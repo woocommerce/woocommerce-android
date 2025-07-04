@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.order
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.AdditionalAnswers
@@ -12,7 +13,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 internal class OrderDtoMapperTest {
     private val stripOrder: StripOrder = mock {
-        on { invoke(any()) }.then(AdditionalAnswers.returnsFirstArg<OrderEntity>())
+        onBlocking { invoke(any()) }.then(AdditionalAnswers.returnsFirstArg<OrderEntity>())
     }
     private val stripOrderMetaData: StripOrderMetaData = mock()
 
@@ -20,7 +21,7 @@ internal class OrderDtoMapperTest {
     val sut = OrderDtoMapper(stripOrder, stripOrderMetaData)
 
     @Test
-    fun `when is_editable is NULL and the status is an editable status the order in Editable`() {
+    fun `when is_editable is NULL and the status is an editable status the order in Editable`() = runTest {
         for (status in OrderDtoMapper.EDITABLE_STATUSES) {
             val oldOrderDTO = getEditableOrder(
                 isEditable = null,
@@ -32,21 +33,21 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `when is_editable is NULL and the status is not an editable status the order is not Editable`() {
+    fun `when is_editable is NULL and the status is not an editable status the order is not Editable`() = runTest {
         val oldOrderDTO = getEditableOrder(isEditable = null, status = "")
         val (orderEntity, _) = sut.toDatabaseEntity(oldOrderDTO, localSiteId)
         assertThat(orderEntity.isEditable).isEqualTo(false)
     }
 
     @Test
-    fun `when is_editable field is true the order is Editable`() {
+    fun `when is_editable field is true the order is Editable`() = runTest {
         val oldOrderDTO = getEditableOrder(isEditable = true, status = "")
         val (orderEntity, _) = sut.toDatabaseEntity(oldOrderDTO, localSiteId)
         assertThat(orderEntity.isEditable).isEqualTo(true)
     }
 
     @Test
-    fun `when is_editable field is false the order is not Editable`() {
+    fun `when is_editable field is false the order is not Editable`() = runTest {
         // We only check for editable statuses if the is_editable field is null
         for (status in OrderDtoMapper.EDITABLE_STATUSES) {
             val oldOrderDTO = getEditableOrder(isEditable = false, status = status)
@@ -67,7 +68,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `when needs_payment is not in json the order dto needs_payment property is null`() {
+    fun `when needs_payment is not in json the order dto needs_payment property is null`() = runTest {
         val json = JsonObject()
         val orderDto = Gson().fromJson(json, OrderDto::class.java)
         val (orderEntity, _) = sut.toDatabaseEntity(orderDto, localSiteId)
@@ -76,7 +77,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `when needs_payment is in json the order dto needs_payment property is parsed`() {
+    fun `when needs_payment is in json the order dto needs_payment property is parsed`() = runTest {
         val json = JsonObject().apply {
             addProperty("needs_payment", "true")
         }
@@ -87,7 +88,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `when needs_processing is not in json the order dto needs_processing property is null`() {
+    fun `when needs_processing is not in json the order dto needs_processing property is null`() = runTest {
         val json = JsonObject()
         val orderDto = Gson().fromJson(json, OrderDto::class.java)
         val (orderEntity, _) = sut.toDatabaseEntity(orderDto, localSiteId)
@@ -96,7 +97,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `when needs_processing is in json the order dto needs_processing property is parsed`() {
+    fun `when needs_processing is in json the order dto needs_processing property is parsed`() = runTest {
         val json = JsonObject().apply {
             addProperty("needs_processing", "true")
         }
@@ -107,7 +108,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `given shipping_tax is absent in json when mapping then orderEntity shippingTax is empty string`() {
+    fun `given shipping_tax is absent in json when mapping then orderEntity shippingTax is empty string`() = runTest {
         val json = JsonObject()
         val orderDto = Gson().fromJson(json, OrderDto::class.java)
         val (orderEntity, _) = sut.toDatabaseEntity(orderDto, localSiteId)
@@ -116,7 +117,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `given shipping_tax is present in json when mapping then orderEntity shippingTax is parsed`() {
+    fun `given shipping_tax is present in json when mapping then orderEntity shippingTax is parsed`() = runTest {
         val json = JsonObject().apply {
             addProperty("shipping_tax", "10.00")
         }
@@ -127,7 +128,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `given created_via is absent in json when mapping then orderEntity createdVia is empty string`() {
+    fun `given created_via is absent in json when mapping then orderEntity createdVia is empty string`() = runTest {
         val json = JsonObject()
         val orderDto = Gson().fromJson(json, OrderDto::class.java)
         val (orderEntity, _) = sut.toDatabaseEntity(orderDto, localSiteId)
@@ -136,7 +137,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `given created_via is present in json when mapping then orderEntity createdVia is parsed`() {
+    fun `given created_via is present in json when mapping then orderEntity createdVia is parsed`() = runTest {
         val json = JsonObject().apply {
             addProperty("created_via", "pos-rest-api")
         }
@@ -147,7 +148,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `given created_via is rest-api in json when mapping then orderEntity createdVia is parsed`() {
+    fun `given created_via is rest-api in json when mapping then orderEntity createdVia is parsed`() = runTest {
         val json = JsonObject().apply {
             addProperty("created_via", "rest-api")
         }
