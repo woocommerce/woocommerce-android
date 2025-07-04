@@ -17,7 +17,6 @@ import javax.inject.Singleton
 @Singleton
 class WooPosCanBeLaunchedInTab @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemotelyEnabled: WooPOSIsRemotelyEnabled
