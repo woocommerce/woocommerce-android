@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import com.woocommerce.android.util.DateUtils
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +36,7 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `when createdVia is pos-rest-api, then salesChannel is POS`() {
+    fun `when createdVia is pos-rest-api, then salesChannel is POS`() = runTest {
         val orderEntity = createTestOrderEntity(createdVia = "pos-rest-api")
 
         val result = orderMapper.toAppModel(orderEntity)
@@ -44,7 +45,7 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `when createdVia is rest-api, then salesChannel is NON_POS`() {
+    fun `when createdVia is rest-api, then salesChannel is NON_POS`() = runTest {
         val orderEntity = createTestOrderEntity(createdVia = "rest-api")
 
         val result = orderMapper.toAppModel(orderEntity)
@@ -53,7 +54,7 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `when createdVia is empty, then salesChannel is NON_POS`() {
+    fun `when createdVia is empty, then salesChannel is NON_POS`() = runTest {
         val orderEntity = createTestOrderEntity(createdVia = "")
 
         val result = orderMapper.toAppModel(orderEntity)
@@ -62,7 +63,7 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `when createdVia is wc-admin, then salesChannel is NON_POS`() {
+    fun `when createdVia is wc-admin, then salesChannel is NON_POS`() = runTest {
         val orderEntity = createTestOrderEntity(createdVia = "wc-admin")
 
         val result = orderMapper.toAppModel(orderEntity)
@@ -71,7 +72,7 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `when createdVia is checkout, then salesChannel is NON_POS`() {
+    fun `when createdVia is checkout, then salesChannel is NON_POS`() = runTest {
         val orderEntity = createTestOrderEntity(createdVia = "checkout")
 
         val result = orderMapper.toAppModel(orderEntity)
