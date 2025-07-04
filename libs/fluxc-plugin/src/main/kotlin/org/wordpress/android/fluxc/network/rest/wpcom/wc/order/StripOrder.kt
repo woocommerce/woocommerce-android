@@ -10,7 +10,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 
 internal class StripOrder @Inject constructor(private val gson: Gson) {
-    operator fun invoke(fatModel: OrderEntity): OrderEntity {
+    suspend operator fun invoke(fatModel: OrderEntity): OrderEntity {
         return fatModel.copy(
                 lineItems = gson.toJson(fatModel.getLineItemList().map { lineItemDto: LineItem ->
                     lineItemDto.copy(

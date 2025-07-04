@@ -154,7 +154,6 @@ class ProductSelectorViewModel @Inject constructor(
 
     private val selectionHandling: SelectionHandling = navArgs.selectionHandling
     val selectionMode: SelectionMode = navArgs.selectionMode
-    val shouldDisplayFilterButton: Boolean = navArgs.productSelectorFlow != OrderListFilter
 
     init {
         if (navArgs.selectionMode == SelectionMode.SINGLE && (navArgs.selectedItems?.size ?: 0) > 1) {
@@ -238,13 +237,13 @@ class ProductSelectorViewModel @Inject constructor(
     private suspend fun getRecentlySoldOrders() =
         orderStore.getPaidOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
 
-    private fun getProductIdsWithNumberOfPurchases(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
-        recentlySoldOrdersList.asSequence()
+    private suspend fun getProductIdsWithNumberOfPurchases(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
+        recentlySoldOrdersList
             .flatMap { it.getLineItemList().mapNotNull { it.productId } }
             .groupingBy { it }
             .eachCount()
 
-    private fun getProductIdsFromRecentlySoldOrders(
+    private suspend fun getProductIdsFromRecentlySoldOrders(
         recentlySoldOrdersList: List<OrderEntity>
     ) = recentlySoldOrdersList.flatMap { orderEntity ->
         orderEntity.getLineItemList().mapNotNull { it.productId }
@@ -620,7 +619,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchProducts(
+    private fun fetchProducts(
         filters: FilterState = filterState.value,
         query: String = "",
         searchType: SearchType = SearchType.DEFAULT,

@@ -7,6 +7,8 @@ import androidx.room.TypeConverters
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.order.CouponLine
@@ -17,7 +19,6 @@ import org.wordpress.android.fluxc.model.order.ShippingLine
 import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.persistence.converters.WCMetaDataConverter
 import java.math.BigDecimal
-import java.util.WeakHashMap
 
 @Entity(
     tableName = "OrderEntity",
@@ -94,13 +95,8 @@ data class OrderEntity(
     @ColumnInfo(name = "shippingTax", defaultValue = "")
     val shippingTax: String = "",
 ) {
-    private fun getCache(): MutableMap<String, List<*>> {
-        return cacheHolder.getOrPut(System.identityHashCode(this)) { mutableMapOf() }
-    }
-
     companion object {
         private val gson by lazy { Gson() }
-        private val cacheHolder = WeakHashMap<Int, MutableMap<String, List<*>>>()
     }
 
     /**
@@ -125,35 +121,35 @@ data class OrderEntity(
     /**
      * Deserializes the JSON contained in [lineItems] into a list of [LineItem] objects.
      */
-    fun getLineItemList(): List<LineItem> {
+    suspend fun getLineItemList(): List<LineItem> {
         return getCachedOrParse(lineItems)
     }
 
     /**
      * Returns the order subtotal (the sum of the subtotals of each line item in the order).
      */
-    fun getOrderSubtotal(): Double {
+    suspend fun getOrderSubtotal(): Double {
         return getLineItemList().sumOf { it.subtotal?.toDoubleOrNull() ?: 0.0 }
     }
 
     /**
      * Deserializes the JSON contained in [shippingLines] into a list of [ShippingLine] objects.
      */
-    fun getShippingLineList(): List<ShippingLine> {
+    suspend fun getShippingLineList(): List<ShippingLine> {
         return getCachedOrParse(shippingLines)
     }
 
     /**
      * Deserializes the JSON contained in [feeLines] into a list of [FeeLine] objects.
      */
-    fun getFeeLineList(): List<FeeLine> {
+    suspend fun getFeeLineList(): List<FeeLine> {
         return getCachedOrParse(feeLines)
     }
 
     /**
      * Deserializes the JSON contained in [couponLines] into a list of [CouponLine] objects.
      */
-    fun getCouponLineList(): List<CouponLine> {
+    suspend fun getCouponLineList(): List<CouponLine> {
         return getCachedOrParse(couponLines)
     }
 
@@ -161,19 +157,16 @@ data class OrderEntity(
      * Deserializes the JSON contained in [taxLines] into a list of [TaxLine] objects.
      * Returns an empty list if deserialization fails.
      */
-    fun getTaxLineList(): List<TaxLine> {
+    suspend fun getTaxLineList(): List<TaxLine> {
         return getCachedOrParse(taxLines)
     }
 
     @Suppress("UNCHECKED_CAST")
-    private inline fun <reified T> getCachedOrParse(json: String): List<T> {
-        val cacheKey = "$json:${T::class.java.name}"
-        return getCache().getOrPut(cacheKey) {
-            parseJsonListSafely<T>(json)
-        } as List<T>
+    private suspend inline fun <reified T> getCachedOrParse(json: String): List<T> {
+        return parseJsonListSafely<T>(json)
     }
 
-    private inline fun <reified T> parseJsonListSafely(json: String): List<T> =
+    private suspend inline fun <reified T> parseJsonListSafely(json: String): List<T> = withContext(Dispatchers.IO) {
         try {
             val responseType = object : TypeToken<List<T>>() {}.type
             gson.fromJson(json, responseType) as? List<T> ?: emptyList()
@@ -186,4 +179,5 @@ data class OrderEntity(
             e.printStackTrace()
             emptyList()
         }
+    }
 }
