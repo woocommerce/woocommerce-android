@@ -52,11 +52,13 @@ class WooShippingLabelPackageRestClient @Inject constructor(
 
     suspend fun deleteSavedCarrierPackage(
         site: SiteModel,
+        isUserDefined: Boolean,
         packageId: String
     ): WooPayload<PackageCreationResponse> {
+        val type = if (isUserDefined) TYPE_CUSTOM else TYPE_PREDEFINED
         return wooNetwork.executeDeleteGsonRequest(
             site = site,
-            path = "$URL/predefined/$packageId",
+            path = "$URL/$type/$packageId",
             clazz = PackageCreationResponse::class.java,
         ).toWooPayload()
     }
