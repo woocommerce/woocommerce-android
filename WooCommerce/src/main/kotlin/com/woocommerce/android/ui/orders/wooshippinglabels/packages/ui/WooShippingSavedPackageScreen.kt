@@ -36,6 +36,7 @@ fun WooShippingSavedPackageScreen(
         isAddPackageEnabled = viewState.value?.packagesData?.hasSavedSelection == true,
         onAddPackageClick = viewModel::onAddSavedPackageClick,
         onSavedPackageSelected = viewModel::onSavedPackageSelected,
+        onSavedPackageRemoved = viewModel::onSavedPackageRemoved,
         onRetryClick = viewModel::onRetryClick,
         onTabChange = onTabChange
     )
@@ -48,6 +49,7 @@ fun WooShippingSavedPackageScreen(
     isAddPackageEnabled: Boolean,
     onAddPackageClick: () -> Unit,
     onSavedPackageSelected: (PackageData, Boolean) -> Unit,
+    onSavedPackageRemoved: (PackageData) -> Unit,
     onRetryClick: () -> Unit,
     onTabChange: (PageType) -> Unit
 ) {
@@ -64,7 +66,8 @@ fun WooShippingSavedPackageScreen(
                     WooShippingSavedPackageContent(
                         modifier = modifier,
                         savedPackages = packageState.savedPackages,
-                        onSavedPackageSelected = onSavedPackageSelected
+                        onSavedPackageSelected = onSavedPackageSelected,
+                        onSavedPackageRemoved = onSavedPackageRemoved
                     )
                 }
 
@@ -107,7 +110,8 @@ fun WooShippingSavedPackageScreen(
 fun WooShippingSavedPackageContent(
     modifier: Modifier = Modifier,
     savedPackages: List<PackageData>,
-    onSavedPackageSelected: (PackageData, Boolean) -> Unit
+    onSavedPackageSelected: (PackageData, Boolean) -> Unit,
+    onSavedPackageRemoved: (PackageData) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -166,6 +170,7 @@ fun WooShippingSavedPackageScreenPreview() {
             isAddPackageEnabled = true,
             onAddPackageClick = {},
             onSavedPackageSelected = { _, _ -> },
+            onSavedPackageRemoved = { _ -> },
             onRetryClick = {},
             onTabChange = {}
         )
@@ -181,6 +186,7 @@ fun WooShippingSavedPackageScreenLoadingPreview() {
             isAddPackageEnabled = false,
             onAddPackageClick = {},
             onSavedPackageSelected = { _, _ -> },
+            onSavedPackageRemoved = { _ -> },
             onRetryClick = {},
             onTabChange = {}
         )
@@ -196,6 +202,7 @@ fun WooShippingSavedPackageScreenErrorPreview() {
             isAddPackageEnabled = false,
             onAddPackageClick = {},
             onSavedPackageSelected = { _, _ -> },
+            onSavedPackageRemoved = { _ -> },
             onRetryClick = {},
             onTabChange = {}
         )
