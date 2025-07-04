@@ -274,6 +274,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             updateSavedCarrierPackages(
                 savePackage = isStarred,
                 packageId = packageData.id,
+                isUserDefined = packageData.isUserDefined,
                 carrierPackages = _viewState.value.packagesData?.carrierPackages ?: emptyMap()
             )
         }

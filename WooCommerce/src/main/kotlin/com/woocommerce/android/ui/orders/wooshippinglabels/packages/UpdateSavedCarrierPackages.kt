@@ -4,6 +4,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import javax.inject.Inject
 
 class UpdateSavedCarrierPackages @Inject constructor(
@@ -13,33 +15,29 @@ class UpdateSavedCarrierPackages @Inject constructor(
     suspend operator fun invoke(
         savePackage: Boolean,
         packageId: String,
-        carrierPackages: Map<Carrier, List<CarrierPackageGroup>>
+        isUserDefined: Boolean,
+        carrierPackages: Map<Carrier, List<CarrierPackageGroup>>? = null
     ) {
         if (savePackage) {
-            repository.saveCarrierPackage(
-                packageId,
-                findCarrierIdForPackageId(packageId, carrierPackages),
-                selectedSite.get()
-            )
+            carrierPackages?.let {
+                repository.saveCarrierPackage(
+                    packageId,
+                    findCarrierIdForPackageId(packageId, carrierPackages),
+                    selectedSite.get()
+                )
+            } ?: WooLog.w(T.SHIPPING_LABELS, "Carrier packages should not be null when saving a package")
         } else {
-            repository.deleteSavedCarrierPackage(
-                packageId,
-                selectedSite.get()
-            )
+            repository.deleteSavedCarrierPackage(packageId, isUserDefined, selectedSite.get())
         }
     }
 
     private fun findCarrierIdForPackageId(
         packageId: String,
-        carrierPackages: Map<Carrier, List<CarrierPackageGroup>>?
-    ): String {
-        return carrierPackages
-            ?.entries
-            ?.firstNotNullOfOrNull { (carrier, packageGroupList) ->
-                packageGroupList
-                    .flatMap { it.packages }
-                    .find { it.id == packageId }
-                    ?.let { carrier.id }
-            } ?: ""
-    }
+        carrierPackages: Map<Carrier, List<CarrierPackageGroup>>
+    ): String = carrierPackages.entries.firstNotNullOfOrNull { (carrier, packageGroupList) ->
+        packageGroupList
+            .flatMap { it.packages }
+            .find { it.id == packageId }
+            ?.let { carrier.id }
+    } ?: ""
 }
