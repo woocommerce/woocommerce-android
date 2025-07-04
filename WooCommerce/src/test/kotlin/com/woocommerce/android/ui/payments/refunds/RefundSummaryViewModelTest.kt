@@ -4,12 +4,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.AmbiguousLocation
-import com.woocommerce.android.model.Location
-import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
@@ -37,7 +34,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RefundSummaryViewModelTest : BaseUnitTest() {
@@ -59,12 +56,6 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
         }
     }
     private val paymentChargeRepository: PaymentChargeRepository = mock()
-    private val orderMapper = OrderMapper(
-        getLocations = mock {
-            on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
-        },
-        mock()
-    )
 
     private lateinit var viewModel: RefundSummaryViewModel
 
@@ -97,11 +88,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -116,10 +105,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: RefundSummaryViewModel.RefundSummaryViewState? = null
-            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+            val viewState = viewModel.refundSummaryStateLiveData.liveData.getOrAwaitValue()
 
-            assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card (Visa **** 1234)")
+            assertThat(viewState.refundMethod).isEqualTo("Credit/Debit card (Visa **** 1234)")
         }
     }
 
@@ -129,11 +117,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -152,7 +138,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { events.add(it) }
             viewModel.onRefundConfirmed(true)
 
-            assertThat(events.first()).isInstanceOf(RefundSummaryViewModel.NavigateToCardReaderScreen::class.java)
+            assertThat(events.firstOrNull()).isInstanceOf(RefundSummaryViewModel.NavigateToCardReaderScreen::class.java)
         }
     }
 
@@ -162,11 +148,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -197,11 +181,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -220,7 +202,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { events.add(it) }
             viewModel.onRefundConfirmed(true)
 
-            assertThat((events.first() as MultiLiveEvent.Event.ShowSnackbar).message).isEqualTo(
+            assertThat((events.firstOrNull() as? MultiLiveEvent.Event.ShowSnackbar)?.message).isEqualTo(
                 R.string.order_refunds_amount_refund_progress_message
             )
         }
@@ -232,11 +214,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -254,7 +234,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { events.add(it) }
             viewModel.refund()
 
-            assertThat(events.first()).isEqualTo(
+            assertThat(events.firstOrNull()).isEqualTo(
                 MultiLiveEvent.Event.ShowSnackbar(
                     R.string.card_reader_interac_refund_notifying_backend_about_successful_refund
                 )
@@ -268,11 +248,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -304,11 +282,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -358,11 +334,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -412,11 +386,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -452,7 +424,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { events.add(it) }
             viewModel.refund()
 
-            assertThat(events.first()).isEqualTo(
+            assertThat(events.firstOrNull()).isEqualTo(
                 MultiLiveEvent.Event.ShowSnackbar(
                     R.string.order_refunds_amount_refund_error
                 )
@@ -466,11 +438,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -489,7 +459,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { events.add(it) }
             viewModel.onRefundConfirmed(true)
 
-            assertThat(events.first()).isNotInstanceOf(RefundSummaryViewModel.NavigateToCardReaderScreen::class.java)
+            assertThat(events.firstOrNull()).isNotInstanceOf(RefundSummaryViewModel.NavigateToCardReaderScreen::class.java)
         }
     }
 
@@ -497,11 +467,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
     fun `given charges call fails, when refund confirmed, then do not trigger card reader screen`() {
         testBlocking {
             val chargeId = "charge_id"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -516,7 +484,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { events.add(it) }
             viewModel.onRefundConfirmed(true)
 
-            assertThat(events.first()).isNotInstanceOf(RefundSummaryViewModel.NavigateToCardReaderScreen::class.java)
+            assertThat(events.firstOrNull()).isNotInstanceOf(RefundSummaryViewModel.NavigateToCardReaderScreen::class.java)
         }
     }
 
@@ -524,11 +492,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
     fun `given non cash order, when charge data loaded with error, then card info is not visible`() {
         testBlocking {
             val chargeId = "charge_id"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -539,10 +505,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: RefundSummaryViewModel.RefundSummaryViewState? = null
-            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+            val viewState = viewModel.refundSummaryStateLiveData.liveData.getOrAwaitValue()
 
-            assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card")
+            assertThat(viewState.refundMethod).isEqualTo("Credit/Debit card")
         }
     }
 
@@ -551,10 +516,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
         testBlocking {
             initViewModel()
 
-            var viewState: RefundSummaryViewModel.RefundSummaryViewState? = null
-            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+            val viewState = viewModel.refundSummaryStateLiveData.liveData.getOrAwaitValue()
 
-            assertThat(viewState!!.isSubmitButtonEnabled).isTrue()
+            assertThat(viewState.isSubmitButtonEnabled).isTrue()
         }
     }
 
@@ -562,11 +526,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
     fun `given non cash order and text summary to long, when charge data loaded, then button not enabled`() {
         testBlocking {
             val chargeId = "charge_id"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -577,21 +539,18 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
 
             viewModel.onRefundSummaryTextChanged(10, 100)
 
-            var viewState: RefundSummaryViewModel.RefundSummaryViewState? = null
-            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+            val viewState = viewModel.refundSummaryStateLiveData.liveData.getOrAwaitValue()
 
-            assertThat(viewState!!.isSubmitButtonEnabled).isFalse()
+            assertThat(viewState.isSubmitButtonEnabled).isFalse()
         }
     }
 
     @Test
     fun `given non cash order and non charge id in order, when charge data loading, then card info is not visible`() {
         testBlocking {
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = emptyList()
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = emptyList()
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
@@ -599,10 +558,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: RefundSummaryViewModel.RefundSummaryViewState? = null
-            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+            val viewState = viewModel.refundSummaryStateLiveData.liveData.getOrAwaitValue()
 
-            assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card")
+            assertThat(viewState.refundMethod).isEqualTo("Credit/Debit card")
         }
     }
 
@@ -612,11 +570,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -652,11 +608,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(false)
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -683,11 +637,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -741,11 +693,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -798,11 +748,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `when refund is issued, then proper track event is triggered`() {
         testBlocking {
-            val orderWithMultipleShipping = orderMapper.toAppModel(
-                OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                    paymentMethod = "cod",
-                    metaData = emptyList()
-                )
+            val orderWithMultipleShipping = createTestOrder(
+                paymentMethod = "cod",
+                metaData = emptyList()
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
             whenever(resourceProvider.getString(any())).thenReturn("")
@@ -818,4 +766,47 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    private fun createTestOrder(
+        paymentMethod: String = "cod",
+        metaData: List<WCMetaData> = emptyList()
+    ): Order = mock {
+        on { id } doReturn ORDER_ID
+        on { this.paymentMethod } doReturn paymentMethod
+        on { chargeId } doReturn metaData.find { it.key == "_charge_id" }?.value?.toString()
+        on { currency } doReturn "USD"
+        on { maxRefund } doReturn BigDecimal("50.00")
+        on { refundTotal } doReturn BigDecimal.ZERO
+        on { isCashPayment } doReturn listOf("cod", "bacs", "cheque").contains(paymentMethod)
+        on { paymentMethodTitle } doReturn if (paymentMethod == "cod") "Cash on delivery" else "Credit/Debit card"
+        on { total } doReturn BigDecimal("50.00")
+        on { number } doReturn "55"
+        on { status } doReturn Order.Status.Pending
+        on { productsTotal } doReturn BigDecimal("40.00")
+        on { totalTax } doReturn BigDecimal("5.00")
+        on { shippingTotal } doReturn BigDecimal("5.00")
+        on { discountTotal } doReturn BigDecimal.ZERO
+        on { orderKey } doReturn "wc_order_test_key"
+        on { customerNote } doReturn ""
+        on { discountCodes } doReturn ""
+        on { pricesIncludeTax } doReturn false
+        on { customer } doReturn null
+        on { shippingMethods } doReturn emptyList()
+        on { items } doReturn emptyList()
+        on { shippingLines } doReturn emptyList()
+        on { feesLines } doReturn emptyList()
+        on { couponLines } doReturn emptyList()
+        on { taxLines } doReturn emptyList()
+        on { shippingPhone } doReturn ""
+        on { paymentUrl } doReturn ""
+        on { isEditable } doReturn true
+        on { selectedGiftCard } doReturn null
+        on { giftCardDiscountedAmount } doReturn null
+        on { shippingTax } doReturn BigDecimal.ZERO
+        on { salesChannel } doReturn Order.SalesChannel.NON_POS
+        on { dateCreated } doReturn Date()
+        on { dateModified } doReturn Date()
+        on { datePaid } doReturn Date()
+    }
+
 }
