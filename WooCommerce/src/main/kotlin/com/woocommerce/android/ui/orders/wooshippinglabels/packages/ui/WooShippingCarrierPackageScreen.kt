@@ -264,17 +264,19 @@ private fun PackageListSection(
             color = colorResource(id = R.color.color_on_surface_disabled)
         )
         Divider()
-        packages.forEach { packageData ->
+        packages.forEachIndexed { index, packageData ->
             WooShippingPackageListItem(
                 modifier = Modifier
                     .clickable { onPackageSelected(packageData, packageData.isSelected.not()) }
                     .padding(start = 16.dp),
                 packageData = packageData,
                 onPackageSelected = onPackageSelected,
+                divider = index < packages.size - 1,
                 packageItemSupportsStarring = true,
                 onPackageStarred = onPackageStarred
             )
         }
+        Divider()
     }
 }
 

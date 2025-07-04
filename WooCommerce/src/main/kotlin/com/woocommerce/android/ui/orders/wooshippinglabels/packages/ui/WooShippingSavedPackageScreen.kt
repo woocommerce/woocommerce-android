@@ -115,12 +115,14 @@ fun WooShippingSavedPackageContent(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        savedPackages.forEach { packageData ->
+        savedPackages.forEachIndexed { index, packageData ->
             WooShippingPackageListItem(
                 modifier,
                 packageData,
                 onSavedPackageSelected,
-                packageItemSupportsStarring = false
+                divider = index < savedPackages.size - 1,
+                packageItemSupportsStarring = false,
+                onPackageRemoved = onSavedPackageRemoved
             )
         }
     }
