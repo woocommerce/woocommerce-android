@@ -648,9 +648,9 @@ private fun SelectPackageCard(
             )
             .dashedBorder(
                 color = colorResource(R.color.divider_color),
-                strokeWidth = 2.dp,
-                dashLength = 8.dp,
-                gapLength = 8.dp,
+                strokeWidth = 1.dp,
+                dashLength = 4.dp,
+                gapLength = 6.dp,
                 shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
             )
             .padding(dimensionResource(id = R.dimen.major_200))

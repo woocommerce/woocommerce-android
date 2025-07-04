@@ -41,12 +41,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -63,6 +59,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.web.WCWebView
+import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
@@ -254,7 +251,6 @@ fun EmptyPaymentMethodsView(
         shapeSize = Size.Unspecified,
         density = LocalDensity.current
     )
-    val borderWidth = with(LocalDensity.current) { 1.dp.toPx() }
 
     Column(modifier) {
         Column(
@@ -262,17 +258,13 @@ fun EmptyPaymentMethodsView(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .drawBehind {
-                    val stroke = Stroke(
-                        width = borderWidth,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-                    )
-                    drawRoundRect(
-                        color = dividerColor,
-                        style = stroke,
-                        cornerRadius = CornerRadius(cornerRadius)
-                    )
-                }
+                .dashedBorder(
+                    color = colorResource(R.color.divider_color),
+                    shape = RoundedCornerShape(8.dp),
+                    strokeWidth = 1.dp,
+                    dashLength = 4.dp,
+                    gapLength = 6.dp,
+                )
         ) {
             Spacer(Modifier.height(48.dp))
             Image(
