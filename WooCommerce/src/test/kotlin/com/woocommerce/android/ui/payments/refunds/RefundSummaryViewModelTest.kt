@@ -89,7 +89,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val cardBrand = "visa"
             val cardLast4 = "1234"
             val orderWithMultipleShipping = createTestOrder(
-                paymentMethod = "cod",
+                paymentMethod = "stripe",
                 metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -493,7 +493,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
         testBlocking {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = createTestOrder(
-                paymentMethod = "cod",
+                paymentMethod = "stripe",
                 metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -514,6 +514,11 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `given non cash order, when charge data loaded, then button enabled`() {
         testBlocking {
+            val orderWithNonCash = createTestOrder(
+                paymentMethod = "stripe",
+                metaData = emptyList()
+            )
+            whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithNonCash)
             initViewModel()
 
             val viewState = viewModel.refundSummaryStateLiveData.liveData.getOrAwaitValue()
@@ -527,7 +532,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
         testBlocking {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = createTestOrder(
-                paymentMethod = "cod",
+                paymentMethod = "stripe",
                 metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -549,7 +554,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
     fun `given non cash order and non charge id in order, when charge data loading, then card info is not visible`() {
         testBlocking {
             val orderWithMultipleShipping = createTestOrder(
-                paymentMethod = "cod",
+                paymentMethod = "stripe",
                 metaData = emptyList()
             )
             whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(orderWithMultipleShipping)
@@ -778,7 +783,11 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
         on { maxRefund } doReturn BigDecimal("50.00")
         on { refundTotal } doReturn BigDecimal.ZERO
         on { isCashPayment } doReturn listOf("cod", "bacs", "cheque").contains(paymentMethod)
-        on { paymentMethodTitle } doReturn if (paymentMethod == "cod") "Cash on delivery" else "Credit/Debit card"
+        on { paymentMethodTitle } doReturn when (paymentMethod) {
+            "cod" -> "Cash on delivery"
+            "stripe" -> "Credit/Debit card"
+            else -> "Credit/Debit card"
+        }
         on { total } doReturn BigDecimal("50.00")
         on { number } doReturn "55"
         on { status } doReturn Order.Status.Pending
