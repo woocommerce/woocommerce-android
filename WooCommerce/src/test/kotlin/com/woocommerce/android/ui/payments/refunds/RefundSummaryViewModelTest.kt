@@ -440,7 +440,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { events.add(it) }
             viewModel.onRefundConfirmed(true)
 
-            assertThat(events.firstOrNull()).isNotInstanceOf(RefundSummaryViewModel.NavigateToCardReaderScreen::class.java)
+            assertThat(events.firstOrNull()).isNotInstanceOf(
+                RefundSummaryViewModel.NavigateToCardReaderScreen::class.java
+            )
         }
     }
 
@@ -464,7 +466,9 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { events.add(it) }
             viewModel.onRefundConfirmed(true)
 
-            assertThat(events.firstOrNull()).isNotInstanceOf(RefundSummaryViewModel.NavigateToCardReaderScreen::class.java)
+            assertThat(events.firstOrNull()).isNotInstanceOf(
+                RefundSummaryViewModel.NavigateToCardReaderScreen::class.java
+            )
         }
     }
 
@@ -747,5 +751,4 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
         on { maxRefund } doReturn BigDecimal("50.00")
         on { refundTotal } doReturn BigDecimal.ZERO
     }
-
 }

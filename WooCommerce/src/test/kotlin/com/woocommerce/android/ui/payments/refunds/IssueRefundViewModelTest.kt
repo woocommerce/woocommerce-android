@@ -11,7 +11,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
