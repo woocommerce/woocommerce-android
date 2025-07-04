@@ -128,7 +128,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `given created_via is absent in json when mapping then orderEntity createdVia is empty string`() {
+    fun `given created_via is absent in json when mapping then orderEntity createdVia is empty string`() = runTest {
         val json = JsonObject()
         val orderDto = Gson().fromJson(json, OrderDto::class.java)
         val (orderEntity, _) = sut.toDatabaseEntity(orderDto, localSiteId)
@@ -137,7 +137,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `given created_via is present in json when mapping then orderEntity createdVia is parsed`() {
+    fun `given created_via is present in json when mapping then orderEntity createdVia is parsed`() = runTest {
         val json = JsonObject().apply {
             addProperty("created_via", "pos-rest-api")
         }
@@ -148,7 +148,7 @@ internal class OrderDtoMapperTest {
     }
 
     @Test
-    fun `given created_via is rest-api in json when mapping then orderEntity createdVia is parsed`() {
+    fun `given created_via is rest-api in json when mapping then orderEntity createdVia is parsed`() = runTest {
         val json = JsonObject().apply {
             addProperty("created_via", "rest-api")
         }
