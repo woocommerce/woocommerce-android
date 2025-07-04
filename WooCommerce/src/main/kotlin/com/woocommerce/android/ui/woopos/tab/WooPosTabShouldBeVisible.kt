@@ -35,6 +35,6 @@ class WooPosTabShouldBeVisible @Inject constructor(
     private fun isCountrySupported(countryCode: String) = SUPPORTED_COUNTRIES.contains(countryCode.lowercase())
 
     private companion object {
-        val SUPPORTED_COUNTRIES = listOf("us", "gb")
+        private val SUPPORTED_COUNTRIES = listOf("us", "gb")
     }
 }
