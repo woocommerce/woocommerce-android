@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.tab
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +11,7 @@ import javax.inject.Inject
 
 class WooPosTabShouldBeVisible @Inject constructor(
     private val selectedSite: SelectedSite,
+    private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled
 ) {
@@ -17,6 +19,8 @@ class WooPosTabShouldBeVisible @Inject constructor(
         val selectedSite = selectedSite.getOrNull() ?: return@withContext false
 
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@withContext false
+
+        if (!isScreenSizeAllowed()) return@withContext false
 
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite)
             ?: wooCommerceStore.fetchSiteGeneralSettings(selectedSite).model

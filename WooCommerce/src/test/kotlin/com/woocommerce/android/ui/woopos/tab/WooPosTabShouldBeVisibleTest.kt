@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.tab
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -24,6 +25,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
 
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
 
     private lateinit var sut: WooPosTabShouldBeVisible
@@ -32,6 +34,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     fun setup() = testBlocking {
         val siteModel = SiteModel().also { it.id = 1 }
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
+        whenever(isScreenSizeAllowed()).thenReturn(true)
         whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(true)
         val siteSettings = buildSiteSettings()
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
@@ -39,6 +42,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
         sut = WooPosTabShouldBeVisible(
             selectedSite = selectedSite,
             wooCommerceStore = wooCommerceStore,
+            isScreenSizeAllowed = isScreenSizeAllowed,
             isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled
         )
     }
@@ -51,6 +55,12 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     @Test
     fun `given feature flag disabled, when invoked, then return false`() = testBlocking {
         whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(false)
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given screen size not allowed, when invoked, then return false`() = testBlocking {
+        whenever(isScreenSizeAllowed()).thenReturn(false)
         assertFalse(sut())
     }
 
