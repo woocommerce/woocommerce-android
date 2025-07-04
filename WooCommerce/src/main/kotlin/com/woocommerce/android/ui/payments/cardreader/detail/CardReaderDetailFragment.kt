@@ -68,6 +68,11 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         }
     }
 
+    private fun View.announceAccessibilityChange(message: String) {
+        this.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
+        this.contentDescription = message
+    }
+
     private fun observeEvents(binding: FragmentCardReaderDetailBinding) {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -99,11 +104,11 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                     event.readersName
                 )
                 is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected ->
-                    binding.readerDisconnectedState.cardReaderDetailConnectBtn.announceForAccessibility(
+                    binding.readerDisconnectedState.cardReaderDetailConnectBtn.announceAccessibilityChange(
                         getString(event.accessibilityDisconnectedText)
                     )
                 is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected ->
-                    binding.readerConnectedState.primaryActionBtn.announceForAccessibility(
+                    binding.readerConnectedState.primaryActionBtn.announceAccessibilityChange(
                         getString(event.accessibilityConnectedText)
                     )
                 is NavigateToUrlInGenericWebView ->
