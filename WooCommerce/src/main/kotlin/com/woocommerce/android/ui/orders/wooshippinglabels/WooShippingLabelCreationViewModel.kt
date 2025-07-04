@@ -528,7 +528,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    @Suppress("ComplexCondition")
+    @Suppress("ComplexCondition", "LongMethod")
     private suspend fun observeShippingLabelInformation() {
         combine(
             accountSettings,

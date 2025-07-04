@@ -41,10 +41,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -246,12 +244,6 @@ fun EmptyPaymentMethodsView(
     onAddNewPaymentMethod: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dividerColor = colorResource(R.color.divider_color)
-    val cornerRadius = MaterialTheme.shapes.medium.topStart.toPx(
-        shapeSize = Size.Unspecified,
-        density = LocalDensity.current
-    )
-
     Column(modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
