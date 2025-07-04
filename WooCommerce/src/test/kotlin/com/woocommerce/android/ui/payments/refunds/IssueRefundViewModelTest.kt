@@ -92,10 +92,9 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: IssueRefundViewState? = null
-            viewModel.viewState.observeForever { new -> viewState = new }
+            val viewState = viewModel.viewState.getOrAwaitValue()
 
-            viewState!!.feesSection.isFeesRefundAvailable.let { assertTrue(it) }
+            viewState.feesSection.isFeesRefundAvailable.let { assertTrue(it) }
             assertTrue(viewState.feesSection.isFeesMainSwitchChecked)
         }
     }
@@ -107,10 +106,9 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: IssueRefundViewState? = null
-            viewModel.viewState.observeForever { new -> viewState = new }
+            val viewState = viewModel.viewState.getOrAwaitValue()
 
-            assertFalse(viewState!!.isRefundNoticeVisible)
+            assertFalse(viewState.isRefundNoticeVisible)
         }
     }
 
@@ -122,10 +120,9 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: IssueRefundViewState? = null
-            viewModel.viewState.observeForever { new -> viewState = new }
+            val viewState = viewModel.viewState.getOrAwaitValue()
 
-            assertFalse(viewState!!.isRefundNoticeVisible)
+            assertFalse(viewState.isRefundNoticeVisible)
         }
     }
 
@@ -137,11 +134,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: IssueRefundViewState? = null
-            viewModel.viewState.observeForever { new -> viewState = new }
+            val viewState = viewModel.viewState.getOrAwaitValue()
 
-            assertTrue(viewState!!.isRefundNoticeVisible)
-            assertEquals("You can refund multiple shipping lines", viewState!!.refundNotice)
+            assertTrue(viewState.isRefundNoticeVisible)
+            assertEquals("You can refund multiple shipping lines", viewState.refundNotice)
         }
     }
 
@@ -175,8 +171,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
 
             initViewModel()
+            viewModel.viewState.getOrAwaitValue()
             viewModel.onRefundQuantityTapped(1L)
 
             verify(analyticsTrackerWrapper).track(
@@ -194,8 +192,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
 
             initViewModel()
+            viewModel.viewState.getOrAwaitValue()
             viewModel.onSelectButtonTapped()
 
             verify(analyticsTrackerWrapper).track(
