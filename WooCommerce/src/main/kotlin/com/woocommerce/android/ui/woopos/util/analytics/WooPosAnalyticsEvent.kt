@@ -127,7 +127,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data class BarcodeScanned(
             val scanDurationMs: Long,
-            val isNumericOnly: Boolean,
             val barcodeLength: Int,
             val scannerInfo: String?,
         ) : Event() {
@@ -138,7 +137,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     mapOf(
                         "barcode_length" to barcodeLength.toString(),
                         "scan_duration_ms" to scanDurationMs.toString(),
-                        "is_numeric_only" to isNumericOnly.toString(),
                         "scanner_info" to (scannerInfo ?: "unknown")
                     )
                 )
@@ -147,7 +145,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data class BarcodeScanningFailed(
             val scanDurationMs: Long,
-            val isNumericOnly: Boolean,
             val barcodeLength: Int,
             val scannerInfo: String?,
             val failReason: String,
@@ -159,7 +156,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     mapOf(
                         "barcode_length" to barcodeLength.toString(),
                         "scan_duration_ms" to scanDurationMs.toString(),
-                        "is_numeric_only" to isNumericOnly.toString(),
                         "scanner_info" to (scannerInfo ?: "unknown"),
                         "fail_reason" to failReason
                     )
