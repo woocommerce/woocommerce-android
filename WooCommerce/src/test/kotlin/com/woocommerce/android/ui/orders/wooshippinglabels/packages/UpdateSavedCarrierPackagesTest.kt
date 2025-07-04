@@ -39,6 +39,7 @@ class UpdateSavedCarrierPackagesTest : BaseUnitTest() {
         useCase(
             savePackage = true,
             packageId = packageIdToSave,
+            isUserDefined = false,
             carrierPackages = carrierPackages,
         )
 
@@ -47,7 +48,7 @@ class UpdateSavedCarrierPackagesTest : BaseUnitTest() {
             saveCarrierPackage(packageIdToSave, expectedCarrier.id, selectedSite.get())
         }
         verifyBlocking(repository, never()) {
-            deleteSavedCarrierPackage(any(), any())
+            deleteSavedCarrierPackage(any(), any(), any())
         }
     }
 
@@ -57,17 +58,19 @@ class UpdateSavedCarrierPackagesTest : BaseUnitTest() {
         val packageIdToDelete = "usps_package_123"
         val expectedCarrier = Carrier.USPS
         val carrierPackages = createDummyCarrierPackages(packageIdToDelete, expectedCarrier)
+        val isUserDefined = false
 
         // When
         useCase(
             savePackage = false,
             packageId = packageIdToDelete,
+            isUserDefined = isUserDefined,
             carrierPackages = carrierPackages,
         )
 
         // Then
         verifyBlocking(repository, times(1)) {
-            deleteSavedCarrierPackage(packageIdToDelete, selectedSite.get())
+            deleteSavedCarrierPackage(packageIdToDelete, isUserDefined, selectedSite.get())
         }
         verifyBlocking(repository, never()) {
             saveCarrierPackage(any(), any(), any())
