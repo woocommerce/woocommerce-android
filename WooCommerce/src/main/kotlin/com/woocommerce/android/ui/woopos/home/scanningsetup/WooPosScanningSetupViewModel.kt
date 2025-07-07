@@ -56,6 +56,12 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun resetToWelcomeState() {
+        _state.value = _state.value.copy(
+            currentStep = createWelcomeStep()
+        )
+    }
+
     private fun handlePrimaryButtonClick() {
         when (_state.value.currentStep) {
             is ScanningSetupStep.Welcome -> {

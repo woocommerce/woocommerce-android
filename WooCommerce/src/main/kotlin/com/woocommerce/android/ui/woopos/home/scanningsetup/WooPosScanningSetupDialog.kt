@@ -17,10 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,10 +32,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,6 +51,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -65,6 +69,7 @@ fun WooPosScanningSetupDialog(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        viewModel.resetToWelcomeState()
         viewModel.openUrlEvent.collect { url ->
             ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
         }
@@ -403,13 +408,8 @@ private fun SetupCompleteContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = Icons.Default.CheckCircle,
-            contentDescription = null,
-            modifier = Modifier
-                .size(64.dp)
-                .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding()),
-            tint = MaterialTheme.colorScheme.primary
+        SetupCompleteCheckIcon(
+            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
         WooPosText(
@@ -431,6 +431,30 @@ private fun SetupCompleteContent(
             onClick = onDone,
             text = step.primaryButtonText,
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun SetupCompleteCheckIcon(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(166.dp)
+            .shadow(
+                elevation = WooPosElevation.Medium.value,
+                shape = CircleShape,
+                clip = false
+            )
+            .background(WooPosTheme.colors.success, CircleShape)
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
+            tint = WooPosTheme.colors.onSuccess,
+            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
+            modifier = Modifier.size(72.dp)
         )
     }
 }
