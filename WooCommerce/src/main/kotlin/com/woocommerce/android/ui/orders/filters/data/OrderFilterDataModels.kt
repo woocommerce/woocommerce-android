@@ -4,7 +4,8 @@ enum class OrderListFilterCategory {
     ORDER_STATUS,
     DATE_RANGE,
     PRODUCT,
-    CUSTOMER
+    CUSTOMER,
+    SALES_CHANNEL
 }
 
 enum class DateRange(val filterKey: String) {
@@ -36,4 +37,10 @@ data class DateRangeFilterOption(
     override val isSelected: Boolean,
     val startDate: Long,
     val endDate: Long,
+) : OrderFilterOption()
+
+data class SalesChannelOption(
+    val key: String,
+    val label: String,
+    override val isSelected: Boolean
 ) : OrderFilterOption()

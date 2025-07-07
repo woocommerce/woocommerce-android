@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CU
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.SALES_CHANNEL
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
@@ -175,6 +176,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         val dateRangeFilterOptions = loadDateRangeFilterOptions()
         val productFilterOptions = getProductFilterOptions()
         val customerFilterOptions = getCustomerFilterOptions()
+        val salesChannelFilterOptions = getSalesChannelFilterOptions()
 
         return listOf(
             OrderFilterCategoryUiModel(
@@ -212,6 +214,15 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                     resourceProvider
                 ),
                 productFilterOptions
+            ),
+            OrderFilterCategoryUiModel(
+                categoryKey = SALES_CHANNEL,
+                displayName = resourceProvider.getString(R.string.orderfilters_sales_channel_filter),
+                displayValue = salesChannelFilterOptions.getDisplayValue(
+                    SALES_CHANNEL,
+                    resourceProvider
+                ),
+                salesChannelFilterOptions
             )
         )
     }
@@ -279,7 +290,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
 
                 DATE_RANGE,
                 PRODUCT,
-                CUSTOMER -> first { it.isSelected }.displayName
+                CUSTOMER,
+                SALES_CHANNEL -> first { it.isSelected }.displayName
             }
         } else {
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
@@ -365,6 +377,47 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 id
             )
         } ?: resourceProvider.getString(R.string.orderfilters_default_filter_value)
+
+    private fun getSalesChannelFilterOptions(): List<OrderFilterOptionUiModel> {
+        val currentSelection = orderFilterRepository.getCurrentFilterSelection(SALES_CHANNEL)
+
+        return mutableListOf(
+            OrderFilterOptionUiModel(
+                key = "pos",
+                displayName = resourceProvider.getString(R.string.point_of_sale),
+                isSelected = currentSelection.contains("pos")
+            )
+        ).apply {
+            addFilterOptionAll(resourceProvider)
+        }
+    }
+
+    fun onSalesChannelSelected(selectedKey: String) {
+        if (selectedKey == "pos") {
+            TODO("Handle Point of Sale selection")
+        }
+
+        val salesChannelFilterOptions = when (selectedKey) {
+            OrderFilterOptionUiModel.DEFAULT_ALL_KEY -> {
+                getSalesChannelFilterOptions().map { it.copy(isSelected = it.key == OrderFilterOptionUiModel.DEFAULT_ALL_KEY) }
+            }
+            else -> {
+                getSalesChannelFilterOptions().map { it.copy(isSelected = it.key == selectedKey) }
+            }
+        }
+
+        onFilterOptionsUpdated(
+            OrderFilterCategoryUiModel(
+                categoryKey = SALES_CHANNEL,
+                displayName = resourceProvider.getString(R.string.orderfilters_sales_channel_filter),
+                displayValue = salesChannelFilterOptions.getDisplayValue(
+                    SALES_CHANNEL,
+                    resourceProvider
+                ),
+                salesChannelFilterOptions
+            )
+        )
+    }
 
     @Parcelize
     data class OrderFilterCategories(

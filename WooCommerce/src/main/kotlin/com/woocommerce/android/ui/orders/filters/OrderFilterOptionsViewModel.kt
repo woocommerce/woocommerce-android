@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CU
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.SALES_CHANNEL
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
@@ -64,6 +65,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
             DATE_RANGE -> updateDateRangeFilters(selectedOrderFilterOption)
             PRODUCT -> error("Product filter option is not supported")
             CUSTOMER -> error("Customer filter not supported in this screen")
+            SALES_CHANNEL -> updateSalesChannelSelectedFilters(selectedOrderFilterOption)
         }
     }
 
@@ -121,6 +123,17 @@ class OrderFilterOptionsViewModel @Inject constructor(
         updateSelectedFilterValues(dateRangeOptionClicked)
     }
 
+    private fun updateSalesChannelSelectedFilters(salesChannelClicked: OrderFilterOptionUiModel) {
+        if (salesChannelClicked.key == "pos") {
+            TODO("Handle Point of Sale selection")
+        }
+        
+        _viewState = _viewState.copy(
+            filterOptions = _viewState.filterOptions.clearAllFilterSelections()
+        )
+        updateSelectedFilterValues(salesChannelClicked)
+    }
+
     private fun updateSelectedFilterValues(selectedFilterOption: OrderFilterOptionUiModel) {
         _viewState.filterOptions.let { filterOptions ->
             var updatedOptionList = filterOptions.map {
@@ -137,7 +150,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
     private fun updateFilterOptionsSelectedValue(
         category: OrderListFilterCategory,
         filterOptionClicked: OrderFilterOptionUiModel
-    ) = if (filterOptionClicked.key == DEFAULT_ALL_KEY || category == DATE_RANGE) {
+    ) = if (filterOptionClicked.key == DEFAULT_ALL_KEY || category == DATE_RANGE || category == SALES_CHANNEL) {
         filterOptionClicked.copy(isSelected = true)
     } else {
         filterOptionClicked.copy(isSelected = !filterOptionClicked.isSelected)
@@ -161,6 +174,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
             DATE_RANGE -> resourceProvider.getString(R.string.orderfilters_filter_date_range_options_title)
             PRODUCT -> error("Product filter option is not supported")
             CUSTOMER -> error("Customer filter not supported in this screen")
+            SALES_CHANNEL -> resourceProvider.getString(R.string.orderfilters_sales_channel_filter)
         }
 
     fun onCustomDateRangeChanged(startMillis: Long, endMillis: Long) {
