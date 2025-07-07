@@ -80,13 +80,6 @@ fun WooPosScanningSetupDialog(
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
         ) {
             when (val step = state.currentStep) {
-                null -> {
-                    LaunchedEffect(state.isVisible) {
-                        if (state.isVisible) {
-                            viewModel.show()
-                        }
-                    }
-                }
                 is ScanningSetupStep.Welcome -> WelcomeContent(
                     step = step,
                     onBluetoothSelected = {

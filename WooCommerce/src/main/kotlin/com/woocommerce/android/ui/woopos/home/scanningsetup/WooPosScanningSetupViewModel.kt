@@ -20,7 +20,7 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosScanningSetupState(
             isVisible = false,
-            currentStep = null
+            currentStep = createWelcomeStep()
         )
     )
     val state: StateFlow<WooPosScanningSetupState> = _state.asStateFlow()
@@ -56,16 +56,8 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun show() {
-        _state.value = WooPosScanningSetupState(
-            isVisible = true,
-            currentStep = createWelcomeStep()
-        )
-    }
-
     private fun handlePrimaryButtonClick() {
         when (_state.value.currentStep) {
-            null -> error("Primary button clicked but dialog not initialized yet")
             is ScanningSetupStep.Welcome -> {
                 error("Primary button should not be available on Welcome step")
             }
@@ -102,7 +94,6 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
 
     private fun handleSecondaryButtonClick() {
         when (_state.value.currentStep) {
-            null -> error("Secondary button clicked but dialog not initialized yet")
             is ScanningSetupStep.Welcome -> error("Secondary button should not be available on Welcome step")
             is ScanningSetupStep.Introduction,
             is ScanningSetupStep.BluetoothWarning,
@@ -114,7 +105,7 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
                 )
             }
             is ScanningSetupStep.ScannerSetupComplete -> {
-                // No secondary button on complete screen
+                error("Secondary button should not be available on ScannerSetupComplete step")
             }
         }
     }

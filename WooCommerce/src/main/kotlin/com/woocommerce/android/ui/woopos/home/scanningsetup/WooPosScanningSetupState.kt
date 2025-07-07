@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class WooPosScanningSetupState(
     val isVisible: Boolean = false,
-    val currentStep: ScanningSetupStep? = null,
+    val currentStep: ScanningSetupStep
 ) : Parcelable {
     sealed class ScanningSetupStep : Parcelable {
         @Parcelize
