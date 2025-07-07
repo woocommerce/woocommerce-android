@@ -79,11 +79,10 @@ private fun PurchasesSectionLandscape(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
-        AnimatedVisibility(orderCompleteToggleVisible) {
+        AnimatedVisibility(visible = orderCompleteToggleVisible, modifier = Modifier.weight(1f)) {
             MarkComplete(
                 markOrderComplete = state.markOrderComplete,
                 onMarkOrderCompleteChange = state.onMarkOrderCompleteChange,
-                modifier = Modifier.weight(1f)
             )
         }
         PurchaseButton(
