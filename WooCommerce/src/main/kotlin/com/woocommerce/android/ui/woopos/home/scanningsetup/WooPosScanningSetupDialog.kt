@@ -81,27 +81,13 @@ fun WooPosScanningSetupDialog(
                 .background(color = MaterialTheme.colorScheme.surfaceBright)
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
         ) {
-            IconButton(
-                onClick = onDismissRequest,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-            ) {
-                Icon(
-                    Icons.Default.Close,
-                    contentDescription = stringResource(
-                        id = R.string.woopos_exit_dialog_confirmation_close_content_description
-                    ),
-                    modifier = Modifier
-                        .size(40.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            }
             AnimatedContent(
                 targetState = state.currentStep,
                 transitionSpec = {
                     fadeIn() togetherWith fadeOut()
                 },
-                label = "step_transition"
+                label = "step_transition",
+                modifier = Modifier.padding(top = WooPosSpacing.XLarge.value.toAdaptivePadding()),
             ) { step ->
                 when (step) {
                     is ScanningSetupStep.Welcome -> WelcomeContent(
@@ -143,6 +129,22 @@ fun WooPosScanningSetupDialog(
                         onDone = onDismissRequest
                     )
                 }
+            }
+
+            IconButton(
+                onClick = onDismissRequest,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = stringResource(
+                        id = R.string.woopos_exit_dialog_confirmation_close_content_description
+                    ),
+                    modifier = Modifier
+                        .size(40.dp),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
             }
         }
     }
