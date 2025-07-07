@@ -68,13 +68,17 @@ fun WooPosScanningSetupDialog(
     val viewModel = hiltViewModel<WooPosScanningSetupViewModel>()
     val context = LocalContext.current
 
+    LaunchedEffect(outerState.isVisible) {
+        if (outerState.isVisible) {
+            viewModel.resetToWelcomeState()
+        }
+    }
+
     LaunchedEffect(Unit) {
-        viewModel.resetToWelcomeState()
         viewModel.openUrlEvent.collect { url ->
             ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
         }
     }
-
     WooPosDialogWrapper(
         isVisible = outerState.isVisible,
         onDismissRequest = onDismissRequest,
@@ -104,31 +108,37 @@ fun WooPosScanningSetupDialog(
                             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnViewDocumentation)
                         }
                     )
+
                     is ScanningSetupStep.Introduction -> IntroductionContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
+
                     is ScanningSetupStep.BluetoothWarning -> BluetoothWarningContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
+
                     is ScanningSetupStep.BluetoothPairing -> BarcodeStepContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
+
                     is ScanningSetupStep.PairOnYourDevice -> BarcodeStepContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
+
                     is ScanningSetupStep.TestYourScanner -> BarcodeStepContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
+
                     is ScanningSetupStep.ScannerSetupComplete -> SetupCompleteContent(
                         step = step,
                         onDone = onDismissRequest
@@ -312,6 +322,7 @@ private fun BarcodeStepContent(
             primaryText = step.primaryButtonText
             secondaryText = step.secondaryButtonText
         }
+
         is ScanningSetupStep.PairOnYourDevice -> {
             title = step.title
             message = step.message
@@ -320,6 +331,7 @@ private fun BarcodeStepContent(
             primaryText = step.primaryButtonText
             secondaryText = step.secondaryButtonText
         }
+
         is ScanningSetupStep.TestYourScanner -> {
             title = step.title
             message = step.message
@@ -328,7 +340,6 @@ private fun BarcodeStepContent(
             primaryText = step.primaryButtonText
             secondaryText = step.secondaryButtonText
         }
-        else -> return
     }
 
     Column(

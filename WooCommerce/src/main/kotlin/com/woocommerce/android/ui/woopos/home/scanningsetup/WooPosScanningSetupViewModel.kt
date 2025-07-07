@@ -67,31 +67,37 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
             is ScanningSetupStep.Welcome -> {
                 error("Primary button should not be available on Welcome step")
             }
+
             is ScanningSetupStep.Introduction -> {
                 _state.value = _state.value.copy(
                     currentStep = createBluetoothWarningStep()
                 )
             }
+
             is ScanningSetupStep.BluetoothWarning -> {
                 _state.value = _state.value.copy(
                     currentStep = createBluetoothPairingStep()
                 )
             }
+
             is ScanningSetupStep.BluetoothPairing -> {
                 _state.value = _state.value.copy(
                     currentStep = createPairOnYourDeviceStep()
                 )
             }
+
             is ScanningSetupStep.PairOnYourDevice -> {
                 _state.value = _state.value.copy(
                     currentStep = createTestYourScannerStep()
                 )
             }
+
             is ScanningSetupStep.TestYourScanner -> {
                 _state.value = _state.value.copy(
                     currentStep = createScannerSetupCompleteStep()
                 )
             }
+
             is ScanningSetupStep.ScannerSetupComplete -> {
                 // Handled by parent through onDismissRequest
             }
@@ -106,26 +112,31 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
                     currentStep = createWelcomeStep()
                 )
             }
+
             is ScanningSetupStep.BluetoothWarning -> {
                 _state.value = _state.value.copy(
                     currentStep = createBluetoothIntroductionStep()
                 )
             }
+
             is ScanningSetupStep.BluetoothPairing -> {
                 _state.value = _state.value.copy(
                     currentStep = createBluetoothWarningStep()
                 )
             }
+
             is ScanningSetupStep.PairOnYourDevice -> {
                 _state.value = _state.value.copy(
                     currentStep = createBluetoothPairingStep()
                 )
             }
+
             is ScanningSetupStep.TestYourScanner -> {
                 _state.value = _state.value.copy(
                     currentStep = createPairOnYourDeviceStep()
                 )
             }
+
             is ScanningSetupStep.ScannerSetupComplete -> {
                 error("Secondary button should not be available on ScannerSetupComplete step")
             }
