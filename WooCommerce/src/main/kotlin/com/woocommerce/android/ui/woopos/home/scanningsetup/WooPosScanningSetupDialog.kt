@@ -78,14 +78,11 @@ fun WooPosScanningSetupDialog(
         val state by viewModel.state.collectAsState()
         Box(
             modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceBright,
-                    shape = RoundedCornerShape(WooPosCornerRadius.Large.value)
-                )
+                .background(color = MaterialTheme.colorScheme.surfaceBright)
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
         ) {
             IconButton(
-                onClick = { onDismissRequest() },
+                onClick = onDismissRequest,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
             ) {
