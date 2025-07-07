@@ -96,7 +96,7 @@ class GetShipments @Inject constructor(
         destinationAddresses: Map<String, DestinationAddressDTO>
     ) = shipmentUIModelList.map { shipmentUIModel ->
         val id = shipmentUIModel.remoteId
-        if (id != null && destinationAddresses.contains(getStoredDataKey(id))) {
+        if (id != null) {
             destinationAddresses[getStoredDataKey(id)]?.let {
                 shipmentUIModel.copy(label = shipmentUIModel.label?.copy(destinationAddress = mapper.invoke(it)))
             } ?: shipmentUIModel
