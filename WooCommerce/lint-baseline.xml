@@ -305,7 +305,7 @@
         errorLine2="                                                         ~~~~~~">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/orders/shippinglabels/creation/CreateShippingLabelViewModelTest.kt"
-            line="382"
+            line="383"
             column="58"/>
     </issue>
 
@@ -316,7 +316,7 @@
         errorLine2="                                                     ~~~~~~">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/orders/shippinglabels/creation/CreateShippingLabelViewModelTest.kt"
-            line="383"
+            line="384"
             column="54"/>
     </issue>
 
@@ -327,7 +327,7 @@
         errorLine2="                                                                  ~~~~~~">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/orders/shippinglabels/creation/CreateShippingLabelViewModelTest.kt"
-            line="406"
+            line="407"
             column="67"/>
     </issue>
 
@@ -338,7 +338,7 @@
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/orders/shippinglabels/creation/CreateShippingLabelViewModelTest.kt"
-            line="407"
+            line="408"
             column="51"/>
     </issue>
 
@@ -921,7 +921,7 @@
         errorLine2="            ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="212"
+            line="211"
             column="13"/>
     </issue>
 
@@ -932,7 +932,7 @@
         errorLine2="            ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="215"
+            line="214"
             column="13"/>
     </issue>
 
@@ -943,7 +943,7 @@
         errorLine2="            ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="218"
+            line="217"
             column="13"/>
     </issue>
 
@@ -954,7 +954,7 @@
         errorLine2="                    ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="222"
+            line="221"
             column="21"/>
     </issue>
 
@@ -965,7 +965,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="227"
+            line="226"
             column="27"/>
     </issue>
 
@@ -976,7 +976,7 @@
         errorLine2="            ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="246"
+            line="245"
             column="13"/>
     </issue>
 
@@ -987,7 +987,7 @@
         errorLine2="            ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="251"
+            line="250"
             column="13"/>
     </issue>
 
@@ -998,7 +998,7 @@
         errorLine2="            ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="256"
+            line="255"
             column="13"/>
     </issue>
 
@@ -1009,7 +1009,7 @@
         errorLine2="                    ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="262"
+            line="261"
             column="21"/>
     </issue>
 
@@ -1020,7 +1020,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="267"
+            line="266"
             column="27"/>
     </issue>
 
@@ -1031,7 +1031,7 @@
         errorLine2="            ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="272"
+            line="271"
             column="13"/>
     </issue>
 
@@ -1042,7 +1042,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="310"
+            line="309"
             column="17"/>
     </issue>
 
@@ -1053,7 +1053,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="315"
+            line="314"
             column="17"/>
     </issue>
 
@@ -1064,7 +1064,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="320"
+            line="319"
             column="17"/>
     </issue>
 
@@ -1075,7 +1075,7 @@
         errorLine2="                        ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="326"
+            line="325"
             column="25"/>
     </issue>
 
@@ -1086,7 +1086,7 @@
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="331"
+            line="330"
             column="31"/>
     </issue>
 
@@ -1097,7 +1097,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="336"
+            line="335"
             column="17"/>
     </issue>
 
@@ -1108,7 +1108,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="346"
+            line="345"
             column="17"/>
     </issue>
 
@@ -1119,7 +1119,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="385"
+            line="384"
             column="17"/>
     </issue>
 
@@ -1130,7 +1130,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="390"
+            line="389"
             column="17"/>
     </issue>
 
@@ -1141,7 +1141,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="395"
+            line="394"
             column="17"/>
     </issue>
 
@@ -1152,7 +1152,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="400"
+            line="399"
             column="17"/>
     </issue>
 
@@ -1163,7 +1163,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="405"
+            line="404"
             column="17"/>
     </issue>
 
@@ -1174,7 +1174,7 @@
         errorLine2="                        ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="411"
+            line="410"
             column="25"/>
     </issue>
 
@@ -1185,7 +1185,7 @@
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="416"
+            line="415"
             column="31"/>
     </issue>
 
@@ -1196,7 +1196,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="421"
+            line="420"
             column="17"/>
     </issue>
 
@@ -1207,7 +1207,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="431"
+            line="430"
             column="17"/>
     </issue>
 
@@ -1218,7 +1218,7 @@
         errorLine2="                ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/IssueRefundViewModelTest.kt"
-            line="441"
+            line="440"
             column="17"/>
     </issue>
 
@@ -2225,6 +2225,28 @@
 
     <issue
         id="DoNotMockDataClass"
+        message="&apos;org.wordpress.android.fluxc.model.order.LineItem&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val mockLineItem = mock&lt;LineItem> {"
+        errorLine2="                           ^">
+        <location
+            file="src/test/kotlin/com/woocommerce/android/ui/products/selector/ProductSelectorViewModelTest.kt"
+            line="1604"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;org.wordpress.android.fluxc.persistence.entity.OrderEntity&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val mockOrder = mock&lt;OrderEntity> {"
+        errorLine2="                        ^">
+        <location
+            file="src/test/kotlin/com/woocommerce/android/ui/products/selector/ProductSelectorViewModelTest.kt"
+            line="1608"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
         message="&apos;org.wordpress.android.fluxc.model.customer.WCCustomerModel&apos; is a data class, so mocking it should not be necessary"
         errorLine1="        val customer: WCCustomerModel = mock()"
         errorLine2="                                        ~~~~~~">
@@ -2276,6 +2298,17 @@
             file="src/test/kotlin/com/woocommerce/android/ui/moremenu/customer/RefreshCustomerDataTests.kt"
             line="78"
             column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.model.Order&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="    ): Order = mock {"
+        errorLine2="               ^">
+        <location
+            file="src/test/kotlin/com/woocommerce/android/ui/payments/refunds/RefundSummaryViewModelTest.kt"
+            line="746"
+            column="16"/>
     </issue>
 
     <issue
@@ -3627,7 +3660,7 @@
         errorLine2="            ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/orders/wooshippinglabels/customs/WooShippingCustomsFormViewModelTest.kt"
-            line="36"
+            line="34"
             column="13"/>
     </issue>
 
@@ -3638,7 +3671,7 @@
         errorLine2="            ^">
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/orders/wooshippinglabels/customs/WooShippingCustomsFormViewModelTest.kt"
-            line="40"
+            line="38"
             column="13"/>
     </issue>
 
