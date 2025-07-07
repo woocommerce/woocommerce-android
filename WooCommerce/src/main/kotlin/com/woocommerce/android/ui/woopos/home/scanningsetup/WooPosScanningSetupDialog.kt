@@ -340,6 +340,8 @@ private fun BarcodeStepContent(
             primaryText = step.primaryButtonText
             secondaryText = step.secondaryButtonText
         }
+
+        else -> error("Invalid step type for BarcodeStepContent: $step")
     }
 
     Column(
