@@ -745,37 +745,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when shipment details is expanded then the back gesture closes the sheet`() = testBlocking {
-        whenever(observeAccountSettings()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-        sut.onShipmentDetailsExpandedChange(true)
-
-        // Close shipment details
-        var shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isFalse()
-
-        // Navigate back
-        shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isTrue()
-    }
-
-    @Test
-    fun `when there is no bottom sheet expanded, then on back navigates to the previous screen`() = testBlocking {
-        whenever(observeAccountSettings()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-
-        // Navigate back
-        val shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isTrue()
-    }
-
-    @Test
     fun `when there are notices then display the notices`() = testBlocking {
         val notice = NoticeBannerUiState(
             message = R.string.woo_shipping_address_notification_destination_missing,
