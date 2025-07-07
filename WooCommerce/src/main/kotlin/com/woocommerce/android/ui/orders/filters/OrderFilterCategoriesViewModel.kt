@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.SA
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
+import com.woocommerce.android.ui.orders.filters.domain.IsSalesChannelFilterSupported
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
@@ -55,7 +56,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val analyticsTraWrapper: AnalyticsTrackerWrapper,
     private val productRepository: ProductListRepository,
     private val customerStore: WCCustomerStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val isSalesChannelFilterSupported: IsSalesChannelFilterSupported
 ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
@@ -176,9 +178,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         val dateRangeFilterOptions = loadDateRangeFilterOptions()
         val productFilterOptions = getProductFilterOptions()
         val customerFilterOptions = getCustomerFilterOptions()
-        val salesChannelFilterOptions = getSalesChannelFilterOptions()
 
-        return listOf(
+        val baseFilters = listOf(
             OrderFilterCategoryUiModel(
                 categoryKey = ORDER_STATUS,
                 displayName = resourceProvider.getString(R.string.orderfilters_order_status_filter),
@@ -214,8 +215,12 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                     resourceProvider
                 ),
                 productFilterOptions
-            ),
-            OrderFilterCategoryUiModel(
+            )
+        )
+
+        return if (isSalesChannelFilterSupported()) {
+            val salesChannelFilterOptions = getSalesChannelFilterOptions()
+            baseFilters + OrderFilterCategoryUiModel(
                 categoryKey = SALES_CHANNEL,
                 displayName = resourceProvider.getString(R.string.orderfilters_sales_channel_filter),
                 displayValue = salesChannelFilterOptions.getDisplayValue(
@@ -224,7 +229,9 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 ),
                 salesChannelFilterOptions
             )
-        )
+        } else {
+            baseFilters
+        }
     }
 
     private fun getProductFilterOptions(): List<OrderFilterOptionUiModel> {
@@ -399,7 +406,11 @@ class OrderFilterCategoriesViewModel @Inject constructor(
 
         val salesChannelFilterOptions = when (selectedKey) {
             OrderFilterOptionUiModel.DEFAULT_ALL_KEY -> {
-                getSalesChannelFilterOptions().map { it.copy(isSelected = it.key == OrderFilterOptionUiModel.DEFAULT_ALL_KEY) }
+                getSalesChannelFilterOptions().map {
+                    it.copy(
+                        isSelected = it.key == OrderFilterOptionUiModel.DEFAULT_ALL_KEY
+                    )
+                }
             }
             else -> {
                 getSalesChannelFilterOptions().map { it.copy(isSelected = it.key == selectedKey) }
