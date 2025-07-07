@@ -33,10 +33,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
-import com.woocommerce.android.ui.woopos.home.WooPosHomeState.BarcodeInfoDialog
-import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
-import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
-import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScanningSetupDialog
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
@@ -123,10 +119,10 @@ private fun WooPosHomeScreen(
     )
 
     WooPosExitConfirmationDialog(
-        isVisible = state.exitConfirmationDialog.isVisible,
-        title = stringResource(id = state.exitConfirmationDialog.title),
-        message = stringResource(id = state.exitConfirmationDialog.message),
-        dismissButtonText = stringResource(id = state.exitConfirmationDialog.confirmButton),
+        isVisible = state.dialogState == WooPosHomeState.DialogState.ExitConfirmationDialog,
+        title = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.title),
+        message = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.message),
+        dismissButtonText = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.confirmButton),
         onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
         onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
     )
@@ -178,19 +174,20 @@ private fun WooPosHomeScreen(
                 .align(Alignment.BottomStart),
         )
 
-        HandleProductsInfoDialog(state.productsInfoDialog, onHomeUIEvent)
-        HandleBarcodeInfoDialog(state.barcodeInfoDialog, onHomeUIEvent)
-        HandleScanningSetupDialog(state.scanningSetupDialog, onHomeUIEvent)
+        HandleProductsInfoDialog(state.dialogState, onHomeUIEvent)
+        HandleBarcodeInfoDialog(state.dialogState, onHomeUIEvent)
+        HandleScanningSetupDialog(state.dialogState, onHomeUIEvent)
     }
 }
 
 @Composable
 private fun HandleProductsInfoDialog(
-    state: ProductsInfoDialog,
+    dialogState: WooPosHomeState.DialogState,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
     WooPosProductInfoDialog(
-        state = state,
+        state = WooPosHomeState.DialogState.ProductsInfoDialog,
+        isVisible = dialogState == WooPosHomeState.DialogState.ProductsInfoDialog,
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
         }
@@ -199,11 +196,12 @@ private fun HandleProductsInfoDialog(
 
 @Composable
 private fun HandleBarcodeInfoDialog(
-    state: BarcodeInfoDialog,
+    dialogState: WooPosHomeState.DialogState,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
     WooPosBarcodeInfoDialog(
-        state = state,
+        state = WooPosHomeState.DialogState.BarcodeInfoDialog,
+        isVisible = dialogState == WooPosHomeState.DialogState.BarcodeInfoDialog,
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.DismissBarcodeInfoDialog)
         }
@@ -212,11 +210,11 @@ private fun HandleBarcodeInfoDialog(
 
 @Composable
 private fun HandleScanningSetupDialog(
-    state: ScanningSetupDialog,
+    dialogState: WooPosHomeState.DialogState,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
     WooPosScanningSetupDialog(
-        outerState = state,
+        isVisible = dialogState == WooPosHomeState.DialogState.ScanningSetupDialog,
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.DismissScanningSetupDialog)
         }
@@ -287,9 +285,7 @@ fun WooPosHomeCartScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
-                productsInfoDialog = ProductsInfoDialog(isVisible = false),
-                barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
-                exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
+                dialogState = WooPosHomeState.DialogState.Hidden,
             ),
             onHomeUIEvent = { },
         )
@@ -303,9 +299,7 @@ fun WooPosHomeCheckoutScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals,
-                productsInfoDialog = ProductsInfoDialog(isVisible = false),
-                barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
-                exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
+                dialogState = WooPosHomeState.DialogState.Hidden,
             ),
             onHomeUIEvent = { },
         )
@@ -319,9 +313,7 @@ fun WooPosHomeCheckoutPaidScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals,
-                productsInfoDialog = ProductsInfoDialog(isVisible = false),
-                barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
-                exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
+                dialogState = WooPosHomeState.DialogState.Hidden,
             ),
             onHomeUIEvent = { },
         )
