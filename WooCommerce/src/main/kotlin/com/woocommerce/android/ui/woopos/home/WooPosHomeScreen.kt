@@ -215,13 +215,12 @@ private fun HandleScanningSetupDialog(
     state: ScanningSetupDialog,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
-    if (state.isVisible) {
-        WooPosScanningSetupDialog(
-            onDismissRequest = {
-                onHomeUIEvent(WooPosHomeUIEvent.DismissScanningSetupDialog)
-            }
-        )
-    }
+    WooPosScanningSetupDialog(
+        outerState = state,
+        onDismissRequest = {
+            onHomeUIEvent(WooPosHomeUIEvent.DismissScanningSetupDialog)
+        }
+    )
 }
 
 @Composable
