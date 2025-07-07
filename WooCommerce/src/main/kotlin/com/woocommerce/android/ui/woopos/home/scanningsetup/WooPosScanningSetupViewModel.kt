@@ -95,13 +95,29 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
     private fun handleSecondaryButtonClick() {
         when (_state.value.currentStep) {
             is ScanningSetupStep.Welcome -> error("Secondary button should not be available on Welcome step")
-            is ScanningSetupStep.Introduction,
-            is ScanningSetupStep.BluetoothWarning,
-            is ScanningSetupStep.BluetoothPairing,
-            is ScanningSetupStep.PairOnYourDevice,
-            is ScanningSetupStep.TestYourScanner -> {
+            is ScanningSetupStep.Introduction -> {
                 _state.value = _state.value.copy(
                     currentStep = createWelcomeStep()
+                )
+            }
+            is ScanningSetupStep.BluetoothWarning -> {
+                _state.value = _state.value.copy(
+                    currentStep = createBluetoothIntroductionStep()
+                )
+            }
+            is ScanningSetupStep.BluetoothPairing -> {
+                _state.value = _state.value.copy(
+                    currentStep = createBluetoothWarningStep()
+                )
+            }
+            is ScanningSetupStep.PairOnYourDevice -> {
+                _state.value = _state.value.copy(
+                    currentStep = createBluetoothPairingStep()
+                )
+            }
+            is ScanningSetupStep.TestYourScanner -> {
+                _state.value = _state.value.copy(
+                    currentStep = createPairOnYourDeviceStep()
                 )
             }
             is ScanningSetupStep.ScannerSetupComplete -> {
@@ -111,11 +127,10 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun createWelcomeStep() = ScanningSetupStep.Welcome(
-        title = "Set up a barcode scanner",
+        title = "Start using a barcode scanner",
         message = "Connect a Bluetooth barcode scanner to quickly add products to orders.",
-        bluetoothOptionTitle = "Bluetooth scanner",
-        bluetoothOptionDescription = "Connect wirelessly via Bluetooth",
-        skipButtonText = "Skip"
+        setupButtonText = "Set up a barcode scanner",
+        documentationButtonText = "View barcode scanner documentation"
     )
 
     private fun createBluetoothIntroductionStep() = ScanningSetupStep.Introduction(

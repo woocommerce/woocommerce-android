@@ -14,9 +14,8 @@ data class WooPosScanningSetupState(
         data class Welcome(
             val title: String,
             val message: String,
-            val bluetoothOptionTitle: String,
-            val bluetoothOptionDescription: String,
-            val skipButtonText: String,
+            val setupButtonText: String,
+            val documentationButtonText: String,
         ) : ScanningSetupStep()
 
         @Parcelize
