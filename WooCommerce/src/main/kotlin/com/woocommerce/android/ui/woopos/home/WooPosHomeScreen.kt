@@ -117,15 +117,6 @@ private fun WooPosHomeScreen(
         totalsWidthDp = totalsWidthAnimatedDp,
         onHomeUIEvent = onHomeUIEvent,
     )
-
-    WooPosExitConfirmationDialog(
-        isVisible = state.dialogState == WooPosHomeState.DialogState.ExitConfirmationDialog,
-        title = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.title),
-        message = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.message),
-        dismissButtonText = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.confirmButton),
-        onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
-        onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
-    )
 }
 
 @Composable
@@ -174,50 +165,46 @@ private fun WooPosHomeScreen(
                 .align(Alignment.BottomStart),
         )
 
-        HandleProductsInfoDialog(state.dialogState, onHomeUIEvent)
-        HandleBarcodeInfoDialog(state.dialogState, onHomeUIEvent)
-        HandleScanningSetupDialog(state.dialogState, onHomeUIEvent)
+        Dialogs(state.dialogState, onHomeUIEvent)
     }
 }
 
 @Composable
-private fun HandleProductsInfoDialog(
+private fun Dialogs(
     dialogState: WooPosHomeState.DialogState,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
+    // Always render all dialogs but control visibility for animations
     WooPosProductInfoDialog(
         state = WooPosHomeState.DialogState.ProductsInfoDialog,
-        isVisible = dialogState == WooPosHomeState.DialogState.ProductsInfoDialog,
+        isVisible = dialogState is WooPosHomeState.DialogState.ProductsInfoDialog,
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
         }
     )
-}
 
-@Composable
-private fun HandleBarcodeInfoDialog(
-    dialogState: WooPosHomeState.DialogState,
-    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
-) {
     WooPosBarcodeInfoDialog(
         state = WooPosHomeState.DialogState.BarcodeInfoDialog,
-        isVisible = dialogState == WooPosHomeState.DialogState.BarcodeInfoDialog,
+        isVisible = dialogState is WooPosHomeState.DialogState.BarcodeInfoDialog,
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.DismissBarcodeInfoDialog)
         }
     )
-}
 
-@Composable
-private fun HandleScanningSetupDialog(
-    dialogState: WooPosHomeState.DialogState,
-    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
-) {
     WooPosScanningSetupDialog(
-        isVisible = dialogState == WooPosHomeState.DialogState.ScanningSetupDialog,
+        isVisible = dialogState is WooPosHomeState.DialogState.ScanningSetupDialog,
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.DismissScanningSetupDialog)
         }
+    )
+
+    WooPosExitConfirmationDialog(
+        isVisible = dialogState is WooPosHomeState.DialogState.ExitConfirmationDialog,
+        title = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.title),
+        message = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.message),
+        dismissButtonText = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.confirmButton),
+        onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
+        onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
     )
 }
 
