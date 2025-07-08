@@ -124,10 +124,6 @@ class OrderFilterOptionsViewModel @Inject constructor(
     }
 
     private fun updateSalesChannelSelectedFilters(salesChannelClicked: OrderFilterOptionUiModel) {
-        if (salesChannelClicked.key == "pos") {
-            TODO("Handle Point of Sale selection")
-        }
-
         _viewState = _viewState.copy(
             filterOptions = _viewState.filterOptions.clearAllFilterSelections()
         )
