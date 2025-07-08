@@ -21,6 +21,8 @@ class WooPosTabController @Inject constructor(
     private val appPrefs: AppPrefs,
     private val selectedSite: SelectedSite,
     private val isWooPosEnabled: WooPosIsEnabled,
+    private val isPosAsTabI2Enabled: WooPosIsPosAsTabM2Enabled,
+    private val shouldPosTabBeVisible: WooPosTabShouldBeVisible,
     private val analyticsTracker: WooPosAnalyticsTracker
 ) : DefaultLifecycleObserver {
 
@@ -70,10 +72,10 @@ class WooPosTabController @Inject constructor(
 
     private fun updateTabVisibilityFromRemoteAndPersist() {
         activity.lifecycleScope.launch {
-            val isWooPosEnabledValue = isWooPosEnabled()
-            setPOSTabVisibility(isWooPosEnabledValue)
-            appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), isWooPosEnabledValue)
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(isWooPosEnabledValue))
+            val tabShouldBeVisible = if (isPosAsTabI2Enabled()) shouldPosTabBeVisible() else isWooPosEnabled()
+            setPOSTabVisibility(tabShouldBeVisible)
+            appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), tabShouldBeVisible)
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(tabShouldBeVisible))
         }
     }
 
