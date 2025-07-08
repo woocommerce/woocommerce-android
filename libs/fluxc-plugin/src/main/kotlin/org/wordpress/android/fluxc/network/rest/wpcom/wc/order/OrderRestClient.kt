@@ -229,6 +229,7 @@ class OrderRestClient @Inject constructor(
      * the optional parameters in effect.
      * @param offset Used to retrieve older orders
      */
+    @Suppress("LongMethod")
     fun fetchOrderListSummaries(
         listDescriptor: WCOrderListDescriptor,
         offset: Long,
