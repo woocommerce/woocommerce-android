@@ -10,10 +10,10 @@ data class WooPosScanningSetupState(
     val currentStep: ScanningSetupStep,
     val selectedDevice: BarcodeReaderDevice? = null
 ) : Parcelable {
-    enum class BarcodeReaderDevice {
-        TERA_1200,
-        STAR_BSH_20B,
-        INATECK_BLUETOOTH
+    enum class BarcodeReaderDevice(val displayName: String) {
+        TERA_1200("Tera 1200"),
+        STAR_BSH_20B("Star BSH-20B"),
+        INATECK_BLUETOOTH("Inateck Bluetooth")
     }
     sealed class ScanningSetupStep : Parcelable {
         @Parcelize

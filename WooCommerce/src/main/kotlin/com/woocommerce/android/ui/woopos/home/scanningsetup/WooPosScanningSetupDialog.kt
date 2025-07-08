@@ -529,12 +529,6 @@ private fun DeviceSelectionItem(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val deviceName = when (device) {
-        BarcodeReaderDevice.TERA_1200 -> "Tera 1200"
-        BarcodeReaderDevice.STAR_BSH_20B -> "Star BSH-20B"
-        BarcodeReaderDevice.INATECK_BLUETOOTH -> "Inateck Bluetooth"
-    }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -552,7 +546,7 @@ private fun DeviceSelectionItem(
         contentAlignment = Alignment.Center
     ) {
         WooPosText(
-            text = deviceName,
+            text = device.displayName,
             style = WooPosTypography.BodyLarge,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
