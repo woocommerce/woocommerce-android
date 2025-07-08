@@ -469,8 +469,7 @@ private fun DeviceSelectionContent(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         WooPosText(
@@ -491,6 +490,7 @@ private fun DeviceSelectionContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
         ) {
@@ -534,12 +534,9 @@ private fun DeviceSelectionItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             .border(
-                width = if (isSelected) 2.dp else 1.dp,
+                width = if (isSelected) 4.dp else 2.dp,
                 color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
                 shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
-            )
-            .background(
-                color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.08f) else Color.Transparent
             )
             .clickable { onClick() }
             .padding(WooPosSpacing.Large.value.toAdaptivePadding()),
@@ -548,8 +545,7 @@ private fun DeviceSelectionItem(
         WooPosText(
             text = device.displayName,
             style = WooPosTypography.BodyLarge,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+            fontWeight = FontWeight.Bold,
         )
     }
 }
