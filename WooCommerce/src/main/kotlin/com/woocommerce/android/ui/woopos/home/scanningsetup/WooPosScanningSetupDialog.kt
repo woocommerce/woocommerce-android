@@ -246,22 +246,12 @@ private fun IntroductionContent(
             modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
-        ) {
-            WooPosOutlinedButton(
-                onClick = onSecondaryClick,
-                text = step.secondaryButtonText,
-                modifier = Modifier.weight(1f)
-            )
-
-            WooPosButton(
-                onClick = onPrimaryClick,
-                text = step.primaryButtonText,
-                modifier = Modifier.weight(1f)
-            )
-        }
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
     }
 }
 
@@ -292,22 +282,12 @@ private fun BluetoothWarningContent(
             modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
-        ) {
-            WooPosOutlinedButton(
-                onClick = onSecondaryClick,
-                text = step.secondaryButtonText,
-                modifier = Modifier.weight(1f)
-            )
-
-            WooPosButton(
-                onClick = onPrimaryClick,
-                text = step.primaryButtonText,
-                modifier = Modifier.weight(1f)
-            )
-        }
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
     }
 }
 
@@ -402,22 +382,12 @@ private fun BarcodeStepContent(
             )
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
-        ) {
-            WooPosOutlinedButton(
-                onClick = onSecondaryClick,
-                text = secondaryText,
-                modifier = Modifier.weight(1f)
-            )
-
-            WooPosButton(
-                onClick = onPrimaryClick,
-                text = primaryText,
-                modifier = Modifier.weight(1f)
-            )
-        }
+        SetupButtonsRow(
+            primaryButtonText = primaryText,
+            secondaryButtonText = secondaryText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
     }
 }
 
@@ -503,23 +473,13 @@ private fun DeviceSelectionContent(
             }
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
-        ) {
-            WooPosOutlinedButton(
-                onClick = onSecondaryClick,
-                text = step.secondaryButtonText,
-                modifier = Modifier.weight(1f)
-            )
-
-            WooPosButton(
-                onClick = onPrimaryClick,
-                text = step.primaryButtonText,
-                modifier = Modifier.weight(1f),
-                state = if (selectedDevice != null) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
-            )
-        }
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick,
+            primaryButtonState = if (selectedDevice != null) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
+        )
     }
 }
 
@@ -546,6 +506,33 @@ private fun DeviceSelectionItem(
             text = device.displayName,
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
+private fun SetupButtonsRow(
+    primaryButtonText: String,
+    secondaryButtonText: String,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+    primaryButtonState: WooPosButtonState = WooPosButtonState.ENABLED,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
+    ) {
+        WooPosOutlinedButton(
+            onClick = onSecondaryClick,
+            text = secondaryButtonText,
+            modifier = Modifier.weight(1f)
+        )
+
+        WooPosButton(
+            onClick = onPrimaryClick,
+            text = primaryButtonText,
+            modifier = Modifier.weight(1f),
+            state = primaryButtonState
         )
     }
 }
