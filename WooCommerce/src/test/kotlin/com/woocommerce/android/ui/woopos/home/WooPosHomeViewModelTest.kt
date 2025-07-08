@@ -410,6 +410,54 @@ class WooPosHomeViewModelTest {
         analyticsTracker.track(BackToCartTapped)
     }
 
+    @Test
+    fun `given Cart state with ProductsInfoDialog visible, when SystemBackClicked, then dialog should be dismissed`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+        events.emit(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
+        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ProductsInfoDialog)
+
+        // WHEN
+        viewModel.onUIEvent(SystemBackClicked)
+
+        // THEN
+        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+    }
+
+    @Test
+    fun `given Cart state with ScanningSetupDialog visible, when SystemBackClicked, then dialog should be dismissed`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+        events.emit(ChildToParentEvent.BarcodeInfoMenuItemClicked)
+        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ScanningSetupDialog)
+
+        // WHEN
+        viewModel.onUIEvent(SystemBackClicked)
+
+        // THEN
+        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+    }
+
+    @Test
+    fun `given Cart state with ExitConfirmationDialog visible, when SystemBackClicked, then dialog should be dismissed`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+        events.emit(ChildToParentEvent.ExitPosClicked)
+        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ExitConfirmationDialog)
+
+        // WHEN
+        viewModel.onUIEvent(SystemBackClicked)
+
+        // THEN
+        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+    }
+
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender,
