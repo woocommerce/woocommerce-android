@@ -38,9 +38,3 @@ data class DateRangeFilterOption(
     val startDate: Long,
     val endDate: Long,
 ) : OrderFilterOption()
-
-data class SalesChannelOption(
-    val key: String,
-    val label: String,
-    override val isSelected: Boolean
-) : OrderFilterOption()
