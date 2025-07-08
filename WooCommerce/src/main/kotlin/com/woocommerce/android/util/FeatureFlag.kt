@@ -10,6 +10,7 @@ enum class FeatureFlag {
     WC_SHIPPING_BANNER,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
+    WOO_POS_SCANNER_SETUP,
     NEW_SHIPPING_SUPPORT,
     WOO_POS_AS_A_TAB_I2,
     REVAMP_WOO_SHIPPING,
@@ -26,6 +27,7 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             WOO_POS_AS_A_TAB_I2,
             ORDER_CREATION_AUTO_TAX_RATE,
+            WOO_POS_SCANNER_SETUP,
             REVAMP_WOO_SHIPPING -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,

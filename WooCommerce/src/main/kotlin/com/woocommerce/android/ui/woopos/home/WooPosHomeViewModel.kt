@@ -15,10 +15,12 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.BarcodeInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScanningSetupDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -42,6 +44,7 @@ class WooPosHomeViewModel @Inject constructor(
             screenPositionState = ScreenPositionState.Cart,
             productsInfoDialog = ProductsInfoDialog(isVisible = false),
             barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
+            scanningSetupDialog = ScanningSetupDialog(isVisible = false),
             exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
         )
     )
@@ -108,6 +111,12 @@ class WooPosHomeViewModel @Inject constructor(
             WooPosHomeUIEvent.DismissBarcodeInfoDialog -> {
                 _state.value = _state.value.copy(
                     barcodeInfoDialog = BarcodeInfoDialog(isVisible = false)
+                )
+            }
+
+            WooPosHomeUIEvent.DismissScanningSetupDialog -> {
+                _state.value = _state.value.copy(
+                    scanningSetupDialog = ScanningSetupDialog(isVisible = false)
                 )
             }
 
@@ -201,9 +210,15 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     ChildToParentEvent.BarcodeInfoMenuItemClicked -> {
-                        _state.value = _state.value.copy(
-                            barcodeInfoDialog = BarcodeInfoDialog(isVisible = true)
-                        )
+                        if (FeatureFlag.WOO_POS_SCANNER_SETUP.isEnabled()) {
+                            _state.value = _state.value.copy(
+                                scanningSetupDialog = ScanningSetupDialog(isVisible = true)
+                            )
+                        } else {
+                            _state.value = _state.value.copy(
+                                barcodeInfoDialog = BarcodeInfoDialog(isVisible = true)
+                            )
+                        }
                     }
 
                     is ChildToParentEvent.ToastMessageDisplayed -> {
