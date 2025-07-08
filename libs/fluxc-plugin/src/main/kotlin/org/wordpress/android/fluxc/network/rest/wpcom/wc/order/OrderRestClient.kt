@@ -249,7 +249,8 @@ class OrderRestClient @Inject constructor(
                 "customer" to listDescriptor.customerId?.toString(),
                 "product" to listDescriptor.productId?.toString(),
                 "exclude" to listDescriptor.excludedIds?.joinToString(),
-                "status" to listDescriptor.statusFilter.takeUnless { it.isNullOrBlank() }
+                "status" to listDescriptor.statusFilter.takeUnless { it.isNullOrBlank() },
+                "created_via" to listDescriptor.createdViaFilter.takeUnless { it.isNullOrBlank() }
             )
 
             val network = if (useAppPasswordsForJetpackSites) {
@@ -314,7 +315,8 @@ class OrderRestClient @Inject constructor(
             "customer" to listDescriptor.customerId?.toString(),
             "product" to listDescriptor.productId?.toString(),
             "exclude" to listDescriptor.excludedIds?.joinToString(),
-            "status" to listDescriptor.statusFilter.takeUnless { it.isNullOrBlank() }
+            "status" to listDescriptor.statusFilter.takeUnless { it.isNullOrBlank() },
+            "created_via" to listDescriptor.createdViaFilter.takeUnless { it.isNullOrBlank() }
         )
 
         return wooNetwork.executeGetGsonRequest(
