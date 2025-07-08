@@ -34,7 +34,7 @@ class WooPosSplashViewModel @Inject constructor(
             val launchability = posCanBeLaunchedInTab()
 
             if (launchability is WooPosLaunchability.NotLaunchable) {
-                _state.value = WooPosSplashState.NotEligible
+                _state.value = WooPosSplashState.NotEligible(launchability.reason)
                 return@launch
             }
 

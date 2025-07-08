@@ -26,18 +26,18 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     suspend operator fun invoke(): WooPosLaunchability = withContext(Dispatchers.IO) {
         val selectedSite = selectedSite.getOrNull()
             ?: return@withContext WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.NoSiteSelected
+                WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected
             )
 
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) {
             return@withContext WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.UnsupportedWooCommerceVersion
+                WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
             )
         }
 
         if (isFeatureSwitchSupported() && isRemotelyEnabled() != true) {
             return@withContext WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.FeatureSwitchDisabled
+                WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
             )
         }
 
@@ -46,7 +46,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
         if (siteSettings == null) {
             return@withContext WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.SiteSettingsUnavailable
+                WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
             )
         }
 
@@ -54,7 +54,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             WooPosLaunchability.Launchable
         } else {
             WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.UnsupportedCurrency
+                WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
             )
         }
     }
@@ -81,9 +81,9 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
 sealed class WooPosLaunchability {
     object Launchable : WooPosLaunchability()
-    data class NotLaunchable(val reason: Reason) : WooPosLaunchability()
+    data class NotLaunchable(val reason: NonLaunchabilityReason) : WooPosLaunchability()
 
-    enum class Reason {
+    enum class NonLaunchabilityReason {
         UnsupportedWooCommerceVersion,
         SiteSettingsUnavailable,
         FeatureSwitchDisabled,
