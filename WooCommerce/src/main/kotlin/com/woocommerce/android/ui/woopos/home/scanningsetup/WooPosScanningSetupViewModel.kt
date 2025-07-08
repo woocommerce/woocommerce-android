@@ -186,8 +186,8 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
     )
 
     private fun createBluetoothIntroductionStep() = ScanningSetupStep.Introduction(
-        title = "Set up a Bluetooth scanner",
-        message = "Follow these steps to connect your Bluetooth barcode scanner.",
+        title = "Set up your ${_state.value.selectedDevice!!.displayName}",
+        message = "Follow these steps to connect your ${_state.value.selectedDevice!!.displayName} barcode scanner.",
         primaryButtonText = "Next",
         secondaryButtonText = "Back"
     )
