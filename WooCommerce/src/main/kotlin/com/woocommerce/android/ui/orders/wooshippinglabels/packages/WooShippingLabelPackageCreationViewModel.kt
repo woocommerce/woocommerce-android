@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CustomPac
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StoreOptionsForPackages
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -97,25 +98,23 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     }
 
     fun onSavedPackageRemoved(removedPackage: PackageData) {
-        _viewState.update { viewState ->
-            val packagesState = viewState.packagesData ?: return@update viewState
-            viewState.copy(
-                packagesState = packagesState.copy(
-                    savedPackages = packagesState.savedPackages.filterNot { it.id == removedPackage.id },
-                    carrierPackages = starCarrierPackage(
-                        carrierPackages = packagesState.carrierPackages,
-                        star = false,
-                        packageId = removedPackage.id
-                    )
-                )
-            )
-        }
+        // Update UI
+        updateSavedPackageUI(packageData = removedPackage, saved = false)
+
+        // Send to backend
         launch {
             updateSavedCarrierPackages(
                 savePackage = false,
                 packageId = removedPackage.id,
                 isUserDefined = removedPackage.isUserDefined,
-            )
+            ).let {
+                if (it.isFailure) {
+                    triggerEvent(Event.ShowSnackbar(R.string.woo_shipping_labels_package_removing_error))
+
+                    // If the removal fails, revert the UI change
+                    updateSavedPackageUI(packageData = removedPackage, saved = true)
+                }
+            }
         }
     }
 
@@ -276,14 +275,41 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     }
 
     fun onCarrierPackageStarred(packageData: PackageData, isStarred: Boolean) {
+        // Update UI
+        updateSavedPackageUI(packageData = packageData, saved = isStarred)
+
+        // Send to backend
+        launch {
+            updateSavedCarrierPackages(
+                savePackage = isStarred,
+                packageId = packageData.id,
+                isUserDefined = packageData.isUserDefined,
+                carrierPackages = _viewState.value.packagesData?.carrierPackages ?: emptyMap()
+            ).let {
+                if (it.isFailure) {
+                    val errorMessage = if (isStarred) {
+                        R.string.woo_shipping_labels_package_saving_error
+                    } else {
+                        R.string.woo_shipping_labels_package_removing_error
+                    }
+                    triggerEvent(Event.ShowSnackbar(errorMessage))
+
+                    // If failed, revert the UI change
+                    updateSavedPackageUI(packageData = packageData, saved = !isStarred)
+                }
+            }
+        }
+    }
+
+    private fun updateSavedPackageUI(packageData: PackageData, saved: Boolean) {
         _viewState.update { viewState ->
-            val packages = viewState.packagesData ?: return@update viewState
+            val packages = viewState.packagesData ?: return
             val updatedCarrierPackages = starCarrierPackage(
                 carrierPackages = packages.carrierPackages,
-                star = isStarred,
+                star = saved,
                 packageId = packageData.id
             )
-            val updatedSavedPackages = if (isStarred) {
+            val updatedSavedPackages = if (saved) {
                 packages.savedPackages + packageData
             } else {
                 packages.savedPackages.filterNot { it.id == packageData.id }
@@ -293,14 +319,6 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                     carrierPackages = updatedCarrierPackages,
                     savedPackages = updatedSavedPackages
                 )
-            )
-        }
-        launch {
-            updateSavedCarrierPackages(
-                savePackage = isStarred,
-                packageId = packageData.id,
-                isUserDefined = packageData.isUserDefined,
-                carrierPackages = _viewState.value.packagesData?.carrierPackages ?: emptyMap()
             )
         }
     }
