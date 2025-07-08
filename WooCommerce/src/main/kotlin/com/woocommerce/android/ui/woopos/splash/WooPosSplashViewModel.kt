@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
+import com.woocommerce.android.ui.woopos.tab.WooPosIsPosAsTabM2Enabled
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.Loaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +22,8 @@ class WooPosSplashViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
     private val popularProductsProvider: WooPosPopularProductsProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val posAsTabM2Enabled: WooPosIsPosAsTabM2Enabled,
+    private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
     val state: StateFlow<WooPosSplashState> = _state
@@ -26,6 +31,13 @@ class WooPosSplashViewModel @Inject constructor(
     init {
         val splashScreenStartTime = System.currentTimeMillis()
         viewModelScope.launch {
+            val launchability = posCanBeLaunchedInTab()
+
+            if (launchability is WooPosLaunchability.NotLaunchable) {
+                _state.value = WooPosSplashState.NotEligible
+                return@launch
+            }
+
             joinAll(
                 launch { productsDataSource.prepopulateProductsCache() },
                 launch { popularProductsProvider.fetchAndCachePopularProducts() }
