@@ -64,31 +64,7 @@ class WooPosHomeViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosHomeUIEvent) {
         when (event) {
-            WooPosHomeUIEvent.SystemBackClicked -> {
-                when (_state.value.screenPositionState) {
-                    ScreenPositionState.Checkout.CartWithTotals -> {
-                        _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart
-                        )
-                        sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
-                        viewModelScope.launch {
-                            analyticsTracker.track(BackToCartTapped)
-                        }
-                    }
-
-                    ScreenPositionState.Checkout.FullScreenTotals -> {
-                        _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart
-                        )
-                    }
-
-                    is ScreenPositionState.Cart -> {
-                        _state.value = _state.value.copy(
-                            dialogState = DialogState.ExitConfirmationDialog
-                        )
-                    }
-                }
-            }
+            WooPosHomeUIEvent.SystemBackClicked -> handleSystemBackClicked()
 
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
                 _state.value = _state.value.copy(
@@ -127,6 +103,41 @@ class WooPosHomeViewModel @Inject constructor(
 
             is WooPosHomeUIEvent.OnBarcodeEvent -> {
                 sendEventToChildren(ParentToChildrenEvent.BarcodeEvent(event.result))
+            }
+        }
+    }
+
+    private fun handleSystemBackClicked() {
+        when (_state.value.screenPositionState) {
+            ScreenPositionState.Checkout.CartWithTotals -> {
+                _state.value = _state.value.copy(
+                    screenPositionState = ScreenPositionState.Cart
+                )
+                sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+                viewModelScope.launch {
+                    analyticsTracker.track(BackToCartTapped)
+                }
+            }
+
+            ScreenPositionState.Checkout.FullScreenTotals -> {
+                _state.value = _state.value.copy(
+                    screenPositionState = ScreenPositionState.Cart
+                )
+            }
+
+            is ScreenPositionState.Cart -> {
+                when (_state.value.dialogState) {
+                    DialogState.Hidden -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.ExitConfirmationDialog
+                        )
+                    }
+                    else -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.Hidden
+                        )
+                    }
+                }
             }
         }
     }
