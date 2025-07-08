@@ -5,10 +5,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageSelected
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType.ENVELOPE
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState.Data
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackagesState.Data
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowPackageTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ViewState
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPredefinedPackagesFromStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPackagesFromStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier.DHL
@@ -38,7 +38,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: WooShippingLabelPackageCreationViewModel
     private val resourceProvider: ResourceProvider = mock()
-    private val fetchPredefinedPackages: FetchPredefinedPackagesFromStore = mock()
+    private val fetchPackages: FetchPackagesFromStore = mock()
     private val packageRepository: WooShippingLabelPackageRepository = mock()
     private val selectedSite: SelectedSite = mock {
         on { getOrNull() } doReturn SiteModel().apply { siteId = 123 }
@@ -61,7 +61,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             SavedStateHandle(),
             selectedSite,
             resourceProvider,
-            fetchPredefinedPackages,
+            fetchPackages,
             updateSavedCarrierPackages,
             packageRepository
         )
@@ -192,7 +192,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             isSelected = false,
             isLetter = true,
         )
-        whenever(fetchPredefinedPackages()).thenReturn(
+        whenever(fetchPackages()).thenReturn(
             Data(
                 storeOptions = StoreOptionsForPackages.DEFAULT,
                 carrierPackages = emptyMap(),
@@ -204,14 +204,14 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             SavedStateHandle(),
             selectedSite,
             resourceProvider,
-            fetchPredefinedPackages,
+            fetchPackages,
             updateSavedCarrierPackages,
             packageRepository
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onSavedPackageSelected(package1, true)
 
-        val selectedPackages = lastViewState?.predefinedPackagesData?.savedPackages?.filter { it.isSelected }
+        val selectedPackages = lastViewState?.packagesData?.savedPackages?.filter { it.isSelected }
         assertThat(selectedPackages).isNotNull
         assertThat(selectedPackages).size().isEqualTo(1)
         assertThat(selectedPackages?.first()).isEqualTo(package1.copy(isSelected = true))
@@ -245,7 +245,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 )
             )
         )
-        whenever(fetchPredefinedPackages()).thenReturn(
+        whenever(fetchPackages()).thenReturn(
             Data(
                 storeOptions = StoreOptionsForPackages.DEFAULT,
                 carrierPackages = carrierPackages,
@@ -257,7 +257,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             SavedStateHandle(),
             selectedSite,
             resourceProvider,
-            fetchPredefinedPackages,
+            fetchPackages,
             updateSavedCarrierPackages,
             packageRepository
         )
@@ -265,7 +265,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         sut.onCarrierPackageSelected(package1, true)
 
         val selectedPackages = lastViewState
-            ?.predefinedPackagesData
+            ?.packagesData
             ?.carrierPackages
             ?.values
             ?.flatten()
@@ -329,7 +329,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 )
             )
         )
-        whenever(fetchPredefinedPackages()).thenReturn(
+        whenever(fetchPackages()).thenReturn(
             Data(
                 storeOptions = StoreOptionsForPackages.DEFAULT,
                 carrierPackages = carrierPackages,
@@ -341,7 +341,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             SavedStateHandle(),
             selectedSite,
             resourceProvider,
-            fetchPredefinedPackages,
+            fetchPackages,
             updateSavedCarrierPackages,
             packageRepository
         )
@@ -352,7 +352,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         val selectedPackages = lastViewState
-            ?.predefinedPackagesData
+            ?.packagesData
             ?.carrierPackages
             ?.values
             ?.flatten()
@@ -385,7 +385,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            whenever(fetchPredefinedPackages()).thenReturn(
+            whenever(fetchPackages()).thenReturn(
                 Data(
                     storeOptions = StoreOptionsForPackages.DEFAULT,
                     carrierPackages = initialCarrierPackages,
@@ -397,7 +397,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 SavedStateHandle(),
                 selectedSite,
                 resourceProvider,
-                fetchPredefinedPackages,
+                fetchPackages,
                 updateSavedCarrierPackages,
                 packageRepository
             )
@@ -413,12 +413,12 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             verify(updateSavedCarrierPackages, times(1)).invoke(
                 true,
                 packageToStar.id,
-                lastViewState?.predefinedPackagesData?.carrierPackages!!
+                lastViewState?.packagesData?.carrierPackages!!
             )
 
             // Verify viewState is updated
             val updatedPackage = lastViewState
-                ?.predefinedPackagesData
+                ?.packagesData
                 ?.carrierPackages
                 ?.get(carrier)
                 ?.flatMap { it.packages }

@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItemSkeleton
@@ -32,8 +32,8 @@ fun WooShippingSavedPackageScreen(
 ) {
     val viewState = viewModel.viewState.observeAsState()
     WooShippingSavedPackageScreen(
-        packageState = viewState.value?.predefinedPackagesState ?: PredefinedPackagesState.Waiting,
-        isAddPackageEnabled = viewState.value?.predefinedPackagesData?.hasSavedSelection == true,
+        packageState = viewState.value?.packagesState ?: PackagesState.Waiting,
+        isAddPackageEnabled = viewState.value?.packagesData?.hasSavedSelection == true,
         onAddPackageClick = viewModel::onAddSavedPackageClick,
         onSavedPackageSelected = viewModel::onSavedPackageSelected,
         onRetryClick = viewModel::onRetryClick,
@@ -44,7 +44,7 @@ fun WooShippingSavedPackageScreen(
 @Composable
 fun WooShippingSavedPackageScreen(
     modifier: Modifier = Modifier,
-    packageState: PredefinedPackagesState,
+    packageState: PackagesState,
     isAddPackageEnabled: Boolean,
     onAddPackageClick: () -> Unit,
     onSavedPackageSelected: (PackageData, Boolean) -> Unit,
@@ -54,13 +54,13 @@ fun WooShippingSavedPackageScreen(
     Column(modifier = modifier) {
         Box(modifier = modifier.weight(1f)) {
             when {
-                packageState is PredefinedPackagesState.Data && packageState.savedPackages.isEmpty() -> EmptyPackages(
+                packageState is PackagesState.Data && packageState.savedPackages.isEmpty() -> EmptyPackages(
                     modifier = modifier,
                     R.drawable.ic_boxes,
                     R.string.woo_shipping_labels_package_creation_empty_saved_message
                 ) { onTabChange(PageType.CUSTOM) }
 
-                packageState is PredefinedPackagesState.Data -> {
+                packageState is PackagesState.Data -> {
                     WooShippingSavedPackageContent(
                         modifier = modifier,
                         savedPackages = packageState.savedPackages,
@@ -68,7 +68,7 @@ fun WooShippingSavedPackageScreen(
                     )
                 }
 
-                packageState is PredefinedPackagesState.Error -> {
+                packageState is PackagesState.Error -> {
                     ErrorMessageWithButton(
                         modifier = modifier,
                         message = R.string.woo_shipping_labels_package_creation_saved_loading_error,
@@ -76,7 +76,7 @@ fun WooShippingSavedPackageScreen(
                     )
                 }
 
-                packageState is PredefinedPackagesState.Waiting -> {
+                packageState is PackagesState.Waiting -> {
                     Column(
                         modifier = modifier
                             .fillMaxSize()
@@ -131,7 +131,7 @@ fun WooShippingSavedPackageContent(
 fun WooShippingSavedPackageScreenPreview() {
     WooThemeWithBackground {
         WooShippingSavedPackageScreen(
-            packageState = PredefinedPackagesState.Data(
+            packageState = PackagesState.Data(
                 storeOptions = StoreOptionsForPackages.DEFAULT,
                 savedPackages = listOf(
                     PackageData(
@@ -175,7 +175,7 @@ fun WooShippingSavedPackageScreenPreview() {
 fun WooShippingSavedPackageScreenLoadingPreview() {
     WooThemeWithBackground {
         WooShippingSavedPackageScreen(
-            packageState = PredefinedPackagesState.Waiting,
+            packageState = PackagesState.Waiting,
             isAddPackageEnabled = false,
             onAddPackageClick = {},
             onSavedPackageSelected = { _, _ -> },
@@ -190,7 +190,7 @@ fun WooShippingSavedPackageScreenLoadingPreview() {
 fun WooShippingSavedPackageScreenErrorPreview() {
     WooThemeWithBackground {
         WooShippingSavedPackageScreen(
-            packageState = PredefinedPackagesState.Error,
+            packageState = PackagesState.Error,
             isAddPackageEnabled = false,
             onAddPackageClick = {},
             onSavedPackageSelected = { _, _ -> },
