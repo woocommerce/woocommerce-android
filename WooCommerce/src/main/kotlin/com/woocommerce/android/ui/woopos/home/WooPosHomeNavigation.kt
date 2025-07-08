@@ -8,11 +8,18 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.woocommerce.android.ui.woopos.eligibility.WooPosEligibilityScreen
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
 const val HOME_ROUTE = "home"
 const val HOME_PAYMENT_COMPLETED_VIA_CASH_KEY = "home_payment_completed_via_cash_key"
+const val ELIGIBILITY_ROUTE = "eligibility"
+const val ELIGIBILITY_REASON_KEY = "eligibility_reason"
 
 fun NavController.navigateToHomeScreen() {
     navigateOnce(HOME_ROUTE)
@@ -79,6 +86,30 @@ fun NavGraphBuilder.homeScreen(
         WooPosHomeScreen(
             isPaymentCompletedViaCash = isPaymentCompletedViaCash,
             viewModel = homeViewModel,
+        )
+    }
+}
+
+fun NavController.navigateToEligibilityScreen(reason: WooPosLaunchability.NonLaunchabilityReason) {
+    navigate("$ELIGIBILITY_ROUTE/${reason.name}")
+}
+
+fun NavGraphBuilder.eligibilityScreen(
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+) {
+    composable(
+        route = "$ELIGIBILITY_ROUTE/{$ELIGIBILITY_REASON_KEY}",
+        arguments = listOf(
+            navArgument(ELIGIBILITY_REASON_KEY) { type = NavType.StringType }
+        )
+    ) { entry ->
+        val reasonName = entry.arguments?.getString(ELIGIBILITY_REASON_KEY)
+        val reason = reasonName?.let { WooPosLaunchability.NonLaunchabilityReason.valueOf(it) }
+            ?: WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable // Fallback if missing
+
+        WooPosEligibilityScreen(
+            reason = reason,
+            onNavigationEvent = onNavigationEvent
         )
     }
 }

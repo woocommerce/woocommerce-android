@@ -31,11 +31,13 @@ class WooPosSplashViewModel @Inject constructor(
     init {
         val splashScreenStartTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val launchability = posCanBeLaunchedInTab()
+            if (posAsTabM2Enabled()) {
+                val launchability = posCanBeLaunchedInTab()
 
-            if (launchability is WooPosLaunchability.NotLaunchable) {
-                _state.value = WooPosSplashState.NotEligible(launchability.reason)
-                return@launch
+                if (launchability is WooPosLaunchability.NotLaunchable) {
+                    _state.value = WooPosSplashState.NotEligible(launchability.reason)
+                    return@launch
+                }
             }
 
             joinAll(

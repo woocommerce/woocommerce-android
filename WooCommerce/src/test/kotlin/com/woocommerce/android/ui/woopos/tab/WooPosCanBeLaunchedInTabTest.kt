@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.woopos.tab
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPOSIsRemotelyEnabled
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.Launchable
-import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NotLaunchable
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NonLaunchabilityReason
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NotLaunchable
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
