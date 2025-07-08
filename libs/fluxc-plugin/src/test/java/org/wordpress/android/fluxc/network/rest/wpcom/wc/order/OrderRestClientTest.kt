@@ -18,8 +18,7 @@ import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooExperimentalNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.dto.OrderSummaryApiResponse
-import org.wordpress.android.fluxc.utils.CoroutineEngine
+import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -48,15 +47,20 @@ class OrderRestClientTest {
     fun `when createdViaFilter is provided, then created_via parameter is sent to API`() = runTest {
         // Given
         val expectedCreatedVia = "pos-rest-api"
-        val paramsCaptor = argumentCaptor<Map<String, String>>()
+        val expectedParams = mapOf(
+            "per_page" to "25",
+            "offset" to "0", 
+            "_fields" to "id,date_created_gmt,date_modified_gmt",
+            "created_via" to expectedCreatedVia
+        )
         val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>())
         
         whenever(
             wooNetwork.executeGetGsonRequest(
-                site = any(),
-                path = any(),
-                clazz = eq(Array<OrderSummaryApiResponse>::class.java),
-                params = paramsCaptor.capture()
+                site = testSite,
+                path = WOOCOMMERCE.orders.pathV3,
+                clazz = Array<OrderSummaryApiResponse>::class.java,
+                params = expectedParams
             )
         ).thenReturn(mockResponse)
         
@@ -73,16 +77,13 @@ class OrderRestClientTest {
             site = testSite,
             path = WOOCOMMERCE.orders.pathV3,
             clazz = Array<OrderSummaryApiResponse>::class.java,
-            params = paramsCaptor.capture()
+            params = expectedParams
         )
-        
-        assertThat(paramsCaptor.firstValue["created_via"]).isEqualTo(expectedCreatedVia)
     }
     
     @Test
     fun `when createdViaFilter is null, then created_via parameter is not sent to API`() = runTest {
         // Given
-        val paramsCaptor = argumentCaptor<Map<String, String>>()
         val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>())
         
         whenever(
@@ -90,7 +91,7 @@ class OrderRestClientTest {
                 site = any(),
                 path = any(),
                 clazz = eq(Array<OrderSummaryApiResponse>::class.java),
-                params = paramsCaptor.capture()
+                params = any()
             )
         ).thenReturn(mockResponse)
         
@@ -103,6 +104,7 @@ class OrderRestClientTest {
         orderRestClient.fetchOrderListSummaries(listDescriptor, 0, false)
         
         // Then
+        val paramsCaptor = argumentCaptor<Map<String, String>>()
         verify(wooNetwork).executeGetGsonRequest(
             site = testSite,
             path = WOOCOMMERCE.orders.pathV3,
@@ -116,7 +118,6 @@ class OrderRestClientTest {
     @Test
     fun `when createdViaFilter is blank, then created_via parameter is not sent to API`() = runTest {
         // Given
-        val paramsCaptor = argumentCaptor<Map<String, String>>()
         val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>())
         
         whenever(
@@ -124,7 +125,7 @@ class OrderRestClientTest {
                 site = any(),
                 path = any(),
                 clazz = eq(Array<OrderSummaryApiResponse>::class.java),
-                params = paramsCaptor.capture()
+                params = any()
             )
         ).thenReturn(mockResponse)
         
@@ -137,6 +138,7 @@ class OrderRestClientTest {
         orderRestClient.fetchOrderListSummaries(listDescriptor, 0, false)
         
         // Then
+        val paramsCaptor = argumentCaptor<Map<String, String>>()
         verify(wooNetwork).executeGetGsonRequest(
             site = testSite,
             path = WOOCOMMERCE.orders.pathV3,
@@ -151,15 +153,14 @@ class OrderRestClientTest {
     fun `when createdViaFilter is provided for first page fetch, then created_via parameter is sent to API`() = runTest {
         // Given
         val expectedCreatedVia = "pos-rest-api"
-        val paramsCaptor = argumentCaptor<Map<String, String>>()
-        val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>())
+        val mockResponse = WPAPIResponse.Success(arrayOf<OrderDto>())
         
         whenever(
             wooNetwork.executeGetGsonRequest(
                 site = any(),
                 path = any(),
-                clazz = eq(Array<OrderSummaryApiResponse>::class.java),
-                params = paramsCaptor.capture()
+                clazz = eq(Array<OrderDto>::class.java),
+                params = any()
             )
         ).thenReturn(mockResponse)
         
@@ -169,13 +170,14 @@ class OrderRestClientTest {
         )
         
         // When
-        orderRestClient.fetchOrdersListFirstPage(listDescriptor, 20)
+        orderRestClient.fetchOrdersListFirstPage(listDescriptor)
         
         // Then
+        val paramsCaptor = argumentCaptor<Map<String, String>>()
         verify(wooNetwork).executeGetGsonRequest(
             site = testSite,
             path = WOOCOMMERCE.orders.pathV3,
-            clazz = Array<OrderSummaryApiResponse>::class.java,
+            clazz = Array<OrderDto>::class.java,
             params = paramsCaptor.capture()
         )
         
