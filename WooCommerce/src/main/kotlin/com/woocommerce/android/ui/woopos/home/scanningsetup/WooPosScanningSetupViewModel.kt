@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,7 +21,8 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosScanningSetupState(
             isVisible = false,
-            currentStep = createWelcomeStep()
+            currentStep = createWelcomeStep(),
+            selectedDevice = null
         )
     )
     val state: StateFlow<WooPosScanningSetupState> = _state.asStateFlow()
@@ -36,7 +38,13 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
         when (event) {
             WooPosScanningSetupUiEvent.OnBluetoothScannerSelected -> {
                 _state.value = _state.value.copy(
-                    currentStep = createBluetoothIntroductionStep()
+                    currentStep = createDeviceSelectionStep()
+                )
+            }
+
+            is WooPosScanningSetupUiEvent.OnDeviceSelected -> {
+                _state.value = _state.value.copy(
+                    selectedDevice = event.device
                 )
             }
 
@@ -58,7 +66,8 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
 
     fun resetToWelcomeState() {
         _state.value = _state.value.copy(
-            currentStep = createWelcomeStep()
+            currentStep = createWelcomeStep(),
+            selectedDevice = null
         )
     }
 
@@ -66,6 +75,14 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
         when (_state.value.currentStep) {
             is ScanningSetupStep.Welcome -> {
                 error("Primary button should not be available on Welcome step")
+            }
+
+            is ScanningSetupStep.DeviceSelection -> {
+                if (_state.value.selectedDevice != null) {
+                    _state.value = _state.value.copy(
+                        currentStep = createBluetoothIntroductionStep()
+                    )
+                }
             }
 
             is ScanningSetupStep.Introduction -> {
@@ -107,9 +124,16 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
     private fun handleSecondaryButtonClick() {
         when (_state.value.currentStep) {
             is ScanningSetupStep.Welcome -> error("Secondary button should not be available on Welcome step")
+            is ScanningSetupStep.DeviceSelection -> {
+                _state.value = _state.value.copy(
+                    currentStep = createWelcomeStep(),
+                    selectedDevice = null
+                )
+            }
+
             is ScanningSetupStep.Introduction -> {
                 _state.value = _state.value.copy(
-                    currentStep = createWelcomeStep()
+                    currentStep = createDeviceSelectionStep()
                 )
             }
 
@@ -148,6 +172,17 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
         message = "Choose an option:",
         setupButtonText = "Set up a barcode scanner",
         documentationButtonText = "View barcode scanner documentation"
+    )
+
+    private fun createDeviceSelectionStep() = ScanningSetupStep.DeviceSelection(
+        title = "Set up a barcode scanner",
+        devices = listOf(
+            BarcodeReaderDevice.TERA_1200,
+            BarcodeReaderDevice.STAR_BSH_20B,
+            BarcodeReaderDevice.INATECK_BLUETOOTH
+        ),
+        primaryButtonText = "Next",
+        secondaryButtonText = "Back"
     )
 
     private fun createBluetoothIntroductionStep() = ScanningSetupStep.Introduction(
@@ -203,4 +238,5 @@ sealed class WooPosScanningSetupUiEvent {
     data object OnPrimaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnSecondaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnViewDocumentation : WooPosScanningSetupUiEvent()
+    data class OnDeviceSelected(val device: BarcodeReaderDevice) : WooPosScanningSetupUiEvent()
 }
