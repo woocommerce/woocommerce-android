@@ -400,10 +400,6 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onSalesChannelSelected(selectedKey: String) {
-        if (selectedKey == "pos") {
-            TODO("Handle Point of Sale selection")
-        }
-
         val salesChannelFilterOptions = when (selectedKey) {
             OrderFilterOptionUiModel.DEFAULT_ALL_KEY -> {
                 getSalesChannelFilterOptions().map {
