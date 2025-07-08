@@ -112,7 +112,15 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given uk country and usd, when invoked, then return Launchable`() = testBlocking {
+    fun `given us country and dollars, when invoked, then return Launchable`() = testBlocking {
+        val siteSettings = buildSiteSettings(countryCode = "US", currencyCode = "USD")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+        val result = sut()
+        assertEquals(Launchable, result)
+    }
+
+    @Test
+    fun `given uk country and usd, when invoked, then return Not Launchable`() = testBlocking {
         val siteSettings = buildSiteSettings(countryCode = "GB", currencyCode = "USD")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
         val result = sut()
