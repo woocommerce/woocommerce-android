@@ -746,37 +746,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when shipment details is expanded then the back gesture closes the sheet`() = testBlocking {
-        whenever(observeAccountSettings()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-        sut.onShipmentDetailsExpandedChange(true)
-
-        // Close shipment details
-        var shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isFalse()
-
-        // Navigate back
-        shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isTrue()
-    }
-
-    @Test
-    fun `when there is no bottom sheet expanded, then on back navigates to the previous screen`() = testBlocking {
-        whenever(observeAccountSettings()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-
-        // Navigate back
-        val shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isTrue()
-    }
-
-    @Test
     fun `when there are notices then display the notices`() = testBlocking {
         val notice = NoticeBannerUiState(
             message = R.string.woo_shipping_address_notification_destination_missing,
@@ -813,7 +782,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             ShipmentUIModel(
                 localId = "0",
                 items = defaultShippableItems,
-                purchased = true
+                purchased = true,
+                label = shippingLabelModel
             )
         )
 
@@ -823,6 +793,35 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val dataState = sut.viewState.value as DataState
         assertThat(dataState.uiState.noticeBannerUiState).isNull()
+    }
+
+    @Test
+    fun `when current label is purchased, then show its price`() = testBlocking {
+        val label = shippingLabelModel.copy(
+            serviceName = "Test Service",
+            rate = BigDecimal.TEN,
+        )
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                purchased = true,
+                label = label
+            )
+        )
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+        assertThat(dataState.shipmentUIList[0].shipmentCostUI?.formattedBasePrice)
+            .isEqualTo(currencyFormatter.formatCurrency(label.rate, label.currency))
+        assertThat(dataState.shipmentUIList[0].shipmentCostUI?.formattedTotalPrice)
+            .isEqualTo(currencyFormatter.formatCurrency(label.rate, label.currency))
+        assertThat(dataState.shipmentUIList[0].shipmentCostUI?.serviceName).isEqualTo(label.serviceName)
     }
 
     @Test

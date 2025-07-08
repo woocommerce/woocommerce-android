@@ -152,7 +152,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         UIControlsState(
             markOrderComplete = false,
             selectedIndex = navArgs.shipmentId,
-            isShipmentDetailsExpanded = false,
             paperSizeOption = WooShippingLabelPaperSize.LABEL
         )
     )
@@ -534,7 +533,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    @Suppress("ComplexCondition")
+    @Suppress("ComplexCondition", "LongMethod")
     private suspend fun observeShippingLabelInformation() {
         combine(
             accountSettings,
@@ -588,7 +587,18 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 shippingAddresses = addresses,
                 uiState = uiState,
                 destinationStatus = destinationStatus,
-                paymentsSectionUI = PaymentsSectionUI(accountSettings.paymentMethodOptions.selectedPaymentMethod)
+                paymentsSectionUI = PaymentsSectionUI(
+                    selectedPaymentMethod = accountSettings.paymentMethodOptions.selectedPaymentMethod,
+                    onEditPaymentMethodClicked = ::onEditPaymentMethodClicked
+                ),
+                purchaseSectionUI = PurchaseSectionUI(
+                    isVisible = !shipmentUIList[uiState.selectedIndex].purchased &&
+                        shippingRatesStatesFlow.value[uiState.selectedIndex] is ShippingRatesState.DataState,
+                    markOrderComplete = uiState.markOrderComplete,
+                    formattedPrice = shipmentUIList[uiState.selectedIndex].shipmentCostUI?.formattedTotalPrice,
+                    onMarkOrderCompleteChange = ::onMarkOrderCompleteChange,
+                    onPurchaseShippingLabel = ::onPurchaseShippingLabel
+                )
             )
         }.combine(loadTrigger.onStart { emit(Unit) }) { viewState, _ ->
             viewState
@@ -688,10 +698,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onMarkOrderCompleteChange(value: Boolean) {
         uiState.update { it.copy(markOrderComplete = value) }
-    }
-
-    fun onShipmentDetailsExpandedChange(value: Boolean) {
-        uiState.update { it.copy(isShipmentDetailsExpanded = value) }
     }
 
     fun onSelectPackageClicked() {
@@ -994,24 +1000,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         triggerEvent(OpenLearnMoreScreen)
     }
 
-    fun onEditPaymentMethodClicked() {
-        triggerEvent(NavigateToPaymentMethodEdit)
-    }
-
-    fun allowBackNavigation(): Boolean {
-        val state = uiState.value
-        return when {
-            state.isShipmentDetailsExpanded -> {
-                uiState.update { it.copy(isShipmentDetailsExpanded = false) }
-                false
-            }
-
-            else -> true
-        }
-    }
-
     fun onNavigateBack() {
-        if (allowBackNavigation()) triggerEvent(Event.Exit)
+        triggerEvent(Event.Exit)
     }
 
     fun onRetry() {
@@ -1031,6 +1021,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 loadTrigger.emit(Unit)
             }
         }
+    }
+
+    private fun onEditPaymentMethodClicked() {
+        triggerEvent(NavigateToPaymentMethodEdit)
     }
 
     private fun List<ShippableItemModel>.isItnRequired(): Boolean {
@@ -1081,7 +1075,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val shippingAddresses: WooShippingAddresses,
             val uiState: UIControlsState,
             val destinationStatus: AddressStatus,
-            val paymentsSectionUI: PaymentsSectionUI
+            val paymentsSectionUI: PaymentsSectionUI,
+            val purchaseSectionUI: PurchaseSectionUI
         ) : WooShippingViewState() {
             val shouldShowSplitShipmentButton: Boolean
                 get() {
@@ -1139,7 +1134,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class UIControlsState(
         val markOrderComplete: Boolean,
         val selectedIndex: Int = 0,
-        val isShipmentDetailsExpanded: Boolean,
         val noticeBannerUiState: NoticeBannerUiState? = null,
         val paperSizeOption: WooShippingLabelPaperSize,
     )
@@ -1271,6 +1265,15 @@ data class ShipmentCostUI(
     val optionsWithFees: Map<String, String>,
 ) : Parcelable
 
+data class PurchaseSectionUI(
+    val isVisible: Boolean,
+    val markOrderComplete: Boolean,
+    val formattedPrice: String?,
+    val onMarkOrderCompleteChange: (Boolean) -> Unit,
+    val onPurchaseShippingLabel: () -> Unit,
+)
+
 data class PaymentsSectionUI(
-    val selectedPaymentMethod: PaymentMethodModel?
+    val selectedPaymentMethod: PaymentMethodModel?,
+    val onEditPaymentMethodClicked: () -> Unit
 )

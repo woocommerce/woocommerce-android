@@ -11,6 +11,7 @@ data class WooPosHomeState(
     val screenPositionState: ScreenPositionState,
     val productsInfoDialog: ProductsInfoDialog,
     val barcodeInfoDialog: BarcodeInfoDialog,
+    val scanningSetupDialog: ScanningSetupDialog = ScanningSetupDialog(isVisible = false),
     val exitConfirmationDialog: ExitConfirmationDialog,
 ) : Parcelable {
     @Parcelize
@@ -84,6 +85,9 @@ data class WooPosHomeState(
             @StringRes val label: Int,
         )
     }
+
+    @Parcelize
+    data class ScanningSetupDialog(val isVisible: Boolean) : Parcelable
 
     @Parcelize
     data class ExitConfirmationDialog(val isVisible: Boolean) : Parcelable {
