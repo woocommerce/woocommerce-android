@@ -96,6 +96,24 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         }
     }
 
+    fun onSavedPackageRemoved(removedPackage: PackageData) {
+        _viewState.update { viewState ->
+            val packagesState = viewState.packagesData ?: return@update viewState
+            viewState.copy(
+                packagesState = packagesState.copy(
+                    savedPackages = packagesState.savedPackages.filterNot { it.id == removedPackage.id }
+                )
+            )
+        }
+        launch {
+            updateSavedCarrierPackages(
+                savePackage = false,
+                packageId = removedPackage.id,
+                isUserDefined = removedPackage.isUserDefined,
+            )
+        }
+    }
+
     fun onRetryClick() {
         triggerEvent(ShowLoadingDialog(true))
         launch {
@@ -274,6 +292,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             updateSavedCarrierPackages(
                 savePackage = isStarred,
                 packageId = packageData.id,
+                isUserDefined = packageData.isUserDefined,
                 carrierPackages = _viewState.value.packagesData?.carrierPackages ?: emptyMap()
             )
         }

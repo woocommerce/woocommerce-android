@@ -30,7 +30,7 @@ class WooShippingLabelPackageRestClient @Inject constructor(
         return wooNetwork.executePostGsonRequest(
             site = site,
             path = URL,
-            body = mapOf("custom" to requestData),
+            body = mapOf(TYPE_CUSTOM to requestData),
             clazz = PackageCreationResponse::class.java,
         ).toWooPayload()
     }
@@ -45,18 +45,20 @@ class WooShippingLabelPackageRestClient @Inject constructor(
         return wooNetwork.executePostGsonRequest(
             site = site,
             path = URL,
-            body = mapOf("predefined" to requestData),
+            body = mapOf(TYPE_PREDEFINED to requestData),
             clazz = PackageCreationResponse::class.java,
         ).toWooPayload()
     }
 
     suspend fun deleteSavedCarrierPackage(
         site: SiteModel,
+        isUserDefined: Boolean,
         packageId: String
     ): WooPayload<PackageCreationResponse> {
+        val type = if (isUserDefined) TYPE_CUSTOM else TYPE_PREDEFINED
         return wooNetwork.executeDeleteGsonRequest(
             site = site,
-            path = "$URL/predefined/$packageId",
+            path = "$URL/$type/$packageId",
             clazz = PackageCreationResponse::class.java,
         ).toWooPayload()
     }
@@ -64,5 +66,7 @@ class WooShippingLabelPackageRestClient @Inject constructor(
     companion object {
         private const val URL = "/wcshipping/v1/packages"
         private const val UPSDAP_FEATURE = "upsdap"
+        private const val TYPE_CUSTOM = "custom"
+        private const val TYPE_PREDEFINED = "predefined"
     }
 }
