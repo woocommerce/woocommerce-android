@@ -43,6 +43,7 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
 @HiltViewModel
@@ -171,7 +172,9 @@ class IssueRefundViewModel @Inject constructor(
         )
 
     init {
-        refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
+        refunds = runBlocking {
+            refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
+        }
 
         viewModelScope.launch {
             initRefundItems()
