@@ -73,7 +73,6 @@ fun NoticeBanner(noticeBannerUiState: NoticeBannerUiState?, modifier: Modifier =
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = rowModifier
-                .padding(dimensionResource(R.dimen.major_100))
                 .background(
                     color = colorResource(backgroundColor),
                     shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))

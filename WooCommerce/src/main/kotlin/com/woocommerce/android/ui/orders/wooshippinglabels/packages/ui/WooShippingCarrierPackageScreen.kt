@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItemSkeleton
@@ -58,8 +58,8 @@ fun WooShippingCarrierPackageScreen(
 ) {
     val viewState by viewModel.viewState.observeAsState()
     WooShippingCarrierPackageScreen(
-        packageState = viewState?.predefinedPackagesState ?: PredefinedPackagesState.Waiting,
-        isAddPackageEnabled = viewState?.predefinedPackagesData?.hasCarrierSelection == true,
+        packageState = viewState?.packagesState ?: PackagesState.Waiting,
+        isAddPackageEnabled = viewState?.packagesData?.hasCarrierSelection == true,
         onPackageSelected = viewModel::onCarrierPackageSelected,
         onAddPackageClick = viewModel::onAddCarrierPackageClick,
         onRetryClick = viewModel::onRetryClick,
@@ -71,7 +71,7 @@ fun WooShippingCarrierPackageScreen(
 @Composable
 fun WooShippingCarrierPackageScreen(
     modifier: Modifier = Modifier,
-    packageState: PredefinedPackagesState,
+    packageState: PackagesState,
     onPackageSelected: (PackageData, Boolean) -> Unit,
     isAddPackageEnabled: Boolean = false,
     onAddPackageClick: () -> Unit = {},
@@ -82,26 +82,26 @@ fun WooShippingCarrierPackageScreen(
     Column(modifier = modifier) {
         Box(modifier = modifier.weight(1f)) {
             when {
-                packageState is PredefinedPackagesState.Data && packageState.carrierPackages.isEmpty() -> EmptyPackages(
+                packageState is PackagesState.Data && packageState.carrierPackages.isEmpty() -> EmptyPackages(
                     modifier = modifier,
                     R.drawable.ic_delivery,
                     R.string.woo_shipping_labels_package_creation_empty_carrier_message
                 ) { onTabChange(PageType.CUSTOM) }
 
-                packageState is PredefinedPackagesState.Data -> WooShippingCarrierPackageContent(
+                packageState is PackagesState.Data -> WooShippingCarrierPackageContent(
                     modifier = modifier,
                     carrierPackages = packageState.carrierPackages,
                     onPackageSelected = onPackageSelected,
                     onPackageStarred = onPackageStarred
                 )
 
-                packageState is PredefinedPackagesState.Error -> ErrorMessageWithButton(
+                packageState is PackagesState.Error -> ErrorMessageWithButton(
                     modifier = modifier,
                     message = R.string.woo_shipping_labels_package_creation_carrier_loading_error,
                     onRetryClick = onRetryClick
                 )
 
-                packageState is PredefinedPackagesState.Waiting -> Column(
+                packageState is PackagesState.Waiting -> Column(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(16.dp)
@@ -379,7 +379,7 @@ fun WooShippingCarrierPackageScreenPreview() {
 fun WooShippingCarrierPackageEmptyScreenPreview() {
     WooThemeWithBackground {
         WooShippingCarrierPackageScreen(
-            packageState = PredefinedPackagesState.Data(
+            packageState = PackagesState.Data(
                 storeOptions = StoreOptionsForPackages.DEFAULT,
                 savedPackages = emptyList(),
                 carrierPackages = emptyMap()
