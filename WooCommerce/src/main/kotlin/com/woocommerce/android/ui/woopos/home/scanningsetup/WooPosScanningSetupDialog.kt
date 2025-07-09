@@ -148,7 +148,7 @@ fun WooPosScanningSetupDialog(
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
-                    is ScanningSetupStep.PairOnYourDevice -> BarcodeStepContent(
+                    is ScanningSetupStep.PairOnYourDevice -> PairOnYourDeviceContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
@@ -309,7 +309,6 @@ private fun BarcodeStepContent(
     step: ScanningSetupStep,
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
-    onOpenBluetoothSettings: (() -> Unit)? = null,
 ) {
     val title: String
     val message: String
@@ -370,16 +369,6 @@ private fun BarcodeStepContent(
             modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
-        if (step is ScanningSetupStep.PairOnYourDevice && onOpenBluetoothSettings != null) {
-            WooPosOutlinedButton(
-                text = step.bluetoothSettingsButtonText,
-                onClick = onOpenBluetoothSettings,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding()),
-            )
-        }
-
         Box(
             modifier = Modifier
                 .size(200.dp)
@@ -409,6 +398,53 @@ private fun BarcodeStepContent(
         SetupButtonsRow(
             primaryButtonText = primaryText,
             secondaryButtonText = secondaryText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
+    }
+}
+
+@Composable
+private fun PairOnYourDeviceContent(
+    step: ScanningSetupStep.PairOnYourDevice,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+    onOpenBluetoothSettings: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+        )
+
+        WooPosOutlinedButton(
+            text = step.bluetoothSettingsButtonText,
+            onClick = onOpenBluetoothSettings,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()),
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
             onPrimaryClick = onPrimaryClick,
             onSecondaryClick = onSecondaryClick
         )
