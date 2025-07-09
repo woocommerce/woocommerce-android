@@ -36,7 +36,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material3.SnackbarHost
@@ -837,12 +836,6 @@ private fun PackageSelectionAvailableCard(
                     Icon(
                         tint = colorResource(id = R.color.color_on_surface_disabled),
                         imageVector = Icons.Outlined.Star,
-                        contentDescription = "Star",
-                    )
-                } else {
-                    Icon(
-                        tint = colorResource(id = R.color.woo_yellow_20),
-                        imageVector = Icons.Filled.Star,
                         contentDescription = "Star",
                     )
                 }
