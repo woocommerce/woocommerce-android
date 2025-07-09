@@ -115,9 +115,9 @@ internal fun ShippingRatesSectionMissingInfo(
         modifier = modifier
             .dashedBorder(
                 color = colorResource(R.color.divider_color),
-                strokeWidth = 2.dp,
-                dashLength = 8.dp,
-                gapLength = 8.dp,
+                strokeWidth = 1.dp,
+                dashLength = 4.dp,
+                gapLength = 6.dp,
                 shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
             )
             .padding(horizontal = 32.dp, vertical = 40.dp),
@@ -163,9 +163,9 @@ internal fun ShippingRatesLoading(
                 .fillMaxWidth()
                 .dashedBorder(
                     color = colorResource(R.color.divider_color),
-                    strokeWidth = 2.dp,
-                    dashLength = 8.dp,
-                    gapLength = 8.dp,
+                    strokeWidth = 1.dp,
+                    dashLength = 4.dp,
+                    gapLength = 6.dp,
                     shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
                 )
                 .padding(horizontal = 32.dp, vertical = 40.dp),

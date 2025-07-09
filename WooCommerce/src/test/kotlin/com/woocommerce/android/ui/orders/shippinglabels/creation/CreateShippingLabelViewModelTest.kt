@@ -50,6 +50,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -100,7 +101,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     private val data = StateMachineData(
-        order = orderMapper.toAppModel(order),
+        order = runBlocking { orderMapper.toAppModel(order) },
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
@@ -116,7 +117,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     )
 
     private val doneData = StateMachineData(
-        order = orderMapper.toAppModel(order),
+        order = runBlocking { orderMapper.toAppModel(order) },
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(READY, shippingAddress),

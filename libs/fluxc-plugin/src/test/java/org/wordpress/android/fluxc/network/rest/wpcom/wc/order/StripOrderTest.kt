@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.order
 
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -22,7 +23,7 @@ internal class StripOrderTest {
     }
 
     @Test
-    fun `should ignore additional members in line item`() {
+    fun `should ignore additional members in line item`() = runTest {
         // given
         val lineItemsFromRemote = JsonArray().apply {
             add(
@@ -44,7 +45,7 @@ internal class StripOrderTest {
     }
 
     @Test
-    fun `should ignore internal-only remote line item attributes if applied to metadata key`() {
+    fun `should ignore internal-only remote line item attributes if applied to metadata key`() = runTest {
         // given
         val internalOnlyAttributeMemberKey = "_internal_attribute_key"
         val lineItemsFromRemote = JsonArray().apply {
@@ -72,7 +73,7 @@ internal class StripOrderTest {
     }
 
     @Test
-    fun `should ignore additional members in shipping item`() {
+    fun `should ignore additional members in shipping item`() = runTest {
         // given
         val shippingLineItemsFromRemote = JsonArray().apply {
             add(
@@ -94,7 +95,7 @@ internal class StripOrderTest {
     }
 
     @Test
-    fun `should ignore additional members in fee item`() {
+    fun `should ignore additional members in fee item`() = runTest {
         // given
         val feeLineItemsFromRemote = JsonArray().apply {
             add(
@@ -116,7 +117,7 @@ internal class StripOrderTest {
     }
 
     @Test
-    fun `should ignore additional members in tax item`() {
+    fun `should ignore additional members in tax item`() = runTest {
         // given
         val taxLineItemsFromRemote = JsonArray().apply {
             add(
@@ -138,7 +139,7 @@ internal class StripOrderTest {
     }
 
     @Test
-    fun `should drop any not needed meta data`() {
+    fun `should drop any not needed meta data`() = runTest {
         // given
         val metaDataFromRemote = listOf(
             WCMetaData(1, redundantMemberKey, "sample value"),
@@ -164,7 +165,7 @@ internal class StripOrderTest {
     }
 
     @Test
-    fun `should not crash when item attribute key is empty`() {
+    fun `should not crash when item attribute key is empty`() = runTest {
         // given
         val emptyAttributeValue = "sample value"
         val lineItemsFromRemote = JsonArray().apply {
@@ -192,7 +193,7 @@ internal class StripOrderTest {
     }
 
     @Test
-    fun `should filter meta data that contains "receipt_url" as key`() {
+    fun `should filter meta data that contains "receipt_url" as key`() = runTest {
         // given
         val metaDataFromRemote = listOf(
             WCMetaData(1, redundantMemberKey, "sample value"),
