@@ -1,27 +1,31 @@
 package org.wordpress.android.fluxc.wc.refunds
 
-import com.yarolegovich.wellsql.WellSql
+import androidx.room.Room
+import androidx.test.platform.app.InstrumentationRegistry
+import com.google.gson.Gson
+import java.io.IOException
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
+import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_ID
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
-import org.wordpress.android.fluxc.persistence.WCRefundSqlUtils
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConverter
+import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
@@ -30,30 +34,42 @@ import org.wordpress.android.fluxc.tools.initCoroutineEngine
 @RunWith(RobolectricTestRunner::class)
 class RefundStoreTest {
     private val restClient = mock<RefundRestClient>()
-    private val site = mock<SiteModel>()
+    private val site = SiteModel()
     private val mapper = RefundMapper()
     private lateinit var store: WCRefundStore
+    private lateinit var db: WCAndroidDatabase
+    private lateinit var refundDao: RefundDao
 
     private val orderId = 1L
     private val refundId = REFUND_RESPONSE.refundId
-    private val error = WooError(INVALID_ID, NOT_FOUND, "Invalid order ID")
+    private val error = WooError(
+        WooErrorType.INVALID_ID,
+        BaseRequest.GenericErrorType.NOT_FOUND,
+        "Invalid order ID"
+    )
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
-        val config = SingleStoreWellSqlConfigForTests(
-                appContext,
-                listOf(WCRefundSqlUtils.RefundBuilder::class.java),
-                WellSqlConfig.ADDON_WOOCOMMERCE
-        )
-        WellSql.init(config)
-        config.reset()
+        val context = InstrumentationRegistry.getInstrumentation().context
+        db = Room.inMemoryDatabaseBuilder(
+            context, WCAndroidDatabase::class.java
+        ).addTypeConverter(CurrencyPositionConverter(Mockito.mock()))
+            .allowMainThreadQueries().build()
+        refundDao = db.refundDao
 
         store = WCRefundStore(
-                restClient,
-                initCoroutineEngine(),
-                mapper
+            restClient,
+            initCoroutineEngine(),
+            mapper,
+            refundDao,
+            Gson()
         )
+    }
+
+    @After
+    @Throws(IOException::class)
+    fun closeDb() {
+        db.close()
     }
 
     @Test
@@ -99,14 +115,14 @@ class RefundStoreTest {
 
     private suspend fun fetchSpecificTestRefund(): WooResult<WCRefundModel> {
         val fetchRefundsPayload = WooPayload(
-                REFUND_RESPONSE
+            REFUND_RESPONSE
         )
         whenever(restClient.fetchRefund(site, orderId, refundId)).thenReturn(
                 fetchRefundsPayload
         )
 
         whenever(restClient.fetchRefund(site, 2, refundId)).thenReturn(
-                WooPayload(error)
+            WooPayload(error)
         )
         return store.fetchRefund(site, orderId, refundId)
     }
@@ -114,27 +130,27 @@ class RefundStoreTest {
     private suspend fun fetchAllTestRefunds(): WooResult<List<WCRefundModel>> {
         val data = arrayOf(REFUND_RESPONSE, REFUND_RESPONSE)
         val fetchRefundsPayload = WooPayload(
-                data
+            data
         )
         whenever(
-                restClient.fetchAllRefunds(
-                        site,
-                        orderId,
-                        WCRefundStore.DEFAULT_PAGE,
-                        WCRefundStore.DEFAULT_PAGE_SIZE
-                )
+            restClient.fetchAllRefunds(
+                site,
+                orderId,
+                WCRefundStore.Companion.DEFAULT_PAGE,
+                WCRefundStore.Companion.DEFAULT_PAGE_SIZE
+            )
         ).thenReturn(
                 fetchRefundsPayload
         )
         whenever(
-                restClient.fetchAllRefunds(
-                        site,
-                        2,
-                        WCRefundStore.DEFAULT_PAGE,
-                        WCRefundStore.DEFAULT_PAGE_SIZE
-                )
+            restClient.fetchAllRefunds(
+                site,
+                2,
+                WCRefundStore.Companion.DEFAULT_PAGE,
+                WCRefundStore.Companion.DEFAULT_PAGE_SIZE
+            )
         ).thenReturn(
-                WooPayload(error)
+            WooPayload(error)
         )
         return store.fetchAllRefunds(site, orderId)
     }
