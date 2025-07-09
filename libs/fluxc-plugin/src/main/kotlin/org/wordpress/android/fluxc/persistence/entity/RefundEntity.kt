@@ -3,15 +3,17 @@ package org.wordpress.android.fluxc.persistence.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 @Entity(
     tableName = "WCRefunds",
     primaryKeys = ["localSiteId", "orderId", "refundId"]
 )
 data class RefundEntity(
-    @ColumnInfo(name = "localSiteId")
-    val localSiteId: Int,
-    val orderId: Long,
-    val refundId: Long,
+    val localSiteId: LocalId,
+    val orderId: RemoteId,
+    val refundId: RemoteId,
     val data: String
 )

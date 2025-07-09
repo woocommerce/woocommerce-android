@@ -1,6 +1,10 @@
 package org.wordpress.android.fluxc.store
 
 import com.google.gson.Gson
+import java.math.BigDecimal
+import javax.inject.Inject
+import javax.inject.Singleton
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
@@ -15,9 +19,6 @@ import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.persistence.entity.RefundEntity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
-import java.math.BigDecimal
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class WCRefundStore @Inject internal constructor(
@@ -84,7 +85,7 @@ class WCRefundStore @Inject internal constructor(
     }
 
     suspend fun getRefund(site: SiteModel, orderId: Long, refundId: Long): WCRefundModel? {
-        val entity = refundDao.getRefund(site.id, orderId, refundId)
+        val entity = refundDao.getRefund(site.localId(), RemoteId(orderId), RemoteId(refundId))
         return entity?.let {
             val refundResponse = gson.fromJson(it.data, RefundResponse::class.java)
             refundsMapper.map(refundResponse)
@@ -103,9 +104,9 @@ class WCRefundStore @Inject internal constructor(
                 response.result != null -> {
                     val json = gson.toJson(response.result)
                     val entity = RefundEntity(
-                        localSiteId = site.id,
-                        orderId = orderId,
-                        refundId = response.result.refundId,
+                        localSiteId = site.localId(),
+                        orderId = RemoteId(orderId),
+                        refundId = RemoteId(response.result.refundId),
                         data = json
                     )
                     refundDao.upsertRefunds(listOf(entity))
@@ -117,7 +118,7 @@ class WCRefundStore @Inject internal constructor(
     }
 
     suspend fun getAllRefunds(site: SiteModel, orderId: Long): List<WCRefundModel> {
-        val entities = refundDao.getRefundsForOrder(site.id, orderId)
+        val entities = refundDao.getRefundsForOrder(site.localId(), RemoteId(orderId))
         return entities.map { entity ->
             val refundResponse = gson.fromJson(entity.data, RefundResponse::class.java)
             refundsMapper.map(refundResponse)
@@ -140,14 +141,14 @@ class WCRefundStore @Inject internal constructor(
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    refundDao.deleteRefundsForOrder(site.id, orderId)
+                    refundDao.deleteRefundsForOrder(site.localId(), RemoteId(orderId))
 
                     val entities = response.result.map { refundResponse ->
                         val json = gson.toJson(refundResponse)
                         RefundEntity(
-                            localSiteId = site.id,
-                            orderId = orderId,
-                            refundId = refundResponse.refundId,
+                            localSiteId = site.localId(),
+                            orderId = RemoteId(orderId),
+                            refundId = RemoteId(refundResponse.refundId),
                             data = json
                         )
                     }
