@@ -67,6 +67,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 fun WooPosScanningSetupDialog(
     isVisible: Boolean,
     onDismissRequest: () -> Unit,
+    onShowBarcodeInfoDialog: () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<WooPosScanningSetupViewModel>()
     val context = LocalContext.current
@@ -78,6 +79,12 @@ fun WooPosScanningSetupDialog(
     LaunchedEffect(Unit) {
         viewModel.openUrlEvent.collect { url ->
             ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.showBarcodeInfoDialogEvent.collect {
+            onShowBarcodeInfoDialog()
         }
     }
     WooPosDialogWrapper(
@@ -116,8 +123,6 @@ fun WooPosScanningSetupDialog(
                         onDeviceSelected = { device ->
                             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(device))
                         },
-                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
                     is ScanningSetupStep.Introduction -> IntroductionContent(
@@ -434,8 +439,6 @@ private fun DeviceSelectionContent(
     step: ScanningSetupStep.DeviceSelection,
     selectedDevice: BarcodeReaderDevice?,
     onDeviceSelected: (BarcodeReaderDevice) -> Unit,
-    onPrimaryClick: () -> Unit,
-    onSecondaryClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -460,26 +463,19 @@ private fun DeviceSelectionContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()),
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
         ) {
             step.devices.forEach { device ->
                 DeviceSelectionItem(
                     device = device,
                     isSelected = selectedDevice == device,
-                    onClick = { onDeviceSelected(device) }
+                    onClick = {
+                        onDeviceSelected(device)
+                    }
                 )
             }
         }
-
-        SetupButtonsRow(
-            primaryButtonText = step.primaryButtonText,
-            secondaryButtonText = step.secondaryButtonText,
-            onPrimaryClick = onPrimaryClick,
-            onSecondaryClick = onSecondaryClick,
-            primaryButtonState = if (selectedDevice != null) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
-        )
     }
 }
 
