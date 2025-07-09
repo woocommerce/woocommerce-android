@@ -102,7 +102,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { getSiteSettings(site) }.thenReturn(mock())
     }
     private val orderMapper: OrderMapper = mock {
-        on { toAppModel(orderEntity) }.thenReturn(order)
+        onBlocking { toAppModel(orderEntity) }.thenReturn(order)
     }
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock {
         onBlocking { isCollectable(order) }.thenReturn(false)

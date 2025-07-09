@@ -37,5 +37,9 @@ data class StoreOptionsDAO(
 enum class CarrierType(val id: String) {
     USPS(id = "usps"),
     DHL(id = "dhlexpress"),
-    UPS(id = "upsdap")
+    UPS(id = "upsdap");
+
+    companion object {
+        fun fromId(id: String): CarrierType? = entries.firstOrNull { it.id == id }
+    }
 }

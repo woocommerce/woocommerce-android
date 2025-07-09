@@ -11,6 +11,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -30,7 +31,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
         },
         mock()
     )
-    private val order = OrderTestUtils.generateOrder().let { orderMapper.toAppModel(it) }
+    private val order = OrderTestUtils.generateOrder().let { runBlocking { orderMapper.toAppModel(it) } }
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val data = StateMachineData(
