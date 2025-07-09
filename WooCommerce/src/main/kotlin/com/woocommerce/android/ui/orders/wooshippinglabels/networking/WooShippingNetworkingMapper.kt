@@ -106,7 +106,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             firstName = name.getOrElse(0) { "" },
             phone = destinationAddressDTO.phone.orEmpty(),
             address2 = destinationAddressDTO.address2.orEmpty(),
-            email = "", // TODO handle email in destination address
+            email = "", // We set the email later from the order details
             lastName = name.getOrElse(1) { "" }
         )
     }
