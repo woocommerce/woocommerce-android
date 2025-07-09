@@ -3,7 +3,8 @@ package org.wordpress.android.fluxc.persistence.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.*
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.entity.RefundEntity
 
 @Dao
@@ -26,5 +27,4 @@ internal abstract class RefundDao {
 
     @Query("SELECT * FROM WCRefunds WHERE localSiteId = :siteId AND orderId = :orderId AND refundId = :refundId")
     abstract suspend fun getRefund(siteId: LocalId, orderId: RemoteId, refundId: RemoteId): RefundEntity?
-
 }

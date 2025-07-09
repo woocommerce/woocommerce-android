@@ -1,9 +1,6 @@
 package org.wordpress.android.fluxc.persistence.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Index
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 

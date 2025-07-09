@@ -3,7 +3,6 @@ package org.wordpress.android.fluxc.wc.refunds
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
-import java.io.IOException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -29,6 +28,7 @@ import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import java.io.IOException
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)

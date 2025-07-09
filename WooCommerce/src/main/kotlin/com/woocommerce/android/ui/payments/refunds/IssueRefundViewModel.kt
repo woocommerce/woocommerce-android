@@ -38,12 +38,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
-import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
 @HiltViewModel

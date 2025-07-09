@@ -1,9 +1,6 @@
 package org.wordpress.android.fluxc.store
 
 import com.google.gson.Gson
-import java.math.BigDecimal
-import javax.inject.Inject
-import javax.inject.Singleton
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
@@ -19,6 +16,9 @@ import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.persistence.entity.RefundEntity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
+import java.math.BigDecimal
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class WCRefundStore @Inject internal constructor(
