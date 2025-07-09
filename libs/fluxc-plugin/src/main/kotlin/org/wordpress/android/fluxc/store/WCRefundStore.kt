@@ -104,7 +104,7 @@ class WCRefundStore @Inject internal constructor(
                 response.result != null -> {
                     val json = gson.toJson(response.result)
                     val entity = RefundEntity(
-                        localSiteId = site.localId(),
+                        siteId = site.localId(),
                         orderId = RemoteId(orderId),
                         refundId = RemoteId(response.result.refundId),
                         data = json
@@ -146,7 +146,7 @@ class WCRefundStore @Inject internal constructor(
                     val entities = response.result.map { refundResponse ->
                         val json = gson.toJson(refundResponse)
                         RefundEntity(
-                            localSiteId = site.localId(),
+                            siteId = site.localId(),
                             orderId = RemoteId(orderId),
                             refundId = RemoteId(refundResponse.refundId),
                             data = json

@@ -19,7 +19,7 @@ val REFUND_RESPONSE = RefundResponse(
 val TEST_SITE = SiteModel().apply { id = 2 }
 
 val REFUND_ENTITY = RefundEntity(
-    localSiteId = TEST_SITE.localId(),
+    siteId = TEST_SITE.localId(),
     orderId = LocalOrRemoteId.RemoteId(1L),
     refundId = LocalOrRemoteId.RemoteId(1L),
     data = "test-data"

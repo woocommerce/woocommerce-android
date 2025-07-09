@@ -16,15 +16,15 @@ internal abstract class RefundDao {
     @Upsert
     abstract suspend fun upsertRefunds(refunds: List<RefundEntity>)
 
-    @Query("DELETE FROM WCRefunds WHERE localSiteId = :siteId AND orderId = :orderId")
+    @Query("DELETE FROM RefundEntity WHERE siteId = :siteId AND orderId = :orderId")
     abstract suspend fun deleteRefundsForOrder(siteId: LocalId, orderId: RemoteId)
 
-    @Query("DELETE FROM WCRefunds WHERE localSiteId = :siteId AND orderId = :orderId AND refundId = :refundId")
+    @Query("DELETE FROM RefundEntity WHERE siteId = :siteId AND orderId = :orderId AND refundId = :refundId")
     abstract suspend fun deleteRefund(siteId: LocalId, orderId: RemoteId, refundId: RemoteId)
 
-    @Query("SELECT * FROM WCRefunds WHERE localSiteId = :siteId AND orderId = :orderId")
+    @Query("SELECT * FROM RefundEntity WHERE siteId = :siteId AND orderId = :orderId")
     abstract suspend fun getRefundsForOrder(siteId: LocalId, orderId: RemoteId): List<RefundEntity>
 
-    @Query("SELECT * FROM WCRefunds WHERE localSiteId = :siteId AND orderId = :orderId AND refundId = :refundId")
+    @Query("SELECT * FROM RefundEntity WHERE siteId = :siteId AND orderId = :orderId AND refundId = :refundId")
     abstract suspend fun getRefund(siteId: LocalId, orderId: RemoteId, refundId: RemoteId): RefundEntity?
 }

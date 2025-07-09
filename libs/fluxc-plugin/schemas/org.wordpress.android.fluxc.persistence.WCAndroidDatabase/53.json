@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 53,
-    "identityHash": "2e80712f2b207ed765512fb4bae4eb21",
+    "identityHash": "f99edfaf7dbb772df11e501c3f4a27b4",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -887,12 +887,12 @@
         "foreignKeys": []
       },
       {
-        "tableName": "WCRefunds",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `refundId` INTEGER NOT NULL, `data` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `orderId`, `refundId`))",
+        "tableName": "RefundEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `refundId` INTEGER NOT NULL, `data` TEXT NOT NULL, PRIMARY KEY(`siteId`, `orderId`, `refundId`))",
         "fields": [
           {
-            "fieldPath": "localSiteId",
-            "columnName": "localSiteId",
+            "fieldPath": "siteId",
+            "columnName": "siteId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -918,7 +918,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "localSiteId",
+            "siteId",
             "orderId",
             "refundId"
           ]
@@ -3331,7 +3331,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e80712f2b207ed765512fb4bae4eb21')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f99edfaf7dbb772df11e501c3f4a27b4')"
     ]
   }
 }

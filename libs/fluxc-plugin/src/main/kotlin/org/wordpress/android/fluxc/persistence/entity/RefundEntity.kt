@@ -5,11 +5,11 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 @Entity(
-    tableName = "WCRefunds",
-    primaryKeys = ["localSiteId", "orderId", "refundId"]
+    tableName = "RefundEntity",
+    primaryKeys = ["siteId", "orderId", "refundId"]
 )
 data class RefundEntity(
-    val localSiteId: LocalId,
+    val siteId: LocalId,
     val orderId: RemoteId,
     val refundId: RemoteId,
     val data: String
