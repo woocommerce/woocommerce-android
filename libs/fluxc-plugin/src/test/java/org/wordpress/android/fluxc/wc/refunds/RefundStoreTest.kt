@@ -26,6 +26,8 @@ import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConverter
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCRefundStore.Companion.DEFAULT_PAGE
+import org.wordpress.android.fluxc.store.WCRefundStore.Companion.DEFAULT_PAGE_SIZE
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import java.io.IOException
@@ -136,8 +138,8 @@ class RefundStoreTest {
             restClient.fetchAllRefunds(
                 site,
                 orderId,
-                WCRefundStore.Companion.DEFAULT_PAGE,
-                WCRefundStore.Companion.DEFAULT_PAGE_SIZE
+                DEFAULT_PAGE,
+                DEFAULT_PAGE_SIZE
             )
         ).thenReturn(
                 fetchRefundsPayload
@@ -146,8 +148,8 @@ class RefundStoreTest {
             restClient.fetchAllRefunds(
                 site,
                 2,
-                WCRefundStore.Companion.DEFAULT_PAGE,
-                WCRefundStore.Companion.DEFAULT_PAGE_SIZE
+                DEFAULT_PAGE,
+                DEFAULT_PAGE_SIZE
             )
         ).thenReturn(
             WooPayload(error)
