@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
@@ -113,12 +115,11 @@ fun WooShippingSavedPackageContent(
     onSavedPackageSelected: (PackageData, Boolean) -> Unit,
     onSavedPackageRemoved: (PackageData) -> Unit
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        savedPackages.forEachIndexed { index, packageData ->
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+        itemsIndexed(
+            items = savedPackages,
+            key = { index, packageData -> packageData.id }
+        ) { index, packageData ->
             WooShippingPackageListItem(
                 modifier,
                 packageData,
