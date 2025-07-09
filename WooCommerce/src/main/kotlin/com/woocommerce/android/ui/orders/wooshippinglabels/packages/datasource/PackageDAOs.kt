@@ -13,6 +13,7 @@ data class PackageDAO(
     val weight: String,
     val isLetter: Boolean,
     val dimensionUnit: String,
+    val isUserDefined: Boolean = false,
     val weightUnit: String,
     val groupName: String? = null,
     val saved: Boolean,

@@ -1,20 +1,28 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,15 +41,69 @@ fun WooShippingPackageListItem(
     modifier: Modifier,
     packageData: PackageData,
     onPackageSelected: (PackageData, Boolean) -> Unit,
+    divider: Boolean = true,
     packageItemSupportsStarring: Boolean,
+    onPackageStarred: (PackageData, Boolean) -> Unit = { _, _ -> },
+    onPackageRemoved: ((PackageData) -> Unit)? = null,
+) {
+    Column(modifier = modifier) {
+        if (onPackageRemoved == null) {
+            WooShippingPackageListItemContent(
+                packageData = packageData,
+                onPackageSelected = onPackageSelected,
+                packageItemSupportsStarring = packageItemSupportsStarring,
+                onPackageStarred = onPackageStarred
+            )
+        } else {
+            val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+                confirmValueChange = {
+                    if (it == SwipeToDismissBoxValue.EndToStart) onPackageRemoved(packageData)
+                    it != SwipeToDismissBoxValue.EndToStart
+                }
+            )
+
+            SwipeToDismissBox(
+                state = swipeToDismissBoxState,
+                modifier = modifier.fillMaxSize(),
+                enableDismissFromStartToEnd = false,
+                backgroundContent = {
+                    if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = stringResource(id = R.string.remove),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(colorResource(R.color.woo_red_50))
+                                .wrapContentSize(Alignment.CenterEnd)
+                                .padding(end = 16.dp),
+                            tint = colorResource(R.color.woo_white)
+                        )
+                    }
+                }
+            ) {
+                WooShippingPackageListItemContent(
+                    packageData = packageData,
+                    onPackageSelected = onPackageSelected,
+                    packageItemSupportsStarring = packageItemSupportsStarring,
+                    onPackageStarred = onPackageStarred
+                )
+            }
+        }
+        if (divider) Divider(modifier = Modifier.padding(start = 48.dp))
+    }
+}
+
+@Composable
+fun WooShippingPackageListItemContent(
+    packageData: PackageData,
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    packageItemSupportsStarring: Boolean,
+    modifier: Modifier = Modifier,
     onPackageStarred: (PackageData, Boolean) -> Unit = { _, _ -> }
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    Surface {
         Row(
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -72,9 +134,7 @@ fun WooShippingPackageListItem(
             }
             if (packageItemSupportsStarring) {
                 Icon(
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .clickable { onPackageStarred(packageData, !packageData.isStarred) },
+                    modifier = Modifier.clickable { onPackageStarred(packageData, !packageData.isStarred) },
                     tint = colorResource(id = R.color.color_on_surface_disabled),
                     imageVector = when (packageData.isStarred) {
                         true -> Icons.Filled.Star
@@ -89,7 +149,6 @@ fun WooShippingPackageListItem(
                 )
             }
         }
-        Divider()
     }
 }
 
@@ -97,13 +156,9 @@ fun WooShippingPackageListItem(
 fun WooShippingPackageListItemSkeleton(
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(
+            modifier = Modifier.padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
