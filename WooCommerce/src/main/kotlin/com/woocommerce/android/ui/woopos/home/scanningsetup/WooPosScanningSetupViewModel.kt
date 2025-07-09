@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice.OTHER
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -52,7 +51,9 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
                 )
 
                 when (event.device) {
-                    OTHER -> viewModelScope.launch { _showBarcodeInfoDialogEvent.emit(Unit) }
+                    BarcodeReaderDevice.OTHER -> viewModelScope.launch {
+                        _showBarcodeInfoDialogEvent.emit(Unit)
+                    }
                     else -> _state.value = _state.value.copy(
                         currentStep = createBluetoothIntroductionStep()
                     )
