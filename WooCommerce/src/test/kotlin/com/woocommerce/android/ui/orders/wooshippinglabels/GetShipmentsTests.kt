@@ -264,7 +264,11 @@ class GetShipmentsTests : BaseUnitTest() {
         val shipmentId = "0"
         val labelId = 12L
 
-        val shippingLabel = ShippingLabelDTO(labelId = labelId, shipmentId = shipmentId)
+        val shippingLabel = ShippingLabelDTO(
+            labelId = labelId,
+            shipmentId = shipmentId,
+            status = ShippingLabelStatus.PURCHASED
+        )
         val destinationAddressDTO = DestinationAddressDTO()
         val configDTO = ConfigDTO(
             shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList()))),
@@ -284,7 +288,7 @@ class GetShipmentsTests : BaseUnitTest() {
             labelId = labelId,
             tracking = "",
             refundableAmount = BigDecimal.ZERO,
-            status = ShippingLabelStatus.UNKNOWN,
+            status = ShippingLabelStatus.PURCHASED,
             created = null,
             carrierId = "",
             serviceName = "",
