@@ -119,7 +119,6 @@ fun WooPosScanningSetupDialog(
 
                     is ScanningSetupStep.DeviceSelection -> DeviceSelectionContent(
                         step = step,
-                        selectedDevice = state.selectedDevice,
                         onDeviceSelected = { device ->
                             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(device))
                         },
@@ -437,7 +436,6 @@ private fun SetupCompleteContent(
 @Composable
 private fun DeviceSelectionContent(
     step: ScanningSetupStep.DeviceSelection,
-    selectedDevice: BarcodeReaderDevice?,
     onDeviceSelected: (BarcodeReaderDevice) -> Unit,
 ) {
     Column(
@@ -469,7 +467,6 @@ private fun DeviceSelectionContent(
             step.devices.forEach { device ->
                 DeviceSelectionItem(
                     device = device,
-                    isSelected = selectedDevice == device,
                     onClick = {
                         onDeviceSelected(device)
                     }
@@ -482,7 +479,6 @@ private fun DeviceSelectionContent(
 @Composable
 private fun DeviceSelectionItem(
     device: BarcodeReaderDevice,
-    isSelected: Boolean,
     onClick: () -> Unit,
 ) {
     Box(
@@ -490,8 +486,8 @@ private fun DeviceSelectionItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             .border(
-                width = if (isSelected) 4.dp else 2.dp,
-                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.inverseSurface,
                 shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
             )
             .clickable { onClick() }
