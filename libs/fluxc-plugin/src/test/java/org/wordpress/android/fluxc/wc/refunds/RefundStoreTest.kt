@@ -1,14 +1,14 @@
 package org.wordpress.android.fluxc.wc.refunds
 
-import androidx.room.Room
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
@@ -22,19 +22,23 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
-import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConverter
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCRefundStore.Companion.DEFAULT_PAGE
 import org.wordpress.android.fluxc.store.WCRefundStore.Companion.DEFAULT_PAGE_SIZE
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
-import java.io.IOException
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class RefundStoreTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private val restClient = mock<RefundRestClient>()
     private val site = SiteModel()
     private val mapper = RefundMapper()
@@ -53,11 +57,7 @@ class RefundStoreTest {
     @Before
     fun setUp() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        db = Room.inMemoryDatabaseBuilder(
-            context, WCAndroidDatabase::class.java
-        ).addTypeConverter(CurrencyPositionConverter(Mockito.mock()))
-            .allowMainThreadQueries().build()
-        refundDao = db.refundDao
+        refundDao = databaseRule.db.refundDao
 
         store = WCRefundStore(
             restClient,
@@ -66,12 +66,6 @@ class RefundStoreTest {
             refundDao,
             Gson()
         )
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        db.close()
     }
 
     @Test
