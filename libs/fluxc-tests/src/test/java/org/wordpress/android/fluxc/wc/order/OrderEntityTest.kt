@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.wc.order
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.order.ShippingLine
@@ -38,7 +39,7 @@ class OrderEntityTest {
     }
 
     @Test
-    fun testGetLineItems() {
+    fun testGetLineItems() = runBlocking {
         val model = OrderTestUtils.generateSampleOrder(61).copy(
                 lineItems = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/lineitems.json")
         )
@@ -72,7 +73,7 @@ class OrderEntityTest {
     }
 
     @Test
-    fun testGetLineItemAttributes() {
+    fun testGetLineItemAttributes() = runBlocking {
         val model = OrderTestUtils.generateSampleOrder(61).copy(
                 lineItems = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/lineitems.json")
         )
@@ -100,7 +101,7 @@ class OrderEntityTest {
     }
 
     @Test
-    fun testGetSubtotal() {
+    fun testGetSubtotal() = runBlocking {
         val model = OrderTestUtils.generateSampleOrder(61).copy(
                 lineItems = "[{\"subtotal\": \"12.26\"},{\"subtotal\": \"15.39\"}]"
         )
@@ -145,7 +146,7 @@ class OrderEntityTest {
     }
 
     @Test
-    fun testGetTaxLinesHandlesInvalidJson() {
+    fun testGetTaxLinesHandlesInvalidJson() = runBlocking {
         // GIVEN
         val model = OrderTestUtils.generateSampleOrder(61).copy(
             taxLines = """[{
@@ -166,7 +167,7 @@ class OrderEntityTest {
     }
 
     @Test
-    fun testGetTaxLinesValidJson() {
+    fun testGetTaxLinesValidJson() = runBlocking {
         val model = OrderTestUtils.generateSampleOrder(61).copy(
             taxLines = """[{
             "id": 1,
@@ -216,5 +217,204 @@ class OrderEntityTest {
             assertEquals("2.30", taxTotal)
             assertEquals("0.25", shippingTaxTotal)
         }
+    }
+
+    @Test
+    fun testParseJsonListSafelyWithValidJson() = runBlocking {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = """[
+                {"id": 1, "name": "Product 1", "total": "10.00"},
+                {"id": 2, "name": "Product 2", "total": "20.00"}
+            ]"""
+        )
+
+        // WHEN
+        val lineItems = model.getLineItemList()
+
+        // THEN
+        assertEquals(2, lineItems.size)
+        assertEquals("Product 1", lineItems[0].name)
+        assertEquals("Product 2", lineItems[1].name)
+    }
+
+    @Test
+    fun testParseJsonListSafelyWithEmptyString() = runBlocking {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = "",
+            shippingLines = "",
+            feeLines = "",
+            couponLines = "",
+            taxLines = ""
+        )
+
+        // WHEN
+        val lineItems = model.getLineItemList()
+        val shippingLines = model.getShippingLineList()
+        val feeLines = model.getFeeLineList()
+        val couponLines = model.getCouponLineList()
+        val taxLines = model.getTaxLineList()
+
+        // THEN
+        assertTrue(lineItems.isEmpty())
+        assertTrue(shippingLines.isEmpty())
+        assertTrue(feeLines.isEmpty())
+        assertTrue(couponLines.isEmpty())
+        assertTrue(taxLines.isEmpty())
+    }
+
+    @Test
+    fun testParseJsonListSafelyWithMalformedJson() = runBlocking {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = "[{invalid json",
+            shippingLines = "not json at all",
+            feeLines = "{\"key\": \"value\"}",
+            taxLines = "[{\"id\": 1,]"
+        )
+
+        // WHEN
+        val lineItems = model.getLineItemList()
+        val shippingLines = model.getShippingLineList()
+        val feeLines = model.getFeeLineList()
+        val taxLines = model.getTaxLineList()
+
+        // THEN
+        assertTrue(lineItems.isEmpty())
+        assertTrue(shippingLines.isEmpty())
+        assertTrue(feeLines.isEmpty())
+        assertTrue(taxLines.isEmpty())
+    }
+
+    @Test
+    fun testParseJsonListSafelyWithNumberFormatException() = runBlocking {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = """[{
+                "id": "not_a_number",
+                "name": "Product",
+                "product_id": "12.5.6",
+                "quantity": "abc",
+                "total": "10.00"
+            }]""",
+            taxLines = """[{
+                "id": 1,
+                "rate_id": "invalid_long",
+                "rate_percent": "not_a_float",
+                "tax_total": "5.00"
+            }]"""
+        )
+
+        // WHEN
+        val lineItems = model.getLineItemList()
+        val taxLines = model.getTaxLineList()
+
+        // THEN
+        assertTrue(lineItems.isEmpty())
+        assertTrue(taxLines.isEmpty())
+    }
+
+    @Test
+    fun testParseJsonListSafelyWithNullValues() = runBlocking {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = "null",
+            shippingLines = "[null, null]",
+            feeLines = """[{"id": null, "name": null}]"""
+        )
+
+        // WHEN
+        val lineItems = model.getLineItemList()
+        val shippingLines = model.getShippingLineList()
+        val feeLines = model.getFeeLineList()
+
+        // THEN
+        assertTrue(lineItems.isEmpty())
+        assertEquals(2, shippingLines.size)
+        assertEquals(1, feeLines.size)
+    }
+
+    @Test
+    fun testParseJsonListSafelyWithMixedValidAndInvalidData() = runBlocking {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            couponLines = """[
+                {"id": 1, "code": "VALID10", "discount": "10.00"},
+                {"id": "invalid", "code": "INVALID", "discount": "abc"},
+                {"id": 3, "code": "VALID20", "discount": "20.00"}
+            ]"""
+        )
+
+        // WHEN
+        val couponLines = model.getCouponLineList()
+
+        // THEN
+        assertTrue(couponLines.isEmpty())
+    }
+
+    @Test
+    fun testParseJsonListSafelyWithLargeNumbers() = runBlocking {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = """[{
+                "id": 9223372036854775807,
+                "name": "Product with max long id",
+                "product_id": 999999999999999999999999999999,
+                "total": "10.00"
+            }]"""
+        )
+
+        // WHEN
+        val lineItems = model.getLineItemList()
+
+        // THEN
+        assertTrue(lineItems.isEmpty())
+    }
+
+    @Test
+    fun testParseJsonListSafelyWithSpecialCharacters() = runBlocking {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = """[{
+                "id": 1,
+                "name": "Product with \"quotes\" and \n newlines",
+                "sku": "test\\slash",
+                "total": "10.00"
+            }]"""
+        )
+
+        // WHEN
+        val lineItems = model.getLineItemList()
+
+        // THEN
+        assertEquals(1, lineItems.size)
+        assertTrue(lineItems[0].name?.contains("quotes") == true)
+    }
+
+    @Test
+    fun testParseJsonListSafelyWithEmptyArray() = runBlocking {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = "[]",
+            shippingLines = "[]",
+            feeLines = "[]",
+            couponLines = "[]",
+            taxLines = "[]"
+        )
+
+        // WHEN
+        val lineItems = model.getLineItemList()
+        val shippingLines = model.getShippingLineList()
+        val feeLines = model.getFeeLineList()
+        val couponLines = model.getCouponLineList()
+        val taxLines = model.getTaxLineList()
+
+        // THEN
+        assertTrue(lineItems.isEmpty())
+        assertTrue(shippingLines.isEmpty())
+        assertTrue(feeLines.isEmpty())
+        assertTrue(couponLines.isEmpty())
+        assertTrue(taxLines.isEmpty())
     }
 }

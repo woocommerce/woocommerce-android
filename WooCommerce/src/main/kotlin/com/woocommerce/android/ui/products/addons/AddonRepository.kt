@@ -47,7 +47,7 @@ class AddonRepository @Inject constructor(
     private suspend fun getOrder(orderID: Long) =
         orderStore.getOrderByIdAndSite(orderID, selectedSite.get())
 
-    private fun OrderEntity.findOrderAttributesWith(orderItemID: Long) =
+    private suspend fun OrderEntity.findOrderAttributesWith(orderItemID: Long) =
         getLineItemList().find { it.id == orderItemID }
             ?.getAttributeList()
             ?.map { Attribute(it.key.orEmpty(), it.value.orEmpty()) }

@@ -36,10 +36,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarc
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.BarcodeInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScanningSetupDialog
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosItemsScreenPreview
+import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolbarStatusConnectedWithMenu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
@@ -178,6 +180,7 @@ private fun WooPosHomeScreen(
 
         HandleProductsInfoDialog(state.productsInfoDialog, onHomeUIEvent)
         HandleBarcodeInfoDialog(state.barcodeInfoDialog, onHomeUIEvent)
+        HandleScanningSetupDialog(state.scanningSetupDialog, onHomeUIEvent)
     }
 }
 
@@ -203,6 +206,19 @@ private fun HandleBarcodeInfoDialog(
         state = state,
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.DismissBarcodeInfoDialog)
+        }
+    )
+}
+
+@Composable
+private fun HandleScanningSetupDialog(
+    state: ScanningSetupDialog,
+    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
+) {
+    WooPosScanningSetupDialog(
+        outerState = state,
+        onDismissRequest = {
+            onHomeUIEvent(WooPosHomeUIEvent.DismissScanningSetupDialog)
         }
     )
 }

@@ -134,17 +134,16 @@ class OrderListRepository @Inject constructor(
 
     fun observeTopOrders(count: Int, isForced: Boolean, statusFilter: Order.Status? = null) = flow {
         if (!isForced) {
-            orderStore.getOrdersForSite(selectedSite.get())
+            val cachedOrders = orderStore.getOrdersForSite(selectedSite.get())
                 .asSequence()
                 .filter { it.status != ORDER_STATUS_TRASH && (statusFilter == null || it.status == statusFilter.value) }
                 .sortedByDescending { it.dateCreated }
                 .take(count)
-                .map { orderMapper.toAppModel(it) }
                 .toList()
-                .takeIf { it.isNotEmpty() }
-                ?.let { orders ->
-                    emit(Result.success(orders))
-                }
+            if (cachedOrders.isNotEmpty()) {
+                val orders = cachedOrders.map { orderMapper.toAppModel(it) }
+                emit(Result.success(orders))
+            }
         }
 
         val result = orderStore.fetchOrders(

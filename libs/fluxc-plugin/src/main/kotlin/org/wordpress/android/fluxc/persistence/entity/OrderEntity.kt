@@ -7,6 +7,8 @@ import androidx.room.TypeConverters
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.order.CouponLine
@@ -121,51 +123,60 @@ data class OrderEntity(
     /**
      * Deserializes the JSON contained in [lineItems] into a list of [LineItem] objects.
      */
-    fun getLineItemList(): List<LineItem> {
-        val responseType = object : TypeToken<List<LineItem>>() {}.type
-        return gson.fromJson(lineItems, responseType) as? List<LineItem> ?: emptyList()
+    suspend fun getLineItemList(): List<LineItem> {
+        return getCachedOrParse(lineItems)
     }
 
     /**
      * Returns the order subtotal (the sum of the subtotals of each line item in the order).
      */
-    fun getOrderSubtotal(): Double {
-        return getLineItemList().sumByDouble { it.subtotal?.toDoubleOrNull() ?: 0.0 }
+    suspend fun getOrderSubtotal(): Double {
+        return getLineItemList().sumOf { it.subtotal?.toDoubleOrNull() ?: 0.0 }
     }
 
     /**
      * Deserializes the JSON contained in [shippingLines] into a list of [ShippingLine] objects.
      */
-    fun getShippingLineList(): List<ShippingLine> {
-        val responseType = object : TypeToken<List<ShippingLine>>() {}.type
-        return gson.fromJson(shippingLines, responseType) as? List<ShippingLine> ?: emptyList()
+    suspend fun getShippingLineList(): List<ShippingLine> {
+        return getCachedOrParse(shippingLines)
     }
 
     /**
      * Deserializes the JSON contained in [feeLines] into a list of [FeeLine] objects.
      */
-    fun getFeeLineList(): List<FeeLine> {
-        val responseType = object : TypeToken<List<FeeLine>>() {}.type
-        return gson.fromJson(feeLines, responseType) as? List<FeeLine> ?: emptyList()
+    suspend fun getFeeLineList(): List<FeeLine> {
+        return getCachedOrParse(feeLines)
     }
 
     /**
      * Deserializes the JSON contained in [couponLines] into a list of [CouponLine] objects.
      */
-    fun getCouponLineList(): List<CouponLine> {
-        val responseType = object : TypeToken<List<CouponLine>>() {}.type
-        return gson.fromJson(couponLines, responseType) as? List<CouponLine> ?: emptyList()
+    suspend fun getCouponLineList(): List<CouponLine> {
+        return getCachedOrParse(couponLines)
     }
 
     /**
      * Deserializes the JSON contained in [taxLines] into a list of [TaxLine] objects.
      * Returns an empty list if deserialization fails.
      */
-    fun getTaxLineList(): List<TaxLine> {
-        return try {
-            val responseType = object : TypeToken<List<TaxLine>>() {}.type
-            gson.fromJson(taxLines, responseType) as? List<TaxLine> ?: emptyList()
+    suspend fun getTaxLineList(): List<TaxLine> {
+        return getCachedOrParse(taxLines)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private suspend inline fun <reified T> getCachedOrParse(json: String): List<T> {
+        return parseJsonListSafely<T>(json)
+    }
+
+    private suspend inline fun <reified T> parseJsonListSafely(json: String): List<T> = withContext(Dispatchers.IO) {
+        try {
+            val responseType = object : TypeToken<List<T>>() {}.type
+            gson.fromJson(json, responseType) as? List<T> ?: emptyList()
         } catch (e: JsonSyntaxException) {
+            @Suppress("PrintStackTrace")
+            e.printStackTrace()
+            emptyList()
+        } catch (e: NumberFormatException) {
             @Suppress("PrintStackTrace")
             e.printStackTrace()
             emptyList()

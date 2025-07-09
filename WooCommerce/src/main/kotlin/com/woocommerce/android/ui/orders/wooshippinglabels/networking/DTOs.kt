@@ -82,7 +82,12 @@ data class ConfigDTO(
 )
 
 data class ShippingLabelDataDTO(
-    @SerializedName("currentOrderLabels") val currentOrderLabels: List<ShippingLabelDTO>
+    @SerializedName("currentOrderLabels") val currentOrderLabels: List<ShippingLabelDTO>?,
+    @SerializedName("storedData") val storedData: StoredDataDTO?
+)
+
+data class StoredDataDTO(
+    @SerializedName("selected_destination") val selectedDestination: Map<String, DestinationAddressDTO>,
 )
 
 data class Item(@SerializedName("id") val id: Long?, @SerializedName("subItems") val subItems: List<String>?)
