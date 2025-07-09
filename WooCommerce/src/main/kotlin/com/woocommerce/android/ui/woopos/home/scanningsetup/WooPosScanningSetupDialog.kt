@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.scanningsetup
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -80,6 +82,14 @@ fun WooPosScanningSetupDialog(
             ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
         }
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.openBluetoothSettingsEvent.collect {
+            val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+            context.startActivity(intent)
+        }
+    }
+
     WooPosDialogWrapper(
         isVisible = isVisible,
         onDismissRequest = onDismissRequest,
@@ -141,7 +151,10 @@ fun WooPosScanningSetupDialog(
                     is ScanningSetupStep.PairOnYourDevice -> BarcodeStepContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
+                        onOpenBluetoothSettings = {
+                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnOpenBluetoothSettings)
+                        }
                     )
 
                     is ScanningSetupStep.TestYourScanner -> BarcodeStepContent(
@@ -296,6 +309,7 @@ private fun BarcodeStepContent(
     step: ScanningSetupStep,
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
+    onOpenBluetoothSettings: (() -> Unit)? = null,
 ) {
     val title: String
     val message: String
@@ -355,6 +369,16 @@ private fun BarcodeStepContent(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
+
+        if (step is ScanningSetupStep.PairOnYourDevice && onOpenBluetoothSettings != null) {
+            WooPosOutlinedButton(
+                text = step.bluetoothSettingsButtonText,
+                onClick = onOpenBluetoothSettings,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding()),
+            )
+        }
 
         Box(
             modifier = Modifier

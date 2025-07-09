@@ -66,6 +66,7 @@ data class WooPosScanningSetupState(
             val instructionText: String,
             val primaryButtonText: String,
             val secondaryButtonText: String,
+            val bluetoothSettingsButtonText: String,
         ) : ScanningSetupStep()
 
         @Parcelize
