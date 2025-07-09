@@ -174,7 +174,6 @@ private fun Dialogs(
     dialogState: WooPosHomeState.DialogState,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
-    // Always render all dialogs but control visibility for animations
     WooPosProductInfoDialog(
         state = WooPosHomeState.DialogState.ProductsInfoDialog,
         isVisible = dialogState is WooPosHomeState.DialogState.ProductsInfoDialog,
