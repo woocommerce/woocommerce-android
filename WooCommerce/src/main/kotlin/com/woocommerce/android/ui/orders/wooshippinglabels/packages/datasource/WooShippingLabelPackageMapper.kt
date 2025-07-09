@@ -2,25 +2,28 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource
 
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CarrierPackageGroupDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CarrierPredefinedPackagesDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CustomPackageDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.PackageCreationResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.PackageResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.PackageStoreOptionsDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.SavedPackageInfoDTO
 import javax.inject.Inject
 
 class WooShippingLabelPackageMapper @Inject constructor() {
     operator fun invoke(response: PackageResponse): StorePackagesDAO {
-        val savedPackagesResponse = response.packages?.saved?.custom ?: emptyList()
+        val savedPackageInfoDTO = response.packages?.saved
         val storeOptionsResponse = response.storeOptions ?: PackageStoreOptionsDTO()
+        val carrierPackages = mapCarrierPackages(
+            response.storeOptions,
+            response.packages?.predefined,
+            response.packages?.saved?.predefined
+        )
 
         return StorePackagesDAO(
             storeOptions = mapStoreOptions(storeOptionsResponse),
-            savedPackages = mapSavedPackages(savedPackagesResponse, response.storeOptions),
-            carrierPackages = mapCarrierPackages(
-                response.storeOptions,
-                response.packages?.predefined,
-                response.packages?.saved?.predefined
-            )
+            savedPackages = savedPackageInfoDTO?.let {
+                mapSavedPackages(it, response.storeOptions, carrierPackages)
+            } ?: emptyList(),
+            carrierPackages = carrierPackages
         )
     }
 
@@ -42,10 +45,20 @@ class WooShippingLabelPackageMapper @Inject constructor() {
     }
 
     private fun mapSavedPackages(
-        savedResponse: List<CustomPackageDTO>,
-        storeOptions: PackageStoreOptionsDTO?
+        savedPackageInfoDTO: SavedPackageInfoDTO,
+        storeOptions: PackageStoreOptionsDTO?,
+        carrierPackages: Map<CarrierType, CarrierDAO>?
     ): List<PackageDAO> {
-        return savedResponse.map {
+        val savedCarrierPackages = savedPackageInfoDTO.predefined?.flatMap { (carrierId, packageIds) ->
+            val carrier = CarrierType.fromId(carrierId)
+            val allPackagesForCarrier = carrierPackages?.get(carrier)
+                ?.packageGroup
+                ?.flatMap { it.packages }
+
+            packageIds.mapNotNull { packageId -> allPackagesForCarrier?.find { it.id == packageId } }
+        } ?: emptyList()
+
+        val savedCustomPackages = savedPackageInfoDTO.custom?.map {
             PackageDAO(
                 id = it.id.orEmpty(),
                 name = it.name.orEmpty(),
@@ -56,7 +69,8 @@ class WooShippingLabelPackageMapper @Inject constructor() {
                 weightUnit = storeOptions?.weightUnit.orEmpty(),
                 saved = true
             )
-        }
+        }.orEmpty()
+        return savedCarrierPackages + savedCustomPackages
     }
 
     private fun mapCarrierPackages(
