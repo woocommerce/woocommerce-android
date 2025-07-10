@@ -773,6 +773,70 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when onPurchaseShippingLabel succeed then track purchase_success`() = testBlocking {
+        val purchasedLabel = shippingLabelModel.copy(status = PURCHASED)
+        whenever(
+            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.success(
+            PurchasedLabelData(
+                labels = listOf(purchasedLabel),
+                origin = emptyMap(),
+                destination = emptyMap(),
+                rates = emptyMap()
+            )
+        )
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = (
+            sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        verify(analyticsTracker).track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
+    }
+
+    @Test
+    fun `when onPurchaseShippingLabel fails then track purchase_failed`() = testBlocking {
+        val error = "Random error"
+        whenever(
+            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.failure(Exception(error))
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = (
+            sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.WCS_PURCHASE_STEP,
+            mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to error)
+        )
+    }
+
+    @Test
     fun `when the view model is created, then get store options from the local preferences and update settings on background`() =
         testBlocking {
             whenever(observeAccountSettings()) doReturn flowOf(null, defaultAccountSettings)
