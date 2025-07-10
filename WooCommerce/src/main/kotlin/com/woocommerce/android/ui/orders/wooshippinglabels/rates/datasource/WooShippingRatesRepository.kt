@@ -8,8 +8,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHa
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsItemDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.PackageDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.PackageDTO.CommonPackageDTO
@@ -20,6 +20,7 @@ import javax.inject.Inject
 class WooShippingRatesRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val shippingRatesMapper: WooShippingRatesDatasourceMapper,
+    private val shippingNetworkingMapper: WooShippingNetworkingMapper,
     private val restClient: WooShippingRatesRestClient
 ) {
     @Suppress("LongParameterList")
@@ -43,14 +44,7 @@ class WooShippingRatesRepository @Inject constructor(
             company = shipFrom.company,
             phone = shipFrom.phone
         )
-        val destination = DestinationAddressDTO(
-            address = shipTo.address1,
-            city = shipTo.city,
-            state = shipTo.state.codeOrRaw,
-            postcode = shipTo.postcode,
-            country = shipTo.country.code,
-            name = "${shipTo.firstName} ${shipTo.lastName}"
-        )
+        val destination = shippingNetworkingMapper.toDestinationAddressDTO(shipTo)
         val packageDTO = createPackageDTO(
             selectedPackage = selectedPackage,
             weight = weight,

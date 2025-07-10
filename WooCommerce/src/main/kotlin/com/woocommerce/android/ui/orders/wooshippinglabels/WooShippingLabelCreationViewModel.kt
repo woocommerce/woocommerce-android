@@ -275,9 +275,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) { order, shipments, selectedIndex ->
             Pair(order, shipments[selectedIndex].label?.destinationAddress)
         }.collectLatest { (order, labelDestination) ->
+            val orderShippingEmail = order.shippingAddress.email.ifBlank { order.billingAddress.email }
+
             if (labelDestination == null) {
                 val defaultDestination = DestinationShippingAddress(
-                    address = order.shippingAddress.copy(email = order.billingAddress.email),
+                    address = order.shippingAddress.copy(email = orderShippingEmail),
                     isVerified = false
                 )
 
@@ -285,13 +287,20 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
                 if (addressValidationHelper.isMissingDestinationAddress(order.shippingAddress).not()) {
                     verifyDestinationAddress(order.id).fold(
-                        onSuccess = { destinationAddress.value = it },
+                        onSuccess = {
+                            destinationAddress.value = it.copy(
+                                address = it.address.copy(email = orderShippingEmail)
+                            )
+                        },
                         onFailure = { }
                     )
                 }
             } else {
                 // Using stored destination address for purchased labels
-                destinationAddress.value = DestinationShippingAddress(address = labelDestination, isVerified = true)
+                destinationAddress.value = DestinationShippingAddress(
+                    address = labelDestination.copy(email = orderShippingEmail),
+                    isVerified = true
+                )
             }
         }
     }

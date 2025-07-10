@@ -908,7 +908,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabelModel> {
         if (isRevampWooShippingEnabled) {
-            configDataStore.getShippingLabels(navArgs.orderId).first()
+            configDataStore.getPurchasedLabels(navArgs.orderId).first()
         } else {
             orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
                 .map { it.toShippingLabelModel() }
