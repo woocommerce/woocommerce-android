@@ -460,11 +460,12 @@ private fun CreateShippingCards(
     Column {
         val isExpanded = remember { mutableStateOf(false) }
 
-        if (shipmentUI.purchased) {
+        if (shipmentUI.purchased && shipmentUI.shipmentPrintLabelUI != null) {
             PrintShippingLabelSection(
                 status = shipmentUI.status,
-                isCustomsFormAvailable = shipmentUI.isCustomsFormAvailable,
-                isRefundAvailable = shipmentUI.isRefundAvailable,
+                isCustomsFormAvailable = shipmentUI.shipmentPrintLabelUI.isCustomsFormAvailable,
+                isRefundAvailable = shipmentUI.shipmentPrintLabelUI.isRefundAvailable,
+                availablePaperSizes = shipmentUI.shipmentPrintLabelUI.availablePrintSizes,
                 selectedLabelPaperSizeOption = uiState.paperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
                 onPrintShippingLabelClicked = onPrintShippingLabelClicked,
@@ -842,6 +843,7 @@ private fun WooShippingLabelCreationScreenPreview() {
                     hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
                     shippingRatesState = ShippingLabelSampleData.getShippingRatesSection(),
                     shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
+                    shipmentPrintLabelUI = ShippingLabelSampleData.getShipmentPrintLabelUI(),
                 )
             ),
             shouldShowSplitShipmentButton = true,

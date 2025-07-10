@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHa
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.ShippingRatesState
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel.Companion.SINGLE_QUANTITY
@@ -69,8 +70,11 @@ fun List<ShippableItemModel>.toUIModel(
         shipmentCostUI = shipmentCostUI,
         purchaseState = shipmentUIModel.purchaseState,
         status = shipmentUIModel.label?.status ?: ShippingLabelStatus.UNKNOWN,
-        isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true,
-        isCustomsFormAvailable = shipmentUIModel.label?.commercialInvoiceUrl.isNotNullOrEmpty()
+        shipmentPrintLabelUI = ShipmentPrintLabelUI(
+            availablePrintSizes = getPaperSizes(shipmentUIModel.label?.originAddress?.country?.code),
+            isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true,
+            isCustomsFormAvailable = shipmentUIModel.label?.commercialInvoiceUrl.isNotNullOrEmpty()
+        ),
     )
 }
 
@@ -191,3 +195,10 @@ private fun getShipmentCostUI(
         else -> null
     }
 }
+
+private fun getPaperSizes(countryCode: String?): List<WooShippingLabelPaperSize> =
+    if (countryCode.isNullOrEmpty() || countryCode.uppercase() in listOf("US", "CA", "MX", "DO")) {
+        WooShippingLabelPaperSize.entries.minus(WooShippingLabelPaperSize.A4)
+    } else {
+        WooShippingLabelPaperSize.entries
+    }
