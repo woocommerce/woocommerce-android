@@ -6,6 +6,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +49,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -56,6 +59,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
@@ -104,6 +108,16 @@ fun WooPosScanningSetupDialog(
                         onViewDocumentation = {
                             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnViewDocumentation)
                         }
+                    )
+
+                    is ScanningSetupStep.DeviceSelection -> DeviceSelectionContent(
+                        step = step,
+                        selectedDevice = state.selectedDevice,
+                        onDeviceSelected = { device ->
+                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(device))
+                        },
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
                     is ScanningSetupStep.Introduction -> IntroductionContent(
@@ -232,22 +246,12 @@ private fun IntroductionContent(
             modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
-        ) {
-            WooPosOutlinedButton(
-                onClick = onSecondaryClick,
-                text = step.secondaryButtonText,
-                modifier = Modifier.weight(1f)
-            )
-
-            WooPosButton(
-                onClick = onPrimaryClick,
-                text = step.primaryButtonText,
-                modifier = Modifier.weight(1f)
-            )
-        }
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
     }
 }
 
@@ -278,22 +282,12 @@ private fun BluetoothWarningContent(
             modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
-        ) {
-            WooPosOutlinedButton(
-                onClick = onSecondaryClick,
-                text = step.secondaryButtonText,
-                modifier = Modifier.weight(1f)
-            )
-
-            WooPosButton(
-                onClick = onPrimaryClick,
-                text = step.primaryButtonText,
-                modifier = Modifier.weight(1f)
-            )
-        }
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
     }
 }
 
@@ -388,22 +382,12 @@ private fun BarcodeStepContent(
             )
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
-        ) {
-            WooPosOutlinedButton(
-                onClick = onSecondaryClick,
-                text = secondaryText,
-                modifier = Modifier.weight(1f)
-            )
-
-            WooPosButton(
-                onClick = onPrimaryClick,
-                text = primaryText,
-                modifier = Modifier.weight(1f)
-            )
-        }
+        SetupButtonsRow(
+            primaryButtonText = primaryText,
+            secondaryButtonText = secondaryText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
     }
 }
 
@@ -441,6 +425,114 @@ private fun SetupCompleteContent(
             onClick = onDone,
             text = step.primaryButtonText,
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun DeviceSelectionContent(
+    step: ScanningSetupStep.DeviceSelection,
+    selectedDevice: BarcodeReaderDevice?,
+    onDeviceSelected: (BarcodeReaderDevice) -> Unit,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = "Select a model from the list:",
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
+        ) {
+            step.devices.forEach { device ->
+                DeviceSelectionItem(
+                    device = device,
+                    isSelected = selectedDevice == device,
+                    onClick = { onDeviceSelected(device) }
+                )
+            }
+        }
+
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick,
+            primaryButtonState = if (selectedDevice != null) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
+        )
+    }
+}
+
+@Composable
+private fun DeviceSelectionItem(
+    device: BarcodeReaderDevice,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+            .border(
+                width = if (isSelected) 4.dp else 2.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
+            )
+            .clickable { onClick() }
+            .padding(WooPosSpacing.Large.value.toAdaptivePadding()),
+        contentAlignment = Alignment.Center
+    ) {
+        WooPosText(
+            text = device.displayName,
+            style = WooPosTypography.BodyLarge,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
+private fun SetupButtonsRow(
+    primaryButtonText: String,
+    secondaryButtonText: String,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+    primaryButtonState: WooPosButtonState = WooPosButtonState.ENABLED,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
+    ) {
+        WooPosOutlinedButton(
+            onClick = onSecondaryClick,
+            text = secondaryButtonText,
+            modifier = Modifier.weight(1f)
+        )
+
+        WooPosButton(
+            onClick = onPrimaryClick,
+            text = primaryButtonText,
+            modifier = Modifier.weight(1f),
+            state = primaryButtonState
         )
     }
 }
