@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.components
 
 import android.content.res.Configuration
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +45,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithB
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 
 @Composable
 fun PrintShippingLabelSection(
@@ -344,10 +344,4 @@ private fun ShippingLabelLinkPreview() {
             showIcon = true
         )
     }
-}
-
-enum class WooShippingLabelPaperSize(@StringRes val stringResource: Int) {
-    A4(R.string.shipping_label_paper_size_a4),
-    LABEL(R.string.shipping_label_paper_size_label),
-    LETTER(R.string.shipping_label_paper_size_letter)
 }
