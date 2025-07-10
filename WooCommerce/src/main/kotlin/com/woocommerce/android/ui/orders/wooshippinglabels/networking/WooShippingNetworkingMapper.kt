@@ -129,7 +129,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             phone = destinationAddressDTO.phone.orEmpty(),
             address2 = destinationAddressDTO.address2.orEmpty(),
             email = "", // We set the email later from the order details
-            lastName =lastName
+            lastName = lastName
         )
     }
 
