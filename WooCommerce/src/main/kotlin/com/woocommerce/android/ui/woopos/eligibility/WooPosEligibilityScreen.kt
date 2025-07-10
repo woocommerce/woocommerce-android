@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,14 @@ fun WooPosEligibilityScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     viewModel: WooPosEligibilityViewModel = hiltViewModel()
 ) {
+    val retryState = viewModel.retryState.collectAsState().value
+
+    LaunchedEffect(retryState) {
+        if (retryState == WooPosEligibilityRetryState.Eligible) {
+            onNavigationEvent(WooPosNavigationEvent.OpenHomeFromSplash)
+        }
+    }
+
     BackHandler {
         onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
     }
@@ -75,12 +84,14 @@ fun WooPosEligibilityScreen(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
-        val isRetryLoading = viewModel.isRetryLoading.collectAsState().value
-
         WooPosButton(
             text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
             onClick = { viewModel.retryEligibilityCheck() },
-            state = if (isRetryLoading) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
+            state = if (retryState == WooPosEligibilityRetryState.Loading) {
+                WooPosButtonState.LOADING
+            } else {
+                WooPosButtonState.ENABLED
+            },
             modifier = Modifier.size(width = 366.dp, height = 80.dp)
         )
 
