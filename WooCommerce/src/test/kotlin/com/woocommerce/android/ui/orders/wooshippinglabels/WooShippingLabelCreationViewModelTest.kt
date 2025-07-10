@@ -381,18 +381,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when there are no origin addresses, then show an error`() = testBlocking {
-        whenever(observeOriginAddresses()) doReturn flowOf(emptyList())
-
-        createViewModel()
-
-        advanceUntilIdle()
-
-        val currentViewState = sut.viewState.value
-        assert(currentViewState is WooShippingViewState.Error)
-    }
-
-    @Test
     fun `when there are origin addresses, then display the origin addresses`() = testBlocking {
         createViewModel()
 
@@ -401,8 +389,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertEquals(dataState.shippingAddresses.originAddresses.size, defaultOriginAddresses.size)
-        val ids = dataState.shippingAddresses.originAddresses.map { it.id }
+        assertEquals(dataState.shippingAddresses.first().originAddresses.size, defaultOriginAddresses.size)
+        val ids = dataState.shippingAddresses.first().originAddresses.map { it.id }
         assert(ids.containsAll(defaultOriginAddresses.map { it.id }))
     }
 

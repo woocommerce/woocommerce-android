@@ -153,8 +153,8 @@ fun WooShippingLabelCreationScreen(
     shippingLines: List<ShippingLineSummaryUI>,
     paymentsSectionUI: PaymentsSectionUI,
     purchaseSectionUI: PurchaseSectionUI,
-    shippingAddresses: WooShippingAddresses,
-    onSelectedShipmentChanged: (index: Int) -> Unit,
+    shippingAddresses: List<WooShippingAddresses>,
+    onSelectedShipmentChanged: (Int) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onSelectPackageClick: () -> Unit,
@@ -255,8 +255,8 @@ private fun LabelCreationScreenWithBottomSheet(
     paymentsSectionUI: PaymentsSectionUI,
     purchaseSectionUI: PurchaseSectionUI,
     onSelectPackageClick: () -> Unit,
-    shippingAddresses: WooShippingAddresses,
-    onSelectedShipmentChanged: (index: Int) -> Unit,
+    shippingAddresses: List<WooShippingAddresses>,
+    onSelectedShipmentChanged: (Int) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
@@ -284,6 +284,7 @@ private fun LabelCreationScreenWithBottomSheet(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val selectedShipment = shipmentUIList[uiState.selectedIndex]
+    val selectedAddress = shippingAddresses[uiState.selectedIndex]
 
     var bottomSheetPeekHeight by remember { mutableStateOf(0.dp) }
 
@@ -306,7 +307,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 totalItems = totalItems,
                 totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
-                shippingAddresses = shippingAddresses,
+                shippingAddresses = selectedAddress,
                 shipmentCostUI = selectedShipment.shipmentCostUI,
                 paymentsSectionUI = paymentsSectionUI,
                 purchaseSectionUI = purchaseSectionUI,
@@ -853,10 +854,12 @@ private fun WooShippingLabelCreationScreenPreview() {
             purchaseSectionUI = ShippingLabelSampleData.getPurchaseSection(),
             modifier = Modifier.fillMaxSize(),
             onSelectPackageClick = {},
-            shippingAddresses = WooShippingAddresses(
-                shipFrom = ShippingLabelSampleData.getShipFrom(),
-                shipTo = ShippingLabelSampleData.getShipTo(),
-                originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
+            shippingAddresses = listOf(
+                WooShippingAddresses(
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
+                )
             ),
             onSelectedShipmentChanged = {},
             onOriginAddressSelected = {},
