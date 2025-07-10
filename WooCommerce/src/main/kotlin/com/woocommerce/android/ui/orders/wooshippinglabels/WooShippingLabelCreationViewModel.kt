@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippin
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.domain.DownloadAndPrintInvoiceUseCase
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
@@ -69,6 +70,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -119,8 +121,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val shouldRequireITN: ShouldRequireITN,
     private val fetchShippingLabelFile: FetchShippingLabelFile,
     private val observeShippingLabelStatus: ObserveShippingLabelStatus,
+    private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
+
+    private var printJob: Job? = null
 
     var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
 
@@ -977,9 +982,29 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    fun onPrintCustomsClicked() {
+    fun onPrintCustomsClicked(storageDirectory: File) {
         val commercialInvoiceUrl = shipments.value[selectedShipmentIndex].label?.commercialInvoiceUrl ?: return
-        triggerEvent(OpenUrl(commercialInvoiceUrl))
+        downloadAndPrintInvoice(commercialInvoiceUrl, storageDirectory)
+    }
+
+    private fun downloadAndPrintInvoice(invoiceUrl: String, storageDirectory: File) {
+        printJob?.cancel()
+        printJob = launch {
+            val fallbackViewState = viewState.value
+            viewState.value = WooShippingViewState.Loading(R.string.shipping_label_print_screen_title)
+            try {
+                downloadAndPrintInvoiceUseCase(invoiceUrl, storageDirectory)
+                    .onSuccess { file ->
+                        triggerEvent(PrintCustomsForm(file))
+                    }
+                    .onFailure {
+                        WooLog.e(WooLog.T.SHIPPING_LABELS, it)
+                        triggerEvent(Event.ShowSnackbar(R.string.shipping_label_print_customs_form_download_failed))
+                    }
+            } finally {
+                viewState.value = fallbackViewState
+            }
+        }
     }
 
     fun onLearnMoreClicked() {
@@ -1160,6 +1185,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class NavigateToUPSDAPTermsOfService(val originAddress: OriginShippingAddress) : Event()
 
     object OpenLearnMoreScreen : Event()
+
+    data class PrintCustomsForm(val file: File) : Event()
 
     enum class Carrier(val pickupUrl: String) {
         USPS("https://tools.usps.com/schedule-pickup-steps.htm"),
