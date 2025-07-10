@@ -204,6 +204,7 @@ class AnalyticsTracker private constructor(
         const val KEY_STATUS = "status"
         const val KEY_PRODUCT = "product"
         const val KEY_CUSTOMER = "customer"
+        const val KEY_SALES_CHANNEL = "sales_channel"
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_TOTAL_COMPLETED_ORDERS = "total_completed_orders"
         const val KEY_SEARCH = "search"
