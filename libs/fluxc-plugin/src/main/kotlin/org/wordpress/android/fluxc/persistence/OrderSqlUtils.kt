@@ -2,63 +2,13 @@ package org.wordpress.android.fluxc.persistence
 
 import com.wellsql.generated.WCOrderShipmentTrackingModelTable
 import com.wellsql.generated.WCOrderStatusModelTable
-import com.wellsql.generated.WCOrderSummaryModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 
 object OrderSqlUtils {
-    private const val CHUNK_SIZE = 200
-
-    fun insertOrUpdateOrderSummaries(orderSummaries: List<WCOrderSummaryModel>) {
-        WellSql.insert(orderSummaries).asSingleTransaction(true).execute()
-    }
-
-    /**
-     * Returns a list of [WCOrderSummaryModel]s that match the [remoteOrderIds] provided. This method uses
-     * Kotlin's chunked functionality to ensure we don't crash with the "SQLiteException: too many SQL variables"
-     * exception.
-     */
-    fun getOrderSummariesForRemoteIds(site: SiteModel, remoteOrderIds: List<Long>): List<WCOrderSummaryModel> {
-        if (remoteOrderIds.isEmpty()) {
-            return emptyList()
-        }
-
-        return remoteOrderIds.chunked(CHUNK_SIZE).map { doGetOrderSummariesForRemoteIds(site, it) }.flatten()
-    }
-
-    private fun doGetOrderSummariesForRemoteIds(
-        site: SiteModel,
-        orderIds: List<Long>
-    ): List<WCOrderSummaryModel> {
-        return WellSql.select(WCOrderSummaryModel::class.java)
-                .where()
-                .equals(WCOrderSummaryModelTable.LOCAL_SITE_ID, site.id)
-                .isIn(WCOrderSummaryModelTable.REMOTE_ORDER_ID, orderIds)
-                .endWhere()
-                .asModel
-    }
-
-    fun deleteOrderSummariesForSite(site: SiteModel) {
-        WellSql.delete(WCOrderSummaryModel::class.java)
-                .where()
-                .equals(WCOrderSummaryModelTable.LOCAL_SITE_ID, site.id)
-                .endWhere()
-                .execute()
-    }
-
-    fun deleteOrderSummaryById(site: SiteModel, orderId: Long) {
-        WellSql.delete(WCOrderSummaryModel::class.java)
-                .where()
-                .equals(WCOrderSummaryModelTable.LOCAL_SITE_ID, site.id)
-                .equals(WCOrderSummaryModelTable.REMOTE_ORDER_ID, orderId)
-                .endWhere()
-                .execute()
-    }
-
     fun insertOrUpdateOrderStatusOption(orderStatus: WCOrderStatusModel): Int {
         val result = WellSql.select(WCOrderStatusModel::class.java)
                 .where().beginGroup()

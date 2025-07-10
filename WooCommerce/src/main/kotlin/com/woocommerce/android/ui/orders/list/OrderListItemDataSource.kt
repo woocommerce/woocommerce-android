@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemU
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -111,20 +112,22 @@ class OrderListItemDataSource @Inject constructor(
                 it
             }
         }
-        val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, orderIds)
-            .let { summariesByRemoteId ->
-                val summaries = remoteItemIds.mapNotNull { summariesByRemoteId[it] }
+        val orderSummaries = runBlocking {
+            orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, orderIds)
+                .let { summariesByRemoteId ->
+                    val summaries = remoteItemIds.mapNotNull { summariesByRemoteId[it] }
 
-                if (!networkStatus.isConnected()) {
-                    // The network is not connected so remove any order summaries from the list where
-                    // a matching order has not yet been downloaded. This prevents the user from seeing
-                    // a "loading" view for that item indefinitely.
-                    val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, orderIds)
-                    summaries.filter { cachedOrders.containsKey(it.orderId) }
-                } else {
-                    summaries
+                    if (!networkStatus.isConnected()) {
+                        // The network is not connected so remove any order summaries from the list where
+                        // a matching order has not yet been downloaded. This prevents the user from seeing
+                        // a "loading" view for that item indefinitely.
+                        val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, orderIds)
+                        summaries.filter { cachedOrders.containsKey(it.orderId.value) }
+                    } else {
+                        summaries
+                    }
                 }
-            }
+        }
 
         val listFuture = mutableListOf<OrderIdentifier>()
         val listToday = mutableListOf<OrderIdentifier>()
@@ -133,7 +136,7 @@ class OrderListItemDataSource @Inject constructor(
         val listWeek = mutableListOf<OrderIdentifier>()
         val listMonth = mutableListOf<OrderIdentifier>()
         val mapToRemoteOrderIdentifier = { summary: WCOrderSummaryModel ->
-            OrderIdentifier(summary.orderId)
+            OrderIdentifier(summary.orderId.value)
         }
 
         val currentSiteDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
