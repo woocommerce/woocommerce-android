@@ -63,7 +63,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
     }
 
@@ -206,7 +207,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onSavedPackageSelected(package1, true)
@@ -259,7 +261,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onCarrierPackageSelected(package1, true)
@@ -343,7 +346,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
 
         sut.viewState.observeForever { lastViewState = it }
@@ -399,7 +403,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 resourceProvider,
                 fetchPackages,
                 updateSavedCarrierPackages,
-                packageRepository
+                packageRepository,
+                mock()
             )
             advanceUntilIdle()
 
@@ -460,7 +465,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         advanceUntilIdle()
 
@@ -508,7 +514,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         advanceUntilIdle()
 
@@ -555,7 +562,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         advanceUntilIdle()
 

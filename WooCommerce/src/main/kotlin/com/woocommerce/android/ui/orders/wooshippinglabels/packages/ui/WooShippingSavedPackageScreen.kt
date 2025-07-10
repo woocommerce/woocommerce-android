@@ -198,7 +198,7 @@ fun WooShippingSavedPackageScreenLoadingPreview() {
 fun WooShippingSavedPackageScreenErrorPreview() {
     WooThemeWithBackground {
         WooShippingSavedPackageScreen(
-            packageState = PackagesState.Error,
+            packageState = PackagesState.Error(),
             isAddPackageEnabled = false,
             onAddPackageClick = {},
             onSavedPackageSelected = { _, _ -> },
