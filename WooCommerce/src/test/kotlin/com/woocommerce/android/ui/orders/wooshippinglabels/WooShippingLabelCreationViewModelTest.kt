@@ -5,6 +5,8 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
@@ -687,6 +689,62 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
             assertThat(dataState.shipmentUIList[0].customsState).isEqualTo(CustomsState.ItnMissing)
         }
+
+    @Test
+    fun `when shipping rates loaded, then track loading_success event`() = testBlocking {
+        createViewModel()
+
+        sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }
+
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "loading_success"))
+    }
+
+    @Test
+    fun `when shipping rates fail, then track loading_failed event`() = testBlocking {
+        val error = "Random error"
+        whenever(
+            getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.failure(Exception(error))
+
+        createViewModel()
+
+        sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }
+
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.WCS_RATE_SELECTION_STEP,
+            mapOf(KEY_STATE to "loading_failed", KEY_ERROR to error)
+        )
+    }
+
+    @Test
+    fun `when shipping rate selected, then track selected event`() = testBlocking {
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = (
+            sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
+    }
 
     @Test
     fun `when onPurchaseShippingLabel fails then show a snackbar`() = testBlocking {
