@@ -105,7 +105,7 @@ fun NavGraphBuilder.eligibilityScreen(
     ) { entry ->
         val reasonName = entry.arguments?.getString(ELIGIBILITY_REASON_KEY)
         val reason = reasonName?.let { WooPosLaunchability.NonLaunchabilityReason.valueOf(it) }
-            ?: WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable // Fallback if missing
+            ?: WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
 
         WooPosEligibilityScreen(
             reason = reason,
