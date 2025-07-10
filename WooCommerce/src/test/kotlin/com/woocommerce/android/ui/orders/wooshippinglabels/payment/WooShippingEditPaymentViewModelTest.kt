@@ -87,7 +87,8 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
             fetchAccountSettings = fetchAccountSettings,
             updatePaymentOptions = updatePaymentOptions,
             webViewAuthenticator = webViewAuthenticator,
-            userAgent = userAgent
+            userAgent = userAgent,
+            tracker = mock()
         )
     }
 
