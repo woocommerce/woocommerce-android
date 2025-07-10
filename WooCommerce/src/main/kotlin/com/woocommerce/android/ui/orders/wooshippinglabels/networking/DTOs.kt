@@ -247,10 +247,10 @@ private class ShipmentMapDeserializer : JsonDeserializer<ShipmentMap> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ShipmentMap {
         // Handle string-encoded JSON or direct JSON object
         val jsonObject = if (json.isJsonPrimitive && json.asJsonPrimitive.isString) {
-            JsonParser.parseString(json.asString).asJsonObject
+            JsonParser.parseString(json.asString)
         } else {
-            json.asJsonObject
-        }
+            json
+        }.asJsonObject
 
         val mapType = object : TypeToken<ShipmentMap>() {}.type
         return Gson().fromJson(jsonObject, mapType)
