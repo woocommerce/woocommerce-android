@@ -88,8 +88,12 @@ data class ShippingLabelDataDTO(
 )
 
 data class StoredDataDTO(
-    @SerializedName("selected_origin") val selectedOrigin: Map<String, OriginAddressDTO>,
-    @SerializedName("selected_destination") val selectedDestination: Map<String, DestinationAddressDTO>,
+    @SerializedName("selected_origin")
+    @JsonAdapter(MapOrEmptyMapDeserializer::class)
+    val selectedOrigin: Map<String, OriginAddressDTO>,
+    @SerializedName("selected_destination")
+    @JsonAdapter(MapOrEmptyMapDeserializer::class)
+    val selectedDestination: Map<String, DestinationAddressDTO>,
 )
 
 data class Item(@SerializedName("id") val id: Long?, @SerializedName("subItems") val subItems: List<String>?)
@@ -222,6 +226,22 @@ data class CustomsItemDTO(
 )
 
 data class RefundLabelResponseDTO(val success: Boolean)
+
+private class MapOrEmptyMapDeserializer : JsonDeserializer<Map<*, *>?> {
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type,
+        context: JsonDeserializationContext
+    ): Map<*, *> = try {
+        if (json.isJsonObject) {
+            context.deserialize(json, typeOfT)
+        } else {
+            emptyMap<Any, Any>()
+        }
+    } catch (_: Exception) {
+        emptyMap<Any, Any>()
+    }
+}
 
 private class ShipmentMapDeserializer : JsonDeserializer<ShipmentMap> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ShipmentMap {
