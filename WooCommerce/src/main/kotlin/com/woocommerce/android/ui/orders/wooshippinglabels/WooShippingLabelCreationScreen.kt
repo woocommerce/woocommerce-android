@@ -32,7 +32,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
@@ -49,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -97,6 +97,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
         }
 
         is WooShippingLabelCreationViewModel.WooShippingViewState.DataState -> {
+            val context = LocalContext.current
             WooShippingLabelCreationScreen(
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 shipmentUIList = viewState.shipmentUIList,
@@ -127,7 +128,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onTrackShipmentClicked = viewModel::onTrackShipmentClicked,
                 onSchedulePickUpClicked = viewModel::onSchedulePickUpClicked,
                 onRefundClicked = viewModel::onRefundClicked,
-                onPrintCustomsClicked = viewModel::onPrintCustomsClicked,
+                onPrintCustomsClicked = { viewModel.onPrintCustomsClicked(context.filesDir) },
                 onLearnMoreClicked = viewModel::onLearnMoreClicked,
             )
         }
@@ -754,13 +755,7 @@ private fun PackageSelectionAvailableCard(
                     )
                 }
 
-                if (packageData.isPredefined) {
-                    Icon(
-                        tint = colorResource(id = R.color.woo_yellow_20),
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = "Star",
-                    )
-                } else {
+                if (packageData.isStarred) {
                     Icon(
                         tint = colorResource(id = R.color.color_on_surface_disabled),
                         imageVector = Icons.Outlined.Star,

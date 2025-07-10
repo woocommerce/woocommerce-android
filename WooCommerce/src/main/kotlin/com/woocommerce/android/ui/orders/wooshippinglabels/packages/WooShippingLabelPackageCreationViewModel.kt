@@ -6,7 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPredefinedPackagesFromStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPackagesFromStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CustomPackageCreationRequestData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
@@ -31,7 +31,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
-    private val fetchPredefinedPackages: FetchPredefinedPackagesFromStore,
+    private val fetchPackages: FetchPackagesFromStore,
     private val updateSavedCarrierPackages: UpdateSavedCarrierPackages,
     private val packageRepository: WooShippingLabelPackageRepository
 ) : ScopedViewModel(savedState) {
@@ -43,9 +43,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     private val storeOptions: StoreOptionsForPackages
-        get() = _viewState.value.predefinedPackagesData
-            ?.storeOptions
-            ?: StoreOptionsForPackages.DEFAULT
+        get() = _viewState.value.packagesData?.storeOptions ?: StoreOptionsForPackages.DEFAULT
 
     private val pageTabs
         get() = listOf(
@@ -69,32 +67,50 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
     private fun loadData(): Job {
         return launch {
-            fetchPredefinedPackages().let { response ->
-                _viewState.update { viewState -> viewState.copy(predefinedPackagesState = response) }
+            fetchPackages().let { response ->
+                _viewState.update { viewState -> viewState.copy(packagesState = response) }
             }
         }
     }
 
     fun onCarrierPackageSelected(selectedPackage: PackageData, isSelected: Boolean) {
         _viewState.update { viewState ->
-            val predefinedPackages = viewState.predefinedPackagesData
-            predefinedPackages?.carrierPackages
+            val packages = viewState.packagesData
+            packages?.carrierPackages
                 ?.map { updateCarrierPackagesSelection(it, selectedPackage, isSelected) }
                 ?.let {
-                    viewState.copy(predefinedPackagesState = predefinedPackages.copy(carrierPackages = it.toMap()))
+                    viewState.copy(packagesState = packages.copy(carrierPackages = it.toMap()))
                 } ?: _viewState.value
         }
     }
 
     fun onSavedPackageSelected(selectedPackage: PackageData, isSelected: Boolean) {
         _viewState.update { viewState ->
-            val predefinedPackages = viewState.predefinedPackagesData
-            predefinedPackages?.savedPackages
+            val packages = viewState.packagesData
+            packages?.savedPackages
                 ?.map { it.copy(isSelected = false) }
                 ?.toMutableList()
                 ?.safelyUpdate(selectedPackage, selectedPackage.copy(isSelected = isSelected))
-                ?.let { viewState.copy(predefinedPackagesState = predefinedPackages.copy(savedPackages = it)) }
+                ?.let { viewState.copy(packagesState = packages.copy(savedPackages = it)) }
                 ?: _viewState.value
+        }
+    }
+
+    fun onSavedPackageRemoved(removedPackage: PackageData) {
+        _viewState.update { viewState ->
+            val packagesState = viewState.packagesData ?: return@update viewState
+            viewState.copy(
+                packagesState = packagesState.copy(
+                    savedPackages = packagesState.savedPackages.filterNot { it.id == removedPackage.id }
+                )
+            )
+        }
+        launch {
+            updateSavedCarrierPackages(
+                savePackage = false,
+                packageId = removedPackage.id,
+                isUserDefined = removedPackage.isUserDefined,
+            )
         }
     }
 
@@ -107,7 +123,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     }
 
     fun onAddCarrierPackageClick() {
-        _viewState.value.predefinedPackagesData?.carrierPackages
+        _viewState.value.packagesData?.carrierPackages
             ?.asSequence()
             ?.flatMap { it.value }
             ?.flatMap { it.packages }
@@ -116,7 +132,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     }
 
     fun onAddSavedPackageClick() {
-        _viewState.value.predefinedPackagesData
+        _viewState.value.packagesData
             ?.savedPackages
             ?.find { it.isSelected }
             ?.let { triggerEvent(PackageSelected(it)) }
@@ -256,8 +272,8 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
     fun onCarrierPackageStarred(packageData: PackageData, isStarred: Boolean) {
         _viewState.update { viewState ->
-            val predefinedPackages = viewState.predefinedPackagesData ?: return@update viewState
-            val updatedCarrierPackages = predefinedPackages.carrierPackages.mapValues { (_, packageGroupList) ->
+            val packages = viewState.packagesData ?: return@update viewState
+            val updatedCarrierPackages = packages.carrierPackages.mapValues { (_, packageGroupList) ->
                 packageGroupList.map { packageGroup ->
                     val updatedPackages = packageGroup.packages.map {
                         when {
@@ -269,14 +285,15 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                 }
             }
             viewState.copy(
-                predefinedPackagesState = predefinedPackages.copy(carrierPackages = updatedCarrierPackages)
+                packagesState = packages.copy(carrierPackages = updatedCarrierPackages)
             )
         }
         launch {
             updateSavedCarrierPackages(
                 savePackage = isStarred,
                 packageId = packageData.id,
-                carrierPackages = _viewState.value.predefinedPackagesData?.carrierPackages ?: emptyMap()
+                isUserDefined = packageData.isUserDefined,
+                carrierPackages = _viewState.value.packagesData?.carrierPackages ?: emptyMap()
             )
         }
     }
@@ -285,21 +302,21 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     data class ViewState(
         val pageTabs: List<PageTab> = emptyList(),
         val customPackageCreationData: CustomPackageCreationData = CustomPackageCreationData.EMPTY,
-        val predefinedPackagesState: PredefinedPackagesState = PredefinedPackagesState.Waiting,
+        val packagesState: PackagesState = PackagesState.Waiting,
     ) : Parcelable {
-        val predefinedPackagesData
-            get() = (predefinedPackagesState as? PredefinedPackagesState.Data)
+        val packagesData
+            get() = (packagesState as? PackagesState.Data)
     }
 
     @Parcelize
-    sealed class PredefinedPackagesState : Parcelable {
-        data object Error : PredefinedPackagesState()
-        data object Waiting : PredefinedPackagesState()
+    sealed class PackagesState : Parcelable {
+        data object Error : PackagesState()
+        data object Waiting : PackagesState()
         data class Data(
             val storeOptions: StoreOptionsForPackages,
             val savedPackages: List<PackageData>,
             val carrierPackages: Map<Carrier, List<CarrierPackageGroup>>
-        ) : PredefinedPackagesState() {
+        ) : PackagesState() {
             val hasCarrierSelection: Boolean
                 get() = carrierPackages.values.flatten().find { group ->
                     group.packages.find { it.isSelected } != null
