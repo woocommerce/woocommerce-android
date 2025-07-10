@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.address
 
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -19,6 +21,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -31,6 +35,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     protected val updateOriginAddress: UpdateOriginAddress = mock()
     protected val updateDestinationAddress: UpdateDestinationAddress = mock()
     protected val getAllCountries: GetAllCountries = mock()
+    protected val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     protected val countries = listOf(
         Location("US", "United States"),
@@ -60,8 +65,24 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             updateOriginAddress = updateOriginAddress,
             updateDestinationAddress = updateDestinationAddress,
             getAllCountries = getAllCountries,
-            analyticsTracker = mock()
+            analyticsTracker = analyticsTracker
         )
+    }
+
+    @Test
+    fun `when viewmodel initializes, then tracks started event`() = testBlocking {
+        val address = Address.EMPTY
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        mockCountries(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(emptyList())
+        Snapshot.withMutableSnapshot {
+            val savedState = createSavedStateHandle(address)
+            createViewModel(savedState)
+        }
+
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(eq(AnalyticsEvent.WCS_EDITING_ADDRESS_STEP), any())
     }
 
     @Test
@@ -412,37 +433,38 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when the country selected changes to a country with states then use the first state from the list`() = testBlocking {
-        val initialCountryCode = "AR"
-        val finalCountryCode = "US"
-        val initialStateCode = "BA"
-        val address = Address.EMPTY.copy(
-            country = AmbiguousLocation.Raw(initialCountryCode).asLocation(),
-            state = AmbiguousLocation.Raw("BA")
-        )
-        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        mockCountries(Result.success(countries))
-        whenever(getStatesByCountryCode.invoke(initialCountryCode)).doReturn(emptyList())
-        whenever(getStatesByCountryCode.invoke(finalCountryCode)).doReturn(states)
-        Snapshot.withMutableSnapshot {
-            val savedState = createSavedStateHandle(address)
-            createViewModel(savedState)
+    fun `when the country selected changes to a country with states then use the first state from the list`() =
+        testBlocking {
+            val initialCountryCode = "AR"
+            val finalCountryCode = "US"
+            val initialStateCode = "BA"
+            val address = Address.EMPTY.copy(
+                country = AmbiguousLocation.Raw(initialCountryCode).asLocation(),
+                state = AmbiguousLocation.Raw("BA")
+            )
+            whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+            mockCountries(Result.success(countries))
+            whenever(getStatesByCountryCode.invoke(initialCountryCode)).doReturn(emptyList())
+            whenever(getStatesByCountryCode.invoke(finalCountryCode)).doReturn(states)
+            Snapshot.withMutableSnapshot {
+                val savedState = createSavedStateHandle(address)
+                createViewModel(savedState)
+            }
+
+            advanceUntilIdle()
+
+            var result = sut.viewState.value
+
+            assertThat(result.shouldUseStatesInput).isTrue
+            assertThat(result.editableAddress.state.code).isEqualTo(initialStateCode)
+
+            sut.onCountryChanged(finalCountryCode)
+
+            result = sut.viewState.value
+
+            assertThat(result.shouldUseStatesInput).isFalse()
+            assertThat(result.editableAddress.state).isEqualTo(states.first())
         }
-
-        advanceUntilIdle()
-
-        var result = sut.viewState.value
-
-        assertThat(result.shouldUseStatesInput).isTrue
-        assertThat(result.editableAddress.state.code).isEqualTo(initialStateCode)
-
-        sut.onCountryChanged(finalCountryCode)
-
-        result = sut.viewState.value
-
-        assertThat(result.shouldUseStatesInput).isFalse()
-        assertThat(result.editableAddress.state).isEqualTo(states.first())
-    }
 
     @Test
     fun `when the country selected changes to initial country then use initial state`() = testBlocking {
@@ -731,6 +753,38 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when normalize address fails, track event error`() = testBlocking {
+        val address = Address(
+            address1 = "Address",
+            address2 = "",
+            city = "Miami",
+            postcode = "",
+            email = "",
+            phone = "",
+            state = AmbiguousLocation.Raw("FL"),
+            country = AmbiguousLocation.Raw("US").asLocation(),
+            firstName = "Name",
+            lastName = "",
+            company = "",
+        )
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        mockCountries(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        whenever(normalizeAddress.invoke(any())).doReturn(Result.failure(Exception("error")))
+        whenever(resourceProvider.getString(any())).doReturn("error")
+        Snapshot.withMutableSnapshot {
+            val savedState = createSavedStateHandle(address)
+            createViewModel(savedState)
+        }
+
+        advanceUntilIdle()
+
+        sut.onNormalizeAddress(sut.viewState.value.editableAddress)
+
+        verify(analyticsTracker, times(2)).track(eq(AnalyticsEvent.WCS_EDITING_ADDRESS_STEP), any())
+    }
+
+    @Test
     fun `when normalize address succeed, display address selection`() = testBlocking {
         val address = Address.EMPTY
         val updatedAddress = EditableAddress(postalCode = InputValue("12345"))
@@ -759,6 +813,33 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
 
         assertThat(result.addressValidationState).isInstanceOf(AddressValidationState.AddressSelection::class.java)
+    }
+
+    @Test
+    fun `when normalize address succeed, track events`() = testBlocking {
+        val address = Address.EMPTY
+        val updatedAddress = EditableAddress(postalCode = InputValue("12345"))
+        val normalizeAddressResponse = AddressNormalizationModel(
+            address = Address.EMPTY,
+            normalizedAddress = Address.EMPTY,
+            isTrivial = true
+        )
+
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        mockCountries(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
+        whenever(resourceProvider.getString(any())).doReturn("error")
+        Snapshot.withMutableSnapshot {
+            val savedState = createSavedStateHandle(address)
+            createViewModel(savedState)
+        }
+
+        advanceUntilIdle()
+
+        sut.onNormalizeAddress(updatedAddress)
+
+        verify(analyticsTracker, times(2)).track(eq(AnalyticsEvent.WCS_EDITING_ADDRESS_STEP), any())
     }
 
     @Test
