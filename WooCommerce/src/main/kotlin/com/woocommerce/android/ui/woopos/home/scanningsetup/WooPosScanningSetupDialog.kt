@@ -56,22 +56,19 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
 @Composable
 fun WooPosScanningSetupDialog(
-    outerState: WooPosHomeState.ScanningSetupDialog,
+    isVisible: Boolean,
     onDismissRequest: () -> Unit,
 ) {
     val viewModel = hiltViewModel<WooPosScanningSetupViewModel>()
     val context = LocalContext.current
 
-    LaunchedEffect(outerState.isVisible) {
-        if (outerState.isVisible) {
-            viewModel.resetToWelcomeState()
-        }
+    LaunchedEffect(isVisible) {
+        viewModel.resetToWelcomeState()
     }
 
     LaunchedEffect(Unit) {
@@ -80,7 +77,7 @@ fun WooPosScanningSetupDialog(
         }
     }
     WooPosDialogWrapper(
-        isVisible = outerState.isVisible,
+        isVisible = isVisible,
         onDismissRequest = onDismissRequest,
         dialogBackgroundContentDescription = "Scanner setup dialog"
     ) {
