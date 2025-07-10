@@ -42,7 +42,8 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
             repository = repository,
             configDataStore = mock(),
             networkStatus = networkStatus,
-            currencyFormatter = mock()
+            currencyFormatter = mock(),
+            tracker = mock()
         )
     }
 
