@@ -40,9 +40,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.util.ChromeCustomTabUtils
-
-private const val WOO_POS_BARCODE_DOC_URL = "https://woocommerce.com/document/barcode-and-qr-code-scanner/"
 
 @Composable
 fun WooPosBarcodeInfoDialog(

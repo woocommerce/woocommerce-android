@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.scanningsetup
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -62,6 +65,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooLog
 
 @Composable
 fun WooPosScanningSetupDialog(
@@ -87,6 +91,18 @@ fun WooPosScanningSetupDialog(
             onShowBarcodeInfoDialog()
         }
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.openBluetoothSettingsEvent.collect {
+            try {
+                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
+            }
+        }
+    }
+
     WooPosDialogWrapper(
         isVisible = isVisible,
         onDismissRequest = onDismissRequest,
@@ -142,10 +158,13 @@ fun WooPosScanningSetupDialog(
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
-                    is ScanningSetupStep.PairOnYourDevice -> BarcodeStepContent(
+                    is ScanningSetupStep.PairOnYourDevice -> PairOnYourDeviceContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
+                        onOpenBluetoothSettings = {
+                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnOpenBluetoothSettings)
+                        }
                     )
 
                     is ScanningSetupStep.TestYourScanner -> BarcodeStepContent(
@@ -389,6 +408,53 @@ private fun BarcodeStepContent(
         SetupButtonsRow(
             primaryButtonText = primaryText,
             secondaryButtonText = secondaryText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
+    }
+}
+
+@Composable
+private fun PairOnYourDeviceContent(
+    step: ScanningSetupStep.PairOnYourDevice,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+    onOpenBluetoothSettings: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+        )
+
+        WooPosOutlinedButton(
+            text = step.bluetoothSettingsButtonText,
+            onClick = onOpenBluetoothSettings,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()),
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
             onPrimaryClick = onPrimaryClick,
             onSecondaryClick = onSecondaryClick
         )

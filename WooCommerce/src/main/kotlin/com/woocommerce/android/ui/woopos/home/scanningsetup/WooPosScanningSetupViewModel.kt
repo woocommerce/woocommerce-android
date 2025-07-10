@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,9 +34,8 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
     private val _showBarcodeInfoDialogEvent = MutableSharedFlow<Unit>()
     val showBarcodeInfoDialogEvent: SharedFlow<Unit> = _showBarcodeInfoDialogEvent.asSharedFlow()
 
-    companion object {
-        private const val WOO_POS_BARCODE_DOC_URL = "https://woocommerce.com/document/barcode-and-qr-code-scanner/"
-    }
+    private val _openBluetoothSettingsEvent = MutableSharedFlow<Unit>()
+    val openBluetoothSettingsEvent: SharedFlow<Unit> = _openBluetoothSettingsEvent.asSharedFlow()
 
     fun onUiEvent(event: WooPosScanningSetupUiEvent) {
         when (event) {
@@ -71,6 +71,12 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
             WooPosScanningSetupUiEvent.OnViewDocumentation -> {
                 viewModelScope.launch {
                     _openUrlEvent.emit(WOO_POS_BARCODE_DOC_URL)
+                }
+            }
+
+            WooPosScanningSetupUiEvent.OnOpenBluetoothSettings -> {
+                viewModelScope.launch {
+                    _openBluetoothSettingsEvent.emit(Unit)
                 }
             }
         }
@@ -214,11 +220,12 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
 
     private fun createPairOnYourDeviceStep() = ScanningSetupStep.PairOnYourDevice(
         title = "Pair on your device",
-        message = "Now scan this barcode to complete the pairing process.",
+        message = "Enable bluetooth on your device and locate your ${_state.value.selectedDevice!!.displayName}",
         barcodeImageRes = R.drawable.ic_barcode,
         instructionText = "Scan the barcode above to complete pairing",
         primaryButtonText = "Next",
-        secondaryButtonText = "Back"
+        secondaryButtonText = "Back",
+        bluetoothSettingsButtonText = "Open Bluetooth Settings"
     )
 
     private fun createTestYourScannerStep() = ScanningSetupStep.TestYourScanner(
@@ -242,5 +249,6 @@ sealed class WooPosScanningSetupUiEvent {
     data object OnPrimaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnSecondaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnViewDocumentation : WooPosScanningSetupUiEvent()
+    data object OnOpenBluetoothSettings : WooPosScanningSetupUiEvent()
     data class OnDeviceSelected(val device: BarcodeReaderDevice) : WooPosScanningSetupUiEvent()
 }

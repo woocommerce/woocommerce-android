@@ -18,7 +18,7 @@ data class PackageData(
     val isSelected: Boolean,
     val isLetter: Boolean,
     val isStarred: Boolean = false,
-    val isPredefined: Boolean = false,
+    val isUserDefined: Boolean = false,
     val dimensionUnit: String = "cm",
     val weightUnit: String = "kg",
     val groupName: String? = null
@@ -68,17 +68,13 @@ data class PackageData(
          */
         const val DEFAULT_HEIGHT = 5.0
 
-        fun fromPackageDAO(
-            dao: PackageDAO,
-            isSelected: Boolean = false,
-            isPredefined: Boolean = true
-        ): PackageData = PackageData(
+        fun fromPackageDAO(dao: PackageDAO, isSelected: Boolean = false) = PackageData(
             id = dao.id,
             name = dao.name,
             dimensions = dao.dimensions,
             weight = dao.weight,
             isSelected = isSelected,
-            isPredefined = isPredefined,
+            isUserDefined = dao.isUserDefined,
             isLetter = dao.isLetter,
             dimensionUnit = dao.dimensionUnit,
             weightUnit = dao.weightUnit,
@@ -119,7 +115,7 @@ data class CustomPackageCreationData(
         isSelected = true,
         isLetter = type == PackageType.ENVELOPE,
         dimensionUnit = dimensionUnit,
-        isPredefined = saveAsTemplate
+        isUserDefined = saveAsTemplate
     )
 
     companion object {

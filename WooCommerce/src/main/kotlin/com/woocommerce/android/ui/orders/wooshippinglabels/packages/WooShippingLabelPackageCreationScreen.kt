@@ -158,7 +158,8 @@ fun WooShippingLabelsPackageCreationScreenPreview() {
                             id = "1",
                         )
                     ),
-                    onSavedPackageSelected = { _, _ -> }
+                    onSavedPackageSelected = { _, _ -> },
+                    onSavedPackageRemoved = { _ -> },
                 )
             },
             createCarrierPackageScreen = {
