@@ -540,6 +540,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     private suspend fun purchaseLabels(data: StateMachineData, fulfillOrder: Boolean): Event {
         val amount = data.stepsState.carrierStep.data.sumByBigDecimal { it.price }
         trackPurchaseInitiated(amount, fulfillOrder)
