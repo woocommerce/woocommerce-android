@@ -27,7 +27,7 @@ internal fun ShippingRatesSection(
 
         is WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo -> {
             ShippingRatesSectionMissingInfo(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 missingInfo = shippingRatesState
             )
         }
