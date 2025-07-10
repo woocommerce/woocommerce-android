@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_AMOUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FULFILL_ORDER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_REVAMPED_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARRIER_RATES_SELECTED
@@ -206,6 +207,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                         viewState = viewState.copy(uiState = Loading)
                         handleResult { loadData(transition.state.orderId) }
                     }
+
                     is State.DataLoadingFailure -> viewState = viewState.copy(uiState = Failed)
                     is State.WaitingForInput -> {
                         viewState = viewState.copy(
@@ -214,6 +216,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                         )
                         updateViewState(transition.state.data)
                     }
+
                     is State.OriginAddressValidation -> {
                         handleResult(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
@@ -226,6 +229,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             )
                         }
                     }
+
                     is State.ShippingAddressValidation -> {
                         handleResult(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
@@ -238,6 +242,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             )
                         }
                     }
+
                     is State.PurchaseLabels -> {
                         handleResult(
                             progressDialogTitle = string.shipping_label_create_purchase_progress_title,
@@ -246,6 +251,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             purchaseLabels(transition.state.data, transition.state.fulfillOrder)
                         }
                     }
+
                     else -> {
                     }
                 }
@@ -253,6 +259,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                     when (sideEffect) {
                         SideEffect.NoOp -> {
                         }
+
                         is SideEffect.ShowError -> showError(sideEffect.error)
                         is SideEffect.OpenAddressEditor -> triggerEvent(
                             ShowAddressEditor(
@@ -262,6 +269,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                                 sideEffect.isCustomsFormRequired
                             )
                         )
+
                         is SideEffect.ShowAddressSuggestion -> triggerEvent(
                             ShowSuggestedAddress(
                                 sideEffect.entered,
@@ -269,6 +277,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                                 sideEffect.type
                             )
                         )
+
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
                         is SideEffect.ShowCustomsForm -> openCustomsForm(
                             sideEffect.originCountryCode,
@@ -276,6 +285,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             sideEffect.shippingPackages,
                             sideEffect.customsPackages
                         )
+
                         is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                         is SideEffect.ShowLabelsPrint -> openPrintLabelsScreen(sideEffect.orderId, sideEffect.labels)
@@ -521,9 +531,11 @@ class CreateShippingLabelViewModel @Inject constructor(
                     AddressChangeSuggested(result.suggested)
                 }
             }
+
             is ValidationResult.NotFound,
             is ValidationResult.Invalid,
             is ValidationResult.NameMissing, ValidationResult.PhoneInvalid -> AddressInvalid(address, result)
+
             is ValidationResult.Error -> AddressValidationFailed
         }
     }
@@ -563,12 +575,19 @@ class CreateShippingLabelViewModel @Inject constructor(
                         is OptimisticUpdateResult -> {
                             // noop
                         }
+
                         is RemoteUpdateResult -> {
                             if (updateOrderResult.event.isError) {
-                                AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
+                                AnalyticsTracker.track(
+                                    AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED,
+                                    mapOf(KEY_IS_REVAMPED_FLOW to false)
+                                )
                                 triggerEvent(ShowSnackbar(string.shipping_label_create_purchase_fulfill_error))
                             } else {
-                                AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
+                                AnalyticsTracker.track(
+                                    AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED,
+                                    mapOf(KEY_IS_REVAMPED_FLOW to false)
+                                )
                             }
                         }
                     }
