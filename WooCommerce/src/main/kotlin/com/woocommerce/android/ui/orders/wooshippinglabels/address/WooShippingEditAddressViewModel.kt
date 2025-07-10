@@ -7,6 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Address
@@ -48,6 +54,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val updateOriginAddress: UpdateOriginAddress,
     private val updateDestinationAddress: UpdateDestinationAddress,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingEditAddressFragmentArgs by savedState.navArgs()
@@ -189,12 +196,20 @@ class WooShippingEditAddressViewModel @Inject constructor(
     )
 
     init {
+        trackScreenShownEvent()
         launch { observeChanges() }
         fillAddressForm(currentAddress.value)
         launch {
             loadCountries()
             loadStates()
         }
+    }
+
+    private fun trackScreenShownEvent() {
+        analyticsTracker.track(
+            AnalyticsEvent.WCS_EDITING_ADDRESS_STEP,
+            mapOf(KEY_TYPE to getAnalyticsType(), KEY_STATE to VALUE_STARTED)
+        )
     }
 
     private fun fillAddressForm(addressInformation: Address) {
@@ -536,8 +551,23 @@ class WooShippingEditAddressViewModel @Inject constructor(
                 onSuccess = {
                     addressValidationState.value =
                         AddressValidationState.AddressSelection(it, it.normalizedAddress)
+                    analyticsTracker.track(
+                        AnalyticsEvent.WCS_EDITING_ADDRESS_STEP,
+                        mapOf(
+                            KEY_TYPE to getAnalyticsType(),
+                            KEY_STATE to getAnalyticsVerificationValue(isVerified.value)
+                        )
+                    )
                 },
                 onFailure = {
+                    analyticsTracker.track(
+                        AnalyticsEvent.WCS_EDITING_ADDRESS_STEP,
+                        mapOf(
+                            KEY_TYPE to getAnalyticsType(),
+                            KEY_STATE to getAnalyticsVerificationValue(false),
+                            KEY_ERROR to it.message
+                        )
+                    )
                     addressValidationState.value = AddressValidationState.VerificationFailed(editableAddress)
                 }
             )
@@ -559,6 +589,10 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
             is EditAddressFlow.EditOriginAddress -> onUpdateNormalizedOriginAddress(selection)
         }
+        analyticsTracker.track(
+            AnalyticsEvent.WCS_EDITING_ADDRESS_STEP,
+            mapOf(KEY_TYPE to getAnalyticsType(), KEY_STATE to "confirmed")
+        )
     }
 
     private fun onUpdateNormalizedDestinationAddress(
@@ -637,6 +671,15 @@ class WooShippingEditAddressViewModel @Inject constructor(
         addressValidationState.value = AddressValidationState.NotStarted
         currentAddress.value = updatedAddress
     }
+
+    private fun getAnalyticsType() = when (navArgs.flow) {
+        is EditAddressFlow.EditOriginAddress -> "origin"
+        is EditAddressFlow.EditDestinationAddress -> "destination"
+    }
+
+    private fun getAnalyticsVerificationValue(
+        verified: Boolean
+    ) = if (verified) "validation_success" else "validation_failed"
 
     data class ViewState(
         val isCompanyExpanded: Boolean,

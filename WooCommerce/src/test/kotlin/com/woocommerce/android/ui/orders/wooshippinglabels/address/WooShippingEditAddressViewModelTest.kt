@@ -59,7 +59,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             updateOriginAddress = updateOriginAddress,
             updateDestinationAddress = updateDestinationAddress,
-            getAllCountries = getAllCountries
+            getAllCountries = getAllCountries,
+            analyticsTracker = mock()
         )
     }
 
