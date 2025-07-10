@@ -328,6 +328,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             shouldRequireITN = shouldRequireITN,
             fetchShippingLabelFile = fetchShippingLabelFile,
             observeShippingLabelStatus = mock(),
+            downloadAndPrintInvoiceUseCase = mock(),
             savedState = savedState
         )
     }

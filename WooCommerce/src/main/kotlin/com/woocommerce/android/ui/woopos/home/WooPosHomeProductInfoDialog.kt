@@ -35,7 +35,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 
 @Composable
 fun WooPosProductInfoDialog(
-    state: WooPosHomeState.ProductsInfoDialog,
+    state: WooPosHomeState.DialogState.ProductsInfoDialog,
+    isVisible: Boolean,
     onDismissRequest: () -> Unit,
 ) {
     val dialogContentDescription = getCombinedContentDescription(state = state)
@@ -47,7 +48,7 @@ fun WooPosProductInfoDialog(
     )
     WooPosDialogWrapper(
         modifier = Modifier,
-        isVisible = state.isVisible,
+        isVisible = isVisible,
         dialogBackgroundContentDescription = dialogBackgroundContentDescription,
         onDismissRequest = onDismissRequest
     ) {
@@ -145,7 +146,7 @@ fun WooPosProductInfoDialog(
 }
 
 @Composable
-private fun getCombinedContentDescription(state: WooPosHomeState.ProductsInfoDialog): String {
+private fun getCombinedContentDescription(state: WooPosHomeState.DialogState.ProductsInfoDialog): String {
     val dialogContentDescription = stringResource(
         id = R.string.woopos_banner_simple_products_dialog_content_description
     )
@@ -162,7 +163,8 @@ fun ProductInfoDialogPreview() {
             contentAlignment = Alignment.Center
         ) {
             WooPosProductInfoDialog(
-                state = WooPosHomeState.ProductsInfoDialog(isVisible = true),
+                state = WooPosHomeState.DialogState.ProductsInfoDialog,
+                isVisible = true,
                 onDismissRequest = {},
             )
         }

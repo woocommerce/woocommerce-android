@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CustomPac
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StoreOptionsForPackages
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -97,20 +98,23 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     }
 
     fun onSavedPackageRemoved(removedPackage: PackageData) {
-        _viewState.update { viewState ->
-            val packagesState = viewState.packagesData ?: return@update viewState
-            viewState.copy(
-                packagesState = packagesState.copy(
-                    savedPackages = packagesState.savedPackages.filterNot { it.id == removedPackage.id }
-                )
-            )
-        }
+        // Update UI
+        updateSavedPackageUI(packageData = removedPackage, saved = false)
+
+        // Send to backend
         launch {
             updateSavedCarrierPackages(
                 savePackage = false,
                 packageId = removedPackage.id,
                 isUserDefined = removedPackage.isUserDefined,
-            )
+            ).let {
+                if (it.isFailure) {
+                    triggerEvent(Event.ShowSnackbar(R.string.woo_shipping_labels_package_removing_error))
+
+                    // If the removal fails, revert the UI change
+                    updateSavedPackageUI(packageData = removedPackage, saved = true)
+                }
+            }
         }
     }
 
@@ -271,30 +275,75 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     }
 
     fun onCarrierPackageStarred(packageData: PackageData, isStarred: Boolean) {
-        _viewState.update { viewState ->
-            val packages = viewState.packagesData ?: return@update viewState
-            val updatedCarrierPackages = packages.carrierPackages.mapValues { (_, packageGroupList) ->
-                packageGroupList.map { packageGroup ->
-                    val updatedPackages = packageGroup.packages.map {
-                        when {
-                            it.id == packageData.id -> it.copy(isStarred = isStarred)
-                            else -> it
-                        }
-                    }
-                    packageGroup.copy(packages = updatedPackages)
-                }
-            }
-            viewState.copy(
-                packagesState = packages.copy(carrierPackages = updatedCarrierPackages)
-            )
-        }
+        // Update UI
+        updateSavedPackageUI(packageData = packageData, saved = isStarred)
+
+        // Send to backend
         launch {
             updateSavedCarrierPackages(
                 savePackage = isStarred,
                 packageId = packageData.id,
                 isUserDefined = packageData.isUserDefined,
                 carrierPackages = _viewState.value.packagesData?.carrierPackages ?: emptyMap()
+            ).let {
+                if (it.isFailure) {
+                    val errorMessage = if (isStarred) {
+                        R.string.woo_shipping_labels_package_saving_error
+                    } else {
+                        R.string.woo_shipping_labels_package_removing_error
+                    }
+                    triggerEvent(Event.ShowSnackbar(errorMessage))
+
+                    // If failed, revert the UI change
+                    updateSavedPackageUI(packageData = packageData, saved = !isStarred)
+                }
+            }
+        }
+    }
+
+    private fun updateSavedPackageUI(packageData: PackageData, saved: Boolean) {
+        _viewState.update { viewState ->
+            val packages = viewState.packagesData ?: return
+            val updatedCarrierPackages = starCarrierPackage(
+                carrierPackages = packages.carrierPackages,
+                star = saved,
+                packageId = packageData.id
             )
+            val updatedSavedPackages = if (saved) {
+                packages.savedPackages + packageData
+            } else {
+                packages.savedPackages.filterNot { it.id == packageData.id }
+            }
+            viewState.copy(
+                packagesState = packages.copy(
+                    carrierPackages = updatedCarrierPackages,
+                    savedPackages = updatedSavedPackages
+                )
+            )
+        }
+    }
+
+    /**
+     * Updates the starred state of a specific carrier package.
+     *
+     * This function iterates through the provided carrier packages and updates the `isStarred`
+     * property of the package that matches the given `packageId`.
+     *
+     * @param carrierPackages A map of carrier packages to be updated.
+     * @param star The new starred state to be set for the package.
+     * @param packageId The ID of the package to be updated.
+     * @return A new map with the updated package information.
+     */
+    private fun starCarrierPackage(
+        carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
+        star: Boolean,
+        packageId: String
+    ) = carrierPackages.mapValues { (_, packageGroupList) ->
+        packageGroupList.map { packageGroup ->
+            val updatedPackages = packageGroup.packages.map {
+                if (it.id == packageId) it.copy(isStarred = star) else it
+            }
+            packageGroup.copy(packages = updatedPackages)
         }
     }
 

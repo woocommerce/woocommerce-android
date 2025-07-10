@@ -4630,6 +4630,8 @@
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
+    <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
+    <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
@@ -4699,6 +4701,7 @@
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">I also agree to the &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_accept">Confirm and continue</string>
 
+    <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
     <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
     <string name="woo_shipping_rate_option_signature_required">Signature required</string>
     <string name="woo_shipping_rate_option_adult_signature_required">Adult signature required</string>

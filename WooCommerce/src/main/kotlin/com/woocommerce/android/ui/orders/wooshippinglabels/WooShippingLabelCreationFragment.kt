@@ -141,8 +141,17 @@ class WooShippingLabelCreationFragment : BaseFragment() {
                 is WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService -> navigateToUPSDAPTermsOfService(
                     event.originAddress
                 )
+
+                is WooShippingLabelCreationViewModel.PrintCustomsForm -> printFile(event.file)
             }
         }
+    }
+
+    /**
+     * This just opens the default PDF reader of the device
+     */
+    private fun printFile(file: File) {
+        ActivityUtils.previewPDFFile(requireActivity(), file)
     }
 
     private fun setupResultHandlers() {

@@ -127,8 +127,8 @@ class WooShippingNetworkingMapper @Inject constructor(
             firstName = firstName,
             phone = destinationAddressDTO.phone.orEmpty(),
             address2 = destinationAddressDTO.address2.orEmpty(),
-            email = destinationAddressDTO.email.orEmpty(),
-            lastName = lastName
+            email = "", // We set the email later from the order details
+            lastName =lastName
         )
     }
 
@@ -242,12 +242,15 @@ class WooShippingNetworkingMapper @Inject constructor(
 
     fun toDestinationAddressDTO(address: Address): DestinationAddressDTO {
         return DestinationAddressDTO(
+            company = address.company,
+            name = "${address.firstName} ${address.lastName}",
+            phone = address.phone,
             address = address.address1,
+            address2 = address.address2,
             city = address.city,
             state = address.state.codeOrRaw,
             postcode = address.postcode,
             country = address.country.code,
-            name = "${address.firstName} ${address.lastName}"
         )
     }
 
