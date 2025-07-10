@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.scanningsetup
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.provider.Settings
 import androidx.compose.animation.AnimatedContent
@@ -64,6 +65,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooLog
 
 @Composable
 fun WooPosScanningSetupDialog(
@@ -85,8 +87,12 @@ fun WooPosScanningSetupDialog(
 
     LaunchedEffect(Unit) {
         viewModel.openBluetoothSettingsEvent.collect {
-            val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-            context.startActivity(intent)
+            try {
+                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
+            }
         }
     }
 
