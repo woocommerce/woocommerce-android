@@ -9,6 +9,7 @@ import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import java.lang.reflect.Type
@@ -33,7 +34,8 @@ data class StoreOptionsDTO(
 
 data class FormDataDTO(
     @SerializedName("selected_payment_method_id") val selectedPaymentId: Long?,
-    @SerializedName("email_receipts") val emailReceipts: Boolean = false
+    @SerializedName("email_receipts") val emailReceipts: Boolean = false,
+    @SerializedName("paper_size") val paperSize: WooShippingLabelPaperSize
 )
 
 data class FormMetaDTO(

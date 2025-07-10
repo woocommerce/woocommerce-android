@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.V
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
@@ -45,6 +44,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelS
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
@@ -159,7 +159,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         canManagePayments = false,
         canEditSettings = true,
         storeOwnerName = "",
-        storeOwnerUsername = ""
+        storeOwnerUsername = "",
+        paperSize = WooShippingLabelPaperSize.LABEL
     )
 
     private val defaultPackageData = PackageData(
@@ -987,6 +988,22 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onSchedulePickUpClicked()
 
         assertThat(event).isEqualTo(OpenUrl("https://tools.usps.com/schedule-pickup-steps.htm"))
+    }
+
+    @Test
+    fun `when viewmodel initializes, then default paper size is set`() = testBlocking {
+        val expectedPaperSize = WooShippingLabelPaperSize.A4
+        given(observeAccountSettings()).willReturn(
+            flowOf(
+                defaultAccountSettings.copy(paperSize = expectedPaperSize)
+            )
+        )
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+        assertThat(dataState.uiState.paperSizeOption).isEqualTo(expectedPaperSize)
     }
 
     @Test

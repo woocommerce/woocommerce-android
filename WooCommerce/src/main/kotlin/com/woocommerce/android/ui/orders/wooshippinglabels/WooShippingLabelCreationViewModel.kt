@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.toAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
@@ -53,6 +52,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
@@ -184,6 +184,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { observeShippingLabelInformation() }
         launch { getDestinationAddress() }
         launch { getSavedShipments() }
+        launch { setDefaultPaperSize() }
         launch { getShippingAddresses() }
         launch { getOrderInformation() }
         launch { observePackageWeight() }
@@ -311,6 +312,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private suspend fun getSavedShipments() {
         order.drop(1).collectLatest { order -> shipments.value = getShipments(order) }
+    }
+
+    private suspend fun setDefaultPaperSize() {
+        val paperSize = accountSettings.first()?.paperSize ?: WooShippingLabelPaperSize.LABEL
+        uiState.update { it.copy(paperSizeOption = paperSize) }
     }
 
     @Suppress("ComplexCondition")
@@ -1300,8 +1306,7 @@ data class ShipmentUI(
     val shipmentCostUI: ShipmentCostUI?,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
     val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
-    val isRefundAvailable: Boolean = false,
-    val isCustomsFormAvailable: Boolean = false,
+    val shipmentPrintLabelUI: ShipmentPrintLabelUI?,
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()
@@ -1319,6 +1324,13 @@ data class ShipmentCostUI(
     val formattedBasePrice: String,
     val formattedTotalPrice: String,
     val optionsWithFees: Map<String, String>,
+) : Parcelable
+
+@Parcelize
+data class ShipmentPrintLabelUI(
+    val availablePrintSizes: List<WooShippingLabelPaperSize>,
+    val isRefundAvailable: Boolean = false,
+    val isCustomsFormAvailable: Boolean = false,
 ) : Parcelable
 
 data class PurchaseSectionUI(

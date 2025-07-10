@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.components
 
 import android.content.res.Configuration
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,12 +45,14 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithB
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 
 @Composable
 fun PrintShippingLabelSection(
     status: ShippingLabelStatus,
     isCustomsFormAvailable: Boolean,
     isRefundAvailable: Boolean,
+    availablePaperSizes: List<WooShippingLabelPaperSize>,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -97,6 +98,7 @@ fun PrintShippingLabelSection(
             isPrintButtonEnabled = status == PURCHASED,
             isCustomsFormAvailable = isCustomsFormAvailable,
             isRefundAvailable = isRefundAvailable,
+            availablePaperSizes = availablePaperSizes,
             selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
             onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
             onPrintShippingLabelClicked = onPrintShippingLabelClicked,
@@ -121,6 +123,7 @@ private fun PrintShippingLabelCard(
     isPrintButtonEnabled: Boolean,
     isCustomsFormAvailable: Boolean,
     isRefundAvailable: Boolean,
+    availablePaperSizes: List<WooShippingLabelPaperSize>,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -141,6 +144,7 @@ private fun PrintShippingLabelCard(
     ) {
         RoundedCornerBoxWithBorder(backgroundColor = colorResource(id = R.color.woo_shipping_label_success_surface)) {
             LabelPaperSizeDropdownMenu(
+                availablePaperSizes = availablePaperSizes,
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
                 modifier = Modifier
@@ -215,12 +219,12 @@ private fun PrintShippingLabelCard(
 
 @Composable
 private fun LabelPaperSizeDropdownMenu(
+    availablePaperSizes: List<WooShippingLabelPaperSize>,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val options = WooShippingLabelPaperSize.entries
 
     Box {
         Row(
@@ -250,7 +254,7 @@ private fun LabelPaperSizeDropdownMenu(
             onDismissRequest = { expanded = false },
             modifier = Modifier.align(alignment = Alignment.CenterEnd)
         ) {
-            options.forEach { option ->
+            availablePaperSizes.forEach { option ->
                 DropdownMenuItem(onClick = {
                     onLabelPaperSizeOptionSelected(option)
                     expanded = false
@@ -311,12 +315,12 @@ private fun ShippingLabelLink(
 internal fun PrintShippingLabelSectionPreview() {
     WooThemeWithBackground {
         Surface {
-            val selectedLabelPaperSizeOption =
-                remember { mutableStateOf(WooShippingLabelPaperSize.LEGAL) }
+            val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.A4) }
             PrintShippingLabelSection(
                 status = PURCHASED,
                 isCustomsFormAvailable = true,
                 isRefundAvailable = true,
+                availablePaperSizes = emptyList(),
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
                 onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
                 onPrintShippingLabelClicked = {},
@@ -340,10 +344,4 @@ private fun ShippingLabelLinkPreview() {
             showIcon = true
         )
     }
-}
-
-enum class WooShippingLabelPaperSize(@StringRes val stringResource: Int) {
-    LEGAL(R.string.shipping_label_paper_size_legal),
-    LETTER(R.string.shipping_label_paper_size_letter),
-    LABEL(R.string.shipping_label_paper_size_label)
 }
