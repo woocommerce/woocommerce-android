@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemM
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -68,9 +69,13 @@ class GetShipments @Inject constructor(
                 shipmentUIModelList = mergePurchaseData(shipmentUIModelList, labels)
             }
 
-            // If there are stored destination address, merge it into the result list
-            data.storedData?.selectedDestination?.let { selectedDestination ->
-                shipmentUIModelList = mergeDestinationAddresses(shipmentUIModelList, selectedDestination)
+            // If there are stored addresses, merge them into the result list
+            data.storedData?.let { storedData ->
+                shipmentUIModelList = mergeAddresses(
+                    shipmentUIModelList,
+                    storedData.selectedOrigin,
+                    storedData.selectedDestination
+                )
             }
         }
 
@@ -91,17 +96,26 @@ class GetShipments @Inject constructor(
         }
     }
 
-    private fun mergeDestinationAddresses(
+    private fun mergeAddresses(
         shipmentUIModelList: List<ShipmentUIModel>,
-        destinationAddresses: Map<String, DestinationAddressDTO>
+        originAddresses: Map<String, OriginAddressDTO>?,
+        destinationAddresses: Map<String, DestinationAddressDTO>?
     ) = shipmentUIModelList.map { shipmentUIModel ->
         val id = shipmentUIModel.remoteId
-        if (id != null) {
-            destinationAddresses[getStoredDataKey(id)]?.let {
-                shipmentUIModel.copy(label = shipmentUIModel.label?.copy(destinationAddress = mapper.invoke(it)))
-            } ?: shipmentUIModel
-        } else {
+        if (id == null) {
             shipmentUIModel
+        } else {
+            var updatedShipment = shipmentUIModel
+            originAddresses?.get(getStoredDataKey(id))?.let {
+                updatedShipment = updatedShipment.copy(
+                    label = updatedShipment.label?.copy(originAddress = mapper.invoke(it))
+                )
+            }
+            destinationAddresses?.get(getStoredDataKey(id))?.let {
+                updatedShipment =
+                    updatedShipment.copy(label = updatedShipment.label?.copy(destinationAddress = mapper.invoke(it)))
+            }
+            updatedShipment
         }
     }
 

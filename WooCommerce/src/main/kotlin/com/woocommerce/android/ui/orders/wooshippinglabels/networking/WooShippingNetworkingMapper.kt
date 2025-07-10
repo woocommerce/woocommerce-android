@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooS
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
 import com.woocommerce.android.util.StringUtils.combineStrings
 import java.math.BigDecimal
@@ -88,6 +89,26 @@ class WooShippingNetworkingMapper @Inject constructor(
             refund = shippingLabelDTO.refund?.let { refund ->
                 ShippingLabelModel.Refund(status = refund.status, requestDate = refund.requestDate?.let { Date(it) })
             }
+        )
+    }
+
+    operator fun invoke(originAddressDTO: OriginAddressDTO): Address {
+        val name = originAddressDTO.name?.split(" ") ?: listOf("", "")
+        return Address(
+            company = originAddressDTO.company.orEmpty(),
+            firstName = name.getOrElse(0) { "" },
+            lastName = name.getOrElse(1) { "" },
+            phone = originAddressDTO.phone.orEmpty(),
+            country = Location(
+                name = originAddressDTO.country.orEmpty(),
+                code = originAddressDTO.country.orEmpty()
+            ),
+            state = AmbiguousLocation.Raw(originAddressDTO.state.orEmpty()),
+            address1 = originAddressDTO.address.orEmpty(),
+            address2 = originAddressDTO.address2.orEmpty(),
+            city = originAddressDTO.city.orEmpty(),
+            postcode = originAddressDTO.postcode.orEmpty(),
+            email = ""
         )
     }
 
