@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.refund
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.RefundLabelResponseDTO
@@ -12,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -29,6 +33,7 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
 
     private val selectedSite: SelectedSite = mock { on { get() } doReturn mockSite }
     private val repository: WooShippingLabelRepository = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
     private val networkStatus: NetworkStatus = mock { on { isConnected() } doReturn true }
 
     @Before
@@ -43,7 +48,7 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
             configDataStore = mock(),
             networkStatus = networkStatus,
             currencyFormatter = mock(),
-            tracker = mock()
+            tracker = tracker
         )
     }
 
@@ -64,6 +69,8 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
         assertThat((capturedEvents.first() as Event.ShowSnackbar).message)
             .isEqualTo(R.string.shipping_label_refund_success)
         assertThat(capturedEvents.last()).isEqualTo(Event.ExitWithResult(mockLabelId))
+
+        verify(tracker).track(AnalyticsEvent.WCS_REFUND_REQUESTED)
     }
 
     @Test
@@ -86,5 +93,6 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(capturedEvent).isEqualTo(Event.ShowSnackbar(R.string.order_refunds_amount_refund_error))
+        verify(tracker).track(AnalyticsEvent.WCS_REFUND_REQUESTED, mapOf(KEY_ERROR to WooErrorType.API_ERROR.name))
     }
 }
