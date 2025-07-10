@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.ObserveShippi
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.VerifyDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.FetchOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.toAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
@@ -127,7 +128,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val emptyOrder = Order.getEmptyOrder(Date(), Date())
     private val order = MutableStateFlow(emptyOrder)
     private val destinationAddress = MutableStateFlow(DestinationShippingAddress.EMPTY)
-    private val shippingAddresses = MutableStateFlow<WooShippingAddresses?>(WooShippingAddresses.EMPTY)
+    private val shippingAddresses = MutableStateFlow<List<WooShippingAddresses>>(emptyList())
     private val loadTrigger = MutableSharedFlow<Unit>()
 
     private val shipments = MutableStateFlow<List<ShipmentUIModel>>(emptyList())
@@ -222,20 +223,18 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                             onTapped = {
                                 when (noticeBanner.type) {
                                     NoticeType.UNVERIFIED_ORIGIN_ADDRESS -> {
-                                        shippingAddresses.value?.shipFrom?.let { shipFrom ->
-                                            onEditOriginAddress(
-                                                shipFrom
-                                            )
-                                        }
+                                        shippingAddresses.value.getOrNull(selectedShipmentIndex)
+                                            ?.shipFrom?.let { shipFrom ->
+                                                onEditOriginAddress(shipFrom)
+                                            }
                                     }
 
                                     NoticeType.MISSING_DESTINATION_ADDRESS,
                                     NoticeType.UNVERIFIED_DESTINATION_ADDRESS -> {
-                                        shippingAddresses.value?.shipTo?.let { shipTo ->
-                                            onEditDestinationAddress(
-                                                shipTo
-                                            )
-                                        }
+                                        shippingAddresses.value.getOrNull(selectedShipmentIndex)
+                                            ?.shipTo?.let { shipTo ->
+                                                onEditDestinationAddress(shipTo)
+                                            }
                                     }
 
                                     NoticeType.MISSING_ITN -> {
@@ -301,7 +300,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         combine(
             accountSettings,
             selectedPackagesFlow.filter { it.isNotEmpty() },
-            shippingAddresses,
+            shippingAddresses.filter { it.isNotEmpty() },
             packageWeightsFlow.filter { it.isNotEmpty() },
             customsStatesFlow.filter { it.isNotEmpty() },
             hazmatStatesFlow.filter { it.isNotEmpty() },
@@ -310,12 +309,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val customsFulfilled = customState[selectedShipmentIndex] is CustomsState.DataAvailable ||
                 customState[selectedShipmentIndex] is NotRequired
             val selectedPackage = selectedPackages[selectedShipmentIndex]
-            if (selectedPackage != null && addresses != null && customsFulfilled) {
+            val selectedAddress = addresses[selectedShipmentIndex]
+            if (selectedPackage != null && customsFulfilled) {
                 ShippingRatesInfo(
                     orderId = navArgs.orderId,
                     packageSelected = selectedPackage,
-                    shipFrom = addresses.shipFrom,
-                    shipTo = addresses.shipTo.address,
+                    shipFrom = selectedAddress.shipFrom,
+                    shipTo = selectedAddress.shipTo.address,
                     weight = packageWeight[selectedShipmentIndex]?.totalWeight,
                     currencyCode = accountSettings?.storeOptions?.currencySymbol,
                     customsData = customsFormDataFlow.value[selectedShipmentIndex],
@@ -458,17 +458,46 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private suspend fun getShippingAddresses() {
-        combine(destinationAddress, observeOriginAddresses()) { destination, originAddresses ->
-            if (!originAddresses.isNullOrEmpty()) {
-                val selectedOriginAddress = getSelectedOriginAddress(originAddresses)
+        combine(
+            order.drop(1),
+            destinationAddress,
+            observeOriginAddresses(),
+            shipments.drop(1),
+            uiState.map { it.selectedIndex }.distinctUntilChanged(),
+        ) { order, destination, originAddresses, shipments, selectedIndex ->
+            val currentShipment = shipments[selectedIndex]
+            val updatedAddress = if (currentShipment.purchased) {
+                val selectedAddress = shippingAddresses.value.getOrNull(selectedShipmentIndex)
+                val shipFrom = selectedAddress?.shipFrom?.takeIf { it != OriginShippingAddress.EMPTY }
+                    ?: currentShipment.label?.originAddress?.let { originAddress ->
+                        OriginShippingAddress.fromAddress(originAddress).copy(isVerified = true)
+                    }
+
+                WooShippingAddresses(
+                    shipFrom = shipFrom ?: OriginShippingAddress.EMPTY,
+                    originAddresses = originAddresses.orEmpty(),
+                    shipTo = DestinationShippingAddress(
+                        address = currentShipment.label?.destinationAddress ?: destination.address,
+                        isVerified = true
+                    )
+                )
+            } else if (originAddresses.isNullOrEmpty()) {
+                WooShippingAddresses.EMPTY
+            } else {
+                val selectedOriginAddress = getSelectedOriginAddress(originAddresses, selectedIndex)
                 WooShippingAddresses(
                     shipFrom = selectedOriginAddress,
                     originAddresses = originAddresses,
                     shipTo = destination
                 )
-            } else {
-                null
             }
+
+            if (shippingAddresses.value.isEmpty()) {
+                // Initialize the list during the initial load
+                shippingAddresses.value = List(shipments.size) { WooShippingAddresses.EMPTY }
+            }
+
+            shippingAddresses.value.toMutableList().apply { set(selectedIndex, updatedAddress) }
         }.collect { shippingAddresses.value = it }
     }
 
@@ -553,23 +582,21 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             hazmatStatesFlow
         ) { accountSettings, order, shipments, addresses, shippingRatesList,
             packageSelections, uiState, customsState, hazmatStates ->
-            if (accountSettings == null || addresses == null ||
-                shipments.any { it.purchaseState is PurchaseState.Error }
-            ) {
+            if (accountSettings == null || shipments.any { it.purchaseState is PurchaseState.Error }) {
                 return@combine WooShippingViewState.Error
-            }
-
-            val destinationStatus = when {
-                addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) -> {
-                    AddressStatus.MISSING_ADDRESS
-                }
-
-                addresses.shipTo.isVerified -> AddressStatus.VERIFIED
-                else -> AddressStatus.UNVERIFIED
             }
 
             shipmentItems.value = shipments.map { it.items }
             adjustFlowSizesToShipmentCount(shipments.size)
+
+            val destinationStatus = when {
+                addressValidationHelper.isMissingDestinationAddress(
+                    addresses[uiState.selectedIndex].shipTo.address
+                ) -> AddressStatus.MISSING_ADDRESS
+
+                addresses[uiState.selectedIndex].shipTo.isVerified -> AddressStatus.VERIFIED
+                else -> AddressStatus.UNVERIFIED
+            }
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
             val shipmentUIList = shipmentItems.value.mapIndexed { index, shippableItemModels ->
@@ -622,6 +649,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
         }
 
+        shippingAddresses.updateSize(WooShippingAddresses.EMPTY)
         selectedPackagesFlow.updateSize(null)
         customsFormDataFlow.updateSize(null)
         packageWeightsFlow.updateSize(null)
@@ -663,11 +691,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    private fun getSelectedOriginAddress(originAddresses: List<OriginShippingAddress>): OriginShippingAddress {
-        return shippingAddresses.value?.shipFrom?.takeIf {
-            it != OriginShippingAddress.EMPTY
-        } ?: originAddresses.first()
-    }
+    private fun getSelectedOriginAddress(
+        originAddresses: List<OriginShippingAddress>,
+        selectedIndex: Int
+    ): OriginShippingAddress = shippingAddresses.value.getOrNull(selectedIndex)?.shipFrom?.takeIf {
+        it != OriginShippingAddress.EMPTY
+    } ?: originAddresses.first()
 
     fun onSelectedShipmentChanged(index: Int) {
         if (index >= shipments.value.size) return // This can happen after shipment split when the UI is not updated yet
@@ -676,8 +705,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onOriginAddressSelected(address: OriginShippingAddress) {
-        shippingAddresses.value?.let {
-            shippingAddresses.value = it.copy(shipFrom = address)
+        shippingAddresses.value.getOrNull(selectedShipmentIndex)?.let {
+            shippingAddresses.value = shippingAddresses.value.toMutableList().apply {
+                set(selectedShipmentIndex, it.copy(shipFrom = address))
+            }
         }
     }
 
@@ -760,11 +791,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @Suppress("ComplexCondition")
     fun onPurchaseShippingLabel() {
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
-        val addresses = shippingAddresses.value
+        val selectedAddress = shippingAddresses.value.getOrNull(selectedShipmentIndex)
         val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]
         val weight = packageWeightsFlow.value[selectedShipmentIndex]?.totalWeight
 
-        if (selectedPackage == null || addresses == null || shippingRate == null || weight == null) return
+        if (selectedPackage == null || selectedAddress == null || shippingRate == null || weight == null) return
 
         val orderId = navArgs.orderId
         val lastOrderComplete = uiState.value.markOrderComplete
@@ -785,8 +816,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 shippableItemsIdList,
                 selectedPackage,
                 selectedShipmentIndex,
-                addresses.shipTo.address,
-                addresses.shipFrom,
+                selectedAddress.shipTo.address,
+                selectedAddress.shipFrom,
                 shippingRate,
                 weight,
                 lastOrderComplete,
@@ -802,9 +833,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         shipments.value[selectedShipmentIndex].copy(purchaseState = fallbackPurchaseState)
                     )
                     if (exception is WooException && exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE) {
-                        shippingAddresses.value?.shipFrom?.let { shipFrom ->
-                            triggerEvent(NavigateToUPSDAPTermsOfService(shipFrom))
-                        }
+                        triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
                     } else {
                         snackbarData = ShippingLabelsSnackbarData(
                             message = R.string.woo_shipping_labels_purchase_error,
@@ -883,7 +912,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onEditCustomsClick() {
-        val destinationCountryCode = shippingAddresses.value
+        val destinationCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)
             ?.shipTo?.address?.country?.code.orEmpty()
 
         val event = NavigateToCustomsFormEdit(
@@ -1019,7 +1048,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             ?.reduce { acc, current -> acc + current }
             ?: BigDecimal.ZERO
 
-        val destinationCountryCode = shippingAddresses.value
+        val destinationCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)
             ?.shipTo?.address?.country?.code.orEmpty()
 
         return shouldRequireITN(destinationCountryCode, totalShippingValue)
@@ -1058,7 +1087,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val totalItems: Int,
             val totalItemsCost: String,
             val shippingLines: List<ShippingLineSummaryUI>,
-            val shippingAddresses: WooShippingAddresses,
+            val shippingAddresses: List<WooShippingAddresses>,
             val uiState: UIControlsState,
             val destinationStatus: AddressStatus,
             val paymentsSectionUI: PaymentsSectionUI,
