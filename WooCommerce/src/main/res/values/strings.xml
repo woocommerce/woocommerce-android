@@ -4469,10 +4469,6 @@
     <!-- WooPos Scanning Setup -->
     <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
-    <string name="woopos_scanning_setup_welcome_title">Start using a barcode scanner</string>
-    <string name="woopos_scanning_setup_welcome_message">Choose an option:</string>
-    <string name="woopos_scanning_setup_welcome_setup_button">Set up a barcode scanner</string>
-    <string name="woopos_scanning_setup_welcome_documentation_button">View barcode scanner documentation</string>
     <string name="woopos_scanning_setup_device_selection_title">Set up a barcode scanner</string>
     <string name="woopos_scanning_setup_device_selection_message">Select a model from the list:</string>
     <string name="woopos_scanning_setup_introduction_title">Set up your %s</string>

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -64,7 +63,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 
 @Composable
@@ -77,13 +75,7 @@ fun WooPosScanningSetupDialog(
     val context = LocalContext.current
 
     LaunchedEffect(isVisible) {
-        viewModel.resetToWelcomeState()
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.openUrlEvent.collect { url ->
-            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
-        }
+        viewModel.resetToInitialState()
     }
 
     LaunchedEffect(Unit) {
@@ -91,7 +83,6 @@ fun WooPosScanningSetupDialog(
             onShowBarcodeInfoDialog()
         }
     }
-
     LaunchedEffect(Unit) {
         viewModel.openBluetoothSettingsEvent.collect {
             try {
@@ -125,16 +116,6 @@ fun WooPosScanningSetupDialog(
                 modifier = Modifier.padding(top = WooPosSpacing.XLarge.value.toAdaptivePadding()),
             ) { step ->
                 when (step) {
-                    is ScanningSetupStep.Welcome -> WelcomeContent(
-                        step = step,
-                        onBluetoothSelected = {
-                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBluetoothScannerSelected)
-                        },
-                        onViewDocumentation = {
-                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnViewDocumentation)
-                        }
-                    )
-
                     is ScanningSetupStep.DeviceSelection -> DeviceSelectionContent(
                         step = step,
                         onDeviceSelected = { device ->
@@ -198,49 +179,6 @@ fun WooPosScanningSetupDialog(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun WelcomeContent(
-    step: ScanningSetupStep.Welcome,
-    onBluetoothSelected: () -> Unit,
-    onViewDocumentation: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        WooPosText(
-            text = step.title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = step.message,
-            style = WooPosTypography.BodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
-        )
-
-        WooPosOutlinedButton(
-            onClick = onBluetoothSelected,
-            text = step.setupButtonText,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-        WooPosOutlinedButton(
-            onClick = onViewDocumentation,
-            text = step.documentationButtonText,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 
@@ -632,15 +570,17 @@ fun WooPosScanningSetupDialogPreview() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            WelcomeContent(
-                step = ScanningSetupStep.Welcome(
-                    title = "Start using a barcode scanner",
-                    message = "Choose the type of scanner you'd like to connect",
-                    setupButtonText = "Set up a barcode scanner",
-                    documentationButtonText = "View barcode scanner documentation"
+            DeviceSelectionContent(
+                step = ScanningSetupStep.DeviceSelection(
+                    title = "Set up a barcode scanner",
+                    devices = listOf(
+                        BarcodeReaderDevice.TERA_1200,
+                        BarcodeReaderDevice.STAR_BSH_20B,
+                        BarcodeReaderDevice.INATECK_BLUETOOTH,
+                        BarcodeReaderDevice.OTHER
+                    )
                 ),
-                onBluetoothSelected = {},
-                onViewDocumentation = {}
+                onDeviceSelected = {}
             )
         }
     }

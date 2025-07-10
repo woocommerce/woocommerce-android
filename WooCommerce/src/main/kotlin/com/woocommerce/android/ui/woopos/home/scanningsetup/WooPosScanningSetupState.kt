@@ -16,16 +16,9 @@ data class WooPosScanningSetupState(
         TERA_1200(R.string.woopos_scanning_setup_device_tera_1200),
         STAR_BSH_20B(R.string.woopos_scanning_setup_device_star_bsh_20b),
         INATECK_BLUETOOTH(R.string.woopos_scanning_setup_device_inateck_bluetooth),
-        OTHER(R.string.woopos_scanning_setup_device_other);
+        OTHER(R.string.woopos_scanning_setup_device_other)
     }
     sealed class ScanningSetupStep : Parcelable {
-        @Parcelize
-        data class Welcome(
-            val title: String,
-            val message: String,
-            val setupButtonText: String,
-            val documentationButtonText: String,
-        ) : ScanningSetupStep()
 
         @Parcelize
         data class DeviceSelection(
