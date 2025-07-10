@@ -124,7 +124,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         val siteSettings = buildSiteSettings(countryCode = "GB", currencyCode = "USD")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
         val result = sut()
-        assertEquals(NotLaunchable(Reason.UnsupportedCurrency), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
     }
 
     @Test
@@ -132,7 +132,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         val siteSettings = buildSiteSettings(countryCode = "US", currencyCode = "GBP")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
         val result = sut()
-        assertEquals(NotLaunchable(Reason.UnsupportedCurrency), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
     }
 
     @Test
