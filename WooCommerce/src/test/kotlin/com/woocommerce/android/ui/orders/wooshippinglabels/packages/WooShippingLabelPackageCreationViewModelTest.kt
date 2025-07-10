@@ -413,12 +413,13 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             verify(updateSavedCarrierPackages, times(1)).invoke(
                 true,
                 packageToStar.id,
+                false, // isUserDefined is false for carrier packages
                 lastViewState?.packagesData?.carrierPackages!!
             )
 
             // Verify viewState is updated
             val updatedPackage = lastViewState
-                ?.packagesData
+                .packagesData
                 ?.carrierPackages
                 ?.get(carrier)
                 ?.flatMap { it.packages }

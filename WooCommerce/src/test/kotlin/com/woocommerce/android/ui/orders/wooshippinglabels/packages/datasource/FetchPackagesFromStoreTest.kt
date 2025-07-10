@@ -41,7 +41,7 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
                 weight = "weight",
                 isSelected = false,
                 isLetter = false,
-                isPredefined = true,
+                isStarred = true,
             ),
             PackageData(
                 id = "2",
@@ -50,7 +50,6 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
                 weight = "weight",
                 isSelected = false,
                 isLetter = false,
-                isPredefined = true,
                 isStarred = true,
             )
         )
@@ -65,7 +64,6 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
                         weight = "weight",
                         isSelected = false,
                         isLetter = false,
-                        isPredefined = true,
                     )
                 )
             )
@@ -109,7 +107,7 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
                 isLetter = false,
                 dimensionUnit = "cm",
                 weightUnit = "kg",
-                saved = false
+                saved = true
             ),
             PackageDAO(
                 id = "2",

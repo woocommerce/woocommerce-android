@@ -50,7 +50,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             )
         }
 
-        return@withContext if (isCurrencySupported(siteSettings.currencyCode)) {
+        return@withContext if (isCountryAndCurrencySupported(siteSettings.countryCode, siteSettings.currencyCode)) {
             WooPosLaunchability.Launchable
         } else {
             WooPosLaunchability.NotLaunchable(
@@ -59,7 +59,10 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         }
     }
 
-    private fun isCurrencySupported(currency: String) = SUPPORTED_CURRENCIES.contains(currency.lowercase())
+    private fun isCountryAndCurrencySupported(countryCode: String, currency: String) =
+        SUPPORTED_COUNTRY_CURRENCY_PAIRS.any {
+            it.first.equals(countryCode, true) && it.second.equals(currency, true)
+        }
 
     private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(): Boolean {
         val wooCoreVersion = getWooCoreVersion() ?: return false
@@ -75,7 +78,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
         const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
 
-        val SUPPORTED_CURRENCIES = listOf("usd", "gbp")
+        val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
     }
 }
 
