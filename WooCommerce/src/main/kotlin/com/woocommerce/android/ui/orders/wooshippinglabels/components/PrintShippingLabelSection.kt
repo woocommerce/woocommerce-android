@@ -343,7 +343,7 @@ private fun ShippingLabelLinkPreview() {
 }
 
 enum class WooShippingLabelPaperSize(@StringRes val stringResource: Int) {
-    LEGAL(R.string.shipping_label_paper_size_legal),
-    LETTER(R.string.shipping_label_paper_size_letter),
-    LABEL(R.string.shipping_label_paper_size_label)
+    A4(R.string.shipping_label_paper_size_a4),
+    LABEL(R.string.shipping_label_paper_size_label),
+    LETTER(R.string.shipping_label_paper_size_letter)
 }
