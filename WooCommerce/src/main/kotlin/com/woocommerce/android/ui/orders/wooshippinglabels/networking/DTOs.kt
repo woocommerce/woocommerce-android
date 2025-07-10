@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import java.lang.reflect.Type
 import java.math.BigDecimal
 
@@ -87,6 +88,7 @@ data class ShippingLabelDataDTO(
 )
 
 data class StoredDataDTO(
+    @SerializedName("selected_origin") val selectedOrigin: Map<String, OriginAddressDTO>,
     @SerializedName("selected_destination") val selectedDestination: Map<String, DestinationAddressDTO>,
 )
 
