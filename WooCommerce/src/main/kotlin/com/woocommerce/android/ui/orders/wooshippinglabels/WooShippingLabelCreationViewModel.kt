@@ -14,6 +14,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.sumByFloat
@@ -862,6 +863,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         val customsData = customsFormDataFlow.value[selectedShipmentIndex]
 
+        analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to VALUE_STARTED))
+
         launch {
             purchaseShippingLabel(
                 orderId,
@@ -887,6 +890,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     if (exception is WooException && exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE) {
                         triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
                     } else {
+                        analyticsTracker.track(
+                            AnalyticsEvent.WCS_PURCHASE_STEP,
+                            mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to exception.message)
+                        )
                         snackbarData = ShippingLabelsSnackbarData(
                             message = R.string.woo_shipping_labels_purchase_error,
                             actionLabel = R.string.retry,
@@ -905,6 +912,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 updateShipment(shipmentId, shipments.value[shipmentId].copy(purchased = true, label = purchasedLabel))
                 observeShippingLabelPurchaseStatus(shipmentId)
             }
+        analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
     }
 
     fun onSelectedRateSortOrderChanged(option: ShippingSortOption) {
