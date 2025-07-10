@@ -990,6 +990,22 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when viewmodel initializes, then default paper size is set`() = testBlocking {
+        val expectedPaperSize = WooShippingLabelPaperSize.A4
+        given(observeAccountSettings()).willReturn(
+            flowOf(
+                defaultAccountSettings.copy(paperSize = expectedPaperSize)
+            )
+        )
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+        assertThat(dataState.uiState.paperSizeOption).isEqualTo(expectedPaperSize)
+    }
+
+    @Test
     fun `onRefundClicked triggers NavigateToRefundRequest event`() = testBlocking {
         val labelId = 123L
         whenever(getShipments(any())) doReturn defaultShipments.toMutableList().apply {
