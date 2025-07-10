@@ -254,9 +254,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val shipment = shipments.value[shipmentId]
             val labelId = shipment.label?.labelId ?: return@launch
             observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { result ->
+                val originAddress = shippingAddresses.value.getOrNull(shipmentId)?.shipFrom?.toAddress()
+
                 // If result has a label model update the label with it. Otherwise, just update the status.
                 val newLabel = result.shippingLabelModel ?: shipment.label.copy(status = result.status)
-                updateShipment(shipmentId, shipment.copy(label = newLabel))
+                updateShipment(shipmentId, shipment.copy(label = newLabel.copy(originAddress = originAddress)))
             }.launchIn(this)
         }
     }
