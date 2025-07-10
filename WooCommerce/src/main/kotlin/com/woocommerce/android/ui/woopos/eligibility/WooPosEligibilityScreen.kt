@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -18,8 +19,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -32,7 +35,8 @@ import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 @Suppress("UnusedParameter")
 fun WooPosEligibilityScreen(
     reason: WooPosLaunchability.NonLaunchabilityReason,
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    viewModel: WooPosEligibilityViewModel = hiltViewModel()
 ) {
     BackHandler {
         onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
@@ -71,10 +75,14 @@ fun WooPosEligibilityScreen(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
+        val isRetryLoading = viewModel.isRetryLoading.collectAsState().value
+
         WooPosButton(
             text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
+            onClick = { viewModel.retryEligibilityCheck() },
+            state = if (isRetryLoading) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
             modifier = Modifier.size(width = 366.dp, height = 80.dp)
-        ) {}
+        )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
