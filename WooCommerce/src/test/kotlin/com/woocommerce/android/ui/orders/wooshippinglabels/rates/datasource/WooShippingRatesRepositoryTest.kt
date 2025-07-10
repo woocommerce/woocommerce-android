@@ -41,7 +41,7 @@ class WooShippingRatesRepositoryTest : BaseUnitTest() {
         weight = "10",
         isSelected = true,
         isLetter = false,
-        isPredefined = true,
+        isUserDefined = true,
         dimensionUnit = "cm",
         weightUnit = "kg"
     )

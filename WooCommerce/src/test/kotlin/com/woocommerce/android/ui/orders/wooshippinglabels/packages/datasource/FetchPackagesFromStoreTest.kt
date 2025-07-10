@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -18,23 +18,20 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
+class FetchPackagesFromStoreTest : BaseUnitTest() {
 
     private val packageRepository: WooShippingLabelPackageRepository = mock()
     private val selectedSite: SelectedSite = mock()
-    private val fetchPredefinedPackagesFromStore = FetchPredefinedPackagesFromStore(
-        selectedSite,
-        packageRepository
-    )
+    private val fetchPackagesFromStore = FetchPackagesFromStore(selectedSite, packageRepository)
 
     @Test
-    fun `invoke should return StorePredefinedPackages with carrier and saved packages`() = testBlocking {
+    fun `invoke should return Data with carrier and saved packages`() = testBlocking {
         val storePackages = generatePackagesData()
         val site = SiteModel().apply { id = 1 }
         whenever(selectedSite.getOrNull()).thenReturn(site)
         whenever(packageRepository.fetchAllStorePackages(site)).thenReturn(WooResult(storePackages))
 
-        val result = fetchPredefinedPackagesFromStore() as PredefinedPackagesState.Data
+        val result = fetchPackagesFromStore() as PackagesState.Data
 
         assertThat(result.savedPackages).containsExactly(
             PackageData(
@@ -44,7 +41,7 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
                 weight = "weight",
                 isSelected = false,
                 isLetter = false,
-                isPredefined = true,
+                isStarred = true,
             ),
             PackageData(
                 id = "2",
@@ -53,7 +50,6 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
                 weight = "weight",
                 isSelected = false,
                 isLetter = false,
-                isPredefined = true,
                 isStarred = true,
             )
         )
@@ -68,7 +64,6 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
                         weight = "weight",
                         isSelected = false,
                         isLetter = false,
-                        isPredefined = true,
                     )
                 )
             )
@@ -76,24 +71,24 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
     }
 
     @Test
-    fun `invoke should return Error StorePredefinedPackages when fetchAllStorePackages returns error`() = testBlocking {
+    fun `invoke should return Error when fetchAllStorePackages returns error`() = testBlocking {
         val error = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         val site = SiteModel().apply { id = 1 }
         whenever(selectedSite.getOrNull()).thenReturn(site)
         whenever(packageRepository.fetchAllStorePackages(site)).thenReturn(WooResult(error))
 
-        val result = fetchPredefinedPackagesFromStore()
+        val result = fetchPackagesFromStore()
 
-        assertThat(result).isEqualTo(PredefinedPackagesState.Error)
+        assertThat(result).isEqualTo(PackagesState.Error)
     }
 
     @Test
-    fun `invoke should return Error StorePredefinedPackages when site is not available`() = testBlocking {
+    fun `invoke should return Error when site is not available`() = testBlocking {
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
-        val result = fetchPredefinedPackagesFromStore()
+        val result = fetchPackagesFromStore()
 
-        assertThat(result).isEqualTo(PredefinedPackagesState.Error)
+        assertThat(result).isEqualTo(PackagesState.Error)
     }
 
     private fun generatePackagesData() = StorePackagesDAO(
@@ -112,7 +107,7 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
                 isLetter = false,
                 dimensionUnit = "cm",
                 weightUnit = "kg",
-                saved = false
+                saved = true
             ),
             PackageDAO(
                 id = "2",

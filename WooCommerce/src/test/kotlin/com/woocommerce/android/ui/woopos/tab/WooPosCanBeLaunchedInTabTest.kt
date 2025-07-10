@@ -104,6 +104,38 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given uk country and pounds, when invoked, then return Launchable`() = testBlocking {
+        val siteSettings = buildSiteSettings(countryCode = "GB", currencyCode = "GBP")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+        val result = sut()
+        assertEquals(Launchable, result)
+    }
+
+    @Test
+    fun `given us country and dollars, when invoked, then return Launchable`() = testBlocking {
+        val siteSettings = buildSiteSettings(countryCode = "US", currencyCode = "USD")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+        val result = sut()
+        assertEquals(Launchable, result)
+    }
+
+    @Test
+    fun `given uk country and usd, when invoked, then return Not Launchable`() = testBlocking {
+        val siteSettings = buildSiteSettings(countryCode = "GB", currencyCode = "USD")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+        val result = sut()
+        assertEquals(NotLaunchable(Reason.UnsupportedCurrency), result)
+    }
+
+    @Test
+    fun `given us country and pounds, when invoked, then return Not Launchable`() = testBlocking {
+        val siteSettings = buildSiteSettings(countryCode = "US", currencyCode = "GBP")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+        val result = sut()
+        assertEquals(NotLaunchable(Reason.UnsupportedCurrency), result)
+    }
+
+    @Test
     fun `given site settings missing but fetched successfully, when invoked, then return Launchable`() = testBlocking {
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(null)
         val fetchedSettings = buildSiteSettings(currencyCode = "usd")
@@ -123,10 +155,13 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
     }
 
-    private fun buildSiteSettings(currencyCode: String = "usd") =
-        WCSettingsTestUtils.generateSettings(
-            siteId = LocalOrRemoteId.LocalId(1)
-        ).copy(
-            currencyCode = currencyCode
-        )
+    private fun buildSiteSettings(
+        countryCode: String = "US",
+        currencyCode: String = "USD"
+    ) = WCSettingsTestUtils.generateSettings(
+        siteId = LocalOrRemoteId.LocalId(1)
+    ).copy(
+        countryCode = countryCode,
+        currencyCode = currencyCode
+    )
 }
