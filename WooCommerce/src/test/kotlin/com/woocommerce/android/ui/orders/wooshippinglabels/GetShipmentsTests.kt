@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLa
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.StoredDataDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -235,11 +236,15 @@ class GetShipmentsTests : BaseUnitTest() {
 
         val shippingLabel = ShippingLabelDTO(labelId = labelId, shipmentId = shipmentId)
         val destinationAddressDTO = DestinationAddressDTO()
+        val originAddressDTO = OriginAddressDTO()
         val configDTO = ConfigDTO(
             shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList()))),
             shippingLabelData = ShippingLabelDataDTO(
                 currentOrderLabels = listOf(shippingLabel),
-                storedData = StoredDataDTO(selectedDestination = mapOf("shipment_$shipmentId" to destinationAddressDTO))
+                storedData = StoredDataDTO(
+                    selectedOrigin = mapOf("shipment_$shipmentId" to originAddressDTO),
+                    selectedDestination = mapOf("shipment_$shipmentId" to destinationAddressDTO)
+                )
             )
         )
 
