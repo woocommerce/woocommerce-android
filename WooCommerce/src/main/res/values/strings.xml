@@ -4466,6 +4466,39 @@
     <string name="woopos_search_coupons_error_title">Unable to load coupons</string>
     <string name="woopos_search_items_error_description">Please try again.</string>
 
+    <!-- WooPos Scanning Setup -->
+    <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>
+    <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
+    <string name="woopos_scanning_setup_welcome_title">Start using a barcode scanner</string>
+    <string name="woopos_scanning_setup_welcome_message">Choose an option:</string>
+    <string name="woopos_scanning_setup_welcome_setup_button">Set up a barcode scanner</string>
+    <string name="woopos_scanning_setup_welcome_documentation_button">View barcode scanner documentation</string>
+    <string name="woopos_scanning_setup_device_selection_title">Set up a barcode scanner</string>
+    <string name="woopos_scanning_setup_device_selection_message">Select a model from the list:</string>
+    <string name="woopos_scanning_setup_introduction_title">Set up your %s</string>
+    <string name="woopos_scanning_setup_introduction_message">Follow these steps to connect your %s barcode scanner.</string>
+    <string name="woopos_scanning_setup_bluetooth_warning_title">Bluetooth pairing</string>
+    <string name="woopos_scanning_setup_bluetooth_warning_message">Make sure your scanner is in pairing mode before proceeding.</string>
+    <string name="woopos_scanning_setup_bluetooth_pairing_title">Scan this barcode</string>
+    <string name="woopos_scanning_setup_bluetooth_pairing_message">Use your scanner to scan this barcode to configure it for pairing.</string>
+    <string name="woopos_scanning_setup_bluetooth_pairing_instruction">Scan the barcode above with your scanner</string>
+    <string name="woopos_scanning_setup_pair_device_title">Pair on your device</string>
+    <string name="woopos_scanning_setup_pair_device_message">Enable bluetooth on your device and locate your %s</string>
+    <string name="woopos_scanning_setup_pair_device_instruction">Scan the barcode above to complete pairing</string>
+    <string name="woopos_scanning_setup_pair_device_bluetooth_button">Open Bluetooth Settings</string>
+    <string name="woopos_scanning_setup_test_scanner_title">Test your scanner</string>
+    <string name="woopos_scanning_setup_test_scanner_message">Scan this test barcode to verify your scanner is working correctly.</string>
+    <string name="woopos_scanning_setup_test_scanner_instruction">Scan the barcode above to test your scanner</string>
+    <string name="woopos_scanning_setup_complete_title">Scanner setup complete!</string>
+    <string name="woopos_scanning_setup_complete_message">Your barcode scanner is now ready to use. You can start scanning products to add them to orders.</string>
+    <string name="woopos_scanning_setup_button_next">Next</string>
+    <string name="woopos_scanning_setup_button_back">Back</string>
+    <string name="woopos_scanning_setup_button_done">Done</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_inateck_bluetooth">Inateck Bluetooth</string>
+    <string name="woopos_scanning_setup_device_other">Other</string>
+
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
     <string name="customers_details_registration_section">Registration</string>

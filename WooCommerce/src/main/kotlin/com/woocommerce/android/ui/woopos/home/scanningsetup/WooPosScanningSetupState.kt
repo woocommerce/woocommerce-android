@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -10,11 +12,11 @@ data class WooPosScanningSetupState(
     val currentStep: ScanningSetupStep,
     val selectedDevice: BarcodeReaderDevice? = null
 ) : Parcelable {
-    enum class BarcodeReaderDevice(val displayName: String) {
-        TERA_1200("Tera 1200"),
-        STAR_BSH_20B("Star BSH-20B"),
-        INATECK_BLUETOOTH("Inateck Bluetooth"),
-        OTHER("Other")
+    enum class BarcodeReaderDevice(@StringRes val displayNameRes: Int) {
+        TERA_1200(R.string.woopos_scanning_setup_device_tera_1200),
+        STAR_BSH_20B(R.string.woopos_scanning_setup_device_star_bsh_20b),
+        INATECK_BLUETOOTH(R.string.woopos_scanning_setup_device_inateck_bluetooth),
+        OTHER(R.string.woopos_scanning_setup_device_other);
     }
     sealed class ScanningSetupStep : Parcelable {
         @Parcelize

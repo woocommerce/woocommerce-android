@@ -106,7 +106,9 @@ fun WooPosScanningSetupDialog(
     WooPosDialogWrapper(
         isVisible = isVisible,
         onDismissRequest = onDismissRequest,
-        dialogBackgroundContentDescription = "Scanner setup dialog"
+        dialogBackgroundContentDescription = stringResource(
+            id = R.string.woopos_scanning_setup_dialog_content_description
+        )
     ) {
         val state by viewModel.state.collectAsState()
         Box(
@@ -389,7 +391,9 @@ private fun BarcodeStepContent(
         ) {
             Image(
                 painter = painterResource(id = barcodeRes),
-                contentDescription = "Barcode",
+                contentDescription = stringResource(
+                    id = R.string.woopos_scanning_setup_barcode_content_description
+                ),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -518,7 +522,7 @@ private fun DeviceSelectionContent(
         )
 
         WooPosText(
-            text = "Select a model from the list:",
+            text = stringResource(id = R.string.woopos_scanning_setup_device_selection_message),
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
@@ -561,7 +565,7 @@ private fun DeviceSelectionItem(
         contentAlignment = Alignment.Center
     ) {
         WooPosText(
-            text = device.displayName,
+            text = stringResource(device.displayNameRes),
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
         )

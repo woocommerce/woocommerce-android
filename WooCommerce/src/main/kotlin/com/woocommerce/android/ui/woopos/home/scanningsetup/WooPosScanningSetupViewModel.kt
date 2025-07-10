@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
+class WooPosScanningSetupViewModel @Inject constructor(
+    private val resourceProvider: ResourceProvider
+) : ViewModel() {
 
     private val _state = MutableStateFlow(
         WooPosScanningSetupState(
@@ -54,6 +57,7 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
                     BarcodeReaderDevice.OTHER -> viewModelScope.launch {
                         _showBarcodeInfoDialogEvent.emit(Unit)
                     }
+
                     else -> _state.value = _state.value.copy(
                         currentStep = createBluetoothIntroductionStep()
                     )
@@ -179,14 +183,16 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun createWelcomeStep() = ScanningSetupStep.Welcome(
-        title = "Start using a barcode scanner",
-        message = "Choose an option:",
-        setupButtonText = "Set up a barcode scanner",
-        documentationButtonText = "View barcode scanner documentation"
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_welcome_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_welcome_message),
+        setupButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_welcome_setup_button),
+        documentationButtonText = resourceProvider.getString(
+            R.string.woopos_scanning_setup_welcome_documentation_button
+        )
     )
 
     private fun createDeviceSelectionStep() = ScanningSetupStep.DeviceSelection(
-        title = "Set up a barcode scanner",
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_device_selection_title),
         devices = listOf(
             BarcodeReaderDevice.TERA_1200,
             BarcodeReaderDevice.STAR_BSH_20B,
@@ -196,51 +202,62 @@ class WooPosScanningSetupViewModel @Inject constructor() : ViewModel() {
     )
 
     private fun createBluetoothIntroductionStep() = ScanningSetupStep.Introduction(
-        title = "Set up your ${_state.value.selectedDevice!!.displayName}",
-        message = "Follow these steps to connect your ${_state.value.selectedDevice!!.displayName} barcode scanner.",
-        primaryButtonText = "Next",
-        secondaryButtonText = "Back"
+        title = resourceProvider.getString(
+            R.string.woopos_scanning_setup_introduction_title,
+            resourceProvider.getString(_state.value.selectedDevice!!.displayNameRes)
+        ),
+        message = resourceProvider.getString(
+            R.string.woopos_scanning_setup_introduction_message,
+            resourceProvider.getString(_state.value.selectedDevice!!.displayNameRes)
+        ),
+        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
+        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
 
     private fun createBluetoothWarningStep() = ScanningSetupStep.BluetoothWarning(
-        title = "Bluetooth pairing",
-        message = "Make sure your scanner is in pairing mode before proceeding.",
-        primaryButtonText = "Next",
-        secondaryButtonText = "Back"
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_warning_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_warning_message),
+        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
+        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
 
     private fun createBluetoothPairingStep() = ScanningSetupStep.BluetoothPairing(
-        title = "Scan this barcode",
-        message = "Use your scanner to scan this barcode to configure it for pairing.",
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_pairing_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_pairing_message),
         barcodeImageRes = R.drawable.ic_barcode,
-        instructionText = "Scan the barcode above with your scanner",
-        primaryButtonText = "Next",
-        secondaryButtonText = "Back"
+        instructionText = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_pairing_instruction),
+        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
+        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
 
     private fun createPairOnYourDeviceStep() = ScanningSetupStep.PairOnYourDevice(
-        title = "Pair on your device",
-        message = "Enable bluetooth on your device and locate your ${_state.value.selectedDevice!!.displayName}",
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_pair_device_title),
+        message = resourceProvider.getString(
+            R.string.woopos_scanning_setup_pair_device_message,
+            resourceProvider.getString(_state.value.selectedDevice!!.displayNameRes),
+        ),
         barcodeImageRes = R.drawable.ic_barcode,
-        instructionText = "Scan the barcode above to complete pairing",
-        primaryButtonText = "Next",
-        secondaryButtonText = "Back",
-        bluetoothSettingsButtonText = "Open Bluetooth Settings"
+        instructionText = resourceProvider.getString(R.string.woopos_scanning_setup_pair_device_instruction),
+        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
+        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+        bluetoothSettingsButtonText = resourceProvider.getString(
+            R.string.woopos_scanning_setup_pair_device_bluetooth_button
+        )
     )
 
     private fun createTestYourScannerStep() = ScanningSetupStep.TestYourScanner(
-        title = "Test your scanner",
-        message = "Scan this test barcode to verify your scanner is working correctly.",
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_message),
         barcodeImageRes = R.drawable.ic_barcode,
-        instructionText = "Scan the barcode above to test your scanner",
-        primaryButtonText = "Done",
-        secondaryButtonText = "Back"
+        instructionText = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_instruction),
+        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done),
+        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
 
     private fun createScannerSetupCompleteStep() = ScanningSetupStep.ScannerSetupComplete(
-        title = "Scanner setup complete!",
-        message = "Your barcode scanner is now ready to use. You can start scanning products to add them to orders.",
-        primaryButtonText = "Done"
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_complete_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_complete_message),
+        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done)
     )
 }
 
