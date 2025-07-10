@@ -279,7 +279,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val orderShippingEmail = order.shippingAddress.email.ifBlank { order.billingAddress.email }
 
             if (labelDestination == null) {
-                if (destinationAddress.value == com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses.EMPTY) {
+                if (destinationAddress.value == WooShippingAddresses.EMPTY) {
                     val defaultDestination = DestinationShippingAddress(
                         address = order.shippingAddress.copy(email = orderShippingEmail),
                         isVerified = false
@@ -288,7 +288,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 }
 
                 if (addressValidationHelper.isMissingDestinationAddress(order.shippingAddress).not() &&
-                    !destinationAddress.value.isVerified) {
+                    !destinationAddress.value.isVerified
+                ) {
                     verifyDestinationAddress(order.id).fold(
                         onSuccess = {
                             destinationAddress.value = it.copy(
