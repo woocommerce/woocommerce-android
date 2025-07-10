@@ -12,6 +12,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.sumByFloat
@@ -369,8 +371,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         fun onSelectedShippingRateChanged(
             rate: ShippingRateUI?
         ) {
-            selectedRatesFlow.update {
-                it.toMutableList().apply { set(selectedShipmentIndex, rate) }
+            if (selectedRatesFlow.value[selectedShipmentIndex] != rate) {
+                selectedRatesFlow.update { it.toMutableList().apply { set(selectedShipmentIndex, rate) } }
+
+                analyticsTracker.track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
             }
         }
 
@@ -547,10 +551,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private suspend fun updateShippingRates(index: Int, shippingRatesInfo: ShippingRatesInfo?) {
         val currentMutableShippingRatesList = shippingRatesStatesFlow.value.toMutableList()
         when {
-            shippingRatesInfo == null -> {
-                shippingRatesStatesFlow.value = currentMutableShippingRatesList.apply {
-                    set(index, ShippingRatesState.NoAvailable)
-                }
+            shippingRatesInfo == null -> shippingRatesStatesFlow.value = currentMutableShippingRatesList.apply {
+                set(index, ShippingRatesState.NoAvailable)
             }
 
             shippingRatesInfo.shipTo == null ||
@@ -581,7 +583,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 shippingRatesStatesFlow.value = currentMutableShippingRatesList.apply {
                     set(index, ShippingRatesState.Loading(sortOrder))
                 }
-
                 val shippingRatesResult = getShippingRates(
                     shippingRatesInfo.orderId,
                     shippingRatesInfo.packageSelected,
@@ -592,18 +593,30 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     shippingRatesInfo.customsData,
                     shippingRatesInfo.hazmatSelection
                 )
-
                 if (shippingRatesResult.isSuccess && shippingRatesResult.getOrThrow().isNotEmpty()) {
                     shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
                         set(index, shippingRatesResult.getOrThrow())
                     }
+                    trackShippingRatesLoading(isSuccess = true)
                 } else {
                     shippingRatesStatesFlow.value = currentMutableShippingRatesList.apply {
                         set(index, ShippingRatesState.Error)
                     }
+                    trackShippingRatesLoading(isSuccess = false, error = shippingRatesResult.exceptionOrNull()?.message)
                 }
                 selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
+        }
+    }
+
+    private fun trackShippingRatesLoading(isSuccess: Boolean, error: String? = null) {
+        if (isSuccess) {
+            analyticsTracker.track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "loading_success"))
+        } else {
+            analyticsTracker.track(
+                AnalyticsEvent.WCS_RATE_SELECTION_STEP,
+                mapOf(KEY_STATE to "loading_failed", KEY_ERROR to error)
+            )
         }
     }
 
