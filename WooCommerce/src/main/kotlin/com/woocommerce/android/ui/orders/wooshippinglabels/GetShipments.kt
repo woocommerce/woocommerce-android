@@ -100,23 +100,17 @@ class GetShipments @Inject constructor(
         shipmentUIModelList: List<ShipmentUIModel>,
         originAddresses: Map<String, OriginAddressDTO>?,
         destinationAddresses: Map<String, DestinationAddressDTO>?
-    ) = shipmentUIModelList.map { shipmentUIModel ->
-        val id = shipmentUIModel.remoteId
-        if (id == null) {
-            shipmentUIModel
-        } else {
-            var updatedShipment = shipmentUIModel
-            originAddresses?.get(getStoredDataKey(id))?.let {
-                updatedShipment = updatedShipment.copy(
-                    label = updatedShipment.label?.copy(originAddress = mapper.invoke(it))
-                )
-            }
-            destinationAddresses?.get(getStoredDataKey(id))?.let {
-                updatedShipment =
-                    updatedShipment.copy(label = updatedShipment.label?.copy(destinationAddress = mapper.invoke(it)))
-            }
-            updatedShipment
-        }
+    ): List<ShipmentUIModel> = shipmentUIModelList.map { shipmentUIModel ->
+        val remoteId = shipmentUIModel.remoteId ?: return@map shipmentUIModel
+        val key = getStoredDataKey(remoteId)
+
+        val updatedLabel = shipmentUIModel.label?.copy(
+            originAddress = originAddresses?.get(key)?.let { mapper(it) }
+                ?: shipmentUIModel.label.originAddress,
+            destinationAddress = destinationAddresses?.get(key)?.let { mapper(it) }
+                ?: shipmentUIModel.label.destinationAddress
+        )
+        shipmentUIModel.copy(label = updatedLabel)
     }
 
     private fun getStoredDataKey(shipmentId: String) = "shipment_$shipmentId"
