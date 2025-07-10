@@ -440,8 +440,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             shippingAddresses,
             customsFormDataFlow.filter { it.isNotEmpty() },
             shipmentItems.filter { it.isNotEmpty() },
-        ) { addresses, customsData, shipmentItems ->
-            val customsRequired = addresses != null && shouldRequireCustoms(addresses)
+            uiState.map { it.selectedIndex }.distinctUntilChanged()
+        ) { addresses, customsData, shipmentItems, selectedIndex ->
+            val selectedAddress = addresses.getOrNull(selectedIndex)
+            val customsRequired = selectedAddress != null && shouldRequireCustoms(selectedAddress)
 
             shipmentItems.mapIndexed { index, shippableItemModelList ->
                 val currentItemCustomsData = customsData[index]
