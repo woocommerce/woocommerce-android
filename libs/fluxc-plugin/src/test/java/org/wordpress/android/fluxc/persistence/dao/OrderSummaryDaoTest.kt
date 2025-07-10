@@ -44,7 +44,7 @@ class OrderSummaryDaoTest {
 
         sut.upsertOrderSummaries(orderSummaries)
 
-        val result = sut.getOrderSummariesChunked(
+        val result = sut.getOrderSummaries(
             site.localId(),
             listOf(1, 2, 3).asRemoteIds()
         )
@@ -57,7 +57,7 @@ class OrderSummaryDaoTest {
 
         sut.upsertOrderSummaries(orderSummaries)
 
-        val result = sut.getOrderSummariesChunked(site.localId(), listOf(RemoteId(1L), RemoteId(3L)))
+        val result = sut.getOrderSummaries(site.localId(), listOf(RemoteId(1L), RemoteId(3L)))
         assertThat(result).containsOnlyIds(1, 3)
     }
 
@@ -68,7 +68,7 @@ class OrderSummaryDaoTest {
 
         sut.deleteOrderSummaryById(site.localId(), RemoteId(1L))
 
-        val result = sut.getOrderSummariesChunked(
+        val result = sut.getOrderSummaries(
             site.localId(),
             listOf(1, 2).asRemoteIds()
         )
@@ -83,7 +83,7 @@ class OrderSummaryDaoTest {
 
         SiteSqlUtils().deleteSite(site)
 
-        val result = sut.getOrderSummariesChunked(
+        val result = sut.getOrderSummaries(
             site.localId(),
             listOf(RemoteId(1L), RemoteId(2L), RemoteId(3L))
         )

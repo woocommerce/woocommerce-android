@@ -453,7 +453,7 @@ class WCOrderStore @Inject internal constructor(
         site: SiteModel,
         orderIds: List<Long>
     ): Map<RemoteId, WCOrderSummaryModel> {
-        val orderSummaries = orderSummaryDao.getOrderSummariesChunked(
+        val orderSummaries = orderSummaryDao.getOrderSummaries(
             site.localId(),
             orderIds.map { RemoteId(it) }
         )

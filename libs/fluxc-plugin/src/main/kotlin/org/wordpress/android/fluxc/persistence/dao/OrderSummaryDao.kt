@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.persistence.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Upsert
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -18,15 +19,16 @@ internal abstract class OrderSummaryDao {
      * Kotlin's chunked functionality to ensure we don't crash with the "SQLiteException: too many SQL variables"
      * exception.
      */
-    suspend fun getOrderSummariesChunked(siteId: LocalId, remoteOrderIds: List<RemoteId>): List<WCOrderSummaryModel> {
+    @Transaction
+    open suspend fun getOrderSummaries(siteId: LocalId, remoteOrderIds: List<RemoteId>): List<WCOrderSummaryModel> {
         return remoteOrderIds.chunked(CHUNK_SIZE)
             .flatMap { chunk ->
-                getOrderSummariesForRemoteIds(siteId, chunk)
+                getOrderSummariesForSubset(siteId, chunk)
             }
     }
 
     @Query("SELECT * FROM OrderSummaryEntity WHERE siteId = :siteId AND orderId IN (:remoteOrderIds)")
-    protected abstract suspend fun getOrderSummariesForRemoteIds(
+    protected abstract suspend fun getOrderSummariesForSubset(
         siteId: LocalId,
         remoteOrderIds: List<RemoteId>
     ): List<WCOrderSummaryModel>
