@@ -953,7 +953,7 @@ class OrderDetailViewModel @Inject constructor(
         ) {
             // we check against the viewstate to avoid sending the event multiple times
             // if the eligibility was cached, and we had the same value after re-fetching it
-            tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value)
+            tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value, isRevampWooShippingEnabled)
         }
 
         viewState = viewState.copy(
