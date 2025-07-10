@@ -872,7 +872,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchOrderShippingLabelsAsync() = async {
         if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
-            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId, isRevampWooShippingEnabled)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
