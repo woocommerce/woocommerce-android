@@ -52,6 +52,7 @@ fun PrintShippingLabelSection(
     status: ShippingLabelStatus,
     isCustomsFormAvailable: Boolean,
     isRefundAvailable: Boolean,
+    availablePaperSizes: List<WooShippingLabelPaperSize>,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -97,6 +98,7 @@ fun PrintShippingLabelSection(
             isPrintButtonEnabled = status == PURCHASED,
             isCustomsFormAvailable = isCustomsFormAvailable,
             isRefundAvailable = isRefundAvailable,
+            availablePaperSizes = availablePaperSizes,
             selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
             onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
             onPrintShippingLabelClicked = onPrintShippingLabelClicked,
@@ -121,6 +123,7 @@ private fun PrintShippingLabelCard(
     isPrintButtonEnabled: Boolean,
     isCustomsFormAvailable: Boolean,
     isRefundAvailable: Boolean,
+    availablePaperSizes: List<WooShippingLabelPaperSize>,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -141,6 +144,7 @@ private fun PrintShippingLabelCard(
     ) {
         RoundedCornerBoxWithBorder(backgroundColor = colorResource(id = R.color.woo_shipping_label_success_surface)) {
             LabelPaperSizeDropdownMenu(
+                availablePaperSizes = availablePaperSizes,
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
                 modifier = Modifier
@@ -215,12 +219,12 @@ private fun PrintShippingLabelCard(
 
 @Composable
 private fun LabelPaperSizeDropdownMenu(
+    availablePaperSizes: List<WooShippingLabelPaperSize>,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val options = WooShippingLabelPaperSize.entries
 
     Box {
         Row(
@@ -250,7 +254,7 @@ private fun LabelPaperSizeDropdownMenu(
             onDismissRequest = { expanded = false },
             modifier = Modifier.align(alignment = Alignment.CenterEnd)
         ) {
-            options.forEach { option ->
+            availablePaperSizes.forEach { option ->
                 DropdownMenuItem(onClick = {
                     onLabelPaperSizeOptionSelected(option)
                     expanded = false
@@ -311,12 +315,12 @@ private fun ShippingLabelLink(
 internal fun PrintShippingLabelSectionPreview() {
     WooThemeWithBackground {
         Surface {
-            val selectedLabelPaperSizeOption =
-                remember { mutableStateOf(WooShippingLabelPaperSize.LEGAL) }
+            val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.A4) }
             PrintShippingLabelSection(
                 status = PURCHASED,
                 isCustomsFormAvailable = true,
                 isRefundAvailable = true,
+                availablePaperSizes = emptyList(),
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
                 onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
                 onPrintShippingLabelClicked = {},
