@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippin
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +36,8 @@ class ObserveAccountSettingsTest : BaseUnitTest() {
         canManagePayments = false,
         canEditSettings = true,
         storeOwnerName = "",
-        storeOwnerUsername = ""
+        storeOwnerUsername = "",
+        paperSize = WooShippingLabelPaperSize.LABEL
     )
 
     val sut = ObserveAccountSettings(

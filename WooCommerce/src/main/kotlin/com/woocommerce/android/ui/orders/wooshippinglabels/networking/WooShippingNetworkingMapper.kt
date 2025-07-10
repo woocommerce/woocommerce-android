@@ -57,7 +57,8 @@ class WooShippingNetworkingMapper @Inject constructor(
                 canManagePayments = formMeta.canManagePayments,
                 canEditSettings = formMeta.canEditSettings,
                 storeOwnerName = formMeta.masterUserName,
-                storeOwnerUsername = formMeta.masterUserWpcomLogin
+                storeOwnerUsername = formMeta.masterUserWpcomLogin,
+                paperSize = formData.paperSize
             )
         }
     }
