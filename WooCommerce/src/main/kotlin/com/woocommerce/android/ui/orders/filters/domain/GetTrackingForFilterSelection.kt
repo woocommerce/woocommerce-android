@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CU
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
-import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.SALES_CHANNEL
 import javax.inject.Inject
 
 class GetTrackingForFilterSelection @Inject constructor(
@@ -18,7 +17,6 @@ class GetTrackingForFilterSelection @Inject constructor(
         val dateRangeOptions = orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
         val productFilterOptions = orderFiltersRepository.getCurrentFilterSelection(PRODUCT)
         val customerFilterOptions = orderFiltersRepository.getCurrentFilterSelection(CUSTOMER)
-        val salesChannelFilterOptions = orderFiltersRepository.getCurrentFilterSelection(SALES_CHANNEL)
 
         val trackingData = mutableMapOf<String, String>()
         if (orderStatusOptions.isNotEmpty()) {
@@ -32,9 +30,6 @@ class GetTrackingForFilterSelection @Inject constructor(
         }
         if (customerFilterOptions.isNotEmpty()) {
             trackingData[AnalyticsTracker.KEY_CUSTOMER] = customerFilterOptions.first()
-        }
-        if (salesChannelFilterOptions.isNotEmpty()) {
-            trackingData[AnalyticsTracker.KEY_SALES_CHANNEL] = salesChannelFilterOptions.first()
         }
         return trackingData
     }
