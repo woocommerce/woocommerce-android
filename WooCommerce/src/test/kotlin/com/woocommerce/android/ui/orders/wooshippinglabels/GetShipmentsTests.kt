@@ -226,6 +226,37 @@ class GetShipmentsTests : BaseUnitTest() {
         assertFalse(shipmentUIModel.purchased)
     }
 
+    @Test
+    fun `when label is failed, then purchased should be false`() = testBlocking {
+        val orderItem = OrderTestUtils.generateTestOrderItems(count = 1).first()
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
+        val shipmentId = "0"
+        val labelId = 123L
+
+        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
+        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+            val productId = invocation.arguments[0] as Long
+            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
+        }
+
+        val shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList())))
+        val shippingLabel = ShippingLabelDTO(
+            labelId = labelId,
+            shipmentId = shipmentId,
+            status = ShippingLabelStatus.PURCHASE_ERROR
+        )
+        val configDTO = ConfigDTO(
+            shipments = shipments,
+            shippingLabelData = ShippingLabelDataDTO(currentOrderLabels = listOf(shippingLabel), storedData = null)
+        )
+        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(configDTO)
+
+        val result = sut.invoke(order)
+        val shipmentUIModel = result.first()
+
+        assertFalse(shipmentUIModel.purchased)
+    }
+
     @Suppress("LongMethod")
     @Test
     fun `when there are stored address in config, result should contain label with address`() = testBlocking {
@@ -234,7 +265,11 @@ class GetShipmentsTests : BaseUnitTest() {
         val shipmentId = "0"
         val labelId = 12L
 
-        val shippingLabel = ShippingLabelDTO(labelId = labelId, shipmentId = shipmentId)
+        val shippingLabel = ShippingLabelDTO(
+            labelId = labelId,
+            shipmentId = shipmentId,
+            status = ShippingLabelStatus.PURCHASED
+        )
         val destinationAddressDTO = DestinationAddressDTO()
         val originAddressDTO = OriginAddressDTO()
         val configDTO = ConfigDTO(
@@ -258,7 +293,7 @@ class GetShipmentsTests : BaseUnitTest() {
             labelId = labelId,
             tracking = "",
             refundableAmount = BigDecimal.ZERO,
-            status = ShippingLabelStatus.UNKNOWN,
+            status = ShippingLabelStatus.PURCHASED,
             created = null,
             carrierId = "",
             serviceName = "",
@@ -287,6 +322,6 @@ class GetShipmentsTests : BaseUnitTest() {
         val shipmentUIModel = result.first()
 
         assertNotNull(shipmentUIModel.label)
-        assertNotNull(shipmentUIModel.label.destinationAddress)
+        assertNotNull(shipmentUIModel.label!!.destinationAddress)
     }
 }

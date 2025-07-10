@@ -48,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -96,6 +97,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
         }
 
         is WooShippingLabelCreationViewModel.WooShippingViewState.DataState -> {
+            val context = LocalContext.current
             WooShippingLabelCreationScreen(
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 shipmentUIList = viewState.shipmentUIList,
@@ -126,7 +128,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onTrackShipmentClicked = viewModel::onTrackShipmentClicked,
                 onSchedulePickUpClicked = viewModel::onSchedulePickUpClicked,
                 onRefundClicked = viewModel::onRefundClicked,
-                onPrintCustomsClicked = viewModel::onPrintCustomsClicked,
+                onPrintCustomsClicked = { viewModel.onPrintCustomsClicked(context.filesDir) },
                 onLearnMoreClicked = viewModel::onLearnMoreClicked,
             )
         }
