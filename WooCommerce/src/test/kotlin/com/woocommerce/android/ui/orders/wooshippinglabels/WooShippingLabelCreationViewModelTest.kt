@@ -330,6 +330,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             fetchShippingLabelFile = fetchShippingLabelFile,
             observeShippingLabelStatus = mock(),
             downloadAndPrintInvoiceUseCase = mock(),
+            analyticsTracker = mock(),
             savedState = savedState
         )
     }

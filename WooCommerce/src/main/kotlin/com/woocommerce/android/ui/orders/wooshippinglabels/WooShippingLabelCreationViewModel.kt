@@ -11,6 +11,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
@@ -122,7 +124,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val shouldRequireITN: ShouldRequireITN,
     private val fetchShippingLabelFile: FetchShippingLabelFile,
     private val observeShippingLabelStatus: ObserveShippingLabelStatus,
-    private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase
+    private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
 
@@ -183,6 +186,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     init {
         launch { observeShippingLabelInformation() }
         launch { getDestinationAddress() }
+        launch { trackScreenShownEvent() }
         launch { getSavedShipments() }
         launch { setDefaultPaperSize() }
         launch { getShippingAddresses() }
@@ -193,6 +197,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { observeShippingRatesState() }
         launch { observeCustomsDataChanges() }
         launch { observeNotices() }
+    }
+
+    private suspend fun trackScreenShownEvent() {
+        val unfulfilledShipmentsCount = shipments.drop(1).first().count { !it.purchased }
+        analyticsTracker.track(
+            AnalyticsEvent.WCS_CREATE_SHIPPING_LABEL_FORM_SHOWN,
+            mapOf("unfulfilled_shipments_count" to unfulfilledShipmentsCount)
+        )
     }
 
     private suspend fun getOrderInformation() {
