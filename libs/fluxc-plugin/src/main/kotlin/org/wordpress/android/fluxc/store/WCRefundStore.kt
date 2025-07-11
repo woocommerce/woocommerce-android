@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.store
 
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
@@ -9,7 +10,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
-import org.wordpress.android.fluxc.persistence.WCRefundSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import java.math.BigDecimal
@@ -17,10 +18,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WCRefundStore @Inject constructor(
+class WCRefundStore @Inject internal constructor(
     private val restClient: RefundRestClient,
     private val coroutineEngine: CoroutineEngine,
-    private val refundsMapper: RefundMapper
+    private val refundsMapper: RefundMapper,
+    private val refundDao: RefundDao,
 ) {
     companion object {
         // Just get everything
@@ -45,7 +47,7 @@ class WCRefundStore @Inject constructor(
             )
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)
-                response.result != null -> WooResult(refundsMapper.map(response.result))
+                response.result != null -> WooResult(refundsMapper.toModel(response.result))
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }
@@ -72,14 +74,19 @@ class WCRefundStore @Inject constructor(
             )
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)
-                response.result != null -> WooResult(refundsMapper.map(response.result))
+                response.result != null -> WooResult(refundsMapper.toModel(response.result))
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }
     }
 
-    fun getRefund(site: SiteModel, orderId: Long, refundId: Long): WCRefundModel? =
-            WCRefundSqlUtils.selectRefund(site, orderId, refundId)?.let { refundsMapper.map(it) }
+    suspend fun getRefund(site: SiteModel, orderId: Long, refundId: Long): WCRefundModel? {
+        return refundDao.getRefund(
+            siteId = site.localId(),
+            orderId = RemoteId(orderId),
+            refundId = RemoteId(refundId)
+        )?.let(refundsMapper::toModel)
+    }
 
     suspend fun fetchRefund(
         site: SiteModel,
@@ -91,16 +98,26 @@ class WCRefundStore @Inject constructor(
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    WCRefundSqlUtils.insertOrUpdate(site, orderId, response.result)
-                    WooResult(refundsMapper.map(response.result))
+                    response.result.let {
+                        refundsMapper.toEntity(
+                            siteId = site.localId(),
+                            orderId = RemoteId(orderId),
+                            refundResponse = it
+                        )
+                    }.let {
+                        refundDao.upsertRefund(it)
+                    }
+                    WooResult(refundsMapper.toModel(response.result))
                 }
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }
     }
 
-    fun getAllRefunds(site: SiteModel, orderId: Long): List<WCRefundModel> =
-            WCRefundSqlUtils.selectAllRefunds(site, orderId).map { refundsMapper.map(it) }
+    suspend fun getAllRefunds(site: SiteModel, orderId: Long): List<WCRefundModel> {
+        val entities = refundDao.getRefundsForOrder(site.localId(), RemoteId(orderId))
+        return entities.map(refundsMapper::toModel)
+    }
 
     suspend fun fetchAllRefunds(
         site: SiteModel,
@@ -118,9 +135,16 @@ class WCRefundStore @Inject constructor(
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    WCRefundSqlUtils.deleteRefunds(site, orderId)
-                    WCRefundSqlUtils.insertOrUpdate(site, orderId, response.result.toList())
-                    WooResult(response.result.map { refundsMapper.map(it) })
+                    val entities = response.result.map { refundResponse ->
+                        refundsMapper.toEntity(
+                            siteId = site.localId(),
+                            orderId = RemoteId(orderId),
+                            refundResponse = refundResponse
+                        )
+                    }
+                    refundDao.replaceRefundsForOrder(site.localId(), RemoteId(orderId), entities)
+
+                    WooResult(response.result.map(refundsMapper::toModel))
                 }
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }

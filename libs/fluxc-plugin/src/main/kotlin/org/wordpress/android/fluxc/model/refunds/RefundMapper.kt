@@ -1,7 +1,11 @@
 package org.wordpress.android.fluxc.model.refunds
 
+import com.google.gson.Gson
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.RefundResponse
+import org.wordpress.android.fluxc.persistence.entity.RefundEntity
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -10,8 +14,29 @@ import javax.inject.Inject
 
 const val DATE_FORMAT_DAY = "yyyy-MM-dd"
 
-class RefundMapper @Inject constructor() {
-    fun map(response: RefundResponse): WCRefundModel {
+class RefundMapper @Inject constructor(private val gson: Gson) {
+
+    fun toModel(entity: RefundEntity): WCRefundModel {
+        val refundResponse = gson.fromJson(entity.data, RefundResponse::class.java)
+        return toModel(refundResponse)
+    }
+
+    fun toEntity(
+        siteId: LocalId,
+        orderId: RemoteId,
+        refundResponse: RefundResponse
+    ): RefundEntity {
+        val json = gson.toJson(refundResponse)
+        val entity = RefundEntity(
+            siteId = siteId,
+            orderId = orderId,
+            refundId = RemoteId(refundResponse.refundId),
+            data = json
+        )
+        return entity
+    }
+
+    fun toModel(response: RefundResponse): WCRefundModel {
         return WCRefundModel(
                 id = response.refundId,
                 dateCreated = response.dateCreated?.let { fromFormattedDate(it) } ?: Date(),
