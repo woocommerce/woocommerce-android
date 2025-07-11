@@ -220,8 +220,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
         bulletPoints = listOf(
             resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_1),
             resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_2),
-            resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_3),
-            resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_4)
+            resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_3)
         ),
         infoText = resourceProvider.getString(R.string.woopos_scanning_setup_info_text),
         backButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
