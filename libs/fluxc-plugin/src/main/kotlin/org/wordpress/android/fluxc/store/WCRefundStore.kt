@@ -135,17 +135,14 @@ class WCRefundStore @Inject internal constructor(
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    refundDao.deleteRefundsForOrder(site.localId(), RemoteId(orderId))
-
-                    response.result.map { refundResponse ->
+                    val entities = response.result.map { refundResponse ->
                         refundsMapper.toEntity(
                             siteId = site.localId(),
                             orderId = RemoteId(orderId),
                             refundResponse = refundResponse
                         )
-                    }.let {
-                        refundDao.upsertRefunds(it)
                     }
+                    refundDao.replaceRefundsForOrder(site.localId(), RemoteId(orderId), entities)
 
                     WooResult(response.result.map(refundsMapper::toModel))
                 }
