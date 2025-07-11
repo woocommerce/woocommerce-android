@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-18 14:54:04+0000
+Translation-Revision-Date: 2025-07-02 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="wpp_shipping_ups_tos_accept">確認並繼續</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">我也同意 &lt;a href=\"ups-technology-agreement\"&gt;UPS® 技術協議&lt;/a&gt;。</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">我不會運送任何未經 UPS® 許可的&lt;a href=\"ups-prohibited-items\"&gt;禁運物品&lt;/a&gt;，也不會在未取得必要權限的情況下運送任何管制商品。</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">我同意 &lt;a href=\"ups-tos\"&gt;UPS® 服務條款&lt;/a&gt;。</string>
+    <string name="wpp_shipping_ups_tos_description">若要採用 UPS® 服務從這個地址開始送貨，請同意以下條款與條件：</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">送件地址</string>
+    <string name="wpp_shipping_ups_tos_title">UPS® 條款與條件</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">無法重新整理付款方式</string>
+    <string name="woo_shipping_payment_method_added">已新增付款方式</string>
+    <string name="woo_shipping_payment_use_card_button">使用這張卡</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">以電子郵件傳送收據</string>
+    <string name="woo_shipping_payment_methods_info_footer">從以下 WordPress.com 帳號擷取信用卡：%1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">新增信用卡或簽帳金融卡</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">新增付款方式以購買運送標籤 </string>
+    <string name="woo_shipping_payment_no_payment_methods_title">新增付款方式</string>
+    <string name="woo_shipping_payment_screen_description">選擇付款方式。</string>
+    <string name="woo_shipping_payment_screen_title">付款方式</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">僅限網站擁有者能管理運送標籤付款方式。 若要管理付款方式，請聯絡商店擁有者：%1$s (%2$s)。</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">編輯付款方式</string>
+    <string name="shipping_label_shipment_details_add_payment_method">新增付款方式</string>
+    <string name="shipping_label_shipment_details_payment_method">付款方式</string>
+    <string name="point_of_sale">銷售時點情報系統</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">伺服器錯誤：%s</string>
     <string name="media_loading_failed">媒體載入失敗</string>
     <string name="no_network_message">沒有可用的網路</string>
     <string name="media_library_title">WordPress 媒體庫</string>
@@ -19,11 +42,11 @@ Language: zh_TW
     <string name="woopos_dialog_barcode_info_content_description">條碼掃描資訊對話方塊</string>
     <string name="woopos_dialog_barcode_info_button_label">確定</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;購買日期：&lt;/b&gt;%s</string>
-    <string name="woo_shipping_refund_description">針對未使用的貨運標籤申請退款。 貨運標籤退款流程將立即啟動，通常會在 14 個工作天內完成。</string>
     <string name="woo_shipping_refund_title">申請貨運標籤退款</string>
     <string name="woopos_cart_adding_item_to_cart_failed">新增商品至購物車失敗，%s。</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">折價券「%1$s」已新增至購物車</string>
     <string name="woopos_dialog_barcode_info_quinary_message">掃描器會模擬鍵盤，因此有時會在搜尋等欄位阻擋螢幕鍵盤顯示。 只要點選鍵盤圖示，即可重新顯示螢幕鍵盤。</string>
+    <string name="woo_shipping_refund_duration_description">針對未使用的運送標籤申請退款。 運送標籤的退款流程將立即開始，且通常會在 %d 個工作天內完成。</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• 在商品清單上掃瞄條碼，將商品加入購物車。</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• 請於系統藍牙設定中，連結條碼掃瞄器。</string>
     <string name="woopos_dialog_barcode_info_secondary_message">• 請參閱藍牙條碼掃描器指示，設定 HID 模式。</string>
@@ -32,7 +55,6 @@ Language: zh_TW
     <string name="woopos_dialog_barcode_info_intro_message">你可以使用外部掃描器，掃描條碼後快速建立購物車。</string>
     <string name="woopos_cart_barcode_scan_result_network_error">沒有網際網路連線</string>
     <string name="woopos_dialog_barcode_info_heading">掃瞄條碼</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">申請已取消</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">不支援：%s</string>
     <string name="woopos_add_coupon_to_cart_accessibility_label">新增折價券至購物車</string>
     <string name="woopos_add_product_to_cart_accessibility_label">新增商品至購物車</string>
