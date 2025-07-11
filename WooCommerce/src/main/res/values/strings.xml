@@ -4478,12 +4478,6 @@
     <string name="woopos_scanning_setup_introduction_message">Scan the Bluetooth HID symbol.</string>
     <string name="woopos_scanning_setup_scanner_pair_mode_title">Scanner set up</string>
     <string name="woopos_scanning_setup_scanner_pair_mode_message">Scan the Pair symbol to get the scanner ready for pairing.</string>
-    <string name="woopos_scanning_setup_bluetooth_pairing_title">Scan this barcode</string>
-    <string name="woopos_scanning_setup_bluetooth_pairing_message">Use your scanner to scan this barcode to configure it for pairing.</string>
-    <string name="woopos_scanning_setup_bluetooth_pairing_instruction">Scan the barcode above with your scanner</string>
-    <string name="woopos_scanning_setup_pair_device_title">Pair on your device</string>
-    <string name="woopos_scanning_setup_pair_device_instruction">Scan the barcode above to complete pairing</string>
-    <string name="woopos_scanning_setup_pair_device_bluetooth_button">Open Bluetooth Settings</string>
     <string name="woopos_scanning_setup_pair_your_scanner_title">Pair your scanner</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
     <string name="woopos_scanning_setup_go_to_settings">Go to settings</string>
