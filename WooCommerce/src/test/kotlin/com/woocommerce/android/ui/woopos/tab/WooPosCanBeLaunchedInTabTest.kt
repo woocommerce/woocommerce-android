@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.woopos.tab
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPOSIsRemotelyEnabled
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.Launchable
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NonLaunchabilityReason
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NotLaunchable
-import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.Reason
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,14 +59,14 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
     fun `given no site selected, when invoked, then return NotLaunchable with NoSiteSelected`() = testBlocking {
         whenever(selectedSite.getOrNull()).thenReturn(null)
         val result = sut()
-        assertEquals(NotLaunchable(Reason.NoSiteSelected), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.NoSiteSelected), result)
     }
 
     @Test
     fun `given unsupported WooCommerce version, when invoked, then return NotLaunchable with UnsupportedWooCommerceVersion`() = testBlocking {
         whenever(getWooCoreVersion()).thenReturn("9.5.0") // lower than 9.6.0
         val result = sut()
-        assertEquals(NotLaunchable(Reason.UnsupportedWooCommerceVersion), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedWooCommerceVersion), result)
     }
 
     @Test
@@ -84,7 +84,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         )
 
         val result = sut()
-        assertEquals(NotLaunchable(Reason.FeatureSwitchDisabled), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.FeatureSwitchDisabled), result)
     }
 
     @Test
@@ -92,7 +92,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(null)
         whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).thenReturn(WooResult(null))
         val result = sut()
-        assertEquals(NotLaunchable(Reason.SiteSettingsUnavailable), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.SiteSettingsUnavailable), result)
     }
 
     @Test
@@ -100,7 +100,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         val siteSettings = buildSiteSettings(currencyCode = "eur")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
         val result = sut()
-        assertEquals(NotLaunchable(Reason.UnsupportedCurrency), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
     }
 
     @Test
@@ -124,7 +124,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         val siteSettings = buildSiteSettings(countryCode = "GB", currencyCode = "USD")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
         val result = sut()
-        assertEquals(NotLaunchable(Reason.UnsupportedCurrency), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
     }
 
     @Test
@@ -132,7 +132,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         val siteSettings = buildSiteSettings(countryCode = "US", currencyCode = "GBP")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
         val result = sut()
-        assertEquals(NotLaunchable(Reason.UnsupportedCurrency), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
     }
 
     @Test
@@ -152,7 +152,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).thenReturn(WooResult(fetchedSettings))
 
         val result = sut()
-        assertEquals(NotLaunchable(Reason.UnsupportedCurrency), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
     }
 
     private fun buildSiteSettings(

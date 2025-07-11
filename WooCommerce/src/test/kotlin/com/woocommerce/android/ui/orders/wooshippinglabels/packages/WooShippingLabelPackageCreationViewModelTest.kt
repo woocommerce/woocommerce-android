@@ -2,6 +2,10 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageSelected
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType.ENVELOPE
@@ -45,6 +49,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
     }
     private val updateSavedCarrierPackages: UpdateSavedCarrierPackages = mock()
 
+    private val tracker: AnalyticsTrackerWrapper = mock()
+
     @Before
     fun setUp() {
         whenever(
@@ -63,8 +69,14 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            tracker
         )
+    }
+
+    @Test
+    fun `when started, track started event`() = testBlocking {
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to VALUE_STARTED))
     }
 
     @Test
@@ -94,6 +106,43 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
         verify(packageRepository, times(0)).createCustomPackage(any(), any())
         assertThat(lastEvent).isEqualTo(PackageSelected(customPackageData.toPackageData("cm")))
+    }
+
+    @Test
+    fun `onAddCustomPackageClick triggers selected track`() = testBlocking {
+        sut.onAddCustomPackageClick(savePackageAsTemplate = false)
+
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
+    }
+
+    @Test
+    fun `onAddCarrierPackageClick triggers selected track`() = testBlocking {
+        sut.onAddCarrierPackageClick()
+
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
+    }
+
+    @Test
+    fun `onAddSavedPackageClick triggers selected track`() = testBlocking {
+        sut.onAddSavedPackageClick()
+
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
+    }
+
+    @Test
+    fun `onSavedPackageRemoved triggers removing_success track`() = testBlocking {
+        val packageToRemove = PackageData(
+            id = "1",
+            name = "Package 1 - Carrier 1",
+            dimensions = "10 x 10 x 10",
+            weight = "10",
+            isSelected = false,
+            isLetter = false,
+            isStarred = true
+        )
+        sut.onSavedPackageRemoved(packageToRemove)
+
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "removing_success"))
     }
 
     @Test
@@ -206,7 +255,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onSavedPackageSelected(package1, true)
@@ -259,7 +309,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onCarrierPackageSelected(package1, true)
@@ -343,7 +394,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
 
         sut.viewState.observeForever { lastViewState = it }
@@ -399,7 +451,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 resourceProvider,
                 fetchPackages,
                 updateSavedCarrierPackages,
-                packageRepository
+                packageRepository,
+                mock()
             )
             advanceUntilIdle()
 
@@ -460,7 +513,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         advanceUntilIdle()
 
@@ -508,7 +562,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         advanceUntilIdle()
 
@@ -555,7 +610,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         advanceUntilIdle()
 

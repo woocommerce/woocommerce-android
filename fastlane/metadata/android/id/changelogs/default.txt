@@ -1,0 +1,2 @@
+22.7:
+Pembaruan ini membuat pengelolaan toko Anda makin mulus! Kami telah memperbarui UI filter pesanan, mempermudah akses POS lewat bilah tab, serta menambahkan dukungan barcode untuk mengisi kolom SKU dan ID Unik. Kami juga telah memperbaiki bug agar Anda bisa menghapus kolom tersebut saat diperlukan.

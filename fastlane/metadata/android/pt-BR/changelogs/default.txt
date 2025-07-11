@@ -1,0 +1,2 @@
+22.7:
+Esta atualização faz o gerenciamento da sua loja ser ainda mais tranquilo! Atualizamos a interface de usuário de filtragem de pedidos, facilitamos o acesso ao ponto de venda por meio da barra de guias e adicionamos suporte a código de barras para definir os campos SKU e ID exclusiva, além de corrigirmos um erro para que você possa limpar esses campos quando necessário.

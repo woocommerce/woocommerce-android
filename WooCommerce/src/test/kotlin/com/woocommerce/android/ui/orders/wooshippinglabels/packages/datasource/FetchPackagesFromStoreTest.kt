@@ -28,7 +28,7 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
     fun `invoke should return Data with carrier and saved packages`() = testBlocking {
         val storePackages = generatePackagesData()
         val site = SiteModel().apply { id = 1 }
-        whenever(selectedSite.getOrNull()).thenReturn(site)
+        whenever(selectedSite.get()).thenReturn(site)
         whenever(packageRepository.fetchAllStorePackages(site)).thenReturn(WooResult(storePackages))
 
         val result = fetchPackagesFromStore() as PackagesState.Data
@@ -74,21 +74,12 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
     fun `invoke should return Error when fetchAllStorePackages returns error`() = testBlocking {
         val error = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         val site = SiteModel().apply { id = 1 }
-        whenever(selectedSite.getOrNull()).thenReturn(site)
+        whenever(selectedSite.get()).thenReturn(site)
         whenever(packageRepository.fetchAllStorePackages(site)).thenReturn(WooResult(error))
 
         val result = fetchPackagesFromStore()
 
-        assertThat(result).isEqualTo(PackagesState.Error)
-    }
-
-    @Test
-    fun `invoke should return Error when site is not available`() = testBlocking {
-        whenever(selectedSite.getOrNull()).thenReturn(null)
-
-        val result = fetchPackagesFromStore()
-
-        assertThat(result).isEqualTo(PackagesState.Error)
+        assertThat(result).isEqualTo(PackagesState.Error(WooErrorType.GENERIC_ERROR.name))
     }
 
     private fun generatePackagesData() = StorePackagesDAO(

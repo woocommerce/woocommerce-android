@@ -1,0 +1,2 @@
+22.7:
+Mit diesem Update wird die Verwaltung deines Shops noch reibungsloser! Wir haben die Benutzeroberfläche für das Filtern von Bestellungen aktualisiert, den Zugriff auf den POS über die Tab-Leiste vereinfacht und Barcode-Unterstützung zum Festlegen von Feldern für die Artikelnummer und die eindeutige ID hinzugefügt. Außerdem haben wir einen Fehler behoben, sodass du diese Felder jetzt bei Bedarf löschen kannst.
