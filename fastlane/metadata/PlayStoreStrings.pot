@@ -16,16 +16,16 @@ msgid "Our latest update brings a refreshed look and feel, aligning the app with
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_228"
+msgid ""
+"22.8:\n"
+"This update brings more reliability and polish to Woo POS! You’ll now see clear error messages if a scanned barcode is too short or improperly formatted, and orders created in POS are now marked with a handy “POS” badge. We’ve also made the designs more consistent for a smoother look. Enjoy the improvements!\n"
+msgstr ""
+
 msgctxt "release_note_227"
 msgid ""
 "22.7:\n"
 "This update makes managing your store even smoother! We’ve refreshed the order filtering UI, made the POS easier to access via the tab bar, and added barcode support to set SKU and Unique ID fields—plus fixed a bug so you can now clear those fields when needed.\n"
-msgstr ""
-
-msgctxt "release_note_226"
-msgid ""
-"22.6:\n"
-"This release brings smoother order creation, better UI on tablets, and enhanced accessibility. POS now supports HID barcode scanners, sends detailed receipts, and checks feature availability for WooCommerce 10.0+. We've also improved refunds, payments UI, and large screen support.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
