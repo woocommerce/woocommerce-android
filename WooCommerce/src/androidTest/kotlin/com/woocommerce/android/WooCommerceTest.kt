@@ -17,6 +17,15 @@ import dagger.hilt.components.SingletonComponent
 interface WooCommerceTest
 
 open class BaseWooCommerce : Application(), HasAndroidInjector, Configuration.Provider {
+    override val workManagerConfiguration: Configuration = Configuration.Builder()
+        .setWorkerFactory(
+            EntryPoints.get(
+                applicationContext,
+                HiltWorkerFactoryEntryPoint::class.java
+            ).workerFactory()
+        )
+        .build()
+
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface AndroidInjectorEntryPoint {
@@ -40,16 +49,5 @@ open class BaseWooCommerce : Application(), HasAndroidInjector, Configuration.Pr
             applicationContext,
             AndroidInjectorEntryPoint::class.java
         ).injector()
-    }
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        val hiltWorkerFactory = EntryPoints.get(
-            applicationContext,
-            HiltWorkerFactoryEntryPoint::class.java
-        ).workerFactory()
-
-        return Configuration.Builder()
-            .setWorkerFactory(hiltWorkerFactory)
-            .build()
     }
 }
