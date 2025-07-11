@@ -473,24 +473,27 @@ private fun ScannerSetupSuccessContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ScannerSetupSuccessIcon(
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
-        )
+        ScannerSetupSuccessIcon()
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         WooPosText(
             text = step.title,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
         WooPosText(
             text = step.message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         WooPosOutlinedButton(
             onClick = onSecondaryClick,
