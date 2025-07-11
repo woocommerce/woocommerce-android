@@ -20,9 +20,9 @@ import org.wordpress.android.fluxc.model.list.datasource.ListItemDataSourceInter
     primaryKeys = ["siteId", "orderId"]
 )
 data class WCOrderSummaryModel(
-    val siteId: LocalId = LocalId(0),
-    val orderId: RemoteId = RemoteId(0L), // The unique identifier for this order on the server
-    val dateCreated: String = "", // ISO 8601-formatted date in UTC, e.g. 1955-11-05T14:15:00Z
+    val siteId: LocalId,
+    val orderId: RemoteId, // The unique identifier for this order on the server
+    val dateCreated: String, // ISO 8601-formatted date in UTC, e.g. 1955-11-05T14:15:00Z
 ) {
-    @Ignore var dateModified: String = ""
+    @Ignore var dateModified: String? = null
 }
