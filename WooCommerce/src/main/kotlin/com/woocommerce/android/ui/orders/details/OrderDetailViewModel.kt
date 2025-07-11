@@ -1058,7 +1058,8 @@ class OrderDetailViewModel @Inject constructor(
         viewState = viewState.copy(
             isOrderDetailEmpty = true,
             isRefreshing = false,
-            isOrderDetailSkeletonShown = false
+            isOrderDetailSkeletonShown = false,
+            toolbarTitle = null
         )
     }
 
@@ -1066,6 +1067,13 @@ class OrderDetailViewModel @Inject constructor(
         viewState = viewState.copy(
             isOrderDetailEmpty = false,
             isOrderDetailSkeletonShown = true
+        )
+    }
+
+    fun onOrdersLoaded() {
+        viewState = viewState.copy(
+            isOrderDetailEmpty = false,
+            isOrderDetailSkeletonShown = false
         )
     }
 
