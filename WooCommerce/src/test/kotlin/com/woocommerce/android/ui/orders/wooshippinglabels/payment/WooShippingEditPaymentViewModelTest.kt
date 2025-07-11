@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSetting
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
@@ -61,7 +62,8 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         canManagePayments = true,
         canEditSettings = true,
         storeOwnerName = "John Doe",
-        storeOwnerUsername = "johndoe"
+        storeOwnerUsername = "johndoe",
+        paperSize = WooShippingLabelPaperSize.LABEL
     )
 
     private val observeAccountSettings: ObserveAccountSettings = mock {

@@ -32,7 +32,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
@@ -49,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -78,11 +78,11 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsT
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarVisuals
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRatesSection
@@ -97,6 +97,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
         }
 
         is WooShippingLabelCreationViewModel.WooShippingViewState.DataState -> {
+            val context = LocalContext.current
             WooShippingLabelCreationScreen(
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 shipmentUIList = viewState.shipmentUIList,
@@ -127,7 +128,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onTrackShipmentClicked = viewModel::onTrackShipmentClicked,
                 onSchedulePickUpClicked = viewModel::onSchedulePickUpClicked,
                 onRefundClicked = viewModel::onRefundClicked,
-                onPrintCustomsClicked = viewModel::onPrintCustomsClicked,
+                onPrintCustomsClicked = { viewModel.onPrintCustomsClicked(context.filesDir) },
                 onLearnMoreClicked = viewModel::onLearnMoreClicked,
             )
         }
@@ -152,8 +153,8 @@ fun WooShippingLabelCreationScreen(
     shippingLines: List<ShippingLineSummaryUI>,
     paymentsSectionUI: PaymentsSectionUI,
     purchaseSectionUI: PurchaseSectionUI,
-    shippingAddresses: WooShippingAddresses,
-    onSelectedShipmentChanged: (index: Int) -> Unit,
+    shippingAddresses: List<WooShippingAddresses>,
+    onSelectedShipmentChanged: (Int) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onSelectPackageClick: () -> Unit,
@@ -254,8 +255,8 @@ private fun LabelCreationScreenWithBottomSheet(
     paymentsSectionUI: PaymentsSectionUI,
     purchaseSectionUI: PurchaseSectionUI,
     onSelectPackageClick: () -> Unit,
-    shippingAddresses: WooShippingAddresses,
-    onSelectedShipmentChanged: (index: Int) -> Unit,
+    shippingAddresses: List<WooShippingAddresses>,
+    onSelectedShipmentChanged: (Int) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
@@ -283,6 +284,7 @@ private fun LabelCreationScreenWithBottomSheet(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val selectedShipment = shipmentUIList[uiState.selectedIndex]
+    val selectedAddress = shippingAddresses[uiState.selectedIndex]
 
     var bottomSheetPeekHeight by remember { mutableStateOf(0.dp) }
 
@@ -305,7 +307,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 totalItems = totalItems,
                 totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
-                shippingAddresses = shippingAddresses,
+                shippingAddresses = selectedAddress,
                 shipmentCostUI = selectedShipment.shipmentCostUI,
                 paymentsSectionUI = paymentsSectionUI,
                 purchaseSectionUI = purchaseSectionUI,
@@ -460,11 +462,12 @@ private fun CreateShippingCards(
     Column {
         val isExpanded = remember { mutableStateOf(false) }
 
-        if (shipmentUI.purchased) {
+        if (shipmentUI.purchased && shipmentUI.shipmentPrintLabelUI != null) {
             PrintShippingLabelSection(
                 status = shipmentUI.status,
-                isCustomsFormAvailable = shipmentUI.isCustomsFormAvailable,
-                isRefundAvailable = shipmentUI.isRefundAvailable,
+                isCustomsFormAvailable = shipmentUI.shipmentPrintLabelUI.isCustomsFormAvailable,
+                isRefundAvailable = shipmentUI.shipmentPrintLabelUI.isRefundAvailable,
+                availablePaperSizes = shipmentUI.shipmentPrintLabelUI.availablePrintSizes,
                 selectedLabelPaperSizeOption = uiState.paperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
                 onPrintShippingLabelClicked = onPrintShippingLabelClicked,
@@ -754,13 +757,7 @@ private fun PackageSelectionAvailableCard(
                     )
                 }
 
-                if (packageData.isPredefined) {
-                    Icon(
-                        tint = colorResource(id = R.color.woo_yellow_20),
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = "Star",
-                    )
-                } else {
+                if (packageData.isStarred) {
                     Icon(
                         tint = colorResource(id = R.color.color_on_surface_disabled),
                         imageVector = Icons.Outlined.Star,
@@ -848,6 +845,7 @@ private fun WooShippingLabelCreationScreenPreview() {
                     hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
                     shippingRatesState = ShippingLabelSampleData.getShippingRatesSection(),
                     shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
+                    shipmentPrintLabelUI = ShippingLabelSampleData.getShipmentPrintLabelUI(),
                 )
             ),
             shouldShowSplitShipmentButton = true,
@@ -858,10 +856,12 @@ private fun WooShippingLabelCreationScreenPreview() {
             purchaseSectionUI = ShippingLabelSampleData.getPurchaseSection(),
             modifier = Modifier.fillMaxSize(),
             onSelectPackageClick = {},
-            shippingAddresses = WooShippingAddresses(
-                shipFrom = ShippingLabelSampleData.getShipFrom(),
-                shipTo = ShippingLabelSampleData.getShipTo(),
-                originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
+            shippingAddresses = listOf(
+                WooShippingAddresses(
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
+                )
             ),
             onSelectedShipmentChanged = {},
             onOriginAddressSelected = {},

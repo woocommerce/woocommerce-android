@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.V
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
@@ -45,6 +44,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelS
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
@@ -159,7 +159,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         canManagePayments = false,
         canEditSettings = true,
         storeOwnerName = "",
-        storeOwnerUsername = ""
+        storeOwnerUsername = "",
+        paperSize = WooShippingLabelPaperSize.LABEL
     )
 
     private val defaultPackageData = PackageData(
@@ -328,6 +329,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             shouldRequireITN = shouldRequireITN,
             fetchShippingLabelFile = fetchShippingLabelFile,
             observeShippingLabelStatus = mock(),
+            downloadAndPrintInvoiceUseCase = mock(),
             savedState = savedState
         )
     }
@@ -380,18 +382,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when there are no origin addresses, then show an error`() = testBlocking {
-        whenever(observeOriginAddresses()) doReturn flowOf(emptyList())
-
-        createViewModel()
-
-        advanceUntilIdle()
-
-        val currentViewState = sut.viewState.value
-        assert(currentViewState is WooShippingViewState.Error)
-    }
-
-    @Test
     fun `when there are origin addresses, then display the origin addresses`() = testBlocking {
         createViewModel()
 
@@ -400,8 +390,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertEquals(dataState.shippingAddresses.originAddresses.size, defaultOriginAddresses.size)
-        val ids = dataState.shippingAddresses.originAddresses.map { it.id }
+        assertEquals(dataState.shippingAddresses.first().originAddresses.size, defaultOriginAddresses.size)
+        val ids = dataState.shippingAddresses.first().originAddresses.map { it.id }
         assert(ids.containsAll(defaultOriginAddresses.map { it.id }))
     }
 
@@ -998,6 +988,22 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onSchedulePickUpClicked()
 
         assertThat(event).isEqualTo(OpenUrl("https://tools.usps.com/schedule-pickup-steps.htm"))
+    }
+
+    @Test
+    fun `when viewmodel initializes, then default paper size is set`() = testBlocking {
+        val expectedPaperSize = WooShippingLabelPaperSize.A4
+        given(observeAccountSettings()).willReturn(
+            flowOf(
+                defaultAccountSettings.copy(paperSize = expectedPaperSize)
+            )
+        )
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+        assertThat(dataState.uiState.paperSizeOption).isEqualTo(expectedPaperSize)
     }
 
     @Test

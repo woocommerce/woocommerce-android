@@ -7,8 +7,15 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class WooPosScanningSetupState(
     val isVisible: Boolean = false,
-    val currentStep: ScanningSetupStep
+    val currentStep: ScanningSetupStep,
+    val selectedDevice: BarcodeReaderDevice? = null
 ) : Parcelable {
+    enum class BarcodeReaderDevice(val displayName: String) {
+        TERA_1200("Tera 1200"),
+        STAR_BSH_20B("Star BSH-20B"),
+        INATECK_BLUETOOTH("Inateck Bluetooth"),
+        OTHER("Other")
+    }
     sealed class ScanningSetupStep : Parcelable {
         @Parcelize
         data class Welcome(
@@ -16,6 +23,12 @@ data class WooPosScanningSetupState(
             val message: String,
             val setupButtonText: String,
             val documentationButtonText: String,
+        ) : ScanningSetupStep()
+
+        @Parcelize
+        data class DeviceSelection(
+            val title: String,
+            val devices: List<BarcodeReaderDevice>,
         ) : ScanningSetupStep()
 
         @Parcelize
@@ -52,6 +65,7 @@ data class WooPosScanningSetupState(
             val instructionText: String,
             val primaryButtonText: String,
             val secondaryButtonText: String,
+            val bluetoothSettingsButtonText: String,
         ) : ScanningSetupStep()
 
         @Parcelize
