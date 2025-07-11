@@ -61,5 +61,13 @@ data class WooPosScanningSetupState(
             @DrawableRes val barcodeImageRes: Int,
             val secondaryButtonText: String,
         ) : ScanningSetupStep()
+
+        @Parcelize
+        data class ScannerSetupSuccess(
+            val title: String,
+            val message: String,
+            val documentationButtonText: String,
+            val documentationUrl: String,
+        ) : ScanningSetupStep()
     }
 }

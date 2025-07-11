@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -37,10 +38,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,12 +59,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 
 @Composable
@@ -89,6 +95,15 @@ fun WooPosScanningSetupDialog(
             } catch (e: ActivityNotFoundException) {
                 WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
             }
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.openDocumentationEvent.collect { url ->
+            ChromeCustomTabUtils.launchUrl(
+                context,
+                url,
+                enableSlideAnimation = true
+            )
         }
     }
 
@@ -172,6 +187,11 @@ fun WooPosScanningSetupDialog(
                     is ScanningSetupStep.TestYourScanner -> TestYourScannerContent(
                         step = step,
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    )
+
+                    is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
+                        step = step,
+                        onViewDocumentation = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnOpenDocumentation) }
                     )
                 }
             }
@@ -439,6 +459,68 @@ private fun SetupButtonsRow(
             text = primaryButtonText,
             modifier = Modifier.weight(1f),
             state = primaryButtonState
+        )
+    }
+}
+
+@Composable
+private fun ScannerSetupSuccessContent(
+    step: ScanningSetupStep.ScannerSetupSuccess,
+    onViewDocumentation: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ScannerSetupSuccessIcon(
+            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+        )
+
+        WooPosOutlinedButton(
+            onClick = onViewDocumentation,
+            text = step.documentationButtonText,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun ScannerSetupSuccessIcon(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(88.dp)
+            .shadow(
+                elevation = WooPosElevation.Medium.value,
+                shape = CircleShape,
+                clip = false
+            )
+            .background(WooPosTheme.colors.success, CircleShape)
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
+            tint = WooPosTheme.colors.onSuccess,
+            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
+            modifier = Modifier.size(40.dp)
         )
     }
 }

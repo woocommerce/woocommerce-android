@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -35,6 +37,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     private val _openBluetoothSettingsEvent = MutableSharedFlow<Unit>()
     val openBluetoothSettingsEvent: SharedFlow<Unit> = _openBluetoothSettingsEvent.asSharedFlow()
+
+    private val _openDocumentationEvent = MutableSharedFlow<String>()
+    val openDocumentationEvent: SharedFlow<String> = _openDocumentationEvent.asSharedFlow()
 
     fun onUiEvent(event: WooPosScanningSetupUiEvent) {
         when (event) {
@@ -65,6 +70,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
             WooPosScanningSetupUiEvent.OnOpenBluetoothSettings -> {
                 viewModelScope.launch {
                     _openBluetoothSettingsEvent.emit(Unit)
+                }
+            }
+
+            WooPosScanningSetupUiEvent.OnOpenDocumentation -> {
+                viewModelScope.launch {
+                    _openDocumentationEvent.emit(WOO_POS_BARCODE_DOC_URL)
                 }
             }
         }
@@ -98,10 +109,15 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     currentStep = createTestYourScannerStep()
                 )
+                startAutoNavigationToSuccess()
             }
 
             is ScanningSetupStep.TestYourScanner -> {
                 error("Primary button should not be available on TestYourScanner step")
+            }
+
+            is ScanningSetupStep.ScannerSetupSuccess -> {
+                // Handled by parent through onDismissRequest
             }
         }
     }
@@ -133,6 +149,10 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     currentStep = createPairYourScannerStep()
                 )
+            }
+
+            is ScanningSetupStep.ScannerSetupSuccess -> {
+                error("Secondary button should not be available on ScannerSetupSuccess step")
             }
         }
     }
@@ -180,11 +200,34 @@ class WooPosScanningSetupViewModel @Inject constructor(
         barcodeImageRes = R.drawable.ic_barcode,
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
+
+    private fun createScannerSetupSuccessStep() = ScanningSetupStep.ScannerSetupSuccess(
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_success_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_success_message),
+        documentationButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_view_documentation),
+        documentationUrl = WOO_POS_BARCODE_DOC_URL
+    )
+
+    private fun startAutoNavigationToSuccess() {
+        viewModelScope.launch {
+            delay(AUTO_NAVIGATION_DELAY_MS)
+            if (_state.value.currentStep is ScanningSetupStep.TestYourScanner) {
+                _state.value = _state.value.copy(
+                    currentStep = createScannerSetupSuccessStep()
+                )
+            }
+        }
+    }
+
+    companion object {
+        private const val AUTO_NAVIGATION_DELAY_MS = 3000L
+    }
 }
 
 sealed class WooPosScanningSetupUiEvent {
     data object OnPrimaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnSecondaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnOpenBluetoothSettings : WooPosScanningSetupUiEvent()
+    data object OnOpenDocumentation : WooPosScanningSetupUiEvent()
     data class OnDeviceSelected(val device: BarcodeReaderDevice) : WooPosScanningSetupUiEvent()
 }
