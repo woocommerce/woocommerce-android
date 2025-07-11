@@ -2,7 +2,7 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 ## 22.8
-This update brings more reliability and polish to Woo POS! You’ll now see clear error messages if a scanned barcode is too short or improperly formatted, and orders created in POS are now marked with a handy “POS” badge. We’ve also made the designs more consistent for a smoother look. Enjoy the improvements!
+This update brings support for creating shipping labels with WooCommerce Shipping, improves POS with clearer error messages and a new badge for POS orders, updates the in-person payment visuals, and fixes crashes and memory issues for a smoother, more reliable experience.
 
 ## 22.7
 This update makes managing your store even smoother! We’ve refreshed the order filtering UI, made the POS easier to access via the tab bar, and added barcode support to set SKU and Unique ID fields—plus fixed a bug so you can now clear those fields when needed.
