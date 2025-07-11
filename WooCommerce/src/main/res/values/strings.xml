@@ -4486,9 +4486,6 @@
     <string name="woopos_scanning_setup_go_to_settings">Go to settings</string>
     <string name="woopos_scanning_setup_test_scanner_title">Test your scanner</string>
     <string name="woopos_scanning_setup_test_scanner_message">Scan this test barcode to verify your scanner is working correctly.</string>
-    <string name="woopos_scanning_setup_test_scanner_instruction">Scan the barcode above to test your scanner</string>
-    <string name="woopos_scanning_setup_complete_title">Scanner setup complete!</string>
-    <string name="woopos_scanning_setup_complete_message">Your barcode scanner is now ready to use. You can start scanning products to add them to orders.</string>
     <string name="woopos_scanning_setup_button_next">Next</string>
     <string name="woopos_scanning_setup_button_back">Back</string>
     <string name="woopos_scanning_setup_button_done">Done</string>

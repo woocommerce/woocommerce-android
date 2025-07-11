@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -38,13 +37,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -59,7 +55,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -174,15 +169,9 @@ fun WooPosScanningSetupDialog(
                         }
                     )
 
-                    is ScanningSetupStep.TestYourScanner -> BarcodeStepContent(
+                    is ScanningSetupStep.TestYourScanner -> TestYourScannerContent(
                         step = step,
-                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
-                    )
-
-                    is ScanningSetupStep.ScannerSetupComplete -> SetupCompleteContent(
-                        step = step,
-                        onDone = onDismissRequest
                     )
                 }
             }
@@ -250,31 +239,10 @@ private fun ScannerModeSetupContent(
 }
 
 @Composable
-private fun BarcodeStepContent(
-    step: ScanningSetupStep,
-    onPrimaryClick: () -> Unit,
+private fun TestYourScannerContent(
+    step: ScanningSetupStep.TestYourScanner,
     onSecondaryClick: () -> Unit,
 ) {
-    val title: String
-    val message: String
-    val barcodeRes: Int
-    val instruction: String
-    val primaryText: String
-    val secondaryText: String
-
-    when (step) {
-        is ScanningSetupStep.TestYourScanner -> {
-            title = step.title
-            message = step.message
-            barcodeRes = step.barcodeImageRes
-            instruction = step.instructionText
-            primaryText = step.primaryButtonText
-            secondaryText = step.secondaryButtonText
-        }
-
-        else -> error("Invalid step type for BarcodeStepContent: $step")
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -282,7 +250,7 @@ private fun BarcodeStepContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         WooPosText(
-            text = title,
+            text = step.title,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -290,7 +258,7 @@ private fun BarcodeStepContent(
         )
 
         WooPosText(
-            text = message,
+            text = step.message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
@@ -305,7 +273,7 @@ private fun BarcodeStepContent(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = barcodeRes),
+                painter = painterResource(id = step.barcodeImageRes),
                 contentDescription = stringResource(
                     id = R.string.woopos_scanning_setup_barcode_content_description
                 ),
@@ -313,22 +281,12 @@ private fun BarcodeStepContent(
             )
         }
 
-        WooPosText(
-            text = instruction,
-            style = WooPosTypography.BodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(
-                top = WooPosSpacing.Large.value.toAdaptivePadding(),
-                bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()
-            )
-        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
-        SetupButtonsRow(
-            primaryButtonText = primaryText,
-            secondaryButtonText = secondaryText,
-            onPrimaryClick = onPrimaryClick,
-            onSecondaryClick = onSecondaryClick
+        WooPosOutlinedButton(
+            onClick = onSecondaryClick,
+            text = step.secondaryButtonText,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -385,44 +343,6 @@ private fun PairYourScannerContent(
             secondaryButtonText = step.secondaryButtonText,
             onPrimaryClick = onPrimaryClick,
             onSecondaryClick = onSecondaryClick
-        )
-    }
-}
-
-@Composable
-private fun SetupCompleteContent(
-    step: ScanningSetupStep.ScannerSetupComplete,
-    onDone: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SetupCompleteCheckIcon(
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = step.title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = step.message,
-            style = WooPosTypography.BodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
-        )
-
-        WooPosButton(
-            onClick = onDone,
-            text = step.primaryButtonText,
-            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -519,30 +439,6 @@ private fun SetupButtonsRow(
             text = primaryButtonText,
             modifier = Modifier.weight(1f),
             state = primaryButtonState
-        )
-    }
-}
-
-@Composable
-private fun SetupCompleteCheckIcon(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(166.dp)
-            .shadow(
-                elevation = WooPosElevation.Medium.value,
-                shape = CircleShape,
-                clip = false
-            )
-            .background(WooPosTheme.colors.success, CircleShape)
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
-            tint = WooPosTheme.colors.onSuccess,
-            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
-            modifier = Modifier.size(72.dp)
         )
     }
 }

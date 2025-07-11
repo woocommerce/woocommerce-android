@@ -101,13 +101,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.TestYourScanner -> {
-                _state.value = _state.value.copy(
-                    currentStep = createScannerSetupCompleteStep()
-                )
-            }
-
-            is ScanningSetupStep.ScannerSetupComplete -> {
-                // Handled by parent through onDismissRequest
+                error("Primary button should not be available on TestYourScanner step")
             }
         }
     }
@@ -139,10 +133,6 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     currentStep = createPairYourScannerStep()
                 )
-            }
-
-            is ScanningSetupStep.ScannerSetupComplete -> {
-                error("Secondary button should not be available on ScannerSetupComplete step")
             }
         }
     }
@@ -188,15 +178,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_message),
         barcodeImageRes = R.drawable.ic_barcode,
-        instructionText = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_instruction),
-        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done),
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
-    )
-
-    private fun createScannerSetupCompleteStep() = ScanningSetupStep.ScannerSetupComplete(
-        title = resourceProvider.getString(R.string.woopos_scanning_setup_complete_title),
-        message = resourceProvider.getString(R.string.woopos_scanning_setup_complete_message),
-        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done)
     )
 }
 
