@@ -126,14 +126,12 @@ private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason
         WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled ->
             stringResource(R.string.woopos_eligibility_reason_feature_switch_disabled)
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> {
-            val supportedCombinations = WooPosCanBeLaunchedInTab.SUPPORTED_COUNTRY_CURRENCY_PAIRS.joinToString(
-                ", "
-            ) { (country, currency) ->
-                "${country.uppercase()} store - ${currency.uppercase()} currency"
-            }
+            val supportedCurrencies = WooPosCanBeLaunchedInTab.SUPPORTED_COUNTRY_CURRENCY_PAIRS
+                .map { (_, currency) -> currency.uppercase() }
+                .joinToString(", ")
             stringResource(
                 id = R.string.woopos_eligibility_reason_unsupported_currency,
-                supportedCombinations
+                supportedCurrencies
             )
         }
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected ->
