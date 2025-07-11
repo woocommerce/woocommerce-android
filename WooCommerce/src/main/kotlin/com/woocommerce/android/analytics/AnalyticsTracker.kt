@@ -316,6 +316,8 @@ class AnalyticsTracker private constructor(
         const val VALUE_ORDER_DISCOUNT_TYPE_FIXED = "fixed_amount"
         const val VALUE_ORDER_DISCOUNT_TYPE_PERCENTAGE = "percentage"
 
+        const val KEY_IS_REVAMPED_FLOW = "is_revamped_flow"
+
         const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
 

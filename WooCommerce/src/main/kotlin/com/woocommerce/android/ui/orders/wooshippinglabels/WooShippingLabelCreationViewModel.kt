@@ -11,6 +11,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
@@ -122,7 +127,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val shouldRequireITN: ShouldRequireITN,
     private val fetchShippingLabelFile: FetchShippingLabelFile,
     private val observeShippingLabelStatus: ObserveShippingLabelStatus,
-    private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase
+    private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
 
@@ -183,6 +189,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     init {
         launch { observeShippingLabelInformation() }
         launch { getDestinationAddress() }
+        launch { trackScreenShownEvent() }
         launch { getSavedShipments() }
         launch { setDefaultPaperSize() }
         launch { getShippingAddresses() }
@@ -193,6 +200,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { observeShippingRatesState() }
         launch { observeCustomsDataChanges() }
         launch { observeNotices() }
+    }
+
+    private suspend fun trackScreenShownEvent() {
+        val unfulfilledShipmentsCount = shipments.drop(1).first().count { !it.purchased }
+        analyticsTracker.track(
+            AnalyticsEvent.WCS_CREATE_SHIPPING_LABEL_FORM_SHOWN,
+            mapOf("unfulfilled_shipments_count" to unfulfilledShipmentsCount)
+        )
     }
 
     private suspend fun getOrderInformation() {
@@ -357,8 +372,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         fun onSelectedShippingRateChanged(
             rate: ShippingRateUI?
         ) {
-            selectedRatesFlow.update {
-                it.toMutableList().apply { set(selectedShipmentIndex, rate) }
+            if (selectedRatesFlow.value[selectedShipmentIndex] != rate) {
+                selectedRatesFlow.update { it.toMutableList().apply { set(selectedShipmentIndex, rate) } }
+
+                analyticsTracker.track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
             }
         }
 
@@ -562,7 +579,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             else -> {
                 val sortOrder = selectedRatesSortOrdersFlow.value[index]
                 updateState(ShippingRatesState.Loading(sortOrder))
-
                 val shippingRatesResult = getShippingRates(
                     shippingRatesInfo.orderId,
                     shippingRatesInfo.packageSelected,
@@ -573,16 +589,28 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     shippingRatesInfo.customsData,
                     shippingRatesInfo.hazmatSelection
                 )
-
                 if (shippingRatesResult.isSuccess && shippingRatesResult.getOrThrow().isNotEmpty()) {
                     shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
                         set(index, shippingRatesResult.getOrThrow())
                     }
+                    trackShippingRatesLoading(isSuccess = true)
                 } else {
                     updateState(ShippingRatesState.Error)
+                    trackShippingRatesLoading(isSuccess = false, error = shippingRatesResult.exceptionOrNull()?.message)
                 }
                 selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
+        }
+    }
+
+    private fun trackShippingRatesLoading(isSuccess: Boolean, error: String? = null) {
+        if (isSuccess) {
+            analyticsTracker.track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "loading_success"))
+        } else {
+            analyticsTracker.track(
+                AnalyticsEvent.WCS_RATE_SELECTION_STEP,
+                mapOf(KEY_STATE to "loading_failed", KEY_ERROR to error)
+            )
         }
     }
 
@@ -828,6 +856,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         val customsData = customsFormDataFlow.value[selectedShipmentIndex]
 
+        analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to VALUE_STARTED))
+
         launch {
             purchaseShippingLabel(
                 orderId,
@@ -853,6 +883,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     if (exception is WooException && exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE) {
                         triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
                     } else {
+                        analyticsTracker.track(
+                            AnalyticsEvent.WCS_PURCHASE_STEP,
+                            mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to exception.message)
+                        )
                         snackbarData = ShippingLabelsSnackbarData(
                             message = R.string.woo_shipping_labels_purchase_error,
                             actionLabel = R.string.retry,
@@ -871,6 +905,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 updateShipment(shipmentId, shipments.value[shipmentId].copy(purchased = true, label = purchasedLabel))
                 observeShippingLabelPurchaseStatus(shipmentId)
             }
+        analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
     }
 
     fun onSelectedRateSortOrderChanged(option: ShippingSortOption) {
