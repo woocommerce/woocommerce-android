@@ -1,9 +1,1 @@
-- [*] Fixed a rare crash in the POS when adding a variation product to the cart by scanning a barcode. [https://github.com/woocommerce/woocommerce-android/pull/14259]
-- [*] POS: Show error messages when scanned barcodes are too short or improperly formatted [https://github.com/woocommerce/woocommerce-android/pull/14255]
-- [*] Use new Woo brand colors on the card reader update indicator in the in-person payments flow [https://github.com/woocommerce/woocommerce-android/pull/14249]
-- [internal] Fix memory leaks in Empty view and LearnMore view [https://github.com/woocommerce/woocommerce-android/pull/14263]
-- [Internal] [*] Bump target SDK to 35 [https://github.com/woocommerce/woocommerce-android/pull/14262]
-- [*] POS: Consistent top margin for toolbars in the Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14265]
-- [internal] Fixed a memory leak on the ProductDetailScreen [https://github.com/woocommerce/woocommerce-android/pull/14264]
-- [*] Fixed a crash that occurred when the third party plugin meddling with orders response [https://github.com/woocommerce/woocommerce-android/pull/14270]
-- [*] Added "POS" badge to orders created in the POS [https://github.com/woocommerce/woocommerce-android/pull/14230]
+This update brings more reliability and polish to Woo POS! You’ll now see clear error messages if a scanned barcode is too short or improperly formatted, and orders created in POS are now marked with a handy “POS” badge. We’ve also made the designs more consistent for a smoother look. Enjoy the improvements!
