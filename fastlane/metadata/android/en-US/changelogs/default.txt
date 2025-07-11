@@ -1,1 +1,9 @@
-This update makes managing your store even smoother! We’ve refreshed the order filtering UI, made the POS easier to access via the tab bar, and added barcode support to set SKU and Unique ID fields—plus fixed a bug so you can now clear those fields when needed.
+- [*] Fixed a rare crash in the POS when adding a variation product to the cart by scanning a barcode. [https://github.com/woocommerce/woocommerce-android/pull/14259]
+- [*] POS: Show error messages when scanned barcodes are too short or improperly formatted [https://github.com/woocommerce/woocommerce-android/pull/14255]
+- [*] Use new Woo brand colors on the card reader update indicator in the in-person payments flow [https://github.com/woocommerce/woocommerce-android/pull/14249]
+- [internal] Fix memory leaks in Empty view and LearnMore view [https://github.com/woocommerce/woocommerce-android/pull/14263]
+- [Internal] [*] Bump target SDK to 35 [https://github.com/woocommerce/woocommerce-android/pull/14262]
+- [*] POS: Consistent top margin for toolbars in the Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14265]
+- [internal] Fixed a memory leak on the ProductDetailScreen [https://github.com/woocommerce/woocommerce-android/pull/14264]
+- [*] Fixed a crash that occurred when the third party plugin meddling with orders response [https://github.com/woocommerce/woocommerce-android/pull/14270]
+- [*] Added "POS" badge to orders created in the POS [https://github.com/woocommerce/woocommerce-android/pull/14230]
