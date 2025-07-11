@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -164,13 +165,7 @@ fun WooPosScanningSetupDialog(
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
-                    is ScanningSetupStep.BluetoothPairing -> BarcodeStepContent(
-                        step = step,
-                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
-                    )
-
-                    is ScanningSetupStep.PairOnYourDevice -> PairOnYourDeviceContent(
+                    is ScanningSetupStep.PairYourScanner -> PairYourScannerContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
@@ -268,24 +263,6 @@ private fun BarcodeStepContent(
     val secondaryText: String
 
     when (step) {
-        is ScanningSetupStep.BluetoothPairing -> {
-            title = step.title
-            message = step.message
-            barcodeRes = step.barcodeImageRes
-            instruction = step.instructionText
-            primaryText = step.primaryButtonText
-            secondaryText = step.secondaryButtonText
-        }
-
-        is ScanningSetupStep.PairOnYourDevice -> {
-            title = step.title
-            message = step.message
-            barcodeRes = step.barcodeImageRes
-            instruction = step.instructionText
-            primaryText = step.primaryButtonText
-            secondaryText = step.secondaryButtonText
-        }
-
         is ScanningSetupStep.TestYourScanner -> {
             title = step.title
             message = step.message
@@ -357,8 +334,8 @@ private fun BarcodeStepContent(
 }
 
 @Composable
-private fun PairOnYourDeviceContent(
-    step: ScanningSetupStep.PairOnYourDevice,
+private fun PairYourScannerContent(
+    step: ScanningSetupStep.PairYourScanner,
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
     onOpenBluetoothSettings: () -> Unit,
@@ -369,30 +346,39 @@ private fun PairOnYourDeviceContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = step.iconRes),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
         WooPosText(
             text = step.title,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
 
         WooPosText(
             text = step.message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
-        WooPosOutlinedButton(
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        WooPosOutlinedButtonSmall(
             text = step.bluetoothSettingsButtonText,
             onClick = onOpenBluetoothSettings,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()),
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         SetupButtonsRow(
             primaryButtonText = step.primaryButtonText,

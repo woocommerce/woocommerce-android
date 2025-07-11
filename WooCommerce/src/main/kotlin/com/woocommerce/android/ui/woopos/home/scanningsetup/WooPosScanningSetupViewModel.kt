@@ -91,17 +91,10 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
             is ScanningSetupStep.ScannerPairModeSetup -> {
                 _state.value = _state.value.copy(
-                    currentStep = createBluetoothPairingStep()
+                    currentStep = createPairYourScannerStep()
                 )
             }
-
-            is ScanningSetupStep.BluetoothPairing -> {
-                _state.value = _state.value.copy(
-                    currentStep = createPairOnYourDeviceStep()
-                )
-            }
-
-            is ScanningSetupStep.PairOnYourDevice -> {
+            is ScanningSetupStep.PairYourScanner -> {
                 _state.value = _state.value.copy(
                     currentStep = createTestYourScannerStep()
                 )
@@ -136,22 +129,15 @@ class WooPosScanningSetupViewModel @Inject constructor(
                     currentStep = createScannerHIDModeSetupStep()
                 )
             }
-
-            is ScanningSetupStep.BluetoothPairing -> {
+            is ScanningSetupStep.PairYourScanner -> {
                 _state.value = _state.value.copy(
                     currentStep = createScannerPairModeSetupStep()
                 )
             }
 
-            is ScanningSetupStep.PairOnYourDevice -> {
-                _state.value = _state.value.copy(
-                    currentStep = createBluetoothPairingStep()
-                )
-            }
-
             is ScanningSetupStep.TestYourScanner -> {
                 _state.value = _state.value.copy(
-                    currentStep = createPairOnYourDeviceStep()
+                    currentStep = createPairYourScannerStep()
                 )
             }
 
@@ -186,29 +172,16 @@ class WooPosScanningSetupViewModel @Inject constructor(
         primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
-
-    private fun createBluetoothPairingStep() = ScanningSetupStep.BluetoothPairing(
-        title = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_pairing_title),
-        message = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_pairing_message),
-        barcodeImageRes = R.drawable.ic_barcode,
-        instructionText = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_pairing_instruction),
-        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
-        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
-    )
-
-    private fun createPairOnYourDeviceStep() = ScanningSetupStep.PairOnYourDevice(
-        title = resourceProvider.getString(R.string.woopos_scanning_setup_pair_device_title),
+    private fun createPairYourScannerStep() = ScanningSetupStep.PairYourScanner(
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_pair_your_scanner_title),
         message = resourceProvider.getString(
-            R.string.woopos_scanning_setup_pair_device_message,
-            resourceProvider.getString(_state.value.selectedDevice!!.displayNameRes),
+            R.string.woopos_scanning_setup_pair_your_scanner_message,
+            resourceProvider.getString(_state.value.selectedDevice!!.displayNameRes)
         ),
-        barcodeImageRes = R.drawable.ic_barcode,
-        instructionText = resourceProvider.getString(R.string.woopos_scanning_setup_pair_device_instruction),
+        iconRes = R.drawable.ic_woopos_bluetooth_settings,
         primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
-        bluetoothSettingsButtonText = resourceProvider.getString(
-            R.string.woopos_scanning_setup_pair_device_bluetooth_button
-        )
+        bluetoothSettingsButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_go_to_settings)
     )
 
     private fun createTestYourScannerStep() = ScanningSetupStep.TestYourScanner(

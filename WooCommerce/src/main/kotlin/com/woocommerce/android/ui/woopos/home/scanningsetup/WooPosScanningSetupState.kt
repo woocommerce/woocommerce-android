@@ -45,21 +45,10 @@ data class WooPosScanningSetupState(
         ) : ScanningSetupStep()
 
         @Parcelize
-        data class BluetoothPairing(
+        data class PairYourScanner(
             val title: String,
             val message: String,
-            @DrawableRes val barcodeImageRes: Int,
-            val instructionText: String,
-            val primaryButtonText: String,
-            val secondaryButtonText: String,
-        ) : ScanningSetupStep()
-
-        @Parcelize
-        data class PairOnYourDevice(
-            val title: String,
-            val message: String,
-            @DrawableRes val barcodeImageRes: Int,
-            val instructionText: String,
+            @DrawableRes val iconRes: Int,
             val primaryButtonText: String,
             val secondaryButtonText: String,
             val bluetoothSettingsButtonText: String,
