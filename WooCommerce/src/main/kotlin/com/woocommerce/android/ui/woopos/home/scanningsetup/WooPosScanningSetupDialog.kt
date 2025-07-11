@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -90,6 +91,7 @@ fun WooPosScanningSetupDialog(
                 val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
                 context.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
+                (context.applicationContext as WooCommerce).appInitializer.get().crashLogging.sendReport(e)
                 WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
             }
         }
