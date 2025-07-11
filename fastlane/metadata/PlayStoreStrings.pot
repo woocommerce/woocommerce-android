@@ -19,7 +19,7 @@ msgstr ""
 msgctxt "release_note_228"
 msgid ""
 "22.8:\n"
-"This update brings more reliability and polish to Woo POS! You’ll now see clear error messages if a scanned barcode is too short or improperly formatted, and orders created in POS are now marked with a handy “POS” badge. We’ve also made the designs more consistent for a smoother look. Enjoy the improvements!\n"
+"This update brings support for creating shipping labels with WooCommerce Shipping, improves POS with clearer error messages and a new badge for POS orders, updates the in-person payment visuals, and fixes crashes and memory issues for a smoother, more reliable experience.\n"
 msgstr ""
 
 msgctxt "release_note_227"

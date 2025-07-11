@@ -16,6 +16,7 @@
 - [internal] Fixed a memory leak on the ProductDetailScreen [https://github.com/woocommerce/woocommerce-android/pull/14264]
 - [*] Fixed a crash that occurred when the third party plugin meddling with orders response [https://github.com/woocommerce/woocommerce-android/pull/14270]
 - [*] Added "POS" badge to orders created in the POS [https://github.com/woocommerce/woocommerce-android/pull/14230]
+- [***] Creating shipping labels is now supported for stores with the WooCommerce Shipping extension [https://github.com/woocommerce/woocommerce-android/pull/14308]
 
 22.7
 -----
