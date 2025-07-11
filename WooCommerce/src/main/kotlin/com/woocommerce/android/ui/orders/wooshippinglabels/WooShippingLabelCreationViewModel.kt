@@ -533,42 +533,35 @@ class WooShippingLabelCreationViewModel @Inject constructor(
      */
     @Suppress("CyclomaticComplexMethod")
     private suspend fun updateShippingRates(index: Int, shippingRatesInfo: ShippingRatesInfo?) {
-        val currentMutableShippingRatesList = shippingRatesStatesFlow.value.toMutableList()
-        when {
-            shippingRatesInfo == null -> {
-                shippingRatesStatesFlow.value = currentMutableShippingRatesList.apply {
-                    set(index, ShippingRatesState.NoAvailable)
-                }
+        fun updateState(newState: ShippingRatesState) {
+            shippingRatesStatesFlow.update {
+                it.toMutableList().apply { set(index, newState) }
             }
+        }
+
+        when {
+            shippingRatesInfo == null -> updateState(ShippingRatesState.NoAvailable)
 
             shippingRatesInfo.shipTo == null ||
                 !addressValidationHelper.canFetchShippingRates(shippingRatesInfo.shipTo) ->
-                shippingRatesStatesFlow.value = currentMutableShippingRatesList.apply {
-                    set(
-                        index,
-                        ShippingRatesState.MissingInfo(
-                            missingTitle = R.string.woo_shipping_labels_shipping_rates_missing_destination,
-                            missingDescription = R.string.woo_shipping_labels_shipping_rates_missing_destination_desc
-                        )
+                updateState(
+                    ShippingRatesState.MissingInfo(
+                        missingTitle = R.string.woo_shipping_labels_shipping_rates_missing_destination,
+                        missingDescription = R.string.woo_shipping_labels_shipping_rates_missing_destination_desc
                     )
-                }
+                )
 
             shippingRatesInfo.weight == null || shippingRatesInfo.weight == 0f ->
-                shippingRatesStatesFlow.value = currentMutableShippingRatesList.apply {
-                    set(
-                        index,
-                        ShippingRatesState.MissingInfo(
-                            missingTitle = R.string.woo_shipping_labels_shipping_rates_missing_weight,
-                            missingDescription = R.string.woo_shipping_labels_shipping_rates_missing_weight_desc
-                        )
+                updateState(
+                    ShippingRatesState.MissingInfo(
+                        missingTitle = R.string.woo_shipping_labels_shipping_rates_missing_weight,
+                        missingDescription = R.string.woo_shipping_labels_shipping_rates_missing_weight_desc
                     )
-                }
+                )
 
             else -> {
                 val sortOrder = selectedRatesSortOrdersFlow.value[index]
-                shippingRatesStatesFlow.value = currentMutableShippingRatesList.apply {
-                    set(index, ShippingRatesState.Loading(sortOrder))
-                }
+                updateState(ShippingRatesState.Loading(sortOrder))
 
                 val shippingRatesResult = getShippingRates(
                     shippingRatesInfo.orderId,
@@ -586,9 +579,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         set(index, shippingRatesResult.getOrThrow())
                     }
                 } else {
-                    shippingRatesStatesFlow.value = currentMutableShippingRatesList.apply {
-                        set(index, ShippingRatesState.Error)
-                    }
+                    updateState(ShippingRatesState.Error)
                 }
                 selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
