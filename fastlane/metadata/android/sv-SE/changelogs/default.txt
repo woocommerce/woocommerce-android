@@ -1,0 +1,2 @@
+22.7:
+Den här uppdateringen gör hanteringen av din butik ännu smidigare. Vi har uppdaterat gränssnittet för beställningsfiltrering, gjort det enklare att komma åt POS via flikfältet och lagt till streckkodsstöd för inställning av fälten SKU och Unikt ID – dessutom har vi åtgärdat en bugg så att du nu kan rensa dessa fält när det behövs.

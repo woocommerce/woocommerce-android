@@ -1,0 +1,2 @@
+22.7:
+Bu güncelleme mağazanızı yönetmeyi daha da kolaylaştırır! Sipariş filtreleme kullanıcı arayüzünü yeniledik, sekme çubuğu aracılığıyla POS'a erişimi kolaylaştırdık ve SKU ve Benzersiz Kimlik alanları ayarlamak için barkod desteği ekledik; ayrıca gerektiğinde bu alanları temizleyebilmeniz için bir hatayı düzelttik.

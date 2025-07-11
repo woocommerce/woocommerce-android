@@ -16,7 +16,12 @@ import org.mockito.Mockito.times
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UpdateSavedCarrierPackagesTest : BaseUnitTest() {
@@ -34,6 +39,13 @@ class UpdateSavedCarrierPackagesTest : BaseUnitTest() {
         val packageIdToSave = "usps_package_123"
         val expectedCarrier = Carrier.USPS
         val carrierPackages = createDummyCarrierPackages(packageIdToSave, expectedCarrier)
+        whenever(
+            repository.saveCarrierPackage(
+                savedPackageId = packageIdToSave,
+                parentCarrierId = expectedCarrier.id,
+                site = selectedSite.get()
+            )
+        ).thenReturn(WooResult(emptyList()))
 
         // When
         useCase(
@@ -59,6 +71,13 @@ class UpdateSavedCarrierPackagesTest : BaseUnitTest() {
         val expectedCarrier = Carrier.USPS
         val carrierPackages = createDummyCarrierPackages(packageIdToDelete, expectedCarrier)
         val isUserDefined = false
+        whenever(
+            repository.deleteSavedCarrierPackage(
+                packageId = packageIdToDelete,
+                isUserDefined = isUserDefined,
+                site = selectedSite.get()
+            )
+        ).thenReturn(WooResult(emptyList()))
 
         // When
         useCase(
@@ -75,6 +94,46 @@ class UpdateSavedCarrierPackagesTest : BaseUnitTest() {
         verifyBlocking(repository, never()) {
             saveCarrierPackage(any(), any(), any())
         }
+    }
+
+    @Test
+    fun `given save fails, when starring a package, then return failure`() = runTest {
+        // Given
+        val packageIdToSave = "usps_package_123"
+        val expectedCarrier = Carrier.USPS
+        val carrierPackages = createDummyCarrierPackages(packageIdToSave, expectedCarrier)
+        val error = WooError(type = WooErrorType.GENERIC_ERROR, original = GenericErrorType.SERVER_ERROR)
+        whenever(repository.saveCarrierPackage(any(), any(), any())).thenReturn(WooResult(error = error))
+
+        // When
+        val result = useCase(
+            savePackage = true,
+            packageId = packageIdToSave,
+            isUserDefined = false,
+            carrierPackages = carrierPackages,
+        )
+
+        // Then
+        assert(result.isFailure)
+    }
+
+    @Test
+    fun `given delete fails, when un-starring a package, then return failure`() = runTest {
+        // Given
+        val packageIdToDelete = "usps_package_123"
+        val isUserDefined = false
+        val error = WooError(type = WooErrorType.GENERIC_ERROR, original = GenericErrorType.SERVER_ERROR)
+        whenever(repository.deleteSavedCarrierPackage(any(), any(), any())).thenReturn(WooResult(error = error))
+
+        // When
+        val result = useCase(
+            savePackage = false,
+            packageId = packageIdToDelete,
+            isUserDefined = isUserDefined,
+        )
+
+        // Then
+        assert(result.isFailure)
     }
 
     private fun createDummyCarrierPackages(

@@ -1,0 +1,2 @@
+22.7:
+Deze update maakt het beheren van je winkel nog eenvoudiger! We hebben de gebruikersinterface voor het filteren van bestellingen vernieuwd en het POS gemakkelijker toegankelijk gemaakt via de tabbladbalk. Ook hebben we streepjescodeondersteuning toegevoegd om velden voor SKU en unieke ID in te stellen, plus een bug verholpen, zodat je die velden nu kan wissen als dat nodig is.

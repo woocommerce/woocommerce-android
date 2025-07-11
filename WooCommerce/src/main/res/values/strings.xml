@@ -1125,6 +1125,7 @@
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
     <string name="shipping_label_preview_pdf_app_missing">Unable to preview shipping label. Please install a PDF viewer app and try again.</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297mm)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
     <string name="print_receipt_label_info_step_count_1" translatable="false">1</string>
@@ -4466,7 +4467,9 @@
     <string name="woopos_search_coupons_error_title">Unable to load coupons</string>
     <string name="woopos_search_items_error_description">Please try again.</string>
 
-    <!-- WooPos Scanning Setup -->
+    <string name="woopos_eligibility_exit_pos_label">Exit POS</string>
+    <string name="woopos_eligibility_retry_check_label">Retry</string>
+
     <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
     <string name="woopos_scanning_setup_device_selection_title">Set up a barcode scanner</string>
@@ -4667,6 +4670,8 @@
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
+    <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
+    <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>

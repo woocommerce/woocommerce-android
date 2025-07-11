@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-17 12:54:04+0000
+Translation-Revision-Date: 2025-07-02 11:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="wpp_shipping_ups_tos_accept">Onayla ve devam et</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">&lt;a href=\"ups-technology-agreement\"&gt;UPS® Teknoloji Sözleşmesi&lt;/a&gt;\'ni de kabul ediyorum.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">UPS® tarafından izin verilmeyen &lt;a href=\"ups-prohibited-items\"&gt;Yasaklanmış Ürünler&lt;/a&gt; taşımayacağım ve gerekli izinler olmadan düzenlemeye tabi ürünler taşımayacağım.</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">&lt;a href=\"ups-tos\"&gt;UPS® Hizmet Koşulları&lt;/a&gt;\'nı kabul ediyorum</string>
+    <string name="wpp_shipping_ups_tos_description">Bu adresten UPS® ile gönderim yapmaya başlamak için şu şartları ve hükümleri kabul etmeniz gerekir:</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">Şuradan gönderim:</string>
+    <string name="wpp_shipping_ups_tos_title">UPS® Şartlar ve Hükümler</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">Ödeme yöntemleriniz yenilenemiyor</string>
+    <string name="woo_shipping_payment_method_added">Ödeme yöntemi eklendi</string>
+    <string name="woo_shipping_payment_use_card_button">Bu kartı kullan</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">Faturayı e-posta ile gönderin</string>
+    <string name="woo_shipping_payment_methods_info_footer">Kredi kartları aşağıdaki WordPress.com hesabından alınır: %1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">Yeni kredi veya banka kartı</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">Gönderim etiketi satın almak için  bir ödeme yöntemi ekleyin</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">Ödeme yöntemi ekleyin</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">Gönderim etiketi ödeme yöntemlerini yalnızca site sahibi yönetebilir. Ödeme yöntemlerini yönetmek için lütfen Mağaza Sahibi %1$s (%2$s) ile iletişime geçin</string>
+    <string name="woo_shipping_payment_screen_description">Bir ödeme yöntemi seçin.</string>
+    <string name="woo_shipping_payment_screen_title">Ödeme yöntemi</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">Sunucu hatası - %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">Ödeme yöntemini düzenle</string>
+    <string name="shipping_label_shipment_details_add_payment_method">Ödeme yöntemi ekle</string>
+    <string name="shipping_label_shipment_details_payment_method">Ödeme yöntemi</string>
+    <string name="point_of_sale">Satış Noktası</string>
     <string name="no_network_message">Uygun durumda şebeke yok</string>
     <string name="media_loading_failed">Medya yükleme başarısız oldu</string>
     <string name="media_library_title">WordPress Ortam Kütüphanesi</string>
     <string name="woo_shipping_refund_note">Lütfen bu iade isteğinin yalnızca kullanılmayan gönderim etiketlerine uygulandığını ve siparişin kendisini etkilemeyeceğini unutmayın.</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;İade edilebilecek tutar:&lt;/b&gt; %s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Satın alma tarihi:&lt;/b&gt; %s</string>
-    <string name="woo_shipping_refund_description">Kullanılmayan gönderim etiketiniz için bir iade talep edin. Gönderim etiketinin iade işlemi hemen başlayacak ve genellikle 14 iş gününde tamamlanır.</string>
+    <string name="woo_shipping_refund_duration_description">Kullanılmayan gönderim etiketiniz için bir iade talep edin. Gönderim etiketinin iade işlemi hemen başlayacak ve genellikle %d iş gününde tamamlanır.</string>
     <string name="woo_shipping_refund_title">Gönderim etiketi iadesi talep et</string>
     <string name="woo_shipping_split_shipment_error">Gönderimleri bölemedik. Lütfen tekrar deneyin.</string>
     <string name="woopos_cart_searching_for_item">Arama</string>
@@ -31,7 +54,6 @@ Language: tr
     <string name="woopos_dialog_barcode_info_primary_message">• Ürünler &gt; Ürün Ayrıntıları &gt; Envanter bölümünde \"GTIN, UPC, EAN, ISBN\" alanında barkodlar ayarlayın. </string>
     <string name="woopos_dialog_barcode_info_intro_message">Bir sepeti hızlıca oluşturmak için harici bir tarayıcı kullanarak barkodları tarayabilirsiniz.</string>
     <string name="woopos_dialog_barcode_info_heading">Barkod taraması</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">İstek iptal edildi</string>
     <string name="woopos_cart_barcode_scan_result_network_error">İnternet bağlantısı yok</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Desteklenmeyen öğe – %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Bilinmeyen taranan öğe</string>

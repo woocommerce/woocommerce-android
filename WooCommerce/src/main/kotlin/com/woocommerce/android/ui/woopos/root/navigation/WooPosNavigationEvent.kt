@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.root.navigation
 
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+
 sealed class WooPosNavigationEvent {
     data object ExitPosClicked : WooPosNavigationEvent()
     data object BackFromSplashClicked : WooPosNavigationEvent()
@@ -9,4 +11,7 @@ sealed class WooPosNavigationEvent {
     data object GoBack : WooPosNavigationEvent()
     data object OpenHomeFromCashPaymentAfterSuccessfulPayment : WooPosNavigationEvent()
     data object ReturnHomeFromCashPayment : WooPosNavigationEvent()
+    data class OpenEligibilityScreenFromSplash(
+        val reason: WooPosLaunchability.NonLaunchabilityReason
+    ) : WooPosNavigationEvent()
 }

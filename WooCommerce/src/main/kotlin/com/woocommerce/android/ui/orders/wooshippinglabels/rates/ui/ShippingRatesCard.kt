@@ -96,8 +96,6 @@ internal fun ShippingRatesCard(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = Devices.PIXEL)
 @Composable
 private fun ShippingRatesCardPreview() {
-    val rates = ShippingLabelSampleData.generateShippingRates()
-    val selected = rates.values.first().first()
     WooThemeWithBackground {
         ShippingRatesCard(
             state = ShippingLabelSampleData.getShippingRatesSection(),

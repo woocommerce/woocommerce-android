@@ -4,6 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -29,7 +33,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.V
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
@@ -45,6 +48,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelS
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
@@ -159,7 +163,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         canManagePayments = false,
         canEditSettings = true,
         storeOwnerName = "",
-        storeOwnerUsername = ""
+        storeOwnerUsername = "",
+        paperSize = WooShippingLabelPaperSize.LABEL
     )
 
     private val defaultPackageData = PackageData(
@@ -307,6 +312,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
     private val fetchShippingLabelFile: FetchShippingLabelFile = mock()
     private val file: File = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var sut: WooShippingLabelCreationViewModel
 
@@ -329,6 +335,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             fetchShippingLabelFile = fetchShippingLabelFile,
             observeShippingLabelStatus = mock(),
             downloadAndPrintInvoiceUseCase = mock(),
+            analyticsTracker = analyticsTracker,
             savedState = savedState
         )
     }
@@ -381,18 +388,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when there are no origin addresses, then show an error`() = testBlocking {
-        whenever(observeOriginAddresses()) doReturn flowOf(emptyList())
-
-        createViewModel()
-
-        advanceUntilIdle()
-
-        val currentViewState = sut.viewState.value
-        assert(currentViewState is WooShippingViewState.Error)
-    }
-
-    @Test
     fun `when there are origin addresses, then display the origin addresses`() = testBlocking {
         createViewModel()
 
@@ -401,8 +396,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertEquals(dataState.shippingAddresses.originAddresses.size, defaultOriginAddresses.size)
-        val ids = dataState.shippingAddresses.originAddresses.map { it.id }
+        assertEquals(dataState.shippingAddresses.first().originAddresses.size, defaultOriginAddresses.size)
+        val ids = dataState.shippingAddresses.first().originAddresses.map { it.id }
         assert(ids.containsAll(defaultOriginAddresses.map { it.id }))
     }
 
@@ -696,6 +691,62 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when shipping rates loaded, then track loading_success event`() = testBlocking {
+        createViewModel()
+
+        sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }
+
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "loading_success"))
+    }
+
+    @Test
+    fun `when shipping rates fail, then track loading_failed event`() = testBlocking {
+        val error = "Random error"
+        whenever(
+            getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.failure(Exception(error))
+
+        createViewModel()
+
+        sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }
+
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.WCS_RATE_SELECTION_STEP,
+            mapOf(KEY_STATE to "loading_failed", KEY_ERROR to error)
+        )
+    }
+
+    @Test
+    fun `when shipping rate selected, then track selected event`() = testBlocking {
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = (
+            sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
+    }
+
+    @Test
     fun `when onPurchaseShippingLabel fails then show a snackbar`() = testBlocking {
         whenever(
             purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
@@ -719,6 +770,70 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onPurchaseShippingLabel()
 
         assertThat(sut.snackbarData).matches { it?.message == R.string.woo_shipping_labels_purchase_error }
+    }
+
+    @Test
+    fun `when onPurchaseShippingLabel succeed then track purchase_success`() = testBlocking {
+        val purchasedLabel = shippingLabelModel.copy(status = PURCHASED)
+        whenever(
+            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.success(
+            PurchasedLabelData(
+                labels = listOf(purchasedLabel),
+                origin = emptyMap(),
+                destination = emptyMap(),
+                rates = emptyMap()
+            )
+        )
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = (
+            sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        verify(analyticsTracker).track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
+    }
+
+    @Test
+    fun `when onPurchaseShippingLabel fails then track purchase_failed`() = testBlocking {
+        val error = "Random error"
+        whenever(
+            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.failure(Exception(error))
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = (
+            sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        sut.onPurchaseShippingLabel()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.WCS_PURCHASE_STEP,
+            mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to error)
+        )
     }
 
     @Test
@@ -1002,6 +1117,22 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when viewmodel initializes, then default paper size is set`() = testBlocking {
+        val expectedPaperSize = WooShippingLabelPaperSize.A4
+        given(observeAccountSettings()).willReturn(
+            flowOf(
+                defaultAccountSettings.copy(paperSize = expectedPaperSize)
+            )
+        )
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+        assertThat(dataState.uiState.paperSizeOption).isEqualTo(expectedPaperSize)
+    }
+
+    @Test
     fun `onRefundClicked triggers NavigateToRefundRequest event`() = testBlocking {
         val labelId = 123L
         whenever(getShipments(any())) doReturn defaultShipments.toMutableList().apply {
@@ -1028,6 +1159,13 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onLearnMoreClicked()
 
         assertThat(event).isEqualTo(OpenLearnMoreScreen)
+    }
+
+    @Test
+    fun `when viewmodel initializes, then tracks form shown event`() = testBlocking {
+        createViewModel()
+        advanceUntilIdle()
+        verify(analyticsTracker).track(eq(AnalyticsEvent.WCS_CREATE_SHIPPING_LABEL_FORM_SHOWN), any())
     }
 
     @Test

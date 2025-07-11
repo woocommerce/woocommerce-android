@@ -9,6 +9,7 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import kotlinx.coroutines.flow.Flow
@@ -35,9 +36,10 @@ class WooShippingConfigDataStore @Inject constructor(
             ?.let { mapper(it) }
     }
 
-    fun getShippingLabels(orderId: Long): Flow<List<ShippingLabelModel>?> = observeConfig(orderId).map { config ->
-        config?.shippingLabelData?.currentOrderLabels?.let {
-            it.map { shippingLabelDTO -> mapper(shippingLabelDTO) }
+    fun getPurchasedLabels(orderId: Long): Flow<List<ShippingLabelModel>?> = observeConfig(orderId).map { config ->
+        config?.shippingLabelData?.currentOrderLabels?.let { labels ->
+            labels.filter { it.status == ShippingLabelStatus.PURCHASED }
+                .map { shippingLabelDTO -> mapper(shippingLabelDTO) }
         }
     }
 
