@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-16 13:54:05+0000
+Translation-Revision-Date: 2025-07-01 14:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="wpp_shipping_ups_tos_accept">التأكيد والاستمرار</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">أوافق أيضًا على &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">لن أشحن أي &lt;a href=\"ups-prohibited-items\"&gt;منتجات محظورة&lt;/a&gt; لا تسمح بها UPS®، ولا أي عناصر منظَّمة من دون الحصول على الصلاحيات الضرورية.</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">أوافق على &lt;a href=\"ups-tos\"&gt;شروط الخدمة الخاصة بـ UPS®&lt;/a&gt;</string>
+    <string name="wpp_shipping_ups_tos_description">لبدء الشحن من هذا العنوان من خلال UPS®، يتعين علينا الموافقة على الشروط والأحكام الآتية:</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">الشحن من</string>
+    <string name="wpp_shipping_ups_tos_title">شروط وأحكام UPS®</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">يتعذّر تحديث طرق دفعك</string>
+    <string name="woo_shipping_payment_method_added">أُضيفت طريقة الدفع</string>
+    <string name="woo_shipping_payment_use_card_button">استخدام هذه البطاقة</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">إرسال الإيصال في رسالة عبر البريد الإلكتروني</string>
+    <string name="woo_shipping_payment_methods_info_footer">يتم استرداد بطاقات الائتمان من حساب WordPress.com التالي: ⁦%1$s⁩ &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">بطاقة ائتمان أو بطاقة خصم جديدة</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">إضافة طريقة دفع  لشراء ملصق الشحن</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">إضافة طريقة دفع</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">يمكن لمالك الموقع فقط إدارة طرق دفع ملصقات الشحن. يُرجى الاتصال بمالك المخزن ⁦%1$s⁩ (⁦%2$s⁩) لإدارة طرق الدفع.</string>
+    <string name="woo_shipping_payment_screen_description">اختيار طريقة دفع.</string>
+    <string name="woo_shipping_payment_screen_title">طريقة الدفع</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">خطأ في الخادم - %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">تحرير طريقة الدفع</string>
+    <string name="shipping_label_shipment_details_add_payment_method">إضافة طريقة الدفع</string>
+    <string name="shipping_label_shipment_details_payment_method">طريقة الدفع</string>
+    <string name="point_of_sale">نقطة البيع</string>
     <string name="no_network_message">لاتوجد شبكة متاحة</string>
     <string name="media_loading_failed">فشل تحميل الوسائط</string>
     <string name="media_library_title">مكتبة وسائط ووردبريس</string>
     <string name="woo_shipping_refund_note">يُرجى ملاحظة أن طلب استرداد الأموال هذا لا ينطبق سوى على ملصق الشحن غير المستخدم ولن يؤثر في الطلب نفسه.</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;المبلغ المؤهل للاسترداد:&lt;/b&gt; %s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;تاريخ الشراء:&lt;/b&gt; %s</string>
-    <string name="woo_shipping_refund_description">اطلب استرداد الأموال لملصق شحنك غير المستخدم. ستبدأ عملية استرداد أموال ملصق الشحن فورًا وعادة ما تكتمل خلال 14 يوم عمل.</string>
+    <string name="woo_shipping_refund_duration_description">اطلب استرداد الأموال لملصق شحنك غير المستخدم. ستبدأ عملية استرداد الأموال الخاصة بملصق الشحن فورًا وتُستكمل عادة في غضون %d من أيام العمل.</string>
     <string name="woo_shipping_refund_title">طلب استرداد أموال ملصق الشحن</string>
     <string name="woo_shipping_split_shipment_error">تعذر علينا تقسيم الشحنات. يُرجى المحاولة مجددًا.</string>
     <string name="woopos_cart_searching_for_item">جارٍ البحث</string>
@@ -31,7 +54,6 @@ Language: ar
     <string name="woopos_dialog_barcode_info_primary_message">• جهّز الرموز الشريطية في حقول \"GTIN، UPC، EAN، ISBN\" في المنتجات &gt; تفاصيل المنتج &gt; المخزون. </string>
     <string name="woopos_dialog_barcode_info_intro_message">يمكنك مسح الرموز الشريطية ضوئيًا باستخدام ماسح ضوئي خارجي لإعداد عربة التسوق سريعًا.</string>
     <string name="woopos_dialog_barcode_info_heading">مسح الرمز الشريطي</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">أُلغي الطلب</string>
     <string name="woopos_cart_barcode_scan_result_network_error">لا يوجد اتصال بالإنترنت</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">عنصر غير مدعوم – %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">عنصر ممسوح ضوئيًا غير معروف</string>

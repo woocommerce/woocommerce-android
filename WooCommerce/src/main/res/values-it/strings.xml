@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-17 14:54:05+0000
+Translation-Revision-Date: 2025-07-02 15:22:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="wpp_shipping_ups_tos_accept">Conferma e continua</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">Inoltre accetto l\'&lt;a href=\"ups-technology-agreement\"&gt;Accordo sulle tecnologie UPS®&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">Accetto di non spedire gli &lt;a href=\"ups-prohibited-items\"&gt;articoli proibiti&lt;/a&gt; non consentiti da UPS® e gli articoli monitorati senza le autorizzazioni necessarie.</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">Accetto i &lt;a href=\"ups-tos\"&gt;Termini di servizio di UPS®&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_description">Per poter spedire da questo indirizzo con UPS®, devi accettare i termini e le condizioni che seguono:</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">Spedizione da</string>
+    <string name="wpp_shipping_ups_tos_title">Termini e condizioni di UPS®</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">Impossibile aggiornare i metodi di pagamento</string>
+    <string name="woo_shipping_payment_method_added">Metodo di pagamento aggiunto</string>
+    <string name="woo_shipping_payment_use_card_button">Usa questa carta</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">Invia la ricevuta tramite e-mail</string>
+    <string name="woo_shipping_payment_methods_info_footer">Le carte di credito vengono recuperate dal seguente account WordPress.com: %1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">Nuova carta di credito o di debito</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">Aggiungi un metodo di pagamento per  acquistare un\'etichetta di spedizione</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">Aggiungi un metodo di pagamento</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">Solo il proprietario del sito può gestire i metodi di pagamento dell\'etichetta di spedizione. Contatta il proprietario del negozio %1$s (%2$s) per gestire i metodi di pagamento.</string>
+    <string name="woo_shipping_payment_screen_description">Scegli un metodo di pagamento.</string>
+    <string name="woo_shipping_payment_screen_title">Metodo di pagamento</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">Errore del server: %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">Modifica metodo di pagamento</string>
+    <string name="shipping_label_shipment_details_add_payment_method">Aggiungi metodo di pagamento</string>
+    <string name="shipping_label_shipment_details_payment_method">Metodo di pagamento</string>
+    <string name="point_of_sale">Punto vendita</string>
     <string name="no_network_message">Nessuna rete disponibile</string>
     <string name="media_loading_failed">Caricamento dei file multimediali non riuscito</string>
     <string name="media_library_title">Libreria multimediale WordPress</string>
     <string name="woo_shipping_refund_note">Tieni presente che questa richiesta di rimborso si applica solo all\'etichetta di spedizione inutilizzata e non riguarda l\'ordine in sé.</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;Importo idoneo al rimborso:&lt;/b&gt; %s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Data di acquisto:&lt;/b&gt; %s</string>
-    <string name="woo_shipping_refund_description">Richiedi un rimborso per l\'etichetta di spedizione inutilizzata. La procedura di rimborso per l\'etichetta di spedizione verrà avviata immediatamente e in genere viene completata entro 14 giorni lavorativi.</string>
+    <string name="woo_shipping_refund_duration_description">Richiedi un rimborso per l\'etichetta di spedizione inutilizzata. La procedura di rimborso per l\'etichetta di spedizione verrà avviata immediatamente e in genere viene completata entro %d giorni lavorativi.</string>
     <string name="woo_shipping_refund_title">Richiedi un rimborso dell\'etichetta di spedizione</string>
     <string name="woo_shipping_split_shipment_error">Impossibile dividere le spedizioni. Riprova.</string>
     <string name="woopos_cart_searching_for_item">Ricerca</string>
@@ -31,7 +54,6 @@ Language: it
     <string name="woopos_dialog_barcode_info_primary_message">• Configura i codici a barre nel campo \"GTIN, UPC, EAN, ISBN\" in Prodotti &gt; Dettagli del prodotto &gt; Inventario. </string>
     <string name="woopos_dialog_barcode_info_intro_message">Per creare rapidamente un carrello, puoi scansionare i codici a barre utilizzando uno scanner esterno.</string>
     <string name="woopos_dialog_barcode_info_heading">Scansione dei codici a barre</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">Richiesta annullata</string>
     <string name="woopos_cart_barcode_scan_result_network_error">Nessuna connessione a Internet</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Articolo non supportato: %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Articolo scansionato sconosciuto</string>
@@ -312,7 +334,7 @@ Language: it
     <string name="woopos_variable_product_item_content_description_v2">Prodotto variabile %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">La descrizione non può essere vuota</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">Invito all\'azione</string>
-    <string name="blaze_campaign_edit_ad_change_tagline_empty_error">Lo slogan non può essere vuoto</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_empty_error">Il motto non può essere vuoto</string>
     <string name="login_magic_links_email_sent_double_check_email">Assicurati che la tua e-mail sia corretta e controlla la cartella dello spam.</string>
     <string name="username_not_registered_wpcom">Non riusciamo a trovare un account WordPress.com collegato a questo nome utente. Puoi inserire un\'e-mail per creare un nuovo account.</string>
     <string name="product_global_unique_id_summary">Inserisci un codice a barre o qualsiasi altro identificatore univoco in questo prodotto. Può aiutarti a elencare questo prodotto su altri canali o marketplace.</string>
@@ -831,7 +853,7 @@ Language: it
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggerito dall\'IA</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d caratteri rimanenti</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Descrizione</string>
-    <string name="blaze_campaign_edit_ad_change_tagline_title">Slogan</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Motto</string>
     <string name="blaze_campaign_edit_ad_change_image_button">Cambia immagine</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Applica</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Data iniziale</string>
