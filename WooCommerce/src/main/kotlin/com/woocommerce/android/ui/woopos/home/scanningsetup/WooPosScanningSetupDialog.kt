@@ -45,14 +45,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withLink
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -70,10 +64,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 
 @Composable
@@ -544,12 +536,8 @@ private fun ScannerSetupInfoContent(
                 .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding()),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
         ) {
-            step.bulletPoints.forEachIndexed { index, bulletPoint ->
-                if (index == 0) {
-                    FirstBulletPointItem(text = bulletPoint)
-                } else {
-                    BulletPointItem(text = bulletPoint)
-                }
+            step.bulletPoints.forEach { bulletPoint ->
+                BulletPointItem(text = bulletPoint)
             }
         }
 
@@ -575,43 +563,6 @@ private fun ScannerSetupInfoContent(
 private fun BulletPointItem(text: String) {
     WooPosText(
         text = "• $text",
-        style = WooPosTypography.BodyLarge,
-        modifier = Modifier.fillMaxWidth()
-    )
-}
-
-@Composable
-private fun FirstBulletPointItem(text: String) {
-    val context = LocalContext.current
-
-    val moreDetailsText = stringResource(id = R.string.woopos_scanning_setup_info_bullet_1_link)
-    val linkAnnotation = LinkAnnotation.Url(
-        WOO_POS_BARCODE_DOC_URL
-    ) { _ ->
-        ChromeCustomTabUtils.launchUrl(
-            context,
-            WOO_POS_BARCODE_DOC_URL,
-            enableSlideAnimation = true
-        )
-    }
-
-    val annotatedText = buildAnnotatedString {
-        append("• ")
-        append(text)
-        append(" ")
-        withStyle(
-            style = SpanStyle(
-                color = MaterialTheme.colorScheme.primary,
-                textDecoration = TextDecoration.Underline
-            )
-        ) {
-            withLink(linkAnnotation) { append(moreDetailsText) }
-        }
-        append(".")
-    }
-
-    WooPosText(
-        text = annotatedText,
         style = WooPosTypography.BodyLarge,
         modifier = Modifier.fillMaxWidth()
     )
