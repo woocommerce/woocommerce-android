@@ -4486,7 +4486,15 @@
     <string name="woopos_scanning_setup_go_to_settings">Go to settings</string>
     <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
     <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
-    <string name="woopos_scanning_setup_view_documentation">View documentation</string>
+    <string name="woopos_scanning_setup_more_information">More information</string>
+    <string name="woopos_scanning_setup_info_title">Scanner set up</string>
+    <string name="woopos_scanning_setup_info_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
+    <string name="woopos_scanning_setup_info_bullet_1">Set up barcodes in the GTIN, UPC, EAN, ISBN field in the product\'s inventory tab.</string>
+    <string name="woopos_scanning_setup_info_bullet_1_link">More details</string>
+    <string name="woopos_scanning_setup_info_bullet_2">Refer to your bluetooth barcode scanner in System Bluetooth settings.</string>
+    <string name="woopos_scanning_setup_info_bullet_3">Scan barcodes while on the item list to add products to the cart.</string>
+    <string name="woopos_scanning_setup_info_bullet_4">Ensure the search field is not enabled while scanning barcodes.</string>
+    <string name="woopos_scanning_setup_info_text">The scanner emulates a keyboard, so sometimes it will prevent the software keyboard from showing, e.g. in search. Double-press the scan button to bring the software keyboard back.</string>
     <string name="woopos_scanning_setup_test_scanner_title">Test your scanner</string>
     <string name="woopos_scanning_setup_test_scanner_message">Scan this test barcode to verify your scanner is working correctly.</string>
     <string name="woopos_scanning_setup_button_next">Next</string>

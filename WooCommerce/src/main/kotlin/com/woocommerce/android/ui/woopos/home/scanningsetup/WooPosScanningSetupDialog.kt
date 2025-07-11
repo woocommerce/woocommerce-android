@@ -45,8 +45,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -64,6 +70,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -98,12 +105,8 @@ fun WooPosScanningSetupDialog(
         }
     }
     LaunchedEffect(Unit) {
-        viewModel.openDocumentationEvent.collect { url ->
-            ChromeCustomTabUtils.launchUrl(
-                context,
-                url,
-                enableSlideAnimation = true
-            )
+        viewModel.dismissDialogEvent.collect {
+            onDismissRequest()
         }
     }
 
@@ -191,7 +194,13 @@ fun WooPosScanningSetupDialog(
 
                     is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
                         step = step,
-                        onViewDocumentation = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnOpenDocumentation) }
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    )
+
+                    is ScanningSetupStep.ScannerSetupInfo -> ScannerSetupInfoContent(
+                        step = step,
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
                 }
             }
@@ -466,7 +475,7 @@ private fun SetupButtonsRow(
 @Composable
 private fun ScannerSetupSuccessContent(
     step: ScanningSetupStep.ScannerSetupSuccess,
-    onViewDocumentation: () -> Unit,
+    onSecondaryClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -494,11 +503,118 @@ private fun ScannerSetupSuccessContent(
         )
 
         WooPosOutlinedButton(
-            onClick = onViewDocumentation,
-            text = step.documentationButtonText,
+            onClick = onSecondaryClick,
+            text = step.moreInfoButtonText,
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+@Composable
+private fun ScannerSetupInfoContent(
+    step: ScanningSetupStep.ScannerSetupInfo,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .fillMaxWidth()
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding()),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
+        ) {
+            step.bulletPoints.forEachIndexed { index, bulletPoint ->
+                if (index == 0) {
+                    FirstBulletPointItem(text = bulletPoint)
+                } else {
+                    BulletPointItem(text = bulletPoint)
+                }
+            }
+        }
+
+        WooPosText(
+            text = step.infoText,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+        )
+
+        SetupButtonsRow(
+            primaryButtonText = step.doneButtonText,
+            secondaryButtonText = step.backButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
+    }
+}
+
+@Composable
+private fun BulletPointItem(text: String) {
+    WooPosText(
+        text = "• $text",
+        style = WooPosTypography.BodyLarge,
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun FirstBulletPointItem(text: String) {
+    val context = LocalContext.current
+
+    val moreDetailsText = stringResource(id = R.string.woopos_scanning_setup_info_bullet_1_link)
+    val linkAnnotation = LinkAnnotation.Url(
+        WOO_POS_BARCODE_DOC_URL
+    ) { _ ->
+        ChromeCustomTabUtils.launchUrl(
+            context,
+            WOO_POS_BARCODE_DOC_URL,
+            enableSlideAnimation = true
+        )
+    }
+
+    val annotatedText = buildAnnotatedString {
+        append("• ")
+        append(text)
+        append(" ")
+        withStyle(
+            style = SpanStyle(
+                color = MaterialTheme.colorScheme.primary,
+                textDecoration = TextDecoration.Underline
+            )
+        ) {
+            withLink(linkAnnotation) { append(moreDetailsText) }
+        }
+        append(".")
+    }
+
+    WooPosText(
+        text = annotatedText,
+        style = WooPosTypography.BodyLarge,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable

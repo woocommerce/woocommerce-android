@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -38,8 +37,8 @@ class WooPosScanningSetupViewModel @Inject constructor(
     private val _openBluetoothSettingsEvent = MutableSharedFlow<Unit>()
     val openBluetoothSettingsEvent: SharedFlow<Unit> = _openBluetoothSettingsEvent.asSharedFlow()
 
-    private val _openDocumentationEvent = MutableSharedFlow<String>()
-    val openDocumentationEvent: SharedFlow<String> = _openDocumentationEvent.asSharedFlow()
+    private val _dismissDialogEvent = MutableSharedFlow<Unit>()
+    val dismissDialogEvent: SharedFlow<Unit> = _dismissDialogEvent.asSharedFlow()
 
     fun onUiEvent(event: WooPosScanningSetupUiEvent) {
         when (event) {
@@ -70,12 +69,6 @@ class WooPosScanningSetupViewModel @Inject constructor(
             WooPosScanningSetupUiEvent.OnOpenBluetoothSettings -> {
                 viewModelScope.launch {
                     _openBluetoothSettingsEvent.emit(Unit)
-                }
-            }
-
-            WooPosScanningSetupUiEvent.OnOpenDocumentation -> {
-                viewModelScope.launch {
-                    _openDocumentationEvent.emit(WOO_POS_BARCODE_DOC_URL)
                 }
             }
         }
@@ -117,7 +110,13 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.ScannerSetupSuccess -> {
-                // Handled by parent through onDismissRequest
+                error("Primary button should not be available on ScannerSetupSuccess step")
+            }
+
+            is ScanningSetupStep.ScannerSetupInfo -> {
+                viewModelScope.launch {
+                    _dismissDialogEvent.emit(Unit)
+                }
             }
         }
     }
@@ -152,7 +151,15 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.ScannerSetupSuccess -> {
-                error("Secondary button should not be available on ScannerSetupSuccess step")
+                _state.value = _state.value.copy(
+                    currentStep = createScannerSetupInfoStep()
+                )
+            }
+
+            is ScanningSetupStep.ScannerSetupInfo -> {
+                _state.value = _state.value.copy(
+                    currentStep = createScannerSetupSuccessStep()
+                )
             }
         }
     }
@@ -204,8 +211,21 @@ class WooPosScanningSetupViewModel @Inject constructor(
     private fun createScannerSetupSuccessStep() = ScanningSetupStep.ScannerSetupSuccess(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_success_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_success_message),
-        documentationButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_view_documentation),
-        documentationUrl = WOO_POS_BARCODE_DOC_URL
+        moreInfoButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_more_information)
+    )
+
+    private fun createScannerSetupInfoStep() = ScanningSetupStep.ScannerSetupInfo(
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_info_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_info_message),
+        bulletPoints = listOf(
+            resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_1),
+            resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_2),
+            resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_3),
+            resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_4)
+        ),
+        infoText = resourceProvider.getString(R.string.woopos_scanning_setup_info_text),
+        backButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+        doneButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done)
     )
 
     private fun startAutoNavigationToSuccess() {
@@ -228,6 +248,5 @@ sealed class WooPosScanningSetupUiEvent {
     data object OnPrimaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnSecondaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnOpenBluetoothSettings : WooPosScanningSetupUiEvent()
-    data object OnOpenDocumentation : WooPosScanningSetupUiEvent()
     data class OnDeviceSelected(val device: BarcodeReaderDevice) : WooPosScanningSetupUiEvent()
 }

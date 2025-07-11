@@ -66,8 +66,17 @@ data class WooPosScanningSetupState(
         data class ScannerSetupSuccess(
             val title: String,
             val message: String,
-            val documentationButtonText: String,
-            val documentationUrl: String,
+            val moreInfoButtonText: String,
+        ) : ScanningSetupStep()
+
+        @Parcelize
+        data class ScannerSetupInfo(
+            val title: String,
+            val message: String,
+            val bulletPoints: List<String>,
+            val infoText: String,
+            val backButtonText: String,
+            val doneButtonText: String,
         ) : ScanningSetupStep()
     }
 }
