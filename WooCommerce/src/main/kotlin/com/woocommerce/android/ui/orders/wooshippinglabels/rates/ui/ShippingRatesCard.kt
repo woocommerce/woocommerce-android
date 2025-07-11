@@ -96,10 +96,12 @@ internal fun ShippingRatesCard(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = Devices.PIXEL)
 @Composable
 private fun ShippingRatesCardPreview() {
-    ShippingRatesCard(
-        state = ShippingLabelSampleData.getShippingRatesSection(),
-        onSelectedRateSortOrderChanged = {},
-    )
+    WooThemeWithBackground {
+        ShippingRatesCard(
+            state = ShippingLabelSampleData.getShippingRatesSection(),
+            onSelectedRateSortOrderChanged = {},
+        )
+    }
 }
 
 @Composable
