@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.getTimeString
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
+import com.woocommerce.android.ui.orders.SalesChannelTag
 import java.util.Date
 
 typealias EditStatusClickListener = (View) -> Unit
@@ -43,6 +44,17 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
             Mode.OrderCreation -> {
                 binding.orderStatusHeader.isVisible = false
             }
+        }
+
+        updatePosTag(order)
+    }
+
+    private fun updatePosTag(order: Order) {
+        if (order.salesChannel == Order.SalesChannel.POS) {
+            binding.orderStatusPosTag.isVisible = true
+            binding.orderStatusPosTag.tag = SalesChannelTag(context.getString(R.string.pos_badge))
+        } else {
+            binding.orderStatusPosTag.isVisible = false
         }
     }
 

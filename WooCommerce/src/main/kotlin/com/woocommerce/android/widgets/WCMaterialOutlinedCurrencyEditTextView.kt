@@ -27,10 +27,10 @@ import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.FILL
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.WRAP
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT_SPACE
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP

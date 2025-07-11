@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageSelected
@@ -20,11 +21,16 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingL
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowLoadingDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowPackageTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowTemplateCreationErrorDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class WooShippingLabelPackageCreationFragment : BaseFragment() {
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
     val viewModel: WooShippingLabelPackageCreationViewModel by viewModels()
 
     private var progressDialog: CustomProgressDialog? = null
@@ -55,6 +61,7 @@ class WooShippingLabelPackageCreationFragment : BaseFragment() {
                 is ShowLoadingDialog -> showLoadingDialog(event.show)
                 is ShowTemplateCreationErrorDialog -> handleTemplateCreationError()
                 is PackageSelected -> navigateBackWithResult(PACKAGE_SELECTION_RESULT, event.packageData)
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }

@@ -57,7 +57,8 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
         rate = BigDecimal.ZERO,
         currency = "",
         expiryDate = 0L,
-        usedDate = null
+        usedDate = null,
+        refund = null
     )
 
     @Before

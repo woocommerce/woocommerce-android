@@ -33,7 +33,8 @@ class ShippingLabelModelTest : BaseUnitTest() {
         rate = BigDecimal(1),
         currency = "USD",
         expiryDate = 32503680000000, // far future date
-        usedDate = null
+        usedDate = null,
+        refund = null
     )
 
     @Test

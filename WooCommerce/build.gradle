@@ -19,7 +19,7 @@ fladle {
     variant = "vanillaDebug"
     serviceAccountCredentials = rootProject.file(".configure-files/firebase.secrets.json")
     testTargets = [
-            "notPackage com.woocommerce.android.e2e.tests.screenshot"
+            "notPackage com.woocommerce.android.e2e"
     ]
     devices = [
             ["model": "Pixel2.arm", "version": "30"]
@@ -427,6 +427,8 @@ dependencies {
     implementation(libs.google.protobuf.javalite)
 
     lintChecks(libs.android.security.lint)
+
+    testImplementation(testFixtures(project(":libs:fluxc-plugin")))
 }
 
 protobuf {

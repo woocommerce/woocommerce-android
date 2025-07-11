@@ -24,11 +24,10 @@ import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
-import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
-import com.woocommerce.android.model.loadProducts
+import com.woocommerce.android.model.toShippingLabelModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
@@ -58,7 +57,10 @@ import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWit
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.fillProducts
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -112,6 +114,7 @@ class OrderDetailViewModel @Inject constructor(
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val shippingLabelRepository: WooShippingLabelRepository,
     private val eligibilityDataStore: WooShippingEligibilityDataStore,
+    private val configDataStore: WooShippingConfigDataStore,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
     private val giftCardRepository: GiftCardRepository,
@@ -153,8 +156,8 @@ class OrderDetailViewModel @Inject constructor(
     private val _shipmentTrackings = MutableLiveData<List<OrderShipmentTracking>>()
     val shipmentTrackings: LiveData<List<OrderShipmentTracking>> = _shipmentTrackings
 
-    private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
-    val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
+    private val _shippingLabels = MutableLiveData<List<ShippingLabelModel>>()
+    val shippingLabels: LiveData<List<ShippingLabelModel>> = _shippingLabels
 
     private val _giftCards = MutableLiveData<List<GiftCardSummary>>()
     val giftCards: LiveData<List<GiftCardSummary>> = _giftCards
@@ -512,9 +515,24 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
+    fun onPrintCustomsFormClicked(shippingLabel: ShippingLabelModel) {
         shippingLabel.commercialInvoiceUrl?.let {
             triggerEvent(ViewPrintCustomsForm(listOf(it), isReprint = true))
+        }
+    }
+
+    fun onViewShippingLabelClicked(shippingLabel: ShippingLabelModel) {
+        launch {
+            if (isRevampWooShippingEnabled) {
+                triggerEvent(
+                    StartWooShippingLabelCreationFlow(
+                        orderId = awaitOrder().id,
+                        shipmentId = shippingLabel.shipmentId?.toIntOrNull()
+                    )
+                )
+            } else {
+                triggerEvent(StartShippingLabelCreationFlow(orderId = awaitOrder().id))
+            }
         }
     }
 
@@ -688,7 +706,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onCreateShippingLabelButtonTapped() {
-        tracker.trackShippinhLabelTapped()
+        tracker.trackShippingLabelTapped()
         launch {
             if (isRevampWooShippingEnabled) {
                 triggerEvent(StartWooShippingLabelCreationFlow(awaitOrder().id))
@@ -820,7 +838,7 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
     }
 
-    private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
+    private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabelModel>): ListInfo<OrderShipmentTracking> {
         val trackingList = orderDetailRepository.getOrderShipmentTrackings(navArgs.orderId)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
@@ -888,12 +906,14 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onGiftCardsFetched()
     }
 
-    private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {
-        orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
-            .loadProducts(awaitOrder().items)
-            .whenNotNullNorEmpty {
-                return ListInfo(list = it)
-            }
+    private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabelModel> {
+        if (isRevampWooShippingEnabled) {
+            configDataStore.getPurchasedLabels(navArgs.orderId).first()
+        } else {
+            orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
+                .map { it.toShippingLabelModel() }
+        }?.fillProducts(awaitOrder().items)
+            .whenNotNullNorEmpty { return ListInfo(list = it) }
         return ListInfo(isVisible = false)
     }
 

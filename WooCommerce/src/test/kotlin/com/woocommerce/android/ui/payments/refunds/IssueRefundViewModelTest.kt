@@ -11,7 +11,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -32,7 +31,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -92,11 +91,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: IssueRefundViewState? = null
-            viewModel.viewState.observeForever { new -> viewState = new }
+            val viewState = viewModel.viewState.getOrAwaitValue()
 
-            viewState!!.feesSection.isFeesRefundAvailable.let { assertTrue(it) }
-            assertTrue(viewState!!.feesSection.isFeesMainSwitchChecked)
+            viewState.feesSection.isFeesRefundAvailable.let { assertTrue(it) }
+            assertTrue(viewState.feesSection.isFeesMainSwitchChecked)
         }
     }
 
@@ -107,10 +105,9 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: IssueRefundViewState? = null
-            viewModel.viewState.observeForever { new -> viewState = new }
+            val viewState = viewModel.viewState.getOrAwaitValue()
 
-            assertFalse(viewState!!.isRefundNoticeVisible)
+            assertFalse(viewState.isRefundNoticeVisible)
         }
     }
 
@@ -122,10 +119,9 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: IssueRefundViewState? = null
-            viewModel.viewState.observeForever { new -> viewState = new }
+            val viewState = viewModel.viewState.getOrAwaitValue()
 
-            assertFalse(viewState!!.isRefundNoticeVisible)
+            assertFalse(viewState.isRefundNoticeVisible)
         }
     }
 
@@ -137,11 +133,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: IssueRefundViewState? = null
-            viewModel.viewState.observeForever { new -> viewState = new }
+            val viewState = viewModel.viewState.getOrAwaitValue()
 
-            assertTrue(viewState!!.isRefundNoticeVisible)
-            assertEquals("You can refund multiple shipping lines", viewState!!.refundNotice)
+            assertTrue(viewState.isRefundNoticeVisible)
+            assertEquals("You can refund multiple shipping lines", viewState.refundNotice)
         }
     }
 
@@ -175,8 +170,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
 
             initViewModel()
+            viewModel.viewState.getOrAwaitValue()
             viewModel.onRefundQuantityTapped(1L)
 
             verify(analyticsTrackerWrapper).track(
@@ -194,8 +191,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
 
             initViewModel()
+            viewModel.viewState.getOrAwaitValue()
             viewModel.onSelectButtonTapped()
 
             verify(analyticsTrackerWrapper).track(
@@ -226,7 +225,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
         val orderEntity = mock<OrderEntity>()
         val orderMapper = mock<OrderMapper> {
-            on { toAppModel(orderEntity) }.thenReturn(order)
+            onBlocking { toAppModel(orderEntity) }.thenReturn(order)
         }
         whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderEntity)
         whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
@@ -266,7 +265,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
         val orderEntity = mock<OrderEntity>()
         val orderMapper = mock<OrderMapper> {
-            on { toAppModel(orderEntity) }.thenReturn(order)
+            onBlocking { toAppModel(orderEntity) }.thenReturn(order)
         }
         val refundedItems = listOf(
             mock<WCRefundItem> {
@@ -330,7 +329,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             }
             val orderEntity = mock<OrderEntity>()
             val orderMapper = mock<OrderMapper> {
-                on { toAppModel(orderEntity) }.thenReturn(order)
+                onBlocking { toAppModel(orderEntity) }.thenReturn(order)
             }
             val refundedItems = listOf(
                 mock<WCRefundItem> {
@@ -415,7 +414,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             }
             val orderEntity = mock<OrderEntity>()
             val orderMapper = mock<OrderMapper> {
-                on { toAppModel(orderEntity) }.thenReturn(order)
+                onBlocking { toAppModel(orderEntity) }.thenReturn(order)
             }
             val refundedItems = listOf(
                 mock<WCRefundItem> {

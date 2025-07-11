@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigatePackageSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToCustomsFormEdit
@@ -44,7 +43,7 @@ import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
+class WooShippingLabelCreationFragment : BaseFragment() {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
@@ -142,8 +141,17 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                 is WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService -> navigateToUPSDAPTermsOfService(
                     event.originAddress
                 )
+
+                is WooShippingLabelCreationViewModel.PrintCustomsForm -> printFile(event.file)
             }
         }
+    }
+
+    /**
+     * This just opens the default PDF reader of the device
+     */
+    private fun printFile(file: File) {
+        ActivityUtils.previewPDFFile(requireActivity(), file)
     }
 
     private fun setupResultHandlers() {
@@ -174,11 +182,9 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
             UPSDAPTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
             entryId = R.id.wooShippingLabelCreationFragment
         ) {
-            viewModel.onPurchaseShippingLabel()
+            viewModel.onUPSTermsAccepted()
         }
     }
-
-    override fun onRequestAllowBackPress(): Boolean = viewModel.allowBackNavigation()
 
     private fun openShippingLabelPreview(file: File) {
         ActivityUtils.previewPDFFile(requireActivity(), file)

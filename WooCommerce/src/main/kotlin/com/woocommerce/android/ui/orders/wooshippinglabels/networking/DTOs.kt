@@ -9,7 +9,9 @@ import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import java.lang.reflect.Type
 import java.math.BigDecimal
 
@@ -32,7 +34,8 @@ data class StoreOptionsDTO(
 
 data class FormDataDTO(
     @SerializedName("selected_payment_method_id") val selectedPaymentId: Long?,
-    @SerializedName("email_receipts") val emailReceipts: Boolean = false
+    @SerializedName("email_receipts") val emailReceipts: Boolean = false,
+    @SerializedName("paper_size") val paperSize: WooShippingLabelPaperSize
 )
 
 data class FormMetaDTO(
@@ -82,7 +85,17 @@ data class ConfigDTO(
 )
 
 data class ShippingLabelDataDTO(
-    @SerializedName("currentOrderLabels") val currentOrderLabels: List<ShippingLabelDTO>
+    @SerializedName("currentOrderLabels") val currentOrderLabels: List<ShippingLabelDTO>?,
+    @SerializedName("storedData") val storedData: StoredDataDTO?
+)
+
+data class StoredDataDTO(
+    @SerializedName("selected_origin")
+    @JsonAdapter(MapOrEmptyMapDeserializer::class)
+    val selectedOrigin: Map<String, OriginAddressDTO>,
+    @SerializedName("selected_destination")
+    @JsonAdapter(MapOrEmptyMapDeserializer::class)
+    val selectedDestination: Map<String, DestinationAddressDTO>,
 )
 
 data class Item(@SerializedName("id") val id: Long?, @SerializedName("subItems") val subItems: List<String>?)
@@ -123,7 +136,10 @@ data class ShippingLabelDTO(
     @SerializedName("refund") val refund: LabelRefund? = null
 )
 
-data class LabelRefund(@SerializedName("status") val status: String? = null)
+data class LabelRefund(
+    @SerializedName("status") val status: String? = null,
+    @SerializedName("request_date") val requestDate: Long? = null
+)
 
 data class PurchasedShippingLabelResponseDTO(
     val success: Boolean,
@@ -213,14 +229,30 @@ data class CustomsItemDTO(
 
 data class RefundLabelResponseDTO(val success: Boolean)
 
+private class MapOrEmptyMapDeserializer : JsonDeserializer<Map<*, *>?> {
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type,
+        context: JsonDeserializationContext
+    ): Map<*, *> = try {
+        if (json.isJsonObject) {
+            context.deserialize(json, typeOfT)
+        } else {
+            emptyMap<Any, Any>()
+        }
+    } catch (_: Exception) {
+        emptyMap<Any, Any>()
+    }
+}
+
 private class ShipmentMapDeserializer : JsonDeserializer<ShipmentMap> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ShipmentMap {
         // Handle string-encoded JSON or direct JSON object
         val jsonObject = if (json.isJsonPrimitive && json.asJsonPrimitive.isString) {
-            JsonParser.parseString(json.asString).asJsonObject
+            JsonParser.parseString(json.asString)
         } else {
-            json.asJsonObject
-        }
+            json
+        }.asJsonObject
 
         val mapType = object : TypeToken<ShipmentMap>() {}.type
         return Gson().fromJson(jsonObject, mapType)

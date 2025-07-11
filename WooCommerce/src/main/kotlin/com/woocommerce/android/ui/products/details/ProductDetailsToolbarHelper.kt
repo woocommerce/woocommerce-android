@@ -9,8 +9,8 @@ import androidx.annotation.IdRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -20,14 +20,14 @@ import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class ProductDetailsToolbarHelper @Inject constructor(
-    private val activity: Activity,
-    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
-) : DefaultLifecycleObserver,
+class ProductDetailsToolbarHelper @Inject constructor() :
+    FragmentManager.FragmentLifecycleCallbacks(),
     Toolbar.OnMenuItemClickListener {
     private var fragment: ProductDetailFragment? = null
     private var binding: FragmentProductDetailBinding? = null
     private var viewModel: ProductDetailViewModel? = null
+    private var activity: Activity? = null
+    private var isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact? = null
 
     private var menu: Menu? = null
 
@@ -39,8 +39,10 @@ class ProductDetailsToolbarHelper @Inject constructor(
         this.fragment = fragment
         this.binding = binding
         this.viewModel = viewModel
+        this.activity = fragment.activity
+        this.isWindowClassLargeThanCompact = IsWindowClassLargeThanCompact(activity!!)
 
-        fragment.lifecycle.addObserver(this)
+        fragment.parentFragmentManager.registerFragmentLifecycleCallbacks(this, false)
 
         setupToolbar()
 
@@ -49,15 +51,20 @@ class ProductDetailsToolbarHelper @Inject constructor(
         }
     }
 
-    fun updateTitle(title: String) {
-        binding?.productDetailToolbar?.title = title
+    override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
+        if (f == fragment) {
+            binding = null
+            menu = null
+            fragment = null
+            viewModel = null
+            activity = null
+            isWindowClassLargeThanCompact = null
+            fm.unregisterFragmentLifecycleCallbacks(this)
+        }
     }
 
-    override fun onDestroy(owner: LifecycleOwner) {
-        fragment = null
-        binding = null
-        viewModel = null
-        menu = null
+    fun updateTitle(title: String) {
+        binding?.productDetailToolbar?.title = title
     }
 
     fun setupToolbar() {
@@ -70,23 +77,24 @@ class ProductDetailsToolbarHelper @Inject constructor(
 
         toolbar.navigationIcon =
             when {
-                isWindowClassLargeThanCompact() -> {
+                isWindowClassLargeThanCompact!!.invoke() -> {
                     val startMode = viewModel?.startMode
                     val isAddNewModeCreationFlow = startMode == ProductDetailFragment.Mode.AddNewProduct
                     val isProductShownAfterGenerationWithAi = startMode is ProductDetailFragment.Mode.ShowProduct &&
                         startMode.afterGeneratedWithAi
                     if (isAddNewModeCreationFlow || isProductShownAfterGenerationWithAi) {
-                        AppCompatResources.getDrawable(activity, R.drawable.ic_back_24dp)
+                        AppCompatResources.getDrawable(activity!!, R.drawable.ic_back_24dp)
                     } else {
                         null
                     }
                 }
+
                 isPartOfProductListFlow() -> {
-                    AppCompatResources.getDrawable(activity, R.drawable.ic_back_24dp)
+                    AppCompatResources.getDrawable(activity!!, R.drawable.ic_back_24dp)
                 }
 
                 else -> {
-                    AppCompatResources.getDrawable(activity, R.drawable.ic_gridicons_cross_24dp)
+                    AppCompatResources.getDrawable(activity!!, R.drawable.ic_gridicons_cross_24dp)
                 }
             }
 
@@ -107,7 +115,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
             title.setSpan(
                 ForegroundColorSpan(
                     ContextCompat.getColor(
-                        activity,
+                        activity!!,
                         R.color.woo_red_30
                     )
                 ),
@@ -129,7 +137,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_publish -> {
-                ActivityUtils.hideKeyboard(activity)
+                ActivityUtils.hideKeyboard(activity!!)
                 viewModel?.onPublishButtonClicked()
                 true
             }
@@ -145,7 +153,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
             }
 
             R.id.menu_save -> {
-                ActivityUtils.hideKeyboard(activity)
+                ActivityUtils.hideKeyboard(activity!!)
                 viewModel?.onSaveButtonClicked()
                 true
             }

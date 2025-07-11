@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,7 +44,8 @@ class FetchAccountSettingsTests : BaseUnitTest() {
         canManagePayments = false,
         canEditSettings = true,
         storeOwnerName = "",
-        storeOwnerUsername = ""
+        storeOwnerUsername = "",
+        paperSize = WooShippingLabelPaperSize.LABEL
     )
 
     val sut = FetchAccountSettings(

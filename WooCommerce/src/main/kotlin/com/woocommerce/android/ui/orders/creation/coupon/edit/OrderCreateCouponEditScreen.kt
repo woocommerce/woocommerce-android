@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -44,12 +46,13 @@ fun OrderCreateCouponEditScreen(
 @Composable
 fun OrderCreateCouponEditionScreenPreview() {
     OrderCreateCouponEditScreen(
-        state = object : State<OrderCreateCouponDetailsViewModel.ViewState?> {
-            override val value: OrderCreateCouponDetailsViewModel.ViewState
-                get() = OrderCreateCouponDetailsViewModel.ViewState(
+        state = remember {
+            mutableStateOf(
+                OrderCreateCouponDetailsViewModel.ViewState(
                     "code",
                     true,
                 )
+            )
         },
         onCouponRemoved = {}
     )

@@ -14,24 +14,20 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.E
 internal fun ShippingRatesSection(
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
-    onRefreshShippingRates: () -> Unit,
-    onSelectedSippingRateChanged: (rate: ShippingRateUI) -> Unit,
+    onRefreshShippingRates: () -> Unit
 ) {
     when (shippingRatesState) {
         is WooShippingLabelCreationViewModel.ShippingRatesState.DataState -> {
             ShippingRatesCard(
-                selectedRate = shippingRatesState.selectedRate,
-                shippingRates = shippingRatesState.shippingRates,
-                selectedSortOption = shippingRatesState.selectedRatesSortOrder,
+                state = shippingRatesState,
                 onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
-                onSelectedSippingRateChanged = onSelectedSippingRateChanged,
                 modifier = Modifier.fillMaxWidth()
             )
         }
 
         is WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo -> {
             ShippingRatesSectionMissingInfo(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 missingInfo = shippingRatesState
             )
         }

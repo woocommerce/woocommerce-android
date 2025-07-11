@@ -626,6 +626,7 @@
     <string name="orderlist_bulk_update_result_no_orders_updated">No orders updated. Please try again.</string>
     <string name="orderlist_bulk_update_result_all_failed">Failed to update orders. Please try again.</string>
     <string name="orderlist_bulk_update_result_partial_success">%d order(s) updated, and %d order(s) failed to update. Please try again.</string>
+    <string name="pos_badge" translatable="false">POS</string>
 
     <!--
          Simple Payments
@@ -1001,6 +1002,7 @@
     <string name="orderdetail_shipping_label_item_carrier">Shipping carriers and rates</string>
     <string name="orderdetail_shipping_label_item_payment">Payment method</string>
     <string name="orderdetail_shipping_label_item_payment_type">Credit card</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">View purchased shipping label</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Show shipment details</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
@@ -1123,6 +1125,7 @@
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
     <string name="shipping_label_preview_pdf_app_missing">Unable to preview shipping label. Please install a PDF viewer app and try again.</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297mm)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
     <string name="print_receipt_label_info_step_count_1" translatable="false">1</string>
@@ -1291,6 +1294,7 @@
     <string name="shipping_label_shipment_details_title">Shipment details</string>
     <string name="shipping_label_shipment_details_order_details">Order details</string>
     <string name="shipping_label_shipment_details_shipment_cost">Shipment cost</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (base fee)</string>
     <string name="shipping_label_shipment_details_mark_order_complete">After purchasing a label, mark this order as complete and notify the customer.</string>
     <string name="shipping_label_shipment_details_purchase_label">Purchase Label · %1$s </string>
     <string name="shipping_label_shipment_details_purchase_label_disabled">Purchase Label</string>
@@ -4296,6 +4300,8 @@
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item – %s</string>
     <string name="woopos_cart_barcode_scan_result_server_error">Server error - %s</string>
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">Scanned barcode is too short</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">Scanner did not send end-of-line character</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
@@ -4313,7 +4319,7 @@
     <string name="woopos_dialog_barcode_info_intro_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
     <string name="woopos_dialog_barcode_info_primary_message">• Set up barcodes in the "GTIN, UPC, EAN, ISBN" field in Products &gt; Product Details &gt; Inventory. </string>
     <string name="woopos_dialog_barcode_info_more_details_link">More details</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Refer to your Bluetooth barcode scanner\'s instructions to set HID mode.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Refer to your Bluetooth barcode scanner\'s instructions to set HID mode. This usually requires scanning a special barcode in the manual.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• Connect your barcode scanner in System Bluetooth settings.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• Scan barcodes while on the item list to add products to the cart.</string>
     <string name="woopos_dialog_barcode_info_quinary_message">The scanner emulates a keyboard, so sometimes it will prevent the software keyboard from showing, e.g. in search. Tap on the keyboard icon to show the software keyboard back.</string>
@@ -4625,6 +4631,8 @@
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
+    <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
+    <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
@@ -4693,6 +4701,14 @@
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">I will not ship any &lt;a href=\"ups-prohibited-items\"&gt;Prohibited Items&lt;/a&gt; that UPS® disallows, nor any regulated items without the necessary permissions.</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">I also agree to the &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_accept">Confirm and continue</string>
+
+    <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_option_signature_required">Signature required</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Adult signature required</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Carbon neutral</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Saturday delivery</string>
+    <string name="woo_shipping_rate_option_additional_handling">Additional handling</string>
 
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>
