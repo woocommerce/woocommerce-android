@@ -49,7 +49,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
                     }
 
                     else -> _state.value = _state.value.copy(
-                        currentStep = createBluetoothIntroductionStep()
+                        currentStep = createScannerHIDModeSetupStep()
                     )
                 }
             }
@@ -83,13 +83,13 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 error("Primary button should not be available on DeviceSelection step")
             }
 
-            is ScanningSetupStep.Introduction -> {
+            is ScanningSetupStep.ScannerHIDModeSetup -> {
                 _state.value = _state.value.copy(
-                    currentStep = createBluetoothWarningStep()
+                    currentStep = createScannerPairModeSetupStep()
                 )
             }
 
-            is ScanningSetupStep.BluetoothWarning -> {
+            is ScanningSetupStep.ScannerPairModeSetup -> {
                 _state.value = _state.value.copy(
                     currentStep = createBluetoothPairingStep()
                 )
@@ -125,21 +125,21 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 "Secondary button should not be available on DeviceSelection step"
             )
 
-            is ScanningSetupStep.Introduction -> {
+            is ScanningSetupStep.ScannerHIDModeSetup -> {
                 _state.value = _state.value.copy(
                     currentStep = createDeviceSelectionStep()
                 )
             }
 
-            is ScanningSetupStep.BluetoothWarning -> {
+            is ScanningSetupStep.ScannerPairModeSetup -> {
                 _state.value = _state.value.copy(
-                    currentStep = createBluetoothIntroductionStep()
+                    currentStep = createScannerHIDModeSetupStep()
                 )
             }
 
             is ScanningSetupStep.BluetoothPairing -> {
                 _state.value = _state.value.copy(
-                    currentStep = createBluetoothWarningStep()
+                    currentStep = createScannerPairModeSetupStep()
                 )
             }
 
@@ -171,22 +171,18 @@ class WooPosScanningSetupViewModel @Inject constructor(
         )
     )
 
-    private fun createBluetoothIntroductionStep() = ScanningSetupStep.Introduction(
-        title = resourceProvider.getString(
-            R.string.woopos_scanning_setup_introduction_title,
-            resourceProvider.getString(_state.value.selectedDevice!!.displayNameRes)
-        ),
-        message = resourceProvider.getString(
-            R.string.woopos_scanning_setup_introduction_message,
-            resourceProvider.getString(_state.value.selectedDevice!!.displayNameRes)
-        ),
+    private fun createScannerHIDModeSetupStep() = ScanningSetupStep.ScannerHIDModeSetup(
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_introduction_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_introduction_message),
+        qrCodeImageRes = R.drawable.ic_barcode,
         primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
 
-    private fun createBluetoothWarningStep() = ScanningSetupStep.BluetoothWarning(
-        title = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_warning_title),
-        message = resourceProvider.getString(R.string.woopos_scanning_setup_bluetooth_warning_message),
+    private fun createScannerPairModeSetupStep() = ScanningSetupStep.ScannerPairModeSetup(
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_message),
+        qrCodeImageRes = R.drawable.ic_barcode,
         primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )

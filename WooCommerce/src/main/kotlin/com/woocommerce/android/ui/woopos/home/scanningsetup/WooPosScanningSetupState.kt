@@ -27,17 +27,19 @@ data class WooPosScanningSetupState(
         ) : ScanningSetupStep()
 
         @Parcelize
-        data class Introduction(
+        data class ScannerHIDModeSetup(
             val title: String,
             val message: String,
+            @DrawableRes val qrCodeImageRes: Int,
             val primaryButtonText: String,
             val secondaryButtonText: String,
         ) : ScanningSetupStep()
 
         @Parcelize
-        data class BluetoothWarning(
+        data class ScannerPairModeSetup(
             val title: String,
             val message: String,
+            @DrawableRes val qrCodeImageRes: Int,
             val primaryButtonText: String,
             val secondaryButtonText: String,
         ) : ScanningSetupStep()
