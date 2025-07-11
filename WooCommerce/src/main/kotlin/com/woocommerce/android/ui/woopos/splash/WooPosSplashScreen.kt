@@ -31,6 +31,10 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         is WooPosSplashState.Loaded -> {
             onNavigationEvent(WooPosNavigationEvent.OpenHomeFromSplash)
         }
+        is WooPosSplashState.NotEligible -> {
+            val reason = (state.value as WooPosSplashState.NotEligible).reason
+            onNavigationEvent(WooPosNavigationEvent.OpenEligibilityScreenFromSplash(reason))
+        }
     }
 }
 
