@@ -105,7 +105,7 @@ class WCRefundStore @Inject internal constructor(
                             refundResponse = it
                         )
                     }.let {
-                        refundDao.upsertRefunds(listOf(it))
+                        refundDao.upsertRefund(it)
                     }
                     WooResult(refundsMapper.toModel(response.result))
                 }

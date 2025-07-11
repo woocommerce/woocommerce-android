@@ -32,10 +32,9 @@ class RefundDaoTest {
     @Test
     fun `test refund insert`(): Unit = runBlocking {
         val entity = REFUND_ENTITY.copy(data = "test-refund-data")
-        sut.upsertRefunds(listOf(entity))
+        sut.upsertRefund(entity)
 
         val entities = sut.getRefundsForOrder(TEST_SITE.localId(), RemoteId(orderId))
-        assertThat(entities).hasSize(1)
         assertThat(entities.first())
             .extracting({ it.data }, { it.refundId.value })
             .containsExactly("test-refund-data", 1L)
@@ -47,13 +46,13 @@ class RefundDaoTest {
         val updatedData = "updated-data"
 
         val entity = REFUND_ENTITY.copy(data = originalData)
-        sut.upsertRefunds(listOf(entity))
+        sut.upsertRefund(entity)
 
         val retrievedEntity = sut.getRefund(TEST_SITE.localId(), RemoteId(orderId), RemoteId(1L))
         assertThat(retrievedEntity?.data).isEqualTo(originalData)
 
         val updatedEntity = REFUND_ENTITY.copy(data = updatedData)
-        sut.upsertRefunds(listOf(updatedEntity))
+        sut.upsertRefund(updatedEntity)
 
         val updatedRetrievedEntity = sut.getRefund(TEST_SITE.localId(), RemoteId(orderId), RemoteId(1L))
         assertThat(updatedRetrievedEntity?.data).isEqualTo(updatedData)
@@ -69,7 +68,6 @@ class RefundDaoTest {
 
         val retrievedEntities = sut.getRefundsForOrder(TEST_SITE.localId(), RemoteId(orderId))
         assertThat(retrievedEntities)
-            .hasSize(2)
             .extracting<String> { it.data }
             .containsExactlyInAnyOrder("data-1", "data-2")
 

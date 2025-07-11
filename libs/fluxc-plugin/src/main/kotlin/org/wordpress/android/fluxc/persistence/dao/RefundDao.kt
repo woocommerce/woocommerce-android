@@ -19,9 +19,6 @@ internal abstract class RefundDao {
     @Query("DELETE FROM RefundEntity WHERE siteId = :siteId AND orderId = :orderId")
     abstract suspend fun deleteRefundsForOrder(siteId: LocalId, orderId: RemoteId)
 
-    @Query("DELETE FROM RefundEntity WHERE siteId = :siteId AND orderId = :orderId AND refundId = :refundId")
-    abstract suspend fun deleteRefund(siteId: LocalId, orderId: RemoteId, refundId: RemoteId)
-
     @Query("SELECT * FROM RefundEntity WHERE siteId = :siteId AND orderId = :orderId")
     abstract suspend fun getRefundsForOrder(siteId: LocalId, orderId: RemoteId): List<RefundEntity>
 

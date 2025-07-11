@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.wc.refunds
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -23,7 +22,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCRefundStore.Companion.DEFAULT_PAGE
