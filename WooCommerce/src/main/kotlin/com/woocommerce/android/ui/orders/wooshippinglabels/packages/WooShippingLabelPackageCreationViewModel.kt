@@ -329,7 +329,10 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                     updateSavedPackageUI(packageData = packageData, saved = !isStarred)
                     tracker.track(
                         AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
-                        mapOf(KEY_STATE to "saving_failed", KEY_ERROR to it.exceptionOrNull()?.message.orEmpty())
+                        mapOf(
+                            KEY_STATE to if (isStarred) "saving_failed" else "removing_failed",
+                            KEY_ERROR to it.exceptionOrNull()?.message.orEmpty()
+                        )
                     )
                 }
             }
