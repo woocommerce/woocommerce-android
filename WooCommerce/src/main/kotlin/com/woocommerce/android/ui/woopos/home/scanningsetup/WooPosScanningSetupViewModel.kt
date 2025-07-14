@@ -108,12 +108,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.PairYourScanner -> {
-                _state.value = _state.value.copy(
-                    currentStep = createTestYourScannerStep()
-                ).also {
-                    startAutoNavigationToTestYourScannerStep()
-                }
-
+                moveToTestYourScannerStep()
             }
 
             is ScanningSetupStep.TestYourScanner -> {
@@ -191,13 +186,16 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.TestYourScannerScanFailed -> {
-                // TODO move to shared method
-                _state.value = _state.value.copy(
-                    currentStep = createTestYourScannerStep()
-                ).also {
-                    startAutoNavigationToTestYourScannerStep()
-                }
+                moveToTestYourScannerStep()
             }
+        }
+    }
+
+    private fun moveToTestYourScannerStep() {
+        _state.value = _state.value.copy(
+            currentStep = createTestYourScannerStep()
+        ).also {
+            startAutoNavigationToTestYourScannerStep()
         }
     }
 
