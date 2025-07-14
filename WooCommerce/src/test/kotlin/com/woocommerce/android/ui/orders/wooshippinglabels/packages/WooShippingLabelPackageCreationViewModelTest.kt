@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -577,6 +578,53 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         // Verify it's removed from saved packages
         val savedPackages = lastViewState?.packagesData?.savedPackages
         assertThat(savedPackages).isEmpty()
+    }
+
+    @Test
+    fun `when unstarring a package fails, then track event with removing_failed property`() = testBlocking {
+        val carrier: Carrier = USPS
+        val packageToUnstar = PackageData(
+            id = "1",
+            name = "Package 1 - Carrier 1",
+            dimensions = "10 x 10 x 10",
+            weight = "10",
+            isSelected = false,
+            isLetter = false,
+            isStarred = true // Initially starred
+        )
+        val initialCarrierPackages = mapOf(
+            carrier to listOf(CarrierPackageGroup(groupName = "Group A", packages = listOf(packageToUnstar)))
+        )
+        val initialSavedPackages = listOf(packageToUnstar)
+
+        whenever(fetchPackages()).thenReturn(
+            Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
+                carrierPackages = initialCarrierPackages,
+                savedPackages = initialSavedPackages
+            )
+        )
+        val error = "test_error"
+        whenever(updateSavedCarrierPackages(any(), any(), any(), any())).thenReturn(Result.failure(Exception(error)))
+
+        sut = WooShippingLabelPackageCreationViewModel(
+            SavedStateHandle(),
+            selectedSite,
+            resourceProvider,
+            fetchPackages,
+            updateSavedCarrierPackages,
+            packageRepository,
+            tracker
+        )
+        advanceUntilIdle()
+
+        // Unstar a package
+        sut.onCarrierPackageStarred(packageToUnstar, false)
+        advanceUntilIdle()
+
+        // Verify WCS_PACKAGE_SELECTION_STEP event is tracked with "removing_failed" property
+        val expectedProperty = mapOf(KEY_STATE to "removing_failed", KEY_ERROR to error)
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, expectedProperty)
     }
 
     @Test
