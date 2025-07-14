@@ -118,6 +118,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val fetchOriginAddresses: FetchOriginAddresses,
     private val getShippingRates: GetShippingRates,
     private val purchaseShippingLabel: PurchaseShippingLabel,
+    private val markOrderAsComplete: MarkOrderAsComplete,
     observeAccountSettings: ObserveAccountSettings,
     private val fetchAccountSettings: FetchAccountSettings,
     private val addressValidationHelper: AddressValidationHelper,
@@ -280,6 +281,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 // If result has a label model update the label with it. Otherwise, just update the status.
                 val newLabel = result.shippingLabelModel ?: shipment.label.copy(status = result.status)
                 updateShipment(shipmentId, shipment.copy(label = newLabel.copy(originAddress = originAddress)))
+
+                if (result.status == ShippingLabelStatus.PURCHASED && uiState.value.markOrderComplete) {
+                    markOrderAsComplete(navArgs.orderId).onFailure {
+                        triggerEvent(Event.ShowSnackbar(R.string.woo_shipping_labels_order_completion_error))
+                    }
+                }
             }.launchIn(this)
         }
     }
