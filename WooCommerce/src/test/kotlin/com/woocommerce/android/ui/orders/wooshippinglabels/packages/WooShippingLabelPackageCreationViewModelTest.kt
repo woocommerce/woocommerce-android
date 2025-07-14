@@ -256,7 +256,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onSavedPackageSelected(package1, true)
@@ -310,7 +310,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onCarrierPackageSelected(package1, true)
@@ -395,7 +395,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
 
         sut.viewState.observeForever { lastViewState = it }
@@ -452,7 +452,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 fetchPackages,
                 updateSavedCarrierPackages,
                 packageRepository,
-                mock()
+                tracker
             )
             advanceUntilIdle()
 
@@ -514,7 +514,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         advanceUntilIdle()
 
@@ -563,7 +563,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         advanceUntilIdle()
 
@@ -611,7 +611,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         advanceUntilIdle()
 
