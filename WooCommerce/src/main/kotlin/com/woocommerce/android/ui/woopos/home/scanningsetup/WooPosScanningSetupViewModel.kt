@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -71,6 +72,10 @@ class WooPosScanningSetupViewModel @Inject constructor(
                     _openBluetoothSettingsEvent.emit(Unit)
                 }
             }
+
+            is WooPosScanningSetupUiEvent.OnBarcodeScanned -> {
+                handleBarcodeScanned(event.barcodeResult)
+            }
         }
     }
 
@@ -98,6 +103,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
                     currentStep = createPairYourScannerStep()
                 )
             }
+
             is ScanningSetupStep.PairYourScanner -> {
                 _state.value = _state.value.copy(
                     currentStep = createTestYourScannerStep()
@@ -144,6 +150,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
                     currentStep = createScannerHIDModeSetupStep()
                 )
             }
+
             is ScanningSetupStep.PairYourScanner -> {
                 _state.value = _state.value.copy(
                     currentStep = createScannerPairModeSetupStep()
@@ -201,6 +208,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
         primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
+
     private fun createPairYourScannerStep() = ScanningSetupStep.PairYourScanner(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_pair_your_scanner_title),
         message = resourceProvider.getString(
@@ -246,6 +254,25 @@ class WooPosScanningSetupViewModel @Inject constructor(
         doneButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done)
     )
 
+    private fun handleBarcodeScanned(barcodeResult: BarcodeInputDetector.BarcodeResult) {
+        when (_state.value.currentStep) {
+            is ScanningSetupStep.TestYourScanner,
+            is ScanningSetupStep.TestYourScannerTimeout -> {
+                if (barcodeResult.barcode == BARCODE_TO_TEST) {
+                    _state.value = _state.value.copy(
+                        currentStep = createScannerSetupSuccessStep()
+                    )
+                } else {
+                    // TODO
+                }
+            }
+
+            else -> {
+                error("Barcode scanning is not expected in the current step: ${_state.value.currentStep}")
+            }
+        }
+    }
+
     private fun startAutoNavigationTo() {
         viewModelScope.launch {
             delay(AUTO_NAVIGATION_DELAY_MS)
@@ -259,6 +286,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     companion object {
         private const val AUTO_NAVIGATION_DELAY_MS = 10000L
+        private const val BARCODE_TO_TEST = "1234567890128"
     }
 }
 
@@ -267,4 +295,5 @@ sealed class WooPosScanningSetupUiEvent {
     data object OnSecondaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnOpenBluetoothSettings : WooPosScanningSetupUiEvent()
     data class OnDeviceSelected(val device: BarcodeReaderDevice) : WooPosScanningSetupUiEvent()
+    data class OnBarcodeScanned(val barcodeResult: BarcodeInputDetector.BarcodeResult) : WooPosScanningSetupUiEvent()
 }

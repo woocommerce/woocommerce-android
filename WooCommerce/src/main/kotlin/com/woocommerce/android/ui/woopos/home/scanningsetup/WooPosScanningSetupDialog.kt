@@ -63,6 +63,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.WooLog
@@ -181,12 +183,18 @@ fun WooPosScanningSetupDialog(
 
                     is ScanningSetupStep.TestYourScanner -> TestYourScannerContent(
                         step = step,
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
+                        onBarcodeScanned = { barcodeResult ->
+                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
+                        }
                     )
 
                     is ScanningSetupStep.TestYourScannerTimeout -> TestYourScannerTimeoutContent(
                         step = step,
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
+                        onBarcodeScanned = { barcodeResult ->
+                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
+                        }
                     )
 
                     is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
@@ -268,11 +276,13 @@ private fun ScannerModeSetupContent(
 private fun TestYourScannerContent(
     step: ScanningSetupStep.TestYourScanner,
     onSecondaryClick: () -> Unit,
+    onBarcodeScanned: (BarcodeInputDetector.BarcodeResult) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .listenForBarcodes(onBarcodeScanned),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         WooPosText(
@@ -321,11 +331,13 @@ private fun TestYourScannerContent(
 private fun TestYourScannerTimeoutContent(
     step: ScanningSetupStep.TestYourScannerTimeout,
     onSecondaryClick: () -> Unit,
+    onBarcodeScanned: (BarcodeInputDetector.BarcodeResult) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .listenForBarcodes(onBarcodeScanned),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         WooPosText(
