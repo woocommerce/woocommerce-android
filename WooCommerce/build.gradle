@@ -28,6 +28,7 @@ fladle {
 
     useOrchestrator = true
     testTimeout = "5m"
+    flakyTestAttempts = 1
 
     maxTestShards = 50
     shardTime = 120
