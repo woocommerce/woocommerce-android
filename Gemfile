@@ -2,15 +2,16 @@
 
 source 'https://rubygems.org'
 
-gem 'fastlane', '~> 2'
+gem 'danger-dangermattic', '~> 1.2'
+gem 'fastlane', '~> 2.216'
 gem 'nokogiri'
-gem 'rubocop', '~> 1.56'
+gem 'rubocop', '~> 1.65'
 
 ### Fastlane Plugins
 
-gem 'fastlane-plugin-wpmreleasetoolkit', '~> 9.1'
+gem 'fastlane-plugin-wpmreleasetoolkit', '~> 12.3'
 # gem 'fastlane-plugin-wpmreleasetoolkit', path: '../../release-toolkit'
-# gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', branch: '…'
+# gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', branch: ''
 
 ### Gems needed only for generating Promo Screenshots
 group :screenshots, optional: true do

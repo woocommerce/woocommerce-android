@@ -2,48 +2,58 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_CUSTOMERS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MORE_MENU_ITEM
+import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
+import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("TooManyFunctions", "LongParameterList", "UnusedPrivateMember")
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
@@ -52,128 +62,213 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuRepository: MoreMenuRepository,
     private val planRepository: SitePlanRepository,
     private val resourceProvider: ResourceProvider,
+    private val blazeCampaignsStore: BlazeCampaignsStore,
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
+    private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
+    private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
+    private var storeHasGoogleAdsCampaigns = false
+
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
-            loadSitePlanName(),
             moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
-        ) { count, selectedSite, sitePlanName, paymentsFeatureWasClicked ->
+            loadSitePlanName(),
+            checkFeaturesAvailability(),
+        ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName, moreMenuButtonStatus ->
             MoreMenuViewState(
-                generalMenuItems = generateGeneralMenuButtons(
-                    unseenReviewsCount = count,
-                    paymentsFeatureWasClicked = paymentsFeatureWasClicked,
-                ),
-                settingsMenuItems = generateSettingsMenuButtons(),
+                menuSections = generateAllSections(
+                    moreMenuButtonStatus,
+                    count,
+                    paymentsFeatureWasClicked
+                ).map { section ->
+                    section.copy(
+                        items = section.items.filter { it.state != MoreMenuItemButton.State.Hidden }
+                    )
+                }.filter { it.isVisible && it.items.isNotEmpty() },
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 sitePlan = sitePlanName,
                 userAvatarUrl = accountStore.account.avatarUrl,
-                isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
+                isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords,
             )
         }.asLiveData()
 
+    init {
+        launch {
+            hasGoogleAdsCampaigns().fold(
+                onSuccess = { storeHasGoogleAdsCampaigns = it },
+                onFailure = { WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to fetch Google Ads campaigns: $it") }
+            )
+        }
+    }
+
+    private fun generateAllSections(
+        buttonsStates: Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>,
+        count: Int,
+        paymentsFeatureWasClicked: Boolean
+    ) = listOf(
+        generateSettingsMenuButtons(buttonsStates[MoreMenuItemButton.Type.Settings]!!),
+        generateGeneralSection(
+            unseenReviewsCount = count,
+            paymentsFeatureWasClicked = paymentsFeatureWasClicked,
+            googleForWooState = buttonsStates[MoreMenuItemButton.Type.GoogleForWoo]!!,
+            blazeState = buttonsStates[MoreMenuItemButton.Type.Blaze]!!,
+            inboxState = buttonsStates[MoreMenuItemButton.Type.Inbox]!!,
+        )
+    )
+
     fun onViewResumed() {
         moreMenuNewFeatureHandler.markNewFeatureAsSeen()
-        launch { trackBlazeDisplayed() }
+        launch {
+            trackBlazeDisplayed()
+            trackGoogleAdsDisplayed()
+        }
     }
 
-    private suspend fun generateGeneralMenuButtons(
+    @Suppress("LongMethod")
+    private fun generateGeneralSection(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
-    ) = listOf(
-        MenuUiButton(
-            title = R.string.more_menu_button_payments,
-            description = R.string.more_menu_button_payments_description,
-            icon = R.drawable.ic_more_menu_payments,
-            badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
-            onClick = ::onPaymentsButtonClick,
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_blaze,
-            description = R.string.more_menu_button_blaze_description,
-            icon = R.drawable.ic_more_menu_blaze,
-            onClick = ::onPromoteProductsWithBlaze,
-            isEnabled = isBlazeEnabled()
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_wс_admin,
-            description = R.string.more_menu_button_wc_admin_description,
-            icon = R.drawable.ic_more_menu_wp_admin,
-            onClick = ::onViewAdminButtonClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_store,
-            description = R.string.more_menu_button_store_description,
-            icon = R.drawable.ic_more_menu_store,
-            onClick = ::onViewStoreButtonClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_coupons,
-            description = R.string.more_menu_button_coupons_description,
-            icon = R.drawable.ic_more_menu_coupons,
-            onClick = ::onCouponsButtonClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_reviews,
-            description = R.string.more_menu_button_reviews_description,
-            icon = R.drawable.ic_more_menu_reviews,
-            badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
-            onClick = ::onReviewsButtonClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_inbox,
-            description = R.string.more_menu_button_inbox_description,
-            icon = R.drawable.ic_more_menu_inbox,
-            isEnabled = moreMenuRepository.isInboxEnabled(),
-            onClick = ::onInboxButtonClick
+        googleForWooState: MoreMenuItemButton.State,
+        blazeState: MoreMenuItemButton.State,
+        inboxState: MoreMenuItemButton.State,
+    ) = MoreMenuItemSection(
+        title = R.string.more_menu_general_section_title,
+        items = listOf(
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_payments,
+                description = R.string.more_menu_button_payments_description,
+                icon = R.drawable.ic_more_menu_payments,
+                badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
+                onClick = ::onPaymentsButtonClick,
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_google,
+                description = R.string.more_menu_button_google_description,
+                icon = R.drawable.google_logo,
+                onClick = ::onPromoteProductsWithGoogle,
+                state = googleForWooState,
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_blaze,
+                description = R.string.more_menu_button_blaze_description,
+                icon = R.drawable.ic_blaze,
+                onClick = ::onPromoteProductsWithBlaze,
+                state = blazeState,
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_wс_admin,
+                description = R.string.more_menu_button_wc_admin_description,
+                icon = R.drawable.ic_more_menu_wp_admin,
+                extraIcon = R.drawable.ic_external,
+                onClick = ::onViewAdminButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_store,
+                description = R.string.more_menu_button_store_description,
+                icon = R.drawable.ic_more_menu_store,
+                extraIcon = R.drawable.ic_external,
+                onClick = ::onViewStoreButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_coupons,
+                description = R.string.more_menu_button_coupons_description,
+                icon = R.drawable.ic_more_menu_coupons,
+                onClick = ::onCouponsButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_reviews,
+                description = R.string.more_menu_button_reviews_description,
+                icon = R.drawable.ic_more_menu_reviews,
+                badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
+                onClick = ::onReviewsButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_customers,
+                description = R.string.more_menu_button_customers_description,
+                icon = R.drawable.icon_multiple_users,
+                onClick = ::onCustomersButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_inbox,
+                description = R.string.more_menu_button_inbox_description,
+                icon = R.drawable.ic_more_menu_inbox,
+                onClick = ::onInboxButtonClick,
+                state = inboxState,
+            )
         )
     )
 
-    private suspend fun trackBlazeDisplayed() {
-        if (isBlazeEnabled()) AnalyticsTracker.track(
-            stat = BLAZE_ENTRY_POINT_DISPLAYED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
+    private fun generateSettingsMenuButtons(settingsMenuButtonState: MoreMenuItemButton.State) =
+        MoreMenuItemSection(
+            title = R.string.more_menu_settings_section_title,
+            items = listOf(
+                MoreMenuItemButton(
+                    title = R.string.more_menu_button_settings,
+                    description = R.string.more_menu_button_settings_description,
+                    icon = R.drawable.ic_more_screen_settings,
+                    onClick = ::onSettingsClick
+                ),
+                MoreMenuItemButton(
+                    title = R.string.more_menu_button_subscriptions,
+                    description = R.string.more_menu_button_subscriptions_description,
+                    icon = R.drawable.ic_more_menu_upgrades,
+                    state = settingsMenuButtonState,
+                    onClick = ::onUpgradesButtonClick
+                )
+            )
         )
+
+    private fun trackBlazeDisplayed() {
+        if (isBlazeEnabled()) {
+            AnalyticsTracker.track(
+                stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
+            )
+        }
     }
 
-    private fun generateSettingsMenuButtons() = listOf(
-        MenuUiButton(
-            title = R.string.more_menu_button_settings,
-            description = R.string.more_menu_button_settings_description,
-            icon = R.drawable.ic_more_screen_settings,
-            onClick = ::onSettingsClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_upgrades,
-            description = R.string.more_menu_button_upgrades_description,
-            icon = R.drawable.ic_more_menu_upgrades,
-            isEnabled = moreMenuRepository.isUpgradesEnabled(),
-            onClick = ::onUpgradesButtonClick
-        )
-    )
+    private suspend fun trackGoogleAdsDisplayed() {
+        if (isGoogleForWooEnabled()) {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                        to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
+                )
+            )
+        }
+    }
 
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
-        if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) BadgeState(
-            badgeSize = R.dimen.major_110,
-            backgroundColor = R.color.color_secondary,
-            textColor = R.color.color_on_surface,
-            textState = TextState("", R.dimen.text_minor_80),
-            animateAppearance = true,
-        ) else null
+        if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) {
+            BadgeState(
+                badgeSize = R.dimen.major_110,
+                backgroundColor = R.color.color_secondary,
+                textColor = R.color.color_on_surface,
+                textState = TextState("", R.dimen.text_minor_80),
+                animateAppearance = true,
+            )
+        } else {
+            null
+        }
 
     private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
-        if (unseenReviewsCount > 0) BadgeState(
-            badgeSize = R.dimen.major_150,
-            backgroundColor = R.color.color_primary,
-            textColor = R.color.color_on_primary,
-            textState = TextState(unseenReviewsCount.toString(), R.dimen.text_minor_80),
-        ) else null
+        if (unseenReviewsCount > 0) {
+            BadgeState(
+                badgeSize = R.dimen.major_150,
+                backgroundColor = R.color.color_primary,
+                textColor = R.color.color_on_primary,
+                textState = TextState(unseenReviewsCount.toString(), R.dimen.text_minor_80),
+            )
+        } else {
+            null
+        }
 
     private fun SiteModel.getSelectedSiteName(): String =
         if (!displayName.isNullOrBlank()) {
@@ -188,7 +283,6 @@ class MoreMenuViewModel @Inject constructor(
         AnalyticsTracker.track(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
-        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_SWITCHING_STORE)
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
 
@@ -208,17 +302,78 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewPayments)
     }
 
-    private fun onPromoteProductsWithBlaze() {
-        AnalyticsTracker.track(
-            stat = BLAZE_ENTRY_POINT_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
-        )
-        triggerEvent(
-            MoreMenuEvent.OpenBlazeEvent(
-                url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM),
-                source = MORE_MENU_ITEM
+    private fun onPromoteProductsWithGoogle() {
+        launch {
+            val urlToOpen = determineUrlToOpen()
+
+            if (urlToOpen.contains(AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX)) {
+                launchGoogleAdsCampaignCreation(urlToOpen)
+            } else {
+                launchGoogleAdsCampaignDetails(urlToOpen)
+            }
+        }
+    }
+
+    private fun determineUrlToOpen(): String {
+        val baseUrl = selectedSite.get().adminUrlOrDefault
+        return if (storeHasGoogleAdsCampaigns) {
+            baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_DASHBOARD)
+        } else {
+            baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX)
+        }
+    }
+
+    private fun launchGoogleAdsCampaignCreation(url: String) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasGoogleAdsCampaigns
             )
         )
+
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, isCreationFlow = true))
+    }
+
+    private fun launchGoogleAdsCampaignDetails(url: String) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasGoogleAdsCampaigns
+            )
+        )
+
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, isCreationFlow = false))
+    }
+
+    fun handleSuccessfulGoogleAdsCreation() {
+        storeHasGoogleAdsCampaigns = true
+    }
+
+    private fun onPromoteProductsWithBlaze() {
+        launch {
+            val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).isNotEmpty()
+            if (hasCampaigns) {
+                AnalyticsTracker.track(
+                    stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
+                    properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
+                )
+                triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
+            } else {
+                triggerEvent(
+                    MoreMenuEvent.OpenBlazeCampaignCreationEvent(source = BlazeFlowSource.MORE_MENU_ITEM)
+                )
+            }
+        }
     }
 
     private fun onViewAdminButtonClick() {
@@ -234,6 +389,11 @@ class MoreMenuViewModel @Inject constructor(
     private fun onCouponsButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_COUPONS)
         triggerEvent(MoreMenuEvent.ViewCouponsEvent)
+    }
+
+    private fun onCustomersButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_CUSTOMERS)
+        triggerEvent(MoreMenuEvent.ViewCustomersEvent)
     }
 
     private fun onReviewsButtonClick() {
@@ -255,49 +415,52 @@ class MoreMenuViewModel @Inject constructor(
         selectedOption: String,
         extraOptions: Map<String, String> = emptyMap()
     ) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.HUB_MENU_OPTION_TAPPED,
             mapOf(KEY_OPTION to selectedOption) + extraOptions
         )
     }
 
     private fun isPaymentBadgeVisible() = moreMenuViewState.value
-        ?.generalMenuItems
+        ?.menuSections
+        ?.filterIsInstance<MoreMenuItemButton>()
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 
-    private fun loadSitePlanName() = flow {
-        planRepository.fetchCurrentPlanDetails(selectedSite.get())
-            ?.formattedPlanName.orEmpty()
-            .let { emit(it) }
+    private fun loadSitePlanName(): Flow<String> = selectedSite.observe()
+        .filterNotNull()
+        .map { site ->
+            planRepository.fetchCurrentPlanDetails(site)
+                ?.formattedPlanName.orEmpty()
+        }
+        .onStart { emit("") }
+
+    private fun checkFeaturesAvailability(): Flow<Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>> {
+        val initialState = MoreMenuItemButton.Type.entries.associateWith {
+            MoreMenuItemButton.State.Loading
+        }.toMutableMap()
+
+        return listOf(
+            doCheckAvailability(MoreMenuItemButton.Type.Blaze) { isBlazeEnabled() },
+            doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
+            doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
+            doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() }
+        ).merge()
+            .map { update ->
+                initialState[update.first] = update.second
+                initialState
+            }
+            .onStart { emit(initialState) }
+    }
+
+    private fun doCheckAvailability(
+        type: MoreMenuItemButton.Type,
+        checker: suspend () -> Boolean
+    ): Flow<Pair<MoreMenuItemButton.Type, MoreMenuItemButton.State>> = flow {
+        val state = if (checker()) MoreMenuItemButton.State.Visible else MoreMenuItemButton.State.Hidden
+        emit(type to state)
     }
 
     private val SitePlan.formattedPlanName
         get() = generateFormattedPlanName(resourceProvider)
-
-    data class MoreMenuViewState(
-        val generalMenuItems: List<MenuUiButton> = emptyList(),
-        val settingsMenuItems: List<MenuUiButton> = emptyList(),
-        val siteName: String = "",
-        val siteUrl: String = "",
-        val sitePlan: String = "",
-        val userAvatarUrl: String = "",
-        val isStoreSwitcherEnabled: Boolean = false
-    ) {
-        val enabledGeneralItems = generalMenuItems.filter { it.isEnabled }
-        val enabledSettingsItems = settingsMenuItems.filter { it.isEnabled }
-    }
-
-    sealed class MoreMenuEvent : MultiLiveEvent.Event() {
-        object NavigateToSettingsEvent : MoreMenuEvent()
-        object NavigateToSubscriptionsEvent : MoreMenuEvent()
-        object StartSitePickerEvent : MoreMenuEvent()
-        object ViewPayments : MoreMenuEvent()
-        data class OpenBlazeEvent(val url: String, val source: BlazeFlowSource) : MoreMenuEvent()
-        data class ViewAdminEvent(val url: String) : MoreMenuEvent()
-        data class ViewStoreEvent(val url: String) : MoreMenuEvent()
-        object ViewReviewsEvent : MoreMenuEvent()
-        object ViewInboxEvent : MoreMenuEvent()
-        object ViewCouponsEvent : MoreMenuEvent()
-    }
 }

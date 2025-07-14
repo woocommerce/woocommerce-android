@@ -7,7 +7,7 @@ import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUpload
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.*
@@ -242,7 +242,7 @@ class ProductImagesUploadWorker @Inject constructor(
         suspend fun fetchProductWithRetries(productId: Long): Product? {
             var retries = 0
             while (retries < PRODUCT_UPDATE_RETRIES) {
-                val product = productDetailRepository.fetchProductOrLoadFromCache(productId)
+                val product = productDetailRepository.fetchAndGetProduct(productId)
                 if (product != null && productDetailRepository.lastFetchProductErrorType == null) {
                     return product
                 }
@@ -255,7 +255,7 @@ class ProductImagesUploadWorker @Inject constructor(
             var retries = 0
             while (retries < PRODUCT_UPDATE_RETRIES) {
                 val result = productDetailRepository.updateProduct(product)
-                if (result) {
+                if (result.first) {
                     return true
                 }
                 retries++

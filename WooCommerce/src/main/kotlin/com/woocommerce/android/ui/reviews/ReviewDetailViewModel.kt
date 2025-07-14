@@ -38,6 +38,12 @@ class ReviewDetailViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private var remoteReviewId = 0L
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
@@ -53,7 +59,7 @@ class ReviewDetailViewModel @Inject constructor(
             viewState.productReview?.let { review ->
                 reviewModerationHandler.postModerationRequest(review, newStatus)
                 // Close the detail view
-                triggerEvent(Exit)
+                closeDetailScreen()
             }
         } else {
             // Network is not connected
@@ -114,6 +120,7 @@ class ReviewDetailViewModel @Inject constructor(
                             )
                         }
                     }
+
                     RequestResult.ERROR -> triggerEvent(ShowSnackbar(R.string.wc_load_review_error))
                     RequestResult.API_ERROR -> Unit // Do nothing
                     RequestResult.RETRY -> Unit // Do nothing
@@ -126,12 +133,16 @@ class ReviewDetailViewModel @Inject constructor(
     }
 
     fun onBackPressed(): Boolean {
+        closeDetailScreen()
+        return false
+    }
+
+    private fun closeDetailScreen() {
         if (launchedFromNotification) {
             triggerEvent(NavigateBackFromNotification)
         } else {
             triggerEvent(Exit)
         }
-        return false
     }
 
     fun onReviewReplied(reviewReply: String) {

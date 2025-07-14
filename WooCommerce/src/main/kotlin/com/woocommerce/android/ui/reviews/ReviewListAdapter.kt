@@ -243,9 +243,9 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
 
             ViewCompat.setTransitionName(
                 viewBinding.root,
-                String.format(
-                    context.getString(R.string.review_card_transition_name),
-                    review.remoteId
+                context.getString(
+                    R.string.review_card_transition_name,
+                    review.remoteId.toString()
                 )
             )
 

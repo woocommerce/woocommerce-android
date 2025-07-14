@@ -5,9 +5,9 @@ import com.woocommerce.android.e2e.helpers.util.ProductData
 
 // Test data for Orders used in E2E (real API) tests
 
-val order40 = OrderData(
+val pendingOrder = OrderData(
     customerName = "Samuel Ayala",
-    id = 40,
+    id = 69,
     productsTotalRaw = "10.00",
     taxesRaw = "0.00",
     shippingRaw = "0.00",
@@ -16,9 +16,9 @@ val order40 = OrderData(
     customerNoteRaw = "Cappuccino is made on doppio, free of charge. Enjoy!"
 )
 
-val order41 = OrderData(
+val completedOrder = OrderData(
     customerName = "Samara Montes",
-    id = 41,
+    id = 70,
     totalRaw = "7.00",
     statusRaw = "completed"
 )
@@ -41,14 +41,14 @@ val productCappuccino = ProductData(
 )
 
 val productCappuccinoAlmondMedium = ProductData(
-    name = productCappuccino.name,
+    name = productCappuccino.name + " - Medium, Almond",
     stockStatusRaw = productCappuccino.stockStatusRaw,
     priceDiscountedRaw = "3",
     sku = productCappuccino.sku + "-ALM-M"
 )
 
 val productCappuccinoAlmondLarge = ProductData(
-    name = productCappuccino.name,
+    name = productCappuccino.name + " - Large, Almond",
     stockStatusRaw = productCappuccino.stockStatusRaw,
     priceDiscountedRaw = "4",
     sku = productCappuccino.sku + "-ALM-L"

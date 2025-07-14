@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.payments.refunds
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.doOnTextChanged
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -17,8 +18,11 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
+import com.woocommerce.android.ui.payments.refunds.RefundSummaryViewModel.NavigateToCardReaderScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,10 +37,13 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
+    private val viewModel: RefundSummaryViewModel by viewModels()
 
     private var _binding: FragmentRefundSummaryBinding? = null
     private val binding get() = _binding!!
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onResume() {
         super.onResume()
@@ -47,9 +54,20 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentRefundSummaryBinding.bind(view)
-
+        setupToolbar()
         initializeViews()
         setupObservers()
+        handleResults()
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
     }
 
     override fun onDestroyView() {
@@ -73,6 +91,15 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                         )
                     findNavController().navigateSafely(action)
                 }
+                is NavigateToCardReaderScreen -> {
+                    val action = RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderFlow(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Refund(
+                            event.orderId,
+                            event.refundAmount
+                        )
+                    )
+                    findNavController().navigateSafely(action)
+                }
                 else -> event.isHandled = false
             }
         }
@@ -85,8 +112,11 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
             new.isSubmitButtonEnabled.takeIfNotEqualTo(old?.isSubmitButtonEnabled) {
                 binding.refundSummaryBtnRefund.isEnabled = new.isSubmitButtonEnabled
             }
-            new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) {
+            new.refundAmountFormatted?.takeIfNotEqualTo(old?.refundAmountFormatted) {
                 binding.refundSummaryRefundAmount.text = it
+                binding.toolbar.title = resources.getString(
+                    R.string.order_refunds_title_with_amount, it
+                )
             }
             new.previouslyRefunded?.takeIfNotEqualTo(old?.previouslyRefunded) {
                 binding.refundSummaryPreviouslyRefunded.text = it
@@ -101,12 +131,22 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                     binding.refundSummaryMethodDescription.hide()
                 }
             }
-            handleDialogNotice(
-                KEY_INTERAC_SUCCESS,
-                entryId = R.id.refundSummaryFragment
-            ) {
-                viewModel.refund()
-            }
+        }
+    }
+
+    private fun handleResults() {
+        handleDialogNotice(
+            key = RefundConfirmationDialog.REFUND_CONFIRMATION_NOTICE,
+            entryId = R.id.refundSummaryFragment
+        ) {
+            viewModel.onRefundConfirmed(true)
+        }
+
+        handleDialogNotice(
+            KEY_INTERAC_SUCCESS,
+            entryId = R.id.refundSummaryFragment
+        ) {
+            viewModel.refund()
         }
     }
 

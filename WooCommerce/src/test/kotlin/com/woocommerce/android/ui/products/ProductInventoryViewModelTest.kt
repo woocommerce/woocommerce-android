@@ -5,13 +5,13 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ProductBackorderStatus.No
 import com.woocommerce.android.ui.products.ProductBackorderStatus.Yes
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -35,6 +35,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     private val initialData = InventoryData(
         "SKU123",
+        globalUniqueId = "123-456",
         isStockManaged = false,
         isSoldIndividually = false,
         stockStatus = InStock,
@@ -44,6 +45,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     private val initialDataWithNonWholeDecimalQuantity = InventoryData(
         "SKU123",
+        globalUniqueId = "123-456",
         isStockManaged = true,
         isSoldIndividually = false,
         stockStatus = InStock,
@@ -53,6 +55,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     private val expectedData = InventoryData(
         "SKU321",
+        globalUniqueId = "123-456",
         isStockManaged = true,
         isSoldIndividually = true,
         stockStatus = OutOfStock,
@@ -68,7 +71,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     private fun createViewModel(requestCode: Int, initData: InventoryData = initialData): ProductInventoryViewModel {
-        val savedState = ProductInventoryFragmentArgs(requestCode, initData, initData.sku!!).initSavedStateHandle()
+        val savedState = ProductInventoryFragmentArgs(requestCode, initData, initData.sku!!).toSavedStateHandle()
         return spy(
             ProductInventoryViewModel(
                 savedState,
@@ -98,6 +101,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
             viewModel.onDataChanged(
                 expectedData.sku,
+                expectedData.globalUniqueId,
                 expectedData.backorderStatus,
                 expectedData.isSoldIndividually,
                 expectedData.isStockManaged,
@@ -131,6 +135,28 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `Test that an error is shown if the global unique id contains characters other than numbers and hyphens`() =
+        testBlocking {
+            val invalidGlobalUniqueId = "invalid"
+            val validGlobalUniqueId = "123-456"
+            var actual: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                actual = new
+            }
+
+            viewModel.onProductUniqueGlobalIdChanged(invalidGlobalUniqueId)
+
+            assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo(invalidGlobalUniqueId)
+            assertThat(actual?.globalUniqueIdErrorMessage)
+                .isEqualTo(string.product_inventory_update_global_unique_id_error)
+
+            viewModel.onProductUniqueGlobalIdChanged(validGlobalUniqueId)
+
+            assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo(validGlobalUniqueId)
+            assertThat(actual?.globalUniqueIdErrorMessage).isEqualTo(0)
+        }
+
+    @Test
     fun `Test that a discard dialog isn't shown if no data changed`() =
         testBlocking {
             val events = mutableListOf<Event>()
@@ -156,6 +182,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
         viewModel.onDataChanged(
             expectedData.sku,
+            expectedData.globalUniqueId,
             expectedData.backorderStatus,
             expectedData.isSoldIndividually,
             expectedData.isStockManaged,
@@ -233,5 +260,91 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
             AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
         )
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was a change on the product global unique id`() {
+        // when
+        viewModel.onProductUniqueGlobalIdChanged("1234")
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_GLOBAL_UNIQUE_IDENTIFIER_FIELD_EDITED
+        )
+    }
+
+    @Test
+    fun `Test that SKU can be cleared with empty string`() = testBlocking {
+        // given
+        var actual: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            actual = new
+        }
+        viewModel.onSkuChanged("some-sku")
+        assertThat(actual?.inventoryData?.sku).isEqualTo("some-sku")
+
+        // when
+        viewModel.onSkuChanged("")
+
+        // then
+        assertThat(actual?.inventoryData?.sku).isEqualTo("")
+        assertThat(actual?.skuErrorMessage).isEqualTo(0)
+    }
+
+    @Test
+    fun `Test that global unique id can be cleared with empty string`() = testBlocking {
+        // given
+        var actual: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            actual = new
+        }
+        viewModel.onProductUniqueGlobalIdChanged("123-456")
+        assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo("123-456")
+
+        // when
+        viewModel.onProductUniqueGlobalIdChanged("")
+
+        // then
+        assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo("")
+        assertThat(actual?.globalUniqueIdErrorMessage).isEqualTo(0)
+    }
+
+    @Test
+    fun `Test that empty string SKU does not trigger error validation`() = testBlocking {
+        // given
+        whenever(productDetailRepository.isSkuAvailableLocally(takenSku)).thenReturn(false)
+
+        var actual: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            actual = new
+        }
+        viewModel.onSkuChanged(takenSku)
+        assertThat(actual?.skuErrorMessage).isEqualTo(string.product_inventory_update_sku_error)
+
+        // when
+        viewModel.onSkuChanged("")
+
+        // then
+        assertThat(actual?.inventoryData?.sku).isEqualTo("")
+        assertThat(actual?.skuErrorMessage).isEqualTo(0)
+    }
+
+    @Test
+    fun `Test that empty string global unique id is considered valid`() = testBlocking {
+        // given
+        var actual: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            actual = new
+        }
+        viewModel.onProductUniqueGlobalIdChanged("invalid-chars!")
+        assertThat(actual?.globalUniqueIdErrorMessage).isEqualTo(string.product_inventory_update_global_unique_id_error)
+
+        // when
+        viewModel.onProductUniqueGlobalIdChanged("")
+
+        // then
+        assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo("")
+        assertThat(actual?.globalUniqueIdErrorMessage).isEqualTo(0)
     }
 }

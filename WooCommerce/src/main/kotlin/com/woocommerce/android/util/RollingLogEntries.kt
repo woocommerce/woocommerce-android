@@ -40,11 +40,12 @@ class RollingLogEntries(private val limit: Int) : LinkedList<LogEntry>() {
         val level: LogLevel,
         val text: String?
     ) {
-        @Suppress("DEPRECATION") private val logDate: Date = DateTimeUtils.nowUTC()
+        @Suppress("DEPRECATION")
+        private val logDate: Date = DateTimeUtils.nowUTC()
 
         override fun toString(): String {
             val logText = if (text.isNullOrEmpty()) "null" else text
-            val logDateStr = SimpleDateFormat("MMM-dd kk:mm", Locale.US).format(logDate)
+            val logDateStr = SimpleDateFormat("MMM-dd kk:mm:ss:SSS", Locale.US).format(logDate)
             return "[$logDateStr ${tag.name} ${level.name}] $logText"
         }
     }

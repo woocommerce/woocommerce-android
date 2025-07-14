@@ -13,14 +13,17 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.Mode
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.NavigateBackToPOS
+import com.woocommerce.android.ui.coupons.tracking.StoreManagementCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFlowTrackerEventProvider
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
@@ -39,6 +42,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -89,19 +93,22 @@ class EditCouponViewModelTests : BaseUnitTest() {
 
     suspend fun setup(
         mode: Mode = Mode.Edit(COUPON_ID),
+        isPOSMode: Boolean = false,
         prepareMocks: suspend () -> Unit = {}
     ) {
         prepareMocks()
 
         viewModel = EditCouponViewModel(
-            savedStateHandle = EditCouponFragmentArgs(mode).initSavedStateHandle(),
+            savedStateHandle = EditCouponFragmentArgs(mode, isPOSMode).toSavedStateHandle(),
             couponRepository = couponRepository,
             couponUtils = couponUtils,
             parameterRepository = mock {
                 on { getParameters(any(), any()) } doReturn siteParams
             },
             analyticsTrackerWrapper = analyticsTrackerWrapper,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            storeManagementEventProvider = StoreManagementCouponCreationFlowTrackerEventProvider(),
+            posEventProvider = WooPosCouponCreationFlowTrackerEventProvider()
         )
     }
 
@@ -327,6 +334,18 @@ class EditCouponViewModelTests : BaseUnitTest() {
     }
 
     @Test
+    fun `given creation flow in POS, when create clicked, should track POS event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent), isPOSMode = true)
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(
+            eq(WooPosAnalyticsEvent.Event.CouponCreationInitiated),
+            any()
+        )
+    }
+
+    @Test
     fun `given coupon creation mode and fixed product type, when create clicked, should track event`() = testBlocking {
         setup(mode = Mode.Create(Coupon.Type.FixedProduct))
 
@@ -367,12 +386,23 @@ class EditCouponViewModelTests : BaseUnitTest() {
     @Test
     fun `given coupon creation mode, when coupon created, should track event`() = testBlocking {
         setup(mode = Mode.Create(Coupon.Type.Percent)) {
-            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(Unit))
+            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(1L))
         }
 
         viewModel.onSaveClick()
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.COUPON_CREATION_SUCCESS)
+    }
+
+    @Test
+    fun `given coupon creation mode in POS, when coupon created, should track POS event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent), isPOSMode = true) {
+            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(1L))
+        }
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(WooPosAnalyticsEvent.Event.CouponCreationSuccess)
     }
 
     @Test
@@ -393,4 +423,37 @@ class EditCouponViewModelTests : BaseUnitTest() {
                 "message"
             )
         }
+
+    @Test
+    fun `given coupon creation mode in POS, when coupon creation fails, should track POS event`() =
+        testBlocking {
+            setup(mode = Mode.Create(Coupon.Type.Percent), isPOSMode = true) {
+                whenever(couponRepository.createCoupon(any())).thenReturn(
+                    Result.failure(WooException(WooError(TIMEOUT, UNKNOWN, "message")))
+                )
+            }
+
+            viewModel.onSaveClick()
+
+            verify(analyticsTrackerWrapper).track(
+                WooPosAnalyticsEvent.Event.CouponCreationFailed,
+                EditCouponViewModel::class.java.simpleName,
+                "TIMEOUT",
+                "message"
+            )
+        }
+
+    @Test
+    fun `given isPOSMode true, when coupon created, should return to POS with new coupon id`() = testBlocking {
+        setup(
+            mode = Mode.Create(Coupon.Type.Percent),
+            isPOSMode = true
+        ) {
+            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(1L))
+        }
+
+        viewModel.onSaveClick()
+
+        assertThat(viewModel.event.value).isEqualTo(NavigateBackToPOS(1L))
+    }
 }

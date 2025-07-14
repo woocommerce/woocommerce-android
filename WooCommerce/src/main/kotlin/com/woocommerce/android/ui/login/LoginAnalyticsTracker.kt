@@ -10,7 +10,6 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginAnalyticsListener.CreatedAccountSource
-import java.util.HashMap
 import javax.inject.Singleton
 
 @Singleton
@@ -272,6 +271,10 @@ class LoginAnalyticsTracker(
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_PASSWORD)
     }
 
+    override fun trackLoginWithWpComUsernamePasswordClick() {
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_WP_COM_USERNAME_PASSWORD)
+    }
+
     override fun trackShowHelpClick() {
         unifiedLoginTracker.trackClick(Click.SHOW_HELP)
         unifiedLoginTracker.track(step = Step.HELP)
@@ -323,5 +326,21 @@ class LoginAnalyticsTracker(
 
     override fun usernamePasswordScreenResumed() {
         unifiedLoginTracker.setStep(Step.USERNAME_PASSWORD)
+    }
+
+    override fun trackLogin2faNeeded() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_2FA_NEEDED)
+    }
+
+    override fun trackLoginSecurityKeyFailure() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SECURITY_KEY_FAILURE)
+    }
+
+    override fun trackLoginSecurityKeySuccess() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SECURITY_KEY_SUCCESS)
+    }
+
+    override fun trackUseSecurityKeyClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_USE_SECURITY_KEY_CLICKED)
     }
 }

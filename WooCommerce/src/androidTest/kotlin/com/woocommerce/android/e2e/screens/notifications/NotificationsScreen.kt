@@ -8,7 +8,7 @@ import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.notifications.WooNotificationType.NewOrder
 
 /**
  * This is not a screen per-se, as it shows the notification drawer with a push notification.
@@ -24,8 +24,6 @@ class NotificationsScreen(private val wooNotificationBuilder: WooNotificationBui
     private fun displayNotification() {
         wooNotificationBuilder.buildAndDisplayWooNotification(
             0,
-            0,
-            getTranslatedString(R.string.notification_channel_order_id),
             notification = Notification(
                 noteId = 1,
                 uniqueId = 1L,
@@ -34,10 +32,9 @@ class NotificationsScreen(private val wooNotificationBuilder: WooNotificationBui
                 icon = "https://s.wp.com/wp-content/mu-plugins/notes/images/update-payment-2x.png",
                 noteTitle = getTranslatedString(R.string.tests_notification_new_order_title),
                 noteMessage = getTranslatedString(R.string.tests_notification_new_order_message),
-                noteType = NEW_ORDER,
+                noteType = NewOrder,
                 channelType = NotificationChannelType.NEW_ORDER
             ),
-            addCustomNotificationSound = false,
             isGroupNotification = false
         )
     }

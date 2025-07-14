@@ -14,11 +14,9 @@ import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.Matchers
 
-class SingleOrderScreen : Screen {
-    constructor() : super(R.id.toolbar)
-
+class SingleOrderScreen : Screen(R.id.orderDetail_container) {
     fun goBackToOrdersScreen(): OrderListScreen {
-        if (isElementDisplayed(R.id.orderDetail_container)) {
+        if (!isElementDisplayed(R.id.order_list_view_root) && isElementDisplayed(R.id.orderDetail_container)) {
             pressBack()
         }
 
@@ -28,7 +26,8 @@ class SingleOrderScreen : Screen {
     private fun assertIdAndTextDisplayed(id: Int, text: String?) {
         Espresso.onView(
             Matchers.allOf(
-                withId(id), withText(text)
+                withId(id),
+                withText(text)
             )
         ).check(ViewAssertions.matches(isDisplayed()))
     }
@@ -44,7 +43,9 @@ class SingleOrderScreen : Screen {
     }
 
     fun assertOrderId(orderId: Int): SingleOrderScreen {
-        Espresso.onView(withId(R.id.toolbar))
+        Espresso.onView(
+            Matchers.allOf(withId(R.id.toolbar), ViewMatchers.isDescendantOfA(withId(R.id.orderRefreshLayout)))
+        )
             .check(ViewAssertions.matches(hasDescendant(withText("Order #$orderId"))))
             .check(ViewAssertions.matches(isDisplayed()))
         return this
@@ -137,6 +138,7 @@ class SingleOrderScreen : Screen {
     }
 
     fun tapOnCollectPayment(): PaymentSelectionScreen {
+        scrollTo(R.id.paymentInfo_collectCardPresentPaymentButton)
         clickOn(R.id.paymentInfo_collectCardPresentPaymentButton)
         return PaymentSelectionScreen()
     }

@@ -12,13 +12,13 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReviewDetailBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -55,6 +55,7 @@ class ReviewDetailFragment :
     BaseFragment(R.layout.fragment_review_detail),
     BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var productImageMap: ProductImageMap
 
     private val viewModel: ReviewDetailViewModel by viewModels()
@@ -80,6 +81,7 @@ class ReviewDetailFragment :
         return inflater.inflate(R.layout.fragment_review_detail, container, false)
     }
 
+    @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -153,7 +155,7 @@ class ReviewDetailFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> exitDetailView()
+                is Exit -> findNavController().popBackStack()
                 is NavigateBackFromNotification -> exitReviewDetailOpenedFromNotification()
                 is Reply -> navigateToReply()
             }
@@ -184,7 +186,7 @@ class ReviewDetailFragment :
         val avatarUrl = UrlUtils.removeQuery(review.reviewerAvatarUrl) + "?s=" + size + "&d=404"
 
         // Populate reviewer section
-        GlideApp.with(binding.reviewGravatar.context)
+        Glide.with(binding.reviewGravatar.context)
             .load(avatarUrl)
             .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_user_circle_24dp))
             .circleCrop()
@@ -227,7 +229,7 @@ class ReviewDetailFragment :
         // call this method to show the image for the just-downloaded product model
         productImageMap.get(remoteProductId)?.let { productImage ->
             val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
-            GlideApp.with(activity as Context)
+            Glide.with(activity as Context)
                 .load(imageUrl)
                 .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_product))
                 .into(binding.reviewProductIcon)
@@ -239,16 +241,6 @@ class ReviewDetailFragment :
             skeletonView.show(binding.container, R.layout.skeleton_notif_detail, delayed = true)
         } else {
             skeletonView.hide()
-        }
-    }
-
-    private fun exitDetailView() {
-        if (isStateSaved) {
-            runOnStartFunc = { findNavController().popBackStack() }
-        } else {
-            findNavController().navigateSafely(
-                ReviewDetailFragmentDirections.actionReviewDetailFromNotificationToReviewListFragment()
-            )
         }
     }
 

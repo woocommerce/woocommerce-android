@@ -4,6 +4,14 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
+import androidx.compose.ui.test.onParent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.closeSoftKeyboard
@@ -23,6 +31,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
 import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -31,6 +40,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
+import androidx.test.uiautomator.UiDevice
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -60,11 +70,11 @@ open class Screen {
     private fun initializeAppPrefs() {
         AppPrefs.init(getInstrumentation().targetContext.applicationContext)
 
-        // hide the promo dialog because it breaks the tests
-        AppPrefs.wasAIProductDescriptionPromoDialogShown = true
-
         // also hide AI description tooltip to make test more simple
         AppPrefs.isAIProductDescriptionTooltipDismissed = true
+
+        // hide notification as it blocks the product button on tablet mode
+        AppPrefs.isNotificationsPermissionBarDismissed = true
     }
 
     open fun recover() = Unit
@@ -87,9 +97,32 @@ open class Screen {
             return isElementDisplayed(onView(withText(text)))
         }
 
+        fun isElementFocused(elementID: Int): Boolean {
+            return isElementFocused(onView(withId(elementID)))
+        }
+
+        private fun isElementFocused(element: ViewInteraction): Boolean {
+            return try {
+                element.check(matches(isDisplayed()))
+                true
+            } catch (e: Throwable) {
+                false
+            }
+        }
+
         private fun isElementDisplayed(element: ViewInteraction): Boolean {
             return try {
                 element.check(matches(isDisplayed()))
+                true
+            } catch (e: Throwable) {
+                false
+            }
+        }
+
+        private fun isElementEnabled(element: Int): Boolean {
+            return try {
+                onView(withId(element))
+                    .check(matches(isEnabled()))
                 true
             } catch (e: Throwable) {
                 false
@@ -134,6 +167,7 @@ open class Screen {
 
     fun clickOn(elementID: Int) {
         waitForElementToBeDisplayed(elementID)
+        waitForElementToBeEnabled(elementID)
         clickOn(onView(withId(elementID)))
         idleFor(500) // allow for transitions
     }
@@ -153,6 +187,57 @@ open class Screen {
         // Need to use the NestedScrollViewExtension because Espresso doesn't natively support it:
         // https://medium.com/@devasierra/espresso-nestedscrollview-scrolling-via-kotlin-delegation-5e7f0aa64c09
         onView(withId(elementID)).perform(NestedScrollViewExtension())
+    }
+
+    /**
+     * Performs a swipe gesture to scroll to top until the node that matches the given matcher is displayed.
+     *
+     * This is needed until https://issuetracker.google.com/issues/232625918 is fixed.
+     *
+     * @param matcher The matcher to find the node to scroll to.
+     * @param requireFullVisibility Whether the node must be fully visible to consider it as displayed,
+     *      if this is true, and the node is larger than the screen, the condition will never succeed.
+     */
+    fun ComposeTestRule.scrollToNodeThatMatches(
+        matcher: SemanticsMatcher,
+        requireFullVisibility: Boolean = true
+    ) {
+        fun SemanticsNodeInteraction.isFullyDisplayed(): Boolean {
+            return onChildren().onLast().isDisplayed() && onChildren().onFirst().isDisplayed()
+        }
+
+        val device = UiDevice.getInstance(getInstrumentation())
+        var scrollUp = true
+        var numberOfScrolls = 0
+        while (true) {
+            val node = onNode(matcher)
+            if (node.isDisplayed() && (!requireFullVisibility || node.isFullyDisplayed())) return
+
+            val bounds = node.onParent().fetchSemanticsNode().boundsInWindow.let {
+                it.copy(
+                    top = it.top.coerceIn(0f, device.displayHeight.toFloat()),
+                    bottom = it.bottom.coerceIn(0f, device.displayHeight.toFloat())
+                )
+            }
+            device.swipe(
+                bounds.center.x.toInt(),
+                bounds.center.y.toInt(),
+                bounds.center.x.toInt(),
+                bounds.center.y.toInt() + if (scrollUp) -100 else 100,
+                10
+            )
+            numberOfScrolls++
+            if (numberOfScrolls * 100 > device.displayHeight) {
+                if (scrollUp) {
+                    // We scrolled up and still didn't find the node, change direction
+                    numberOfScrolls = 0
+                    scrollUp = false
+                } else {
+                    // We scrolled up and down and still didn't find the node
+                    error("Couldn't find the node that matches the given matcher.")
+                }
+            }
+        }
     }
 
     fun scrollToListItem(itemTitle: String, listID: Int) {
@@ -307,6 +392,14 @@ open class Screen {
         idleFor(1000) // allow for transitions
     }
 
+    fun waitForElementToBeEnabled(elementID: Int) {
+        waitForConditionToBeTrue(
+            Supplier<Boolean> {
+                isElementEnabled(elementID)
+            }
+        )
+    }
+
     fun waitForElementToBeDisplayed(elementID: Int) {
         waitForConditionToBeTrue(
             Supplier<Boolean> {
@@ -418,7 +511,7 @@ open class Screen {
         return mCurrentActivity
     }
 
-    protected fun getTranslatedString(resourceID: Int): String {
+    fun getTranslatedString(resourceID: Int): String {
         return getCurrentActivity()!!.resources.getString(resourceID)
     }
 
@@ -428,5 +521,11 @@ open class Screen {
         } catch (ex: Exception) {
             // do nothing
         }
+    }
+
+    fun clearSearchBar(searchBarId: Int) {
+        onView(withId(searchBarId))
+            .perform(ViewActions.click())
+            .perform(ViewActions.replaceText(""))
     }
 }

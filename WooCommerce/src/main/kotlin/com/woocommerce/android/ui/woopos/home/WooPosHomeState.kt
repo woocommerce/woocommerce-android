@@ -1,0 +1,106 @@
+package com.woocommerce.android.ui.woopos.home
+
+import android.os.Parcelable
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class WooPosHomeState(
+    val screenPositionState: ScreenPositionState,
+    val dialogState: DialogState = DialogState.Hidden,
+) : Parcelable {
+    @Parcelize
+    sealed class ScreenPositionState : Parcelable {
+        @Parcelize
+        data object Cart : ScreenPositionState()
+
+        @Parcelize
+        sealed class Checkout : ScreenPositionState() {
+            @Parcelize
+            data object CartWithTotals : Checkout()
+
+            @Parcelize
+            data object FullScreenTotals : Checkout()
+        }
+    }
+
+    @Parcelize
+    sealed class DialogState : Parcelable {
+        @Parcelize
+        data object Hidden : DialogState()
+
+        @Parcelize
+        data object ProductsInfoDialog : DialogState() {
+            @IgnoredOnParcel
+            val header: Int = R.string.woopos_dialog_products_info_heading
+
+            @IgnoredOnParcel
+            val primaryMessage: Int = R.string.woopos_dialog_products_info_primary_message
+
+            @IgnoredOnParcel
+            val secondaryMessage: Int = R.string.woopos_dialog_products_info_secondary_message
+
+            @IgnoredOnParcel
+            val tertiaryMessage: Int = R.string.woopos_dialog_products_info_tertiary_message
+
+            @IgnoredOnParcel
+            val primaryButton: PrimaryButton = PrimaryButton(
+                label = R.string.woopos_dialog_products_info_button_label,
+            )
+
+            data class PrimaryButton(
+                @StringRes val label: Int,
+            )
+        }
+
+        @Parcelize
+        data object BarcodeInfoDialog : DialogState() {
+            @IgnoredOnParcel
+            val header: Int = R.string.woopos_dialog_barcode_info_heading
+
+            @IgnoredOnParcel
+            val introMessage: Int = R.string.woopos_dialog_barcode_info_intro_message
+
+            @IgnoredOnParcel
+            val primaryMessage: Int = R.string.woopos_dialog_barcode_info_primary_message
+
+            @IgnoredOnParcel
+            val secondaryMessage: Int = R.string.woopos_dialog_barcode_info_secondary_message
+
+            @IgnoredOnParcel
+            val tertiaryMessage: Int = R.string.woopos_dialog_barcode_info_tertiary_message
+
+            @IgnoredOnParcel
+            val quaternaryMessage: Int = R.string.woopos_dialog_barcode_info_quaternary_message
+
+            @IgnoredOnParcel
+            val quinaryMessage: Int = R.string.woopos_dialog_barcode_info_quinary_message
+
+            @IgnoredOnParcel
+            val primaryButton: PrimaryButton = PrimaryButton(
+                label = R.string.woopos_dialog_barcode_info_button_label,
+            )
+
+            data class PrimaryButton(
+                @StringRes val label: Int,
+            )
+        }
+
+        @Parcelize
+        data object ScanningSetupDialog : DialogState()
+
+        @Parcelize
+        data object ExitConfirmationDialog : DialogState() {
+            @IgnoredOnParcel
+            val title: Int = R.string.woopos_exit_dialog_confirmation_title
+
+            @IgnoredOnParcel
+            val message: Int = R.string.woopos_exit_dialog_confirmation_message
+
+            @IgnoredOnParcel
+            val confirmButton: Int = R.string.woopos_exit_dialog_confirmation_confirm_button
+        }
+    }
+}

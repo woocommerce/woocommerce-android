@@ -13,16 +13,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.NavGraphPaymentFlowDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderPaymentDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -31,12 +31,10 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInR
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulState
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment.Companion.KEY_INTERAC_SUCCESS
-import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.UiHelpers.getIllustrationVisibilityForAccessibility
 import com.woocommerce.android.util.UiHelpers.getTextOfUiString
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -77,6 +75,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
         viewModel.start()
     }
 
+    @Suppress("LongMethod")
     private fun initObservers(binding: CardReaderPaymentDialogBinding) {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -88,10 +87,11 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     event.documentName
                 )
                 InteracRefundSuccessful -> navigateBackWithNotice(KEY_INTERAC_SUCCESS)
-                is SendReceipt -> composeEmail(event.address, event.subject, event.content)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowSnackbarInDialog -> Snackbar.make(
-                    requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG
+                    requireView(),
+                    event.message,
+                    BaseTransientBottomBar.LENGTH_LONG
                 ).show()
                 is PlayChaChing -> playChaChing()
                 is ContactSupport -> openSupportRequestScreen()
@@ -106,10 +106,16 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
             announceForAccessibility(binding, viewState)
             UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
             UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
-            UiHelpers.setImageOrHideInLandscape(binding.illustration, viewState.illustration)
+            UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+                binding.illustration,
+                viewState.illustration
+            ).also {
+                if (binding.illustration.isVisible) {
+                    binding.illustration.visibility =
+                        requireContext().getIllustrationVisibilityForAccessibility(resources.configuration.fontScale)
+                }
+            }
             UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
-            (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
-                .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
             UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
             UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
             UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
@@ -140,7 +146,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
 
     private fun openPurchaseCardReaderScreen(url: String) {
         findNavController().navigate(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = url)
+            NavGraphPaymentFlowDirections.actionGlobalAuthenticatedWebViewFragment(urlToLoad = url)
         )
     }
 
@@ -186,12 +192,6 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
             )
         val mp = MediaPlayer.create(requireActivity(), chaChingUri)
         mp.start()
-    }
-
-    private fun composeEmail(address: String, subject: UiString, content: UiString) {
-        ActivityUtils.sendEmail(requireActivity(), address, subject, content) {
-            viewModel.onEmailActivityNotFound()
-        }
     }
 
     override fun onResume() {

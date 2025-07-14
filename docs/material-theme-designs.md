@@ -5,9 +5,7 @@ This page contains the material theme designs that govern theming inside the Woo
 
 ## Color Palette
 
-| Light | Dark  |
-| -- | -- |
-| [[docs/images/colors-light.png]] | [[docs/images/colors-dark.png]] |
+The app uses colors from [Color Studio](https://color-studio.blog/).
 
 <a name="design-typography">
 
@@ -15,7 +13,7 @@ This page contains the material theme designs that govern theming inside the Woo
 
 | Light | Dark  |
 | -- | -- |
-| [[docs/images/typo-light.png]] | [[docs/images/typo-dark.png]] |
+| ![](/docs/images/typo-light.png) | ![](/docs/images/typo-dark.png) |
 
 <a name="design-elevation">
 
@@ -23,7 +21,7 @@ This page contains the material theme designs that govern theming inside the Woo
 
 | Light | Dark  |
 | -- | -- |
-| [[docs/images/elevation-light.png]] | [[docs/images/elevation-dark.png]] |
+| ![](/docs/images/elevation-light.png) | ![](/docs/images/elevation-dark.png) |
 
 <a name="design-states">
 
@@ -31,7 +29,7 @@ This page contains the material theme designs that govern theming inside the Woo
 
 | Light | Dark  |
 | -- | -- |
-| [[docs/images/states-light.png]] | [[docs/images/states-dark.png]] |
+| ![](/docs/images/states-light.png) | ![](/docs/images/states-dark.png) |
 
 <a name="design-components">
 
@@ -39,4 +37,4 @@ This page contains the material theme designs that govern theming inside the Woo
 
 | Light | Dark  |
 | -- | -- |
-| [[docs/images/components-light.png]] | [[docs/images/components-dark.png]] |
+| ![](/docs/images/components-light.png) | ![](/docs/images/components-dark.png) |

@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
 import com.woocommerce.android.model.ProductAttributeTerm
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat

@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
 import com.woocommerce.android.cardreader.internal.connection.BluetoothReaderListenerImpl
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
+import com.woocommerce.android.cardreader.internal.connection.TapToPayReaderListenerImpl
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.connection.UpdateErrorMapper
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
@@ -33,14 +34,17 @@ object CardReaderManagerFactory {
         logWrapper: LogWrapper
     ): CardReaderManager {
         val terminal = TerminalWrapper()
+        val terminalListener = TerminalListenerImpl(logWrapper)
         val batteryLevelProvider = { terminal.getConnectedReader()?.currentBatteryLevel }
         val bluetoothReaderListener = BluetoothReaderListenerImpl(
             logWrapper,
             AdditionalInfoMapper(),
-            UpdateErrorMapper(batteryLevelProvider)
+            UpdateErrorMapper(batteryLevelProvider),
+            terminalListener
         )
-        val terminalListener = TerminalListenerImpl(logWrapper)
+        val tapToPayReaderListener = TapToPayReaderListenerImpl(logWrapper)
         val cardReaderConfigFactory = CardReaderConfigFactory()
+        val paymentUtils = PaymentUtils(logWrapper)
 
         return CardReaderManagerImpl(
             application,
@@ -55,12 +59,12 @@ object CardReaderManagerFactory {
                     terminal,
                     logWrapper,
                     cardReaderConfigFactory,
-                    PaymentUtils
+                    paymentUtils,
                 ),
                 CollectPaymentAction(terminal, logWrapper),
                 ProcessPaymentAction(terminal, logWrapper),
                 CancelPaymentAction(terminal),
-                PaymentUtils,
+                paymentUtils,
                 PaymentErrorMapper(),
                 cardReaderConfigFactory
             ),
@@ -68,13 +72,15 @@ object CardReaderManagerFactory {
                 CollectInteracRefundAction(terminal),
                 ProcessInteracRefundAction(terminal),
                 RefundErrorMapper(),
-                PaymentUtils
+                paymentUtils,
             ),
             ConnectionManager(
                 terminal,
                 bluetoothReaderListener,
+                tapToPayReaderListener,
                 DiscoverReadersAction(terminal, logWrapper),
                 terminalListener,
+                application,
             ),
             SoftwareUpdateManager(
                 terminal,

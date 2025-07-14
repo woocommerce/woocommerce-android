@@ -4,7 +4,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CATEGORY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -13,8 +12,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -66,7 +65,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         val savedState = EditShippingLabelPackagesFragmentArgs(
             orderId = ORDER_ID,
             shippingLabelPackages = currentPackages
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
@@ -406,5 +405,27 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
                 KEY_ORDER_ID to ORDER_ID
             )
         )
+    }
+
+    @Test
+    fun `when the package selected changes, then the weight is updated`() = testBlocking {
+        val item1 = defaultItem.copy(quantity = 2, weight = 2f)
+        val item2 = defaultItem.copy(quantity = 1, weight = 5f)
+        val items = listOf(item1, item2)
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                items = items,
+                weight = 10f
+            )
+        )
+        val selectedPackage = CreateShippingLabelTestUtils.generatePackage()
+        val expectedWeight = 5f + (2f * 2f) + selectedPackage.boxWeight
+
+        setup(currentShippingPackages)
+
+        viewModel.onPackageSelected(0, selectedPackage)
+
+        val packages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(packages.first().weight).isEqualTo(expectedWeight)
     }
 }

@@ -39,17 +39,33 @@ class OrderEditingViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val navArgs by savedState.navArgs<OrderDetailFragmentArgs>()
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     lateinit var order: Order
+    private var orderId: Long = -1L
 
     fun start() {
         runBlocking {
-            order = requireNotNull(orderDetailRepository.getOrderById(navArgs.orderId)) {
-                "Order ${navArgs.orderId} not found in the database."
+            val orderId = if (orderId == -1L) {
+                navArgs.orderId
+            } else {
+                orderId
+            }
+            order = requireNotNull(orderDetailRepository.getOrderById(orderId)) {
+                "Order $orderId not found in the database."
             }
         }
+    }
+
+    fun setOrderId(orderId: Long) {
+        this.orderId = orderId
     }
 
     private fun checkConnectionAndResetState(): Boolean {
@@ -63,7 +79,8 @@ class OrderEditingViewModel @Inject constructor(
 
     fun updateCustomerOrderNote(updatedNote: String) = runWhenUpdateIsPossible {
         orderEditingRepository.updateCustomerOrderNote(
-            order.id, updatedNote
+            order.id,
+            updatedNote
         ).collectOrderUpdate(AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE)
     }
 

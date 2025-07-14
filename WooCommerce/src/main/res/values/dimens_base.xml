@@ -75,12 +75,15 @@ so that's the baseline as defined in `major_100`.
     <dimen name="image_minor_80">32dp</dimen>
     <dimen name="image_minor_100">40dp</dimen>
     <dimen name="image_major_50">48dp</dimen>
+    <dimen name="image_major_56">56dp</dimen>
     <dimen name="image_major_64">64dp</dimen>
     <dimen name="image_major_72">72dp</dimen>
     <dimen name="image_major_100">100dp</dimen>
     <dimen name="image_major_120">128dp</dimen>
+    <dimen name="image_major_140">148dp</dimen>
     <dimen name="image_major_150">156dp</dimen>
     <dimen name="image_major_200">200dp</dimen>
+    <dimen name="image_major_300">250dp</dimen>
     <dimen name="image_frame_stroke_width">1dp</dimen>
 
     <!-- Skeleton sizes -->
@@ -131,12 +134,11 @@ so that's the baseline as defined in `major_100`.
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="floating_dialog_min_width">280dp</dimen>
     <dimen name="tab_indicator_size">8dp</dimen>
+    <dimen name="progress_bar_small">32dp</dimen>
     <dimen name="progress_bar_mid">56dp</dimen>
     <dimen name="progress_bar_large">91dp</dimen>
     <dimen name="whats_new_dialog_heading_top_margin">64dp</dimen>
     <dimen name="card_reader_manuals_divider">105dp</dimen>
-    <dimen name="prologue_logo_height">36dp</dimen>
-    <dimen name="prologue_button_wide">300dp</dimen>
     <dimen name="support_request_message_height">400dp</dimen>
     <dimen name="multiline_textfield_height">155dp</dimen>
 
@@ -151,6 +153,6 @@ so that's the baseline as defined in `major_100`.
     <dimen name="stats_widget_list_item_min_height">30dp</dimen>
     <dimen name="stats_widget_content_height">120dp</dimen>
     <dimen name="stats_widget_min_width">250dp</dimen>
-    <dimen name="stats_widget_min_height">150dp</dimen>
+    <dimen name="stats_widget_min_height">75dp</dimen>
 
 </resources>

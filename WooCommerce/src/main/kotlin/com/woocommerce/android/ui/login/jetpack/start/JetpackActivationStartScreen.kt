@@ -155,8 +155,11 @@ private fun ColumnScope.StartState(
 ) {
     Image(
         painter = painterResource(
-            id = if (isJetpackInstalled) R.drawable.img_connect_jetpack
-            else R.drawable.img_install_jetpack
+            id = if (isJetpackInstalled) {
+                R.drawable.img_connect_jetpack
+            } else {
+                R.drawable.img_install_jetpack
+            }
         ),
         contentDescription = null,
         modifier = Modifier
@@ -168,8 +171,11 @@ private fun ColumnScope.StartState(
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
     Text(
         text = stringResource(
-            id = if (isJetpackInstalled) R.string.login_jetpack_connection_explanation
-            else R.string.login_jetpack_installation_explanation
+            id = if (isJetpackInstalled) {
+                R.string.login_jetpack_connection_explanation
+            } else {
+                R.string.login_jetpack_installation_explanation
+            }
         ),
         style = MaterialTheme.typography.body1,
         textAlign = TextAlign.Center

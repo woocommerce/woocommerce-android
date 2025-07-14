@@ -5,6 +5,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_REVAMPED_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.model.Order
@@ -24,8 +25,10 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
@@ -82,7 +85,9 @@ class OrderDetailRepository @Inject constructor(
         } else {
             if (result?.error?.type == WCOrderStore.OrderErrorType.PLUGIN_NOT_ACTIVE) {
                 RequestResult.API_ERROR
-            } else RequestResult.ERROR
+            } else {
+                RequestResult.ERROR
+            }
         }
     }
 
@@ -93,14 +98,22 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchOrderShippingLabels(remoteOrderId: Long): List<ShippingLabel> {
+    suspend fun fetchOrderShippingLabels(
+        remoteOrderId: Long,
+        isRevampWooShippingEnabled: Boolean
+    ): List<ShippingLabel> {
         return withContext(dispatchers.io) {
             val result = shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
 
             val action = if (result.isError) {
                 VALUE_API_FAILED
-            } else VALUE_API_SUCCESS
-            AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
+            } else {
+                VALUE_API_SUCCESS
+            }
+            AnalyticsTracker.track(
+                AnalyticsEvent.SHIPPING_LABEL_API_REQUEST,
+                mapOf(KEY_FEEDBACK_ACTION to action, KEY_IS_REVAMPED_FLOW to isRevampWooShippingEnabled)
+            )
             result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }
                 ?.map { shippingLabelMapper.toAppModel(it) }
                 ?: emptyList()
@@ -132,8 +145,11 @@ class OrderDetailRepository @Inject constructor(
             note = noteModel.note,
             isCustomerNote = noteModel.isCustomerNote
         ).let {
-            if (it.isError) Result.failure(WooException(it.error))
-            else Result.success(Unit)
+            if (it.isError) {
+                Result.failure(WooException(it.error))
+            } else {
+                Result.success(Unit)
+            }
         }
     }
 
@@ -157,7 +173,9 @@ class OrderDetailRepository @Inject constructor(
     ): OnOrderChanged {
         return orderStore.deleteOrderShipmentTracking(
             WCOrderStore.DeleteOrderShipmentTrackingPayload(
-                selectedSite.get(), orderId, shipmentTrackingModel
+                selectedSite.get(),
+                orderId,
+                shipmentTrackingModel
             )
         )
     }
@@ -187,44 +205,62 @@ class OrderDetailRepository @Inject constructor(
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
 
     fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getVirtualProductCountByRemoteIds(
-                selectedSite.get(), remoteProductIds
-            ) == remoteProductIds.size
-        } else false
+        return runBlocking {
+            if (remoteProductIds.isNotEmpty()) {
+                productStore.getVirtualProductCountByRemoteIds(
+                    selectedSite.get(), remoteProductIds
+                ) == remoteProductIds.size
+            } else {
+                false
+            }
+        }
     }
 
     fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
-        } else 0
+        return runBlocking {
+            if (remoteProductIds.isNotEmpty()) {
+                productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
+            } else {
+                0
+            }
+        }
     }
 
     suspend fun getUniqueProductTypes(remoteProductIds: List<Long>): String {
         return if (remoteProductIds.isNotEmpty()) {
             val products = productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
             products.map { product -> product.type }.toSet().joinToString()
-        } else ""
+        } else {
+            ""
+        }
     }
 
     fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-                .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
-        } else false
+        return runBlocking {
+            if (remoteProductIds.isNotEmpty()) {
+                productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+                    .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
+            } else {
+                false
+            }
+        }
     }
 
-    fun getOrderRefunds(orderId: Long) = refundStore
-        .getAllRefunds(selectedSite.get(), orderId)
-        .map { it.toAppModel() }
-        .reversed()
-        .sortedBy { it.id }
+    fun getOrderRefunds(orderId: Long) = runBlocking {
+        refundStore
+            .getAllRefunds(selectedSite.get(), orderId)
+            .map { it.toAppModel() }
+            .reversed()
+            .sortedBy { it.id }
+    }
 
     fun getOrderShipmentTrackingByTrackingNumber(
         orderId: Long,
         trackingNumber: String
     ): OrderShipmentTracking? = orderStore.getShipmentTrackingByTrackingNumber(
-        selectedSite.get(), orderId, trackingNumber
+        selectedSite.get(),
+        orderId,
+        trackingNumber
     )?.toAppModel()
 
     fun getOrderShipmentTrackings(orderId: Long) =
@@ -237,6 +273,11 @@ class OrderDetailRepository @Inject constructor(
 
     fun getWooServicesPluginInfo(): WooPlugin {
         val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)
+        return WooPlugin(info != null, info?.isActive ?: false, info?.version)
+    }
+
+    fun getWooShippingPluginInfo(): WooPlugin {
+        val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SHIPPING)
         return WooPlugin(info != null, info?.isActive ?: false, info?.version)
     }
 
@@ -310,6 +351,10 @@ class OrderDetailRepository @Inject constructor(
     suspend fun orderHasMetadata(orderId: Long) = orderStore.hasDisplayableOrderMetadata(orderId, selectedSite.get())
 
     suspend fun getOrderMetadata(orderId: Long) = orderStore.getDisplayableOrderMetadata(orderId, selectedSite.get())
+
+    suspend fun getOrderAttributionInfo(orderId: Long) = OrderAttributionInfo(
+        orderStore.getOrderMetadata(orderId, selectedSite.get())
+    )
 
     companion object {
         const val PRODUCT_SUBSCRIPTION_TYPE = "subscription"

@@ -9,29 +9,30 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -43,7 +44,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -52,8 +52,10 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.products.ProductType.BUNDLE
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -63,38 +65,56 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Lis
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.Undefined
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionMode
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 import com.woocommerce.android.util.StringUtils
 
+/**
+ * @param handleInsets true if the screen should handle insets manually.
+ *  This is needed when the screen is used in a DialogFragment, otherwise the handling of insets at the root
+ *  layout will be enough.
+ *
+ *  Note: normally this shouldn't be needed, as we consume the insets in the root layout, but due to this
+ *  bug https://issuetracker.google.com/issues/411868840 the insets are re-applied when the keyboard is shown.
+ */
 @Composable
-fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
+fun ProductSelectorScreen(
+    viewModel: ProductSelectorViewModel,
+    handleInsets: Boolean,
+) {
     val viewState by viewModel.viewState.observeAsState()
     BackHandler(onBack = viewModel::onNavigateBack)
     viewState?.let { state ->
+        val showToolbar = state.selectionMode != SelectionMode.LIVE
         Scaffold(topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = string.coupon_conditions_products_select_products_title)) },
-                navigationIcon = {
-                    IconButton(viewModel::onNavigateBack) {
-                        Icon(
-                            imageVector = if (state.searchState.isActive) {
-                                Icons.Filled.ArrowBack
-                            } else {
-                                Icons.Filled.Close
-                            },
-                            contentDescription = stringResource(id = string.back)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = color.color_toolbar),
-                elevation = 0.dp,
-            )
+            if (showToolbar) {
+                Toolbar(
+                    title = state.screenTitleOverride
+                        ?: stringResource(id = string.coupon_conditions_products_select_products_title),
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                    onNavigationButtonClick = viewModel::onNavigateBack,
+                    windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
+                )
+            }
         }) { padding ->
+            val modifier = Modifier
+                .padding(padding)
+                .then(
+                    if (handleInsets) {
+                        Modifier
+                            .navigationBarsPadding()
+                            .imePadding()
+                            .then(if (!showToolbar) Modifier.statusBarsPadding() else Modifier)
+                    } else {
+                        Modifier
+                    }
+                )
             ProductSelectorScreen(
-                modifier = Modifier.padding(padding),
+                modifier = modifier,
                 state = state,
                 onDoneButtonClick = viewModel::onDoneButtonClick,
                 onClearButtonClick = viewModel::onClearButtonClick,
@@ -103,7 +123,9 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
                 onLoadMore = viewModel::onLoadMore,
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick,
-                onSearchTypeChanged = viewModel::onSearchTypeChanged
+                onSearchTypeChanged = viewModel::onSearchTypeChanged,
+                trackConfigurableProduct = viewModel::trackConfigurableProduct,
+                onEditConfiguration = viewModel::onEditConfiguration,
             )
         }
     }
@@ -120,7 +142,9 @@ fun ProductSelectorScreen(
     onLoadMore: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
-    onClearFiltersButtonClick: () -> Unit
+    onClearFiltersButtonClick: () -> Unit,
+    trackConfigurableProduct: () -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -158,8 +182,11 @@ fun ProductSelectorScreen(
                 onClearButtonClick = onClearButtonClick,
                 onFilterButtonClick = onFilterButtonClick,
                 onProductClick = onProductClick,
-                onLoadMore = onLoadMore
+                onLoadMore = onLoadMore,
+                trackConfigurableProduct = trackConfigurableProduct,
+                onEditConfiguration = onEditConfiguration
             )
+
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
             else -> EmptyProductList(state, onClearFiltersButtonClick)
         }
@@ -221,11 +248,13 @@ private fun EmptyProductList(
 private fun PopularProductsList(
     state: ViewState,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     displayProductsSection(
         type = ProductType.POPULAR,
         state = state,
-        onProductClick = onProductClick
+        onProductClick = onProductClick,
+        onEditConfiguration = onEditConfiguration
     )
 }
 
@@ -233,11 +262,13 @@ private fun PopularProductsList(
 private fun RecentlySoldProductsList(
     state: ViewState,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     displayProductsSection(
         type = ProductType.RECENT,
         state = state,
-        onProductClick = onProductClick
+        onProductClick = onProductClick,
+        onEditConfiguration = onEditConfiguration
     )
 }
 
@@ -246,6 +277,7 @@ private fun displayProductsSection(
     type: ProductType,
     state: ViewState,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     val (productsList, heading, productSectionForTracking) = when (type) {
         ProductType.POPULAR -> Triple(
@@ -253,6 +285,7 @@ private fun displayProductsSection(
             stringResource(id = string.product_selector_popular_products_heading),
             ProductSourceForTracking.POPULAR
         )
+
         ProductType.RECENT -> Triple(
             state.recentProducts,
             stringResource(id = string.product_selector_recent_products_heading),
@@ -281,14 +314,19 @@ private fun displayProductsSection(
             SelectorListItem(
                 title = product.title,
                 imageUrl = product.imageUrl,
-                infoLine1 = product.stockAndPrice,
+                infoLine1 = product.getInformation(),
                 infoLine2 = product.sku?.let {
                     stringResource(string.product_selector_sku_value, it)
                 },
                 selectionState = product.selectionState,
                 isArrowVisible = product.hasVariations(),
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
-                imageContentDescription = stringResource(string.product_image_content_description)
+                imageContentDescription = stringResource(string.product_image_content_description),
+                isCogwheelVisible = product is ListItem.ConfigurableListItem,
+                enabled = state.selectionEnabled,
+                onEditConfiguration = {
+                    (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
+                }
             ) {
                 onProductClick(product, productSectionForTracking)
             }
@@ -316,6 +354,8 @@ private fun ProductList(
     onFilterButtonClick: () -> Unit,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
+    trackConfigurableProduct: () -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -328,14 +368,16 @@ private fun ProductList(
                 .padding(horizontal = dimensionResource(dimen.minor_100))
                 .fillMaxWidth()
         ) {
-            WCTextButton(
-                onClick = onClearButtonClick,
-                text = stringResource(id = string.product_selector_clear_button_title),
-                allCaps = false,
-                enabled = state.selectedItemsCount > 0,
-                modifier = Modifier.align(Alignment.CenterStart)
-            )
-            if (state.searchState.searchQuery.isEmpty()) {
+            if (state.selectionMode == SelectionMode.MULTIPLE) {
+                WCTextButton(
+                    onClick = onClearButtonClick,
+                    text = stringResource(id = string.product_selector_clear_button_title),
+                    allCaps = false,
+                    enabled = state.selectedItemsCount > 0,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
+            }
+            if (state.shouldDisplayFilterButton) {
                 WCTextButton(
                     onClick = onFilterButtonClick,
                     text = StringUtils.getQuantityString(
@@ -344,7 +386,8 @@ private fun ProductList(
                         zero = string.product_selector_filter_button_title_zero
                     ),
                     allCaps = false,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
                 )
             }
         }
@@ -358,7 +401,8 @@ private fun ProductList(
                 item {
                     PopularProductsList(
                         state = state,
-                        onProductClick = onProductClick
+                        onProductClick = onProductClick,
+                        onEditConfiguration = onEditConfiguration
                     )
                 }
             }
@@ -366,7 +410,8 @@ private fun ProductList(
                 item {
                     RecentlySoldProductsList(
                         state = state,
-                        onProductClick = onProductClick
+                        onProductClick = onProductClick,
+                        onEditConfiguration = onEditConfiguration
                     )
                 }
             }
@@ -385,17 +430,25 @@ private fun ProductList(
                 }
             }
             itemsIndexed(state.products) { _, product ->
+                if (product is ListItem.ConfigurableListItem) {
+                    trackConfigurableProduct()
+                }
                 SelectorListItem(
                     title = product.title,
                     imageUrl = product.imageUrl,
-                    infoLine1 = product.stockAndPrice,
+                    infoLine1 = product.getInformation(),
                     infoLine2 = product.sku?.let {
                         stringResource(string.product_selector_sku_value, it)
                     },
                     selectionState = product.selectionState,
                     isArrowVisible = product.hasVariations(),
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
-                    imageContentDescription = stringResource(string.product_image_content_description)
+                    imageContentDescription = stringResource(string.product_image_content_description),
+                    isCogwheelVisible = product is ListItem.ConfigurableListItem,
+                    enabled = state.selectionEnabled,
+                    onEditConfiguration = {
+                        (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
+                    }
                 ) {
                     onProductClick(product, ProductSourceForTracking.ALPHABETICAL)
                 }
@@ -421,24 +474,40 @@ private fun ProductList(
             onLoadMore()
         }
 
-        Divider(
-            color = colorResource(id = color.divider_color),
-            thickness = dimensionResource(id = dimen.minor_10)
-        )
+        if (state.selectionMode != SelectionMode.LIVE) {
+            SelectionConfirmButton(onDoneButtonClick, state)
+        }
+    }
+}
 
-        WCColoredButton(
-            onClick = onDoneButtonClick,
-            text = StringUtils.getQuantityString(
+@Composable
+private fun SelectionConfirmButton(
+    onClick: () -> Unit,
+    state: ViewState
+) {
+    Divider(
+        color = colorResource(id = color.divider_color),
+        thickness = dimensionResource(id = dimen.minor_10)
+    )
+
+    WCColoredButton(
+        onClick = onClick,
+        text = state.ctaButtonTextOverride ?: when (state.selectionMode) {
+            SelectionMode.MULTIPLE -> StringUtils.getQuantityString(
                 quantity = state.selectedItemsCount,
                 default = string.product_selector_select_button_title_default,
                 one = string.product_selector_select_button_title_one,
                 zero = string.done
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = dimen.major_100))
-        )
-    }
+            )
+
+            SelectionMode.SINGLE -> stringResource(id = string.done)
+            SelectionMode.LIVE -> ""
+        },
+        enabled = state.isDoneButtonEnabled,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(id = dimen.major_100))
+    )
 }
 
 private fun ListItem.hasVariations() =
@@ -542,12 +611,16 @@ fun PopularProductsListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = emptyList(),
+            selectionMode = SelectionMode.MULTIPLE,
+            productFlow = Undefined
         ),
-        {},
-        {},
-        {},
-        { _, _ -> },
-        {}
+        onDoneButtonClick = {},
+        onClearButtonClick = {},
+        onFilterButtonClick = {},
+        onProductClick = { _, _ -> },
+        onLoadMore = {},
+        trackConfigurableProduct = {},
+        onEditConfiguration = {}
     )
 }
 
@@ -609,12 +682,16 @@ fun RecentProductsListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = products,
+            selectionMode = SelectionMode.MULTIPLE,
+            productFlow = Undefined
         ),
-        {},
-        {},
-        {},
-        { _, _ -> },
-        {}
+        onDoneButtonClick = {},
+        onClearButtonClick = {},
+        onFilterButtonClick = {},
+        onProductClick = { _, _ -> },
+        onLoadMore = {},
+        trackConfigurableProduct = {},
+        onEditConfiguration = {}
     )
 }
 
@@ -663,6 +740,15 @@ fun ProductListPreview() {
             numVariations = 0,
             stockAndPrice = null,
             sku = null
+        ),
+
+        ListItem.ConfigurableListItem(
+            productId = 5,
+            title = "Product 5",
+            type = BUNDLE,
+            imageUrl = null,
+            stockAndPrice = null,
+            sku = null
         )
     )
 
@@ -675,12 +761,16 @@ fun ProductListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = products,
+            selectionMode = SelectionMode.MULTIPLE,
+            productFlow = Undefined
         ),
-        {},
-        {},
-        {},
-        { _, _ -> },
-        {}
+        onDoneButtonClick = {},
+        onClearButtonClick = {},
+        onFilterButtonClick = {},
+        onProductClick = { _, _ -> },
+        onLoadMore = {},
+        trackConfigurableProduct = {},
+        onEditConfiguration = {}
     )
 }
 
@@ -688,7 +778,7 @@ fun ProductListPreview() {
 @Composable
 fun ProductListEmptyPreview() {
     EmptyProductList(
-        ViewState(
+        state = ViewState(
             products = emptyList(),
             selectedItemsCount = 3,
             loadingState = IDLE,
@@ -696,12 +786,25 @@ fun ProductListEmptyPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = emptyList(),
-        )
-    ) {}
+            selectionMode = SelectionMode.MULTIPLE,
+            productFlow = Undefined
+        ),
+        onClearFiltersButtonClick = {}
+    )
 }
 
 @Preview
 @Composable
 fun ProductListSkeletonPreview() {
     ProductListSkeleton()
+}
+
+@Composable
+fun ListItem.getInformation(): String? {
+    return if (type == com.woocommerce.android.ui.products.ProductType.BUNDLE) {
+        listOfNotNull(stringResource(id = string.product_type_bundle), stockAndPrice)
+            .joinToString(" \u2022 ")
+    } else {
+        stockAndPrice
+    }
 }

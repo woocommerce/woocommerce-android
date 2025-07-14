@@ -119,7 +119,7 @@
             android:layout_weight="1"
             android:layout_marginTop="@dimen/major_75"
             android:layout_marginBottom="@dimen/major_75"
-            android:text="@string/order_refunds_fees_refund" />
+            android:text="@string/order_refunds_custom_amount_refund" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/issueRefund_feesTotal"

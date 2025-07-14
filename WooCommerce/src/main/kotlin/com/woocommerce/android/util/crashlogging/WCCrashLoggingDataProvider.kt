@@ -4,6 +4,7 @@ import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel
 import com.automattic.android.tracks.crashlogging.ExtraKnownKey
+import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.di.AppCoroutineScope
@@ -73,10 +74,10 @@ class WCCrashLoggingDataProvider @Inject constructor(
 
     override val performanceMonitoringConfig = specifyPerformanceMonitoringConfig()
 
-    override val releaseName: String = if (buildConfig.debug) {
-        DEBUG_RELEASE_NAME
+    override val releaseName: ReleaseName = if (buildConfig.debug) {
+        ReleaseName.SetByApplication(DEBUG_RELEASE_NAME)
     } else {
-        buildConfig.versionName
+        ReleaseName.SetByTracksLibrary
     }
 
     override val sentryDSN: String = BuildConfig.SENTRY_DSN

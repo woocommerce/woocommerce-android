@@ -21,8 +21,11 @@ class DomainChangeRepository @Inject constructor(
         val result = withContext(Dispatchers.Default) {
             siteStore.fetchSiteDomains(selectedSite.get())
         }
-        return if (result.isError) Result.failure(Exception(result.error.message))
-        else Result.success(result.domains ?: emptyList())
+        return if (result.isError) {
+            Result.failure(Exception(result.error.message))
+        } else {
+            Result.success(result.domains ?: emptyList())
+        }
     }
 
     suspend fun fetchActiveSitePlan(): Result<PlanModel> {

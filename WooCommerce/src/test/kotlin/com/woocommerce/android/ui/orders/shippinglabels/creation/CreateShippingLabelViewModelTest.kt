@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.OrderMapper
@@ -51,6 +50,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -93,14 +93,15 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val orderMapper = OrderMapper(
         getLocations = mock {
             on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
-        }
+        },
+        mock()
     )
     private val checkEUShippingScenario: CheckEUShippingScenario = mock {
         on { invoke(any()) } doReturn flowOf(false)
     }
 
     private val data = StateMachineData(
-        order = orderMapper.toAppModel(order),
+        order = runBlocking { orderMapper.toAppModel(order) },
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
@@ -116,7 +117,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     )
 
     private val doneData = StateMachineData(
-        order = orderMapper.toAppModel(order),
+        order = runBlocking { orderMapper.toAppModel(order) },
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(READY, shippingAddress),
@@ -189,7 +190,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = true
     )
 
-    private val savedState = CreateShippingLabelFragmentArgs(order.orderId).initSavedStateHandle()
+    private val savedState = CreateShippingLabelFragmentArgs(order.orderId).toSavedStateHandle()
 
     private lateinit var viewModel: CreateShippingLabelViewModel
 
@@ -388,7 +389,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.id, CoreOrderStatus.COMPLETED.value
+            doneData.order.id,
+            CoreOrderStatus.COMPLETED.value
         )
     }
 

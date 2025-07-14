@@ -60,10 +60,11 @@ class ScalableImageView @JvmOverloads constructor(
         val drawableHeight = it.intrinsicHeight.toFloat()
         val drawableWidth = it.intrinsicWidth.toFloat()
         val scale =
-            if (it.intrinsicWidth * viewHeight > it.intrinsicHeight * viewWidth)
+            if (it.intrinsicWidth * viewHeight > it.intrinsicHeight * viewWidth) {
                 viewHeight / drawableHeight
-            else
+            } else {
                 viewWidth / drawableWidth
+            }
         val offset = viewHeight / scale
 
         val drawableRect = when (matrixType) {

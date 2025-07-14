@@ -5,6 +5,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import kotlinx.parcelize.IgnoredOnParcel
@@ -48,7 +49,16 @@ data class Order(
     val shippingPhone: String,
     val paymentUrl: String,
     val isEditable: Boolean,
+    val selectedGiftCard: String?,
+    val giftCardDiscountedAmount: BigDecimal?,
+    val shippingTax: BigDecimal,
+    val salesChannel: SalesChannel,
 ) : Parcelable {
+    enum class SalesChannel {
+        POS,
+        NON_POS
+    }
+
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
 
@@ -62,11 +72,9 @@ data class Order(
     @IgnoredOnParcel
     val isRefundAvailable = !isOrderFullyRefunded && quantityOfItemsWhichPossibleToRefund > 0 && isOrderPaid
 
-    val hasMultipleShippingLines: Boolean
-        get() = shippingLines.size > 1
-
-    val hasMultipleFeeLines: Boolean
-        get() = feesLines.size > 1
+    @IgnoredOnParcel
+    val billingName
+        get() = getBillingName("")
 
     @IgnoredOnParcel
     val feesTotal = feesLines.sumByBigDecimal(FeeLine::total)
@@ -76,6 +84,9 @@ data class Order(
 
     @IgnoredOnParcel
     val shippingAddress = customer?.shippingAddress ?: Address.EMPTY
+
+    val maxRefund: BigDecimal
+        get() = total - refundTotal
 
     @Parcelize
     data class ShippingMethod(
@@ -100,11 +111,16 @@ data class Order(
         val sku: String,
         val quantity: Float,
         val subtotal: BigDecimal,
+        val subtotalTax: BigDecimal,
         val totalTax: BigDecimal,
         val total: BigDecimal,
         val variationId: Long,
         val attributesList: List<Attribute>,
-        val parent: Long? = null
+        val parent: Long? = null,
+        val configuration: ProductConfiguration? = null,
+        val configurationKey: Long? = null,
+        val containsMetadata: Boolean = false,
+        val taxes: List<LineTaxEntry> = emptyList(),
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
@@ -120,9 +136,6 @@ data class Order(
 
         @IgnoredOnParcel
         var containsAddons = false
-
-        @IgnoredOnParcel
-        val attributesNames = attributesList.map { it.addonName }
 
         /**
          * @return a comma-separated list of attribute values for display
@@ -146,6 +159,7 @@ data class Order(
                     sku = "",
                     quantity = 0f,
                     subtotal = BigDecimal(0),
+                    subtotalTax = BigDecimal(0),
                     totalTax = BigDecimal(0),
                     total = BigDecimal(0),
                     variationId = 0,
@@ -172,7 +186,7 @@ data class Order(
                 .firstOrNull()?.groupValues
                 ?.takeIf { it.size == addonAttributeGroupSize }
                 ?.toMutableList()
-                ?.apply { removeFirst() }
+                ?.apply { removeAt(0) }
 
             @IgnoredOnParcel
             val addonName = keyAsAddonRegexGroup
@@ -192,10 +206,11 @@ data class Order(
         val methodId: String?,
         val methodTitle: String,
         val totalTax: BigDecimal,
-        val total: BigDecimal
+        val total: BigDecimal,
+        val taxes: List<LineTaxEntry>
     ) : Parcelable {
         constructor(methodId: String, methodTitle: String, total: BigDecimal) :
-            this(0L, methodId, methodTitle, BigDecimal.ZERO, total)
+            this(0L, methodId, methodTitle, BigDecimal.ZERO, total, emptyList())
     }
 
     @Parcelize
@@ -215,6 +230,7 @@ data class Order(
         val total: BigDecimal,
         val totalTax: BigDecimal,
         var taxStatus: FeeLineTaxStatus,
+        val taxes: List<LineTaxEntry>
     ) : Parcelable {
         fun getTotalValue(): BigDecimal = total + totalTax
 
@@ -225,6 +241,7 @@ data class Order(
                 total = BigDecimal.ZERO,
                 totalTax = BigDecimal.ZERO,
                 taxStatus = FeeLineTaxStatus.UNKNOWN,
+                taxes = emptyList()
             )
         }
 
@@ -248,6 +265,7 @@ data class Order(
         val email: String? = null,
         val billingAddress: Address,
         val shippingAddress: Address,
+        val username: String? = null,
     ) : Parcelable {
         companion object {
             val EMPTY = Customer(
@@ -260,6 +278,12 @@ data class Order(
             )
         }
     }
+
+    @Parcelize
+    data class LineTaxEntry(
+        val rateId: Long,
+        val taxAmount: BigDecimal
+    ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
         return when {
@@ -274,7 +298,9 @@ data class Order(
         val billingAddress = this.billingAddress.getEnvelopeAddress()
         val billingCountry = AddressUtils.getCountryLabelByCountryCode(this.billingAddress.country.code)
         return this.billingAddress.getFullAddress(
-            billingName, billingAddress, billingCountry
+            billingName,
+            billingAddress,
+            billingCountry
         )
     }
 
@@ -283,7 +309,9 @@ data class Order(
         val shippingAddress = this.shippingAddress.getEnvelopeAddress()
         val shippingCountry = AddressUtils.getCountryLabelByCountryCode(this.shippingAddress.country.code)
         return this.shippingAddress.getFullAddress(
-            shippingName, shippingAddress, shippingCountry
+            shippingName,
+            shippingAddress,
+            shippingCountry
         )
     }
 
@@ -380,11 +408,15 @@ data class Order(
                 shippingPhone = "",
                 paymentUrl = "",
                 isEditable = true,
+                selectedGiftCard = "",
+                giftCardDiscountedAmount = null,
+                shippingTax = BigDecimal(0),
+                salesChannel = SalesChannel.NON_POS
             )
         }
 
-        val EMPTY
-            get() = DEFAULT_EMPTY_ORDER.copy(dateCreated = Date(), dateModified = Date())
+        fun getEmptyOrder(dateCreated: Date, dateModified: Date) =
+            DEFAULT_EMPTY_ORDER.copy(dateCreated = dateCreated, dateModified = dateModified)
     }
 }
 

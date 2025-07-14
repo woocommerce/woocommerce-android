@@ -17,12 +17,10 @@ import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.buildBatteryLevelUiString
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
@@ -37,6 +35,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOC
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,7 +48,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
-    private val tracker: CardReaderTracker,
+    private val tracker: PaymentsFlowTracker,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
@@ -87,7 +86,7 @@ class CardReaderDetailViewModel @Inject constructor(
                         )
                         handleNotConnectedState()
                     }
-                }.exhaustive
+                }
             }
         }
     }
@@ -126,7 +125,7 @@ class CardReaderDetailViewModel @Inject constructor(
                 triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
             }
             FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
-        }.exhaustive
+        }
     }
 
     private fun handleNotConnectedState() {
@@ -230,7 +229,7 @@ class CardReaderDetailViewModel @Inject constructor(
         when (updateStatus) {
             SoftwareUpdateAvailability.Available -> showConnectedState(readerStatus, updateAvailable = true)
             SoftwareUpdateAvailability.NotAvailable -> showConnectedState(readerStatus)
-        }.exhaustive
+        }
     }
 
     private fun handleBatteryStatusChange(newStatus: CardReaderBatteryStatus) {
@@ -239,7 +238,7 @@ class CardReaderDetailViewModel @Inject constructor(
                 updateBatteryLevelOnConnectedState(newStatus.batteryLevel)
             }
             else -> {}
-        }.exhaustive
+        }
     }
 
     private fun clearLastKnowReader() {

@@ -32,8 +32,9 @@ class CouponListHandler @Inject constructor(private val repository: CouponReposi
 
     suspend fun fetchCoupons(
         searchQuery: String? = null,
-        forceRefresh: Boolean = false
-    ): Result<Unit> = mutex.withLock {
+        forceRefresh: Boolean = false,
+        isPos: Boolean = false
+    ): Result<Boolean> = mutex.withLock {
         // Reset pagination attributes
         page = 1
         canLoadMore = true
@@ -41,39 +42,39 @@ class CouponListHandler @Inject constructor(private val repository: CouponReposi
         this.searchQuery.value = searchQuery
         return if (searchQuery == null) {
             if (forceRefresh) {
-                loadCoupons()
+                loadCoupons(isPos)
             } else {
-                Result.success(Unit)
+                Result.success(canLoadMore)
             }
         } else {
             searchResults.value = emptyList()
             if (searchQuery.isEmpty()) {
                 // If the query is empty, clear search results directly
                 canLoadMore = false
-                Result.success(Unit)
+                Result.success(canLoadMore)
             } else {
                 searchCoupons()
             }
         }
     }
 
-    suspend fun loadMore(): Result<Unit> = mutex.withLock {
-        if (!canLoadMore) return@withLock Result.success(Unit)
+    suspend fun loadMore(isPos: Boolean = false): Result<Boolean> = mutex.withLock {
+        if (!canLoadMore) return@withLock Result.success(canLoadMore)
         return if (searchQuery.value == null) {
-            loadCoupons()
+            loadCoupons(isPos)
         } else {
             searchCoupons()
         }
     }
 
-    private suspend fun loadCoupons(): Result<Unit> {
-        return repository.fetchCoupons(page, PAGE_SIZE).onSuccess {
+    private suspend fun loadCoupons(isPos: Boolean): Result<Boolean> {
+        return repository.fetchCoupons(page, PAGE_SIZE, isPosMode = isPos).onSuccess {
             canLoadMore = it
             page++
-        }.map { }
+        }.map { canLoadMore }
     }
 
-    private suspend fun searchCoupons(): Result<Unit> {
+    private suspend fun searchCoupons(): Result<Boolean> {
         return repository.searchCoupons(
             searchString = searchQuery.value!!,
             page = page,
@@ -82,6 +83,6 @@ class CouponListHandler @Inject constructor(private val repository: CouponReposi
             canLoadMore = result.canLoadMore
             page++
             searchResults.update { it + result.coupons }
-        }.map { }
+        }.map { canLoadMore }
     }
 }

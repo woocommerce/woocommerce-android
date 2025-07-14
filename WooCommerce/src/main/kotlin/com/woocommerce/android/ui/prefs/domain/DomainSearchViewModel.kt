@@ -9,11 +9,9 @@ import com.woocommerce.android.extensions.getTitle
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit

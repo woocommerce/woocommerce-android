@@ -19,7 +19,13 @@ class ProductPropertiesDiffCallback(
     override fun getNewListSize(): Int = newList.size
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition] == newList[newItemPosition]
+        val newItem = newList[newItemPosition]
+        val oldItem = oldList[oldItemPosition]
+        return if (oldItem is Editable && newItem is Editable && oldItem.text.isNotEmpty()) {
+            true
+        } else {
+            oldItem == newItem
+        }
     }
 
     override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
@@ -27,6 +33,8 @@ class ProductPropertiesDiffCallback(
         val oldItem = oldList[oldItemPosition]
         return if (oldItem is Editable && newItem is Editable && newItem.text != oldItem.text) {
             newItem.shouldFocus = true
-        } else null
+        } else {
+            null
+        }
     }
 }

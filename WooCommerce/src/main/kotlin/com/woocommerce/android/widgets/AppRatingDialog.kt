@@ -34,8 +34,10 @@ object AppRatingDialog {
 
     // app must have been installed this long before the rating dialog will appear
     private const val CRITERIA_INSTALL_DAYS: Int = 7
+
     // app must have been launched this many times before the rating dialog will appear
     private const val CRITERIA_LAUNCH_TIMES: Int = 10
+
     // user must have performed this many interactions before the rating dialog will appear
     private const val CRITERIA_INTERACTIONS: Int = 10
 

@@ -7,10 +7,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_CREATION_INITIATED
-import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_CREATION_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_UPDATE_INITIATED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPON_DISCOUNT_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DESCRIPTION
@@ -33,11 +29,14 @@ import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIn
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProducts
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
+import com.woocommerce.android.ui.coupons.tracking.StoreManagementCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -70,6 +69,8 @@ class EditCouponViewModel @Inject constructor(
     private val parameterRepository: ParameterRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resourceProvider: ResourceProvider,
+    storeManagementEventProvider: StoreManagementCouponCreationFlowTrackerEventProvider,
+    posEventProvider: WooPosCouponCreationFlowTrackerEventProvider,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
@@ -77,6 +78,12 @@ class EditCouponViewModel @Inject constructor(
 
     private val navArgs: EditCouponFragmentArgs by savedStateHandle.navArgs()
     private val mode: StateFlow<Mode> = savedStateHandle.getStateFlow(this, navArgs.mode, "key_mode")
+
+    private val trackingEventProvider = if (navArgs.isPOSMode) {
+        posEventProvider
+    } else {
+        storeManagementEventProvider
+    }
 
     private val storedCoupon: Deferred<Coupon> = async {
         with(mode.value) {
@@ -255,6 +262,10 @@ class EditCouponViewModel @Inject constructor(
         isSaving.value = false
     }
 
+    fun onBackPressed() {
+        exitFlow()
+    }
+
     private fun getSaveButtonText(): Int = when (mode.value) {
         is Mode.Edit -> R.string.coupon_edit_save_button
         is Mode.Create -> R.string.coupon_create_save_button
@@ -262,10 +273,10 @@ class EditCouponViewModel @Inject constructor(
 
     private suspend fun addCoupon(newCoupon: Coupon) {
         couponRepository.createCoupon(newCoupon)
-            .onSuccess {
+            .onSuccess { couponId ->
                 triggerEvent(ShowSnackbar(R.string.coupon_create_coupon_created))
-                triggerEvent(Exit)
-                analyticsTrackerWrapper.track(COUPON_CREATION_SUCCESS)
+                exitFlow(couponId)
+                analyticsTrackerWrapper.track(trackingEventProvider.COUPON_CREATION_SUCCESS)
             }
             .onFailure { exception ->
                 WooLog.e(
@@ -274,7 +285,7 @@ class EditCouponViewModel @Inject constructor(
                 )
                 val wooErrorType = (exception as? WooException)?.error?.type
                 analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.COUPON_CREATION_FAILED,
+                    stat = trackingEventProvider.COUPON_CREATION_FAILED,
                     errorContext = this@EditCouponViewModel.javaClass.simpleName,
                     errorType = wooErrorType?.name,
                     errorDescription = exception.message
@@ -291,9 +302,9 @@ class EditCouponViewModel @Inject constructor(
         couponRepository.updateCoupon(newCoupon)
             .onSuccess {
                 triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_updated))
-                triggerEvent(Exit)
+                exitFlow()
 
-                analyticsTrackerWrapper.track(AnalyticsEvent.COUPON_UPDATE_SUCCESS)
+                analyticsTrackerWrapper.track(trackingEventProvider.COUPON_UPDATE_SUCCESS)
             }
             .onFailure { exception ->
                 WooLog.e(
@@ -303,7 +314,7 @@ class EditCouponViewModel @Inject constructor(
 
                 val wooErrorType = (exception as? WooException)?.error?.type
                 analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.COUPON_UPDATE_FAILED,
+                    stat = trackingEventProvider.COUPON_UPDATE_FAILED,
                     errorContext = this@EditCouponViewModel.javaClass.simpleName,
                     errorType = wooErrorType?.name,
                     errorDescription = exception.message
@@ -328,7 +339,7 @@ class EditCouponViewModel @Inject constructor(
         val wereCouponUsageRestrictionsUpdated = oldCoupon.restrictions != newCoupon.restrictions
 
         analyticsTrackerWrapper.track(
-            COUPON_UPDATE_INITIATED,
+            trackingEventProvider.COUPON_UPDATE_INITIATED,
             mapOf(
                 Pair(AnalyticsTracker.KEY_COUPON_DISCOUNT_TYPE_UPDATED, wasCouponTypeUpdated),
                 Pair(AnalyticsTracker.KEY_COUPON_CODE_UPDATED, wasCouponCodeUpdated),
@@ -354,7 +365,7 @@ class EditCouponViewModel @Inject constructor(
             excludedProductIds.isNotEmpty() || excludedCategoryIds.isNotEmpty()
         }
         analyticsTrackerWrapper.track(
-            COUPON_CREATION_INITIATED,
+            trackingEventProvider.COUPON_CREATION_INITIATED,
             mapOf(
                 KEY_COUPON_DISCOUNT_TYPE to type,
                 KEY_HAS_EXPIRY_DATE to (newCoupon.dateExpires != null),
@@ -364,6 +375,14 @@ class EditCouponViewModel @Inject constructor(
                 KEY_HAS_USAGE_RESTRICTIONS to newCoupon.hasUsageRestrictions()
             )
         )
+    }
+
+    private fun exitFlow(couponId: Long? = null) {
+        if (navArgs.isPOSMode) {
+            triggerEvent(NavigateBackToPOS(couponId))
+        } else {
+            triggerEvent(Exit)
+        }
     }
 
     private fun Coupon.hasUsageRestrictions() = with(restrictions) {
@@ -396,4 +415,6 @@ class EditCouponViewModel @Inject constructor(
         @Parcelize
         data class Edit(val couponId: Long) : Mode()
     }
+
+    data class NavigateBackToPOS(val couponId: Long?) : MultiLiveEvent.Event()
 }

@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_AMOUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FULFILL_ORDER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_REVAMPED_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARRIER_RATES_SELECTED
@@ -129,6 +130,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -169,6 +171,12 @@ class CreateShippingLabelViewModel @Inject constructor(
 
     private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
@@ -199,6 +207,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                         viewState = viewState.copy(uiState = Loading)
                         handleResult { loadData(transition.state.orderId) }
                     }
+
                     is State.DataLoadingFailure -> viewState = viewState.copy(uiState = Failed)
                     is State.WaitingForInput -> {
                         viewState = viewState.copy(
@@ -207,6 +216,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                         )
                         updateViewState(transition.state.data)
                     }
+
                     is State.OriginAddressValidation -> {
                         handleResult(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
@@ -219,6 +229,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             )
                         }
                     }
+
                     is State.ShippingAddressValidation -> {
                         handleResult(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
@@ -231,6 +242,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             )
                         }
                     }
+
                     is State.PurchaseLabels -> {
                         handleResult(
                             progressDialogTitle = string.shipping_label_create_purchase_progress_title,
@@ -239,6 +251,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             purchaseLabels(transition.state.data, transition.state.fulfillOrder)
                         }
                     }
+
                     else -> {
                     }
                 }
@@ -246,6 +259,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                     when (sideEffect) {
                         SideEffect.NoOp -> {
                         }
+
                         is SideEffect.ShowError -> showError(sideEffect.error)
                         is SideEffect.OpenAddressEditor -> triggerEvent(
                             ShowAddressEditor(
@@ -255,6 +269,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                                 sideEffect.isCustomsFormRequired
                             )
                         )
+
                         is SideEffect.ShowAddressSuggestion -> triggerEvent(
                             ShowSuggestedAddress(
                                 sideEffect.entered,
@@ -262,6 +277,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                                 sideEffect.type
                             )
                         )
+
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
                         is SideEffect.ShowCustomsForm -> openCustomsForm(
                             sideEffect.originCountryCode,
@@ -269,6 +285,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                             sideEffect.shippingPackages,
                             sideEffect.customsPackages
                         )
+
                         is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                         is SideEffect.ShowLabelsPrint -> openPrintLabelsScreen(sideEffect.orderId, sideEffect.labels)
@@ -429,7 +446,9 @@ class CreateShippingLabelViewModel @Inject constructor(
                             .first { it.packageId == rate.packageId }
                         Pair(labelPackage, rate.price)
                     }.toMap()
-                } else emptyMap()
+                } else {
+                    emptyMap()
+                }
 
                 return OrderSummaryState(
                     isVisible = true,
@@ -512,13 +531,16 @@ class CreateShippingLabelViewModel @Inject constructor(
                     AddressChangeSuggested(result.suggested)
                 }
             }
+
             is ValidationResult.NotFound,
             is ValidationResult.Invalid,
             is ValidationResult.NameMissing, ValidationResult.PhoneInvalid -> AddressInvalid(address, result)
+
             is ValidationResult.Error -> AddressValidationFailed
         }
     }
 
+    @Suppress("LongMethod")
     private suspend fun purchaseLabels(data: StateMachineData, fulfillOrder: Boolean): Event {
         val amount = data.stepsState.carrierStep.data.sumByBigDecimal { it.price }
         trackPurchaseInitiated(amount, fulfillOrder)
@@ -554,12 +576,19 @@ class CreateShippingLabelViewModel @Inject constructor(
                         is OptimisticUpdateResult -> {
                             // noop
                         }
+
                         is RemoteUpdateResult -> {
                             if (updateOrderResult.event.isError) {
-                                AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
+                                AnalyticsTracker.track(
+                                    AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED,
+                                    mapOf(KEY_IS_REVAMPED_FLOW to false)
+                                )
                                 triggerEvent(ShowSnackbar(string.shipping_label_create_purchase_fulfill_error))
                             } else {
-                                AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
+                                AnalyticsTracker.track(
+                                    AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED,
+                                    mapOf(KEY_IS_REVAMPED_FLOW to false)
+                                )
                             }
                         }
                     }
@@ -590,7 +619,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                     )
                 }
 
-                val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
+                val weightDimension = runBlocking { wooStore.getProductSettings(site.get())?.weightUnit ?: "" }
                 val stringResource = if (data.size == 1) {
                     string.shipping_label_single_package_total_weight
                 } else {
@@ -655,8 +684,11 @@ class CreateShippingLabelViewModel @Inject constructor(
 
     private val CustomsStep.stepDescription: String
         get() = resourceProvider.getString(
-            if (status == DONE) string.shipping_label_create_customs_done
-            else string.shipping_label_create_customs_description
+            if (status == DONE) {
+                string.shipping_label_create_customs_done
+            } else {
+                string.shipping_label_create_customs_description
+            }
         )
 
     fun retry() = stateMachine.handleEvent(FlowStarted(arguments.orderId))

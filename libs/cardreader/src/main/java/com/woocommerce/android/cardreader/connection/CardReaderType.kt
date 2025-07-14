@@ -13,7 +13,7 @@ sealed class ReaderType(val name: String) {
     }
 
     sealed class BuildInReader(buildInReaderName: String) : ReaderType(buildInReaderName) {
-        object CotsDevice : BuildInReader("COTS_DEVICE")
+        object TapToPayDevice : BuildInReader("TAP_TO_PAY_DEVICE")
     }
 
     object Unknown : ReaderType("UNKNOWN")
@@ -26,7 +26,7 @@ sealed class ReaderType(val name: String) {
                 "VERIFONE_P400" -> ExternalReader.VerifoneP400
                 "WISEPAD_3" -> ExternalReader.WisePade3
                 "WISEPOS_E" -> ExternalReader.WisePadeE
-                "COTS_DEVICE" -> BuildInReader.CotsDevice
+                "TAP_TO_PAY_DEVICE" -> BuildInReader.TapToPayDevice
                 else -> Unknown
             }
 

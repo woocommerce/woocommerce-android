@@ -27,10 +27,7 @@ class LearnMoreUrlProvider @Inject constructor(
                 }
             }
             LearnMoreUrlType.CASH_ON_DELIVERY -> {
-                when (preferredPlugin) {
-                    STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
-                    WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
-                }
+                AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
             }
         }
     }

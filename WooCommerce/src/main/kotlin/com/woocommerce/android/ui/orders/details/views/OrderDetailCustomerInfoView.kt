@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
@@ -19,9 +20,11 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
+import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 
@@ -33,6 +36,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     private companion object {
         const val KEY_SUPER_STATE = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-SUPER-STATE"
         const val KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-IS_CUSTOMER_INFO_VIEW_EXPANDED"
+        private const val WHATSAPP_PACKAGE_NAME = "com.whatsapp"
+        private const val TELEGRAM_PACKAGE_NAME = "org.telegram.messenger"
     }
 
     private val binding = OrderDetailCustomerInfoBinding.inflate(LayoutInflater.from(ctx), this)
@@ -81,6 +86,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         val shippingAddress = order.formatShippingInformationForDisplay()
 
         if (isReadOnly && billingAddress.isEmpty()) {
+            binding.customerInfoBillingLabel.hide()
             // if the address is empty but we have details like email or phone, show "No address specified"
             if (order.billingAddress.hasInfo()) {
                 binding.customerInfoBillingAddr.setText(resources.getString(R.string.orderdetail_empty_address), 0)
@@ -96,8 +102,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             // a customer makes an order, but it will be empty once we offer order creation
             if (billingAddress.isEmpty() && !isReadOnly) {
                 expandCustomerInfoView()
+                binding.customerInfoBillingLabel.hide()
                 binding.customerInfoViewMore.hide()
             } else {
+                binding.customerInfoBillingLabel.show()
                 binding.customerInfoViewMore.show()
             }
         }
@@ -108,7 +116,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         binding.customerInfoBillingAddr.setIsReadOnly(isReadOnly)
         if (!isReadOnly) {
             binding.customerInfoBillingAddressSection.setOnClickListener {
-                navigateToBillingAddressEditingView(order.id)
+                navigateToBillingAddressEditingView(order.billingAddress)
             }
             binding.customerInfoBillingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoBillingAddressSection
@@ -189,7 +197,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoDivider3.visibility = VISIBLE
             binding.customerInfoCallOrMessageBtn.visibility = VISIBLE
             binding.customerInfoCallOrMessageBtn.setOnClickListener {
-                showCallOrMessagePopup(order)
+                showContactCustomerOptionsPopup(order)
             }
         } else {
             binding.customerInfoPhone.visibility = GONE
@@ -200,6 +208,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun showCustomerNote(order: Order, isReadOnly: Boolean) {
         val isEmpty = order.customerNote.isEmpty()
+        if (isEmpty) {
+            binding.customerInfoCustomerNoteTitle.hide()
+        } else {
+            binding.customerInfoCustomerNoteTitle.show()
+        }
         if (isEmpty && isReadOnly) {
             binding.customerInfoCustomerNoteSection.hide()
             return
@@ -222,18 +235,23 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         binding.customerInfoCustomerNote.setIsReadOnly(isReadOnly)
 
         if (!isReadOnly) {
+            binding.customerInfoCustomerNote.binding.notEmptyLabel.setClickableParent(
+                binding.customerInfoCustomerNoteSection
+            )
+
             binding.customerInfoCustomerNoteSection.setOnClickListener {
-                val action =
-                    OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
-                        order.id
-                    )
-                findNavController().navigateSafely(action)
+                navigateToCustomerNote(order)
             }
         }
     }
 
     private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
         val shippingAddress = order.formatShippingInformationForDisplay()
+        if (shippingAddress.isEmpty()) {
+            binding.customerInfoShippingLabel.hide()
+        } else {
+            binding.customerInfoShippingLabel.show()
+        }
         if (shippingAddress.isEmpty() && isReadOnly) {
             binding.customerInfoShippingSection.hide()
             return
@@ -260,7 +278,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (!isReadOnly) {
             binding.customerInfoShippingAddressSection.setOnClickListener {
-                navigateToShippingAddressEditingView(order.id)
+                navigateToShippingAddressEditingView(order.shippingAddress)
             }
             binding.customerInfoShippingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoShippingAddressSection
@@ -268,19 +286,32 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
     }
 
-    private fun navigateToShippingAddressEditingView(orderId: Long) {
+    private fun navigateToCustomerNote(order: Order) {
+        if (!isAttachedToWindow) return
+
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
+            order.id
+        )
+        findNavController().navigateSafely(action)
+    }
+
+    private fun navigateToShippingAddressEditingView(address: Address) {
+        if (!isAttachedToWindow) return
+
         OrderDetailFragmentDirections
-            .actionOrderDetailFragmentToShippingAddressEditingFragment(orderId)
+            .actionOrderDetailFragmentToShippingAddressEditingFragment(storedAddress = address)
             .let { findNavController().navigateSafely(it) }
     }
 
-    private fun navigateToBillingAddressEditingView(orderId: Long) {
+    private fun navigateToBillingAddressEditingView(address: Address) {
+        if (!isAttachedToWindow) return
+
         OrderDetailFragmentDirections
-            .actionOrderDetailFragmentToBillingAddressEditingFragment(orderId)
+            .actionOrderDetailFragmentToBillingAddressEditingFragment(storedAddress = address)
             .let { findNavController().navigateSafely(it) }
     }
 
-    private fun showCallOrMessagePopup(order: Order) {
+    private fun showContactCustomerOptionsPopup(order: Order) {
         val popup = PopupMenu(context, binding.customerInfoCallOrMessageBtn)
         popup.menuInflater.inflate(R.menu.menu_order_detail_phone_actions, popup.menu)
 
@@ -296,6 +327,34 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             OrderCustomerHelper.sendSms(context, order, order.billingAddress.phone)
             AppRatingDialog.incrementInteractions()
             true
+        }
+
+        if (ActivityUtils.isAppInstalled(context, WHATSAPP_PACKAGE_NAME)) {
+            popup.menu.add(
+                0,
+                View.generateViewId(),
+                0,
+                R.string.orderdetail_message_customer_using_whatsapp
+            ).setOnMenuItemClickListener {
+                AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_WHATSAPP_TAPPED)
+                ActivityUtils.openWhatsApp(context, order.billingAddress.phone)
+                AppRatingDialog.incrementInteractions()
+                true
+            }
+        }
+
+        if (ActivityUtils.isAppInstalled(context, TELEGRAM_PACKAGE_NAME)) {
+            popup.menu.add(
+                0,
+                View.generateViewId(),
+                0,
+                R.string.orderdetail_message_customer_using_telegram
+            ).setOnMenuItemClickListener {
+                AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_TELEGRAM_TAPPED)
+                ActivityUtils.openTelegram(context, order.billingAddress.phone)
+                AppRatingDialog.incrementInteractions()
+                true
+            }
         }
 
         popup.show()

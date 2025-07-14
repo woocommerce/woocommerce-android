@@ -38,7 +38,9 @@ class ProductSortAndFiltersCard @JvmOverloads constructor(
         with(binding.btnProductFilter) {
             text = if (isFilterEnabled) {
                 context.getString(R.string.product_list_filters_selected, filterCount)
-            } else context.getString(R.string.product_list_filters)
+            } else {
+                context.getString(R.string.product_list_filters)
+            }
 
             isSelected = isFilterEnabled
         }

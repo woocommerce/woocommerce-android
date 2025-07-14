@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -34,7 +33,7 @@ class MoveShippingItemViewModelTest : BaseUnitTest() {
 
     fun setup(args: MoveShippingItemDialogArgs = defaultNavArgs) {
         viewModel = MoveShippingItemViewModel(
-            savedState = args.initSavedStateHandle()
+            savedState = args.toSavedStateHandle()
         )
     }
 

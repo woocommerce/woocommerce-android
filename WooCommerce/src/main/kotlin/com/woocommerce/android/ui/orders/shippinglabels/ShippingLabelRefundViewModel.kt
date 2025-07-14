@@ -28,10 +28,16 @@ class ShippingLabelRefundViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private var refundJob: Job? = null
     val isRefundInProgress: Boolean
-        get() = refundJob?.isActive ?: false
+        get() = refundJob?.isActive == true
 
     private val arguments: ShippingLabelRefundFragmentArgs by savedState.navArgs()
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val shippingLabelRefundViewStateData = LiveDataDelegate(savedState, ShippingLabelRefundViewState())
     private var shippingLabelRefundViewState by shippingLabelRefundViewStateData
 
@@ -73,6 +79,6 @@ class ShippingLabelRefundViewModel @Inject constructor(
         @IgnoredOnParcel
         val isRefundExpired: Boolean
             get() = shippingLabel?.isAnonymized == true ||
-                shippingLabel?.refundExpiryDate?.let { Date().after(it) } ?: false
+                shippingLabel?.refundExpiryDate?.let { Date().after(it) } == true
     }
 }

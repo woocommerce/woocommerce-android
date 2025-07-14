@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSearchFilterBinding
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
@@ -94,7 +93,7 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
                         hideSearchList()
                         showEmptyView(viewState.searchQuery)
                     }
-                }.exhaustive
+                }
             }
         )
     }
@@ -107,7 +106,7 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
                     is ItemSelected -> {
                         navigateBackWithResult(event.requestKey, event.selectedItemValue)
                     }
-                }.exhaustive
+                }
             }
         )
     }

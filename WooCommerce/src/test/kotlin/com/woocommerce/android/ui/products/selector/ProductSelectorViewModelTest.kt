@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants.SEARCH_TYPING_DELAY_MS
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_FILTER_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
@@ -11,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SEARCH_T
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SEARCH_TYPE_ALL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SEARCH_TYPE_SKU
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
@@ -20,15 +20,21 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem.ProductListItem
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderListFilter
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.Undefined
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.getOrAwaitValue
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -40,11 +46,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.order.LineItem
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 internal class ProductSelectorViewModelTest : BaseUnitTest() {
@@ -89,23 +98,22 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     private val productSelectorTracker: ProductSelectorTracker = ProductSelectorTracker(tracker)
     private val orderStore: WCOrderStore = mock()
     private val productsMapper: ProductsMapper = mock()
-    private val siteSettings: WCSettingsModel = mock()
     private val productRestriction: OrderCreationProductRestrictions = mock()
 
     @Before
     fun setup() {
-        val site: SiteModel = mock()
+        val site: SiteModel = SiteModel().apply { id = 1 }
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(siteSettings.currencyCode).thenReturn("USD")
-        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+        val settings = WCSettingsTestUtils.generateSettings(site.localId())
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(settings)
     }
 
     @Test
     fun `given variable product, when view model created, should generate correct item subtitle`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
-            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
-        ).initSavedStateHandle()
+            productSelectorFlow = Undefined,
+        ).toSavedStateHandle()
 
         whenever(currencyFormatter.formatCurrency(VARIABLE_PRODUCT.price!!, "USD"))
             .thenReturn("$${VARIABLE_PRODUCT.price}")
@@ -126,8 +134,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     fun `given variable subscription product, when view model created, should generate correct item subtitle`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
-            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
-        ).initSavedStateHandle()
+            productSelectorFlow = Undefined,
+        ).toSavedStateHandle()
 
         whenever(currencyFormatter.formatCurrency(VARIABLE_SUBSCRIPTION_PRODUCT.price!!, "USD"))
             .thenReturn("$${VARIABLE_SUBSCRIPTION_PRODUCT.price}")
@@ -148,8 +156,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     fun `given non-variable product, when view model created, should generate correct item subtitle`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
-            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
-        ).initSavedStateHandle()
+            productSelectorFlow = Undefined,
+        ).toSavedStateHandle()
 
         whenever(currencyFormatter.formatCurrency(VALID_PRODUCT.price!!, "USD")).thenReturn("$${VALID_PRODUCT.price}")
 
@@ -169,8 +177,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     fun `given no restrictions, when view model created, should show all products`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
-            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
-        ).initSavedStateHandle()
+            productSelectorFlow = Undefined,
+        ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
 
@@ -185,11 +193,82 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given order creation flow from order list filter, when item is de-selected, then remove selected item`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderListFilter,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+        sut.viewState.observeForever { state ->
+            assertThat(state.selectedItemsCount).isEqualTo(1)
+        }
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+
+        sut.viewState.observeForever { state ->
+            assertThat(state.selectedItemsCount).isEqualTo(0)
+        }
+    }
+
+    @Test
+    fun `given order creation flow from order list filter, when item is de-selected, then done button should still be enabled`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderListFilter,
+            selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+
+        val state = sut.viewState.getOrAwaitValue()
+        assertTrue(state.isDoneButtonEnabled)
+    }
+
+    @Test
+    fun `given order creation flow from any other flow other than order list filter, when item is de-selected, then done button should be disabled`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        val state = sut.viewState.getOrAwaitValue()
+        assertFalse(state.isDoneButtonEnabled)
+
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+
+        val updatedState = sut.viewState.getOrAwaitValue()
+        assertTrue(updatedState.isDoneButtonEnabled)
+    }
+
+    @Test
     fun `given order creation flow, when item is selected, should track analytic event`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
 
@@ -205,7 +284,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
         val listItem = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE)
@@ -221,7 +300,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
 
             val sut = createViewModel(navArgs)
             sut.onDoneButtonClick()
@@ -242,7 +321,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
 
             val sut = createViewModel(navArgs)
             sut.onProductClick(
@@ -273,7 +352,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
         sut.onClearButtonClick()
@@ -289,9 +368,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
-        val popularOrdersList = generatePopularOrders()
-        val ordersList = generateTestOrders()
+        ).toSavedStateHandle()
+        val popularOrdersList = generateMockPopularOrders()
+        val ordersList = generateMockTestOrders()
         val totalOrders = ordersList + popularOrdersList
         whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
@@ -312,9 +391,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
-        val popularOrdersList = generatePopularOrders()
-        val ordersList = generateTestOrders()
+        ).toSavedStateHandle()
+        val popularOrdersList = generateMockPopularOrders()
+        val ordersList = generateMockTestOrders()
         val totalOrders = ordersList + popularOrdersList
         whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
@@ -336,13 +415,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
-        val popularOrdersList = generatePopularOrders()
-        val ordersList = generateTestOrders()
+        )
+        val popularOrdersList = generateMockPopularOrders()
+        val ordersList = generateMockTestOrders()
         val totalOrders = ordersList + popularOrdersList
         whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
-        val sut = createViewModel(navArgs)
+        val sut = createViewModel(navArgs.toSavedStateHandle())
         sut.onProductClick(
             item = ProductListItem(productId = 1, numVariations = 2, title = "", type = ProductType.VARIABLE),
             productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
@@ -353,7 +432,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 productId = 1,
                 selectedVariationIds = emptySet(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+                selectionMode = navArgs.selectionMode,
+                screenMode = VariationSelectorViewModel.ScreenMode.FULLSCREEN
             )
         )
     }
@@ -363,13 +444,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
-        val popularOrdersList = generatePopularOrders()
-        val ordersList = generateTestOrders()
+        )
+        val popularOrdersList = generateMockPopularOrders()
+        val ordersList = generateMockTestOrders()
         val totalOrders = ordersList + popularOrdersList
         whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
-        val sut = createViewModel(navArgs)
+        val sut = createViewModel(navArgs.toSavedStateHandle())
         sut.onProductClick(
             item = ProductListItem(
                 productId = 23,
@@ -385,7 +466,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 productId = 23,
                 selectedVariationIds = emptySet(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+                selectionMode = navArgs.selectionMode,
+                screenMode = VariationSelectorViewModel.ScreenMode.FULLSCREEN
             )
         )
     }
@@ -395,7 +478,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         val sut = createViewModel(navArgs)
         sut.onSearchQueryChanged("test")
 
@@ -412,9 +495,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
-        val popularOrdersList = generatePopularOrders()
-        val ordersList = generateTestOrders()
+        ).toSavedStateHandle()
+        val popularOrdersList = generateMockPopularOrders()
+        val ordersList = generateMockTestOrders()
         val totalOrders = ordersList + popularOrdersList
         whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
@@ -436,11 +519,11 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
-        val popularOrdersList = generatePopularOrders()
-        val ordersList = generateTestOrders()
+        ).toSavedStateHandle()
+        val popularOrdersList = generateMockPopularOrders()
+        val ordersList = generateMockTestOrders()
         val totalOrders = ordersList + popularOrdersList
-        whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+        doReturn(totalOrders).whenever(orderStore).getPaidOrdersForSiteDesc(any())
 
         val sut = createViewModel(navArgs)
 
@@ -459,7 +542,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         val sut = createViewModel(navArgs)
         sut.onSearchQueryChanged("test")
 
@@ -479,7 +562,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
 
             whenever(listHandler.productsFlow).thenReturn(
                 flow {
@@ -517,7 +600,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
 
             whenever(listHandler.productsFlow).thenReturn(
                 flow {
@@ -558,7 +641,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
 
             whenever(listHandler.productsFlow).thenReturn(
                 flow {
@@ -605,18 +688,19 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val popularOrdersList = generatePopularOrders()
-            val ordersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val popularOrdersList = generateMockPopularOrders()
+            val ordersList = generateMockTestOrders()
             val totalOrders = ordersList + popularOrdersList
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            doReturn(totalOrders).whenever(orderStore).getPaidOrdersForSiteDesc(any())
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
             val argumentCaptor = argumentCaptor<List<Long>>()
 
             createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
-                listOf(2445L, 2448L, 2447L, 2444L, 2446L)
+                listOf(2444L, 2446L, 2449L, 2450L, 2451L)
             )
         }
     }
@@ -627,30 +711,25 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val popularOrdersList = generatePopularOrders()
+            ).toSavedStateHandle()
+            val popularOrdersList = generateMockPopularOrders()
             val popularOrdersThatAreNotPaidYet = mutableListOf<OrderEntity>()
             repeat(10) {
                 popularOrdersThatAreNotPaidYet.add(
-                    OrderTestUtils.generateOrder(
-                        lineItems = generateLineItems(
-                            name = "ACME Bike",
-                            productId = "1111"
-                        ),
-                        datePaid = ""
-                    ),
+                    createTestOrderEntity("1111", datePaid = "")
                 )
             }
-            val ordersList = generateTestOrders()
+            val ordersList = generateMockTestOrders()
             val totalOrders = ordersList + popularOrdersList + popularOrdersThatAreNotPaidYet
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            doReturn(totalOrders).whenever(orderStore).getPaidOrdersForSiteDesc(any())
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
             val argumentCaptor = argumentCaptor<List<Long>>()
 
             createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
-                listOf(2445L, 2448L, 2447L, 2444L, 2446L)
+                listOf(2444L, 2446L, 2449L, 2450L, 2451L)
             )
         }
     }
@@ -661,9 +740,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val popularOrdersList = generatePopularOrders()
-            val ordersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val popularOrdersList = generateMockPopularOrders()
+            val ordersList = generateMockTestOrders()
             val totalOrders = popularOrdersList + ordersList
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
@@ -686,9 +765,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val popularOrdersList = generatePopularOrders()
-            val ordersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val popularOrdersList = generateMockPopularOrders()
+            val ordersList = generateMockTestOrders()
             val totalOrders = popularOrdersList + ordersList
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
@@ -715,9 +794,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val ordersList = generateTestOrders()
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
+            ).toSavedStateHandle()
+            val ordersList = generateMockTestOrders()
+            doReturn(ordersList).whenever(orderStore).getPaidOrdersForSiteDesc(any())
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
 
             val sut = createViewModel(navArgs)
@@ -738,8 +817,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val ordersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val ordersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
 
@@ -765,9 +844,10 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
+            doReturn(recentOrdersList).whenever(orderStore).getPaidOrdersForSiteDesc(any())
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
             val argumentCaptor = argumentCaptor<List<Long>>()
 
             createViewModel(navArgs)
@@ -785,7 +865,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
             repeat(10) {
                 ordersThatAreNotPaidYet.add(
@@ -798,7 +878,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                     ),
                 )
             }
-            val recentOrdersList = generateTestOrders()
+            val recentOrdersList = generateMockTestOrders()
             val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
             val argumentCaptor = argumentCaptor<List<Long>>()
@@ -818,19 +898,15 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             val recentOrdersList = mutableListOf<OrderEntity>()
             repeat(10) {
                 recentOrdersList.add(
-                    OrderTestUtils.generateOrder(
-                        lineItems = generateLineItems(
-                            name = "ACME Bike",
-                            productId = "1111"
-                        ),
-                    ),
+                    createTestOrderEntity("1111")
                 )
             }
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
+            doReturn(recentOrdersList).whenever(orderStore).getPaidOrdersForSiteDesc(any())
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
             val argumentCaptor = argumentCaptor<List<Long>>()
 
             createViewModel(navArgs)
@@ -848,8 +924,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val ordersList = generateTestOrders() + generatePopularOrders()
+            ).toSavedStateHandle()
+            val ordersList = generateMockTestOrders() + generateMockPopularOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
 
@@ -877,8 +953,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val ordersList = generateTestOrders() + generatePopularOrders()
+            ).toSavedStateHandle()
+            val ordersList = generateMockTestOrders() + generateMockPopularOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
 
@@ -914,8 +990,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val ordersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val ordersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
 
@@ -943,8 +1019,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val ordersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val ordersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
 
@@ -982,9 +1058,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
-            val recentOrdersList = generateTestOrders()
+            val recentOrdersList = generateMockTestOrders()
             val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
@@ -1012,8 +1088,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1047,8 +1123,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1087,8 +1163,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1118,8 +1194,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1155,8 +1231,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1179,14 +1255,15 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             )
         }
     }
+
     @Test
     fun `given product variation selected from popular section, then track correct source`() {
         testBlocking {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1218,8 +1295,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1251,8 +1328,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1279,13 +1356,63 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a configurable product is displayed on the UI then send the track event`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).toSavedStateHandle()
+            val sut = createViewModel(navArgs)
+            sut.trackConfigurableProduct()
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SELECTOR
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given a configurable product is tapped then send the track event`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).toSavedStateHandle()
+            val sut = createViewModel(navArgs)
+            val item = ProductSelectorViewModel.ListItem.ConfigurableListItem(
+                productId = 1L,
+                title = "",
+                type = ProductType.SIMPLE,
+                imageUrl = null,
+                stockAndPrice = null,
+                sku = null,
+                selectionState = SelectionState.UNSELECTED
+            )
+
+            sut.onProductClick(item, ProductSourceForTracking.ALPHABETICAL)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SELECTOR
+                )
+            )
+        }
+    }
+
+    @Test
     fun `given product variation selected from search section, then track correct source`() {
         testBlocking {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1317,8 +1444,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val recentOrdersList = generateTestOrders()
+            ).toSavedStateHandle()
+            val recentOrdersList = generateMockTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
@@ -1352,6 +1479,98 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
     //endregion
 
+    @Test
+    fun `given single selection, when product selected, then should set selection state to selected`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        val state = sut.viewState.runAndCaptureValues {
+            sut.onProductClick(
+                item = generateProductListItem(DRAFT_PRODUCT.remoteId),
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+            )
+            sut.onProductClick(
+                item = generateProductListItem(VALID_PRODUCT.remoteId),
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+            )
+        }.last()
+
+        assertThat(state.products.single { it.id == VALID_PRODUCT.remoteId }.selectionState)
+            .isEqualTo(SelectionState.SELECTED)
+        assertThat(state.products.count { it.selectionState == SelectionState.SELECTED }).isEqualTo(1)
+    }
+
+    @Test
+    fun `given single selection, when variable product is clicked, then should pass correct selection mode`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        val event = sut.event.runAndCaptureValues {
+            sut.onProductClick(
+                item = ProductListItem(
+                    productId = DRAFT_PRODUCT.remoteId,
+                    title = "",
+                    type = ProductType.VARIABLE,
+                    numVariations = 2
+                ),
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+            )
+        }.last()
+
+        assertThat(event).isInstanceOf(ProductNavigationTarget.NavigateToVariationSelector::class.java)
+        assertThat((event as ProductNavigationTarget.NavigateToVariationSelector).selectionMode)
+            .isEqualTo(ProductSelectorViewModel.SelectionMode.SINGLE)
+    }
+
+    @Test
+    fun `when using simple handling, then treat all products as single items`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        val state = sut.viewState.captureValues().last()
+
+        assertThat(state.products).allMatch {
+            it is ProductListItem && it.numVariations == 0
+        }
+    }
+
+    @Test
+    fun `shouldDisplayFilterButton is true when productFlow is Undefined`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            productSelectorFlow = Undefined,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        val viewState = sut.viewState.captureValues().last()
+        assertThat(viewState.shouldDisplayFilterButton).isTrue
+    }
+
+    @Test
+    fun `shouldDisplayFilterButton is false when productFlow is OrderListFilter`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            productSelectorFlow = OrderListFilter,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        val viewState = sut.viewState.captureValues().last()
+        assertThat(viewState.shouldDisplayFilterButton).isFalse
+    }
+
     private fun generateProductListItem(
         id: Long,
     ) = ProductListItem(
@@ -1381,6 +1600,38 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             productRestriction,
         )
 
+    private fun createTestOrderEntity(productId: String, datePaid: String = "2018-02-02T16:11:13Z"): OrderEntity {
+        val mockLineItem = mock<LineItem> {
+            on { this.productId }.thenReturn(productId.toLongOrNull())
+        }
+
+        val mockOrder = mock<OrderEntity> {
+            on { this.datePaid }.thenReturn(datePaid)
+        }
+
+        runBlocking {
+            whenever(mockOrder.getLineItemList()).thenReturn(listOf(mockLineItem))
+        }
+
+        return mockOrder
+    }
+
+    private fun generateMockTestOrders() = listOf(
+        createTestOrderEntity("2444"),
+        createTestOrderEntity("2446"),
+        createTestOrderEntity("2449"),
+        createTestOrderEntity("2450"),
+        createTestOrderEntity("2451"),
+    )
+
+    private fun generateMockPopularOrders() = listOf(
+        createTestOrderEntity("2445"),
+        createTestOrderEntity("2448"),
+        createTestOrderEntity("2447"),
+        createTestOrderEntity("2444"),
+        createTestOrderEntity("2446"),
+    )
+
     private fun generateLineItems(
         name: String,
         productId: String,
@@ -1388,73 +1639,5 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         return "[{\"id\":1121,\"meta_data\":[],\"name\":\"$name\",\"price\":\"88.6\"," +
             "\"product_id\":$productId,\"quantity\":1.0,\"sku\":\"ACBI\"," +
             "\"subtotal\":\"88.60\",\"total\":\"88.60\",\"total_tax\":\"0.00\",\"variation_id\":0}]"
-    }
-
-    private fun generateTestOrders() = listOf(
-        OrderTestUtils.generateOrder(
-            lineItems = generateLineItems(
-                name = "ACME Bike",
-                productId = "2444"
-            )
-        ),
-        OrderTestUtils.generateOrder(
-            lineItems = generateLineItems(
-                name = "Variation Product",
-                productId = "2446"
-            )
-        ),
-        OrderTestUtils.generateOrder(
-            lineItems = generateLineItems(
-                name = "Lorry",
-                productId = "2449"
-            )
-        ),
-        OrderTestUtils.generateOrder(
-            lineItems = generateLineItems(
-                name = "Bus",
-                productId = "2450"
-            )
-        ),
-        OrderTestUtils.generateOrder(
-            lineItems = generateLineItems(
-                name = "TVS",
-                productId = "2451"
-            )
-        ),
-    )
-
-    private fun generatePopularOrders(): MutableList<OrderEntity> {
-        val ordersList = mutableListOf<OrderEntity>()
-        repeat(4) {
-            ordersList.add(
-                OrderTestUtils.generateOrder(
-                    lineItems = generateLineItems(
-                        name = "Bicycle",
-                        productId = "2445"
-                    )
-                )
-            )
-        }
-        repeat(3) {
-            ordersList.add(
-                OrderTestUtils.generateOrder(
-                    lineItems = generateLineItems(
-                        name = "Toys",
-                        productId = "2448"
-                    )
-                )
-            )
-        }
-        repeat(2) {
-            ordersList.add(
-                OrderTestUtils.generateOrder(
-                    lineItems = generateLineItems(
-                        name = "Car",
-                        productId = "2447"
-                    )
-                )
-            )
-        }
-        return ordersList
     }
 }

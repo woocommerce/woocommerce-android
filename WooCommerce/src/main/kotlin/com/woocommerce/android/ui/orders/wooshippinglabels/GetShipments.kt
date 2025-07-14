@@ -1,0 +1,118 @@
+package com.woocommerce.android.ui.orders.wooshippinglabels
+
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import kotlinx.coroutines.flow.first
+import javax.inject.Inject
+
+class GetShipments @Inject constructor(
+    private val orderDetailRepository: OrderDetailRepository,
+    private val productDetailRepository: ProductDetailRepository,
+    private val configDataStore: WooShippingConfigDataStore,
+    private val mapper: WooShippingNetworkingMapper,
+) {
+    suspend operator fun invoke(order: Order): List<ShipmentUIModel> {
+        val refunds = orderDetailRepository.getOrderRefunds(order.id)
+        val noRefundedProducts = refunds.getNonRefundedProducts(order.items)
+
+        val orderItems = noRefundedProducts.mapNotNull { item ->
+            val product = productDetailRepository.getProductAsync(item.productId)
+            if (product != null && !product.isSampleProduct && !product.isVirtual) {
+                ShippableItemModel(
+                    itemId = item.itemId,
+                    productId = product.remoteId,
+                    height = product.height,
+                    width = product.width,
+                    length = product.length,
+                    weight = product.weight,
+                    title = product.name,
+                    imageUrl = product.firstImageUrl,
+                    quantity = item.quantity,
+                    price = item.price,
+                    currency = order.currency
+                )
+            } else {
+                null
+            }
+        }
+
+        val config = configDataStore.observeConfig(order.id).first()
+
+        val shipments = config?.shipments
+
+        var shipmentUIModelList = if (shipments.isNullOrEmpty()) {
+            listOf(ShipmentUIModel(localId = "0", items = orderItems))
+        } else {
+            shipments.map { (shipmentId, shipmentItems) ->
+                val items = shipmentItems.mapNotNull { (id, subItems) ->
+                    // orderItems contains the total quantity for each product in the order.
+                    // We update the quantity per shipment based on the number of subItems in each shipment.
+                    orderItems.firstOrNull { it.itemId == id }
+                        ?.copy(quantity = if (subItems.isNullOrEmpty()) 1f else subItems.size.toFloat())
+                }
+                ShipmentUIModel(localId = shipmentId, remoteId = shipmentId, items = items)
+            }
+        }.sortedBy { it.localId.toLong() }
+
+        config?.shippingLabelData?.let { data ->
+            // If there are purchased labels, merge their data into the result list
+            data.currentOrderLabels?.let { labels ->
+                shipmentUIModelList = mergePurchaseData(shipmentUIModelList, labels)
+            }
+
+            // If there are stored addresses, merge them into the result list
+            data.storedData?.let { storedData ->
+                shipmentUIModelList = mergeAddresses(
+                    shipmentUIModelList,
+                    storedData.selectedOrigin,
+                    storedData.selectedDestination
+                )
+            }
+        }
+
+        return shipmentUIModelList
+    }
+
+    private fun mergePurchaseData(
+        shipmentUIModelList: List<ShipmentUIModel>,
+        currentOrderLabels: List<ShippingLabelDTO>
+    ) = shipmentUIModelList.map { shipmentUIModel ->
+        val purchasedNonRefundedLabel = currentOrderLabels.find {
+            it.shipmentId == shipmentUIModel.remoteId && it.status == ShippingLabelStatus.PURCHASED && it.refund == null
+        }
+        if (purchasedNonRefundedLabel == null) {
+            shipmentUIModel
+        } else {
+            shipmentUIModel.copy(purchased = true, label = mapper.invoke(purchasedNonRefundedLabel))
+        }
+    }
+
+    private fun mergeAddresses(
+        shipmentUIModelList: List<ShipmentUIModel>,
+        originAddresses: Map<String, OriginAddressDTO>?,
+        destinationAddresses: Map<String, DestinationAddressDTO>?
+    ): List<ShipmentUIModel> = shipmentUIModelList.map { shipmentUIModel ->
+        val remoteId = shipmentUIModel.remoteId ?: return@map shipmentUIModel
+        val key = getStoredDataKey(remoteId)
+
+        val updatedLabel = shipmentUIModel.label?.copy(
+            originAddress = originAddresses?.get(key)?.let { mapper(it) }
+                ?: shipmentUIModel.label.originAddress,
+            destinationAddress = destinationAddresses?.get(key)?.let { mapper(it) }
+                ?: shipmentUIModel.label.destinationAddress
+        )
+        shipmentUIModel.copy(label = updatedLabel)
+    }
+
+    private fun getStoredDataKey(shipmentId: String) = "shipment_$shipmentId"
+}

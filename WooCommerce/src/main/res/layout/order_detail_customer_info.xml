@@ -17,10 +17,15 @@
         <!-- Card Title -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/customerInfo_label"
-            style="@style/Woo.Card.Header"
-            android:layout_width="wrap_content"
+            style="@style/Woo.Card.Title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/customer_information" />
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginEnd="@dimen/minor_00"
+            android:layout_marginTop="@dimen/minor_00"
+            android:padding="@dimen/major_100"
+            android:text="@string/orderdetail_customer_header"
+            android:background="@color/default_window_background"/>
 
         <!-- Label: Customer note -->
         <LinearLayout
@@ -32,11 +37,6 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/minor_100"
             tools:visibility="visible">
-
-            <View
-                android:id="@+id/customerInfo_noteDivider"
-                style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/major_100" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_customerNoteTitle"

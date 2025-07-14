@@ -265,7 +265,9 @@ private fun AnimatedVisibilityScope.MainContent(viewState: InstallationState) {
             modifier = Modifier.animateEnterExit(
                 enter = if (viewState is InstallationOngoing) {
                     fadeIn(tween(400, delayMillis = 600, easing = LinearEasing))
-                } else EnterTransition.None,
+                } else {
+                    EnterTransition.None
+                },
                 exit = ExitTransition.None
             )
         )
@@ -282,7 +284,9 @@ private fun AnimatedVisibilityScope.MainContent(viewState: InstallationState) {
                         1f at 1000
                     }
                 )
-            } else EnterTransition.None,
+            } else {
+                EnterTransition.None
+            },
             exit = ExitTransition.None
         )
 
@@ -338,14 +342,15 @@ private fun InstallationLoadingIndicator(showLoadingIndicator: Boolean, modifier
     val progressColor = colorResource(id = R.color.woo_purple_50)
 
     val startAngle by if (showLoadingIndicator) {
-        val transition = rememberInfiniteTransition()
+        val transition = rememberInfiniteTransition(label = "")
 
         transition.animateFloat(
-            -90f,
-            270f,
-            infiniteRepeatable(
+            initialValue = -90f,
+            targetValue = 270f,
+            animationSpec = infiniteRepeatable(
                 animation = tween(1332, easing = LinearEasing)
-            )
+            ),
+            label = ""
         )
     } else {
         remember { mutableStateOf(-90f) }
@@ -375,9 +380,10 @@ private fun InstallationLoadingIndicator(showLoadingIndicator: Boolean, modifier
 
 @Preview
 @Composable
+@Suppress("UnusedContentLambdaTargetStateParameter")
 private fun PreInstallationPreview() {
     WooThemeWithBackground {
-        AnimatedContent(targetState = Unit) {
+        AnimatedContent(targetState = Unit, label = "") {
             InstallWCShippingFlow(
                 viewState = PreInstallation(
                     extensionsName = R.string.install_wc_shipping_extension_name,
@@ -394,9 +400,10 @@ private fun PreInstallationPreview() {
 
 @Preview
 @Composable
+@Suppress("UnusedContentLambdaTargetStateParameter")
 private fun InstallationOngoingPreview() {
     WooThemeWithBackground {
-        AnimatedContent(targetState = Unit) {
+        AnimatedContent(targetState = Unit, label = "") {
             InstallationContent(
                 viewState = InstallationOngoing(
                     extensionsName = R.string.install_wc_shipping_extension_name,

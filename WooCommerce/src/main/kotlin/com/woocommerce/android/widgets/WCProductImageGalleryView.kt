@@ -21,13 +21,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ImageGalleryItemBinding
-import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
@@ -66,7 +66,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private val adapter: ImageGalleryAdapter
     private val layoutInflater: LayoutInflater
 
-    private val glideRequest: GlideRequest<Drawable>
+    private val glideRequest: RequestBuilder<Drawable>
     private val glideTransform: RequestOptions
 
     private lateinit var listener: OnGalleryImageInteractionListener
@@ -115,7 +115,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         // cancel pending Glide request when a view is recycled
-        val glideRequests = GlideApp.with(this)
+        val glideRequests = Glide.with(this)
         @Suppress("DEPRECATION")
         setRecyclerListener { holder ->
             glideRequests.clear((holder as ImageViewHolder).viewBinding.productImage)
@@ -202,7 +202,16 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 // use a negative id so we can check it in isPlaceholder() below
                 val id = (-index - 1).toLong()
                 // set the image src to this uri so we can preview it while uploading
-                placeholders.add(0, Product.Image(id, "", imageUriList[index].toString(), Date()))
+                placeholders.add(
+                    0,
+                    Product.Image(
+                        id = id,
+                        name = "",
+                        source = imageUriList[index].toString(),
+                        dateCreated = Date(),
+                        isCoverImage = false
+                    )
+                )
             }
 
             adapter.setPlaceholderImages(placeholders)
@@ -243,13 +252,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             imageList.addAll(images)
 
             // restore the "Add image" icon (never shown when list is empty)
-            if (showAddImageIcon && imageList.size > 0) {
+            if (showAddImageIcon && imageList.isNotEmpty()) {
                 imageList.add(
                     Product.Image(
                         id = ADD_IMAGE_ITEM_ID,
                         name = "",
                         source = "",
-                        dateCreated = Date()
+                        dateCreated = Date(),
+                        isCoverImage = false
                     )
                 )
             }
@@ -290,7 +300,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
 
             for (index in images.indices) {
-                if (images[index].id != actualImages[index].id) {
+                if (images[index] != actualImages[index]) {
                     return false
                 }
             }
@@ -412,7 +422,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 glideRequest.load(Uri.parse(image.source)).apply(glideTransform).into(viewBinding.productImage)
             } else if (viewType == VIEW_TYPE_IMAGE) {
-                val photonUrl = PhotonUtils.getPhotonImageUrl(image.source, 0, imageSize)
+                val photonUrl = PhotonUtils.getPhotonImageUrl(
+                    image.source,
+                    0,
+                    imageSize,
+                    PhotonUtils.Quality.LOW
+                )
                 glideRequest.load(photonUrl).apply(glideTransform).into(viewBinding.productImage)
             }
 
@@ -423,11 +438,13 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                     viewBinding.uploadProgess.visibility = View.VISIBLE
                     viewBinding.addImageContainer.visibility = View.GONE
                 }
+
                 VIEW_TYPE_ADD_IMAGE -> {
                     viewBinding.productImage.visibility = View.GONE
                     viewBinding.uploadProgess.visibility = View.GONE
                     viewBinding.addImageContainer.visibility = View.VISIBLE
                 }
+
                 else -> {
                     viewBinding.productImage.visibility = View.VISIBLE
                     viewBinding.productImage.alpha = 1.0F
@@ -438,6 +455,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             viewBinding.deleteImageButton.setOnClickListener {
                 listener.onGalleryImageDeleteIconClicked(image)
+            }
+            viewBinding.coverTag.visibility = when {
+                image.isCoverImage -> View.VISIBLE
+                else -> View.GONE
             }
         }
 

@@ -1,5 +1,13 @@
 #!/bin/bash -eu
 
+# Check if we can skip this job based on PR changes
+if .buildkite/commands/should-skip-job.sh --job-type validation; then
+  mkdir -p WooCommerce/build/buildkite-test-analytics && touch WooCommerce/build/buildkite-test-analytics/empty.xml
+  exit 0
+fi
+
+"$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
+
 echo "--- :rubygems: Setting up Gems"
 install_gems
 
@@ -28,6 +36,6 @@ else
 fi
 
 echo "--- 🧪 Copying test logs for test collector"
-mkdir WooCommerce/build/buildkite-test-analytics && cp build/instrumented-tests/*/*/*.xml WooCommerce/build/buildkite-test-analytics
+mkdir WooCommerce/build/buildkite-test-analytics && cp -r build/instrumented-tests/matrix_* WooCommerce/build/buildkite-test-analytics
 
 exit $TESTS_EXIT_STATUS

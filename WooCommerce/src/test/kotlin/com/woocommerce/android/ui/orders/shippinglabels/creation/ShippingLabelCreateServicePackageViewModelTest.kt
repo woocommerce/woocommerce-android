@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -34,7 +33,13 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
 
     private val availablePackages = listOf(
         ShippingPackage(
-            "id1", "title1", false, "DHL Express", PackageDimensions(1.0f, 1.0f, 1.0f), 1f, "dhl"
+            "id1",
+            "title1",
+            false,
+            "DHL Express",
+            PackageDimensions(1.0f, 1.0f, 1.0f),
+            1f,
+            "dhl"
         ),
         ShippingPackage(
             "id2",
@@ -48,7 +53,7 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
     )
 
     fun setup() {
-        val savedState = ShippingLabelCreatePackageFragmentArgs(0).initSavedStateHandle()
+        val savedState = ShippingLabelCreatePackageFragmentArgs(0).toSavedStateHandle()
         viewModel = ShippingLabelCreateServicePackageViewModel(
             savedState,
             resourceProvider,

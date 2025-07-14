@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import java.math.BigDecimal
 
 sealed class OrderNavigationTarget : Event() {
     data class ViewOrderStatusSelector(
@@ -32,7 +34,12 @@ sealed class OrderNavigationTarget : Event() {
     data class ViewRefundedProducts(val orderId: Long) : OrderNavigationTarget()
     data class ViewOrderFulfillInfo(val orderId: Long) : OrderNavigationTarget()
     data class AddOrderNote(val orderId: Long, val orderNumber: String) : OrderNavigationTarget()
-    data class RefundShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
+    data class RefundShippingLabel(
+        val remoteOrderId: Long,
+        val shippingLabelId: Long,
+        val isRevampWooShippingEnabled: Boolean
+    ) : OrderNavigationTarget()
+
     data class AddOrderShipmentTracking(
         val orderId: Long,
         val orderTrackingProvider: String,
@@ -43,6 +50,7 @@ sealed class OrderNavigationTarget : Event() {
         val orderId: Long,
         val selectedProvider: String
     ) : OrderNavigationTarget()
+    object OpenTrackingBarcodeScanning : OrderNavigationTarget()
     data class PrintShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
     data class ViewShippingLabelPaperSizes(val currentPaperSize: ShippingLabelPaperSize) : OrderNavigationTarget()
     object ViewCreateShippingLabelInfo : OrderNavigationTarget()
@@ -50,12 +58,28 @@ sealed class OrderNavigationTarget : Event() {
     object ViewShippingLabelFormatOptions : OrderNavigationTarget()
     data class ViewPrintCustomsForm(val invoices: List<String>, val isReprint: Boolean) : OrderNavigationTarget()
     data class StartShippingLabelCreationFlow(val orderId: Long) : OrderNavigationTarget()
-    data class StartPaymentFlow(val orderId: Long) : OrderNavigationTarget()
+    data class StartWooShippingLabelCreationFlow(
+        val orderId: Long,
+        val shipmentId: Int? = null
+    ) : OrderNavigationTarget()
+
+    data class StartPaymentFlow(
+        val orderId: Long,
+        val paymentTypeFlow: CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType,
+    ) : OrderNavigationTarget()
     object ViewPrintingInstructions : OrderNavigationTarget()
     data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: Long) :
         OrderNavigationTarget()
     data class ViewOrderedAddons(val remoteOrderID: Long, val orderItemID: Long, val addonsProductID: Long) :
         OrderNavigationTarget()
-    data class EditOrder(val orderId: Long) : OrderNavigationTarget()
+    data class EditOrder(
+        val orderId: Long,
+        val giftCard: String? = null,
+        val appliedDiscount: BigDecimal? = null,
+        val orderCurrency: String? = null,
+    ) : OrderNavigationTarget()
+    data class ShowOrder(val orderId: Long, val allOrderIds: LongArray) : OrderNavigationTarget()
     data class ViewCustomFields(val orderId: Long) : OrderNavigationTarget()
+    data class AIThankYouNote(val customerName: String, val productName: String, val productDescription: String?) :
+        OrderNavigationTarget()
 }

@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -56,6 +57,7 @@ data class Product(
     val isStockManaged: Boolean,
     val stockQuantity: Double,
     val sku: String,
+    val globalUniqueId: String,
     val shippingClass: String,
     val shippingClassId: Long,
     val isDownloadable: Boolean,
@@ -83,9 +85,16 @@ data class Product(
     override val width: Float,
     override val height: Float,
     override val weight: Float,
-    val subscription: SubscriptionDetails?,
     val isSampleProduct: Boolean,
-    val specialStockStatus: ProductStockStatus? = null
+    val specialStockStatus: ProductStockStatus? = null,
+    val isConfigurable: Boolean = false,
+    val minAllowedQuantity: Int?,
+    val maxAllowedQuantity: Int?,
+    val bundleMinSize: Float?,
+    val bundleMaxSize: Float?,
+    val groupOfQuantity: Int?,
+    val combineVariationQuantities: Boolean?,
+    val password: String?
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -94,9 +103,10 @@ data class Product(
     @Parcelize
     data class Image(
         val id: Long,
-        val name: String,
+        val name: String?,
         val source: String,
-        val dateCreated: Date
+        val dateCreated: Date?,
+        val isCoverImage: Boolean
     ) : Parcelable
 
     fun isSameProduct(product: Product): Boolean {
@@ -109,6 +119,7 @@ data class Product(
             isSoldIndividually == product.isSoldIndividually &&
             reviewsAllowed == product.reviewsAllowed &&
             sku == product.sku &&
+            globalUniqueId == product.globalUniqueId &&
             slug == product.slug &&
             type == product.type &&
             name.fastStripHtml() == product.name.fastStripHtml() &&
@@ -145,8 +156,12 @@ data class Product(
             downloadExpiry == product.downloadExpiry &&
             isDownloadable == product.isDownloadable &&
             attributes == product.attributes &&
-            subscription == product.subscription &&
-            specialStockStatus == product.specialStockStatus
+            specialStockStatus == product.specialStockStatus &&
+            minAllowedQuantity == product.minAllowedQuantity &&
+            maxAllowedQuantity == product.maxAllowedQuantity &&
+            groupOfQuantity == product.groupOfQuantity &&
+            combineVariationQuantities == product.combineVariationQuantities &&
+            password == product.password
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -169,16 +184,6 @@ data class Product(
         return updatedProduct?.let {
             externalUrl != it.externalUrl ||
                 buttonText != it.buttonText
-        } ?: false
-    }
-
-    /**
-     * Verifies if there are any changes to upsells or cross-sells
-     */
-    fun hasLinkedProductChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            upsellProductIds != it.upsellProductIds ||
-                crossSellProductIds != it.crossSellProductIds
         } ?: false
     }
 
@@ -221,12 +226,6 @@ data class Product(
         } ?: false
     }
 
-    fun hasDownloadChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            downloads != it.downloads
-        } ?: false
-    }
-
     fun hasAttributeChanges(updatedProduct: Product?): Boolean {
         updatedProduct?.attributes?.let { updatedAttributes ->
             if (updatedAttributes.size != this.attributes.size) {
@@ -242,6 +241,10 @@ data class Product(
     }
 
     fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
+
+    fun hasQuantityRules() = (minAllowedQuantity ?: -1) > 0 ||
+        (maxAllowedQuantity ?: -1) > 0 ||
+        (groupOfQuantity ?: -1) > 0
 
     /**
      * Compares this product's categories with the passed list, returns true only if both lists contain
@@ -293,6 +296,7 @@ data class Product(
                 shortDescription = updatedProduct.shortDescription,
                 name = updatedProduct.name,
                 sku = updatedProduct.sku,
+                globalUniqueId = updatedProduct.globalUniqueId,
                 slug = updatedProduct.slug,
                 status = updatedProduct.status,
                 catalogVisibility = updatedProduct.catalogVisibility,
@@ -332,8 +336,11 @@ data class Product(
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
-                subscription = updatedProduct.subscription,
-                specialStockStatus = specialStockStatus
+                specialStockStatus = specialStockStatus,
+                minAllowedQuantity = updatedProduct.minAllowedQuantity,
+                maxAllowedQuantity = updatedProduct.maxAllowedQuantity,
+                groupOfQuantity = updatedProduct.groupOfQuantity,
+                combineVariationQuantities = updatedProduct.combineVariationQuantities
             )
         } ?: this.copy()
     }
@@ -407,80 +414,81 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         return jsonArray.toString()
     }
 
-    return (storedProductModel ?: WCProductModel()).also {
-        it.remoteProductId = remoteId
-        it.description = description
-        it.shortDescription = shortDescription
-        it.name = name
-        it.sku = sku
-        it.slug = slug
-        it.status = status.toString()
-        it.catalogVisibility = catalogVisibility.toString()
-        it.featured = isFeatured
-        it.manageStock = isStockManaged
-        it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
-        it.stockQuantity = stockQuantity
-        it.soldIndividually = isSoldIndividually
-        it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
-        it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
-        it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
-        it.length = if (length == 0f) "" else length.formatToString()
-        it.width = if (width == 0f) "" else width.formatToString()
-        it.weight = if (weight == 0f) "" else weight.formatToString()
-        it.height = if (height == 0f) "" else height.formatToString()
-        it.shippingClass = shippingClass
-        it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
-        it.taxClass = taxClass
-        it.images = imagesToJson()
-        it.reviewsAllowed = reviewsAllowed
-        it.virtual = isVirtual
-        if (isSaleScheduled) {
-            saleStartDateGmt?.let { dateOnSaleFrom ->
-                it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
-            }
-            it.dateOnSaleToGmt = saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+    return (storedProductModel ?: WCProductModel()).copy(
+        remoteId = LocalOrRemoteId.RemoteId(remoteId),
+        description = description,
+        shortDescription = shortDescription,
+        name = name,
+        sku = sku,
+        globalUniqueId = globalUniqueId,
+        slug = slug,
+        status = status.toString(),
+        catalogVisibility = catalogVisibility.toString(),
+        featured = isFeatured,
+        manageStock = isStockManaged,
+        stockStatus = ProductStockStatus.fromStockStatus(stockStatus),
+        stockQuantity = stockQuantity,
+        soldIndividually = isSoldIndividually,
+        backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus),
+        regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString(),
+        salePrice = if (salePrice.isNotSet()) "" else salePrice.toString(),
+        length = if (length == 0f) "" else length.formatToString(),
+        width = if (width == 0f) "" else width.formatToString(),
+        weight = if (weight == 0f) "" else weight.formatToString(),
+        height = if (height == 0f) "" else height.formatToString(),
+        shippingClass = shippingClass,
+        taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus),
+        taxClass = taxClass,
+        images = imagesToJson(),
+        reviewsAllowed = reviewsAllowed,
+        virtual = isVirtual,
+        dateOnSaleFromGmt = if (isSaleScheduled) {
+            saleStartDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
         } else {
-            it.dateOnSaleFromGmt = ""
-            it.dateOnSaleToGmt = ""
-        }
-        it.purchaseNote = purchaseNote
-        it.externalUrl = externalUrl
-        it.buttonText = buttonText
-        it.menuOrder = menuOrder
-        it.categories = categoriesToJson()
-        it.tags = tagsToJson()
-        it.type = type
-        it.groupedProductIds = groupedProductIds.joinToString(
+            ""
+        },
+        dateOnSaleToGmt = if (isSaleScheduled) {
+            saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+        } else {
+            ""
+        },
+        purchaseNote = purchaseNote,
+        externalUrl = externalUrl,
+        buttonText = buttonText,
+        menuOrder = menuOrder,
+        categories = categoriesToJson(),
+        tags = tagsToJson(),
+        type = type,
+        groupedProductIds = groupedProductIds.joinToString(
             separator = ",",
             prefix = "[",
             postfix = "]"
-        )
-        it.crossSellIds = crossSellProductIds.joinToString(
+        ),
+        crossSellIds = crossSellProductIds.joinToString(
             separator = ",",
             prefix = "[",
             postfix = "]"
-        )
-        it.upsellIds = upsellProductIds.joinToString(
+        ),
+        upsellIds = upsellProductIds.joinToString(
             separator = ",",
             prefix = "[",
             postfix = "]"
-        )
-        it.downloads = downloadsToJson()
-        it.downloadLimit = downloadLimit
-        it.downloadExpiry = downloadExpiry
-        it.downloadable = isDownloadable
-        it.attributes = attributesToJson()
-        it.purchasable = isPurchasable
-    }
+        ),
+        downloads = downloadsToJson(),
+        downloadLimit = downloadLimit,
+        downloadExpiry = downloadExpiry,
+        downloadable = isDownloadable,
+        attributes = attributesToJson(),
+        purchasable = isPurchasable,
+        minAllowedQuantity = minAllowedQuantity ?: -1,
+        maxAllowedQuantity = maxAllowedQuantity ?: -1,
+        groupOfQuantity = groupOfQuantity ?: -1,
+        combineVariationQuantities = combineVariationQuantities ?: false,
+        password = password
+    )
 }
 
 fun WCProductModel.toAppModel(): Product {
-    val productType = ProductType.fromString(type)
-    val subscription = if (productType == ProductType.SUBSCRIPTION) {
-        SubscriptionDetailsMapper.toAppModel(this.metadata)
-    } else {
-        null
-    }
     return Product(
         remoteId = this.remoteProductId,
         parentId = this.parentId,
@@ -512,6 +520,7 @@ fun WCProductModel.toAppModel(): Product {
         isStockManaged = this.manageStock,
         stockQuantity = this.stockQuantity,
         sku = this.sku,
+        globalUniqueId = this.globalUniqueId,
         slug = this.slug,
         length = this.length.toFloatOrNull() ?: 0f,
         width = this.width.toFloatOrNull() ?: 0f,
@@ -533,10 +542,11 @@ fun WCProductModel.toAppModel(): Product {
         numVariations = this.getNumVariations(),
         images = this.getImageListOrEmpty().map {
             Product.Image(
-                it.id,
-                it.name,
-                it.src,
-                DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
+                id = it.id,
+                name = it.name,
+                source = it.src,
+                dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
+                isCoverImage = it.src == this.getFirstImageUrl()
             )
         },
         attributes = this.getAttributeList().map { it.toAppModel() },
@@ -565,22 +575,34 @@ fun WCProductModel.toAppModel(): Product {
         upsellProductIds = this.getUpsellProductIdList(),
         variationIds = this.getVariationIdList(),
         isPurchasable = this.purchasable,
-        subscription = subscription,
         isSampleProduct = isSampleProduct,
         specialStockStatus = if (this.specialStockStatus.isNotNullOrEmpty()) {
             ProductStockStatus.fromString(this.specialStockStatus)
         } else {
             null
-        }
+        },
+        isConfigurable = isConfigurable,
+        minAllowedQuantity = this.getMinAllowedQuantity(),
+        maxAllowedQuantity = this.maxAllowedQuantity(),
+        bundleMinSize = this.bundleMinSize,
+        bundleMaxSize = this.bundleMaxSize,
+        groupOfQuantity = this.groupOfQuantity(),
+        combineVariationQuantities = this.combineVariationQuantities,
+        password = this.password
     )
 }
+
+private fun WCProductModel.getMinAllowedQuantity() = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null
+private fun WCProductModel.maxAllowedQuantity() = if (this.maxAllowedQuantity >= 0) this.maxAllowedQuantity else null
+private fun WCProductModel.groupOfQuantity() = if (this.groupOfQuantity >= 0) this.groupOfQuantity else null
 
 fun MediaModel.toAppModel(): Product.Image {
     return Product.Image(
         id = this.mediaId,
         name = this.fileName.orEmpty(),
         source = this.url,
-        dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
+        dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate),
+        isCoverImage = false
     )
 }
 

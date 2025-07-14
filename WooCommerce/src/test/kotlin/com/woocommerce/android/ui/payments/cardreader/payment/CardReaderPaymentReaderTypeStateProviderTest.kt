@@ -154,7 +154,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         val result = provider.providePaymentSuccessfulReceiptSentAutomaticallyState(
             cardReaderType,
             "amountLabel",
-            UiStringRes(androidx.navigation.dynamicfeatures.fragment.R.string.ok),
+            UiStringRes(android.R.string.ok),
             {},
             {},
         )
@@ -164,7 +164,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
         assertThat(result.receiptSentAutomaticallyHint).isEqualTo(
             UiStringRes(
-                androidx.navigation.dynamicfeatures.fragment.R.string.ok
+                android.R.string.ok
             )
         )
     }
@@ -180,14 +180,14 @@ class CardReaderPaymentReaderTypeStateProviderTest {
             cardReaderType,
             errorType = error,
             amountLabel = "amountLabel",
-            primaryLabel = androidx.navigation.dynamicfeatures.fragment.R.string.ok,
+            primaryLabel = android.R.string.ok,
             {},
         )
 
         // THEN
         assertThat(result).isInstanceOf(BuiltInReaderFailedPaymentState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
-        assertThat(result.primaryActionLabel).isEqualTo(androidx.navigation.dynamicfeatures.fragment.R.string.ok)
+        assertThat(result.primaryActionLabel).isEqualTo(android.R.string.ok)
         assertThat(result.paymentStateLabel).isEqualTo(error.message)
     }
 
@@ -202,14 +202,14 @@ class CardReaderPaymentReaderTypeStateProviderTest {
             cardReaderType,
             errorType = error,
             amountLabel = "amountLabel",
-            primaryLabel = androidx.navigation.dynamicfeatures.fragment.R.string.ok,
+            primaryLabel = android.R.string.ok,
             {},
         )
 
         // THEN
         assertThat(result).isInstanceOf(ExternalReaderFailedPaymentState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
-        assertThat(result.primaryActionLabel).isEqualTo(androidx.navigation.dynamicfeatures.fragment.R.string.ok)
+        assertThat(result.primaryActionLabel).isEqualTo(android.R.string.ok)
         assertThat(result.paymentStateLabel).isEqualTo(error.message)
     }
 

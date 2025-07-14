@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.model.ShippingLabelPackage.Item
@@ -26,18 +25,9 @@ import kotlin.math.ceil
 @ExperimentalCoroutinesApi
 class ShippingCustomsViewModelTest : BaseUnitTest() {
     private val countries = listOf(
-        WCLocationModel().apply {
-            name = "USA"
-            code = "US"
-        },
-        WCLocationModel().apply {
-            name = "Canada"
-            code = "CA"
-        },
-        WCLocationModel().apply {
-            name = "Syria"
-            code = "SY"
-        }
+        WCLocationModel(name = "USA", code = "US"),
+        WCLocationModel(name = "Canada", code = "CA"),
+        WCLocationModel(name = "Syria", code = "SY"),
     )
 
     private lateinit var viewModel: ShippingCustomsViewModel
@@ -64,7 +54,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
 
     fun setup(navArgs: ShippingCustomsFragmentArgs = defaultNavArgs) {
         viewModel = ShippingCustomsViewModel(
-            savedStateHandle = navArgs.initSavedStateHandle(),
+            savedStateHandle = navArgs.toSavedStateHandle(),
             selectedSide = selectedSite,
             parameterRepository = parameterRepository,
             dataStore = dataStore,

@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.InputField
 import com.woocommerce.android.ui.common.OptionalField
 import com.woocommerce.android.ui.common.RequiredField
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CloseKeyboard
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
@@ -67,6 +68,12 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     private val arguments: EditShippingLabelAddressFragmentArgs by savedState.navArgs()
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState(arguments))
     private var viewState by viewStateData
 
@@ -75,7 +82,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             val fullCountriesList = dataStore.getCountries()
             val supportedCountries = if (arguments.addressType == ORIGIN) {
                 fullCountriesList.filter { ACCEPTED_USPS_ORIGIN_COUNTRIES.contains(it.code) }
-            } else fullCountriesList
+            } else {
+                fullCountriesList
+            }
             return supportedCountries.map { it.toAppModel() }
         }
 
@@ -102,6 +111,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         viewState = viewState.validateAllFields()
         val address = viewState.getAddress()
         if (viewState.areAllRequiredFieldsValid) {
+            triggerEvent(CloseKeyboard)
             launch {
                 viewState = viewState.copy(
                     isValidationProgressDialogVisible = true,
@@ -115,7 +125,21 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
             }
+        } else {
+            triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+            triggerScrollToFirstErrorFieldEvent()
         }
+    }
+
+    private fun triggerScrollToFirstErrorFieldEvent() {
+        val firstErrorField = viewState.findFirstErrorField()
+        firstErrorField?.let {
+            triggerEvent(CreateShippingLabelEvent.ScrollToFirstErrorField(it, viewState.isStateFieldSpinner))
+        }
+    }
+
+    private fun ViewState.findFirstErrorField(): Field? {
+        return Field.values().firstOrNull { this[it].error != null }
     }
 
     private fun loadCountriesAndStates() {
@@ -147,13 +171,17 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             ValidationResult.Valid -> {
                 exitWithAddress(address)
             }
+
             is ValidationResult.Invalid -> {
                 val validationErrorMessage = getAddressErrorStringRes(result.message)
                 viewState = viewState.copy(
                     address1Field = viewState.address1Field.copy(validationError = validationErrorMessage).validate(),
                     bannerMessage = resourceProvider.getString(
-                        if (arguments.addressType == ORIGIN) R.string.shipping_label_edit_origin_address_error_warning
-                        else R.string.shipping_label_edit_address_error_warning
+                        if (arguments.addressType == ORIGIN) {
+                            R.string.shipping_label_edit_origin_address_error_warning
+                        } else {
+                            R.string.shipping_label_edit_address_error_warning
+                        }
                     )
                 )
             }
@@ -209,9 +237,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         // Validate fields locally
         viewState = viewState.validateAllFields()
         if (viewState.areAllRequiredFieldsValid) {
+            triggerEvent(CloseKeyboard)
             exitWithAddress(viewState.getAddress())
         } else {
             triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+            triggerScrollToFirstErrorFieldEvent()
         }
     }
 
@@ -437,8 +467,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val companyContent: String
     ) : InputField<NameField>(content) {
         override fun validateInternal(): UiString? {
-            return if (content.isNotBlank() || companyContent.isNotBlank()) null
-            else UiStringRes(R.string.error_required_field)
+            return if (content.isNotBlank() || companyContent.isNotBlank()) {
+                null
+            } else {
+                UiStringRes(R.string.error_required_field)
+            }
         }
     }
 
@@ -463,8 +496,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val addressType: AddressType
     ) : InputField<PhoneField>(content) {
         override fun validateInternal(): UiString? {
-            return if (content.isValidPhoneNumber(addressType, isCustomsFormRequired)) null
-            else {
+            return if (content.isValidPhoneNumber(addressType, isCustomsFormRequired)) {
+                null
+            } else {
                 when {
                     content.isBlank() -> UiStringRes(R.string.shipping_label_address_phone_required)
                     addressType == ORIGIN ->
@@ -485,8 +519,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val isRequired: Boolean = false
     ) : InputField<LocationField>(location.name) {
         override fun validateInternal(): UiString? {
-            return if (isRequired && content.isBlank()) UiStringRes(R.string.error_required_field)
-            else null
+            return if (isRequired && content.isBlank()) {
+                UiStringRes(R.string.error_required_field)
+            } else {
+                null
+            }
         }
     }
 

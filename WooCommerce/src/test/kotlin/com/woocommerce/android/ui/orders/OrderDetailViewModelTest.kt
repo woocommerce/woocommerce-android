@@ -2,13 +2,13 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -18,6 +18,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.network.giftcard.GiftCardRestClient
@@ -25,28 +26,46 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingLabelCreationFlow
+import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
+import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.details.OrderDetailTracker
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewState.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.getOrAwaitValue
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -67,6 +86,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -86,6 +106,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         private const val ORDER_SITE_ID = 1
     }
 
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
@@ -98,20 +119,34 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         onBlocking { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
     }
     private val addonsRepository: AddonRepository = mock()
-    private val cardReaderTracker: CardReaderTracker = mock()
-    private val analyticsTraWrapper: AnalyticsTrackerWrapper = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
+    private val orderDetailTracker: OrderDetailTracker = mock()
     private val resources: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
-    private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock()
+    private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
+        doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
+    }
+    private val shippingLabelRepository: WooShippingLabelRepository = mock()
+    private val shippingEligibilityDataStore: WooShippingEligibilityDataStore = mock()
 
-    private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
+    private val configDataStore: WooShippingConfigDataStore = mock()
+
+    private val savedState = OrderDetailFragmentArgs(
+        orderId = ORDER_ID,
+        allOrderIds = arrayOf(ORDER_ID).toLongArray()
+    ).toSavedStateHandle()
 
     private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
+    private val productDetailRepository: ProductDetailRepository = mock()
+    private val paymentReceiptHelper: PaymentReceiptHelper = mock {
+        onBlocking { isReceiptAvailable(any()) }.thenReturn(false)
+        onBlocking { getReceiptUrl(any()) }.thenReturn(Result.success("https://www.testname.com"))
+    }
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_ID))
@@ -132,7 +167,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val currentViewStateValue
         get() = viewModel.viewStateData.liveData.value
 
-    private val orderWithParameters = ViewState(
+    private val orderWithParameters = OrderDetailViewState(
         orderInfo = orderInfo,
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
         isShipmentTrackingAvailable = true,
@@ -142,7 +177,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isProductListMenuVisible = false,
         wcShippingBannerVisible = false,
         isRefreshing = false,
-        isOrderDetailSkeletonShown = false
+        isOrderDetailSkeletonShown = false,
     )
 
     private val getOrderSubscriptions: GetOrderSubscriptions = mock()
@@ -155,10 +190,18 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         )
     )
 
+    private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
+    private val refreshShippingMethods: RefreshShippingMethods = mock()
+    private val isStoreCurrencyMatch: IsStoreCurrencyMatch = mock()
+
     private fun createViewModel() {
+        createViewModel(newSavedState = savedState)
+    }
+
+    private fun createViewModel(newSavedState: SavedStateHandle) {
         viewModel = spy(
             OrderDetailViewModel(
-                savedState,
+                newSavedState,
                 appPrefsWrapper,
                 networkStatus,
                 resources,
@@ -167,13 +210,22 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 selectedSite,
                 productImageMap,
                 paymentCollectibilityChecker,
-                cardReaderTracker,
-                analyticsTraWrapper,
+                paymentsFlowTracker,
+                orderDetailTracker,
                 shippingLabelOnboardingRepository,
+                shippingLabelRepository,
+                shippingEligibilityDataStore,
+                configDataStore,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
-                orderProductMapper
+                orderProductMapper,
+                productDetailRepository,
+                paymentReceiptHelper,
+                analyticsTracker,
+                refreshShippingMethods,
+                isStoreCurrencyMatch,
+                getShippingMethodsWithOtherValue,
             )
         )
     }
@@ -236,7 +288,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-        var orderData: ViewState? = null
+        var orderData: OrderDetailViewState? = null
         viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
         // order notes
@@ -270,9 +322,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         // shipping Labels
-        val shippingLabels = ArrayList<ShippingLabel>()
-        viewModel.shippingLabels.observeForever {
-            it?.let { shippingLabels.addAll(it) }
+        val shippingLabels = ArrayList<ShippingLabelModel>()
+        viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+            shippingLabelModelList?.let { shippingLabels.addAll(it) }
         }
 
         viewModel.start()
@@ -289,6 +341,92 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         assertThat(refunds).isEmpty()
         assertThat(shippingLabels).isEmpty()
     }
+
+    @Test
+    fun `given receipt is available and order is paid, when view model started, then state with receipt is visible emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
+            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(
+                order.copy(
+                    datePaid = Date()
+                )
+            )
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
+            whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
+            whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
+            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+            // WHEN
+            var detailViewState: OrderDetailViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> detailViewState = new }
+
+            viewModel.start()
+
+            // THEN
+            assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Visible
+            )
+        }
+
+    @Test
+    fun `given receipt is available and order not paid, when view model started, then state with receipt is hidden emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
+            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(
+                order.copy(
+                    datePaid = null
+                )
+            )
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
+            whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
+            whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
+            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+            // WHEN
+            var detailViewState: OrderDetailViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> detailViewState = new }
+
+            viewModel.start()
+
+            // THEN
+            assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Hidden
+            )
+        }
+
+    @Test
+    fun `given receipt is not available, when view model started, then state with receipt is hidden emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(false)
+            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
+            whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
+            whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
+            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+            // WHEN
+            var detailViewState: OrderDetailViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> detailViewState = new }
+
+            viewModel.start()
+
+            // THEN
+            assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Hidden
+            )
+        }
 
     @Test
     fun `collect button hidden if payment is not collectable`() =
@@ -336,7 +474,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
 
             viewModel.start()
             assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
@@ -351,14 +489,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(orderDetailRepository).hasVirtualProductsOnly(listOf(3, 4))
             doReturn(virtualOrder).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(virtualOrder).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(testOrderRefunds).whenever(orderDetailRepository).getOrderRefunds(any())
 
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
 
             viewModel.start()
 
@@ -381,7 +516,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             viewModel.start()
@@ -424,7 +559,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             viewModel.start()
@@ -448,7 +583,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
 
             val refunds = ArrayList<Refund>()
             viewModel.orderRefunds.observeForever {
@@ -484,9 +619,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
             }
 
             var areProductsVisible: Boolean? = null
@@ -501,84 +636,54 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Hide Create shipping label button and show Products area menu when shipping labels are available`() =
+    fun `Show Products area menu when shipping labels are available`() =
         testBlocking {
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
+                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+            doReturn(flowOf(true))
+                .whenever(shippingEligibilityDataStore).observeEligibility(any())
+            doReturn(flowOf(OrderTestUtils.generateShippingLabelModels(2)))
+                .whenever(configDataStore).getPurchasedLabels(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
 
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-
-            doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
-            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-            doReturn(true).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
-
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
             }
 
-            var isCreateShippingLabelButtonVisible: Boolean? = null
             var isProductListMenuVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-                isProductListMenuVisible = new.isProductListMenuVisible
-            }
+            viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
 
             viewModel.start()
 
             assertThat(shippingLabels).isNotEmpty
-            assertThat(isCreateShippingLabelButtonVisible).isFalse
             assertThat(isProductListMenuVisible).isTrue
         }
 
     @Test
-    fun `Show Create shipping label button and hide Products area menu when no shipping labels are available`() =
+    fun `Hide Products area menu when no shipping labels are available`() =
         testBlocking {
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
 
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
-            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-            doReturn(true).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
-
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
             }
 
-            var isCreateShippingLabelButtonVisible: Boolean? = null
             var isProductListMenuVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-                isProductListMenuVisible = new.isProductListMenuVisible
-            }
+            viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
 
             viewModel.start()
 
             assertThat(shippingLabels).isEmpty()
-            assertThat(isCreateShippingLabelButtonVisible).isTrue
             assertThat(isProductListMenuVisible).isFalse
         }
 
@@ -600,12 +705,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            var orderData: ViewState? = null
+            var orderData: OrderDetailViewState? = null
             viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
             }
 
             viewModel.start()
@@ -633,9 +738,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
             }
 
             var isCreateShippingLabelButtonVisible: Boolean? = null
@@ -666,7 +771,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, times(1)).fetchOrderById(ORDER_ID)
-        verify(viewModel, never()).order
+        verify(viewModel, never()).awaitOrder()
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.order_error_fetch_generic))
     }
@@ -727,7 +832,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var snackbar: ShowUndoSnackbar? = null
@@ -757,7 +862,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         verify(orderDetailRepository, times(2)).updateOrderStatus(eq(order.id), statusChangeCaptor.capture())
 
         assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
-            initialStatus, newStatus, initialStatus
+            initialStatus,
+            newStatus,
+            initialStatus
         )
     }
 
@@ -779,7 +886,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var newOrder: Order? = null
@@ -796,30 +903,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         )
 
         assertThat(newOrder?.status).isEqualTo(order.status)
-    }
-
-    @Test
-    fun `Do not update order status when not connected`() = testBlocking {
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(false).whenever(networkStatus).isConnected()
-
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
-        }
-
-        viewModel.order = order
-        viewModel.start()
-        viewModel.onOrderStatusChanged(
-            OrderStatusUpdateSource.Dialog(
-                oldStatus = order.status.value,
-                newStatus = CoreOrderStatus.PROCESSING.value
-            )
-        )
-
-        verify(orderDetailRepository, never()).updateOrderStatus(any(), any())
-
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
     }
 
     @Test
@@ -842,7 +925,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             .whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var orderShipmentTrackings = emptyList<OrderShipmentTracking>()
@@ -860,19 +943,21 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `show shipping label creation if the order is eligible`() = testBlocking {
+        doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        doReturn(flowOf(OrderTestUtils.generateShippingLabelModels(2)))
+            .whenever(configDataStore).getPurchasedLabels(any())
+        doReturn(flowOf(true))
+            .whenever(shippingEligibilityDataStore).observeEligibility(any())
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
-        doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
-        doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
         doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-        doReturn(true).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
 
         var isCreateShippingLabelButtonVisible: Boolean? = null
         viewModel.viewStateData.observeForever { _, new ->
@@ -889,10 +974,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
+            doReturn(ShippingLabelSupport.NOT_SUPPORTED)
+                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -918,7 +1003,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
 
@@ -935,11 +1020,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `hide shipping label creation if wcs plugin is not installed`() =
         testBlocking {
+            doReturn(ShippingLabelSupport.NOT_SUPPORTED)
+                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -965,7 +1051,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.onCardReaderPaymentCompleted()
 
-        assertThat(viewModel.order).isEqualTo(orderAfterPayment)
+        assertThat(viewModel.awaitOrder()).isEqualTo(orderAfterPayment)
     }
 
     @Test
@@ -1098,8 +1184,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn("testing url")
-                .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
@@ -1114,19 +1198,81 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn("testing url")
-                .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
             viewModel.onSeeReceiptClicked()
 
-            verify(analyticsTraWrapper).track(
-                AnalyticsEvent.RECEIPT_VIEW_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_ORDER_ID to order.id,
-                    AnalyticsTracker.KEY_STATUS to order.status
-                )
+            verify(orderDetailTracker).trackReceiptViewTapped(order.id, order.status)
+        }
+
+    @Test
+    fun `given receipt request returns error, when user taps on see receipt, then snackbar event emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+            val errorMessage = "error"
+            whenever(paymentReceiptHelper.getReceiptUrl(order.id)).thenReturn(Result.failure(Exception(errorMessage)))
+
+            // WHEN
+            viewModel.start()
+
+            viewModel.onSeeReceiptClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(string.receipt_fetching_error)
+            verify(paymentsFlowTracker).trackReceiptUrlFetchingFails(
+                errorDescription = errorMessage
+            )
+        }
+
+    @Test
+    fun `given receipt request returns success, when user taps on see receipt, then PreviewReceipt event emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+            val receiptUrl = "https://example.com"
+            whenever(paymentReceiptHelper.getReceiptUrl(order.id)).thenReturn(Result.success(receiptUrl))
+
+            // WHEN
+            viewModel.start()
+
+            viewModel.onSeeReceiptClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as PreviewReceipt).orderId).isEqualTo(order.id)
+            assertThat((viewModel.event.value as PreviewReceipt).receiptUrl).isEqualTo(receiptUrl)
+            assertThat((viewModel.event.value as PreviewReceipt).billingEmail).isEqualTo(order.billingAddress.email)
+        }
+
+    @Test
+    fun `when onSeeReceiptClicked clicked, then loading receipt status emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+            val receiptUrl = "https://example.com"
+            whenever(paymentReceiptHelper.getReceiptUrl(order.id)).thenReturn(Result.success(receiptUrl))
+
+            // WHEN
+            viewModel.start()
+
+            val states = viewModel.viewStateData.liveData.captureValues()
+
+            viewModel.onSeeReceiptClicked()
+
+            // THEN
+            assertThat((states.last()).orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Visible
+            )
+            assertThat((states[states.size - 2]).orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Loading
             )
         }
 
@@ -1317,7 +1463,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // When
-            viewModel.onAcceptCardPresentPaymentClicked()
+            viewModel.onCollectPaymentClicked()
 
             // Then
             assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartPaymentFlow::class.java)
@@ -1331,10 +1477,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // When
-            viewModel.onAcceptCardPresentPaymentClicked()
+            viewModel.onCollectPaymentClicked()
 
             // Then
-            verify(cardReaderTracker).trackCollectPaymentTapped()
+            verify(paymentsFlowTracker).trackCollectPaymentTapped(any())
         }
 
     @Test
@@ -1349,7 +1495,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onRefreshRequested()
 
             // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH)
+            verify(orderDetailTracker).trackOrderDetailPulledToRefresh()
         }
 
     @Test
@@ -1366,13 +1512,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onNewShipmentTrackingAdded(testOrderShipmentTrackings[0])
 
             // Then
-            verify(analyticsTraWrapper).track(
-                AnalyticsEvent.ORDER_TRACKING_ADD,
-                mapOf(
-                    AnalyticsTracker.KEY_ID to order.id,
-                    AnalyticsTracker.KEY_STATUS to order.status,
-                    AnalyticsTracker.KEY_CARRIER to testOrderShipmentTrackings[0].trackingProvider
-                )
+            verify(orderDetailTracker).trackAddOrderTrackingTapped(
+                order.id,
+                order.status,
+                testOrderShipmentTrackings[0].trackingProvider
             )
         }
 
@@ -1394,14 +1537,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onOrderStatusChanged(updateSource)
 
             // Then
-            verify(analyticsTraWrapper).track(
-                AnalyticsEvent.ORDER_STATUS_CHANGE,
-                mapOf(
-                    AnalyticsTracker.KEY_ID to order.id,
-                    AnalyticsTracker.KEY_FROM to order.status.value,
-                    AnalyticsTracker.KEY_TO to updateSource.newStatus,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_EDITING
-                )
+            verify(orderDetailTracker).trackOrderStatusChanged(
+                order.id,
+                order.status.value,
+                updateSource.newStatus
             )
         }
 
@@ -1419,7 +1558,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onCreateShippingLabelButtonTapped()
 
             // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
+            verify(orderDetailTracker).trackShippingLabelTapped()
         }
 
     @Test
@@ -1436,7 +1575,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onMarkOrderCompleteButtonTapped()
 
             // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
+            verify(orderDetailTracker).trackMarkOrderAsCompleteTapped()
         }
 
     @Test
@@ -1453,7 +1592,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onViewOrderedAddonButtonTapped(order.items[0])
 
             // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
+            verify(orderDetailTracker).trackViewAddonsTapped()
         }
 
     @Test
@@ -1464,18 +1603,18 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            whenever(isStoreCurrencyMatch.invoke(any())).thenReturn(
+                CurrencyMatchResult(isMatch = true, storeCurrency = "USD")
+            )
             viewModel.start()
 
             // When
             viewModel.onEditClicked()
 
             // Then
-            verify(analyticsTraWrapper).track(
-                AnalyticsEvent.ORDER_EDIT_BUTTON_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_HAS_MULTIPLE_FEE_LINES to (order.feesLines.size > 1),
-                    AnalyticsTracker.KEY_HAS_MULTIPLE_SHIPPING_LINES to (order.shippingLines.size > 1)
-                )
+            verify(orderDetailTracker).trackEditButtonTapped(
+                order.feesLines.size,
+                order.shippingLines.size
             )
         }
 
@@ -1515,12 +1654,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is installed and active, then fetch plugin data`() = testBlocking {
-        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
-        pluginsInfo[services] = WooPlugin(
-            isInstalled = true,
-            isActive = true,
-            version = "1.0.0"
-        )
+        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1528,18 +1663,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
     @Test
     fun `when service plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
-        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
-        pluginsInfo[services] = WooPlugin(
-            isInstalled = true,
-            isActive = false,
-            version = "1.0.0"
-        )
+        doReturn(ShippingLabelSupport.NOT_SUPPORTED).whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1547,18 +1677,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any(), any())
         verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
     @Test
     fun `when service plugin is NOT installed, then DON'T fetch plugin data`() = testBlocking {
-        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
-        pluginsInfo[services] = WooPlugin(
-            isInstalled = false,
-            isActive = false,
-            version = null
-        )
+        doReturn(ShippingLabelSupport.NOT_SUPPORTED).whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1566,7 +1691,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any(), any())
         verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
@@ -1629,13 +1754,15 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there is no info about the plugins, then optimistically fetch plugin data`() = testBlocking {
+        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
 
         viewModel.start()
 
-        verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any(), any())
         verify(orderDetailRepository, times(1)).fetchOrderShipmentTrackingList(any())
     }
 
@@ -1695,7 +1822,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+        verify(orderDetailTracker).trackOrderDetailsSubscriptionsShown()
     }
 
     @Test
@@ -1716,7 +1843,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+        verify(orderDetailTracker, never()).trackOrderDetailsSubscriptionsShown()
     }
 
     @Test
@@ -1737,7 +1864,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+        verify(orderDetailTracker, never()).trackOrderDetailsSubscriptionsShown()
     }
 
     @Test
@@ -1795,7 +1922,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+        verify(orderDetailTracker).trackOrderDetailsGiftCardShown()
     }
 
     @Test
@@ -1816,7 +1943,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+        verify(orderDetailTracker, never()).trackOrderDetailsGiftCardShown()
     }
 
     @Test
@@ -1837,7 +1964,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+        verify(orderDetailTracker, never()).trackOrderDetailsGiftCardShown()
     }
 
     @Test
@@ -1873,13 +2000,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper).track(
-            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_ID to order.id,
-                AnalyticsTracker.PRODUCT_TYPES to types,
-                AnalyticsTracker.HAS_ADDONS to hasAddons
-            )
+        verify(orderDetailTracker).trackProductsLoaded(
+            order.id,
+            types,
+            hasAddons
         )
     }
 
@@ -1898,13 +2022,456 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper).track(
-            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_ID to order.id,
-                AnalyticsTracker.PRODUCT_TYPES to types,
-                AnalyticsTracker.HAS_ADDONS to hasAddons
+        verify(orderDetailTracker).trackProductsLoaded(
+            order.id,
+            types,
+            hasAddons
+        )
+    }
+
+    @Test
+    fun `given order ids passed, when ViewModel starts, then previous order navigations is not enabled`() =
+        testBlocking {
+            val newSavedState = OrderDetailFragmentArgs(
+                orderId = ORDER_ID,
+                allOrderIds = arrayOf(ORDER_ID, 2).toLongArray()
+            ).toSavedStateHandle()
+
+            createViewModel(newSavedState)
+
+            viewModel.start()
+
+            // Then
+            assertThat(viewModel.previousOrderNavigationIsEnabled()).isFalse
+        }
+
+    @Test
+    fun `when the order is the last one then it disables navigation to next order`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(2, ORDER_ID).toLongArray()
+        ).toSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        // Then
+        assertThat(viewModel.nextOrderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when the order is in the middle then it enables navigation to previous and next order`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(2, ORDER_ID, 3).toLongArray()
+        ).toSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        assertThat(viewModel.previousOrderNavigationIsEnabled()).isTrue
+        assertThat(viewModel.nextOrderNavigationIsEnabled()).isTrue
+    }
+
+    @Test
+    fun `when the order is not in the list then it disables order navigation`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(2L, 3L).toLongArray()
+        ).toSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        assertThat(viewModel.orderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when there is only one order then it disables order navigation`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(ORDER_ID).toLongArray()
+        ).toSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        assertThat(viewModel.orderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when order attribution is loaded, then update state`() = testBlocking {
+        val attribution = OrderAttributionInfo(
+            sourceType = "referral",
+            source = "Woo.com"
+        )
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+        whenever(orderDetailRepository.getOrderAttributionInfo(ORDER_ID)).thenReturn(attribution)
+
+        createViewModel()
+        viewModel.start()
+
+        val attributionState = viewModel.orderAttributionInfo.getOrAwaitValue()
+
+        assertThat(attributionState).isEqualTo(attribution)
+    }
+
+    @Test
+    fun `when trash button is clicked, then show an alert`() = testBlocking {
+        createViewModel()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onTrashOrderClicked()
+        }.last()
+
+        assertThat(event).isInstanceOf(MultiLiveEvent.Event.ShowDialog::class.java)
+    }
+
+    @Test
+    fun `when trash is confirmed, then communicate event to the parent fragment`() = testBlocking {
+        createViewModel()
+
+        val dialogEvent = viewModel.event.runAndCaptureValues {
+            viewModel.onTrashOrderClicked()
+        }.last() as MultiLiveEvent.Event.ShowDialog
+        val event = viewModel.event.runAndCaptureValues {
+            dialogEvent.positiveBtnAction?.onClick(mock(), 0)
+        }.last()
+
+        assertThat(event).isEqualTo(OrderDetailViewModel.TrashOrder(ORDER_ID))
+        verify(analyticsTracker).track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
+    }
+
+    @Test
+    fun `when we can get shipping titles from the cached shipping methods then refresh is NOT call`() =
+        testBlocking {
+            // Given
+            val shippingMethod = ShippingMethod(id = "free_shipping", title = "Free Shipping")
+            val orderShippingLines = listOf(
+                Order.ShippingLine(
+                    itemId = 1L,
+                    methodTitle = "Free",
+                    methodId = shippingMethod.id,
+                    total = BigDecimal.ZERO,
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
+                ),
+                Order.ShippingLine(
+                    itemId = 2L,
+                    methodTitle = "Another shipping",
+                    methodId = "",
+                    total = BigDecimal.TEN,
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
+                ),
+            )
+            val testOrder = order.copy(shippingLines = orderShippingLines)
+            val shippingMethods = listOf(shippingMethod)
+
+            doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            doReturn(flowOf(shippingMethods)).whenever(getShippingMethodsWithOtherValue).invoke()
+
+            createViewModel()
+
+            viewModel.start()
+
+            var shippingLineDetails: List<ShippingLineDetails>? = null
+
+            // When
+            viewModel.viewStateData.observeForever { _, _ -> }
+            viewModel.shippingLineList.observeForever { shippingLines ->
+                shippingLineDetails = shippingLines
+            }
+
+            // Then
+            assertThat(shippingLineDetails).isNotNull
+            assertThat(shippingLineDetails?.size).isEqualTo(testOrder.shippingLines.size)
+
+            val details = shippingLineDetails?.firstOrNull { it.shippingMethod?.title == shippingMethod.title }
+            assertThat(details).isNotNull
+            verify(refreshShippingMethods, never()).invoke()
+        }
+
+    @Test
+    fun `when we can't get shipping titles from the cached shipping methods then refresh is call`() =
+        testBlocking {
+            // Given
+            val orderShippingLines = listOf(
+                Order.ShippingLine(
+                    itemId = 1L,
+                    methodTitle = "Free",
+                    methodId = "free_shipping",
+                    total = BigDecimal.ZERO,
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
+                ),
+                Order.ShippingLine(
+                    itemId = 2L,
+                    methodTitle = "Another shipping",
+                    methodId = "",
+                    total = BigDecimal.TEN,
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
+                ),
+            )
+            val testOrder = order.copy(shippingLines = orderShippingLines)
+            val shippingMethods = emptyList<ShippingMethod>()
+
+            doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            doReturn(flowOf(shippingMethods)).whenever(getShippingMethodsWithOtherValue).invoke()
+
+            createViewModel()
+
+            viewModel.start()
+
+            var shippingLineDetails: List<ShippingLineDetails>? = null
+
+            // When
+            viewModel.viewStateData.observeForever { _, _ -> }
+            viewModel.shippingLineList.observeForever { shippingLines ->
+                shippingLineDetails = shippingLines
+            }
+
+            // Then
+            assertThat(shippingLineDetails).isNotNull
+            assertThat(shippingLineDetails?.size).isEqualTo(testOrder.shippingLines.size)
+
+            verify(refreshShippingMethods).invoke()
+        }
+
+    @Test
+    fun `when we can't get shipping titles from the cached shipping methods then refresh is called one time`() =
+        testBlocking {
+            // Given
+            val orderShippingLines = listOf(
+                Order.ShippingLine(
+                    itemId = 1L,
+                    methodTitle = "Free",
+                    methodId = "free_shipping",
+                    total = BigDecimal.ZERO,
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
+                ),
+                Order.ShippingLine(
+                    itemId = 2L,
+                    methodTitle = "Another shipping",
+                    methodId = "",
+                    total = BigDecimal.TEN,
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
+                ),
+            )
+            val testOrder = order.copy(shippingLines = orderShippingLines)
+            val shippingMethods = emptyList<ShippingMethod>()
+
+            doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            doReturn(flowOf(shippingMethods, shippingMethods)).whenever(getShippingMethodsWithOtherValue).invoke()
+
+            createViewModel()
+
+            viewModel.start()
+
+            var shippingLineDetails: List<ShippingLineDetails>? = null
+
+            // When
+            viewModel.viewStateData.observeForever { _, _ -> }
+            viewModel.shippingLineList.observeForever { shippingLines ->
+                shippingLineDetails = shippingLines
+            }
+
+            // Then
+            assertThat(shippingLineDetails).isNotNull
+            assertThat(shippingLineDetails?.size).isEqualTo(testOrder.shippingLines.size)
+
+            verify(refreshShippingMethods).invoke()
+        }
+
+    @Test
+    fun `when the order contains shipping lines then track the event`() = testBlocking {
+        val shippingLines = listOf(
+            Order.ShippingLine(
+                methodId = "other",
+                methodTitle = "Other",
+                total = BigDecimal.TEN
+            ),
+            Order.ShippingLine(
+                methodId = "free_shipping",
+                methodTitle = "Free",
+                total = BigDecimal.ZERO
             )
         )
+        val order = order.copy(shippingLines = shippingLines)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
+
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
+        doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
+        doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+
+        createViewModel()
+        viewModel.start()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
+            mapOf(AnalyticsTracker.KEY_SHIPPING_LINES_COUNT to shippingLines.size)
+        )
+    }
+
+    @Test
+    fun `when the order DOESN'T contains shipping lines then DON'T track the event`() = testBlocking {
+        val shippingLines = emptyList<Order.ShippingLine>()
+        val order = order.copy(shippingLines = shippingLines)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
+
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
+        doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
+        doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+
+        createViewModel()
+        viewModel.start()
+
+        verify(analyticsTracker, never()).track(
+            AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
+            mapOf(AnalyticsTracker.KEY_SHIPPING_LINES_COUNT to shippingLines.size)
+        )
+    }
+
+    @Test
+    fun `when woo shipping is installed, then navigate to the new shipping flow`() = testBlocking {
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+
+        createViewModel()
+
+        viewModel.start()
+        viewModel.onCreateShippingLabelButtonTapped()
+
+        assertThat(viewModel.event.value).isInstanceOf(StartWooShippingLabelCreationFlow::class.java)
+    }
+
+    @Test
+    fun `when woo shipping and tax is installed, then navigate to the legacy shipping flow`() = testBlocking {
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+
+        createViewModel()
+
+        viewModel.start()
+        viewModel.onCreateShippingLabelButtonTapped()
+
+        assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartShippingLabelCreationFlow::class.java)
+    }
+
+    @Test
+    fun `given order and store currency mismatch, when edit clicked, then track proper event`() = testBlocking {
+        // Given
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.fetchOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+        whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+        whenever(isStoreCurrencyMatch.invoke(any())).thenReturn(
+            CurrencyMatchResult(isMatch = false, storeCurrency = "USD")
+        )
+        viewModel.start()
+
+        // When
+        viewModel.onEditClicked()
+
+        verify(orderDetailTracker).trackOrderAndStoreCurrencyMismatchWhenEditButtonTapped()
+    }
+
+    @Test
+    fun `when edit clicked, then trigger EditOrder event`() = testBlocking {
+        // Given
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.fetchOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+        whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+        whenever(isStoreCurrencyMatch.invoke(any())).thenReturn(
+            CurrencyMatchResult(isMatch = true, storeCurrency = "USD")
+        )
+        viewModel.start()
+
+        // When
+        viewModel.onEditClicked()
+
+        assertThat(viewModel.event.value).isNotInstanceOf(ShowSnackbar::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(EditOrder::class.java)
+    }
+
+    @Test
+    fun `when edit clicked, then trigger EditOrder event with order currency passed as parameter`() = testBlocking {
+        // Given
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.fetchOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+        whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+        whenever(isStoreCurrencyMatch.invoke(any())).thenReturn(
+            CurrencyMatchResult(isMatch = true, storeCurrency = "USD")
+        )
+        viewModel.start()
+
+        // When
+        viewModel.onEditClicked()
+
+        assertThat(viewModel.event.value).isNotInstanceOf(ShowSnackbar::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(EditOrder::class.java)
+        assertThat((viewModel.event.value as EditOrder).orderCurrency).isEqualTo(viewModel.awaitOrder().currency)
+    }
+
+    @Test
+    fun `given order in db, when viewmodel start, then view state is updated with order`() = testBlocking {
+        // GIVEN
+        val newOrder = order.copy(
+            status = Order.Status.Processing,
+            number = "NewOrderNumber"
+        )
+        doReturn(newOrder).whenever(orderDetailRepository).getOrderById(any())
+
+        var observedViewState: OrderDetailViewState? = null
+        viewModel.viewStateData.observeForever { _, newState -> observedViewState = newState }
+
+        // WHEN
+        viewModel.start()
+
+        // THEN
+        assertThat(observedViewState!!.orderInfo!!.order).isEqualTo(newOrder)
+        assertThat(observedViewState.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
+    }
+
+    @Test
+    fun `when view model is initialized then fetchConfig is called`() = testBlocking {
+        viewModel.start()
+
+        verify(shippingLabelRepository, never()).fetchConfig(selectedSite.get(), ORDER_ID)
     }
 }

@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class QuantityRules(
-    val min: Int?,
-    val max: Int?,
-    val groupOf: Int?
+    val min: Int? = null,
+    val max: Int? = null,
+    val groupOf: Int? = null
 ) : Parcelable

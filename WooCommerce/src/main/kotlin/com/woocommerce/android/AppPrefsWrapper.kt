@@ -1,17 +1,43 @@
 package com.woocommerce.android
 
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.promobanner.PromoBannerType
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
-    var storeCreationProfilerAnswers by AppPrefs::storeCreationProfilerAnswers
+    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
+
+    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
+
+    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
+
+    var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
+
+    var blazeFirstTimeWithoutCampaign by AppPrefs::blazeFirstTimeWithoutCampaign
+
+    var isBlazeNoCampaignReminderShown by AppPrefs::isBlazeNoCampaignReminderShown
+
+    var isBlazeAbandonedCampaignReminderShown by AppPrefs::isBlazeAbandonedCampaignReminderShown
+
+    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+
+    var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
+
+    var timesAiProductCreationSurveyDisplayed by AppPrefs::timesAiProductCreationSurveyDisplayed
+
+    var isAiProductCreationSurveyDismissed by AppPrefs::isAiProductCreationSurveyDismissed
+
+    var isCustomFieldsTopBannerDismissed by AppPrefs::isCustomFieldsTopBannerDismissed
+
+    var blazeCampaignSelectedObjective by AppPrefs::blazeCampaignSelectedObjective
+
+    var blazeCampaignObjectiveSwitchChecked by AppPrefs::blazeCampaignObjectiveSwitchChecked
+
+    var isSiteWPComSuspended by AppPrefs::isSiteWPComSuspended
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
@@ -118,12 +144,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
 
-    fun isOrderNotificationsEnabled() = AppPrefs.isOrderNotificationsEnabled()
-
-    fun isReviewNotificationsEnabled() = AppPrefs.isReviewNotificationsEnabled()
-
-    fun isOrderNotificationsChaChingEnabled() = AppPrefs.isOrderNotificationsChaChingEnabled()
-
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
     }
@@ -192,24 +212,23 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
 
-    fun setActiveStatsGranularity(statsGranularity: String) {
-        AppPrefs.setActiveStatsGranularity(statsGranularity)
+    fun setActiveStatsTab(selectionName: String) {
+        AppPrefs.setActiveStatsTab(selectionName)
     }
 
-    fun getActiveStatsGranularity() =
-        AppPrefs.getActiveStatsGranularity()
+    fun getActiveStoreStatsTab() = AppPrefs.getActiveStatsTab()
 
-    fun markAsNewSignUp(newSignUp: Boolean) {
-        AppPrefs.markAsNewSignUp(newSignUp)
+    fun setActiveTopPerformersTab(selectionName: String) {
+        AppPrefs.setActiveTopPerformersTab(selectionName)
     }
 
-    fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
+    fun getActiveTopPerformersTab() = AppPrefs.getActiveTopPerformersTab()
 
-    fun setStoreCreationSource(source: String) {
-        AppPrefs.setStoreCreationSource(source)
+    fun getActiveCouponsTab() = AppPrefs.getActiveCouponsTab()
+
+    fun setActiveCouponsTab(selectionName: String) {
+        AppPrefs.setActiveCouponsTab(selectionName)
     }
-
-    fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {
         AppPrefs.setCustomDomainsSource(source.name)
@@ -217,12 +236,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getCustomDomainsSource(): DomainFlowSource = enumValueOf(AppPrefs.getCustomDomainsSource())
     fun getCustomDomainsSourceAsString(): String = AppPrefs.getCustomDomainsSource().lowercase()
-
-    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
-        AppPrefs.setJetpackInstallationIsFromBanner(isFromBanner)
-    }
-
-    fun getJetpackInstallationIsFromBanner() = AppPrefs.getJetpackInstallationIsFromBanner()
 
     /**
      * Card Reader Upsell
@@ -303,21 +316,10 @@ class AppPrefsWrapper @Inject constructor() {
     /**
      * Observes changes to the preferences
      */
-    fun observePrefs(): Flow<Unit> {
-        return callbackFlow {
-            val listener = OnSharedPreferenceChangeListener { _, _ ->
-                trySend(Unit)
-            }
-            AppPrefs.getPreferences().registerOnSharedPreferenceChangeListener(listener)
+    fun observePrefs(): Flow<Unit> = AppPrefs.observePrefs()
 
-            awaitClose {
-                AppPrefs.getPreferences().unregisterOnSharedPreferenceChangeListener(listener)
-            }
-        }
-    }
-
-    fun markAllOnboardingTasksCompleted(siteId: Int) {
-        AppPrefs.markOnboardingTaskCompletedFor(siteId)
+    fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
+        AppPrefs.updateOnboardingCompletedStatus(siteId, completed)
     }
 
     fun isOnboardingCompleted(siteId: Int): Boolean = AppPrefs.areOnboardingTaskCompletedFor(siteId)
@@ -328,25 +330,9 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStoreOnboardingShown(siteId: Int): Boolean = AppPrefs.getStoreOnboardingShown(siteId)
 
-    fun getOnboardingSettingVisibility(siteId: Int): Boolean = AppPrefs.getOnboardingSettingVisibility(siteId)
-
-    fun setOnboardingSettingVisibility(siteId: Int, show: Boolean) {
-        AppPrefs.setOnboardingSettingVisibility(siteId, show)
-    }
-
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) = AppPrefs.setStorePhoneNumber(siteId, phoneNumber)
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
-
-    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
-
-    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
-
-    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
-
-    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
-
-    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
 
     fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
     fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
@@ -364,11 +350,27 @@ class AppPrefsWrapper @Inject constructor() {
     fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 
-    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+    fun getWCStoreID(siteID: Long) = AppPrefs.getWCStoreID(siteID)
 
-    fun isBlazeBannerHidden(siteId: Int): Boolean = AppPrefs.isBlazeBannerHidden(siteId)
-
-    fun setBlazeBannerHidden(siteId: Int, hide: Boolean) {
-        AppPrefs.setBlazeBannerHidden(siteId, hide)
+    fun setWCStoreID(siteID: Long, storeID: String?) {
+        AppPrefs.setWCStoreID(siteID, storeID)
     }
+
+    fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) =
+        AppPrefs.incrementNotificationChannelTypeSuffix(channel)
+
+    fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? =
+        AppPrefs.getNotificationChannelTypeSuffix(channel)
+
+    fun removeBlazeFirstTimeWithoutCampaign() {
+        AppPrefs.removeBlazeFirstTimeWithoutCampaign()
+    }
+
+    fun existsBlazeFirstTimeWithoutCampaign() = AppPrefs.existsBlazeFirstTimeWithoutCampaign()
+
+    fun setBlazeCampaignCreated() {
+        AppPrefs.setBlazeCampaignCreated()
+    }
+
+    fun getBlazeCampaignCreated() = AppPrefs.getBlazeCampaignCreated()
 }

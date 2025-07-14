@@ -13,19 +13,25 @@ import android.view.animation.Transformation
 import android.widget.LinearLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
 import androidx.transition.TransitionManager
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.util.DisplayUtils
 
 const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
 
@@ -181,4 +187,43 @@ fun View.scrollStartEvents(): Flow<Unit> {
         .distinctUntilChanged()
         .filter { it == MotionEvent.ACTION_MOVE }
         .map { }
+}
+
+fun View.edgeToEdgeHandlingForNavigationBar() {
+    doOnApplyWindowInsets {
+        setPadding(it.left, 0, it.right, it.bottom)
+    }
+}
+
+fun View.edgeToEdgeForInLandscape() {
+    if (DisplayUtils.isLandscape(context)) {
+        edgeToEdgeHandlingForNavigationBar()
+    }
+}
+
+fun View.edgeToEdgeHandlingForNavigationAndStatusBar(appBarLayout: AppBarLayout? = null) {
+    doOnApplyWindowInsets(consumeInsets = true) { insets ->
+        updatePadding(
+            left = insets.left,
+            right = insets.right,
+            bottom = insets.bottom
+        )
+
+        if (appBarLayout != null) {
+            appBarLayout.updatePadding(top = insets.top)
+        } else {
+            updatePadding(top = insets.top)
+        }
+    }
+}
+
+inline fun View.doOnApplyWindowInsets(
+    insetsMask: Int = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+    consumeInsets: Boolean = false,
+    crossinline action: (Insets) -> Unit
+) {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+        action(insets.getInsets(insetsMask))
+        if (consumeInsets) WindowInsetsCompat.CONSUMED else insets
+    }
 }

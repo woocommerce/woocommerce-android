@@ -5,8 +5,7 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForGB
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
-import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.ui.login.storecreation.countrypicker.LocalCountriesRepository
+import com.woocommerce.android.ui.common.LocalCountriesRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -162,7 +161,7 @@ class TapToPayAboutViewModelTest : BaseUnitTest() {
             currencyFormatter = currencyFormatter,
             savedStateHandle = TapToPayAboutFragmentArgs(
                 cardReaderConfig
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
         )
     }
 }

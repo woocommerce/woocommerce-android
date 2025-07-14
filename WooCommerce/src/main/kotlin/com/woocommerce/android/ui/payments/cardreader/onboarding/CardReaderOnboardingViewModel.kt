@@ -5,15 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.di.PointOfSaleMode
+import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInWPComWebView
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInBrowser
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -53,6 +52,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -72,8 +72,9 @@ private const val UNIX_TO_JAVA_TIMESTAMP_OFFSET = 1000L
 @HiltViewModel
 class CardReaderOnboardingViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    @StoreManagementMode storeManagementPaymentsFlowTracker: PaymentsFlowTracker,
+    @PointOfSaleMode pointOfSalePaymentsFlowTracker: PaymentsFlowTracker,
     private val cardReaderChecker: CardReaderOnboardingChecker,
-    private val cardReaderTracker: CardReaderTracker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
@@ -82,6 +83,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val errorClickHandler: CardReaderOnboardingErrorCtaClickHandler,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderOnboardingFragmentArgs by savedState.navArgs()
+    private val paymentsFlowTracker: PaymentsFlowTracker = when {
+        isPos -> pointOfSalePaymentsFlowTracker
+        else -> storeManagementPaymentsFlowTracker
+    }
 
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
@@ -89,11 +94,21 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val viewState = MutableLiveData<CardReaderOnboardingViewState>()
     val viewStateData: LiveData<CardReaderOnboardingViewState> = viewState
 
+    private var lastShownOnboardingState: CardReaderOnboardingState? = null
+
+    val isPos: Boolean
+        get() {
+            val cardReaderFlowParam = arguments.cardReaderOnboardingParam.cardReaderFlowParam
+            return cardReaderFlowParam is CardReaderFlowParam.WooPosConnection ||
+                cardReaderFlowParam is CardReaderFlowParam.PaymentOrRefund.Payment &&
+                cardReaderFlowParam.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
+        }
+
     init {
         when (val onboardingParam = arguments.cardReaderOnboardingParam) {
             is Check -> refreshState(onboardingParam.pluginType)
             is Failed -> showOnboardingState(onboardingParam.onboardingState)
-        }.exhaustive
+        }
     }
 
     private fun refreshState(pluginType: PluginType? = null) {
@@ -117,13 +132,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     triggerEvent(Event.ShowUiStringSnackbar(UiString.UiStringText(reaction.message)))
                     refreshState()
                 }
-                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView -> {
-                    triggerEvent(NavigateToUrlInWPComWebView(reaction.url))
-                    viewState.value = prevState!!
-                }
 
-                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenGenericWebView -> {
-                    triggerEvent(NavigateToUrlInGenericWebView(reaction.url))
+                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenBrowser -> {
+                    triggerEvent(NavigateToUrlInBrowser(reaction.url))
                     viewState.value = prevState!!
                 }
             }
@@ -146,6 +157,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     @Suppress("LongMethod", "ComplexMethod")
     private fun showOnboardingState(state: CardReaderOnboardingState) {
+        lastShownOnboardingState = state
+        if (isPos) {
+            paymentsFlowTracker.trackOnboardingShownInPosFlow(state)
+        }
+
         when (state) {
             is OnboardingCompleted -> {
                 continueFlow()
@@ -277,9 +293,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             state.version
                         )
                     },
-                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                    onLearnMoreActionClicked = ::onLearnMoreClicked,
+                    onContactSupportActionClicked = ::onContactSupportClicked
                 )
-        }.exhaustive
+        }
     }
 
     private fun onSkipCashOnDeliveryClicked(
@@ -294,7 +311,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             selfHostedSiteId = site.selfHostedSiteId,
             true
         )
-        cardReaderTracker.trackOnboardingSkippedState(
+        paymentsFlowTracker.trackOnboardingSkippedState(
             CardReaderOnboardingState.CashOnDeliveryDisabled(
                 countryCode,
                 preferredPlugin,
@@ -314,7 +331,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         preferredPlugin: PluginType,
         version: String? = null
     ) {
-        cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
+        paymentsFlowTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
         viewState.value = CashOnDeliveryDisabledState(
             onSkipCashOnDeliveryClicked = {
                 (::onSkipCashOnDeliveryClicked)(
@@ -332,6 +349,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 )
             },
             onLearnMoreActionClicked = ::onLearnMoreClicked,
+            onContactSupportActionClicked = ::onContactSupportClicked,
             shouldShowProgress = true
         )
         launch {
@@ -344,7 +362,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 settings = Settings(instructions = "Pay by card or another accepted payment method"),
             )
             result.model?.let {
-                cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                paymentsFlowTracker.trackCashOnDeliveryEnabledSuccess(
                     ONBOARDING
                 )
                 viewState.postValue(
@@ -365,12 +383,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             )
                         },
                         onLearnMoreActionClicked = ::onLearnMoreClicked,
+                        onContactSupportActionClicked = ::onContactSupportClicked,
                         shouldShowProgress = false,
                         cashOnDeliveryEnabledSuccessfully = true
                     )
                 )
             } ?: run {
-                cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                paymentsFlowTracker.trackCashOnDeliveryEnabledFailure(
                     ONBOARDING,
                     result.error.message
                 )
@@ -392,6 +411,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             )
                         },
                         onLearnMoreActionClicked = ::onLearnMoreClicked,
+                        onContactSupportActionClicked = ::onContactSupportClicked,
                         shouldShowProgress = false,
                         cashOnDeliveryEnabledSuccessfully = false
                     )
@@ -405,7 +425,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             viewState.value =
                 CardReaderOnboardingViewState.SelectPaymentPluginState(
                     onConfirmPaymentMethodClicked = { pluginType ->
-                        cardReaderTracker.trackPaymentGatewaySelected(pluginType)
+                        paymentsFlowTracker.trackPaymentGatewaySelected(pluginType)
                         (::refreshState)(pluginType)
                     }
                 )
@@ -417,8 +437,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onLearnMoreClicked() {
-        cardReaderTracker.trackOnboardingLearnMoreTapped()
-        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
+        paymentsFlowTracker.trackOnboardingLearnMoreTapped()
+        triggerEvent(NavigateToUrlInBrowser(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
     }
 
     private fun onSkipPendingRequirementsClicked() {
@@ -435,7 +455,24 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     CardReaderOnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType))
                 )
             }
-        }.exhaustive
+            is CardReaderFlowParam.WooPosConnection -> {
+                triggerEvent(
+                    CardReaderOnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType))
+                )
+            }
+        }
+    }
+
+    override fun onCleared() {
+        clearViewModel()
+    }
+
+    fun clearViewModel() {
+        if (isPos) {
+            lastShownOnboardingState?.let {
+                paymentsFlowTracker.trackOnboardingDismissedInPosFlow(it)
+            }
+        }
     }
 
     private fun convertCountryCodeToCountry(countryCode: String?) =

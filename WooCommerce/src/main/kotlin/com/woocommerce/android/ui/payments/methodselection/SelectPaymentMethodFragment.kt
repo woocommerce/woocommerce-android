@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -17,15 +18,17 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSelectPaymentMethodBinding
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.payments.changeduecalculator.ChangeDueCalculatorFragment
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment
@@ -48,14 +51,27 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
     private var _binding: FragmentSelectPaymentMethodBinding? = null
     private val binding get() = _binding!!
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSelectPaymentMethodBinding.inflate(inflater, container, false)
-
+        setupToolbar()
         return binding.root
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,7 +90,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             when (state) {
                 Loading -> renderLoadingState(binding)
                 is Success -> renderSuccessfulState(binding, state)
-            }.exhaustive
+            }
         }
     }
 
@@ -93,7 +109,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         binding.tvSelectPaymentTitle.isVisible = true
         binding.pbLoading.isVisible = false
 
-        requireActivity().title = getString(R.string.simple_payments_take_payment_button, state.orderTotal)
+        binding.toolbar.title = getString(R.string.simple_payments_take_payment_button, state.orderTotal)
 
         binding.container.removeAllViews()
         state.rows.forEach { row ->
@@ -178,7 +194,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             .actionSelectPaymentMethodFragmentToScanToPayDialogFragment(
                                 event.paymentUrl
                             )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateToCardReaderPaymentFlow -> {
@@ -187,7 +203,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             event.cardReaderFlowParam,
                             event.cardReaderType
                         )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateToCardReaderHubFlow -> {
@@ -195,7 +211,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFlow(
                             event.cardReaderFlowParam
                         )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateToCardReaderRefundFlow -> {
@@ -204,13 +220,19 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             event.cardReaderFlowParam,
                             event.cardReaderType
                         )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateBackToOrderList -> {
-                    val action =
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
-                    findNavController().navigateSafely(action)
+                    if (requireContext().isTwoPanesShouldBeUsed) {
+                        // in tablet mode the [SelectPaymentMethodFragment] is shown in the details pane.
+                        // We should pop the back stack to show the [OrderDetailsFragment].
+                        findNavController().popBackStack()
+                    } else {
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList().run {
+                            findNavController().navigateSafely(this)
+                        }
+                    }
                 }
 
                 is NavigateBackToHub -> {
@@ -230,6 +252,15 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
                             orderId = event.orderId
                         )
+                    findNavController().navigateSafely(action)
+                }
+
+                is NavigateToChangeDueCalculatorScreen -> {
+                    val action =
+                        SelectPaymentMethodFragmentDirections
+                            .actionSelectPaymentMethodFragmentToChangeDueCalculatorFragment(
+                                orderId = event.order.id
+                            )
                     findNavController().navigateSafely(action)
                 }
 
@@ -267,6 +298,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             entryId = R.id.selectPaymentMethodFragment
         ) {
             viewModel.onScanToPayCompleted()
+        }
+
+        handleDialogResult<Boolean>(
+            key = ChangeDueCalculatorFragment.IS_ORDER_PAID_RESULT,
+            entryId = R.id.selectPaymentMethodFragment
+        ) { paid ->
+            viewModel.handleIsOrderPaid(paid)
         }
     }
 

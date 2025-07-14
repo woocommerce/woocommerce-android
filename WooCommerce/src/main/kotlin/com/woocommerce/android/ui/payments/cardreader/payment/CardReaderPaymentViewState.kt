@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.payment
 
-import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
@@ -20,7 +19,6 @@ sealed class ViewState(
     @StringRes open val headerLabel: Int? = null,
     val paymentStateLabel: UiString? = null,
     open val receiptSentAutomaticallyHint: UiString? = null,
-    @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
     @DrawableRes val illustration: Int? = null,
     open val isProgressVisible: Boolean = false,
     val primaryActionLabel: Int? = null,
@@ -56,7 +54,6 @@ sealed class ViewState(
     ) : ViewState(
         headerLabel = R.string.card_reader_payment_payment_failed_header,
         paymentStateLabel = errorType.message,
-        paymentStateLabelTopMargin = R.dimen.major_100,
         primaryActionLabel = primaryLabel,
         illustration = R.drawable.img_products_error,
         secondaryActionLabel = secondaryLabel
@@ -72,7 +69,6 @@ sealed class ViewState(
     ) : ViewState(
         headerLabel = R.string.card_reader_payment_payment_failed_header,
         paymentStateLabel = errorType.message,
-        paymentStateLabelTopMargin = R.dimen.major_100,
         primaryActionLabel = primaryLabel,
         illustration = R.drawable.img_card_reader_tpp_payment_failed,
         secondaryActionLabel = secondaryLabel
@@ -210,9 +206,16 @@ sealed class ViewState(
 
     data class PrintingReceiptState(
         override val amountWithCurrencyLabel: String,
-        val receiptUrl: String,
-        val documentName: String
     ) : ViewState(
+        headerLabel = R.string.card_reader_payment_completed_payment_header,
+        illustration = null,
+        primaryActionLabel = null,
+        secondaryActionLabel = null,
+    ) {
+        override val isProgressVisible = true
+    }
+
+    object SharingReceiptState : ViewState(
         headerLabel = R.string.card_reader_payment_completed_payment_header,
         illustration = null,
         primaryActionLabel = null,
@@ -255,7 +258,6 @@ sealed class ViewState(
     ) : ViewState(
         headerLabel = R.string.card_reader_interac_refund_refund_failed_header,
         paymentStateLabel = errorType.message,
-        paymentStateLabelTopMargin = R.dimen.major_100,
         primaryActionLabel = primaryLabel,
         illustration = R.drawable.img_products_error,
         secondaryActionLabel = secondaryLabel,
@@ -330,6 +332,7 @@ sealed class PaymentFlowError(val message: UiString) {
             NonRetryableError
 
         object PinRequired : Declined(UiStringRes(R.string.card_reader_payment_failed_pin_required))
+        object IncorrectPin : Declined(UiStringRes(R.string.card_reader_payment_failed_incorrect_pin))
         object TooManyPinTries : Declined(UiStringRes(R.string.card_reader_payment_failed_too_many_pin_tries))
         object TestCard : Declined(UiStringRes(R.string.card_reader_payment_failed_test_card))
         object TestModeLiveCard : Declined(UiStringRes(R.string.card_reader_payment_failed_test_mode_live_card))

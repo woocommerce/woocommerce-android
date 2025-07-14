@@ -1,0 +1,9 @@
+for (taskName in gradle.startParameter.taskNames) {
+    if (taskName.contains("UnitTest")) {
+        tasks.matching { it.name.startsWith("hilt") }
+                .configureEach {
+                    logger.warn("Disabling task ${it.name} for unit tests")
+                    enabled = false
+                }
+    }
+}

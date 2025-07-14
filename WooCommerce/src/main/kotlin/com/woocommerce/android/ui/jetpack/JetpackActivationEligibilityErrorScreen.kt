@@ -14,7 +14,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.jetpack.benefits.JetpackActivationEligibilityErrorViewModel
 
 @Composable
 fun JetpackActivationEligibilityErrorScreen(viewModel: JetpackActivationEligibilityErrorViewModel) {
@@ -56,7 +55,7 @@ fun JetpackActivationEligibilityErrorScreen(
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
-                navigationIcon = Icons.Filled.ArrowBack,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onHelpButtonClick = onHelpButtonClick,
                 onNavigationButtonClick = onBackButtonClick
             )
@@ -73,7 +72,6 @@ fun JetpackActivationEligibilityErrorScreen(
                     horizontal = dimensionResource(id = R.dimen.major_100)
                 )
         ) {
-
             MainContent(
                 username = viewState.username,
                 role = viewState.role,

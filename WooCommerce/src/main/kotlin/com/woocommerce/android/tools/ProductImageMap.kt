@@ -63,12 +63,14 @@ class ProductImageMap @Inject constructor(
                     val result = productStore.fetchSingleProduct(FetchSingleProductPayload(site, remoteProductId))
                     if (!result.isError) {
                         withContext(dispatchers.main) {
+                            // Collect references to remove
+                            val toRemove = mutableListOf<WeakReference<OnProductFetchedListener>>()
                             observers.forEach { weakReference ->
-                                // notify the observer
-                                weakReference.get()?.onProductFetched(remoteProductId)
-                                    // remove the weak reference if the observer was garbage collected
-                                    ?: observers.remove(weakReference)
+                                // notify the observer or collect it for removal if it's been garbage collected
+                                weakReference.get()?.onProductFetched(remoteProductId) ?: toRemove.add(weakReference)
                             }
+                            // Remove the collected references
+                            observers.removeAll(toRemove)
                         }
                     }
                 }

@@ -4,31 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_jetpack_install"
     app:startDestination="@id/jetpackBenefitsDialog">
+    <include app:graph="@navigation/nav_graph_jetpack_activation" />
+    <action
+        android:id="@+id/action_global_jetpackCPInstallProgressDialog"
+        app:destination="@id/jetpackCPInstallProgressDialog" />
     <dialog
-        android:id="@+id/jetpackInstallStartDialog"
-        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallStartDialog"
-        android:label="JetpackInstallStartDialog"
+        android:id="@+id/jetpackCPInstallStartDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackCPInstallStartDialog"
+        android:label="JetpackCPInstallStartDialog"
         tools:layout="@layout/dialog_jetpack_install_start">
         <action
-            android:id="@+id/action_jetpackInstallStartDialog_to_jetpackInstallProgressDialog"
-            app:destination="@id/jetpackInstallProgressDialog" />
+            android:id="@+id/action_jetpackCPInstallStartDialog_to_jetpackCPInstallProgressDialog"
+            app:destination="@id/jetpackCPInstallProgressDialog" />
     </dialog>
     <dialog
-        android:id="@+id/jetpackInstallProgressDialog"
-        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog"
+        android:id="@+id/jetpackCPInstallProgressDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackCPInstallProgressDialog"
         android:label="JetpackInstallProgressDialog"
-        tools:layout="@layout/dialog_jetpack_install_progress">
-    </dialog>
+        tools:layout="@layout/dialog_jetpack_install_progress" />
     <dialog
         android:id="@+id/jetpackBenefitsDialog"
         android:name="com.woocommerce.android.ui.jetpack.benefits.JetpackBenefitsDialog"
         android:label="JetpackBenefitsDialog">
         <action
-            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackInstallStartDialog"
-            app:destination="@id/jetpackInstallStartDialog" />
+            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackCPInstallStartDialog"
+            app:destination="@id/jetpackCPInstallStartDialog" />
         <action
             android:id="@+id/action_jetpackBenefitsDialog_to_jetpack_activation"
-            app:destination="@id/nav_graph_jetpack_activation" >
+            app:destination="@id/nav_graph_jetpack_activation">
             <argument
                 android:name="siteUrl"
                 app:argType="string" />
@@ -40,7 +43,6 @@
             android:id="@+id/action_jetpackBenefitsDialog_to_jetpackActivationEligibilityErrorFragment"
             app:destination="@id/jetpackActivationEligibilityErrorFragment" />
     </dialog>
-    <include app:graph="@navigation/nav_graph_jetpack_activation" />
     <fragment
         android:id="@+id/jetpackActivationEligibilityErrorFragment"
         android:name="com.woocommerce.android.ui.jetpack.JetpackActivationEligibilityErrorFragment"

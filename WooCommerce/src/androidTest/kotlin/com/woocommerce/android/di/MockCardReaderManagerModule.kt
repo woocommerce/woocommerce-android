@@ -2,6 +2,7 @@ package com.woocommerce.android.di
 
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderManager.SimulatorUpdateFrequency
+import com.woocommerce.android.cardreader.CardReaderManager.TapToPayUxConfig
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -15,6 +16,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import dagger.Module
 import dagger.Provides
@@ -41,7 +43,7 @@ class MockCardReaderManagerModule {
             override val id: String
                 get() = "ADEE123"
             override val type: String
-                get() = "reader"
+                get() = "TAP_TO_PAY_DEVICE"
             override val currentBatteryLevel: Float
                 get() = 1f
             override val firmwareVersion: String
@@ -76,6 +78,8 @@ class MockCardReaderManagerModule {
             return emptyFlow()
         }
 
+        override fun setupTapToPayUx(config: TapToPayUxConfig) {}
+
         override fun startConnectionToReader(cardReader: CardReader, locationId: String) {}
 
         override suspend fun disconnectReader(): Boolean = true
@@ -83,7 +87,10 @@ class MockCardReaderManagerModule {
         override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> =
             flowOf(CardPaymentStatus.CollectingPayment)
 
-        override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
+        override suspend fun refundInteracPayment(
+            refundParams: RefundParams,
+            refundConfig: RefundConfig
+        ): Flow<CardInteracRefundStatus> {
             return emptyFlow()
         }
 

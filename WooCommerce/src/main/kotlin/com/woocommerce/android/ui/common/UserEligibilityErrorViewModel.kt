@@ -29,6 +29,12 @@ class UserEligibilityErrorViewModel @Inject constructor(
         private const val ROLES_KEY = "current_roles"
     }
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
@@ -61,7 +67,9 @@ class UserEligibilityErrorViewModel @Inject constructor(
 
                     if (isUserEligible) {
                         triggerEvent(Exit)
-                    } else triggerEvent(ShowSnackbar(string.user_role_access_error_retry))
+                    } else {
+                        triggerEvent(ShowSnackbar(string.user_role_access_error_retry))
+                    }
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(R.string.error_generic))

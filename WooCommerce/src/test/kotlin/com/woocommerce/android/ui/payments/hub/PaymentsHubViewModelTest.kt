@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.hub
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY
@@ -15,13 +14,9 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
-import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -33,20 +28,19 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySurveyScreen
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
-import com.woocommerce.android.ui.payments.taptopay.TTPCaUkFeatureFlagEnabled
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.Available
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -71,8 +65,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 class PaymentsHubViewModelTest : BaseUnitTest() {
@@ -91,17 +83,10 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         onBlocking { isCashOnDeliveryEnabled() } doReturn false
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
-    private val cardReaderTracker: CardReaderTracker = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val paymentMenuUtmProvider: UtmProvider = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
         on { invoke() }.thenReturn(Available)
-    }
-    private val tapToPayCaUkFeatureFlagEnabled: TTPCaUkFeatureFlagEnabled = mock()
-    private val appPrefs: AppPrefs = mock()
-    private val feedbackRepository: FeedbackRepository = mock {
-        on { getFeatureFeedbackSetting(any()) }.thenReturn(
-            FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY)
-        )
     }
     private val paymentsHubTapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
@@ -125,14 +110,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen shown, then collect payments row present`() {
-        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
-            .anyMatch {
-                it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
-            }
-    }
-
-    @Test
     fun `when screen shown, then manage card reader row present`() {
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
@@ -153,14 +130,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.label == UiStringRes(R.string.card_reader_purchase_card_reader)
-            }
-    }
-
-    @Test
-    fun `when screen shown, then collect payment row icon is present`() {
-        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
-            .anyMatch {
-                it.icon == R.drawable.ic_gridicons_money_on_surface
             }
     }
 
@@ -200,27 +169,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 it.icon == R.drawable.ic_card_reader_manual &&
                     it.label == UiStringRes(R.string.settings_card_reader_manuals)
             }
-    }
-
-    @Test
-    fun `when user clicks on collect payment, then app navigates to payment collection screen`() {
-        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
-        }!!.onClick!!.invoke()
-
-        assertThat(viewModel.event.getOrAwaitValue())
-            .isEqualTo(
-                PaymentsHubViewModel.PaymentsHubEvents.NavigateToPaymentCollectionScreen
-            )
-    }
-
-    @Test
-    fun `when user clicks on collect payment, then collect payment event tracked`() {
-        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
-        }!!.onClick!!.invoke()
-
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
     }
 
     @Test
@@ -646,25 +594,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given onboarding error, when screen shown, then collect payment row is enabled`() =
-        testBlocking {
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
-                mock<CardReaderOnboardingState.GenericError>()
-            )
-
-            initViewModel()
-
-            assertThat(
-                (
-                    viewModel.viewStateData.getOrAwaitValue().rows.find {
-                        it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
-                    }
-                        as NonToggleableListItem
-                    ).isEnabled
-            ).isTrue()
-        }
-
-    @Test
     fun `given onboarding error, when screen shown, then card reader manual is enabled`() =
         testBlocking {
             val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
@@ -721,25 +650,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.getOrAwaitValue().onboardingErrorAction?.text).isEqualTo(
                 UiStringRes(R.string.card_reader_onboarding_with_pending_requirements, containsHtml = true)
             )
-        }
-
-    @Test
-    fun `given pending requirements status, when screen shown, then collect payment row is enabled`() =
-        testBlocking {
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
-                mock<StripeAccountPendingRequirement>()
-            )
-
-            initViewModel()
-
-            assertThat(
-                (
-                    viewModel.viewStateData.getOrAwaitValue().rows.find {
-                        it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
-                    }
-                        as NonToggleableListItem
-                    ).isEnabled
-            ).isTrue()
         }
 
     @Test
@@ -826,8 +736,17 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it is PaymentsHubViewState.ListItem.HeaderItem &&
-                    it.index == 2 &&
+                    it.index == 1 &&
                     it.label == UiStringRes(R.string.card_reader_settings_header)
+            }
+    }
+
+    @Test
+    fun `when screen shown, then DepositSummaryListItem shown`() {
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+            .anyMatch {
+                it is PaymentsHubViewState.ListItem.PayoutSummaryListItem &&
+                    it.index == 0
             }
     }
 
@@ -1090,7 +1009,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(true)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
+            verify(paymentsFlowTracker).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
         }
 
     @Test
@@ -1112,7 +1031,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(true)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryEnabledFailure(
+            verify(paymentsFlowTracker).trackCashOnDeliveryEnabledFailure(
                 PAYMENTS_HUB,
                 "Toggling COD failed. Please try again later"
             )
@@ -1137,7 +1056,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(false)
 
             // THEN
-            verify(cardReaderTracker, never()).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
+            verify(paymentsFlowTracker, never()).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
         }
 
     @Test
@@ -1159,7 +1078,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(false)
 
             // THEN
-            verify(cardReaderTracker, never()).trackCashOnDeliveryEnabledFailure(
+            verify(paymentsFlowTracker, never()).trackCashOnDeliveryEnabledFailure(
                 PAYMENTS_HUB,
                 "Toggling COD failed. Please try again later"
             )
@@ -1184,7 +1103,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(false)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryDisabledFailure(
+            verify(paymentsFlowTracker).trackCashOnDeliveryDisabledFailure(
                 PAYMENTS_HUB,
                 "Toggling COD failed. Please try again later"
             )
@@ -1209,7 +1128,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(false)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryDisabledSuccess(
+            verify(paymentsFlowTracker).trackCashOnDeliveryDisabledSuccess(
                 PAYMENTS_HUB
             )
         }
@@ -1363,7 +1282,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onLearnMoreClicked.invoke()
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryLearnMoreTapped()
+            verify(paymentsFlowTracker).trackCashOnDeliveryLearnMoreTapped()
         }
 
     @Test
@@ -1375,7 +1294,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
-            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
 
             // WHEN
             initViewModel()
@@ -1383,7 +1301,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             // THEN
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
                 it is PaymentsHubViewState.ListItem.HeaderItem &&
-                    it.index == 5 &&
+                    it.index == 4 &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_header)
             }
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
@@ -1391,7 +1309,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_baseline_contactless &&
                     it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) &&
                     it.description == UiStringRes(R.string.card_reader_tap_to_pay_description) &&
-                    it.index == 6 &&
+                    it.index == 5 &&
                     it.iconBadge == R.drawable.ic_badge_new
             }
         }
@@ -1405,8 +1323,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
-            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-            whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
             // WHEN
             initViewModel()
@@ -1417,114 +1333,8 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_tintable_info_outline_24dp &&
                     it.label == UiStringRes(R.string.card_reader_about_tap_to_pay) &&
                     it.description == null &&
-                    it.index == 7 &&
+                    it.index == 6 &&
                     it.iconBadge == null
-            }
-        }
-
-    @Test
-    fun `given ttp available and used and feedback not given, when view model started, then show feedback row`() =
-        testBlocking {
-            // GIVEN
-            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
-                mock<CardReaderOnboardingState.OnboardingCompleted>()
-            )
-            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-            whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
-                .thenReturn(FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
-
-            // WHEN
-            initViewModel()
-
-            // THEN
-            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
-                it is NonToggleableListItem &&
-                    it.icon == R.drawable.ic_feedback_banner_logo &&
-                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
-                    it.description == null &&
-                    it.index == 8 &&
-                    it.iconBadge == null
-            }
-        }
-
-    @Test
-    fun `given ttp available and used and feedback given more than 30 days ago, when view model started, then dont show feedback row`() =
-        testBlocking {
-            // GIVEN
-            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
-                mock<CardReaderOnboardingState.OnboardingCompleted>()
-            )
-            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-            whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
-                .thenReturn(
-                    FeatureFeedbackSettings(
-                        FeatureFeedbackSettings.Feature.TAP_TO_PAY,
-                        FeatureFeedbackSettings.FeedbackState.GIVEN,
-                        Calendar.getInstance().time.time - TimeUnit.DAYS.toMillis(31)
-                    )
-                )
-
-            // WHEN
-            initViewModel()
-
-            // THEN
-            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-                it is NonToggleableListItem &&
-                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
-            }
-        }
-
-    @Test
-    fun `given ttp available and used and feedback given less than 30 days ago, when view model started, then show feedback row`() =
-        testBlocking {
-            // GIVEN
-            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
-                mock<CardReaderOnboardingState.OnboardingCompleted>()
-            )
-            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-            whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
-                .thenReturn(
-                    FeatureFeedbackSettings(
-                        FeatureFeedbackSettings.Feature.TAP_TO_PAY,
-                        FeatureFeedbackSettings.FeedbackState.GIVEN,
-                        Calendar.getInstance().time.time - TimeUnit.DAYS.toMillis(29)
-                    )
-                )
-
-            // WHEN
-            initViewModel()
-
-            // THEN
-            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
-                it is NonToggleableListItem &&
-                    it.icon == R.drawable.ic_feedback_banner_logo &&
-                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
-                    it.description == null &&
-                    it.index == 8
-            }
-        }
-
-    @Test
-    fun `given ttp available and not used, when view model started, then dont show feedback row`() =
-        testBlocking {
-            // GIVEN
-            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
-            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(false)
-
-            // WHEN
-            initViewModel()
-
-            // THEN
-            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-                it is NonToggleableListItem &&
-                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
             }
         }
 
@@ -1546,7 +1356,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 .onClick!!.invoke()
 
             // THEN
-            verify(cardReaderTracker).trackIPPLearnMoreClicked("payments_menu")
+            verify(paymentsFlowTracker).trackIPPLearnMoreClicked("payments_menu")
         }
 
     @Test
@@ -1590,15 +1400,13 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     selfHostedSiteId = site.selfHostedSiteId
                 )
             ).thenReturn(true)
-            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-            whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
             // WHEN
             initViewModel()
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         }
 
     @Test
@@ -1687,7 +1495,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         // THEN
-        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySummaryScreen::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapToPaySummaryScreen::class.java)
     }
 
     @Test
@@ -1736,7 +1544,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
         )
         assertThat(learnMoreListItems[0].icon).isEqualTo(R.drawable.ic_info_outline_20dp)
-        assertThat(learnMoreListItems[0].index).isEqualTo(13)
+        assertThat(learnMoreListItems[0].index).isEqualTo(11)
     }
 
     @Test
@@ -1749,7 +1557,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         initViewModel(OpenInHub.TAP_TO_PAY_SUMMARY)
 
         // THEN
-        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySummaryScreen::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapToPaySummaryScreen::class.java)
     }
 
     @Test
@@ -1767,7 +1575,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             any(),
             any(),
         )
-        verify(cardReaderTracker).trackTapToPayNotAvailableReason(
+        verify(paymentsFlowTracker).trackTapToPayNotAvailableReason(
             SystemVersionNotSupported,
             "payments_menu",
         )
@@ -1780,68 +1588,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.event.value).isNull()
-    }
-
-    @Test
-    fun `given ttp used and feedback not given, when on survey tapped, then navigate to tap to pay feedback screen event emitted`() {
-        // GIVEN
-        whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
-        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
-            .thenReturn(CardReaderConfigForUSA)
-
-        // WHEN
-        initViewModel()
-        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
-        }!!.onClick!!.invoke()
-
-        // THEN
-        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySurveyScreen::class.java)
-    }
-
-    @Test
-    fun `given ttp used and feedback not given, when on survey tapped, then navigate tap is tracked`() {
-        // GIVEN
-        whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
-            .thenReturn(FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
-        whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
-        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
-            .thenReturn(CardReaderConfigForUSA)
-
-        // WHEN
-        initViewModel()
-        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
-        }!!.onClick!!.invoke()
-
-        // THEN
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_FEEDBACK_TAPPED)
-    }
-
-    @Test
-    fun `given ttp used and feedback not given, when on survey tapped, then save that answer is given`() {
-        // GIVEN
-        whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
-        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
-            .thenReturn(CardReaderConfigForUSA)
-
-        // WHEN
-        initViewModel()
-        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
-        }!!.onClick!!.invoke()
-
-        // THEN
-        verify(feedbackRepository).saveFeatureFeedback(
-            FeatureFeedbackSettings.Feature.TAP_TO_PAY,
-            FeatureFeedbackSettings.FeedbackState.GIVEN
-        )
     }
 
     // region optional card reader update
@@ -1913,7 +1659,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         initViewModel()
         softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
 
-        verify(cardReaderTracker).trackSoftwareUpdateAlertShown()
+        verify(paymentsFlowTracker).trackSoftwareUpdateAlertShown()
     }
 
     @Test
@@ -1925,7 +1671,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
         (viewModel.event.value as CardReaderUpdateAvailable).onClick.onClick(mock())
 
-        verify(cardReaderTracker).trackSoftwareUpdateAlertInstallClicked()
+        verify(paymentsFlowTracker).trackSoftwareUpdateAlertInstallClicked()
     }
 
     @Test
@@ -1935,7 +1681,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        verify(cardReaderTracker, never()).trackSoftwareUpdateAlertShown()
+        verify(paymentsFlowTracker, never()).trackSoftwareUpdateAlertShown()
     }
 
     @Test
@@ -1945,7 +1691,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        verify(cardReaderTracker, never()).trackSoftwareUpdateAlertInstallClicked()
+        verify(paymentsFlowTracker, never()).trackSoftwareUpdateAlertInstallClicked()
     }
 
     @Test
@@ -1953,7 +1699,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         val supportedCountry: CardReaderConfig = CardReaderConfigForCanada
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
-        whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
         initViewModel()
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
@@ -1968,7 +1713,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         val supportedCountry: CardReaderConfigForSupportedCountry = CardReaderConfigForCanada
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
-        whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
         initViewModel()
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
@@ -2009,7 +1753,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         viewModel = PaymentsHubViewModel(
             PaymentsHubFragmentArgs(
                 cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(openInHub),
-            ).initSavedStateHandle(),
+            ).toSavedStateHandle(),
             appPrefsWrapper,
             selectedSite,
             analyticsTrackerWrapper,
@@ -2018,15 +1762,12 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             cashOnDeliverySettingsRepository,
             learnMoreUrlProvider,
             cardReaderCountryConfigProvider,
-            cardReaderTracker,
+            paymentsFlowTracker,
             paymentMenuUtmProvider,
             tapToPayAvailabilityStatus,
-            appPrefs,
-            feedbackRepository,
             paymentsHubTapToPayUnavailableHandler,
             clearCardReaderDataAction,
             cardReaderManager,
-            tapToPayCaUkFeatureFlagEnabled,
         )
         viewModel.onViewVisible()
     }

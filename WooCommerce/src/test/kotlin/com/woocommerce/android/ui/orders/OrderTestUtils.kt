@@ -8,12 +8,15 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.model.OrderEntity
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
@@ -24,7 +27,7 @@ object OrderTestUtils {
     private const val TEST_ORDER_STATUS_COUNT = 20
 
     fun generateOrder(
-        metadata: String = "",
+        metadata: List<WCMetaData> = emptyList(),
         paymentMethod: String = "",
         datePaid: String = "2018-02-02T16:11:13Z",
         lineItems: String = ""
@@ -38,7 +41,7 @@ object OrderTestUtils {
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             metaData = metadata,
             paymentMethod = paymentMethod,
             datePaid = datePaid,
@@ -49,12 +52,12 @@ object OrderTestUtils {
     fun generateOrderShipmentProviders(): List<WCOrderShipmentProviderModel> {
         val result = ArrayList<WCOrderShipmentProviderModel>()
         result.add(
-            WCOrderShipmentProviderModel().apply {
-                localSiteId = 1
-                country = "Australia"
-                carrierName = "Anitaa Test"
+            WCOrderShipmentProviderModel(
+                localSiteId = LocalId(1),
+                country = "Australia",
+                carrierName = "Anitaa Test",
                 carrierLink = "http://google.com"
-            }
+            )
         )
         return result
     }
@@ -98,6 +101,73 @@ object OrderTestUtils {
             )
         }
         return result
+    }
+
+    fun generateShippingLabelModels(totalCount: Int = 5): List<ShippingLabelModel> {
+        val result = ArrayList<ShippingLabelModel>()
+        for (i in totalCount downTo 1) {
+            result.add(
+                ShippingLabelModel(
+                    labelId = i.toLong(),
+                    packageName = "Package$i",
+                    serviceName = "Service$i",
+                    createdDate = Date(),
+                    tracking = "",
+                    refundableAmount = BigDecimal.ZERO,
+                    status = UNKNOWN,
+                    created = null,
+                    carrierId = "",
+                    commercialInvoiceUrl = "",
+                    isCommercialInvoiceSubmittedElectronically = false,
+                    isLetter = false,
+                    productNames = emptyList(),
+                    productIds = emptyList(),
+                    shipmentId = "0",
+                    receiptItemId = 0L,
+                    mainReceiptId = 0L,
+                    rate = BigDecimal.ZERO,
+                    currency = "",
+                    expiryDate = 0L,
+                    usedDate = 0L,
+                    refund = null,
+                )
+            )
+        }
+        return result
+    }
+
+    fun generateItemsRefunds(
+        productQuantityPairs: List<Pair<Long, Int>>
+    ): List<Refund> {
+        val items = productQuantityPairs.map { pair ->
+            val (productId, quantity) = pair
+
+            Refund.Item(
+                productId = productId,
+                quantity = quantity,
+                id = 1L,
+                name = "A test",
+                variationId = 0,
+                subtotal = BigDecimal.valueOf(10.00),
+                total = BigDecimal.valueOf(10.00),
+                totalTax = BigDecimal.ZERO,
+                price = BigDecimal.valueOf(10.00),
+                orderItemId = 1L
+            )
+        }
+
+        return listOf(
+            Refund(
+                id = 1L,
+                amount = BigDecimal.TEN,
+                dateCreated = Date(),
+                reason = "Test",
+                automaticGatewayRefund = true,
+                items = items,
+                shippingLines = emptyList(),
+                feeLines = emptyList()
+            )
+        )
     }
 
     fun generateRefunds(totalCount: Int = 5): List<Refund> {
@@ -148,7 +218,7 @@ object OrderTestUtils {
     }
 
     fun generateTestOrder(orderId: Long = 1): Order {
-        return Order.EMPTY.copy(
+        return Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
             customer = Order.Customer(
                 billingAddress = Address.EMPTY.copy(
@@ -178,7 +248,7 @@ object OrderTestUtils {
             "    \"subtotal_tax\":\"0.00\",\n" +
             "    \"total\":\"10.00\",\n" +
             "    \"total_tax\":\"0.00\",\n" +
-            "    \"taxes\":[],\n" +
+            "    \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
             "    \"meta_data\":[],\n" +
             "    \"sku\":null,\n" +
             "    \"price\":10\n" +
@@ -189,7 +259,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "pending",
@@ -206,8 +276,44 @@ object OrderTestUtils {
                 "   \"instance_id\":\"0\",\n" +
                 "   \"total\":\"30.00\",\n" +
                 "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "   \"meta_data\":[]}]",
+        )
+    }
+
+    fun generateOrderWithCustomAmount(): OrderEntity {
+        val feeLine =
+            "[{\n" +
+                "    \"id\":1,\n" +
+                "    \"name\":\"A test\",\n" +
+                "    \"product_id\":15,\n" +
+                "    \"quantity\":1,\n" +
+                "    \"tax_class\":\"\",\n" +
+                "    \"subtotal\":\"10.00\",\n" +
+                "    \"subtotal_tax\":\"0.00\",\n" +
+                "    \"total\":\"10.00\",\n" +
+                "    \"total_tax\":\"0.00\",\n" +
+                "    \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
+                "    \"meta_data\":[],\n" +
+                "    \"sku\":null,\n" +
+                "    \"price\":10\n" +
+                "  }]"
+
+        return OrderEntity(
+            billingFirstName = "Carissa",
+            billingLastName = "King",
+            currency = "USD",
+            dateCreated = "2018-02-02T16:11:13Z",
+            localSiteId = LocalId(1),
+            orderId = 1,
+            number = "55",
+            status = "complete",
+            total = "106.00",
+            shippingTotal = "10.00",
+            lineItems = "",
+            refundTotal = -BigDecimal.TEN,
+            feeLines = feeLine,
+            shippingLines = ""
         )
     }
 
@@ -217,7 +323,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "pending",
@@ -234,7 +340,7 @@ object OrderTestUtils {
                 "    \"subtotal_tax\":\"0.00\",\n" +
                 "    \"total\":\"10.00\",\n" +
                 "    \"total_tax\":\"0.00\",\n" +
-                "    \"taxes\":[],\n" +
+                "    \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "    \"meta_data\":[],\n" +
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
@@ -248,7 +354,7 @@ object OrderTestUtils {
                 "   \"instance_id\":\"0\",\n" +
                 "   \"total\":\"30.00\",\n" +
                 "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "   \"meta_data\":[]},\n" +
                 "{  " +
                 "\"id\":120,\n" +
@@ -257,7 +363,7 @@ object OrderTestUtils {
                 "   \"instance_id\":\"0\",\n" +
                 "   \"total\":\"20.00\",\n" +
                 "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":3}, {\"id\":2, \"total\":4}],\n" +
                 "   \"meta_data\":[]\n" +
                 "}]",
         )
@@ -306,7 +412,8 @@ object OrderTestUtils {
     fun generateTestOrderItems(
         count: Int = 1,
         productId: Long = -1,
-        quantity: Float = 1F
+        quantity: Float = 1F,
+        taxes: (Int) -> List<Order.LineTaxEntry> = { emptyList() }
     ): List<Item> {
         val list = mutableListOf<Item>()
         for (i in 1..count) {
@@ -319,10 +426,12 @@ object OrderTestUtils {
                     sku = "",
                     quantity = quantity,
                     subtotal = BigDecimal("10"),
+                    subtotalTax = BigDecimal.ZERO,
                     totalTax = BigDecimal.ZERO,
                     total = BigDecimal("10"),
                     variationId = 0,
-                    attributesList = emptyList()
+                    attributesList = emptyList(),
+                    taxes = taxes(i),
                 )
             )
         }

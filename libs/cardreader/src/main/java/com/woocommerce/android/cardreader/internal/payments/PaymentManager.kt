@@ -37,7 +37,7 @@ internal class PaymentManager(
     private val errorMapper: PaymentErrorMapper,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
 ) {
-    suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
+    fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
         if (isInvalidState(paymentInfo)) return@flow
 
         val paymentIntent = createPaymentIntent(paymentInfo)
@@ -157,6 +157,8 @@ internal class PaymentManager(
         return result
     }
 
+    // Stripe new SDk now has paymentIntent.id as nullable to support offline payment. But we don't support offline yet
+    // so adding paymentIntent.id!! here for now. Code need to be refactored once we support offline payment.
     private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
         receiptUrl: String,
         orderId: Long,
@@ -164,7 +166,7 @@ internal class PaymentManager(
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
-        when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)) {
+        when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id!!)) {
             is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }

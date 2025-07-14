@@ -3,105 +3,137 @@ package com.woocommerce.android.ui.orders.details
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.FrameLayout
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
-import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
-import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABEL_M4
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
+import com.woocommerce.android.extensions.windowWidthSizeClass
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.CustomAmountCard
+import com.woocommerce.android.ui.orders.Header
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmptyNotified
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoadingNotified
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
+import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderDetailFragment :
     BaseFragment(R.layout.fragment_order_detail),
-    OrderProductActionListener,
-    MenuProvider {
+    OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
+        private const val MARGINS_FOR_TABLET: Float = 0.1F
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
-    private val orderEditingViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
 
     @Inject
     lateinit var navigator: OrderNavigator
+
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var productImageMap: ProductImageMap
+
     @Inject
     lateinit var dateUtils: DateUtils
+
     @Inject
     lateinit var cardReaderManager: CardReaderManager
-    @Inject
-    lateinit var feedbackPrefs: FeedbackPrefs
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -109,15 +141,16 @@ class OrderDetailFragment :
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
 
+    private val navArgs: OrderDetailFragmentArgs by navArgs()
+
     private var screenTitle = ""
         set(value) {
             field = value
             updateActivityTitle()
         }
 
-    private val feedbackState
-        get() = feedbackPrefs.getFeatureFeedbackSettings(SHIPPING_LABEL_M4)?.feedbackState
-            ?: UNANSWERED
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onResume() {
         super.onResume()
@@ -146,14 +179,57 @@ class OrderDetailFragment :
     override fun getFragmentTitle() = screenTitle
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val isScreenLargerThanCompact = requireContext().isTwoPanesShouldBeUsed
+        if (isScreenLargerThanCompact) {
+            // Postpone the transition until the view is ready. We need to do this on tablets to avoid a flicker
+            // when navigating to order detail/list. For instance - While collecting payment during order creation
+            // we navigate from order creation to order detail screen. If we don't postpone the transition, we would
+            // see a flicker of empty order detail screen before the order detail is loaded.
+            postponeEnterTransition()
+        }
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentOrderDetailBinding.bind(view)
+        /**
+         * In tablet split view, when the app window is initially narrow,
+         * the order detail occupies the full screen as a single pane.
+         * Below code takes care of transition handling:
+         * if the app window is then expanded in the split view,
+         * the layout should adapt from the single-pane full-screen mode to a two-pane layout,
+         * ensuring a seamless user experience across varying app window sizes.
+         *
+         * This code identifies scenarios where the device is a tablet and the order detail currently
+         * occupies the entire window (typical in a transition from single-pane to two-pane layout).
+         * It then navigates up to the order list screen, which is responsible for managing the two-pane
+         * layout effectively.
+         *
+         * The code also determines if the Order Detail screen is invoked following order creation
+         * during the payment collection process. If this is the case, it navigates to the
+         * Select Payment screen on both phone and tablet devices.
+         */
+        if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && !navArgs.startPaymentFlow) {
+            navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)
+            return
+        } else if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && navArgs.startPaymentFlow) {
+            navigateBackWithResult(KEY_START_PAYMENT_FLOW, navArgs.orderId)
+            return
+        }
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+        if (navArgs.startPaymentFlow) {
+            communicationViewModel.notifyOrdersLoaded()
+        }
+
+        _binding = FragmentOrderDetailBinding.bind(view)
+        if (isScreenLargerThanCompact) {
+            view.post { startPostponedEnterTransition() }
+        }
+
+        setMarginsIfTablet()
+        setupToolbar()
+
         setupObservers(viewModel)
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
+        setupOrdersCommunicationObservers(communicationViewModel)
 
         binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
             viewModel.onEditOrderStatusSelected()
@@ -165,6 +241,12 @@ class OrderDetailFragment :
         binding.customFieldsCard.customFieldsButton.setOnClickListener {
             viewModel.onCustomFieldsButtonClicked()
         }
+        binding.orderDetailsAICard.aiThankYouNoteButton.setOnClickListener {
+            viewModel.onAIThankYouNoteButtonClicked()
+        }
+        binding.orderDetailTrash.setOnClickListener {
+            viewModel.onTrashOrderClicked()
+        }
 
         ViewCompat.setTransitionName(
             binding.scrollView,
@@ -172,29 +254,105 @@ class OrderDetailFragment :
         )
     }
 
+    private fun isOrderListFragmentNotVisible() = parentFragment?.parentFragment !is OrderListFragment
+
+    private fun setMarginsIfTablet() {
+        val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
+        val layoutParams = binding.orderDetailContainer.layoutParams as FrameLayout.LayoutParams
+        when (requireContext().isTwoPanesShouldBeUsed) {
+            true -> {
+                val marginHorizontal = getMarginHorizontal(windowWidth)
+                layoutParams.setMargins(
+                    marginHorizontal,
+                    layoutParams.topMargin,
+                    marginHorizontal,
+                    layoutParams.bottomMargin
+                )
+            }
+
+            false -> return
+        }
+        binding.orderDetailContainer.layoutParams = layoutParams
+    }
+
+    private fun getMarginHorizontal(windowWidth: Int): Int = when (requireContext().windowWidthSizeClass) {
+        WindowSizeClass.Medium -> resources.getDimension(R.dimen.major_100).toInt()
+        WindowSizeClass.ExpandedAndBigger -> (windowWidth * MARGINS_FOR_TABLET).toInt()
+        WindowSizeClass.Compact -> 0
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.title = screenTitle
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        // Set up the toolbar menu
+        binding.toolbar.inflateMenu(R.menu.menu_order_detail)
+        setupToolbarMenu(binding.toolbar.menu)
+    }
+
+    private fun setupToolbarMenu(menu: Menu) {
+        onPrepareMenu(menu)
+        if (requireContext().isTwoPanesShouldBeUsed) {
+            binding.toolbar.navigationIcon = null
+        } else {
+            binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
+            binding.toolbar.setNavigationOnClickListener {
+                if (!findNavController().popBackStack(R.id.orders, false)) {
+                    // in case the back stack is empty, indicating that the OrderDetailsFragment is shown in details pane
+                    // of the OrderListFragment, we need to propagate back press to the parent fragment manually.
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        }
+        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
+        menuEditOrder.isVisible = true
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_order_detail, menu)
-        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
-        menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
-    }
-
-    override fun onPrepareMenu(menu: Menu) {
+    fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.menu_edit_order)?.let {
             it.isEnabled = viewModel.hasOrder()
         }
+
+        menu.findItem(R.id.menu_arrow_up)?.let {
+            it.isVisible = viewModel.orderNavigationIsEnabled()
+
+            if (it.isVisible) {
+                it.isEnabled = viewModel.previousOrderNavigationIsEnabled()
+            }
+        }
+
+        menu.findItem(R.id.menu_arrow_down)?.let {
+            it.isVisible = viewModel.orderNavigationIsEnabled()
+
+            if (it.isVisible) {
+                it.isEnabled = viewModel.nextOrderNavigationIsEnabled()
+            }
+        }
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_order -> {
                 viewModel.onEditClicked()
                 true
             }
+
+            R.id.menu_arrow_up -> {
+                viewModel.onPreviousOrderClicked()
+                true
+            }
+
+            R.id.menu_arrow_down -> {
+                viewModel.onNextOrderClicked()
+                true
+            }
+
             else -> {
                 false
             }
@@ -211,11 +369,30 @@ class OrderDetailFragment :
         (activity as? MainNavigationRouter)?.showProductVariationDetail(remoteProductId, remoteVariationId)
     }
 
+    private fun setupOrdersCommunicationObservers(ordersCommunicationViewModel: OrdersCommunicationViewModel) {
+        ordersCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OrdersEmptyNotified -> {
+                    viewModel.showEmptyView()
+                }
+
+                is OrdersLoadingNotified -> {
+                    viewModel.showLoadingView()
+                }
+
+                else -> event.isHandled = false
+            }
+        }
+    }
+
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
-                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
-                requireActivity().invalidateOptionsMenu()
+                showOrderDetail(it.order!!, it.receiptButtonStatus)
+                if (requireContext().isTwoPanesShouldBeUsed) {
+                    orderEditingViewModel.setOrderId(it.order.id)
+                }
+                onPrepareMenu(binding.toolbar.menu)
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
@@ -227,13 +404,13 @@ class OrderDetailFragment :
             new.isProductListMenuVisible?.takeIfNotEqualTo(old?.isProductListMenuVisible) {
                 showProductListMenuButton(it)
             }
-            new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it)
-            }
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
             }
-            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
+            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) {
+                screenTitle = it
+                binding.toolbar.title = it
+            }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
                 showAddShipmentTracking(it)
@@ -245,32 +422,45 @@ class OrderDetailFragment :
             new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
                 showInstallWcShippingBanner(it)
             }
-            new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
-                binding.customFieldsCard.isVisible = it
+            new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
+                binding.orderDetailsAICard.isVisible = it
             }
+            new.isOrderDetailEmpty.takeIfNotEqualTo(old?.isOrderDetailEmpty) { showEmptyView(it) }
         }
 
         viewModel.orderNotes.observe(viewLifecycleOwner) {
             showOrderNotes(it)
         }
         viewModel.orderRefunds.observe(viewLifecycleOwner) {
-            showOrderRefunds(it, viewModel.order)
+            lifecycleScope.launch {
+                showOrderRefunds(it, viewModel.awaitOrder())
+            }
         }
         viewModel.productList.observe(viewLifecycleOwner) {
-            showOrderProducts(it, viewModel.order.currency)
+            lifecycleScope.launch {
+                showOrderProducts(it, viewModel.awaitOrder().currency)
+            }
         }
+        showCustomAmounts(viewModel.feeLineList)
         viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
             showShipmentTrackings(it)
         }
         viewModel.shippingLabels.observe(viewLifecycleOwner) {
-            showShippingLabels(it, viewModel.order.currency)
+            lifecycleScope.launch {
+                showShippingLabels(it, viewModel.awaitOrder().currency, viewModel.isRevampWooShippingEnabled)
+            }
         }
         viewModel.subscriptions.observe(viewLifecycleOwner) {
             showSubscriptions(it)
         }
         viewModel.giftCards.observe(viewLifecycleOwner) {
-            showGiftCards(it, viewModel.order.currency)
+            lifecycleScope.launch {
+                showGiftCards(it, viewModel.awaitOrder().currency)
+            }
         }
+        showShippingLines(viewModel.shippingLineList)
+
+        setupOrderAttributionInfoCard(viewModel.orderAttributionInfo)
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -281,15 +471,53 @@ class OrderDetailFragment :
                         uiMessageResolver.showSnack(event.message)
                     }
                 }
+
                 is ShowUndoSnackbar -> {
                     displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
+
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                is OrderDetailViewModel.TrashOrder -> {
+                    if (findNavController().previousBackStackEntry != null) {
+                        findNavController().popBackStack()
+                    }
+
+                    communicationViewModel.trashOrder(event.orderId)
+                }
+
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
         }
         viewModel.start()
+    }
+
+    private fun showShippingLines(shippingLineList: LiveData<List<ShippingLineDetails>>) {
+        binding.orderDetailShippingLines.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val orderCurrency = remember { mutableStateOf<String>("") }
+                LaunchedEffect(Unit) {
+                    orderCurrency.value = viewModel.awaitOrder().currency
+                }
+
+                shippingLineList.observeAsState().value?.let { shippingLines ->
+                    WooThemeWithBackground {
+                        ShippingLineSection(
+                            shippingLineDetails = shippingLines,
+                            formatCurrency = { amount ->
+                                currencyFormatter.formatCurrency(
+                                    amount,
+                                    currencyCode = orderCurrency.value
+                                )
+                            },
+                            modifier = Modifier.padding(bottom = 1.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun showSubscriptions(subscriptions: List<Subscription>) {
@@ -330,6 +558,20 @@ class OrderDetailFragment :
         )
     }
 
+    private fun setupOrderAttributionInfoCard(orderAttributionInfo: LiveData<OrderAttributionInfo>) {
+        binding.orderDetailOrderAttributionInfo.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                orderAttributionInfo.observeAsState().value?.let {
+                    WooThemeWithBackground {
+                        OrderDetailAttributionInfoView(attributionInfo = it)
+                    }
+                }
+            }
+        }
+    }
+
     private fun navigateToInstallWcShippingFlow() {
         findNavController().navigateSafely(
             OrderDetailFragmentDirections.actionOrderDetailFragmentToInstallWcShippingFlow()
@@ -364,6 +606,9 @@ class OrderDetailFragment :
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
             viewModel.onNewOrderNoteAdded(it)
         }
+        handleResult<Long>(WooShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
+            viewModel.onShippingLabelRefunded()
+        }
         handleResult<Boolean>(ShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
             viewModel.onShippingLabelRefunded()
         }
@@ -392,11 +637,9 @@ class OrderDetailFragment :
 
     private fun showOrderDetail(
         order: Order,
-        isPaymentCollectableWithCardReader: Boolean,
-        isReceiptButtonsVisible: Boolean
+        receiptButtonStatus: OrderDetailViewState.ReceiptButtonStatus
     ) {
         binding.orderDetailOrderStatus.updateOrder(order)
-        binding.orderDetailShippingMethodNotice.isVisible = order.hasMultipleShippingLines
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
@@ -404,17 +647,14 @@ class OrderDetailFragment :
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
-            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
-            isReceiptAvailable = isReceiptButtonsVisible,
+            receiptButtonStatus = receiptButtonStatus,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onSeeReceiptClickListener = {
                 viewModel.onSeeReceiptClicked()
             },
-            onCollectCardPresentPaymentClickListener = {
-                cardReaderManager.let {
-                    viewModel.onAcceptCardPresentPaymentClicked()
-                }
+            onCollectPaymentClickListener = {
+                viewModel.onCollectPaymentClicked(requireContext().isTwoPanesShouldBeUsed)
             },
             onPrintingInstructionsClickListener = {
                 viewModel.onPrintingInstructionsClicked()
@@ -503,6 +743,47 @@ class OrderDetailFragment :
         }.otherwise { binding.orderDetailProductList.hide() }
     }
 
+    private fun showCustomAmounts(feeLine: LiveData<List<Order.FeeLine>>) {
+        binding.orderDetailCustomAmount.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val feeLineState = feeLine.observeAsState(emptyList())
+                val currency = produceState<String?>(initialValue = null) {
+                    value = viewModel.awaitOrder().currency
+                }.value
+                if (feeLineState.value.isEmpty().not()) {
+                    WooThemeWithBackground {
+                        Column(
+                            modifier = Modifier.padding(bottom = 1.dp)
+                        ) {
+                            Header(text = stringResource(id = R.string.order_detail_custom_amounts_header))
+                            feeLineState.value.forEachIndexed { index, feeLine ->
+                                CustomAmountCard(
+                                    CustomAmountUI(
+                                        name = feeLine.name ?: "",
+                                        amount = currency?.let {
+                                            CurrencyFormattedAmount(
+                                                currencyFormatter.formatCurrency(
+                                                    feeLine.total,
+                                                    currencyCode = currency
+                                                )
+                                            )
+                                        } ?: run {
+                                            CurrencyFormattedAmount(
+                                                currencyFormatter.formatCurrency(feeLine.total)
+                                            )
+                                        },
+                                        shouldShowDivider = index < feeLineState.value.size - 1,
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun showAddShipmentTracking(show: Boolean) {
         with(binding.orderDetailShipmentList) {
             isVisible = show
@@ -522,7 +803,11 @@ class OrderDetailFragment :
         )
     }
 
-    private fun showShippingLabels(shippingLabels: List<ShippingLabel>, currency: String) {
+    private fun showShippingLabels(
+        shippingLabels: List<ShippingLabelModel>,
+        currency: String,
+        isRevampWooShippingEnabled: Boolean
+    ) {
         shippingLabels.whenNotNullNorEmpty {
             with(binding.orderDetailShippingLabelList) {
                 show()
@@ -530,18 +815,23 @@ class OrderDetailFragment :
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
+                    isRevampWooShippingEnabled = isRevampWooShippingEnabled,
                     productClickListener = this@OrderDetailFragment,
                     shippingLabelClickListener = object : OnShippingLabelClickListener {
-                        override fun onRefundRequested(shippingLabel: ShippingLabel) {
-                            viewModel.onRefundShippingLabelClick(shippingLabel.id)
+                        override fun onRefundRequested(shippingLabel: ShippingLabelModel) {
+                            viewModel.onRefundShippingLabelClick(shippingLabel.labelId)
                         }
 
-                        override fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel) {
-                            viewModel.onPrintShippingLabelClicked(shippingLabel.id)
+                        override fun onPrintShippingLabelClicked(shippingLabel: ShippingLabelModel) {
+                            viewModel.onPrintShippingLabelClicked(shippingLabel.labelId)
                         }
 
-                        override fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
+                        override fun onPrintCustomsFormClicked(shippingLabel: ShippingLabelModel) {
                             viewModel.onPrintCustomsFormClicked(shippingLabel)
+                        }
+
+                        override fun onViewShippingLabelClicked(shippingLabel: ShippingLabelModel) {
+                            viewModel.onViewShippingLabelClicked(shippingLabel)
                         }
                     }
                 )
@@ -549,56 +839,6 @@ class OrderDetailFragment :
         }.otherwise {
             binding.orderDetailShippingLabelList.hide()
         }
-    }
-
-    private fun displayShippingLabelsWIPCard(show: Boolean) {
-        if (show && feedbackState != DISMISSED) {
-            binding.orderDetailShippingLabelsWipCard.isVisible = true
-
-            binding.orderDetailShippingLabelsWipCard.initView(
-                getString(R.string.orderdetail_shipping_label_m2_wip_title),
-                getString(R.string.orderdetail_shipping_label_m3_wip_message),
-                onGiveFeedbackClick = { onGiveFeedbackClicked() },
-                onDismissClick = { onDismissProductWIPNoticeCardClicked() }
-            )
-        } else binding.orderDetailShippingLabelsWipCard.isVisible = false
-    }
-
-    private fun onGiveFeedbackClicked() {
-        val context = AnalyticsTracker.VALUE_SHIPPING_LABELS_M4_FEEDBACK
-
-        AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-            )
-        )
-        registerFeedbackSetting(GIVEN)
-        NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.SHIPPING_LABELS)
-            .apply { findNavController().navigateSafely(this) }
-    }
-
-    private fun onDismissProductWIPNoticeCardClicked() {
-        val context = AnalyticsTracker.VALUE_SHIPPING_LABELS_M4_FEEDBACK
-
-        AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-            )
-        )
-        registerFeedbackSetting(DISMISSED)
-        displayShippingLabelsWIPCard(false)
-    }
-
-    private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(
-            SHIPPING_LABEL_M4,
-            state
-        ).registerItself(feedbackPrefs)
     }
 
     private fun displayUndoSnackbar(
@@ -614,4 +854,22 @@ class OrderDetailFragment :
             it.show()
         }
     }
+
+    private fun showEmptyView(show: Boolean) {
+        if (show) {
+            binding.orderDetailContainer.visibility = View.GONE
+            binding.emptyView.show(WCEmptyView.EmptyViewType.ORDER_DETAILS)
+        } else {
+            binding.emptyView.hide()
+        }
+    }
+
+    data class CustomAmountUI(
+        val name: String,
+        val amount: CurrencyFormattedAmount,
+        val shouldShowDivider: Boolean,
+    )
+
+    @JvmInline
+    value class CurrencyFormattedAmount(val amount: String)
 }

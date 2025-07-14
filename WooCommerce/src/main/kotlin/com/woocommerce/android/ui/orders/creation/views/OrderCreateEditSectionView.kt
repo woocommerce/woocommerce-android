@@ -6,17 +6,20 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.annotation.DimenRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.use
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.core.view.setPadding
+import androidx.core.view.setMargins
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationSectionBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 
 class OrderCreateEditSectionView @JvmOverloads constructor(
     ctx: Context,
@@ -55,6 +58,12 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             updateContent(value)
         }
 
+    val barcodeIcon: ImageView
+        get() = binding.barcodeIcon
+
+    val addIcon: ImageView
+        get() = binding.addIcon
+
     private var keepAddButtons: Boolean = false
     private var hasEditButton: Boolean = true
 
@@ -75,6 +84,39 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         }
     }
 
+    fun showAddProductsHeaderActions() {
+        binding.addIcon.show()
+        binding.barcodeIcon.show()
+    }
+
+    fun showScanProductsHeaderAction() {
+        binding.barcodeIcon.show()
+    }
+
+    fun showAddAction() {
+        binding.addIcon.show()
+    }
+
+    fun hideAddAction() {
+        binding.addIcon.hide()
+    }
+
+    fun hideAddProductsHeaderActions() {
+        binding.addIcon.hide()
+        binding.barcodeIcon.hide()
+    }
+    fun hideHeader() {
+        binding.headerLabel.hide()
+    }
+
+    fun showHeader() {
+        binding.headerLabel.show()
+    }
+
+    fun removeProductsButtons() {
+        binding.addButtonsLayout.removeAllViews()
+    }
+
     fun setAddButtons(buttons: List<AddButton>) {
         binding.addButtonsLayout.removeAllViews()
         buttons.forEach { buttonModel ->
@@ -92,41 +134,138 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
     }
 
     fun setProductSectionButtons(
-        addProductsButton: AddButton,
+        addProductsButton: AddButton? = null,
+        addCustomAmountsButton: AddButton? = null,
+        addProductsViaScanIconButton: AddButton? = null,
         addProductsViaScanButton: AddButton? = null,
     ) {
         binding.addButtonsLayout.removeAllViews()
         val container = RelativeLayout(context)
-        var params = RelativeLayout.LayoutParams(
-            LayoutParams.WRAP_CONTENT,
-            LayoutParams.WRAP_CONTENT
+        val addProductsManuallyButtonId = View.generateViewId()
+        addProductsButton(
+            addProductsButton = addProductsButton,
+            container = container,
+            id = addProductsManuallyButtonId
         )
-        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-        val addingProductsManuallyButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
-        addingProductsManuallyButton.text = addProductsButton.text
-        addingProductsManuallyButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_add)
-        addingProductsManuallyButton.layoutParams = params
-        addingProductsManuallyButton.setOnClickListener { addProductsButton.onClickListener() }
+        addProductsViaScanIconButton(
+            addProductsViaScanIconButton = addProductsViaScanIconButton,
+            container = container
+        )
+        val addProductsButtonId = if (addProductsButton == null) null else addProductsManuallyButtonId
+        addProductsViaScanButton(
+            addProductsViaScanButton = addProductsViaScanButton,
+            container = container,
+            addingProductsManuallyButtonId = addProductsButtonId,
+            id = addProductsManuallyButtonId,
+        )
+        addCustomAmountsButton(
+            addCustomAmountsButton = addCustomAmountsButton,
+            container = container,
+            addingProductsManuallyButtonId = addProductsManuallyButtonId,
+        )
+        binding.addButtonsLayout.addView(container)
+    }
 
-        container.addView(addingProductsManuallyButton)
+    fun setCustomAmountsSectionButtons(
+        addCustomAmountsButton: AddButton
+    ) {
+        binding.addButtonsLayout.removeAllViews()
+        val container = RelativeLayout(context)
+        addCustomAmountsButton(addCustomAmountsButton, container, null)
+        binding.addButtonsLayout.addView(container)
+    }
 
-        addProductsViaScanButton?.let {
-            val addingProductsViaScanningButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
-            addingProductsViaScanningButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_barcode)
-            addingProductsViaScanningButton.iconPadding = 0
-            addingProductsViaScanningButton.setPadding(0)
-            addingProductsViaScanningButton.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
-            addingProductsViaScanningButton.setOnClickListener { addProductsViaScanButton.onClickListener() }
-            params = RelativeLayout.LayoutParams(
+    fun removeCustomSectionButtons() {
+        binding.addButtonsLayout.removeAllViews()
+    }
+
+    private fun addCustomAmountsButton(
+        addCustomAmountsButton: AddButton?,
+        container: RelativeLayout,
+        addingProductsManuallyButtonId: Int?
+    ) {
+        addCustomAmountsButton?.let {
+            val addingCustomAmountsButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
+            addingCustomAmountsButton.text = addCustomAmountsButton.text
+            addingCustomAmountsButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_add)
+            addingCustomAmountsButton.setOnClickListener { addCustomAmountsButton.onClickListener() }
+            val addCustomAmountsButtonParams = RelativeLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT
             )
-            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-            addingProductsViaScanningButton.layoutParams = params
+            addCustomAmountsButtonParams.addRule(RelativeLayout.ALIGN_PARENT_START)
+            addingProductsManuallyButtonId?.let {
+                addCustomAmountsButtonParams.addRule(RelativeLayout.BELOW, it)
+            }
+            addingCustomAmountsButton.layoutParams = addCustomAmountsButtonParams
+            container.addView(addingCustomAmountsButton)
+        }
+    }
+
+    private fun addProductsViaScanIconButton(
+        addProductsViaScanIconButton: AddButton?,
+        container: RelativeLayout
+    ) {
+        addProductsViaScanIconButton?.let {
+            val addingProductsViaScanningButton = ImageView(context, null)
+            addingProductsViaScanningButton.setImageResource(R.drawable.ic_barcode)
+            val margins = resources.getDimensionPixelSize(R.dimen.major_100)
+            addingProductsViaScanningButton.setOnClickListener { addProductsViaScanIconButton.onClickListener() }
+            val addProductsViaScanningButtonParams = RelativeLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+            )
+            addProductsViaScanningButtonParams.setMargins(margins)
+            addProductsViaScanningButtonParams.addRule(RelativeLayout.ALIGN_PARENT_END)
+            addingProductsViaScanningButton.layoutParams = addProductsViaScanningButtonParams
             container.addView(addingProductsViaScanningButton)
         }
+    }
 
-        binding.addButtonsLayout.addView(container)
+    private fun addProductsViaScanButton(
+        addProductsViaScanButton: AddButton?,
+        container: RelativeLayout,
+        addingProductsManuallyButtonId: Int?,
+        id: Int,
+    ) {
+        addProductsViaScanButton ?: return
+        val addProductButtonsParams = RelativeLayout.LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT
+        )
+        addProductButtonsParams.addRule(RelativeLayout.ALIGN_PARENT_START)
+        val scanToAddProductButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
+        scanToAddProductButton.text = addProductsViaScanButton.text
+        scanToAddProductButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_barcode)
+        scanToAddProductButton.id = id
+        addingProductsManuallyButtonId?.let {
+            addProductButtonsParams.addRule(RelativeLayout.BELOW, it)
+        }
+        scanToAddProductButton.layoutParams = addProductButtonsParams
+        scanToAddProductButton.setOnClickListener { addProductsViaScanButton.onClickListener() }
+
+        container.addView(scanToAddProductButton)
+    }
+
+    private fun addProductsButton(
+        addProductsButton: AddButton?,
+        container: RelativeLayout,
+        id: Int,
+    ) {
+        addProductsButton ?: return
+        val addProductButtonsParams = RelativeLayout.LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT
+        )
+        addProductButtonsParams.addRule(RelativeLayout.ALIGN_PARENT_START)
+        val addingProductsManuallyButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
+        addingProductsManuallyButton.text = addProductsButton.text
+        addingProductsManuallyButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_add)
+        addingProductsManuallyButton.id = id
+        addingProductsManuallyButton.layoutParams = addProductButtonsParams
+        addingProductsManuallyButton.setOnClickListener { addProductsButton.onClickListener() }
+
+        container.addView(addingProductsManuallyButton)
     }
 
     private fun updateContent(content: View?) {

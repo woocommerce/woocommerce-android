@@ -14,9 +14,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaUploadErrorListFragmentArgs
-import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
+import com.woocommerce.android.ui.products.details.ProductDetailFragment
+import com.woocommerce.android.ui.products.details.ProductDetailFragmentArgs
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.util.SystemVersionUtils
 import org.wordpress.android.util.SystemServiceFactory
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -150,15 +150,19 @@ class ProductImagesNotificationHandler @Inject constructor(
     fun postUploadFailureNotification(product: Product?, errors: List<ProductImageUploadData>) {
         val productId = product?.remoteId ?: errors.first().remoteProductId
 
+        val productDetailFragmentArgs = ProductDetailFragmentArgs(
+            mode = ProductDetailFragment.Mode.ShowProduct(productId)
+        ).toBundle()
+
+        val mediaUploadErrorsFragmentArgs = MediaUploadErrorListFragmentArgs(
+            remoteProductId = productId,
+            errorList = errors.toTypedArray()
+        ).toBundle()
+
         val pendingIntent = NavDeepLinkBuilder(context)
             .setGraph(R.navigation.nav_graph_main)
-            .setDestination(R.id.mediaUploadErrorsFragment)
-            .setArguments(
-                MediaUploadErrorListFragmentArgs(
-                    remoteId = productId,
-                    errorList = errors.toTypedArray()
-                ).toBundle()
-            )
+            .addDestination(R.id.productDetailFragment, productDetailFragmentArgs)
+            .addDestination(R.id.mediaUploadErrorsFragment, mediaUploadErrorsFragmentArgs)
             .createPendingIntent()
 
         val message = StringUtils.getQuantityString(
@@ -191,23 +195,25 @@ class ProductImagesNotificationHandler @Inject constructor(
         NavDeepLinkBuilder(context)
             .setGraph(R.navigation.nav_graph_main)
             .setDestination(R.id.productDetailFragment)
-            .setArguments(ProductDetailFragmentArgs(remoteProductId = productId).toBundle())
+            .setArguments(
+                ProductDetailFragmentArgs(
+                    mode = ProductDetailFragment.Mode.ShowProduct(productId)
+                ).toBundle()
+            )
             .createPendingIntent()
 
     /**
      * Ensures the notification channel for image uploads is created - only required for Android O+
      */
     private fun createChannel() {
-        if (SystemVersionUtils.isAtLeastO()) {
-            // first check if the channel already exists
-            notificationManager.getNotificationChannel(CHANNEL_ID)?.let {
-                return
-            }
-
-            val channelName = context.getString(R.string.product_images_upload_channel_title)
-            val channel = NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT)
-            notificationManager.createNotificationChannel(channel)
+        // first check if the channel already exists
+        notificationManager.getNotificationChannel(CHANNEL_ID)?.let {
+            return
         }
+
+        val channelName = context.getString(R.string.product_images_upload_channel_title)
+        val channel = NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT)
+        notificationManager.createNotificationChannel(channel)
     }
 
     fun removeForegroundNotification() {

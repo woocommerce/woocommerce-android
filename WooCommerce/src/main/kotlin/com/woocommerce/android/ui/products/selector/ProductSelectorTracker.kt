@@ -11,7 +11,7 @@ import javax.inject.Inject
 class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsTrackerWrapper) {
     fun trackClearSelectionButtonClicked(flow: ProductSelectorFlow, source: ProductSelectorSource) {
         when (flow) {
-            ProductSelectorFlow.OrderCreation -> {
+            ProductSelectorFlow.OrderCreation, ProductSelectorFlow.OrderEditing -> {
                 val sourceProperty = when (source) {
                     ProductSelectorSource.ProductSelector -> AnalyticsTracker.VALUE_PRODUCT_SELECTOR
                     ProductSelectorSource.VariationSelector -> AnalyticsTracker.VALUE_VARIATION_SELECTOR
@@ -22,30 +22,33 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
                 )
             }
             ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorFlow.OrderListFilter -> {}
             ProductSelectorFlow.Undefined -> {}
         }
     }
 
     fun trackItemSelected(flow: ProductSelectorFlow) {
         when (flow) {
-            ProductSelectorFlow.OrderCreation -> {
+            ProductSelectorFlow.OrderCreation, ProductSelectorFlow.OrderEditing -> {
                 tracker.track(
                     AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
                 )
             }
             ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorFlow.OrderListFilter -> {}
             ProductSelectorFlow.Undefined -> {}
         }
     }
 
     fun trackItemUnselected(flow: ProductSelectorFlow) {
         when (flow) {
-            ProductSelectorFlow.OrderCreation -> {
+            ProductSelectorFlow.OrderCreation, ProductSelectorFlow.OrderEditing -> {
                 tracker.track(
                     AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
                 )
             }
             ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorFlow.OrderListFilter -> {}
             ProductSelectorFlow.Undefined -> {}
         }
     }
@@ -57,7 +60,7 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
         isFilterActive: Boolean,
     ) {
         when (flow) {
-            ProductSelectorFlow.OrderCreation -> {
+            ProductSelectorFlow.OrderCreation, ProductSelectorFlow.OrderEditing -> {
                 tracker.track(
                     AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
                     mapOf(
@@ -68,6 +71,7 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
                 )
             }
             ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorFlow.OrderListFilter -> {}
             ProductSelectorFlow.Undefined -> {}
         }
     }
@@ -82,6 +86,40 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
                 }
             )
         )
+    }
+
+    fun trackConfigurableItem(flow: ProductSelectorFlow) {
+        if (flow == ProductSelectorFlow.OrderCreation || flow == ProductSelectorFlow.OrderEditing) {
+            val flowValue = when (flow) {
+                ProductSelectorFlow.OrderCreation -> AnalyticsTracker.VALUE_FLOW_CREATION
+                ProductSelectorFlow.OrderEditing -> AnalyticsTracker.VALUE_FLOW_EDITING
+                else -> AnalyticsTracker.VALUE_OTHER
+            }
+            tracker.track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to flowValue,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SELECTOR
+                )
+            )
+        }
+    }
+
+    fun trackConfigurableTapped(flow: ProductSelectorFlow) {
+        if (flow == ProductSelectorFlow.OrderCreation || flow == ProductSelectorFlow.OrderEditing) {
+            val flowValue = when (flow) {
+                ProductSelectorFlow.OrderCreation -> AnalyticsTracker.VALUE_FLOW_CREATION
+                ProductSelectorFlow.OrderEditing -> AnalyticsTracker.VALUE_FLOW_EDITING
+                else -> AnalyticsTracker.VALUE_OTHER
+            }
+            tracker.track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to flowValue,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SELECTOR
+                )
+            )
+        }
     }
 
     enum class ProductSelectorSource {

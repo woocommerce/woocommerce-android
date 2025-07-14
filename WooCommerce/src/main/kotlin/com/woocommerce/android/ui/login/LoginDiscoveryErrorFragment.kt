@@ -57,6 +57,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
     private var loginListener: LoginListener? = null
     private var jetpackLoginListener: LoginNoJetpackListener? = null
+
     @Inject
     internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
@@ -117,7 +118,10 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
                 AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
                 unifiedLoginTracker.trackClick(Click.TRY_AGAIN)
                 jetpackLoginListener?.showUsernamePasswordScreen(
-                    siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                    siteAddress,
+                    siteXmlRpcAddress,
+                    mInputUsername,
+                    mInputPassword
                 )
             }
         }

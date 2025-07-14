@@ -4,17 +4,11 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ActionStatus.PENDING
 import com.woocommerce.android.model.ProductReview
 
-@Suppress("DataClassPrivateConstructor")
-data class ReviewModerationRequest private constructor(
+data class ReviewModerationRequest(
     val review: ProductReview,
     val newStatus: ProductReviewStatus,
-    private val timeOfRequest: Long
 ) : Comparable<ReviewModerationRequest> {
-    constructor(review: ProductReview, newStatus: ProductReviewStatus) : this(
-        review,
-        newStatus,
-        System.currentTimeMillis()
-    )
+    private val timeOfRequest = System.currentTimeMillis()
 
     override fun compareTo(other: ReviewModerationRequest): Int {
         return timeOfRequest.compareTo(other.timeOfRequest)

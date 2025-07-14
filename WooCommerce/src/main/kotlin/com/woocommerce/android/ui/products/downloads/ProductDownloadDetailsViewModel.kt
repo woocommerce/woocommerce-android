@@ -29,6 +29,12 @@ class ProductDownloadDetailsViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductDownloadDetailsFragmentArgs by savedState.navArgs()
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val productDownloadDetailsViewStateData = LiveDataDelegate(
         savedState,
         ProductDownloadDetailsViewState(
@@ -62,7 +68,9 @@ class ProductDownloadDetailsViewModel @Inject constructor(
     fun onDoneOrUpdateClicked() {
         val urlWithScheme = if (!productDownloadDetailsViewState.fileDraft.url.startsWith("http")) {
             "http://${productDownloadDetailsViewState.fileDraft.url}"
-        } else productDownloadDetailsViewState.fileDraft.url
+        } else {
+            productDownloadDetailsViewState.fileDraft.url
+        }
         val updatedFile = productDownloadDetailsViewState.fileDraft.copy(url = urlWithScheme)
 
         if (navArgs.isEditing) {
@@ -93,7 +101,9 @@ class ProductDownloadDetailsViewModel @Inject constructor(
                 )
             )
             false
-        } else true
+        } else {
+            true
+        }
     }
 
     private fun updateState(updatedState: ProductDownloadDetailsViewState) {

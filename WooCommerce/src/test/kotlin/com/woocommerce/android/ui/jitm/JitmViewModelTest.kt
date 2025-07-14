@@ -5,7 +5,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmViewModel.Companion.JITM_MESSAGE_PATH_KEY
-import com.woocommerce.android.ui.mystore.MyStoreUtmProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -34,7 +33,7 @@ class JitmViewModelTest : BaseUnitTest() {
     }
     private val jitmStoreInMemoryCache: JitmStoreInMemoryCache = mock()
     private val jitmTracker: JitmTracker = mock()
-    private val utmProvider: MyStoreUtmProvider = mock()
+    private val utmProvider: JitmUtmProvider = mock()
     private val selectedSite: SelectedSite = mock()
 
     private lateinit var sut: JitmViewModel
@@ -539,7 +538,9 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             verify(jitmTracker).trackJitmDisplayed(
-                any(), any(), any()
+                any(),
+                any(),
+                any()
             )
         }
     }
@@ -552,7 +553,8 @@ class JitmViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
-                        id = "12345", featureClass = "woomobile_ipp"
+                        id = "12345",
+                        featureClass = "woomobile_ipp"
                     )
                 )
             )
@@ -560,7 +562,9 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             verify(jitmTracker).trackJitmDisplayed(
-                UTM_SOURCE, "12345", "woomobile_ipp"
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }
@@ -590,7 +594,9 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onPrimaryActionClicked.invoke()
 
             verify(jitmTracker).trackJitmCtaTapped(
-                any(), any(), any()
+                any(),
+                any(),
+                any()
             )
         }
     }
@@ -604,7 +610,8 @@ class JitmViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
-                        id = "12345", featureClass = "woomobile_ipp"
+                        id = "12345",
+                        featureClass = "woomobile_ipp"
                     )
                 )
             )
@@ -622,7 +629,9 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onPrimaryActionClicked.invoke()
 
             verify(jitmTracker).trackJitmCtaTapped(
-                UTM_SOURCE, "12345", "woomobile_ipp"
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }
@@ -642,7 +651,9 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissTapped(
-                any(), any(), any()
+                any(),
+                any(),
+                any()
             )
         }
     }
@@ -655,7 +666,8 @@ class JitmViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
-                        id = "12345", featureClass = "woomobile_ipp"
+                        id = "12345",
+                        featureClass = "woomobile_ipp"
                     )
                 )
             )
@@ -664,7 +676,9 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissTapped(
-                UTM_SOURCE, "12345", "woomobile_ipp"
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }
@@ -689,7 +703,9 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissSuccess(
-                any(), any(), any()
+                any(),
+                any(),
+                any()
             )
         }
     }
@@ -702,7 +718,8 @@ class JitmViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
-                        id = "12345", featureClass = "woomobile_ipp"
+                        id = "12345",
+                        featureClass = "woomobile_ipp"
                     )
                 )
             )
@@ -716,7 +733,9 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissSuccess(
-                UTM_SOURCE, "12345", "woomobile_ipp"
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }
@@ -741,7 +760,11 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
-                anyString(), anyString(), anyString(), eq(null), eq(null)
+                anyString(),
+                anyString(),
+                anyString(),
+                eq(null),
+                eq(null)
             )
         }
     }
@@ -761,7 +784,8 @@ class JitmViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 WooResult(
                     WooError(
-                        type = WooErrorType.GENERIC_ERROR, original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
                     )
                 )
             )
@@ -770,7 +794,11 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
-                anyString(), anyString(), anyString(), any(), eq(null)
+                anyString(),
+                anyString(),
+                anyString(),
+                any(),
+                eq(null)
             )
         }
     }
@@ -783,7 +811,8 @@ class JitmViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
-                        id = "12345", featureClass = "woomobile_ipp"
+                        id = "12345",
+                        featureClass = "woomobile_ipp"
                     )
                 )
             )
@@ -803,7 +832,11 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
-                UTM_SOURCE, "12345", "woomobile_ipp", WooErrorType.GENERIC_ERROR, "Generic error"
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp",
+                WooErrorType.GENERIC_ERROR,
+                "Generic error"
             )
         }
     }
@@ -831,7 +864,11 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
-                UTM_SOURCE, "12345", "woomobile_ipp", null, null
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp",
+                null,
+                null
             )
         }
     }
@@ -892,7 +929,8 @@ class JitmViewModelTest : BaseUnitTest() {
         message: String = "",
         link: String = ""
     ) = JITMCta(
-        message = message, link = link
+        message = message,
+        link = link
     )
 
     private companion object {

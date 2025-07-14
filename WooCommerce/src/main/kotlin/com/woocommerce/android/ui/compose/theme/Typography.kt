@@ -54,7 +54,8 @@ val WooTypography = Typography(
     h6 = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
-        lineHeight = 24.sp
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
     ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.Normal,

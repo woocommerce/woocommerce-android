@@ -13,9 +13,10 @@ import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpda
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUploadsCompleted
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -44,8 +45,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_PRODUCT_ID = 1L
         private const val TEST_URI = "test"
-        private val FETCHED_MEDIA = MediaModel()
-        private val UPLOADED_MEDIA = MediaModel().apply {
+        private val FETCHED_MEDIA = MediaModel(0, 0)
+        private val UPLOADED_MEDIA = MediaModel(0, 0).apply {
             fileName = ""
             filePath = ""
             url = ""
@@ -121,7 +122,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
 
         advanceUntilIdle()
         verify(mediaFilesRepository).uploadMedia(any(), any())
@@ -132,9 +133,9 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when media upload progress changes, then update notification`() = testBlocking {
         whenever(mediaFilesRepository.uploadMedia(any(), any()))
-            .thenReturn(flowOf(UploadProgress(0.5f), UploadSuccess(MediaModel())))
+            .thenReturn(flowOf(UploadProgress(0.5f), UploadSuccess(MediaModel(0, 0))))
 
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
         advanceUntilIdle()
 
         verify(notificationHandler).setProgress(0.5f)
@@ -143,9 +144,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when media upload fails for an image, then send an event`() = testBlocking {
         val error = MediaUploadException(
-            MediaModel(),
-            GENERIC_ERROR,
-            ""
+            errorType = GENERIC_ERROR,
+            errorMessage = ""
         )
         whenever(mediaFilesRepository.uploadMedia(any(), any())).thenReturn(flowOf(UploadResult.UploadFailure(error)))
 
@@ -153,7 +153,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
 
         advanceUntilIdle()
         assertThat(eventsList).contains(UploadFailed(REMOTE_PRODUCT_ID, TEST_URI, error))
@@ -166,7 +166,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
 
         advanceUntilIdle()
         assertThat(eventsList).contains(ProductUploadsCompleted(REMOTE_PRODUCT_ID))
@@ -176,26 +176,26 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product is requested, then fetch product`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
-        verify(productDetailRepository).fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)
+        verify(productDetailRepository).fetchAndGetProduct(REMOTE_PRODUCT_ID)
     }
 
     @Test
     fun `when fetching product fails, then retry three times`() = testBlocking {
-        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(null)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(null)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         verify(productDetailRepository, times(ProductImagesUploadWorker.PRODUCT_UPDATE_RETRIES))
-            .fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)
+            .fetchAndGetProduct(REMOTE_PRODUCT_ID)
     }
 
     @Test
     fun `when fetching product fails, then send an event`() = testBlocking {
-        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(null)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(null)
 
         val eventsList = mutableListOf<Event>()
         val job = launch {
@@ -211,7 +211,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product is requested, then update product`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
@@ -222,8 +222,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product succeeds, then send an event`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
-        whenever(productDetailRepository.updateProduct(any())).thenReturn(true)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.updateProduct(any<Product>())).thenReturn(Pair(true, null))
 
         val eventsList = mutableListOf<Event>()
         val job = launch {
@@ -239,8 +239,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product fails, then retry three times`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
-        whenever(productDetailRepository.updateProduct(any())).thenReturn(false)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.updateProduct(any<Product>())).thenReturn(Pair(false, null))
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
@@ -252,8 +252,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product fails, then send an event`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
-        whenever(productDetailRepository.updateProduct(any())).thenReturn(false)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.updateProduct(any<Product>())).thenReturn(Pair(false, null))
 
         val eventsList = mutableListOf<Event>()
         val job = launch {

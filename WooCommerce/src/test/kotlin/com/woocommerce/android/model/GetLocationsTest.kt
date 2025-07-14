@@ -20,15 +20,8 @@ class GetLocationsTest {
     @Test
     fun `should provide country and associated state if locations are in database`() {
         // given
-        val country = WCLocationModel().apply {
-            code = "US"
-            name = "United States"
-        }
-        val associatedState = WCLocationModel().apply {
-            parentCode = "US"
-            code = "CA"
-            name = "California"
-        }
+        val country = WCLocationModel(code = "US", name = "United States")
+        val associatedState = WCLocationModel(parentCode = "US", code = "CA", "California")
         whenever(locationStore.getCountries()).thenReturn(listOf(country))
         whenever(locationStore.getStates(country.code)).thenReturn(listOf(associatedState))
 
@@ -43,10 +36,7 @@ class GetLocationsTest {
     @Test
     fun `should provide country and state with location code only if state is not found in database`() {
         // given
-        val country = WCLocationModel().apply {
-            code = "US"
-            name = "United States"
-        }
+        val country = WCLocationModel(code = "US", name = "United States")
         val nonExistentStateLocationCode = "AABBCC"
         whenever(locationStore.getCountries()).thenReturn(listOf(country))
         whenever(locationStore.getStates(country.code)).thenReturn(emptyList())

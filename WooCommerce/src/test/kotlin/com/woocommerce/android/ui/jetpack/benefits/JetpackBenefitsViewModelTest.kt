@@ -2,12 +2,15 @@ package com.woocommerce.android.ui.jetpack.benefits
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.model.User
 import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -74,13 +77,11 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = true,
-            isJetpackConnected = true,
-            wpComEmail = null
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected("email")
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
         givenJetpackFetchResult(
-            jetpackStatus,
-            FetchJetpackStatus.JetpackStatusFetchResponse.SUCCESS
+            FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus)
         )
 
         // When
@@ -98,13 +99,8 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     @Test
     fun `given REST API login and user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() = testBlocking {
         // Given
-        val jetpackStatus = JetpackStatus(
-            isJetpackInstalled = true,
-            isJetpackConnected = false,
-            wpComEmail = null
-        )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.FORBIDDEN)
+        givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.ConnectionForbidden)
         givenUserEligibility(user, UserRole.Editor)
 
         // When
@@ -124,11 +120,13 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = false,
-            isJetpackConnected = false,
-            wpComEmail = null
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                blogId = null
+            )
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.NOT_FOUND)
+        givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
         givenUserEligibility(user, UserRole.Administrator)
 
         // When
@@ -148,11 +146,13 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = false,
-            isJetpackConnected = false,
-            wpComEmail = null
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                blogId = null
+            )
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.NOT_FOUND)
+        givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
         givenUserEligibility(user, UserRole.Editor)
 
         // When
@@ -181,11 +181,10 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     }
 
     private fun givenJetpackFetchResult(
-        jetpackStatus: JetpackStatus,
         jetpackStatusFetchResponse: FetchJetpackStatus.JetpackStatusFetchResponse
     ) = testBlocking {
-        val result = Result.success(jetpackStatus to jetpackStatusFetchResponse)
-        whenever(fetchJetpackStatus.invoke()).thenReturn(result)
+        val result = Result.success(jetpackStatusFetchResponse)
+        whenever(fetchJetpackStatus.invoke(site = siteModelMock, useApplicationPasswords = true)).thenReturn(result)
     }
 
     private fun givenUserEligibility(user: User, role: UserRole) = testBlocking {

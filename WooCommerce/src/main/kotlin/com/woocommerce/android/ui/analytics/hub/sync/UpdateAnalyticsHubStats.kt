@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
+import com.woocommerce.android.model.AnalyticsCards
+import com.woocommerce.android.model.BundleStat
+import com.woocommerce.android.model.GiftCardsStat
+import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -36,20 +40,37 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val visitorsCountState = MutableStateFlow(VisitorsState.Available(0) as VisitorsState)
     val sessionState by lazy { combineSessionDataChanges() }
 
+    private val _bundlesState = MutableStateFlow(BundlesState.Available(BundleStat.EMPTY) as BundlesState)
+    val bundlesState: Flow<BundlesState> = _bundlesState
+
+    private val _giftCardsState = MutableStateFlow(GiftCardsState.Available(GiftCardsStat.EMPTY) as GiftCardsState)
+    val giftCardsState: Flow<GiftCardsState> = _giftCardsState
+
+    private val _googleAdsState = MutableStateFlow(GoogleAdsState.Available(GoogleAdsStat.EMPTY) as GoogleAdsState)
+    val googleAdsState: Flow<GoogleAdsState> = _googleAdsState
+
     private val fullStatsRequestState by lazy { combineFullUpdateState() }
 
     suspend operator fun invoke(
         rangeSelection: StatsTimeRangeSelection,
         scope: CoroutineScope,
-        forceUpdate: Boolean = false
+        forceUpdate: Boolean = false,
+        visibleCards: List<AnalyticsCards> = AnalyticsCards.entries,
     ): Flow<AnalyticsHubUpdateState> {
-        _ordersState.update { OrdersState.Loading }
-        _revenueState.update { RevenueState.Loading }
-        _productsState.update { ProductsState.Loading }
-        visitorsCountState.update { VisitorsState.Loading }
+        visibleCards.forEach { card ->
+            when (card) {
+                AnalyticsCards.Revenue -> _revenueState.update { RevenueState.Loading }
+                AnalyticsCards.Orders -> _ordersState.update { OrdersState.Loading }
+                AnalyticsCards.Products -> _productsState.update { ProductsState.Loading }
+                AnalyticsCards.Session -> visitorsCountState.update { VisitorsState.Loading }
+                AnalyticsCards.Bundles -> _bundlesState.update { BundlesState.Loading }
+                AnalyticsCards.GiftCards -> _giftCardsState.update { GiftCardsState.Loading }
+                AnalyticsCards.GoogleAds -> _googleAdsState.update { GoogleAdsState.Loading }
+            }
+        }
 
-        withFetchStrategyFrom(rangeSelection, forceUpdate) { fetchStrategy ->
-            updateStatsData(scope, rangeSelection, fetchStrategy)
+        withFetchStrategyFrom(visibleCards, rangeSelection, forceUpdate) { fetchStrategy ->
+            updateStatsData(scope, rangeSelection, fetchStrategy, visibleCards)
         }
 
         return fullStatsRequestState
@@ -58,21 +79,30 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private suspend fun updateStatsData(
         scope: CoroutineScope,
         rangeSelection: StatsTimeRangeSelection,
-        fetchStrategy: FetchStrategy
+        fetchStrategy: FetchStrategy,
+        visibleCards: List<AnalyticsCards>
     ) {
-        awaitAll(
-            scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy),
-            scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy),
-            scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy),
-            scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
-        )
+        val asyncCalls = visibleCards.mapNotNull { card ->
+            when (card) {
+                AnalyticsCards.Revenue -> scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Orders -> scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Products -> scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Session -> scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Bundles -> scope.fetchBundlesDataAsync(rangeSelection)
+                AnalyticsCards.GiftCards -> scope.fetchGiftCardDataAsync(rangeSelection)
+                AnalyticsCards.GoogleAds -> scope.fetchGoogleAdsAsync(rangeSelection)
+            }
+        }
+
+        asyncCalls.awaitAll()
 
         if (fetchStrategy == FetchStrategy.ForceNew) {
-            analyticsUpdateDataStore.storeLastAnalyticsUpdate(rangeSelection)
+            analyticsUpdateDataStore.storeLastAnalyticsUpdate(rangeSelection, visibleCards.map { it.toAnalyticData() })
         }
     }
 
     private suspend fun withFetchStrategyFrom(
+        visibleCards: List<AnalyticsCards>,
         rangeSelection: StatsTimeRangeSelection,
         forceUpdate: Boolean,
         action: suspend (FetchStrategy) -> Unit
@@ -83,26 +113,47 @@ class UpdateAnalyticsHubStats @Inject constructor(
         }
 
         analyticsUpdateDataStore
-            .shouldUpdateAnalytics(rangeSelection)
+            .shouldUpdateAnalytics(rangeSelection, visibleCards.map { it.toAnalyticData() })
             .map { if (it) FetchStrategy.ForceNew else FetchStrategy.Saved }
             .firstOrNull()
             ?.let { action(it) }
             ?: action(FetchStrategy.ForceNew)
     }
 
+    @Suppress("MagicNumber")
     private fun combineFullUpdateState() =
-        combine(_revenueState, _productsState, _ordersState, sessionState) { revenue, products, orders, session ->
-            revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle
+        combine(
+            _revenueState,
+            _productsState,
+            _ordersState,
+            sessionState,
+            _bundlesState,
+            _giftCardsState
+        ) { flows ->
+            val revenue = flows[0] as RevenueState
+            val products = flows[1] as ProductsState
+            val orders = flows[2] as OrdersState
+            val session = flows[3] as SessionState
+            val bundles = flows[4] as BundlesState
+            val giftCard = flows[5] as GiftCardsState
+            revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle && bundles.isIdle && giftCard.isIdle
         }.map { if (it) Finished else Loading }
 
     private fun combineSessionDataChanges() =
         combine(_ordersState, visitorsCountState) { orders, visitors ->
-            if (orders is OrdersState.Available && visitors is VisitorsState.Available) {
-                SessionState.Available(SessionStat(orders.orders.ordersCount, visitors.visitors))
-            } else if (orders is OrdersState.Error || visitors is VisitorsState.Error) {
-                SessionState.Error
-            } else {
-                SessionState.Loading
+            when {
+                orders is OrdersState.Available && visitors is VisitorsState.Available -> {
+                    SessionState.Available(SessionStat(orders.orders.ordersCount, visitors.visitors))
+                }
+                visitors is VisitorsState.NotSupported -> {
+                    SessionState.NotSupported
+                }
+                orders is OrdersState.Error || visitors is VisitorsState.Error -> {
+                    SessionState.Error
+                }
+                else -> {
+                    SessionState.Loading
+                }
             }
         }.distinctUntilChanged()
 
@@ -120,10 +171,19 @@ class UpdateAnalyticsHubStats @Inject constructor(
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) = async {
-        analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy)
-            .run { this as? AnalyticsRepository.VisitorsResult.VisitorsData }
-            ?.let { visitorsCountState.value = VisitorsState.Available(it.visitorsCount) }
-            ?: visitorsCountState.update { VisitorsState.Error }
+        analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy).run {
+            when (this) {
+                is AnalyticsRepository.VisitorsResult.VisitorsData -> {
+                    visitorsCountState.value = VisitorsState.Available(visitorsCount)
+                }
+                is AnalyticsRepository.VisitorsResult.VisitorsError -> {
+                    visitorsCountState.update { VisitorsState.Error }
+                }
+                is AnalyticsRepository.VisitorsResult.VisitorsNotSupported -> {
+                    visitorsCountState.update { VisitorsState.NotSupported }
+                }
+            }
+        }
     }
 
     private fun CoroutineScope.fetchRevenueDataAsync(
@@ -144,5 +204,37 @@ class UpdateAnalyticsHubStats @Inject constructor(
             .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
             ?.let { _productsState.value = ProductsState.Available(it.productsStat) }
             ?: _productsState.update { ProductsState.Error }
+    }
+
+    private fun CoroutineScope.fetchBundlesDataAsync(
+        rangeSelection: StatsTimeRangeSelection
+    ) = async {
+        analyticsRepository.fetchProductBundlesStats(rangeSelection)
+            .run { this as? AnalyticsRepository.BundlesResult.BundlesData }
+            ?.let { _bundlesState.value = BundlesState.Available(it.bundleStat) }
+            ?: _bundlesState.update { BundlesState.Error }
+    }
+
+    private fun CoroutineScope.fetchGiftCardDataAsync(
+        rangeSelection: StatsTimeRangeSelection
+    ) = async {
+        analyticsRepository.fetchGiftCardsStats(rangeSelection)
+            .run { this as? AnalyticsRepository.GiftCardResult.GiftCardData }
+            ?.let { _giftCardsState.value = GiftCardsState.Available(it.giftCardStat) }
+            ?: _giftCardsState.update { GiftCardsState.Error }
+    }
+
+    private fun CoroutineScope.fetchGoogleAdsAsync(
+        rangeSelection: StatsTimeRangeSelection
+    ) = async {
+        analyticsRepository.fetchGoogleAdsStats(rangeSelection)
+            .run { this as? AnalyticsRepository.GoogleAdsResult.GoogleAdsData }
+            ?.let {
+                if (it.googleAdsStat.noCampaignsAvailable) {
+                    _googleAdsState.value = GoogleAdsState.Empty
+                } else {
+                    _googleAdsState.value = GoogleAdsState.Available(it.googleAdsStat)
+                }
+            } ?: _googleAdsState.update { GoogleAdsState.Error }
     }
 }

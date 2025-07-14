@@ -41,7 +41,10 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
         selectedPaymentId = 1,
         lastUsedBoxId = null,
         storeOwnerDetails = StoreOwnerDetails(
-            "email", "username", "username", "name"
+            "email",
+            "username",
+            "username",
+            "name"
         ),
         isEmailReceiptEnabled = true
     )

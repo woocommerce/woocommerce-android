@@ -12,6 +12,7 @@ import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -33,6 +34,16 @@ class ProductInventoryViewModel @Inject constructor(
     private val navArgs: ProductInventoryFragmentArgs by savedState.navArgs()
     private val isProduct = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
 
+    private var _lastClickedBarcodeButton: Int? = null
+    val lastClickedBarcodeButton: Int?
+        get() = _lastClickedBarcodeButton
+
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
@@ -64,10 +75,12 @@ class ProductInventoryViewModel @Inject constructor(
      * in the local db. Only if it is not available, the API verification call is initiated.
      */
     fun onSkuChanged(sku: String) {
-        // verify if the sku exists only if the text entered by the user does not match the sku stored locally
-        if (sku.length > 2) {
-            onDataChanged(sku = sku)
-
+        if (sku == viewState.inventoryData.sku) {
+            return
+        }
+        onDataChanged(sku = sku)
+        skuVerificationJob?.cancel()
+        if (sku.isNotEmpty()) {
             if (sku == originalSku) {
                 clearSkuError()
             } else {
@@ -77,14 +90,9 @@ class ProductInventoryViewModel @Inject constructor(
                     clearSkuError()
                 }
 
-                // cancel any existing verification search, then start a new one after a brief delay
-                // so we don't actually perform the fetch until the user stops typing
-                skuVerificationJob?.cancel()
                 skuVerificationJob = launch {
                     delay(AppConstants.SEARCH_TYPING_DELAY_MS)
 
-                    // only after the SKU is available remotely, reset the error if it's available locally, as well
-                    // to avoid showing/hiding error message
                     productRepository.isSkuAvailableRemotely(sku)?.let { isRemotelyAvailable ->
                         if (isRemotelyAvailable) {
                             clearSkuError()
@@ -94,11 +102,27 @@ class ProductInventoryViewModel @Inject constructor(
                     }
                 }
             }
+        } else {
+            clearSkuError()
+        }
+    }
+
+    fun onProductUniqueGlobalIdChanged(globalUniqueId: String) {
+        if (globalUniqueId == viewState.inventoryData.globalUniqueId) {
+            return
+        }
+        onDataChanged(globalUniqueId = globalUniqueId)
+
+        if (isOnlyNumbersAndHyphensOrEmpty(globalUniqueId)) {
+            clearGlobalUniqueIdError()
+        } else {
+            showGlobalUniqueIdError()
         }
     }
 
     fun onDataChanged(
         sku: String? = inventoryData.sku,
+        globalUniqueId: String? = inventoryData.globalUniqueId,
         backorderStatus: ProductBackorderStatus? = inventoryData.backorderStatus,
         isSoldIndividually: Boolean? = inventoryData.isSoldIndividually,
         isStockManaged: Boolean? = inventoryData.isStockManaged,
@@ -108,6 +132,7 @@ class ProductInventoryViewModel @Inject constructor(
         viewState = viewState.copy(
             inventoryData = InventoryData(
                 sku = sku,
+                globalUniqueId = globalUniqueId,
                 backorderStatus = backorderStatus,
                 isSoldIndividually = isSoldIndividually,
                 isStockManaged = isStockManaged,
@@ -122,10 +147,23 @@ class ProductInventoryViewModel @Inject constructor(
             AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)
         )
-        if (hasChanges && !hasSkuError()) {
+        if (hasChanges && !hasSkuError() && !hasGlobalUniqueIdError()) {
+            trackGlobalUniqueIdChangeIfNecessary()
             triggerEvent(ExitWithResult(inventoryData))
         } else {
             triggerEvent(Exit)
+        }
+    }
+
+    fun updateLastClickedBarcodeButton(buttonId: Int?) {
+        _lastClickedBarcodeButton = buttonId
+    }
+
+    private fun trackGlobalUniqueIdChangeIfNecessary() {
+        if (inventoryData.globalUniqueId != originalInventoryData.globalUniqueId) {
+            analyticsTracker.track(
+                AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_GLOBAL_UNIQUE_IDENTIFIER_FIELD_EDITED
+            )
         }
     }
 
@@ -137,7 +175,23 @@ class ProductInventoryViewModel @Inject constructor(
         viewState = viewState.copy(skuErrorMessage = string.product_inventory_update_sku_error)
     }
 
+    private fun clearGlobalUniqueIdError() {
+        viewState = viewState.copy(globalUniqueIdErrorMessage = 0)
+    }
+
+    private fun showGlobalUniqueIdError() {
+        viewState = viewState.copy(globalUniqueIdErrorMessage = string.product_inventory_update_global_unique_id_error)
+    }
+
     private fun hasSkuError() = viewState.skuErrorMessage != 0 && viewState.skuErrorMessage != null
+
+    private fun hasGlobalUniqueIdError() = viewState.globalUniqueIdErrorMessage != 0 &&
+        viewState.globalUniqueIdErrorMessage != null
+
+    private fun isOnlyNumbersAndHyphensOrEmpty(input: String): Boolean {
+        val pattern = "^[0-9-]+$"
+        return input.isEmpty() || input.matches(pattern.toRegex())
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -148,14 +202,17 @@ class ProductInventoryViewModel @Inject constructor(
     data class ViewState(
         val inventoryData: InventoryData = InventoryData(),
         val skuErrorMessage: Int? = null,
+        val globalUniqueIdErrorMessage: Int? = null,
         val isIndividualSaleSwitchVisible: Boolean? = null,
         val isStockStatusVisible: Boolean? = null,
         val isStockManagementVisible: Boolean? = null,
         val isStockQuantityEditable: Boolean? = null
     ) : Parcelable
+
     @Parcelize
     data class InventoryData(
         val sku: String? = null,
+        val globalUniqueId: String? = null,
         val isStockManaged: Boolean? = null,
         val isSoldIndividually: Boolean? = null,
         val stockStatus: ProductStockStatus? = null,

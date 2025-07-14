@@ -7,11 +7,16 @@ import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.HiddenState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoSupportedState
+import com.woocommerce.android.ui.analytics.hub.ReportCard
+import com.woocommerce.android.ui.analytics.hub.toReportCard
 import com.woocommerce.android.widgets.SkeletonView
+
+typealias SeeReportClickListener = (url: String, card: ReportCard) -> Unit
 
 class AnalyticsHubInformationCardView @JvmOverloads constructor(
     ctx: Context,
@@ -21,13 +26,14 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
     val binding = AnalyticsInformationCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
 
+    var onSeeReportClickListener: SeeReportClickListener? = null
+
     internal fun updateInformation(viewState: AnalyticsHubInformationViewState) {
-        visibility = if (viewState is HiddenState) View.GONE else View.VISIBLE
         when (viewState) {
             is LoadingViewState -> setSkeleton()
             is DataViewState -> setDataViewState(viewState)
             is NoDataState -> setNoDataViewState(viewState)
-            is HiddenState -> {}
+            is NoSupportedState -> setNoSupportedViewState(viewState)
         }
     }
 
@@ -49,16 +55,43 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
         binding.leftAnalyticsSection.visibility = VISIBLE
         binding.rightAnalyticsSection.visibility = VISIBLE
         binding.noDataText.visibility = GONE
+        binding.statUnavailable.visibility = GONE
+        if (viewState.reportUrl != null) {
+            binding.reportGroup.visibility = VISIBLE
+            binding.reportText.setOnClickListener {
+                onSeeReportClickListener?.let {
+                    val card = viewState.card.toReportCard()
+                    if (card != null) it(viewState.reportUrl, card)
+                }
+            }
+        } else {
+            binding.reportGroup.visibility = GONE
+        }
         visibility = VISIBLE
     }
 
     private fun setNoDataViewState(viewState: NoDataState) {
         skeletonView.hide()
+        binding.analyticsCardTitle.text = viewState.title
         binding.noDataText.text = viewState.message
-        binding.analyticsCardTitle.visibility = GONE
+        binding.analyticsCardTitle.visibility = VISIBLE
         binding.leftAnalyticsSection.visibility = GONE
         binding.rightAnalyticsSection.visibility = GONE
         binding.noDataText.visibility = VISIBLE
+        binding.statUnavailable.visibility = GONE
+        visibility = VISIBLE
+    }
+
+    private fun setNoSupportedViewState(viewState: NoSupportedState) {
+        skeletonView.hide()
+        binding.analyticsCardTitle.text = viewState.title
+        binding.statUnavailableTitle.text = viewState.message
+        binding.statUnavailableDescription.text = viewState.description
+        binding.analyticsCardTitle.visibility = VISIBLE
+        binding.leftAnalyticsSection.visibility = GONE
+        binding.rightAnalyticsSection.visibility = GONE
+        binding.noDataText.visibility = GONE
+        binding.statUnavailable.visibility = VISIBLE
         visibility = VISIBLE
     }
 }

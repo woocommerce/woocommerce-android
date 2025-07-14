@@ -49,6 +49,13 @@
         <item name="lineHeight">@dimen/line_height_major_25</item>
     </style>
 
+    <style name="TextAppearance.Woo.EditText" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="fontFamily">@font/roboto_medium</item>
+        <item name="android:textSize">@dimen/text_major_25</item>
+        <item name="android:textStyle">bold</item>
+        <item name="lineHeight">@dimen/line_height_major_25</item>
+    </style>
+
     <style name="TextAppearance.Woo.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
         <item name="fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_125</item>

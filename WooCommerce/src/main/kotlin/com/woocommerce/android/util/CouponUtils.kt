@@ -203,7 +203,9 @@ class CouponUtils @Inject constructor(
                 default = R.string.product_count_many,
                 one = R.string.product_count_one
             )
-        } else ""
+        } else {
+            ""
+        }
     }
 
     private fun formatCategories(categories: Int): String {
@@ -214,7 +216,9 @@ class CouponUtils @Inject constructor(
                 default = R.string.category_count_many,
                 one = R.string.category_count_one
             )
-        } else ""
+        } else {
+            ""
+        }
     }
 
     /**

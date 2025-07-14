@@ -9,10 +9,15 @@ import androidx.annotation.LayoutRes
  */
 class SectionParameters private constructor(builder: Builder) {
     @LayoutRes val headerResourceId: Int?
+
     @LayoutRes val footerResourceId: Int?
+
     @LayoutRes val itemResourceId: Int
+
     @LayoutRes val loadingResourceId: Int?
+
     @LayoutRes val failedResourceId: Int?
+
     @LayoutRes val emptyResourceId: Int?
 
     /**
@@ -25,9 +30,13 @@ class SectionParameters private constructor(builder: Builder) {
      */
     (@param:LayoutRes val mItemResourceId: Int) {
         @LayoutRes var headerResourceId: Int? = null
+
         @LayoutRes var footerResourceId: Int? = null
+
         @LayoutRes var loadingResourceId: Int? = null
+
         @LayoutRes var failedResourceId: Int? = null
+
         @LayoutRes var emptyResourceId: Int? = null
 
         /**

@@ -1,20 +1,22 @@
 package com.woocommerce.android.ui.compose.component
 
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.autoMirror
@@ -24,8 +26,9 @@ fun ToolbarWithHelpButton(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit)? = null,
-    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     onHelpButtonClick: (() -> Unit)
 ) {
     Toolbar(
@@ -36,7 +39,8 @@ fun ToolbarWithHelpButton(
         navigationIconContentDescription = navigationIconContentDescription,
         actionButtonIcon = ImageVector.vectorResource(id = drawable.ic_help_24dp),
         onActionButtonClick = onHelpButtonClick,
-        actionIconContentDescription = stringResource(id = string.help)
+        actionIconContentDescription = stringResource(id = string.help),
+        windowInsets = windowInsets
     )
 }
 
@@ -45,8 +49,9 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit),
-    navigationIcon: ImageVector = Filled.ArrowBack,
-    navigationIconContentDescription: String = stringResource(id = string.back)
+    navigationIcon: ImageVector = Icons.AutoMirrored.Filled.ArrowBack,
+    navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
 ) {
     Toolbar(
         modifier = modifier,
@@ -54,6 +59,7 @@ fun Toolbar(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
+        windowInsets = windowInsets,
     )
 }
 
@@ -62,8 +68,9 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit)? = null,
-    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     actionButtonIcon: ImageVector,
     onActionButtonClick: (() -> Unit),
     actionIconContentDescription: String
@@ -74,6 +81,7 @@ fun Toolbar(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
+        windowInsets = windowInsets,
         actions = {
             IconButton(onClick = onActionButtonClick) {
                 Icon(
@@ -90,8 +98,9 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit)? = null,
-    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     Toolbar(
@@ -100,6 +109,7 @@ fun Toolbar(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
+        windowInsets = windowInsets,
         actions = actions
     )
 }
@@ -109,8 +119,9 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit)? = null,
-    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     onActionButtonClick: (() -> Unit),
     actionButtonText: String
 ) {
@@ -120,6 +131,7 @@ fun Toolbar(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
+        windowInsets = windowInsets,
         actions = {
             TextButton(onClick = onActionButtonClick) {
                 Text(text = actionButtonText)
@@ -135,10 +147,12 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
+        windowInsets = windowInsets,
+        backgroundColor = colorResource(id = R.color.color_toolbar),
         title = title,
         navigationIcon = {
             if (navigationIcon != null) {
@@ -149,7 +163,9 @@ fun Toolbar(
                     Icon(
                         navigationIcon,
                         contentDescription = navigationIconContentDescription,
-                        modifier = Modifier.autoMirror()
+                        modifier = Modifier.then(
+                            if (navigationIcon.autoMirror) Modifier else Modifier.autoMirror()
+                        )
                     )
                 }
             }

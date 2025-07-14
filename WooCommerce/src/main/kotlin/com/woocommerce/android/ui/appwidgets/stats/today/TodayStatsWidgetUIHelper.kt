@@ -67,8 +67,9 @@ class TodayStatsWidgetUIHelper @Inject constructor(
 
         remoteViews.setTextViewText(R.id.widget_revenue_value, revenue)
         remoteViews.setTextViewText(R.id.widget_orders_value, stats.ordersTotal.toString())
-        remoteViews.setTextViewText(R.id.widget_visitors_value, stats.visitorsTotal.toString())
-
+        stats.visitorsTotal?.let {
+            remoteViews.setTextViewText(R.id.widget_visitors_value, it.toString())
+        }
         remoteViews.setViewVisibility(R.id.widget_revenue_value, View.VISIBLE)
         remoteViews.setViewVisibility(R.id.widget_revenue_skeleton, View.INVISIBLE)
 
@@ -80,11 +81,11 @@ class TodayStatsWidgetUIHelper @Inject constructor(
 
         remoteViews.setViewVisibility(
             R.id.widget_visitors_title,
-            if (stats.areVisitorStatsSupported) View.VISIBLE else View.GONE
+            if (stats.visitorsTotal != null) View.VISIBLE else View.GONE
         )
         remoteViews.setViewVisibility(
             R.id.widget_visitors_value,
-            if (stats.areVisitorStatsSupported) View.VISIBLE else View.GONE
+            if (stats.visitorsTotal != null) View.VISIBLE else View.GONE
         )
 
         remoteViews.setTextViewText(

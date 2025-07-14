@@ -15,7 +15,7 @@ data class CustomerListViewState(
     val showFab: Boolean,
     val searchFocused: Boolean,
     val partialLoading: Boolean = false,
-    val body: CustomerList = CustomerList.Loading,
+    val body: CustomerList = CustomerList.Loading
 ) {
     sealed class CustomerList {
         object Loading : CustomerList()
@@ -27,7 +27,7 @@ data class CustomerListViewState(
         data class Error(@StringRes val message: Int) : CustomerList()
         data class Loaded(
             val customers: List<Item>,
-            val shouldResetScrollPosition: Boolean,
+            val shouldResetScrollPosition: Boolean
         ) : CustomerList()
 
         sealed class Item {
@@ -36,9 +36,9 @@ data class CustomerListViewState(
                 val name: Text,
                 val email: Text,
                 val username: Text,
-
                 val payload: WCCustomerModel,
             ) : Item() {
+
                 sealed class Text {
                     data class Highlighted(val text: String, val start: Int, val end: Int) : Text()
                     data class Placeholder(val text: String) : Text()

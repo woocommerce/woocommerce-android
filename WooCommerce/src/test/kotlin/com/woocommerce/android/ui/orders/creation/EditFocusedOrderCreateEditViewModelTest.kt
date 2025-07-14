@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_COMPACT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_REGULAR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
@@ -11,6 +13,8 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import junit.framework.TestCase.assertEquals
@@ -152,6 +156,46 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
+    fun `given phone, when done button tapped, then track event with correct properties`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onCreateOrderClicked(defaultOrderValue)
+
+        verify(tracker, never()).track(
+            AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to VALUE_DEVICE_TYPE_COMPACT,
+                AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
+                AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
+                AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
+                AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
+            )
+        )
+    }
+
+    @Test
+    fun `given tablet, when done button tapped, then track event with correct properties`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onCreateOrderClicked(defaultOrderValue)
+
+        verify(tracker, never()).track(
+            AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to VALUE_DEVICE_TYPE_REGULAR,
+                AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
+                AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
+                AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
+                AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
+            )
+        )
+    }
+
+    @Test
     fun `when new non-empty coupon added, then should update coupon lines in order draft`() {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
@@ -160,7 +204,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             latestOrderDraft = it
         }
 
-        sut.onCouponAdded("new_code")
+        sut.addCoupon("new_code")
 
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
@@ -178,7 +222,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             latestOrderDraft = it
         }
 
-        sut.onCouponAdded("new_code")
+        sut.addCoupon("new_code")
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
             assertEquals(1, size)
@@ -201,8 +245,8 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.orderDraft.observeForever {
             latestOrderDraft = it
         }
-        sut.onCouponAdded("new_code")
-        sut.onCouponAdded("new_code2")
+        sut.addCoupon("new_code")
+        sut.addCoupon("new_code2")
 
         // when
         sut.onCouponEditResult(OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("new_code"))
@@ -240,7 +284,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.orderDraft.observeForever {
             orderDraft = it
         }
-        sut.onCouponAdded("new_code")
+        sut.addCoupon("new_code")
 
         // when
         sut.onCouponButtonClicked()
@@ -272,6 +316,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
                     BigDecimal(1),
                     BigDecimal(1),
                     BigDecimal(1),
+                    BigDecimal(1),
                     1L,
                     listOf()
                 )
@@ -293,6 +338,254 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
+    fun `given coupon applied to order, then should disable adding discount to a product`() {
+        // given
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            items = listOf(
+                Order.Item(
+                    1L,
+                    1L,
+                    "name",
+                    BigDecimal(1),
+                    "",
+                    1f,
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    1L,
+                    listOf()
+                )
+            ),
+            couponLines = listOf(Order.CouponLine("code", 1L, ""))
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertTrue(orderDraft!!.couponLines.isNotEmpty())
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
+        sut.viewStateData.liveData.observeForever {
+            lastReceivedState = it
+        }
+        // then
+        assertFalse(lastReceivedState!!.areDiscountButtonsEnabled)
+    }
+
+    @Test
+    fun `given a coupon applied to order, then should allow adding another one`() {
+        // given
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            items = listOf(
+                Order.Item(
+                    1L,
+                    1L,
+                    "name",
+                    BigDecimal(1),
+                    "",
+                    1f,
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    1L,
+                    listOf()
+                )
+            ),
+            couponLines = listOf(Order.CouponLine("code", 1L, ""))
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertTrue(orderDraft!!.couponLines.isNotEmpty())
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
+        sut.viewStateData.liveData.observeForever {
+            lastReceivedState = it
+        }
+        // then
+        assertTrue(lastReceivedState!!.isCouponButtonEnabled)
+    }
+
+    @Test
+    fun `given no coupons applied to order, then should enable adding discount to a product`() {
+        // given
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            items = listOf(
+                Order.Item(
+                    1L,
+                    1L,
+                    "name",
+                    BigDecimal(1),
+                    "",
+                    1f,
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    1L,
+                    listOf()
+                )
+            ),
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertTrue(orderDraft!!.couponLines.isEmpty())
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
+        sut.viewStateData.liveData.observeForever {
+            lastReceivedState = it
+        }
+        // then
+        assertTrue(lastReceivedState!!.areDiscountButtonsEnabled)
+    }
+
+    @Test
+    fun `given discount applied to at least one item, then should disable adding coupon to the order`() {
+        // given
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val item = Order.Item(
+            itemId = 1L,
+            productId = 1L,
+            name = "name",
+            price = BigDecimal(1),
+            sku = "",
+            quantity = 1f,
+            subtotal = BigDecimal(10),
+            subtotalTax = BigDecimal(1),
+            totalTax = BigDecimal(5),
+            total = BigDecimal(1),
+            variationId = 1L,
+            attributesList = listOf()
+        )
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            items = listOf(item),
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
+        sut.viewStateData.liveData.observeForever {
+            lastReceivedState = it
+        }
+        // then
+        assertTrue(item.discount > BigDecimal.ZERO)
+        assertFalse(lastReceivedState!!.isCouponButtonEnabled)
+    }
+
+    @Test
+    fun `given no discounts applied to order items, then should disable adding coupon to the order`() {
+        // given
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val item = Order.Item(
+            itemId = 1L,
+            productId = 1L,
+            name = "name",
+            price = BigDecimal(1),
+            sku = "",
+            quantity = 1f,
+            subtotal = BigDecimal(10),
+            subtotalTax = BigDecimal(1),
+            totalTax = BigDecimal(1),
+            total = BigDecimal(10),
+            variationId = 1L,
+            attributesList = listOf()
+        )
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            items = listOf(item),
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
+        sut.viewStateData.liveData.observeForever {
+            lastReceivedState = it
+        }
+        // then
+        assertTrue(item.discount == BigDecimal.ZERO)
+        assertTrue(lastReceivedState!!.isCouponButtonEnabled)
+    }
+
+    @Test
+    fun `given order is editable, when screen loaded, then listed coupons are enabled`() = testBlocking {
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            datePaid = null,
+            couponLines = listOf(Order.CouponLine("Dummy coupon 1"))
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+
+        createSut()
+        sut.couponLinesLiveData.observeForever {
+        }
+
+        assertThat(sut.couponLinesLiveData.value!!.isEnabled).isTrue()
+    }
+
+    @Test
+    fun `given order is not editable, when screen loaded, then listed coupons are disabled`() = testBlocking {
+        val order = defaultOrderValue.copy(
+            isEditable = false,
+            couponLines = listOf(Order.CouponLine("Dummy coupon 1"))
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+
+        createSut()
+        sut.couponLinesLiveData.observeForever {
+        }
+
+        assertThat(sut.couponLinesLiveData.value!!.isEnabled).isFalse()
+    }
+
+    @Test
     fun `given editable order and order paid, then set tax rate button should be disabled`() {
         testBlocking {
             initMocksForAnalyticsWithOrder(defaultOrderValue)
@@ -300,8 +593,6 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
                 datePaid = Date()
             )
             whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
-
-            whenever(isTaxRateSelectorEnabled.invoke()).thenReturn(true)
 
             orderDetailRepository.stub {
                 onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
@@ -325,8 +616,6 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             )
             whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
 
-            whenever(isTaxRateSelectorEnabled.invoke()).thenReturn(true)
-
             whenever(resourceProvider.getString(any())).thenReturn("label")
 
             orderDetailRepository.stub {
@@ -343,32 +632,6 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
-    fun `given order not paid, when feature flag disabled, tax rate button not shown`() {
-        testBlocking {
-            initMocksForAnalyticsWithOrder(defaultOrderValue)
-            val order = defaultOrderValue.copy(
-                datePaid = null
-            )
-            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
-
-            whenever(isTaxRateSelectorEnabled.invoke()).thenReturn(false)
-
-            whenever(resourceProvider.getString(any())).thenReturn("label")
-
-            orderDetailRepository.stub {
-                onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
-            }
-            createUpdateOrderUseCase = mock {
-                onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
-            }
-
-            createSut()
-
-            assertFalse(sut.viewStateData.liveData.value!!.taxRateSelectorButtonState.isShown)
-        }
-    }
-
-    @Test
     fun `given not editable order and containing at least one item, then add coupon button should be disabled`() {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         val order = defaultOrderValue.copy(
@@ -381,6 +644,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
                     BigDecimal(1),
                     "",
                     1f,
+                    BigDecimal(1),
                     BigDecimal(1),
                     BigDecimal(1),
                     BigDecimal(1),
@@ -409,7 +673,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponAdded("code ")
+        sut.addCoupon("code ")
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
@@ -428,5 +692,61 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             AnalyticsEvent.ORDER_COUPON_REMOVE,
             mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING)
         )
+    }
+
+    @Test
+    fun `given 100_001 quantity, when onItemAmountChanged with increase, then do nothing`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val item = Order.Item(
+            1L,
+            1L,
+            "name",
+            BigDecimal(1),
+            "",
+            1f,
+            BigDecimal(1),
+            BigDecimal(1),
+            BigDecimal(1),
+            BigDecimal(1),
+            1L,
+            listOf()
+        )
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            items = listOf(item)
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        val productInfo: ProductInfo = mock {
+            on { productType }.thenReturn(ProductType.SIMPLE)
+        }
+        sut.onItemAmountChanged(
+            OrderCreationProduct.ProductItem(
+                item = item,
+                productInfo = productInfo
+            ),
+            ProductAmountEvent.Change("100000")
+        )
+
+        sut.onItemAmountChanged(
+            OrderCreationProduct.ProductItem(
+                item = item.copy(quantity = 100_000f),
+                productInfo = productInfo
+            ),
+            ProductAmountEvent.Increase
+        )
+
+        assertThat(orderDraft!!.items[0].quantity).isEqualTo(100_000f)
     }
 }

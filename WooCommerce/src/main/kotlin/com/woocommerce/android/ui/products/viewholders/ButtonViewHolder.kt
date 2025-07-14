@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.products.viewholders
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.products.WCProductPropertyButtonView
 import com.woocommerce.android.ui.products.models.ProductProperty.Button
+import com.woocommerce.android.ui.products.propertyviews.WCProductPropertyButtonView
 
 class ButtonViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(
     parent,

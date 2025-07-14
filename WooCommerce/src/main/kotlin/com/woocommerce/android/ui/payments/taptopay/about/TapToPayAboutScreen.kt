@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.taptopay.about
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -9,9 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -24,12 +25,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.LearnMoreAboutSection
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -62,16 +63,19 @@ fun TapToPayAboutScreen(
                     .padding(paddingValues)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
+                Spacer(modifier = Modifier.size(16.dp))
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_header),
                     style = MaterialTheme.typography.h5,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_description),
                     style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
 
                 if (state.importantInfo != null) {
@@ -83,72 +87,64 @@ fun TapToPayAboutScreen(
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_title),
                     style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-                TapToPayAboutScreenHowItWorksFirstLine()
+                Text(
+                    text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_1_updated),
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_2),
                     style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_3),
                     style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_4),
                     style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_5),
                     style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                Spacer(Modifier.size(dimensionResource(id = R.dimen.major_200)))
+
+                Spacer(Modifier.size(16.dp))
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_copyright),
                     style = MaterialTheme.typography.caption,
-                    color = colorResource(id = R.color.color_on_surface_medium)
+                    color = colorResource(id = R.color.color_on_surface_disabled),
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
+
+                Spacer(Modifier.size(16.dp))
+                Divider()
+
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
+                        .sizeIn(minHeight = 8.dp)
+                )
+
+                LearnMoreAboutSection(
+                    textWithUrl = R.string.card_reader_tap_to_pay_learn_more,
+                    onClick = state.onLearnMoreAboutTapToPay,
+                )
+
+                Spacer(modifier = Modifier.size(16.dp))
             }
         }
-    )
-}
-
-@Composable
-private fun TapToPayAboutScreenHowItWorksFirstLine() {
-    val createOrderPlaceholder = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_create_order)
-    val collectPaymentPlaceholder = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_collect_payment)
-
-    val fullText = stringResource(
-        id = R.string.card_reader_tap_to_pay_about_how_works_1,
-        createOrderPlaceholder,
-        collectPaymentPlaceholder
-    )
-
-    val startCollectPayment = fullText.indexOf(collectPaymentPlaceholder)
-    val startCreateOrder = fullText.indexOf(createOrderPlaceholder)
-    val spanStyle = SpanStyle(
-        color = colorResource(id = R.color.color_primary),
-        fontWeight = FontWeight.W600
-    )
-    val spanStyles = listOf(
-        AnnotatedString.Range(
-            spanStyle,
-            start = startCollectPayment,
-            end = startCollectPayment + collectPaymentPlaceholder.length
-        ),
-        AnnotatedString.Range(
-            spanStyle,
-            start = startCreateOrder,
-            end = startCreateOrder + createOrderPlaceholder.length
-        )
-    )
-    Text(
-        text = AnnotatedString(text = fullText, spanStyles = spanStyles),
-        style = MaterialTheme.typography.body1,
     )
 }
 
@@ -204,8 +200,7 @@ fun TapToPayAboutScreenImportantInfo(importantInfo: TapToPayAboutViewModel.UiSta
     Spacer(Modifier.size(dimensionResource(id = R.dimen.major_200)))
 }
 
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 fun TapToPaySummaryAboutPreview() {
     WooThemeWithBackground {
@@ -215,9 +210,10 @@ fun TapToPaySummaryAboutPreview() {
                 importantInfo = TapToPayAboutViewModel.UiState.ImportantInfo(
                     pinDescription =
                     "In Australia, some cards require a PIN for contactless transactions above \$200. ",
-                    onLearnMoreAboutCardReaders = {}
-                )
-            )
+                    onLearnMoreAboutCardReaders = {},
+                ),
+                onLearnMoreAboutTapToPay = {}
+            ),
         )
     }
 }
@@ -228,7 +224,10 @@ fun TapToPaySummaryAboutWithoutImportantInfoPreview() {
     WooThemeWithBackground {
         TapToPayAboutScreen(
             onBackClick = {},
-            state = TapToPayAboutViewModel.UiState(importantInfo = null)
+            state = TapToPayAboutViewModel.UiState(
+                importantInfo = null,
+                onLearnMoreAboutTapToPay = {},
+            )
         )
     }
 }

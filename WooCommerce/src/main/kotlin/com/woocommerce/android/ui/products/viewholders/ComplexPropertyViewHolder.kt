@@ -4,8 +4,8 @@ import android.text.SpannableString
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.products.WCProductPropertyView
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import com.woocommerce.android.ui.products.propertyviews.WCProductPropertyView
 import org.wordpress.android.util.HtmlUtils
 
 class ComplexPropertyViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.layout.product_property_view) {

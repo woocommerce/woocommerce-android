@@ -47,6 +47,7 @@ class OrderDetailsTransactionLauncher @Inject constructor(
 
     private enum class Conditions {
         ORDER_FETCHED,
+        SHIPMENTS_FETCHED,
         SHIPPING_LABEL_FETCHED,
         NOTES_FETCHED,
         REFUNDS_FETCHED,
@@ -57,6 +58,8 @@ class OrderDetailsTransactionLauncher @Inject constructor(
     }
 
     fun onOrderFetched() = satisfyCondition(Conditions.ORDER_FETCHED)
+
+    fun onShipmentsFetchingCompleted() = satisfyCondition(Conditions.SHIPMENTS_FETCHED)
 
     fun onShippingLabelFetchingCompleted() = satisfyCondition(Conditions.SHIPPING_LABEL_FETCHED)
 
@@ -87,6 +90,7 @@ class OrderDetailsTransactionLauncher @Inject constructor(
                     performanceTransactionRepository.startTransaction(TRANSACTION_NAME, TransactionOperation.UI_LOAD)
                 waitingTimeTracker.start()
             }
+
             Lifecycle.Event.ON_DESTROY -> {
                 performanceTransactionId?.let {
                     performanceTransactionRepository.finishTransaction(it, TransactionStatus.ABORTED)
@@ -94,6 +98,7 @@ class OrderDetailsTransactionLauncher @Inject constructor(
                 performanceTransactionId = null
                 waitingTimeTracker.abort()
             }
+
             else -> {
                 // no-op
             }

@@ -23,7 +23,7 @@ open class JetpackActivationWPComPostLoginViewModel(
         analyticsTrackerWrapper.track(JETPACK_SETUP_LOGIN_COMPLETED)
 
         val siteUrl = selectedSite.get().url
-        if (jetpackStatus.isJetpackConnected) {
+        if (jetpackStatus.isCurrentUserConnected) {
             // Attempt returning the site from the DB if it exists, otherwise fetch it from API
             val jetpackSite = jetpackActivationRepository.getJetpackSiteByUrl(siteUrl)
                 .takeIf { it?.hasWooCommerce == true }
@@ -34,12 +34,16 @@ open class JetpackActivationWPComPostLoginViewModel(
                     }
 
             jetpackActivationRepository.setSelectedSiteAndCleanOldSites(jetpackSite)
-            triggerEvent(GoToStore)
+            if (jetpackStatus.isJetpackInstalled) {
+                triggerEvent(GoToStore)
+            } else {
+                triggerEvent(ShowJetpackCPInstallationScreen)
+            }
             return Result.success(Unit)
         } else {
             triggerEvent(
                 ShowJetpackActivationScreen(
-                    isJetpackInstalled = jetpackStatus.isJetpackInstalled,
+                    jetpackStatus = jetpackStatus,
                     siteUrl = siteUrl
                 )
             )
@@ -48,7 +52,9 @@ open class JetpackActivationWPComPostLoginViewModel(
     }
 
     data class ShowJetpackActivationScreen(
-        val isJetpackInstalled: Boolean,
+        val jetpackStatus: JetpackStatus,
         val siteUrl: String
     ) : MultiLiveEvent.Event()
+
+    object ShowJetpackCPInstallationScreen : MultiLiveEvent.Event()
 }

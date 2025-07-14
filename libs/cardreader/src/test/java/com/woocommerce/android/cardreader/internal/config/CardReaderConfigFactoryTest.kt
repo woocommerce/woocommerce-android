@@ -20,32 +20,54 @@ class CardReaderConfigFactoryTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given country code US, then US card reader config is returned`() {
+    fun `given country code US, when getCardReaderConfigFor is called, then US card reader config  returned`() {
+        // GIVEN
         val countryCode = "US"
         val expectedCardReaderConfig = CardReaderConfigForUSA
 
+        // WHEN
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
 
+        // THEN
         assertThat(cardReaderConfig).isInstanceOf(expectedCardReaderConfig::class.java)
     }
 
     @Test
-    fun `given country code CA, then Canada card reader config is returned`() {
+    fun `given country code CA, when getCardReaderConfigFor is called, then Canada card reader config returned`() {
+        // GIVEN
         val countryCode = "CA"
         val expectedCardReaderConfig = CardReaderConfigForCanada
 
+        // WHEN
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
 
+        // THEN
         assertThat(cardReaderConfig).isInstanceOf(expectedCardReaderConfig::class.java)
     }
 
     @Test
-    fun `given unsupported country code, then unsupported country card reader config is returned`() {
+    fun `given unsupported country code, when getCardReaderConfigFor is called, then unsupported country card reader config returned`() {
+        // GIVEN
         val countryCode = "invalid country code"
         val expectedCardReaderConfig = CardReaderConfigForUnsupportedCountry
 
+        // WHEN
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
 
+        // THEN
+        assertThat(cardReaderConfig).isInstanceOf(expectedCardReaderConfig::class.java)
+    }
+
+    @Test
+    fun `given PR country code, when getCardReaderConfigFor is called, then US card reader config returned`() {
+        // GIVEN
+        val countryCode = "PR"
+        val expectedCardReaderConfig = CardReaderConfigForUSA
+
+        // WHEN
+        val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
+
+        // THEN
         assertThat(cardReaderConfig).isInstanceOf(expectedCardReaderConfig::class.java)
     }
 }

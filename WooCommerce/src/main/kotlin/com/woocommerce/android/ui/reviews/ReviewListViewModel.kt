@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
@@ -59,6 +60,12 @@ class ReviewListViewModel @Inject constructor(
     override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
         get() = this@ReviewListViewModel.reviewModerationHandler
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
@@ -156,14 +163,31 @@ class ReviewListViewModel @Inject constructor(
                 if (viewState.isUnreadFilterEnabled) {
                     fetchUnreadReviews(loadMore = loadMore)
                 } else {
-                    when (reviewRepository.fetchProductReviews(loadMore)) {
-                        SUCCESS,
-                        NO_ACTION_NEEDED -> {
-                            val productReviews = reviewRepository.getCachedProductReviews()
-                            _reviewList.value = productReviews
-                        }
+                    reviewRepository.fetchProductReviews(loadMore).collect { result ->
+                        when (result) {
+                            ReviewListRepository.FetchReviewsResult.NothingFetched -> {
+                                // No action needed
+                            }
+                            is ReviewListRepository.FetchReviewsResult.NotificationsFetched -> {
+                                if (result.requestResult == SUCCESS) {
+                                    val reviews = reviewRepository.getCachedProductReviews()
+                                    if (reviews.isNotEmpty()) {
+                                        _reviewList.value = reviews
+                                    }
+                                }
+                            }
 
-                        else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                            is ReviewListRepository.FetchReviewsResult.ReviewsFetched -> {
+                                when (result.requestResult) {
+                                    SUCCESS,
+                                    NO_ACTION_NEEDED -> _reviewList.value = reviewRepository.getCachedProductReviews()
+
+                                    ERROR,
+                                    RequestResult.API_ERROR,
+                                    RequestResult.RETRY -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                                }
+                            }
+                        }
                     }
                 }
                 checkForUnreadReviews()

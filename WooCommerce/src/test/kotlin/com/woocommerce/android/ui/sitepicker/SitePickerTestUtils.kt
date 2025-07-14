@@ -48,7 +48,8 @@ object SitePickerTestUtils {
         isHelpBtnVisible = true,
         isSecondaryBtnVisible = true,
         isPrimaryBtnVisible = true,
-        toolbarTitle = ""
+        toolbarTitle = "",
+        editStoreListEnabled = true
     )
 
     fun getDefaultSwitchStoreViewState(
@@ -58,7 +59,8 @@ object SitePickerTestUtils {
         toolbarTitle = resourceProvider.getString(R.string.site_picker_title),
         isHelpBtnVisible = false,
         isSecondaryBtnVisible = false,
-        isPrimaryBtnVisible = true
+        isPrimaryBtnVisible = true,
+        editStoreListEnabled = true
     )
 
     fun getEmptyViewState(

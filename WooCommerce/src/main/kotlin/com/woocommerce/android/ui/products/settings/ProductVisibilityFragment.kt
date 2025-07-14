@@ -6,25 +6,36 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.CheckedTextView
 import androidx.annotation.IdRes
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductVisibilityBinding
+import com.woocommerce.android.ui.products.details.DetermineProductPasswordApi
+import com.woocommerce.android.ui.products.details.ProductPasswordApi
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PASSWORD_PROTECTED
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PRIVATE
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.util.ActivityUtils
+import javax.inject.Inject
 
 /**
  * Settings screen which enables choosing a product's visibility
  */
+@AndroidEntryPoint
 class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_product_visibility), OnClickListener {
     companion object {
         const val ARG_VISIBILITY = "visibility"
         const val ARG_PASSWORD = "password"
         const val PRODUCT_VISIBILITY_RESULT = "product-visibility"
     }
+
+    @Inject
+    lateinit var determineProductPasswordApi: DetermineProductPasswordApi
 
     private var _binding: FragmentProductVisibilityBinding? = null
     private val binding get() = _binding!!
@@ -47,34 +58,43 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
 
         val password = savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password
         setupPasswordProtectedSetting(
-            isApplicationPasswordsLogin = navArgs.isApplicationPasswordsLogin,
             selectedVisibility = selectedVisibility,
             password = password
+        )
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_visibility),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    onRequestAllowBackPress()
+                }
+            }
         )
     }
 
     private fun setupPasswordProtectedSetting(
-        isApplicationPasswordsLogin: Boolean,
         selectedVisibility: String?,
         password: String?
-    ) {
-        if (isApplicationPasswordsLogin) {
-            // Hide "Password protected" visibility setting on login with application passwords,
-            // because this feature specifically uses WP.com API.
+    ) = viewLifecycleOwner.lifecycleScope.launch {
+        val productPasswordApi = determineProductPasswordApi()
+        if (productPasswordApi == ProductPasswordApi.UNSUPPORTED) {
+            // Hide "Password protected" visibility setting when not supported.
             binding.btnPasswordProtected.visibility = View.GONE
-        } else {
-            if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
-                password?.let {
-                    binding.editPassword.text = it
-                    showPassword(it.isNotBlank())
-                }
+            return@launch
+        }
+
+        if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
+            password?.let {
+                binding.editPassword.text = it
+                showPassword(it.isNotBlank())
             }
-            binding.btnPasswordProtected.setOnClickListener(this)
-            binding.btnPasswordProtected.visibility = View.VISIBLE
-            binding.editPassword.setOnTextChangedListener {
-                if (it.toString().isNotBlank()) {
-                    binding.editPassword.clearError()
-                }
+        }
+        binding.btnPasswordProtected.setOnClickListener(this@ProductVisibilityFragment)
+        binding.btnPasswordProtected.visibility = View.VISIBLE
+        binding.editPassword.setOnTextChangedListener {
+            if (it.toString().isNotBlank()) {
+                binding.editPassword.clearError()
             }
         }
     }
@@ -129,8 +149,6 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_visibility)
 
     override fun validateChanges(): Boolean {
         if (selectedVisibility == PASSWORD_PROTECTED.toString() && getPassword().isEmpty()) {

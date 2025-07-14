@@ -23,50 +23,55 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
         val selectedDateRange = orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
             .map { DateRange.fromValue(it) }
             .firstOrNull()
-        val rangeStartAndEnd = getBeforeAndAfterFrom(selectedDateRange)
+        val rangeStartAndEnd = selectedDateRange.getBeforeAndAfterFrom(orderFiltersRepository, dateUtils)
 
-        val orderStatusFilters =
-            orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
-                .joinToString(separator = ",")
+        val orderStatusFilters = orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
+            .joinToString(separator = ",")
 
         return WCOrderListDescriptor(
             site = selectedSite.get(),
             statusFilter = orderStatusFilters,
             beforeFilter = rangeStartAndEnd.second,
-            afterFilter = rangeStartAndEnd.first
+            afterFilter = rangeStartAndEnd.first,
+            productId = orderFiltersRepository.productFilter,
+            customerId = orderFiltersRepository.customerFilter
         )
     }
-
-    private fun getBeforeAndAfterFrom(range: DateRange?): Pair<String?, String?> =
-        when {
-            range == null -> Pair(null, null)
-            range != CUSTOM_RANGE -> {
-                Pair(dateUtils.toIso8601Format(range.toDateTimeInMillis()), null)
-            }
-            else -> {
-                val customDateRange = orderFiltersRepository.getCustomDateRangeFilter()
-                var afterDate: String? = null
-                var beforeDate: String? = null
-                if (customDateRange.first > 0) {
-                    afterDate = dateUtils.toIso8601Format(
-                        dateUtils.getDateInMillisAtTheStartOfTheDay(customDateRange.first)
-                    )
-                }
-                if (customDateRange.second > 0) {
-                    beforeDate = dateUtils.toIso8601Format(
-                        dateUtils.getDateInMillisAtTheEndOfTheDay(customDateRange.second)
-                    )
-                }
-                Pair(afterDate, beforeDate)
-            }
-        }
-
-    private fun DateRange.toDateTimeInMillis(): Long =
-        when (this) {
-            TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
-            LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 2)
-            LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 7)
-            LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
-            CUSTOM_RANGE -> 0
-        }
 }
+
+fun DateRange?.getBeforeAndAfterFrom(
+    orderFiltersRepository: OrderFiltersRepository,
+    dateUtils: DateUtils
+): Pair<String?, String?> =
+    when {
+        this == null -> Pair(null, null)
+        this != CUSTOM_RANGE -> {
+            Pair(dateUtils.toIso8601Format(this.toDateTimeInMillis(dateUtils)), null)
+        }
+
+        else -> {
+            val customDateRange = orderFiltersRepository.getCustomDateRangeFilter()
+            var afterDate: String? = null
+            var beforeDate: String? = null
+            if (customDateRange.first > 0) {
+                afterDate = dateUtils.toIso8601Format(
+                    dateUtils.getDateInMillisAtTheStartOfTheDay(customDateRange.first)
+                )
+            }
+            if (customDateRange.second > 0) {
+                beforeDate = dateUtils.toIso8601Format(
+                    dateUtils.getDateInMillisAtTheEndOfTheDay(customDateRange.second)
+                )
+            }
+            Pair(afterDate, beforeDate)
+        }
+    }
+
+fun DateRange.toDateTimeInMillis(dateUtils: DateUtils): Long =
+    when (this) {
+        TODAY -> dateUtils.getDateForTodayAtTheStartOfTheDay()
+        LAST_2_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 2)
+        LAST_7_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 7)
+        LAST_30_DAYS -> dateUtils.getCurrentDateTimeMinusDays(days = 30)
+        CUSTOM_RANGE -> 0
+    }

@@ -56,8 +56,9 @@ class PrivacySettingsViewModel @Inject constructor(
 
                 event.onFailure {
                     triggerEvent(
-                        MultiLiveEvent.Event.ShowActionSnackbar(
-                            resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch)
+                        MultiLiveEvent.Event.ShowActionStringSnackbar(
+                            message = resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch),
+                            actionText = resourceProvider.getString(R.string.retry),
                         ) {
                             initialize()
                         }
@@ -69,8 +70,9 @@ class PrivacySettingsViewModel @Inject constructor(
                         args.requestedAnalyticsValue == RequestedAnalyticsValue.ENABLED
 
                     triggerEvent(
-                        MultiLiveEvent.Event.ShowActionSnackbar(
-                            resourceProvider.getString(R.string.settings_tracking_analytics_error_update)
+                        MultiLiveEvent.Event.ShowActionStringSnackbar(
+                            message = resourceProvider.getString(R.string.settings_tracking_analytics_error_update),
+                            actionText = resourceProvider.getString(R.string.retry),
                         ) { onSendStatsSettingChanged(checked) }
                     )
                 }
@@ -105,7 +107,6 @@ class PrivacySettingsViewModel @Inject constructor(
         analyticsTrackerWrapper.sendUsageStats = checked
         launch {
             if (repository.isUserWPCOM()) {
-
                 _state.value = _state.value?.copy(progressBarVisible = true)
 
                 val event = repository.updateTracksSetting(checked)
@@ -120,8 +121,9 @@ class PrivacySettingsViewModel @Inject constructor(
                     onFailure = {
                         analyticsTrackerWrapper.sendUsageStats = !checked
                         triggerEvent(
-                            MultiLiveEvent.Event.ShowActionSnackbar(
-                                resourceProvider.getString(R.string.settings_tracking_analytics_error_update)
+                            MultiLiveEvent.Event.ShowActionStringSnackbar(
+                                message = resourceProvider.getString(R.string.settings_tracking_analytics_error_update),
+                                actionText = resourceProvider.getString(R.string.retry),
                             ) { onSendStatsSettingChanged(checked) }
                         )
                     }

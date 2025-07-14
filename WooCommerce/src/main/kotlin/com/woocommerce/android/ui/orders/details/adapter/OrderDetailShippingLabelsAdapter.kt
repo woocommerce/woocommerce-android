@@ -15,11 +15,12 @@ import com.woocommerce.android.databinding.OrderDetailShippingLabelListItemBindi
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
-import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import java.math.BigDecimal
@@ -28,17 +29,19 @@ class OrderDetailShippingLabelsAdapter(
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productImageMap: ProductImageMap,
     private val listener: OnShippingLabelClickListener,
-    private val productClickListener: OrderProductActionListener
+    private val productClickListener: OrderProductActionListener,
+    private val isRevampWooShippingEnabled: Boolean
 ) : RecyclerView.Adapter<ShippingLabelsViewHolder>() {
     private val viewPool = RecyclerView.RecycledViewPool()
 
     interface OnShippingLabelClickListener {
-        fun onRefundRequested(shippingLabel: ShippingLabel)
-        fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel)
-        fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel)
+        fun onRefundRequested(shippingLabel: ShippingLabelModel)
+        fun onPrintShippingLabelClicked(shippingLabel: ShippingLabelModel)
+        fun onPrintCustomsFormClicked(shippingLabel: ShippingLabelModel)
+        fun onViewShippingLabelClicked(shippingLabel: ShippingLabelModel)
     }
 
-    var shippingLabels: List<ShippingLabel> = ArrayList()
+    var shippingLabels: List<ShippingLabelModel> = ArrayList()
         set(value) {
             val diffResult = DiffUtil.calculateDiff(
                 ShippingLabelDiffCallback(
@@ -63,6 +66,7 @@ class OrderDetailShippingLabelsAdapter(
             viewPool,
             productImageMap,
             formatCurrencyForDisplay,
+            isRevampWooShippingEnabled,
             listener,
             productClickListener
         )
@@ -74,18 +78,81 @@ class OrderDetailShippingLabelsAdapter(
 
     override fun getItemCount(): Int = shippingLabels.size
 
+    @Suppress("LongParameterList")
     class ShippingLabelsViewHolder(
         private var viewBinding: OrderDetailShippingLabelListItemBinding,
         private val viewPool: RecyclerView.RecycledViewPool,
         private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (BigDecimal) -> String,
+        private val isRevampWooShippingEnabled: Boolean,
         private val listener: OnShippingLabelClickListener,
         private val productClickListener: OrderProductActionListener
-    ) : RecyclerView.ViewHolder(
-        viewBinding.root
-    ) {
-        fun bind(shippingLabel: ShippingLabel) {
-            // display product list if product list is not empty
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
+
+        fun bind(shippingLabel: ShippingLabelModel) {
+            displayProductList(shippingLabel)
+
+            if (shippingLabel.labelId == 0L) {
+                viewBinding.shippingLabelItemTrackingNumber.isVisible = false
+                viewBinding.shippingLabelItemMorePanel.isVisible = false
+                with(viewBinding.shippingLabelListLblPackage) {
+                    text = context.getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
+                }
+                return
+            }
+
+            // Set up the collapsible button to show/hide the products list.
+            setupCollapsibleButton(shippingLabel)
+
+            // display tracking number details if shipping label is not refunded
+            displayTrackingNumberDetails(shippingLabel)
+
+            // Shipping label header
+            with(viewBinding.shippingLabelListLblPackage) {
+                text = context.getString(
+                    R.string.orderdetail_shipping_label_item_header,
+                    bindingAdapterPosition + 1
+                )
+            }
+
+            // display origin address
+            shippingLabel.originAddress?.let {
+                viewBinding.shippingLabelItemShipFrom.setShippingLabelValue(
+                    it.getFullAddress(
+                        it.firstName,
+                        it.getEnvelopeAddress(),
+                        it.country.name
+                    )
+                )
+            }
+
+            // display destination address
+            shippingLabel.destinationAddress?.let {
+                viewBinding.shippingLabelItemShipTo.setShippingLabelValue(
+                    it.getFullAddress(
+                        it.firstName,
+                        it.getEnvelopeAddress(),
+                        it.country.name
+                    )
+                )
+            }
+
+            // Shipping label package info
+            with(viewBinding.shippingLabelItemPackageInfo) { setShippingLabelValue(shippingLabel.packageName) }
+
+            // Shipping label carrier info
+            with(viewBinding.shippingLabelItemCarrierInfo) {
+                setShippingLabelValue(
+                    context.getString(
+                        R.string.orderdetail_shipping_label_carrier_info,
+                        shippingLabel.serviceName,
+                        formatCurrencyForDisplay(shippingLabel.rate)
+                    )
+                )
+            }
+        }
+
+        private fun displayProductList(shippingLabel: ShippingLabelModel) {
             if (shippingLabel.products.isNotEmpty()) {
                 with(viewBinding.shippingLabelListProducts) {
                     layoutManager = LinearLayoutManager(context)
@@ -109,17 +176,9 @@ class OrderDetailShippingLabelsAdapter(
                     setRecycledViewPool(viewPool)
                 }
             }
+        }
 
-            if (shippingLabel.id == 0L) {
-                viewBinding.shippingLabelItemTrackingNumber.isVisible = false
-                viewBinding.shippingLabelItemMorePanel.isVisible = false
-                with(viewBinding.shippingLabelListLblPackage) {
-                    text = context.getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
-                }
-                return
-            }
-
-            // Set up the collapsible button to show/hide the products list.
+        private fun setupCollapsibleButton(shippingLabel: ShippingLabelModel) {
             viewBinding.shippingLabelListCountButtonTitle.text = StringUtils.getQuantityString(
                 context = viewBinding.shippingLabelListCountButtonTitle.context,
                 quantity = shippingLabel.products.count(),
@@ -136,13 +195,38 @@ class OrderDetailShippingLabelsAdapter(
                     viewBinding.shippingLabelListCountButtonImage.animate().rotation(0F).setDuration(200).start()
                 }
             }
+        }
 
-            // display tracking number details if shipping label is not refunded
-            val isRefunded = shippingLabel.refund == null
-            viewBinding.shippingLabelListBtnMenu.isVisible = isRefunded
-            viewBinding.shippingLabelListPrintBtn.isVisible = isRefunded
+        @Suppress("LongMethod")
+        private fun displayTrackingNumberDetails(shippingLabel: ShippingLabelModel) {
+            val isNotRefunded = shippingLabel.refund == null
+            viewBinding.shippingLabelListBtnMenu.isVisible = isNotRefunded
+            viewBinding.shippingLabelListPrintBtn.isVisible = isNotRefunded
             with(viewBinding.shippingLabelItemTrackingNumber) {
-                if (shippingLabel.refund != null) {
+                if (isNotRefunded) {
+                    setShippingLabelTitle(context.getString(R.string.order_shipment_tracking_number_label))
+                    setShippingLabelValue(shippingLabel.tracking)
+                    viewBinding.shippingLabelListBtnMenu.setOnClickListener { showRefundPopup(shippingLabel, listener) }
+
+                    // display tracking link if available
+                    if (shippingLabel.tracking.isNotEmpty()) {
+                        showTrackingItemButton(true)
+                        setTrackingItemClickListener {
+                            OrderShipmentTrackingHelper.showTrackingOrDeleteOptionPopup(
+                                getTrackingItemButton(),
+                                context,
+                                shippingLabel.trackingLink,
+                                shippingLabel.tracking
+                            )
+                        }
+                    } else {
+                        showTrackingItemButton(false)
+                    }
+
+                    viewBinding.shippingLabelListPrintBtn.setOnClickListener {
+                        listener.onPrintShippingLabelClicked(shippingLabel)
+                    }
+                } else {
                     setShippingLabelTitle(
                         context.getString(
                             R.string.orderdetail_shipping_label_refund_title,
@@ -153,101 +237,57 @@ class OrderDetailShippingLabelsAdapter(
                         context.getString(
                             R.string.orderdetail_shipping_label_refund_subtitle,
                             formatCurrencyForDisplay(shippingLabel.rate),
-                            shippingLabel.refund.refundDate?.formatToMMMddYYYYhhmm() ?: ""
+                            shippingLabel.refund.requestDate?.formatToMMMddYYYYhhmm() ?: ""
                         )
                     )
                     showTrackingItemButton(false)
-                } else {
-                    setShippingLabelTitle(
-                        context.getString(
-                            R.string.order_shipment_tracking_number_label
-                        )
-                    )
-                    setShippingLabelValue(shippingLabel.trackingNumber)
-                    viewBinding.shippingLabelListBtnMenu.setOnClickListener {
-                        showRefundPopup(shippingLabel, listener)
-                    }
+                }
+            }
 
-                    // display tracking link if available
-                    if (shippingLabel.trackingNumber.isNotEmpty()) {
-                        showTrackingItemButton(true)
-                        setTrackingItemClickListener {
-                            OrderShipmentTrackingHelper.showTrackingOrDeleteOptionPopup(
-                                getTrackingItemButton(), context, shippingLabel.trackingLink,
-                                shippingLabel.trackingNumber
-                            )
+            if (isRevampWooShippingEnabled) {
+                // Legacy flow buttons
+                viewBinding.shippingLabelItemViewMore.isVisible = false
+                viewBinding.shippingLabelItemViewMoreButtonTitle.isVisible = false
+
+                if (isNotRefunded) {
+                    // New flow buttons
+                    viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.isVisible = true
+                    viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.setOnClickListener {
+                        listener.onViewShippingLabelClicked(shippingLabel)
+                    }
+                } else {
+                    viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.isVisible = false
+                }
+            } else {
+                // New flow buttons
+                viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.isVisible = false
+
+                // Legacy flow buttons
+                viewBinding.shippingLabelItemViewMore.isVisible = true
+                viewBinding.shippingLabelItemViewMoreButtonTitle.isVisible = true
+
+                // click on view more details section
+                viewBinding.shippingLabelItemViewMore.setOnClickListener {
+                    val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
+                    if (isChecked) {
+                        viewBinding.shippingLabelItemMorePanel.expand()
+                        viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(180F).setDuration(200)
+                            .start()
+                        with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                            text = context.getString(R.string.orderdetail_shipping_label_item_hide_shipping)
                         }
-                    } else showTrackingItemButton(false)
-
-                    viewBinding.shippingLabelListPrintBtn.setOnClickListener {
-                        listener.onPrintShippingLabelClicked(shippingLabel)
+                    } else {
+                        viewBinding.shippingLabelItemMorePanel.collapse()
+                        viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+                        with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                            text = context.getString(R.string.orderdetail_shipping_label_item_show_shipping)
+                        }
                     }
                 }
-            }
-
-            // click on view more details section
-            viewBinding.shippingLabelItemViewMore.setOnClickListener {
-                val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
-                if (isChecked) {
-                    viewBinding.shippingLabelItemMorePanel.expand()
-                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
-                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
-                        text = context.getString(R.string.orderdetail_shipping_label_item_hide_shipping)
-                    }
-                } else {
-                    viewBinding.shippingLabelItemMorePanel.collapse()
-                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
-                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
-                        text = context.getString(R.string.orderdetail_shipping_label_item_show_shipping)
-                    }
-                }
-            }
-
-            // Shipping label header
-            with(viewBinding.shippingLabelListLblPackage) {
-                text = context.getString(
-                    R.string.orderdetail_shipping_label_item_header,
-                    bindingAdapterPosition + 1
-                )
-            }
-
-            // display origin address
-            shippingLabel.originAddress?.let {
-                viewBinding.shippingLabelItemShipFrom.setShippingLabelValue(
-                    it.getFullAddress(
-                        it.firstName, it.getEnvelopeAddress(), it.country.name
-                    )
-                )
-            }
-
-            // display destination address
-            shippingLabel.destinationAddress?.let {
-                viewBinding.shippingLabelItemShipTo.setShippingLabelValue(
-                    it.getFullAddress(
-                        it.firstName, it.getEnvelopeAddress(), it.country.name
-                    )
-                )
-            }
-
-            // Shipping label package info
-            with(viewBinding.shippingLabelItemPackageInfo) { setShippingLabelValue(shippingLabel.packageName) }
-
-            // Shipping label carrier info
-            with(viewBinding.shippingLabelItemCarrierInfo) {
-                setShippingLabelValue(
-                    context.getString(
-                        R.string.orderdetail_shipping_label_carrier_info,
-                        shippingLabel.serviceName,
-                        formatCurrencyForDisplay(shippingLabel.rate)
-                    )
-                )
             }
         }
 
-        private fun showRefundPopup(
-            shippingLabel: ShippingLabel,
-            listener: OnShippingLabelClickListener
-        ) {
+        private fun showRefundPopup(shippingLabel: ShippingLabelModel, listener: OnShippingLabelClickListener) {
             val popup = PopupMenu(itemView.context, viewBinding.shippingLabelListBtnMenu)
             popup.menuInflater.inflate(R.menu.menu_shipping_label, popup.menu)
 
@@ -256,7 +296,7 @@ class OrderDetailShippingLabelsAdapter(
                 true
             }
             popup.menu.findItem(R.id.menu_print_customs_form).apply {
-                isVisible = shippingLabel.hasCommercialInvoice
+                isVisible = shippingLabel.commercialInvoiceUrl.isNotNullOrEmpty()
                 setOnMenuItemClickListener {
                     listener.onPrintCustomsFormClicked(shippingLabel)
                     true
@@ -268,11 +308,11 @@ class OrderDetailShippingLabelsAdapter(
     }
 
     class ShippingLabelDiffCallback(
-        private val oldList: List<ShippingLabel>,
-        private val newList: List<ShippingLabel>
+        private val oldList: List<ShippingLabelModel>,
+        private val newList: List<ShippingLabelModel>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].id == newList[newItemPosition].id
+            return oldList[oldItemPosition].labelId == newList[newItemPosition].labelId
         }
 
         override fun getOldListSize(): Int = oldList.size

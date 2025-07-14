@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -24,16 +23,26 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     private val availablePackages = listOf(
         ShippingPackage(
-            "id1", "title1", false, "provider1", PackageDimensions(1.0f, 1.0f, 1.0f), 1f
+            "id1",
+            "title1",
+            false,
+            "provider1",
+            PackageDimensions(1.0f, 1.0f, 1.0f),
+            1f
         ),
         ShippingPackage(
-            "id2", "title2", false, "provider2", PackageDimensions(1.0f, 1.0f, 1.0f), 1f
+            "id2",
+            "title2",
+            false,
+            "provider2",
+            PackageDimensions(1.0f, 1.0f, 1.0f),
+            1f
         )
     )
     private val parameterRepository: ParameterRepository = mock()
     private val shippingRepository: ShippingLabelRepository = mock()
 
-    private val savedState = ShippingPackageSelectorFragmentArgs(0).initSavedStateHandle()
+    private val savedState = ShippingPackageSelectorFragmentArgs(0).toSavedStateHandle()
 
     private lateinit var viewModel: ShippingPackageSelectorViewModel
 

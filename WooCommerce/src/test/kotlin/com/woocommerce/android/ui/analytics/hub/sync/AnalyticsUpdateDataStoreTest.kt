@@ -3,9 +3,10 @@ package com.woocommerce.android.ui.analytics.hub.sync
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
-import com.woocommerce.android.ui.mystore.domain.asRangeSelection
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -19,7 +20,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Calendar
 import java.util.Date
@@ -34,7 +34,9 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
 
     private val defaultSelectionData = LAST_MONTH.generateSelectionData(
         calendar = Calendar.getInstance(),
-        locale = Locale.getDefault()
+        locale = Locale.getDefault(),
+        referenceStartDate = Date(),
+        referenceEndDate = Date()
     )
 
     @Test
@@ -49,6 +51,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         // When
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS,
             maxOutdatedTime = maxOutdatedTime
         ).single()
 
@@ -68,6 +71,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         // When
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS,
             maxOutdatedTime = maxOutdatedTime
         ).single()
 
@@ -87,6 +91,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         // When
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS,
             maxOutdatedTime = maxOutdatedTime
         ).single()
 
@@ -101,7 +106,12 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             lastUpdateTimestamp = null,
             currentTimestamp = 100
         )
-        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection()
+        val rangeSelection = SelectionType.TODAY.generateSelectionData(
+            referenceStartDate = Date(),
+            referenceEndDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
+        )
 
         // When
         sut.storeLastAnalyticsUpdate(
@@ -114,23 +124,32 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given store analytics is called with an analytic data ALL, then save the value for ALL analytic keys`() = testBlocking {
+    fun `given store analytics is called with an analytic data list, then save the value for ALL analytic keys`() = testBlocking {
         // Given
         createAnalyticsUpdateScenarioWith(
             lastUpdateTimestamp = null,
             currentTimestamp = 100
         )
-        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection()
-        val numberOfAnalyticsDataKeys = AnalyticsUpdateDataStore.AnalyticData.values().size
+        val rangeSelection = SelectionType.TODAY.generateSelectionData(
+            referenceStartDate = Date(),
+            referenceEndDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
+        )
+        val analyticsData = listOf(
+            AnalyticsUpdateDataStore.AnalyticData.VISITORS,
+            AnalyticsUpdateDataStore.AnalyticData.BUNDLES,
+            AnalyticsUpdateDataStore.AnalyticData.REVENUE
+        )
 
         // When
         sut.storeLastAnalyticsUpdate(
             rangeSelection = rangeSelection,
-            analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
+            analyticDataList = analyticsData
         )
 
         // Then saved for all analytic data values
-        verify(dataStore, times(numberOfAnalyticsDataKeys)).edit(any())
+        verify(dataStore, times(analyticsData.size)).edit(any())
     }
 
     @Test
@@ -152,6 +171,153 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         // Then
         assertThat(timestampUpdate).isNotNull()
         assertThat(timestampUpdate).isEqualTo(2000)
+    }
+
+    @Test
+    fun `given observe should emit last update for all data sources, when a data source is missing then return null`() = testBlocking {
+        // Given
+        val selectedSiteId = 1
+        val lastUpdateTimestamp = 2000L
+        val rangeId = defaultSelectionData.selectionType.identifier
+        val presentKey =
+            "${selectedSiteId}${AnalyticsUpdateDataStore.AnalyticData.REVENUE}$rangeId"
+
+        val analyticsPreferences = mock<Preferences> {
+            on { get(longPreferencesKey(presentKey)) } doReturn lastUpdateTimestamp
+        }
+
+        createAnalyticsUpdateScenarioWith(analyticsPreferences, selectedSiteId)
+
+        // When
+        var timestampUpdate: Long? = null
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = listOf(
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            )
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // Then
+        assertThat(timestampUpdate).isNull()
+    }
+
+    @Test
+    fun `given observe should emit last update for all data sources, when all data source are present then return the oldest timestamp`() = testBlocking {
+        // Given
+        val selectedSiteId = 1
+        val oldLastUpdateTimestamp = 2000L
+        val newLastUpdateTimestamp = 2500L
+        val rangeId = defaultSelectionData.selectionType.identifier
+        val keyRevenue =
+            "${selectedSiteId}${AnalyticsUpdateDataStore.AnalyticData.REVENUE}$rangeId"
+        val keyVisitors =
+            "${selectedSiteId}${AnalyticsUpdateDataStore.AnalyticData.VISITORS}$rangeId"
+
+        val analyticsPreferences = mock<Preferences> {
+            on { get(longPreferencesKey(keyRevenue)) } doReturn newLastUpdateTimestamp
+            on { get(longPreferencesKey(keyVisitors)) } doReturn oldLastUpdateTimestamp
+        }
+
+        createAnalyticsUpdateScenarioWith(analyticsPreferences, selectedSiteId)
+
+        // When
+        var timestampUpdate: Long? = null
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = listOf(
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            )
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // Then
+        assertThat(timestampUpdate).isNotNull()
+        assertThat(timestampUpdate).isEqualTo(oldLastUpdateTimestamp)
+    }
+
+    @Test
+    fun `given observe should emit last update, when all data sources are not required, if a data source is missing then return the available last update`() = testBlocking {
+        // Given
+        val selectedSiteId = 1
+        val lastUpdateTimestamp = 2000L
+        val rangeId = defaultSelectionData.selectionType.identifier
+        val presentKey =
+            "${selectedSiteId}${AnalyticsUpdateDataStore.AnalyticData.REVENUE}$rangeId"
+
+        val analyticsPreferences = mock<Preferences> {
+            on { get(longPreferencesKey(presentKey)) } doReturn lastUpdateTimestamp
+        }
+
+        createAnalyticsUpdateScenarioWith(analyticsPreferences, selectedSiteId)
+
+        // When
+        var timestampUpdate: Long? = null
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = listOf(
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            ),
+            shouldAllDataBePresent = false
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // Then
+        assertThat(timestampUpdate).isNotNull()
+        assertThat(timestampUpdate).isEqualTo(lastUpdateTimestamp)
+    }
+
+    @Test
+    fun `given observe should emit last update, when all data sources are not required, if all data sources are missing then return null`() = testBlocking {
+        // Given
+        val selectedSiteId = 1
+
+        val analyticsPreferences = mock<Preferences>()
+
+        createAnalyticsUpdateScenarioWith(analyticsPreferences, selectedSiteId)
+
+        // When
+        var timestampUpdate: Long? = null
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = listOf(
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            ),
+            shouldAllDataBePresent = false
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // Then
+        assertThat(timestampUpdate).isNull()
+    }
+
+    private fun createAnalyticsUpdateScenarioWith(
+        analyticsPreferences: Preferences,
+        selectedSiteId: Int
+    ) {
+        dataStore = mock {
+            on { data } doReturn flowOf(analyticsPreferences)
+        }
+
+        currentTimeProvider = mock()
+
+        val selectedSite: SelectedSite = mock {
+            on { getSelectedSiteId() } doReturn selectedSiteId
+        }
+
+        sut = AnalyticsUpdateDataStore(
+            dataStore = dataStore,
+            currentTimeProvider = currentTimeProvider,
+            selectedSite = selectedSite
+        )
     }
 
     private fun createAnalyticsUpdateScenarioWith(

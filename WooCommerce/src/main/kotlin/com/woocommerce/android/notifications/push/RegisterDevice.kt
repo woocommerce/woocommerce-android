@@ -16,9 +16,6 @@ class RegisterDevice @Inject constructor(
     private val getDeviceRegistrationStatus: GetDeviceRegistrationStatus,
 ) {
     suspend operator fun invoke(mode: Mode) {
-        if (BuildConfig.DEBUG) {
-            WooLog.d(WooLog.T.UTILS, "Current FCM token: ${appPrefsWrapper.getFCMToken()}")
-        }
         when (mode) {
             IF_NEEDED -> {
                 if (getDeviceRegistrationStatus() == GetDeviceRegistrationStatus.Status.UNREGISTERED) {
@@ -26,6 +23,11 @@ class RegisterDevice @Inject constructor(
                 }
             }
             FORCEFULLY -> sendToken()
+        }
+
+        WooLog.d(WooLog.T.NOTIFICATIONS, "Push notifications registration status: ${getDeviceRegistrationStatus()}")
+        if (BuildConfig.DEBUG) {
+            WooLog.d(WooLog.T.UTILS, "Current FCM token: ${appPrefsWrapper.getFCMToken()}")
         }
     }
 

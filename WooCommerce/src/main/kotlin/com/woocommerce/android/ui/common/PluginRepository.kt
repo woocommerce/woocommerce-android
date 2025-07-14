@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.common
 
 import android.os.Parcelable
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
@@ -34,11 +37,13 @@ import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginPayload
 import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginConfigured
 import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginFetched
 import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginInstalled
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
-    @Suppress("unused") private val pluginStore: PluginStore
+    @Suppress("unused") private val pluginStore: PluginStore,
+    private val wooCommerceStore: WooCommerceStore
 ) {
     companion object {
         private const val GENERIC_ERROR = "Unknown issue."
@@ -63,6 +68,7 @@ class PluginRepository @Inject constructor(
                 )
                 Result.success(event.plugin)
             }
+
             else -> {
                 WooLog.w(
                     WooLog.T.PLUGINS,
@@ -144,6 +150,27 @@ class PluginRepository @Inject constructor(
             // Finish the flow unless it's an intermediary event: Installation
             status is PluginInstalled
         }
+    }
+
+    suspend fun getPluginsInfo(site: SiteModel, plugins: List<WooCommerceStore.WooPlugin>): Map<String, WooPlugin> {
+        val result = HashMap<String, WooPlugin>()
+        val information = wooCommerceStore.getSitePlugins(site, plugins).associateBy { it.name }
+
+        if (information.isEmpty()) {
+            AnalyticsTracker.track(AnalyticsEvent.PLUGINS_NOT_SYNCED_YET)
+            // return earlier, no plugins info in the database
+            return result
+        }
+
+        plugins.associateByTo(
+            destination = result,
+            keySelector = { plugin -> plugin.pluginName },
+            valueTransform = { plugin ->
+                val info = information[plugin.pluginName]
+                WooPlugin(info != null, info?.isActive ?: false, info?.version)
+            }
+        )
+        return result
     }
 
     private fun dispatchPluginActivationAction(site: SiteModel, slug: String, name: String) {

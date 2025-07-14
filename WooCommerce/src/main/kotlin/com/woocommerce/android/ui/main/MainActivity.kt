@@ -3,7 +3,6 @@
 package com.woocommerce.android.ui.main
 
 import NotificationsPermissionCard
-import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -12,12 +11,12 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -35,6 +34,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import com.automattic.android.tracks.crashlogging.CrashLogging
@@ -47,34 +47,33 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.InfoScreenFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.POS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.MainActivityViewModel.OpenFreeTrialSurvey
 import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityEvent
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
@@ -83,40 +82,44 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForP
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewStorePlanUpgrade
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
-import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
-import com.woocommerce.android.ui.products.ProductDetailFragment
-import com.woocommerce.android.ui.products.ProductListFragmentDirections
+import com.woocommerce.android.ui.products.details.ProductDetailFragment
+import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.ui.woopos.tab.WooPosTabController
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.lang.ref.WeakReference
+import java.math.BigDecimal
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -157,19 +160,36 @@ class MainActivity :
         }
     }
 
-    @Inject lateinit var presenter: MainContract.Presenter
-    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var crashLogging: CrashLogging
-    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
-    @Inject lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
-    @Inject lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
+    @Inject
+    lateinit var presenter: MainContract.Presenter
+
+    @Inject
+    lateinit var loginAnalyticsListener: LoginAnalyticsListener
+
+    @Inject
+    lateinit var selectedSite: SelectedSite
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var crashLogging: CrashLogging
+
+    @Inject
+    lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+
+    @Inject
+    lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
+
+    @Inject lateinit var animatorHelper: MainAnimatorHelper
+
+    @Inject lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
+
+    @Inject lateinit var posTabController: WooPosTabController
 
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var unfilledOrderCount: Int = 0
-    private var restoreToolbarHeight = 0
     private var menu: Menu? = null
 
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
@@ -186,32 +206,44 @@ class MainActivity :
         }
     }
 
-    private val showSubtitleAnimator by lazy {
-        createCollapsingToolbarMarginBottomAnimator(
-            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
-            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
-            duration = 200L
-        )
-    }
-
-    private val hideSubtitleAnimator by lazy {
-        createCollapsingToolbarMarginBottomAnimator(
-            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
-            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
-            duration = 200L
-        )
+    private val handler = Handler(Looper.getMainLooper())
+    private val notificationPermissionBarRunnable = Runnable {
+        animateBottomBar(binding.notificationsPermissionBar, show = true)
     }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
-    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION")
+    private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
+        private var lastFragment = WeakReference<Fragment>(null)
+
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+            updateAppBarAndBottomNav(f)
+        }
+
+        override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
+            // This logic is needed to handle this case:
+            // 1. User navigates from Fragment A to Fragment B
+            // 2. Fragment B's view gets created, and onFragmentViewCreated is called, updating the AppBar.
+            // 3. Quickly the user goes back to Fragment A
+            // 4. Fragment A's view wasn't destroyed yet, so it doesn't go through the creation lifecycle,
+            //    which means onFragmentViewCreated won't be called, and the AppBar won't be updated.
+            //
+            // In this case, lastFragment will be pointing to Fragment B, so we can compare it with the fragment being
+            // started (Fragment A), and we can update the AppBar accordingly.
+            if (lastFragment.get() != f) {
+                updateAppBarAndBottomNav(f)
+            }
+        }
+
+        private fun updateAppBarAndBottomNav(f: Fragment) {
             if (f is DialogFragment) return
+            lastFragment = WeakReference(f)
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar()
+                    showToolbar(animate = f is TopLevelFragment)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -230,13 +262,18 @@ class MainActivity :
                     toolbar.navigationIcon = appBarStatus.navigationIcon?.let {
                         ContextCompat.getDrawable(this@MainActivity, it)
                     }
-                    binding.appBarLayout.elevation = if (appBarStatus.hasShadow) {
+                    binding.appBarLayout.targetElevation = if (appBarStatus.hasShadow) {
                         resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
-                    } else 0f
+                    } else {
+                        0f
+                    }
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
-                AppBarStatus.Hidden -> hideToolbar()
+                AppBarStatus.Hidden -> {
+                    hideToolbar(animate = f is TopLevelFragment)
+                    binding.appBarLayout.targetElevation = 0f
+                }
             }
 
             if (f is TopLevelFragment) {
@@ -274,9 +311,14 @@ class MainActivity :
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        edgeToEdgeHelper.applyEdgeToEdgeSettings(binding)
+
         toolbar = binding.toolbar.toolbar
+
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
+
+        animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         val graphInflater = navHostFragment.navController.navInflater
@@ -288,6 +330,8 @@ class MainActivity :
         navController.graph = navGraph
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
+
+        posTabController.initialize(this, binding, navController)
 
         presenter.takeView(this)
 
@@ -316,8 +360,17 @@ class MainActivity :
 
         if (savedInstanceState == null) {
             viewModel.handleIncomingAppLink(intent?.data)
-            viewModel.handleShortcutAction(intent?.action?.toLowerCase())
+            viewModel.handleShortcutAction(intent?.action?.lowercase(Locale.ROOT))
+            handleIncomingImages()
         }
+    }
+
+    private fun handleIncomingImages() {
+        viewModel.handleIncomingImages(
+            intent?.clipData?.let {
+                (0 until it.itemCount).map { index -> it.getItemAt(index).uri.toString() }
+            }
+        )
     }
 
     override fun hideProgressDialog() {
@@ -356,7 +409,7 @@ class MainActivity :
         super.onPause()
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
         // Verify authenticated session
@@ -369,10 +422,12 @@ class MainActivity :
         initFragment(null)
 
         viewModel.handleIncomingAppLink(intent?.data)
+        handleIncomingImages()
     }
 
     public override fun onDestroy() {
         presenter.dropView()
+        handler.removeCallbacks(notificationPermissionBarRunnable)
         super.onDestroy()
     }
 
@@ -394,6 +449,7 @@ class MainActivity :
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
@@ -401,6 +457,10 @@ class MainActivity :
             if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
                 return
             }
+        }
+
+        supportFragmentManager.primaryNavigationFragment?.let { fragment ->
+            updateAppBarVisibility(fragment)
         }
 
         super.onBackPressed()
@@ -415,12 +475,6 @@ class MainActivity :
 
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onMenuOpened(featureId: Int, menu: Menu): Boolean {
-        val currentFragment = getActiveChildFragment()
-        if (currentFragment is ProductDetailFragment) currentFragment.trackBlazeDisplayedIfVisible()
-        return true
     }
 
     /**
@@ -481,16 +535,40 @@ class MainActivity :
         return null
     }
 
-    private fun showToolbar() {
-        if (restoreToolbarHeight > 0) {
-            binding.collapsingToolbar.updateLayoutParams { height = restoreToolbarHeight }
+    private fun showToolbar(animate: Boolean) {
+        // Cancel any pending toolbar animations
+        animatorHelper.cancelToolbarAnimation()
+
+        if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
+        if (animate) {
+            animatorHelper.animateToolbarHeight(show = true) {
+                binding.collapsingToolbar.updateLayoutParams {
+                    height = it
+                }
+            }
+        } else {
+            binding.collapsingToolbar.updateLayoutParams {
+                height = animatorHelper.toolbarHeight
+            }
         }
     }
 
-    private fun hideToolbar() {
+    private fun hideToolbar(animate: Boolean) {
+        // Cancel any pending toolbar animations
+        animatorHelper.cancelToolbarAnimation()
+
         if (binding.collapsingToolbar.layoutParams.height == 0) return
-        restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
-        binding.collapsingToolbar.updateLayoutParams { height = 0 }
+        if (animate) {
+            animatorHelper.animateToolbarHeight(show = false) {
+                binding.collapsingToolbar.updateLayoutParams {
+                    height = it
+                }
+            }
+        } else {
+            binding.collapsingToolbar.updateLayoutParams {
+                height = 0
+            }
+        }
     }
 
     override fun setTitle(title: CharSequence?) {
@@ -510,23 +588,14 @@ class MainActivity :
         }
     }
 
-    private fun createCollapsingToolbarMarginBottomAnimator(from: Int, to: Int, duration: Long): ValueAnimator {
-        return ValueAnimator.ofInt(from, to)
-            .also { valueAnimator ->
-                valueAnimator.duration = duration
-                valueAnimator.interpolator = AccelerateDecelerateInterpolator()
-                valueAnimator.addUpdateListener {
-                    binding.collapsingToolbar.expandedTitleMarginBottom = it.animatedValue as Int
-                }
-            }
-    }
-
     private fun removeSubtitle() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
         if (binding.toolbarSubtitle.visibility == View.GONE) return
         if (binding.collapsingToolbar.layoutParams.height != 0) {
             binding.toolbarSubtitle.collapse(duration = 200L)
-            hideSubtitleAnimator.start()
+            animatorHelper.animateCollapsingToolbarMarginBottom(show = false) {
+                binding.collapsingToolbar.expandedTitleMarginBottom = it
+            }
         } else {
             binding.toolbarSubtitle.hide()
         }
@@ -537,7 +606,9 @@ class MainActivity :
         binding.toolbarSubtitle.text = subtitle
         if (binding.toolbarSubtitle.visibility == View.VISIBLE) return
         binding.toolbarSubtitle.expand(duration = 200L)
-        showSubtitleAnimator.start()
+        animatorHelper.animateCollapsingToolbarMarginBottom(show = true) {
+            binding.collapsingToolbar.expandedTitleMarginBottom = it
+        }
     }
 
     fun enableToolbarExpansion(enable: Boolean) {
@@ -629,11 +700,6 @@ class MainActivity :
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
 
-    override fun showAnalytics(targetPeriod: StatsTimeRangeSelection.SelectionType) {
-        val action = MyStoreFragmentDirections.actionMyStoreToAnalytics(targetPeriod)
-        navController.navigateSafely(action)
-    }
-
     override fun updateSelectedSite() {
         hideProgressDialog()
 
@@ -656,7 +722,7 @@ class MainActivity :
     /**
      * Called when the user switches sites - restarts the activity so all fragments and child fragments are reset
      */
-    private fun restart() {
+    override fun restart() {
         val intent = intent
         intent.addFlags(
             Intent.FLAG_ACTIVITY_CLEAR_TOP or
@@ -684,18 +750,28 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    override fun onNavItemSelected(navPos: BottomNavigationPosition) {
+    override fun onNavItemSelected(navPos: BottomNavigationPosition): Boolean {
         val stat = when (navPos) {
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
+            POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
-        AnalyticsTracker.track(stat)
+        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
 
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
         }
+
+        if (navPos == POS) {
+            posTabController.navigateToPOS()
+
+            // Do not keep the tab selected for POS
+            return false
+        }
+
+        return true
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
@@ -704,8 +780,11 @@ class MainActivity :
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
+            POS -> null
         }
-        AnalyticsTracker.track(stat)
+        stat?.let {
+            AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
+        }
 
         // if we're at the root scroll the active fragment to the top
         // TODO bring back clearing the backstack when the navgraphs are fixed to support multiple backstacks:
@@ -741,7 +820,7 @@ class MainActivity :
             intent.removeExtra(FIELD_REMOTE_NOTIFICATION)
             intent.removeExtra(FIELD_PUSH_ID)
 
-            viewModel.handleIncomingNotification(localPushId, notification)
+            viewModel.onPushNotificationTapped(localPushId, notification)
         } else if (localNotification != null) {
             intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
             viewModel.onLocalNotificationTapped(localNotification)
@@ -755,17 +834,15 @@ class MainActivity :
             when (event) {
                 is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
                 is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                is ViewZendeskTickets -> startZendeskActivity()
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is RestartActivityForPushNotification -> onRestartActivityEvent(event)
-                is RestartActivityForLocalNotification -> onRestartActivityEvent(event)
-                is RestartActivityForAppLink -> onRestartActivityEvent(event)
+                is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId)
+                ViewBlazeCampaignList -> showBlazeCampaignList(campaignId = null)
+                is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
-                is ViewStorePlanUpgrade -> startUpgradeFlowFactory.create(navController).invoke(event.source)
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
@@ -787,7 +864,12 @@ class MainActivity :
                     showPrivacySettingsScreen(event.requestedAnalyticsValue)
                 }
 
-                is OpenFreeTrialSurvey -> openFreeTrialSurvey()
+                is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
+                is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
+                MainActivityViewModel.LaunchBlazeCampaignCreation -> {
+                    // Propagate it to the DashboardBlazeCard
+                    event.isHandled = false
+                }
             }
         }
 
@@ -797,9 +879,14 @@ class MainActivity :
         observeBottomBarState()
     }
 
-    private fun openFreeTrialSurvey() {
+    private fun showBlazeCampaignList(campaignId: String?) {
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+
         navController.navigateSafely(
-            NavGraphMainDirections.actionGlobalFreeTrialSurveyFragment()
+            MoreMenuFragmentDirections.actionMoreMenuToBlazeCampaignListFragment(
+                campaignId = campaignId
+            ),
         )
     }
 
@@ -814,10 +901,8 @@ class MainActivity :
                         }
                     }
                 }
-                Handler().postDelayed(
-                    {
-                        animateBottomBar(binding.notificationsPermissionBar, show = true)
-                    },
+                handler.postDelayed(
+                    notificationPermissionBarRunnable,
                     NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY
                 )
             } else {
@@ -843,7 +928,7 @@ class MainActivity :
                 is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
                 NewFeature -> binding.bottomNav.showMoreMenuNewFeatureBadge()
                 Hidden -> binding.bottomNav.hideMoreMenuBadge()
-            }.exhaustive
+            }
         }
     }
 
@@ -855,8 +940,7 @@ class MainActivity :
 
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
-                        context = this,
-                        startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
+                        context = this
                     ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     animateBottomBar(binding.trialBar, show = true)
@@ -873,15 +957,37 @@ class MainActivity :
 
     private fun navigateToFeatureAnnouncement(event: ShowFeatureAnnouncement) {
         if (!PackageUtils.isTesting()) {
-            val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+            val action = NavGraphMainDirections.actionGlobalFeatureAnnouncementDialogFragmentOnMain(event.announcement)
             navController.navigateSafely(action)
         }
     }
 
     private fun navigateToWebView(event: ViewUrlInWebView) {
         navController.navigate(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+            NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
+                urlToLoad = event.url
+            )
         )
+    }
+
+    @Suppress("LongParameterList")
+    fun navigateToGlobalInfoScreenFragment(
+        screenTitle: Int,
+        heading: Int,
+        message: Int,
+        linkTitle: Int,
+        imageResource: Int,
+        linkAction: InfoScreenFragment.InfoScreenLinkAction
+    ) {
+        val action = NavGraphMainDirections.actionGlobalInfoScreenFragment(
+            screenTitle = screenTitle,
+            heading = heading,
+            message = message,
+            linkTitle = linkTitle,
+            imageResource = imageResource,
+            linkAction = linkAction
+        )
+        navController.navigate(action)
     }
 
     private fun showOrderDetail(event: ViewOrderDetail) {
@@ -891,11 +997,6 @@ class MainActivity :
             remoteNoteId = event.remoteNoteId,
             launchedFromNotification = true
         )
-    }
-
-    private fun startZendeskActivity() {
-        binding.bottomNav.currentPosition = MY_STORE
-        startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
     private fun onRestartActivityEvent(event: RestartActivityEvent) {
@@ -913,11 +1014,17 @@ class MainActivity :
         restart()
     }
 
-    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId = remoteProductId,
-            isTrashEnabled = enableTrash
-        )
+    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean, popUpToProductList: Boolean) {
+        val action = when (popUpToProductList) {
+            true -> NavGraphMainDirections.actionGlobalProductDetailFragmentPopUpToProductList(
+                mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
+                isTrashEnabled = enableTrash
+            )
+            else -> NavGraphMainDirections.actionGlobalProductDetailFragment(
+                mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
+                isTrashEnabled = enableTrash
+            )
+        }
         navController.navigateSafely(action)
     }
 
@@ -926,7 +1033,7 @@ class MainActivity :
         val extras = FragmentNavigatorExtras(sharedView to productCardDetailTransitionName)
 
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId = remoteProductId,
+            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(directions = action, extras = extras)
@@ -940,9 +1047,12 @@ class MainActivity :
         navController.navigate(Uri.parse(deeplink))
     }
 
-    override fun showAddProduct() {
+    override fun showAddProduct(imageUris: List<String>) {
         showBottomNav()
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            mode = ProductDetailFragment.Mode.AddNewProduct,
+            images = imageUris.toTypedArray()
+        )
         navController.navigateSafely(action)
     }
 
@@ -1078,10 +1188,28 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    fun showOrderCreation(
+        mode: OrderCreateEditViewModel.Mode,
+        giftCardCode: String?,
+        giftCardAmount: BigDecimal?,
+        orderCurrency: String? = null,
+    ) {
+        NavGraphMainDirections.actionGlobalToOrderCreationFragment(
+            mode = mode,
+            giftCardCode = giftCardCode,
+            giftCardAmount = giftCardAmount,
+            orderCurrency = orderCurrency
+        ).apply {
+            navController.navigateSafely(this)
+        }
+    }
+
     override fun showOrderDetail(
         orderId: Long,
+        navHostFragment: NavHostFragment?,
         remoteNoteId: Long,
-        launchedFromNotification: Boolean
+        launchedFromNotification: Boolean,
+        startPaymentsFlow: Boolean,
     ) {
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
@@ -1089,22 +1217,63 @@ class MainActivity :
             navController.popBackStack(R.id.orders, false)
         }
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
+            orderId,
+            arrayOf(orderId).toLongArray(),
+            remoteNoteId
+        )
+        navHostFragment?.navController?.let { navController ->
+            val bundle = OrderDetailFragmentArgs(
+                orderId,
+                longArrayOf(orderId),
+                remoteNoteId,
+                startPaymentsFlow
+            ).toBundle()
+            navController.navigate(
+                R.id.orderDetailFragment,
+                bundle,
+                navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+            )
+        } ?: run {
+            navController.navigateSafely(action)
+        }
         crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(action)
     }
 
     override fun showOrderDetailWithSharedTransition(
         orderId: Long,
+        allOrderIds: List<Long>,
         remoteNoteId: Long,
         sharedView: View
     ) {
         val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
         val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
+            orderId,
+            allOrderIds.toLongArray(),
+            remoteNoteId
+        )
         crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(directions = action, extras = extras)
+        navController.navigateSafely(
+            directions = action,
+            extras = extras,
+        )
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onAttachFragment(fragment: Fragment) {
+        super.onAttachFragment(fragment)
+        updateAppBarVisibility(fragment)
+    }
+
+    private fun updateAppBarVisibility(fragment: Fragment) {
+        (fragment as? BaseFragment)?.let {
+            when (it.activityAppBarStatus) {
+                is AppBarStatus.Hidden -> supportActionBar?.hide()
+                is AppBarStatus.Visible -> supportActionBar?.show()
+            }
+        }
     }
 
     override fun showFeedbackSurvey() {

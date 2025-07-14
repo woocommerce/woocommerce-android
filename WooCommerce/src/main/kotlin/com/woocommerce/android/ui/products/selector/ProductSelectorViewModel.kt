@@ -11,7 +11,9 @@ import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
+import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductType
@@ -19,14 +21,17 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIATION
 import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchType
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderListFilter
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.NORMAL
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.SIMPLE
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -43,6 +48,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
@@ -52,7 +58,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -71,7 +77,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val tracker: ProductSelectorTracker,
     private val productsMapper: ProductsMapper,
-    private val productRestrictions: OrderCreationProductRestrictions,
+    private val productRestrictions: OrderCreationProductRestrictions
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -88,17 +94,21 @@ class ProductSelectorViewModel @Inject constructor(
     private val searchState = savedState.getStateFlow(this, SearchState())
 
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedItems = savedState.getStateFlow(
+    private val _selectedItems: MutableStateFlow<List<SelectedItem>> = savedState.getStateFlow(
         viewModelScope,
-        navArgs.selectedItems.toList(),
+        navArgs.selectedItems?.toList() ?: emptyList(),
         "key_selected_items"
     )
+    val selectedItems: StateFlow<List<SelectedItem>> = _selectedItems
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val products = listHandler.productsFlow.map { products ->
         products.filterNot { product -> productRestrictions.isProductRestricted(product = product) }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
+
+    private val selectionEnabled: MutableStateFlow<Boolean> =
+        savedState.getStateFlow(viewModelScope, true, "key_selection_enabled")
 
     private val selectedItemsSource: MutableMap<Long, ProductSourceForTracking> = mutableMapOf()
 
@@ -114,32 +124,62 @@ class ProductSelectorViewModel @Inject constructor(
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
                     STATE_UPDATE_DELAY
-                } else 0L
+                } else {
+                    0L
+                }
             }
             .map { it.value },
         flow5 = selectedItems,
         flow6 = filterState,
         flow7 = searchState,
-    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState ->
+        flow8 = selectionEnabled,
+    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState, enabled ->
         ViewState(
             loadingState = loadingState,
-            products = products.map { it.toUiModel(selectedIds) },
+            products = products.map {
+                mapProductsToUiModel(it, selectedIds)
+            },
             popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
             recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
-            searchState = searchState
+            searchState = searchState,
+            selectionMode = navArgs.selectionMode,
+            productFlow = navArgs.productSelectorFlow,
+            screenTitleOverride = navArgs.screenTitleOverride,
+            ctaButtonTextOverride = navArgs.ctaButtonTextOverride,
+            selectionEnabled = enabled,
         )
     }.asLiveData()
 
+    private val selectionHandling: SelectionHandling = navArgs.selectionHandling
+    val selectionMode: SelectionMode = navArgs.selectionMode
+
     init {
+        if (navArgs.selectionMode == SelectionMode.SINGLE && (navArgs.selectedItems?.size ?: 0) > 1) {
+            error("Single selection mode can only be used with a single selected item")
+        }
         monitorSearchQuery()
         monitorProductFilters()
         viewModelScope.launch {
-            loadPopularProducts()
-            loadRecentProducts()
             fetchProducts(searchType = searchState.value.searchType)
         }
+        viewModelScope.launch {
+            listHandler.productsFlow.collectLatest { products ->
+                if (products.isNotEmpty()) {
+                    loadPopularProducts()
+                    loadRecentProducts()
+                }
+            }
+        }
+    }
+
+    private fun mapProductsToUiModel(
+        it: Product,
+        selectedIds: List<SelectedItem>
+    ) = when (selectionHandling) {
+        NORMAL -> it.toUiModel(selectedIds)
+        SIMPLE -> it.toSimpleUiModel(selectedIds)
     }
 
     private fun getPopularProductsToDisplay(
@@ -163,8 +203,9 @@ class ProductSelectorViewModel @Inject constructor(
         if (searchState.value.searchQuery.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
             return emptyList()
         }
-        return productsList.map { it.toUiModel(selectedIds) }
+        return productsList.map { mapProductsToUiModel(it, selectedIds) }
     }
+
     private suspend fun loadRecentProducts() {
         val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
@@ -196,13 +237,13 @@ class ProductSelectorViewModel @Inject constructor(
     private suspend fun getRecentlySoldOrders() =
         orderStore.getPaidOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
 
-    private fun getProductIdsWithNumberOfPurchases(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
-        recentlySoldOrdersList.asSequence()
+    private suspend fun getProductIdsWithNumberOfPurchases(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
+        recentlySoldOrdersList
             .flatMap { it.getLineItemList().mapNotNull { it.productId } }
             .groupingBy { it }
             .eachCount()
 
-    private fun getProductIdsFromRecentlySoldOrders(
+    private suspend fun getProductIdsFromRecentlySoldOrders(
         recentlySoldOrdersList: List<OrderEntity>
     ) = recentlySoldOrdersList.flatMap { orderEntity ->
         orderEntity.getLineItemList().mapNotNull { it.productId }
@@ -210,56 +251,101 @@ class ProductSelectorViewModel @Inject constructor(
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ListItem {
         val isVariation = productType == VARIATION
+        val stockStatus = getStockText(resourceProvider)
+        val price = formatPrice()
+        val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
+        val isConfigurable = isConfigurable
 
-        fun getProductSelection(): SelectionState {
-            return if (isVariable() && numVariations > 0) {
+        return when {
+            isVariation -> createVariationListItem(stockAndPrice, selectedItems)
+            isConfigurable -> createConfigurableListItem(stockAndPrice, selectedItems)
+            else -> createProductListItem(stockAndPrice, selectedItems)
+        }
+    }
+
+    private fun Product.getProductSelection(selectedItems: Collection<SelectedItem>): SelectionState {
+        return when {
+            isVariable() && numVariations > 0 -> {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
                     intersection.isEmpty() -> UNSELECTED
                     intersection.size < variationIds.size -> PARTIALLY_SELECTED
                     else -> SELECTED
                 }
-            } else if (isVariation) { // variation can be displayed in search results
-                if (selectedItems.variationIds.contains(this.remoteId))
-                    SELECTED
-                else
-                    UNSELECTED
-            } else {
-                val selectedProductsIds = selectedItems.map { it.id }.toSet()
-                if (selectedProductsIds.contains(remoteId)) SELECTED else UNSELECTED
+            }
+
+            productType == VARIATION -> {
+                if (selectedItems.variationIds.contains(remoteId)) SELECTED else UNSELECTED
+            }
+
+            else -> {
+                val selectedProductIds = selectedItems.map { it.id }.toSet()
+                if (selectedProductIds.contains(remoteId)) SELECTED else UNSELECTED
             }
         }
+    }
 
-        val stockStatus = getStockText(resourceProvider)
-
-        val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
-
-        val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
-
-        return if (isVariation) {
-            ListItem.VariationListItem(
-                parentId = parentId,
-                variationId = remoteId,
-                title = name,
-                type = productType,
-                imageUrl = firstImageUrl,
-                sku = sku.takeIf { it.isNotBlank() },
-                stockAndPrice = stockAndPrice,
-                selectionState = getProductSelection()
-            )
-        } else {
-            ProductListItem(
-                productId = remoteId,
-                title = name,
-                type = productType,
-                imageUrl = firstImageUrl,
-                sku = sku.takeIf { it.isNotBlank() },
-                stockAndPrice = stockAndPrice,
-                numVariations = numVariations,
-                selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
-                selectionState = getProductSelection()
+    private fun Product.formatPrice(): String? {
+        return price?.let {
+            PriceUtils.formatCurrency(
+                price,
+                navArgs.orderCurrency ?: currencyCode,
+                currencyFormatter
             )
         }
+    }
+
+    private fun Product.createVariationListItem(stockAndPrice: String, selectedItems: Collection<SelectedItem>) =
+        ListItem.VariationListItem(
+            parentId = parentId,
+            variationId = remoteId,
+            title = name,
+            type = productType,
+            imageUrl = firstImageUrl,
+            sku = sku.takeIf { it.isNotBlank() },
+            stockAndPrice = stockAndPrice,
+            selectionState = getProductSelection(selectedItems)
+        )
+
+    private fun Product.createConfigurableListItem(stockAndPrice: String, selectedItems: Collection<SelectedItem>) =
+        ListItem.ConfigurableListItem(
+            productId = remoteId,
+            title = name,
+            type = productType,
+            imageUrl = firstImageUrl,
+            sku = sku.takeIf { it.isNotBlank() },
+            stockAndPrice = stockAndPrice,
+            selectionState = getProductSelection(selectedItems)
+        )
+
+    private fun Product.createProductListItem(stockAndPrice: String, selectedItems: Collection<SelectedItem>) =
+        ListItem.ProductListItem(
+            productId = remoteId,
+            title = name,
+            type = productType,
+            imageUrl = firstImageUrl,
+            sku = sku.takeIf { it.isNotBlank() },
+            stockAndPrice = stockAndPrice,
+            numVariations = numVariations,
+            selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
+            selectionState = getProductSelection(selectedItems)
+        )
+
+    private fun Product.toSimpleUiModel(selectedItems: Collection<SelectedItem>): ListItem {
+        val stockStatus = getStockText(resourceProvider)
+        val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
+        val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
+
+        return ListItem.ProductListItem(
+            productId = remoteId,
+            title = name,
+            type = productType,
+            imageUrl = firstImageUrl,
+            sku = sku.takeIf { it.isNotBlank() },
+            stockAndPrice = stockAndPrice,
+            numVariations = 0,
+            selectionState = if (selectedItems.any { it.id == remoteId }) SELECTED else UNSELECTED
+        )
     }
 
     fun onClearButtonClick() {
@@ -269,7 +355,7 @@ class ProductSelectorViewModel @Inject constructor(
                 ProductSelectorTracker.ProductSelectorSource.ProductSelector
             )
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
-            selectedItems.value = emptyList()
+            _selectedItems.value = emptyList()
         }
     }
 
@@ -288,25 +374,67 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
-        when (item) {
-            is ProductListItem -> {
-                if (item.hasVariations()) {
-                    triggerEvent(
-                        NavigateToVariationSelector(
-                            item.id,
-                            item.selectedVariationIds,
-                            productSelectorFlow,
-                            productSource
-                        )
-                    )
-                } else if (!item.isVariable()) {
-                    handleNonVariableProductItemTap(item, productSource)
+        if (
+            navArgs.productSelectorFlow == OrderListFilter &&
+            _selectedItems.value.containsItemWith(item.id)
+        ) {
+            selectedItemsSource.remove(item.id)
+            _selectedItems.update { it.filter { selectedItem -> selectedItem.id != item.id } }
+        } else {
+            when (item) {
+                is ListItem.ProductListItem -> {
+                    handleProductTap(item, productSource)
+                }
+
+                is ListItem.VariationListItem -> {
+                    handleVariationItemTap(item, productSource)
+                }
+
+                is ListItem.ConfigurableListItem -> {
+                    handleConfigurableItemTap(item)
                 }
             }
+        }
+    }
 
-            is ListItem.VariationListItem -> {
-                handleVariationItemTap(item, productSource)
+    fun onEditConfiguration(item: ListItem.ConfigurableListItem) {
+        val selectedItem = selectedItems.value.firstOrNull { it.id == item.id } as? SelectedItem.ConfigurableProduct
+        selectedItem?.configuration?.let {
+            triggerEvent(
+                ProductNavigationTarget.EditProductConfiguration(
+                    itemId = item.id,
+                    productId = item.productId,
+                    configuration = it
+                )
+            )
+        } ?: triggerEvent(ProductNavigationTarget.NavigateToProductConfiguration(item.id))
+    }
+
+    private fun handleProductTap(
+        item: ListItem.ProductListItem,
+        productSource: ProductSourceForTracking
+    ) {
+        fun ListItem.ProductListItem.hasVariations() =
+            isVariable() && numVariations > 0
+
+        if (item.hasVariations()) {
+            val variationSelectorScreenMode = when (selectionMode) {
+                SelectionMode.SINGLE, SelectionMode.MULTIPLE -> VariationSelectorViewModel.ScreenMode.FULLSCREEN
+                SelectionMode.LIVE -> VariationSelectorViewModel.ScreenMode.DIALOG
             }
+            triggerEvent(
+                NavigateToVariationSelector(
+                    productId = item.id,
+                    selectedVariationIds = item.selectedVariationIds,
+                    productSelectorFlow = productSelectorFlow,
+                    productSourceForTracking = productSource,
+                    selectionMode = selectionMode,
+                    screenMode = variationSelectorScreenMode,
+                    orderCurrency = navArgs.orderCurrency
+                )
+            )
+        } else {
+            updateItemSelection(SelectedItem.Product(item.id), productSource)
         }
     }
 
@@ -314,51 +442,52 @@ class ProductSelectorViewModel @Inject constructor(
         item: ListItem.VariationListItem,
         productSource: ProductSourceForTracking
     ) {
-        if (selectedItems.value.containsItemWith(item.id)) {
+        updateItemSelection(SelectedItem.ProductVariation(item.parentId, item.id), productSource)
+    }
+
+    private fun handleConfigurableItemTap(item: ListItem.ConfigurableListItem) {
+        if (selectedItems.value.containsItemWith(item.id) && selectionMode == SelectionMode.MULTIPLE) {
             tracker.trackItemUnselected(productSelectorFlow)
             selectedItemsSource.remove(item.id)
-            selectedItems.update { items ->
-                items.filter { it.id != item.id }
-            }
+            _selectedItems.update { items -> items.filter { it.id != item.id } }
         } else {
-            tracker.trackItemSelected(productSelectorFlow)
-            selectedItemsSource[item.id] = productSource
-            selectedItems.update { items ->
-                items + SelectedItem.ProductVariation(item.parentId, item.id)
-            }
+            tracker.trackConfigurableTapped(productSelectorFlow)
+            triggerEvent(
+                ProductNavigationTarget.NavigateToProductConfiguration(item.id)
+            )
         }
     }
 
-    private fun handleNonVariableProductItemTap(
-        item: ListItem,
-        productSource: ProductSourceForTracking
-    ) {
-        selectedItems.update { items ->
-            val selectedProductItems = items.filter {
-                it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
-            }
-            if (selectedProductItems.containsItemWith(item.id)) {
-                tracker.trackItemUnselected(productSelectorFlow)
-                selectedItemsSource.remove(item.id)
-                val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
-                selectedItems.value - productItemToUnselect
-            } else {
-                selectedItemsSource[item.id] = productSource
+    private fun updateItemSelection(item: SelectedItem, productSource: ProductSourceForTracking) {
+        when (selectionMode) {
+            SelectionMode.SINGLE -> {
                 tracker.trackItemSelected(productSelectorFlow)
-                selectedItems.value + SelectedItem.Product(item.id)
+                selectedItemsSource[item.id] = productSource
+                _selectedItems.value = listOf(item)
+            }
+
+            SelectionMode.MULTIPLE, SelectionMode.LIVE -> {
+                _selectedItems.update { items ->
+                    if (items.containsItemWith(item.id)) {
+                        tracker.trackItemUnselected(productSelectorFlow)
+                        selectedItemsSource.remove(item.id)
+                        items.filter { it.id != item.id }
+                    } else {
+                        selectedItemsSource[item.id] = productSource
+                        tracker.trackItemSelected(productSelectorFlow)
+                        items + item
+                    }
+                }
             }
         }
     }
 
-    private fun ProductListItem.hasVariations() =
-        isVariable() && numVariations > 0
-
-    private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking):
-        ProductSourceForTracking {
+    private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking): ProductSourceForTracking {
         return when {
             searchState.value.searchQuery.isNotNullOrEmpty() -> {
                 ProductSourceForTracking.SEARCH
             }
+
             else -> {
                 productSource
             }
@@ -418,14 +547,14 @@ class ProductSelectorViewModel @Inject constructor(
         loadMoreJob?.cancel()
         loadMoreJob = viewModelScope.launch {
             loadingState.value = APPENDING
-            listHandler.loadMore()
+            listHandler.loadMore(orderCurrency = navArgs.orderCurrency)
             loadingState.value = IDLE
         }
     }
 
     fun onSelectedVariationsUpdated(result: VariationSelectionResult) {
         viewModelScope.launch {
-            selectedItems.update { items ->
+            _selectedItems.update { items ->
                 val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
 
                 val oldItems = items.filter {
@@ -446,7 +575,7 @@ class ProductSelectorViewModel @Inject constructor(
                     )
                 }
 
-                selectedItems.value - oldItems.toSet() + newItems
+                _selectedItems.value - oldItems.toSet() + newItems
             }
         }
     }
@@ -490,7 +619,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchProducts(
+    private fun fetchProducts(
         filters: FilterState = filterState.value,
         query: String = "",
         searchType: SearchType = SearchType.DEFAULT,
@@ -503,9 +632,13 @@ class ProductSelectorViewModel @Inject constructor(
                 filters = filters.filterOptions,
                 searchQuery = query,
                 searchType = searchType,
+                orderCurrency = navArgs.orderCurrency
             ).onFailure {
-                val message = if (query.isEmpty()) string.product_selector_loading_failed
-                else string.product_selector_search_failed
+                val message = if (query.isEmpty()) {
+                    string.product_selector_loading_failed
+                } else {
+                    string.product_selector_search_failed
+                }
                 triggerEvent(ShowSnackbar(message))
             }
             loadingState.value = IDLE
@@ -518,6 +651,40 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
+    fun onConfigurationSaved(productId: Long, productConfiguration: ProductConfiguration) {
+        tracker.trackItemSelected(productSelectorFlow)
+        _selectedItems.update { items ->
+            val newItem = SelectedItem.ConfigurableProduct(productId, productConfiguration)
+            when (selectionMode) {
+                SelectionMode.SINGLE -> listOf(newItem)
+                SelectionMode.MULTIPLE, SelectionMode.LIVE -> items + newItem
+            }
+        }
+    }
+
+    fun onConfigurationEdited(productId: Long, productConfiguration: ProductConfiguration) {
+        val items = _selectedItems.value.map { item ->
+            if (item.id == productId && item is SelectedItem.ConfigurableProduct) {
+                item.copy(configuration = productConfiguration)
+            } else {
+                item
+            }
+        }
+        _selectedItems.update { items }
+    }
+
+    fun trackConfigurableProduct() {
+        tracker.trackConfigurableItem(productSelectorFlow)
+    }
+
+    fun updateSelectedItems(selectedItems: List<SelectedItem>) {
+        _selectedItems.value = selectedItems
+    }
+
+    fun onProductSelectionStateChanged(productSelectionEnabled: Boolean) {
+        selectionEnabled.value = productSelectionEnabled
+    }
+
     data class ViewState(
         val loadingState: LoadingState,
         val products: List<ListItem>,
@@ -525,8 +692,17 @@ class ProductSelectorViewModel @Inject constructor(
         val recentProducts: List<ListItem>,
         val selectedItemsCount: Int,
         val filterState: FilterState,
-        val searchState: SearchState = SearchState()
-    )
+        val searchState: SearchState,
+        val selectionMode: SelectionMode,
+        val productFlow: ProductSelectorFlow,
+        val screenTitleOverride: String? = null,
+        val ctaButtonTextOverride: String? = null,
+        val selectionEnabled: Boolean = true
+    ) {
+        val isDoneButtonEnabled: Boolean =
+            selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0 || productFlow == OrderListFilter
+        val shouldDisplayFilterButton = searchState.searchQuery.isEmpty() && productFlow != OrderListFilter
+    }
 
     @Parcelize
     data class SearchState(
@@ -586,6 +762,24 @@ class ProductSelectorViewModel @Inject constructor(
             sku = sku,
             selectionState = selectionState
         )
+
+        data class ConfigurableListItem(
+            val productId: Long,
+            override val title: String,
+            override val type: ProductType,
+            override val imageUrl: String? = null,
+            override val stockAndPrice: String? = null,
+            override val sku: String? = null,
+            override val selectionState: SelectionState = UNSELECTED
+        ) : ListItem(
+            id = productId,
+            title = title,
+            type = type,
+            imageUrl = imageUrl,
+            stockAndPrice = stockAndPrice,
+            sku = sku,
+            selectionState = selectionState
+        )
     }
 
     @Parcelize
@@ -615,9 +809,41 @@ class ProductSelectorViewModel @Inject constructor(
             val productId: Long,
             val variationId: Long,
         ) : SelectedItem(variationId)
+
+        @Parcelize
+        data class ConfigurableProduct(
+            val productId: Long,
+            val configuration: ProductConfiguration,
+        ) : SelectedItem(productId)
     }
+
     enum class ProductSelectorFlow {
-        OrderCreation, CouponEdition, Undefined
+        OrderCreation, OrderEditing, CouponEdition, OrderListFilter, Undefined
+    }
+
+    enum class SelectionMode {
+        SINGLE,
+        MULTIPLE,
+
+        /**
+         * Used e.g. in two-pane UI when product selector is always visible next to order summary.
+         * In this mode the confirmation button and toolbar are hidden.
+         * The variation selector will appear in a dialog mode.
+         */
+        LIVE
+    }
+
+    enum class SelectionHandling {
+
+        /**
+         * Treat all products as a single item, and return just the product ID.
+         */
+        SIMPLE,
+
+        /**
+         * Handle product selection depending on the product type.
+         */
+        NORMAL
     }
 }
 

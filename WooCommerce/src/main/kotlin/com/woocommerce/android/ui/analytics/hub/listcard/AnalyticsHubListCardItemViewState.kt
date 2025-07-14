@@ -5,5 +5,6 @@ data class AnalyticsHubListCardItemViewState(
     val title: String,
     val value: String,
     val description: String,
-    val showDivider: Boolean = true
+    val showDivider: Boolean = true,
+    val showImage: Boolean = true
 )

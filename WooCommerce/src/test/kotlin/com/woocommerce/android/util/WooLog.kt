@@ -24,7 +24,11 @@ object WooLog {
         CARD_READER,
         COUPONS,
         JITM,
-        SITE_PICKER
+        SITE_PICKER,
+        BLAZE,
+        AI,
+        POS,
+        SHIPPING_LABELS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

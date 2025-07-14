@@ -493,18 +493,6 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenTTPWasUsedAtLeastOnceNeverInvokedThenIsTTPWasUsedAtLeastOnceReturnsFalse() {
-        assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isFalse
-    }
-
-    @Test
-    fun givenTTPWasUsedAtLeastOnceInvokedThenIsTTPWasUsedAtLeastOnceReturnsTrue() {
-        AppPrefs.setTTPWasUsedAtLeastOnce()
-
-        assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isTrue
-    }
-
-    @Test
     fun givenIppWasNotUsedWhenGetCardReaderLastSuccessfulPaymentThenTimeReturnedZero() {
         assertThat(AppPrefs.getCardReaderLastSuccessfulPaymentTime()).isEqualTo(0L)
     }
@@ -513,7 +501,9 @@ class AppPrefsTest {
     fun givenSetApplicationStoreSnapshotTrackedForSiteNotCalledThenGetterReturnsFalse() {
         assertThat(
             AppPrefs.isApplicationStoreSnapshotTrackedForSite(
-                0, 0L, 0L
+                0,
+                0L,
+                0L
             )
         ).isFalse
     }
@@ -521,13 +511,42 @@ class AppPrefsTest {
     @Test
     fun givenSetApplicationStoreSnapshotTrackedForSiteCalledThenGetterReturnsTrue() {
         AppPrefs.setApplicationStoreSnapshotTrackedForSite(
-            0, 0L, 0L
+            0,
+            0L,
+            0L
         )
 
         assertThat(
             AppPrefs.isApplicationStoreSnapshotTrackedForSite(
-                0, 0L, 0L
+                0,
+                0L,
+                0L
             )
         ).isTrue
+    }
+
+    @Test
+    fun givenSetPOSTabVisibilityForSiteCalledThenGetterReturnsTrue() {
+        // GIVEN
+        val siteId = 123
+
+        // WHEN
+        AppPrefs.setPOSTabVisibilityForSite(siteId, true)
+        val result = AppPrefs.isPOSTabVisibleForSite(siteId)
+
+        // THEN
+        assertThat(result).isTrue
+    }
+
+    @Test
+    fun givenPOSTabVisibilityNotSetThenGetterReturnsFalseByDefault() {
+        // GIVEN
+        val siteId = 456
+
+        // WHEN
+        val result = AppPrefs.isPOSTabVisibleForSite(siteId)
+
+        // THEN
+        assertThat(result).isFalse
     }
 }

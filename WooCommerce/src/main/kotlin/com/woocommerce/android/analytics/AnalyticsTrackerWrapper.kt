@@ -31,7 +31,7 @@ open class AnalyticsTrackerWrapper @Inject constructor() {
         }
     }
 
-    fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, Any>()) {
+    fun track(stat: IAnalyticsEvent, properties: Map<String, *> = emptyMap<String, Any>()) {
         AnalyticsTracker.track(stat, properties)
     }
 
@@ -42,7 +42,7 @@ open class AnalyticsTrackerWrapper @Inject constructor() {
      * @param errorType The type of error.
      * @param errorDescription The error text or other description.
      */
-    fun track(stat: AnalyticsEvent, errorContext: String?, errorType: String?, errorDescription: String?) {
+    fun track(stat: IAnalyticsEvent, errorContext: String?, errorType: String?, errorDescription: String?) {
         AnalyticsTracker.track(stat, errorContext, errorType, errorDescription)
     }
 
@@ -55,7 +55,7 @@ open class AnalyticsTrackerWrapper @Inject constructor() {
      * @param errorDescription The error text or other description.
      */
     fun track(
-        stat: AnalyticsEvent,
+        stat: IAnalyticsEvent,
         properties: Map<String, Any>,
         errorContext: String?,
         errorType: String?,

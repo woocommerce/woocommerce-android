@@ -104,8 +104,11 @@ private fun rememberQrBitmapPainter(
                 eraseColor(Color.TRANSPARENT)
             }
         BitmapPainter(
-            if (overlay != null) currentBitmap.addOverlayToCenter(overlay).asImageBitmap()
-            else currentBitmap.asImageBitmap()
+            if (overlay != null) {
+                currentBitmap.addOverlayToCenter(overlay).asImageBitmap()
+            } else {
+                currentBitmap.asImageBitmap()
+            }
         )
     }
 }
@@ -168,7 +171,7 @@ fun QRCodePreview() {
         QRCode(
             content = "https://woocommerce.com",
             size = 150.dp,
-            overlayId = R.drawable.img_woo_bubble_white
+            overlayId = R.drawable.img_woo_white
         )
     }
 }

@@ -62,10 +62,6 @@
         android:name="com.woocommerce.android.ui.products.settings.ProductVisibilityFragment"
         tools:layout="@layout/fragment_product_visibility">
         <argument
-            android:name="isApplicationPasswordsLogin"
-            app:argType="boolean"
-            app:nullable="false" />
-        <argument
             android:name="visibility"
             app:argType="string"
             app:nullable="true" />

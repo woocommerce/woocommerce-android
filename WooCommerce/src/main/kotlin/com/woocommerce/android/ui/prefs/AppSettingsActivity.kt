@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -18,6 +20,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -46,10 +49,15 @@ class AppSettingsActivity :
     }
 
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
+
     @Inject lateinit var presenter: AppSettingsContract.Presenter
+
     @Inject lateinit var selectedSite: SelectedSite
+
     @Inject lateinit var prefs: AppPrefs
+
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
+
     @Inject lateinit var statsWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private var isBetaOptionChanged = false
@@ -62,6 +70,22 @@ class AppSettingsActivity :
 
         binding = ActivityAppSettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.root.doOnApplyWindowInsets(
+            insetsMask = WindowInsetsCompat.Type.systemBars() or
+                WindowInsetsCompat.Type.displayCutout() or
+                WindowInsetsCompat.Type.ime(),
+            consumeInsets = true
+        ) {
+            binding.root.updatePadding(
+                left = it.left,
+                right = it.right,
+                bottom = it.bottom
+            )
+            binding.appBarLayout.updatePadding(
+                top = it.top
+            )
+        }
 
         presenter.takeView(this)
 
@@ -81,7 +105,6 @@ class AppSettingsActivity :
         }
 
         if (intent.getBooleanExtra(EXTRA_SHOW_PRIVACY_SETTINGS, false)) {
-
             val requestedAnalyticsValue =
                 intent.parcelable(EXTRA_REQUESTED_ANALYTICS_VALUE_FROM_ERROR)
                     ?: RequestedAnalyticsValue.NONE

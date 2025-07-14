@@ -25,13 +25,13 @@ class MainBottomNavigationView @JvmOverloads constructor(
 ) : BottomNavigationView(context, attrs),
     OnItemSelectedListener,
     OnItemReselectedListener {
-    private lateinit var navController: NavController
+    private var navController: NavController? = null
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
     private lateinit var moreMenuBadge: BadgeDrawable
 
     interface MainNavigationListener {
-        fun onNavItemSelected(navPos: BottomNavigationPosition)
+        fun onNavItemSelected(navPos: BottomNavigationPosition): Boolean
         fun onNavItemReselected(navPos: BottomNavigationPosition)
     }
 
@@ -42,15 +42,15 @@ class MainBottomNavigationView @JvmOverloads constructor(
         }
 
     fun init(navController: NavController, listener: MainNavigationListener) {
-        this.listener = listener
         this.navController = navController
+        this.listener = listener
 
         addTopDivider()
         createBadges()
 
         assignNavigationListeners(true)
         val weakReference = WeakReference(this)
-        navController.addOnDestinationChangedListener(
+        this.navController?.addOnDestinationChangedListener(
             object : NavController.OnDestinationChangedListener {
                 override fun onDestinationChanged(
                     controller: NavController,
@@ -59,7 +59,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
                 ) {
                     val view = weakReference.get()
                     if (view == null) {
-                        navController.removeOnDestinationChangedListener(this)
+                        this@MainBottomNavigationView.navController?.removeOnDestinationChangedListener(this)
                         return
                     }
                     view.menu.forEach { item ->
@@ -68,14 +68,15 @@ class MainBottomNavigationView @JvmOverloads constructor(
                         }
                     }
                 }
-            })
+            }
+        )
     }
 
     private fun createBadges() {
         ordersBadge = getOrCreateBadge(R.id.orders)
         ordersBadge.isVisible = false
         ordersBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
-        ordersBadge.maxCharacterCount = 3 // this includes the plus sign
+        ordersBadge.maxCharacterCount = MAX_CHARACTERS_IN_BADGE // this includes the plus sign
 
         moreMenuBadge = getOrCreateBadge(R.id.moreMenu)
         moreMenuBadge.isVisible = false
@@ -132,15 +133,10 @@ class MainBottomNavigationView @JvmOverloads constructor(
         }
     }
 
-    fun clearOrderBadgeCount() {
-        ordersBadge.clearNumber()
-    }
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val navSuccess = NavigationUI.onNavDestinationSelected(item, navController)
-        if (navSuccess) {
-            listener.onNavItemSelected(findNavigationPositionById(item.itemId))
-            return true
+        navController?.let { navController ->
+            NavigationUI.onNavDestinationSelected(item, navController)
+            return listener.onNavItemSelected(findNavigationPositionById(item.itemId))
         }
         return false
     }
@@ -157,4 +153,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     private fun NavDestination.matchDestination(@IdRes destId: Int): Boolean =
         hierarchy.any { it.id == destId }
+
+    companion object {
+        private const val MAX_CHARACTERS_IN_BADGE = 4
+    }
 }

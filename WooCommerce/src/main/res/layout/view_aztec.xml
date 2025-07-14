@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <org.wordpress.aztec.AztecText
+            android:id="@+id/visual_editor"
+            style="@style/Woo.AztecText.VisualEditor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="52dp"
+            android:scrollbars="vertical" />
+
+        <org.wordpress.aztec.source.SourceViewEditText
+            android:id="@+id/sourceEditor"
+            style="@style/Woo.AztecText.SourceEditor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="52dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <org.wordpress.aztec.toolbar.AztecToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

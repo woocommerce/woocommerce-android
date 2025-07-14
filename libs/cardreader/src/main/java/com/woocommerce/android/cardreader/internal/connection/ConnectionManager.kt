@@ -1,12 +1,18 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import android.Manifest
+import android.app.Application
+import android.content.pm.PackageManager
+import android.os.Build
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration
-import com.stripe.stripeterminal.external.models.ConnectionConfiguration.LocalMobileConnectionConfiguration
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration.TapToPayConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -22,57 +28,101 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+private const val ARTIFICIAL_STATUS_UPDATE_DELAY_IN_MILLIS = 500L
+
 internal class ConnectionManager(
     private val terminal: TerminalWrapper,
     private val bluetoothReaderListener: BluetoothReaderListenerImpl,
+    private val tapToPayReaderListener: TapToPayReaderListenerImpl,
     private val discoverReadersAction: DiscoverReadersAction,
     private val terminalListenerImpl: TerminalListenerImpl,
+    private val application: Application,
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
     val batteryStatus = bluetoothReaderListener.batteryStatusEvents
     val displayBluetoothCardReaderMessages = bluetoothReaderListener.displayMessagesEvents
-
     fun discoverReaders(isSimulated: Boolean, cardReaderTypesToDiscover: CardReaderTypesToDiscover) =
         when (cardReaderTypesToDiscover) {
             is SpecificReaders -> {
                 when (cardReaderTypesToDiscover) {
-                    is BuiltInReaders -> discoverReadersAction.discoverBuildInReaders(isSimulated)
-                    is ExternalReaders -> discoverReadersAction.discoverExternalReaders(isSimulated)
+                    is BuiltInReaders -> {
+                        if (application.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            error("ACCESS_FINE_LOCATION permission is required to discover built-in readers")
+                        }
+                        discoverReadersAction.discoverBuildInReaders(isSimulated)
+                    }
+
+                    is ExternalReaders -> {
+                        checkIfNecessaryPermissionsAreGranted()
+                        discoverReadersAction.discoverExternalReaders(isSimulated)
+                    }
                 }
             }
-            UnspecifiedReaders -> merge(
-                discoverReadersAction.discoverBuildInReaders(isSimulated),
-                discoverReadersAction.discoverExternalReaders(isSimulated)
-            )
+
+            UnspecifiedReaders -> {
+                checkIfNecessaryPermissionsAreGranted()
+                merge(
+                    discoverReadersAction.discoverBuildInReaders(isSimulated),
+                    discoverReadersAction.discoverExternalReaders(isSimulated)
+                )
+            }
         }.map { state ->
             when (state) {
                 is DiscoverReadersStatus.Started -> {
                     CardReaderDiscoveryEvents.Started
                 }
+
                 is DiscoverReadersStatus.Failure -> {
                     CardReaderDiscoveryEvents.Failed(state.exception.errorMessage)
                 }
+
                 is DiscoverReadersStatus.FoundReaders -> {
                     val filtering: (Reader) -> Boolean = when (cardReaderTypesToDiscover) {
                         is SpecificReaders -> { reader ->
                             cardReaderTypesToDiscover.readers.map { it.name }.contains(reader.deviceType.name)
                         }
+
                         UnspecifiedReaders -> { _ -> true }
                     }
                     CardReaderDiscoveryEvents.ReadersFound(state.readers.filter(filtering).map { CardReaderImpl(it) })
                 }
+
                 DiscoverReadersStatus.Success -> {
                     CardReaderDiscoveryEvents.Succeeded
                 }
             }
         }
+
+    private fun checkIfNecessaryPermissionsAreGranted() {
+        val isAtLeastAndroidS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        val permissionsToCheck = mutableMapOf(
+            Manifest.permission.ACCESS_FINE_LOCATION to "ACCESS_FINE_LOCATION permission is " +
+                "required to discover external readers"
+        )
+
+        if (isAtLeastAndroidS) {
+            permissionsToCheck[Manifest.permission.BLUETOOTH_CONNECT] = "BLUETOOTH_CONNECT permission is " +
+                "required to discover external readers"
+            permissionsToCheck[Manifest.permission.BLUETOOTH_SCAN] = "BLUETOOTH_SCAN permission is " +
+                "required to discover external readers"
+        }
+
+        permissionsToCheck.forEach { (permission, errorMessage) ->
+            if (application.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                error(errorMessage)
+            }
+        }
+    }
 
     fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         (cardReader as CardReaderImpl).let {
@@ -83,12 +133,17 @@ internal class ConnectionManager(
                 }
 
                 override fun onFailure(e: TerminalException) {
-                    updateReaderStatus(CardReaderStatus.NotConnected(e.errorMessage))
+                    updateReaderStatus(
+                        CardReaderStatus.NotConnected(
+                            errorCode = e.errorCode.toErrorCode(),
+                            errorMessage = e.errorMessage,
+                        )
+                    )
                 }
             }
 
             when (it.cardReader.deviceType) {
-                DeviceType.COTS_DEVICE -> connectToBuiltInReader(cardReader, locationId, readerCallback)
+                DeviceType.TAP_TO_PAY_DEVICE -> connectToBuiltInReader(cardReader, locationId, readerCallback)
                 else -> connectToExternalReader(cardReader, locationId, readerCallback)
             }
         }
@@ -111,10 +166,19 @@ internal class ConnectionManager(
     private fun startStateResettingJobIfNeeded(currentStatus: CardReaderStatus) {
         if (currentStatus !is CardReaderStatus.Connecting) return
 
-        val connectedScope = CoroutineScope(Dispatchers.Default)
+        val connectedScope = CoroutineScope(Dispatchers.Main)
         connectedScope.launch {
             terminalListenerImpl.readerStatus.collect { connectionStatus ->
                 if (connectionStatus is CardReaderStatus.NotConnected) {
+                    /**
+                     * This delay is a workaround to avoid situations in which the state is reset to Unknown before
+                     * the consumer gets a chance to handle it. For example, when the consumer initiates the connection
+                     * flow and there is a required update, the client might want to navigate to the sw update flow.
+                     * However, the Stripe SDK starts the update flow immediately and if it fails on LOW_BATTERY_ERROR
+                     * the state is reset to Unknown (no ongoing update) before the client even got a chance to
+                     * navigate to the sw update flow. More info on PR 12912.
+                     */
+                    delay(ARTIFICIAL_STATUS_UPDATE_DELAY_IN_MILLIS)
                     bluetoothReaderListener.resetConnectionState()
                     connectedScope.cancel()
                 }
@@ -131,6 +195,10 @@ internal class ConnectionManager(
         startStateResettingJobIfNeeded(status)
     }
 
+    fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
+        terminal.setupTapToPayUx(config)
+    }
+
     private fun connectToExternalReader(
         cardReader: CardReaderImpl,
         locationId: String,
@@ -138,9 +206,8 @@ internal class ConnectionManager(
     ) {
         terminal.connectToReader(
             cardReader.cardReader,
-            BluetoothConnectionConfiguration(locationId),
-            readerCallback,
-            bluetoothReaderListener,
+            BluetoothConnectionConfiguration(locationId, true, bluetoothReaderListener),
+            readerCallback
         )
     }
 
@@ -151,8 +218,20 @@ internal class ConnectionManager(
     ) {
         terminal.connectToMobile(
             cardReader.cardReader,
-            LocalMobileConnectionConfiguration(locationId),
+            TapToPayConnectionConfiguration(
+                locationId,
+                autoReconnectOnUnexpectedDisconnect = true,
+                tapToPayReaderListener
+            ),
             readerCallback
         )
     }
+
+    private fun TerminalErrorCode.toErrorCode(): CardReaderStatus.NotConnected.ErrorCode =
+        when (this) {
+            TerminalErrorCode.READER_BATTERY_CRITICALLY_LOW ->
+                CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW
+
+            else -> CardReaderStatus.NotConnected.ErrorCode.OTHER
+        }
 }

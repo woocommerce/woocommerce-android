@@ -34,48 +34,48 @@ class CollectInteracRefundActionTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when collecting interac refund succeeds, then Success is emitted`() = testBlocking {
-        whenever(terminal.refundPayment(any(), any())).thenAnswer {
-            (it.arguments[1] as Callback).onSuccess()
+        whenever(terminal.refundPayment(any(), any(), any())).thenAnswer {
+            (it.arguments[2] as Callback).onSuccess()
             mock<Cancelable>()
         }
 
-        val result = action.collectRefund(mock()).first()
+        val result = action.collectRefund(mock(), mock()).first()
 
         assertThat(result).isExactlyInstanceOf(Success::class.java)
     }
 
     @Test
     fun `when collecting interac refund fails, then Failure is emitted`() = testBlocking {
-        whenever(terminal.refundPayment(any(), any())).thenAnswer {
-            (it.arguments[1] as Callback).onFailure(mock())
+        whenever(terminal.refundPayment(any(), any(), any())).thenAnswer {
+            (it.arguments[2] as Callback).onFailure(mock())
             mock<Cancelable>()
         }
 
-        val result = action.collectRefund(mock()).first()
+        val result = action.collectRefund(mock(), mock()).first()
 
         assertThat(result).isExactlyInstanceOf(Failure::class.java)
     }
 
     @Test
     fun `when collecting interac refund succeeds, then flow is terminated`() = testBlocking {
-        whenever(terminal.refundPayment(any(), any())).thenAnswer {
-            (it.arguments[1] as Callback).onSuccess()
+        whenever(terminal.refundPayment(any(), any(), any())).thenAnswer {
+            (it.arguments[2] as Callback).onSuccess()
             mock<Cancelable>()
         }
 
-        val result = action.collectRefund(mock()).toList()
+        val result = action.collectRefund(mock(), mock()).toList()
 
         assertThat(result.size).isEqualTo(1)
     }
 
     @Test
     fun `when collecting interac refund fails, then flow is terminated`() = testBlocking {
-        whenever(terminal.refundPayment(any(), any())).thenAnswer {
-            (it.arguments[1] as Callback).onFailure(mock())
+        whenever(terminal.refundPayment(any(), any(), any())).thenAnswer {
+            (it.arguments[2] as Callback).onFailure(mock())
             mock<Cancelable>()
         }
 
-        val result = action.collectRefund(mock()).toList()
+        val result = action.collectRefund(mock(), mock()).toList()
 
         assertThat(result.size).isEqualTo(1)
     }
@@ -84,9 +84,9 @@ class CollectInteracRefundActionTest : CardReaderBaseUnitTest() {
     fun `given flow not terminated, when job canceled, then interac refund gets canceled`() = testBlocking {
         val cancelable = mock<Cancelable>()
         whenever(cancelable.isCompleted).thenReturn(false)
-        whenever(terminal.refundPayment(any(), any())).thenAnswer { cancelable }
+        whenever(terminal.refundPayment(any(), any(), any())).thenAnswer { cancelable }
         val job = launch {
-            action.collectRefund(mock()).collect { }
+            action.collectRefund(mock(), mock()).collect { }
         }
 
         job.cancel()

@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_settings"
     app:startDestination="@id/mainSettingsFragment">
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <include app:graph="@navigation/nav_graph_domain_change" />
+    <include app:graph="@navigation/nav_graph_themes" />
+
     <fragment
         android:id="@+id/mainSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.MainSettingsFragment"
@@ -48,6 +52,16 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_nameYourStoreDialogFragment"
             app:destination="@id/nameYourStoreDialogFragment" />
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_themePickerFragment"
+            app:destination="@id/nav_graph_themes" >
+        </action>
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_notificationSettingsFragment"
+            app:destination="@id/notificationSettingsFragment" />
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_pluginsFragment"
+            app:destination="@id/pluginsFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -116,9 +130,9 @@
             app:nullable="false" />
     </dialog>
     <fragment
-        android:id="@+id/WPComWebViewFragment"
-        android:name="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment"
-        android:label="WPComWebViewFragment"
+        android:id="@+id/AuthenticatedWebViewFragment"
+        android:name="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment"
+        android:label="AuthenticatedWebViewFragment"
         tools:layout="@layout/fragment_wpcom_webview">
         <argument
             android:name="urlToLoad"
@@ -140,29 +154,31 @@
         <argument
             android:name="displayMode"
             android:defaultValue="REGULAR"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
+            app:argType="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel$DisplayMode" />
         <argument
             android:name="urlComparisonMode"
             android:defaultValue="PARTIAL"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
+            app:argType="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel$UrlComparisonMode" />
         <argument
             android:name="clearCache"
             android:defaultValue="false"
             app:argType="boolean" />
     </fragment>
     <action
-        android:id="@+id/action_global_WPComWebViewFragment"
-        app:destination="@id/WPComWebViewFragment" />
-    <include app:graph="@navigation/nav_graph_jetpack_install" />
+        android:id="@+id/action_global_AuthenticatedWebViewFragment"
+        app:destination="@id/AuthenticatedWebViewFragment" />
     <fragment
         android:id="@+id/developerOptionsFragment"
-        android:name="com.woocommerce.android.ui.prefs.DeveloperOptionsFragment"
-        android:label="DeveloperOptionsFragment" />
-    <include app:graph="@navigation/nav_graph_domain_change" />
+        android:name="com.woocommerce.android.ui.prefs.developer.DeveloperOptionsFragment"
+        android:label="DeveloperOptionsFragment">
+        <action
+            android:id="@+id/action_developerOptionsFragment_to_ApiFaker"
+            app:destination="@id/apiFakerHostFragment" />
+    </fragment>
     <fragment
         android:id="@+id/accountSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.account.AccountSettingsFragment"
-        android:label="AccountSettingsFragment" >
+        android:label="AccountSettingsFragment">
         <action
             android:id="@+id/action_accountSettingsFragment_to_closeAccountDialogFragment"
             app:destination="@id/closeAccountDialogFragment" />
@@ -173,12 +189,23 @@
         android:label="CloseAccountDialogFragment" />
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
-        android:label="NameYourStoreDialogFragment" >
+        android:name="com.woocommerce.android.ui.onboarding.NameYourStoreDialogFragment"
+        android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
-
+    <fragment
+        android:id="@+id/notificationSettingsFragment"
+        android:name="com.woocommerce.android.ui.prefs.notifications.NotificationSettingsFragment"
+        android:label="NotificationSettingsFragment" />
+    <fragment
+        android:id="@+id/pluginsFragment"
+        android:name="com.woocommerce.android.ui.prefs.plugins.PluginsFragment"
+        android:label="PluginsFragment" />
+    <fragment
+        android:id="@+id/apiFakerHostFragment"
+        android:name="com.woocommerce.android.apifaker.ApiFakerHostFragment"
+        android:label="ApiFakerHostFragment" />
 </navigation>

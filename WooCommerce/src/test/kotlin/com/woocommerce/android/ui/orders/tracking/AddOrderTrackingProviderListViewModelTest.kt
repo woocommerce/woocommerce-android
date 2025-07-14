@@ -1,16 +1,20 @@
 package com.woocommerce.android.ui.orders.tracking
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListViewModel.ViewState
+import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchException
+import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchResult
+import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchResult.NoCarriersFound
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -37,7 +41,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: AddOrderTrackingProviderListViewModel
 
-    private val savedState = AddOrderTrackingProviderListFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
+    private val savedState = AddOrderTrackingProviderListFragmentArgs(orderId = ORDER_ID).toSavedStateHandle()
 
     fun setupViewModel() {
         viewModel = AddOrderTrackingProviderListViewModel(
@@ -49,9 +53,9 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides the provider list skeleton correctly`() = testBlocking {
-        doReturn(testShipmentProvider).whenever(shipmentProvidersRepository)
-            .fetchOrderShipmentProviders(ORDER_ID)
+    fun `Shows and hides the provider list skeleton correctly`() = runTest {
+        doReturn(flowOf(testShipmentProvider)).whenever(shipmentProvidersRepository)
+            .observeOrderShipmentProviders()
 
         setupViewModel()
         var state: ViewState? = null
@@ -65,8 +69,9 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error snackbar when provider list is empty`() = testBlocking {
-        doReturn(emptyList<OrderShipmentProvider>()).whenever(shipmentProvidersRepository)
+    fun `Display error snackbar when no carriers has been found on remote`() = runTest {
+        doReturn(Result.success(NoCarriersFound))
+            .whenever(shipmentProvidersRepository)
             .fetchOrderShipmentProviders(ORDER_ID)
 
         setupViewModel()
@@ -82,7 +87,11 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Display error snackbar when error occurs`() = testBlocking {
-        doReturn(null).whenever(shipmentProvidersRepository)
+        doReturn(
+            Result.failure<OrderShipmentProvidersFetchResult>(
+                OrderShipmentProvidersFetchException("error")
+            )
+        ).whenever(shipmentProvidersRepository)
             .fetchOrderShipmentProviders(ORDER_ID)
 
         setupViewModel()
@@ -98,8 +107,8 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `filter results`() = testBlocking {
-        doReturn(testShipmentProvider).whenever(shipmentProvidersRepository)
-            .fetchOrderShipmentProviders(ORDER_ID)
+        doReturn(flowOf(testShipmentProvider)).whenever(shipmentProvidersRepository)
+            .observeOrderShipmentProviders()
 
         setupViewModel()
         viewModel.onSearchQueryChanged("bbb")
@@ -116,9 +125,6 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     @Test
     @Suppress("UNCHECKED_CAST")
     fun `handle carrier selection`() = testBlocking {
-        doReturn(testShipmentProvider).whenever(shipmentProvidersRepository)
-            .fetchOrderShipmentProviders(ORDER_ID)
-
         setupViewModel()
         viewModel.onProviderSelected(testShipmentProvider[0])
 

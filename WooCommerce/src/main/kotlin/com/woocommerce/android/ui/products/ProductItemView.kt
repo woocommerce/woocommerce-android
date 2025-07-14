@@ -8,13 +8,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductItemViewBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.orders.creation.ProductUIModel
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
 import com.woocommerce.android.ui.orders.creation.product.discount.GetItemDiscountAmountText
 import com.woocommerce.android.util.CurrencyFormatter
@@ -40,28 +40,33 @@ class ProductItemView @JvmOverloads constructor(
     private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
     private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
 
+    companion object {
+        private const val LOW_IMAGE_ALPHA = 0.3f
+    }
+
     fun bind(
         product: Product,
         currencyFormatter: CurrencyFormatter,
         currencyCode: String? = null,
-        isActivated: Boolean = false
+        isActivated: Boolean = false,
+        isUploadingMedia: Boolean = false
     ) {
         showProductName(product.name)
         showProductSku(product.sku)
-        showProductImage(product.firstImageUrl, isActivated)
+        showProductImage(product.firstImageUrl, isActivated, isUploadingMedia)
         showProductStockStatusPrice(product, currencyFormatter, currencyCode)
     }
 
     fun bind(
-        productUIModel: ProductUIModel,
+        orderCreationProduct: OrderCreationProduct,
         currencyFormatter: CurrencyFormatter,
         currencyCode: String? = null,
         showDiscount: Boolean = false,
     ) {
-        showProductName(productUIModel.item.name)
-        showProductSku(productUIModel.item.sku)
-        showProductImage(productUIModel.imageUrl)
-        val discountAmount = CalculateItemDiscountAmount()(productUIModel.item)
+        showProductName(orderCreationProduct.item.name)
+        showProductSku(orderCreationProduct.item.sku)
+        showProductImage(orderCreationProduct.productInfo.imageUrl)
+        val discountAmount = CalculateItemDiscountAmount()(orderCreationProduct.item)
         if (showDiscount && currencyCode != null && discountAmount > BigDecimal.ZERO) {
             binding.productDiscount.isVisible = true
             binding.productDiscount.text =
@@ -74,14 +79,14 @@ class ProductItemView @JvmOverloads constructor(
         }
 
         binding.productStockAndStatus.text = buildString {
-            if (productUIModel.item.isVariation && productUIModel.item.attributesDescription.isNotEmpty()) {
-                append(productUIModel.item.attributesDescription)
+            if (orderCreationProduct.item.isVariation && orderCreationProduct.item.attributesDescription.isNotEmpty()) {
+                append(orderCreationProduct.item.attributesDescription)
             } else {
-                append(productUIModel.getStockText(context))
+                append(orderCreationProduct.getStockText(context))
             }
             append(" $bullet ")
             val decimalFormatter = getDecimalFormatter(currencyFormatter, currencyCode)
-            append(decimalFormatter(productUIModel.item.total).replace(" ", "\u00A0"))
+            append(decimalFormatter(orderCreationProduct.item.total).replace(" ", "\u00A0"))
         }
     }
 
@@ -106,7 +111,8 @@ class ProductItemView @JvmOverloads constructor(
 
     private fun showProductImage(
         imageUrl: String?,
-        isActivated: Boolean = false
+        isActivated: Boolean = false,
+        isUploadingMedia: Boolean = false
     ) {
         val size: Int
         when {
@@ -117,14 +123,25 @@ class ProductItemView @JvmOverloads constructor(
             else -> {
                 size = imageSize
                 val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
-                GlideApp.with(context)
+                Glide.with(context)
                     .load(photonUrl)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(binding.productImage)
             }
         }
-        binding.productImageSelected.visibility = if (isActivated) View.VISIBLE else View.GONE
+
+        // There are two possible overlays for the product image, but we only show one at a time:
+        // - Checkmark, when `isActivated` (when in bulk selection mode and the product is selected)
+        // - Loading animation, when `isUploadingMedia` (when merchant uploads images in product details, then
+        //   returns to product list while the upload is still ongoing)
+        //
+        // If both states are true, the checkmark overlay takes precedence.
+        binding.productImageSelected.isVisible = isActivated
+        binding.mediaUploadProgress.isVisible = !isActivated && isUploadingMedia
+        // Add transparency to product image when uploading media so that the progress bar is more visible
+        binding.productImage.alpha = if (!isActivated && isUploadingMedia) LOW_IMAGE_ALPHA else 1f
+
         binding.productImage.layoutParams.apply {
             height = size
             width = size

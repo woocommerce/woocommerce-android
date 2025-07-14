@@ -8,7 +8,17 @@ jacoco {
 
 rootProject.afterEvaluate {
     tasks.register("jacocoTestReport", JacocoReport) {
-        dependsOn(':WooCommerce:testJalapenoDebugUnitTest', ':libs:cardreader:testDebugUnitTest')
+        dependsOn(
+                ':WooCommerce:testJalapenoDebugUnitTest',
+                ':libs:cardreader:testDebugUnitTest',
+                ':WooCommerce-Wear:testJalapenoDebugUnitTest',
+                ':libs:fluxc:testDebugUnitTest',
+                ':libs:fluxc-plugin:testDebugUnitTest',
+                ':libs:fluxc-tests:testDebugUnitTest',
+                ':libs:login:testDebugUnitTest',
+                ':libs:apifaker:testDebugUnitTest',
+                ':libs:commons:testDebugUnitTest',
+        )
 
         group = "Reporting"
         description = "Generate Jacoco coverage reports for JalapenoDebug variant"
@@ -37,7 +47,7 @@ rootProject.afterEvaluate {
                 '**/dagger',
                 '**/*Hilt*.*',
                 '**/hilt_aggregated_deps',
-                '**/*Module.*',
+                '**/*Module*',
                 '**/*Module$*.*',
                 '**/com/bumptech',
                 '**/*FragmentDirections*',
@@ -56,6 +66,19 @@ rootProject.afterEvaluate {
                 '**/*Adapter$*.*',
                 '**/*Screen*',
                 '**/*Screen$*',
+
+                // Classes below have the same name in WooCommerce and WooCommerce-Wear modules
+                // Without exclusions, JaCoCo fails with "Can't add different class with same name"
+                "**/AppCoroutineScope*",
+                "**/*DateUtils*",
+                "**/*NumberExt*",
+                "**/*DateExt*",
+                "**/*OrderEntityExt*",
+                "**/*CalendarExt*",
+
+                "**/*DataStoreType*",
+                "**/*DataStoreQualifier*",
+                "**/*AnalyticsTracker*",
         ]
 
         def kClasses = rootProject.subprojects.collect { proj ->
@@ -73,9 +96,8 @@ rootProject.afterEvaluate {
         sourceDirectories.setFrom(files([sources]))
         classDirectories.from = files([kotlinClasses])
 
-        executionData.from = files([
-                "WooCommerce/build/outputs/unit_test_code_coverage/jalapenoDebugUnitTest/testJalapenoDebugUnitTest.exec",
-                "libs/cardreader/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
-        ])
+        executionData fileTree(project.rootDir.absolutePath)
+                .include("**/build/**/*.exec")
+                .exclude("**/detektrules/**")
     }
 }

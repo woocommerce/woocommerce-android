@@ -6,14 +6,18 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
 import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
@@ -31,13 +35,18 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     companion object {
         const val KEY_LABEL_PURCHASED = "key-label-purchased"
     }
+
     @Inject lateinit var navigator: OrderNavigator
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: PrintShippingLabelViewModel by viewModels()
     private val navArgs: PrintShippingLabelFragmentArgs by navArgs()
 
     private var progressDialog: CustomProgressDialog? = null
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun getFragmentTitle(): String {
         return getString(viewModel.screenTitle)
@@ -47,10 +56,24 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentPrintShippingLabelBinding.bind(view)
+        setupToolbar(binding)
 
         initUi(binding)
         setupObservers(viewModel, binding)
         setupResultHandlers(viewModel)
+    }
+
+    private fun setupToolbar(binding: FragmentPrintShippingLabelBinding) {
+        binding.toolbar.title = getString(viewModel.screenTitle)
+        binding.toolbar.setNavigationOnClickListener {
+            @Suppress("DEPRECATION")
+            when {
+                requireContext().isTwoPanesShouldBeUsed && onRequestAllowBackPress() -> {
+                    findNavController().navigateUp()
+                }
+                else -> (activity as? MainActivity)?.onBackPressed()
+            }
+        }
     }
 
     private fun initUi(binding: FragmentPrintShippingLabelBinding) {
@@ -58,13 +81,19 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         binding.purchaseGroup.isVisible = !navArgs.isReprint
 
         binding.labelPurchased.setText(
-            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_purchase_success
-            else R.string.shipping_label_print_purchase_success
+            if (navArgs.shippingLabelIds.size > 1) {
+                R.string.shipping_label_print_multiple_purchase_success
+            } else {
+                R.string.shipping_label_print_purchase_success
+            }
         )
 
         binding.shippingLabelPrintBtn.setText(
-            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_button
-            else R.string.shipping_label_print_button
+            if (navArgs.shippingLabelIds.size > 1) {
+                R.string.shipping_label_print_multiple_button
+            } else {
+                R.string.shipping_label_print_button
+            }
         )
 
         binding.shippingLabelPrintPaperSize.setClickListener { viewModel.onPaperSizeOptionsSelected() }

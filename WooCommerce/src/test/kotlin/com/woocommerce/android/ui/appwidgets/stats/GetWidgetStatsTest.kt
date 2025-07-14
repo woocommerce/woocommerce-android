@@ -2,21 +2,25 @@ package com.woocommerce.android.ui.appwidgets.stats
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.appwidgets.IsDeviceBatterySaverActive
+import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsBatterySaverActive
+import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.store.WCStatsStore
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetWidgetStatsTest : BaseUnitTest() {
@@ -25,18 +29,20 @@ class GetWidgetStatsTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val statsRepository: StatsRepository = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val isDeviceBatterySaverActive: IsDeviceBatterySaverActive = mock()
 
-    private val defaultGranularity = WCStatsStore.StatsGranularity.DAYS
+    private val defaultRange = StatsTimeRangeSelection.build(
+        selectionType = SelectionType.TODAY,
+        referenceDate = Date(),
+        calendar = Calendar.getInstance(),
+        locale = Locale.getDefault()
+    )
     private val defaultSiteModel = SiteModel().apply {
         siteId = 1
         origin = SiteModel.ORIGIN_WPCOM_REST
         setIsJetpackConnected(true)
     }
-    private val defaultError = WooError(
-        type = WooErrorType.GENERIC_ERROR,
-        original = BaseRequest.GenericErrorType.UNKNOWN,
-        message = "Error fetching site stats for site ${defaultSiteModel.siteId}"
-    )
+    private val defaultErrorMessage = "Error fetching site stats for site ${defaultSiteModel.siteId}"
     private val defaultResponse = StatsRepository.SiteStats(
         visitors = mapOf(
             "2020-10-01" to 1,
@@ -52,7 +58,8 @@ class GetWidgetStatsTest : BaseUnitTest() {
         appPrefsWrapper = appPrefsWrapper,
         statsRepository = statsRepository,
         networkStatus = networkStatus,
-        coroutineDispatchers = coroutinesTestRule.testDispatchers
+        coroutineDispatchers = coroutinesTestRule.testDispatchers,
+        isDeviceBatterySaverActive = isDeviceBatterySaverActive
     )
 
     @Test
@@ -61,7 +68,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
         whenever(accountRepository.isUserLoggedIn()).thenReturn(false)
 
         // When GetWidgetStats is invoked
-        val result = sut.invoke(defaultGranularity, defaultSiteModel)
+        val result = sut.invoke(defaultRange, defaultSiteModel)
 
         // Then the result is WidgetStatsAuthFailure
         assertThat(result).isEqualTo(GetWidgetStats.WidgetStatsResult.WidgetStatsAuthFailure)
@@ -75,7 +82,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
             whenever(appPrefsWrapper.isV4StatsSupported()).thenReturn(false)
 
             // When GetWidgetStats is invoked
-            val result = sut.invoke(defaultGranularity, defaultSiteModel)
+            val result = sut.invoke(defaultRange, defaultSiteModel)
 
             // Then the result is WidgetStatsAPINotSupportedFailure
             assertThat(result).isEqualTo(GetWidgetStats.WidgetStatsResult.WidgetStatsAPINotSupportedFailure)
@@ -90,7 +97,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
             whenever(networkStatus.isConnected()).thenReturn(false)
 
             // When GetWidgetStats is invoked
-            val result = sut.invoke(defaultGranularity, defaultSiteModel)
+            val result = sut.invoke(defaultRange, defaultSiteModel)
 
             // Then the result is WidgetStatsAPINotSupportedFailure
             assertThat(result).isEqualTo(GetWidgetStats.WidgetStatsResult.WidgetStatsNetworkFailure)
@@ -105,7 +112,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
             whenever(networkStatus.isConnected()).thenReturn(true)
 
             // When GetWidgetStats is invoked with a null siteModel
-            val result = sut.invoke(defaultGranularity, null)
+            val result = sut.invoke(defaultRange, null)
             val expected = GetWidgetStats.WidgetStatsResult.WidgetStatsFailure("No site selected")
 
             // Then the result is WidgetStatsFailure
@@ -121,19 +128,19 @@ class GetWidgetStatsTest : BaseUnitTest() {
             whenever(networkStatus.isConnected()).thenReturn(true)
 
             // Given fetching the stats fails
-            whenever(statsRepository.fetchStats(defaultGranularity, true, true, defaultSiteModel))
-                .thenReturn(WooResult(defaultError))
+            whenever(statsRepository.fetchStats(any(), any(), any(), eq(true), eq(true), eq(defaultSiteModel)))
+                .thenReturn(Result.failure(Exception(defaultErrorMessage)))
 
             // When GetWidgetStats is invoked
-            val result = sut.invoke(defaultGranularity, defaultSiteModel)
-            val expected = GetWidgetStats.WidgetStatsResult.WidgetStatsFailure(defaultError.message)
+            val result = sut.invoke(defaultRange, defaultSiteModel)
+            val expected = GetWidgetStats.WidgetStatsResult.WidgetStatsFailure(defaultErrorMessage)
 
             // Then the result is WidgetStatsFailure
             assertThat(result).isEqualTo(expected)
         }
 
     @Test
-    fun `when fetchStats succeed then get stats respond with WidgetStatsFailure`() =
+    fun `when fetchStats succeed then get stats respond with WidgetStats`() =
         testBlocking {
             // Given the user is logged, v4 stats is supported and network is working fine
             whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
@@ -141,14 +148,27 @@ class GetWidgetStatsTest : BaseUnitTest() {
             whenever(networkStatus.isConnected()).thenReturn(true)
 
             // Given fetching the stats succeed
-            whenever(statsRepository.fetchStats(defaultGranularity, true, true, defaultSiteModel))
-                .thenReturn(WooResult(defaultResponse))
+            whenever(statsRepository.fetchStats(any(), any(), any(), eq(true), eq(true), eq(defaultSiteModel)))
+                .thenReturn(Result.success(defaultResponse))
 
             // When GetWidgetStats is invoked
-            val result = sut.invoke(defaultGranularity, defaultSiteModel)
-            val expected = GetWidgetStats.WidgetStatsResult.WidgetStats(defaultResponse, true)
+            val result = sut.invoke(defaultRange, defaultSiteModel)
+            val expected = GetWidgetStats.WidgetStatsResult.WidgetStats(defaultResponse)
 
             // Then the result is WidgetStatsFailure
             assertThat(result).isEqualTo(expected)
+        }
+
+    @Test
+    fun `when the device is in battery saver mode then get stats respond with WidgetStatsBatterySaverActive`() =
+        testBlocking {
+            // Given the user is logged, v4 stats is supported and network is working fine
+            whenever(isDeviceBatterySaverActive()).thenReturn(true)
+
+            // When GetWidgetStats is invoked
+            val result = sut.invoke(defaultRange, defaultSiteModel)
+
+            // Then the result is WidgetStatsBatterySaverActive
+            assertThat(result).isEqualTo(WidgetStatsBatterySaverActive)
         }
 }

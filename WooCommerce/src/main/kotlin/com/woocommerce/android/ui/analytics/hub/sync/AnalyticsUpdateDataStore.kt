@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
@@ -21,7 +22,7 @@ import javax.inject.Inject
  * through stored timestamp.
  */
 class AnalyticsUpdateDataStore @Inject constructor(
-    @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
+    @DataStoreQualifier(DataStoreType.ANALYTICS_UI_CACHE) private val dataStore: DataStore<Preferences>,
     private val currentTimeProvider: CurrentTimeProvider,
     private val selectedSite: SelectedSite
 ) {
@@ -34,11 +35,27 @@ class AnalyticsUpdateDataStore @Inject constructor(
      */
     fun shouldUpdateAnalytics(
         rangeSelection: StatsTimeRangeSelection,
+        analyticData: AnalyticData,
         maxOutdatedTime: Long = defaultMaxOutdatedTime,
-        analyticData: AnalyticData = AnalyticData.ALL
     ) = dataStore.data
         .map { prefs -> prefs[longPreferencesKey(getTimeStampKey(rangeSelection.identifier, analyticData))] }
         .map { lastUpdateTime -> isElapsedTimeExpired(lastUpdateTime, maxOutdatedTime) }
+
+    fun shouldUpdateAnalytics(
+        rangeSelection: StatsTimeRangeSelection,
+        analyticDataList: List<AnalyticData>,
+        maxOutdatedTime: Long = defaultMaxOutdatedTime,
+    ): Flow<Boolean> {
+        val timestampKeys = analyticDataList.map { getTimeStampKey(rangeSelection.identifier, it) }
+        val flows = timestampKeys.map { timestampKey ->
+            dataStore.data.map { prefs -> prefs[longPreferencesKey(timestampKey)] }
+        }
+        return combine(flows) { lastUpdateMillisArray ->
+            lastUpdateMillisArray.all { lastUpdateTime ->
+                lastUpdateTime?.let { isElapsedTimeExpired(lastUpdateTime, maxOutdatedTime) } ?: true
+            }
+        }
+    }
 
     /***
      * Stores the current timestamp for a given [rangeSelection] and [analyticData]
@@ -47,13 +64,16 @@ class AnalyticsUpdateDataStore @Inject constructor(
      */
     suspend fun storeLastAnalyticsUpdate(
         rangeSelection: StatsTimeRangeSelection,
-        analyticData: AnalyticData = AnalyticData.ALL
+        analyticData: AnalyticData
     ) {
-        if (analyticData == AnalyticData.ALL) {
-            AnalyticData.values().forEach { dataItem ->
-                storeLastAnalyticsUpdate(getTimeStampKey(rangeSelection.identifier, dataItem))
-            }
-        } else {
+        storeLastAnalyticsUpdate(getTimeStampKey(rangeSelection.identifier, analyticData))
+    }
+
+    suspend fun storeLastAnalyticsUpdate(
+        rangeSelection: StatsTimeRangeSelection,
+        analyticDataList: List<AnalyticData>
+    ) {
+        analyticDataList.forEach { analyticData ->
             storeLastAnalyticsUpdate(getTimeStampKey(rangeSelection.identifier, analyticData))
         }
     }
@@ -78,23 +98,31 @@ class AnalyticsUpdateDataStore @Inject constructor(
      */
     fun observeLastUpdate(
         rangeSelection: StatsTimeRangeSelection,
-        analyticData: List<AnalyticData>
+        analyticData: List<AnalyticData>,
+        shouldAllDataBePresent: Boolean = true
     ): Flow<Long?> {
         val timestampKeys = analyticData.map { data ->
             getTimeStampKey(rangeSelection.identifier, data)
         }
-        return observeLastUpdate(timestampKeys)
+        return observeLastUpdate(timestampKeys, shouldAllDataBePresent)
     }
 
     private fun observeLastUpdate(
-        timestampKeys: List<String>
+        timestampKeys: List<String>,
+        shouldAllDataBePresent: Boolean
     ): Flow<Long?> {
         val flows = timestampKeys.map { timestampKey ->
             dataStore.data.map { prefs -> prefs[longPreferencesKey(timestampKey)] }
         }
         return combine(flows) { lastUpdateMillisArray -> lastUpdateMillisArray.filterNotNull() }
-            .filter { notNullValues -> notNullValues.size == timestampKeys.size }
-            .map { lastUpdateValues -> lastUpdateValues.min() }
+            .filter { notNullValues ->
+                if (shouldAllDataBePresent) {
+                    notNullValues.size == timestampKeys.size
+                } else {
+                    true
+                }
+            }
+            .map { lastUpdateValues -> lastUpdateValues.minOrNull() }
     }
 
     private fun observeLastUpdate(timestampKey: String): Flow<Long?> {
@@ -135,6 +163,20 @@ class AnalyticsUpdateDataStore @Inject constructor(
         VISITORS,
         TOP_PERFORMERS,
         ORDERS,
-        ALL
+        BUNDLES,
+        GIFT_CARDS,
+        GOOGLE_ADS
+    }
+}
+
+fun AnalyticsCards.toAnalyticData(): AnalyticsUpdateDataStore.AnalyticData {
+    return when (this) {
+        AnalyticsCards.Revenue -> AnalyticsUpdateDataStore.AnalyticData.REVENUE
+        AnalyticsCards.Orders -> AnalyticsUpdateDataStore.AnalyticData.ORDERS
+        AnalyticsCards.Products -> AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+        AnalyticsCards.Session -> AnalyticsUpdateDataStore.AnalyticData.VISITORS
+        AnalyticsCards.Bundles -> AnalyticsUpdateDataStore.AnalyticData.BUNDLES
+        AnalyticsCards.GiftCards -> AnalyticsUpdateDataStore.AnalyticData.GIFT_CARDS
+        AnalyticsCards.GoogleAds -> AnalyticsUpdateDataStore.AnalyticData.GOOGLE_ADS
     }
 }

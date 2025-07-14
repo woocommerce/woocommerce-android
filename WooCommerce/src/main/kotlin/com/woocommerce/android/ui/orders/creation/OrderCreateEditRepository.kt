@@ -4,24 +4,28 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
+import com.woocommerce.android.model.OrderAttributionOrigin
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.LineItem
+import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -41,30 +45,36 @@ class OrderCreateEditRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val dispatchers: CoroutineDispatchers,
     private val wooCommerceStore: WooCommerceStore,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val listItemMapper: ListItemMapper,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
 ) {
-    suspend fun placeOrder(order: Order): Result<Order> {
+    suspend fun createOrUpdateOrder(order: Order, source: OrderCreationSource, giftCard: String = ""): Result<Order> {
         val request = UpdateOrderRequest(
             customerId = order.customer?.customerId,
             status = order.status.toDataModel(),
-            lineItems = order.items.map { item ->
-                LineItem(
-                    id = item.itemId.takeIf { it != 0L },
-                    name = item.name,
-                    productId = item.productId,
-                    variationId = item.variationId,
-                    quantity = item.quantity
-                )
-            },
+            lineItems = order.items.map { item -> listItemMapper.toRawListItem(item) },
             shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
             customerNote = order.customerNote,
-            shippingLines = order.shippingLines.map { it.toDataModel() }
+            shippingLines = order.shippingLines.map { it.toDataModel() },
+            feeLines = order.feesLines.map { it.toDataModel() },
+            couponLines = order.couponLines.map { it.toDataModel() },
+            createdVia = source.value,
+            giftCard = giftCard.orNullIfEmpty(),
         )
         val result = if (order.id == 0L) {
-            orderUpdateStore.createOrder(selectedSite.get(), request)
+            orderUpdateStore.createOrder(
+                site = selectedSite.get(),
+                createOrderRequest = request,
+                attributionSourceType = OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE
+            )
         } else {
-            orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
+            orderUpdateStore.updateOrder(
+                site = selectedSite.get(),
+                orderId = order.id,
+                updateRequest = request
+            )
         }
 
         return when {
@@ -76,6 +86,7 @@ class OrderCreateEditRepository @Inject constructor(
     suspend fun createSimplePaymentOrder(
         currentPrice: BigDecimal,
         customerNote: String? = null,
+        isTaxable: Boolean = true
     ): Result<Order> {
         val status = if (isAutoDraftSupported()) {
             WCOrderStatusModel(statusKey = AUTO_DRAFT)
@@ -86,7 +97,7 @@ class OrderCreateEditRepository @Inject constructor(
         val result = orderUpdateStore.createSimplePayment(
             site = selectedSite.get(),
             amount = currentPrice.toString(),
-            isTaxable = true,
+            isTaxable = isTaxable,
             status = status,
             customerNote = customerNote
         )
@@ -101,46 +112,6 @@ class OrderCreateEditRepository @Inject constructor(
                         AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
                     )
                 )
-                Result.failure(WooException(result.error))
-            }
-
-            else -> Result.success(orderMapper.toAppModel(result.model!!))
-        }
-    }
-
-    suspend fun createOrUpdateDraft(order: Order): Result<Order> {
-        val request = UpdateOrderRequest(
-            customerId = order.customer?.customerId,
-            status = order.status.toDataModel(),
-            lineItems = order.items.map { item ->
-                LineItem(
-                    id = item.itemId.takeIf { it != 0L },
-                    name = item.name,
-                    productId = item.productId,
-                    variationId = item.variationId,
-                    quantity = item.quantity,
-                    subtotal = item.subtotal.takeIf { item.itemId != 0L }?.toPlainString(),
-                    total = item.total.takeIf { item.itemId != 0L }?.toPlainString()
-                )
-            },
-            shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }
-                ?.toShippingAddressModel(),
-            billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }
-                ?.toBillingAddressModel(),
-            customerNote = order.customerNote,
-            shippingLines = order.shippingLines.map { it.toDataModel() },
-            feeLines = order.feesLines.map { it.toDataModel() },
-            couponLines = order.couponLines.map { it.toDataModel() },
-        )
-
-        val result = if (order.id == 0L) {
-            orderUpdateStore.createOrder(selectedSite.get(), request)
-        } else {
-            orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
-        }
-
-        return when {
-            result.isError -> {
                 Result.failure(WooException(result.error))
             }
 
@@ -177,6 +148,19 @@ class OrderCreateEditRepository @Inject constructor(
         return wooCommerceStore.getTaxBasedOnSettings(selectedSite.get())?.getTaxBasedOnSetting()
     }
 
+    suspend fun fetchOrderSupportedPlugins() =
+        wooCommerceStore.getSitePlugins(
+            site = selectedSite.get(),
+            plugins = listOf(WooCommerceStore.WooPlugin.WOO_GIFT_CARDS)
+        ).associateBy { it.name }
+            .mapValues { (_, plugin) ->
+                WooPlugin(
+                    isInstalled = true,
+                    isActive = plugin.isActive,
+                    version = plugin.version
+                )
+            }
+
     private fun TaxBasedOnSettingEntity.getTaxBasedOnSetting() =
         when (selectedOption) {
             "shipping" -> ShippingAddress
@@ -188,13 +172,7 @@ class OrderCreateEditRepository @Inject constructor(
     private var isAutoDraftSupported: Boolean? = null
     private suspend fun isAutoDraftSupported(): Boolean {
         isAutoDraftSupported?.let { return it }
-        val version = withContext(dispatchers.io) {
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )?.version
-                ?: "0.0"
-        }
+        val version = withContext(dispatchers.io) { getWooVersion() ?: "0.0" }
         val isSupported = version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
         isAutoDraftSupported = isSupported
         return isSupported
@@ -225,6 +203,11 @@ class OrderCreateEditRepository @Inject constructor(
         it.id = id
         it.name = name
         it.total = total.toPlainString()
+        it.taxStatus = when (taxStatus) {
+            Order.FeeLine.FeeLineTaxStatus.TAXABLE -> FeeLineTaxStatus.Taxable
+            Order.FeeLine.FeeLineTaxStatus.NONE -> FeeLineTaxStatus.None
+            else -> FeeLineTaxStatus.None
+        }
     }
 
     private fun Order.CouponLine.toDataModel() =
@@ -233,4 +216,9 @@ class OrderCreateEditRepository @Inject constructor(
     companion object {
         const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
     }
+}
+
+enum class OrderCreationSource(val value: String?) {
+    STORE_MANAGEMENT(null),
+    POINT_OF_SALE("pos-rest-api")
 }

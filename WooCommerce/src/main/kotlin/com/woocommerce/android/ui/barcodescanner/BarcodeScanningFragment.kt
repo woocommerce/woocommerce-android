@@ -8,27 +8,19 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class BarcodeScanningFragment : BaseFragment() {
     private val viewModel: BarcodeScanningViewModel by viewModels()
-
-    @Inject
-    lateinit var codeScanner: GoogleMLKitCodeScanner
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         ComposeView(requireContext())
@@ -40,33 +32,36 @@ class BarcodeScanningFragment : BaseFragment() {
         observeViewModelEvents()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.startCodesRecognition()
+    }
+
+    override fun onPause() {
+        viewModel.stopCodesRecognition()
+        super.onPause()
+    }
+
     private fun observeCameraPermissionState(view: ComposeView) {
         viewModel.permissionState.observe(viewLifecycleOwner) { permissionState ->
             view.setContent {
                 WooThemeWithBackground {
                     BarcodeScannerScreen(
-                        codeScanner = codeScanner,
+                        onNewFrame = viewModel::onNewFrame,
+                        onBindingException = viewModel::onBindingException,
                         permissionState = permissionState,
                         onResult = { granted ->
                             viewModel.updatePermissionState(
                                 granted,
                                 shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
                             )
-                        },
-                        onScannedResult = { codeScannerStatus ->
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                                    codeScannerStatus.collect { status ->
-                                        navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
-                                    }
-                                }
-                            }
-                        },
+                        }
                     )
                 }
             }
         }
     }
+
     private fun observeViewModelEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -78,12 +73,21 @@ class BarcodeScanningFragment : BaseFragment() {
                     WooPermissionUtils.showAppSettings(requireContext(), false)
                 }
 
+                is BarcodeScanningViewModel.ScanningEvents.OnScanningResult -> {
+                    navigateToNextScreen(event.status)
+                }
+
                 is Exit -> {
                     findNavController().navigateUp()
                 }
             }
         }
     }
+
+    private fun navigateToNextScreen(status: CodeScannerStatus) {
+        navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
+    }
+
     override fun getFragmentTitle() = getString(R.string.barcode_scanning_title)
 
     companion object {

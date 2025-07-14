@@ -206,6 +206,7 @@ abstract class AppUpgradeActivity :
 
     private fun requestAppUpdate(appUpdateInfo: AppUpdateInfo) {
         try {
+            @Suppress("DEPRECATION")
             appUpdateManager.startUpdateFlowForResult(
                 appUpdateInfo,
                 inAppUpdateType,

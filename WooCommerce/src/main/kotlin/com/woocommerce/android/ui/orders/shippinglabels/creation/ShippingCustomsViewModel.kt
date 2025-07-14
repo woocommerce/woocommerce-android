@@ -55,6 +55,12 @@ class ShippingCustomsViewModel @Inject constructor(
         private const val KEY_PARAMETERS = "key_parameters"
     }
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
@@ -257,8 +263,11 @@ class ShippingCustomsViewModel @Inject constructor(
         fun CustomsPackage.validateItn(): String? {
             val itn = itn
             return if (itn.isNotEmpty()) {
-                if (ITN_REGEX.matches(itn)) null
-                else resourceProvider.getString(R.string.shipping_label_customs_itn_invalid_format)
+                if (ITN_REGEX.matches(itn)) {
+                    null
+                } else {
+                    resourceProvider.getString(R.string.shipping_label_customs_itn_invalid_format)
+                }
             } else {
                 val classesAbove2500usd = lines
                     .filter { it.hsTariffNumber.isNotEmpty() && it.validateHsTariff() == null }
@@ -335,8 +344,11 @@ class ShippingCustomsViewModel @Inject constructor(
     }
 
     private fun CustomsLine.validateHsTariff(): String? {
-        return if (hsTariffNumber.isEmpty() || HS_TARIFF_NUMBER_REGEX.matches(hsTariffNumber)) null
-        else resourceProvider.getString(R.string.shipping_label_customs_hs_tariff_invalid_format)
+        return if (hsTariffNumber.isEmpty() || HS_TARIFF_NUMBER_REGEX.matches(hsTariffNumber)) {
+            null
+        } else {
+            resourceProvider.getString(R.string.shipping_label_customs_hs_tariff_invalid_format)
+        }
     }
 
     @Parcelize

@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToEmailHelpDialogEvent
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToJetpackActivationSteps
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToLoginScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.OnJetpackConnectedEvent
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -39,6 +40,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
     }
 
     private val viewModel: AccountMismatchErrorViewModel by viewModels()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
@@ -71,6 +73,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                         it.show(parentFragmentManager, LoginEmailHelpDialogFragment.TAG)
                     }
                 }
+                is NavigateToJetpackActivationSteps -> navigateToJetpackActivationSteps(event)
                 is NavigateToLoginScreen -> navigateToLoginScreen()
                 is OnJetpackConnectedEvent -> onJetpackConnected(event)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -111,6 +114,16 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
             LoginMode.WOO_LOGIN_MODE.putInto(this)
         }
         startActivity(intent)
+    }
+
+    private fun navigateToJetpackActivationSteps(event: NavigateToJetpackActivationSteps) {
+        findNavController().navigate(
+            AccountMismatchErrorFragmentDirections
+                .actionAccountMismatchErrorFragmentToNavGraphJetpackActivation(
+                    siteUrl = event.siteUrl,
+                    jetpackStatus = event.jetpackStatus
+                )
+        )
     }
 
     override fun onEmailNeedMoreHelpClicked() {

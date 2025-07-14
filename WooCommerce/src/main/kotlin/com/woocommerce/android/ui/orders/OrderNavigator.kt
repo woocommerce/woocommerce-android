@@ -2,19 +2,22 @@ package com.woocommerce.android.ui.orders
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
+import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.AIThankYouNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCustomFields
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
@@ -32,7 +35,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -43,7 +45,9 @@ class OrderNavigator @Inject constructor() {
             is ViewOrderStatusSelector -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderStatusSelectorDialog(
-                        currentStatus = target.currentStatus, orderStatusList = target.orderStatusList
+                        currentStatus = target.currentStatus,
+                        orderStatusList = target.orderStatusList,
+                        positiveButtonLabel = R.string.apply
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -71,10 +75,19 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is RefundShippingLabel -> {
-                val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
-                        orderId = target.remoteOrderId, shippingLabelId = target.shippingLabelId
-                    )
+                val action = if (target.isRevampWooShippingEnabled) {
+                    OrderDetailFragmentDirections
+                        .actionOrderDetailFragmentToWooShippingLabelRefundRequestFragment(
+                            orderId = target.remoteOrderId,
+                            labelId = target.shippingLabelId
+                        )
+                } else {
+                    OrderDetailFragmentDirections
+                        .actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
+                            orderId = target.remoteOrderId,
+                            shippingLabelId = target.shippingLabelId
+                        )
+                }
                 fragment.findNavController().navigateSafely(action)
             }
             is AddOrderShipmentTracking -> {
@@ -89,10 +102,18 @@ class OrderNavigator @Inject constructor() {
             is ViewShipmentTrackingProviders -> {
                 val action = AddOrderShipmentTrackingFragmentDirections
                     .actionAddOrderShipmentTrackingFragmentToAddOrderTrackingProviderListFragment(
-                        orderId = target.orderId, selectedProvider = target.selectedProvider
+                        orderId = target.orderId,
+                        selectedProvider = target.selectedProvider
                     )
                 fragment.findNavController().navigateSafely(action)
             }
+
+            is OpenTrackingBarcodeScanning -> {
+                val action = AddOrderShipmentTrackingFragmentDirections
+                    .actionAddOrderShipmentTrackingFragmentToBarcodeScanningFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is PrintShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToPrintShippingLabelFragment(
@@ -115,7 +136,7 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewCreateShippingLabelInfo -> {
-                val action = NavGraphMainDirections.actionGlobalInfoScreenFragment(
+                (fragment.activity as? MainActivity)?.navigateToGlobalInfoScreenFragment(
                     screenTitle = R.string.shipping_label_more_information_title,
                     heading = R.string.shipping_label_more_information_heading,
                     message = R.string.shipping_label_more_information_message,
@@ -123,7 +144,6 @@ class OrderNavigator @Inject constructor() {
                     imageResource = R.drawable.img_print_with_phone,
                     linkAction = LearnMoreAboutShippingLabels
                 )
-                fragment.findNavController().navigateSafely(action)
             }
             is ViewShippingLabelFormatOptions -> {
                 val action = PrintShippingLabelFragmentDirections
@@ -153,9 +173,9 @@ class OrderNavigator @Inject constructor() {
             }
             is StartPaymentFlow -> {
                 val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
-                    CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId, ORDER)
+                    CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId, target.paymentTypeFlow)
                 )
-                fragment.findNavController().navigateSafely(action)
+                fragment.findNavController().navigateSafely(directions = action)
             }
             is ViewPrintingInstructions -> {
                 val action = OrderDetailFragmentDirections
@@ -180,16 +200,42 @@ class OrderNavigator @Inject constructor() {
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
             is EditOrder -> {
-                OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToOrderCreationFragment(
-                        OrderCreateEditViewModel.Mode.Edit(target.orderId),
-                        null,
-                        null,
-                    ).let { fragment.findNavController().navigateSafely(it) }
+                (fragment.activity as? MainActivity)?.showOrderCreation(
+                    OrderCreateEditViewModel.Mode.Edit(target.orderId),
+                    target.giftCard,
+                    target.appliedDiscount,
+                    target.orderCurrency
+                )
             }
+            is OrderNavigationTarget.ShowOrder -> {
+                OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToOrderDetailFragment(
+                        target.orderId,
+                        target.allOrderIds
+                    )
+                    .let { fragment.findNavController().navigateSafely(it) }
+            }
+
             is ViewCustomFields -> {
-                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment(
-                    orderId = target.orderId
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomFieldsFragment(
+                    parentItemId = target.orderId
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+            is AIThankYouNote -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToAIThankYouNoteBottomSheetFragment(
+                        customerName = target.customerName,
+                        productName = target.productName,
+                        productDescription = target.productDescription
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is StartWooShippingLabelCreationFlow -> {
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToWooShippingLabelCreationFragment(
+                    target.orderId,
+                    target.shipmentId ?: 0
                 )
                 fragment.findNavController().navigateSafely(action)
             }

@@ -35,33 +35,18 @@ import org.wordpress.android.fluxc.store.WCDataStore
 class AddressViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
-    private val newCountry = WCLocationModel().apply {
-        name = "Brazil"
-        code = "BR"
-    }
 
-    private val newState = WCLocationModel().apply {
-        name = "Acre"
-        code = "AC"
-        parentCode = "BR"
-    }
-
-    private val newCountryWithoutStates = WCLocationModel().apply {
-        name = "Country without states"
-        code = "123"
-    }
+    private val newCountry = WCLocationModel(name = "Brazil", code = "BR")
+    private val newState = WCLocationModel(name = "Acre", code = "AC", parentCode = "BR")
+    private val newCountryWithoutStates = WCLocationModel(name = "Country without states", code = "123")
 
     private val dataStore: WCDataStore = mock {
         on { getCountries() } doReturn listOf(newCountry, newCountryWithoutStates)
         on { getStates(newCountry.code) } doReturn listOf(newState)
     }
 
-    private val addressViewModel = AddressViewModel(
-        savedStateHandle,
-        selectedSite,
-        dataStore,
-        GetLocations(dataStore)
-    )
+    private lateinit var addressViewModel: AddressViewModel
+
     private val viewStateObserver: Observer<ViewState> = mock()
     private val shippingAddress = CreateShippingLabelTestUtils.generateAddress().copy(
         country = testCountry,
@@ -70,6 +55,12 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        addressViewModel = AddressViewModel(
+            savedStateHandle,
+            selectedSite,
+            dataStore,
+            GetLocations(dataStore)
+        )
         addressViewModel.viewStateData.liveData.observeForever(viewStateObserver)
         addressViewModel.shouldEnableDoneButton.observeForever(mock())
     }

@@ -10,103 +10,34 @@ sealed class LocalNotification(
     @StringRes val title: Int,
     @StringRes val description: Int,
     val type: LocalNotificationType,
-    val delay: Long,
+    open val delay: Long,
     val delayUnit: TimeUnit
 ) {
     open val data: String? = null
     val id = type.hashCode()
 
-    abstract fun getDescriptionString(resourceProvider: ResourceProvider): String
+    fun getTitleString(resourceProvider: ResourceProvider) = resourceProvider.getString(title)
 
-    open fun getTitleString(resourceProvider: ResourceProvider): String {
-        return resourceProvider.getString(title)
-    }
+    fun getDescriptionString(resourceProvider: ResourceProvider) = resourceProvider.getString(description)
 
-    data class StoreCreationCompletedNotification(
+    data class BlazeNoCampaignReminderNotification(
         override val siteId: Long,
-        val name: String
+        override val delay: Long,
     ) : LocalNotification(
         siteId = siteId,
-        title = R.string.local_notification_store_creation_complete_title,
-        description = R.string.local_notification_store_creation_complete_description,
-        type = LocalNotificationType.STORE_CREATION_FINISHED,
-        delay = 5,
-        delayUnit = TimeUnit.MINUTES
-    ) {
+        title = R.string.local_notification_blaze_no_campaign_reminder_title,
+        description = R.string.local_notification_blaze_no_campaign_reminder_description,
+        type = LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER,
+        delay = delay,
+        delayUnit = TimeUnit.MILLISECONDS
+    )
 
-        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
-            return resourceProvider.getString(description, name)
-        }
-    }
-
-    data class FreeTrialExpiringNotification(
-        val expiryDate: String,
-        override val siteId: Long
-    ) : LocalNotification(
+    data class BlazeAbandonedCampaignReminderNotification(override val siteId: Long) : LocalNotification(
         siteId = siteId,
-        title = R.string.local_notification_one_day_before_free_trial_expires_title,
-        description = R.string.local_notification_one_day_before_free_trial_expires_description,
-        type = LocalNotificationType.FREE_TRIAL_EXPIRING,
-        delay = 13,
+        title = R.string.local_notification_blaze_abandoned_campaign_reminder_title,
+        description = R.string.local_notification_blaze_abandoned_campaign_reminder_description,
+        type = LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER,
+        delay = 1,
         delayUnit = TimeUnit.DAYS
-    ) {
-        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
-            return resourceProvider.getString(description, expiryDate)
-        }
-    }
-
-    data class FreeTrialExpiredNotification(
-        val name: String,
-        override val siteId: Long
-    ) : LocalNotification(
-        siteId = siteId,
-        title = R.string.local_notification_one_day_after_free_trial_expires_title,
-        description = R.string.local_notification_one_day_after_free_trial_expires_description,
-        type = LocalNotificationType.FREE_TRIAL_EXPIRED,
-        delay = 15,
-        delayUnit = TimeUnit.DAYS
-    ) {
-        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
-            return resourceProvider.getString(description, name)
-        }
-    }
-
-    data class UpgradeToPaidPlanNotification(override val siteId: Long) : LocalNotification(
-        siteId = siteId,
-        title = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_title,
-        description = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_description,
-        type = LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
-        delay = 6,
-        delayUnit = TimeUnit.HOURS
-    ) {
-        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
-            return resourceProvider.getString(description)
-        }
-    }
-
-    data class FreeTrialSurveyNotification(override val siteId: Long) : LocalNotification(
-        siteId = siteId,
-        title = R.string.local_notification_survey_after_24_hours_title,
-        description = R.string.local_notification_survey_after_24_hours_description,
-        type = LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED,
-        delay = 24,
-        delayUnit = TimeUnit.HOURS
-    ) {
-        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
-            return resourceProvider.getString(description)
-        }
-    }
-
-    data class StillExploringNotification(override val siteId: Long) : LocalNotification(
-        siteId = siteId,
-        title = R.string.local_notification_still_exploring_title,
-        description = R.string.local_notification_still_exploring_description,
-        type = LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING,
-        delay = 3,
-        delayUnit = TimeUnit.DAYS
-    ) {
-        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
-            return resourceProvider.getString(description)
-        }
-    }
+    )
 }

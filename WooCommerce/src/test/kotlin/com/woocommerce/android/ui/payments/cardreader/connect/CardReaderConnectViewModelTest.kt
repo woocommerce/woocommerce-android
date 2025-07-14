@@ -11,22 +11,19 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenAuthenticatedWebView
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenWPComWebView
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
@@ -62,10 +59,12 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
-import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel
+import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -91,7 +90,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
-    private val tracker: CardReaderTracker = mock()
+    private val tracker: PaymentsFlowTracker = mock()
     private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
     private val cardReaderManager: CardReaderManager = mock {
         on { readerStatus }.thenReturn(readerStatusFlow)
@@ -101,7 +100,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
     private val locationRepository: CardReaderLocationRepository = mock()
-    private val developerOptionsRepository: DeveloperOptionsRepository = mock()
+    private val developerOptionsRepository: DeveloperOptionsRepository = mock {
+        on { getUpdateSimulatedReaderOption() } doReturn CardReaderManager.SimulatorUpdateFrequency.RANDOM
+    }
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
         on { getIfExists() }.thenReturn(siteModel)
@@ -109,6 +110,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
+    private val resourceProvider: ResourceProvider = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val locationId = "location_id"
     private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
@@ -117,11 +119,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() = testBlocking {
         viewModel = initVM()
-        whenever(
-            appPrefs.selectedUpdateReaderOption()
-        ).thenReturn(
-            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.RANDOM.name
-        )
     }
 
     @Test
@@ -278,9 +275,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
 
-            (viewModel.viewStateData.value as? LocationDisabledError)?.let {
-                it.onPrimaryActionClicked.invoke()
-            }
+            (viewModel.viewStateData.value as? LocationDisabledError)?.onPrimaryActionClicked?.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(OpenLocationSettings::class.java)
         }
@@ -290,9 +285,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(false)
-            (viewModel.viewStateData.value as? LocationDisabledError)?.let {
-                it.onPrimaryActionClicked.invoke()
-            }
+            (viewModel.viewStateData.value as? LocationDisabledError)?.onPrimaryActionClicked?.invoke()
 
             (viewModel.event.value as OpenLocationSettings).onLocationSettingsClosed()
 
@@ -326,7 +319,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted, when enable-bluetooth requested, then card manager initialized`() =
         testBlocking {
-
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
@@ -339,7 +331,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted, when bt permissions requested, then card manager initialized`() =
         testBlocking {
-
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
@@ -353,7 +344,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request not accepted, when bt permissions requested, then card manager not initialized`() =
         testBlocking {
-
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
@@ -366,7 +356,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted and manager init, when enable-bluetooth requested, then manager is not initialized`() =
         testBlocking {
-
             whenever(cardReaderManager.initialized).thenReturn(true)
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
@@ -744,10 +733,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
-                OpenWPComWebView::class.java
+                OpenAuthenticatedWebView::class.java
             )
             assertThat(
-                (viewModel.event.value as OpenWPComWebView).url
+                (viewModel.event.value as OpenAuthenticatedWebView).url
             ).isEqualTo(url)
         }
 
@@ -766,10 +755,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
-                OpenWPComWebView::class.java
+                OpenAuthenticatedWebView::class.java
             )
             assertThat(
-                (viewModel.event.value as OpenWPComWebView).url
+                (viewModel.event.value as OpenAuthenticatedWebView).url
             ).isEqualTo(url)
         }
 
@@ -980,7 +969,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
-            readerStatusFlow.emit(CardReaderStatus.NotConnected(errorMessage))
+            readerStatusFlow.emit(CardReaderStatus.NotConnected(errorMessage = errorMessage))
 
             assertThat(viewModel.event.value).isEqualTo(ShowToastString(errorMessage))
         }
@@ -1180,9 +1169,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_scanning)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_200)
         }
 
     @Test
@@ -1206,9 +1192,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewStateData.value!!.illustration)
             .describedAs("Check illustration")
             .isEqualTo(R.drawable.img_card_reader_tpp_connecting)
-        assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-            .describedAs("Check illustration vertical margin")
-            .isEqualTo(R.dimen.major_200)
     }
 
     @Test
@@ -1241,9 +1224,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1270,9 +1250,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_connecting)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_275)
         }
 
     @Test
@@ -1300,9 +1277,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_tpp_connecting)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_275)
         }
 
     @Test
@@ -1323,9 +1297,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1350,9 +1321,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1378,8 +1346,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1405,8 +1371,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.secondaryActionLabel).isNull()
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1431,9 +1395,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1458,9 +1419,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1488,9 +1446,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1512,8 +1467,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1583,28 +1536,121 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             verify(cardReaderManager).discoverReaders(anyBoolean(), captor.capture())
             assertThat(captor.firstValue).isEqualTo(
                 CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders(
-                    listOf(ReaderType.BuildInReader.CotsDevice)
+                    listOf(ReaderType.BuildInReader.TapToPayDevice)
                 )
             )
+        }
+
+    @Test
+    fun `when back pressed, then should exit the flow`() = testBlocking {
+        init(scanState = SCANNING)
+
+        viewModel.onBackPressed()
+
+        assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
+    }
+
+    @Test
+    fun `given reader initialized, when back pressed, then should disconnect the reader`() = testBlocking {
+        whenever(cardReaderManager.initialized).thenReturn(true)
+
+        init(scanState = SCANNING)
+
+        viewModel.onBackPressed()
+
+        verify(cardReaderManager).disconnectReader()
+    }
+
+    @Test
+    fun `given battery critically low error, when connecting fails, then hint label shows battery low message`() =
+        testBlocking {
+            init()
+
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(
+                CardReaderStatus.NotConnected(
+                    errorCode = CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW,
+                    errorMessage = "Battery critically low"
+                )
+            )
+
+            val state = viewModel.viewStateData.value as ConnectingFailedState
+            assertThat(state.hintLabel).isEqualTo(R.string.card_reader_connect_failed_battery_low_hint)
+        }
+
+    @Test
+    fun `given other error, when connecting fails, then hint label is null`() =
+        testBlocking {
+            init()
+
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(
+                CardReaderStatus.NotConnected(
+                    errorCode = CardReaderStatus.NotConnected.ErrorCode.OTHER,
+                    errorMessage = "Other error"
+                )
+            )
+
+            val state = viewModel.viewStateData.value as ConnectingFailedState
+            assertThat(state.hintLabel).isNull()
+        }
+
+    @Test
+    fun `given battery low error with message, when connecting fails, then toast is not shown`() =
+        testBlocking {
+            init()
+
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(
+                CardReaderStatus.NotConnected(
+                    errorCode = CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW,
+                    errorMessage = "Battery critically low"
+                )
+            )
+
+            assertThat(viewModel.event.value).isNotInstanceOf(ShowToastString::class.java)
+        }
+
+    @Test
+    fun `given other error with message, when connecting fails, then toast shows error message`() =
+        testBlocking {
+            val errorMessage = "Other error message"
+            init()
+
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+            readerStatusFlow.emit(
+                CardReaderStatus.NotConnected(
+                    errorCode = CardReaderStatus.NotConnected.ErrorCode.OTHER,
+                    errorMessage = errorMessage
+                )
+            )
+
+            assertThat(viewModel.event.value).isEqualTo(ShowToastString(errorMessage))
         }
 
     private fun initVM(
         cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
         cardReaderType: CardReaderType = EXTERNAL
     ): CardReaderConnectViewModel {
-        val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam, cardReaderType).initSavedStateHandle()
+        val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam, cardReaderType).toSavedStateHandle()
         return CardReaderConnectViewModel(
-            savedState,
-            coroutinesTestRule.testDispatchers,
-            tracker,
-            appPrefs,
-            developerOptionsRepository,
-            locationRepository,
-            selectedSite,
-            cardReaderManager,
-            cardReaderTrackingInfoKeeper,
-            cardReaderOnboardingChecker,
-            learnMoreUrlProvider,
+            savedState = savedState,
+            storeManagementPaymentsFlowTracker = tracker,
+            pointOfSalePaymentsFlowTracker = tracker,
+            dispatchers = coroutinesTestRule.testDispatchers,
+            appPrefs = appPrefs,
+            developerOptionsRepository = developerOptionsRepository,
+            locationRepository = locationRepository,
+            selectedSite = selectedSite,
+            cardReaderManager = cardReaderManager,
+            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+            cardReaderOnboardingChecker = cardReaderOnboardingChecker,
+            learnMoreUrlProvider = learnMoreUrlProvider,
+            resourceProvider = resourceProvider
         )
     }
 

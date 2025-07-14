@@ -7,18 +7,25 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.automattic.android.experimentation.ExPlat
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.automattic.android.experimentation.VariationsRepository
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
-import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
+import com.woocommerce.android.background.BackgroundUpdatesDisabled
+import com.woocommerce.android.background.UpdateDataOnBackgroundWorker
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.notifications.WooNotificationBuilder
+import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.push.FCMRefreshWorker
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.support.zendesk.ZendeskSettings
@@ -31,14 +38,17 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.appwidgets.getWidgetName
+import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
@@ -73,6 +83,7 @@ import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import java.util.Date
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -86,42 +97,71 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     @Inject lateinit var crashLogging: CrashLogging
+
     @Inject lateinit var fluxCCrashLogger: FluxCCrashLogger
+
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher
+
     @Inject lateinit var accountStore: AccountStore
+
     @Inject lateinit var accountRepository: Lazy<AccountRepository>
+
     @Inject lateinit var siteStore: SiteStore // Required to ensure the SiteStore is initialized
+
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
 
     @Inject lateinit var selectedSite: SelectedSite
+
     @Inject lateinit var networkStatus: NetworkStatus
+
     @Inject lateinit var zendeskSettings: ZendeskSettings
-    @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
+
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
+
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
+
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
+
     @Inject lateinit var sendTelemetry: SendTelemetry
+
     @Inject lateinit var siteObserver: SiteObserver
+
+    @Inject lateinit var blazeCampaignsObserver: BlazeCampaignsObserver
+
     @Inject lateinit var wooLog: WooLogWrapper
+
     @Inject lateinit var registerDevice: RegisterDevice
+
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
-    @Inject lateinit var featureFlagRepository: WPComRemoteFeatureFlagRepository
+
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
-    @Inject lateinit var explat: ExPlat
+    @Inject lateinit var variationsRepository: VariationsRepository
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
     @Inject lateinit var prefs: AppPrefs
 
-    @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
+    @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
+
+    @Inject
+    @AppCoroutineScope
+    lateinit var appCoroutineScope: CoroutineScope
 
     @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
+
     @Inject lateinit var jitmStoreInMemoryCache: JitmStoreInMemoryCache
+
     @Inject lateinit var trackStoreSnapshot: TrackStoreSnapshot
+
+    @Inject lateinit var notificationChannelsHandler: NotificationChannelsHandler
+
+    @Inject lateinit var backgroundUpdatesDisabled: BackgroundUpdatesDisabled
+
+    @Inject lateinit var edgeToEdgeEnabler: ApplicationEdgeToEdgeEnabler
 
     private var connectionReceiverRegistered = false
 
@@ -134,10 +174,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         override fun run(): Boolean {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
-                    wooCommerceStore.fetchWooCommerceSite(it).let {
-                        if (it.model?.hasWooCommerce == false && it.model?.connectionType == ApplicationPasswords) {
+                    wooCommerceStore.fetchWooCommerceSite(it).model?.let {
+                        if (!it.hasWooCommerce && it.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
+
                             selectedSite.reset()
                             restartMainActivity()
                         }
@@ -153,6 +194,15 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun init(application: Application) {
         this.application = application
 
+        crashLogging.initialize()
+        Thread.setDefaultUncaughtExceptionHandler(
+            UncaughtErrorsHandler(
+                context = application,
+                baseHandler = Thread.getDefaultUncaughtExceptionHandler(),
+                crashLogger = crashLogging
+            )
+        )
+
         // Apply Theme
         AppThemeUtils.setAppTheme()
 
@@ -164,23 +214,17 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         initAnalytics()
 
+        notificationChannelsHandler.init()
+
         // Developers can uncomment the line below to clear the db tables at startup
         // wellSqlConfig.resetDatabase()
-
-        wooNotificationBuilder.createNotificationChannels()
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         application.registerActivityLifecycleCallbacks(lifecycleMonitor)
         application.registerComponentCallbacks(lifecycleMonitor)
+        application.registerActivityLifecycleCallbacks(edgeToEdgeEnabler)
 
         trackStartupAnalytics()
-
-        zendeskSettings.setup(
-            context = application,
-            zendeskUrl = BuildConfig.ZENDESK_DOMAIN,
-            applicationId = BuildConfig.ZENDESK_APP_ID,
-            oauthClientId = BuildConfig.ZENDESK_OAUTH_CLIENT_ID
-        )
 
         observeEncryptedLogsUploadResults()
         uploadEncryptedLogs()
@@ -193,16 +237,20 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
-        appCoroutineScope.launch {
-            featureFlagRepository.fetchFeatureFlags(PackageUtils.getVersionName(application.applicationContext))
-        }
+        appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
 
         monitorApplicationPasswordsStatus()
+
+        // Schedule worker to refresh FCM token periodically
+        FCMRefreshWorker.schedule(application)
     }
 
     @Suppress("DEPRECATION")
     override fun onAppComesFromBackground() {
         trackApplicationOpened()
+
+        clearRefreshDataPeriodically()
+        backgroundUpdatesDisabled()
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
@@ -275,6 +323,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     override fun onAppGoesToBackground() {
         AnalyticsTracker.track(AnalyticsEvent.APPLICATION_CLOSED)
+        refreshDataPeriodically()
 
         if (connectionReceiverRegistered) {
             connectionReceiverRegistered = false
@@ -319,7 +368,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun initAnalytics() {
-        AnalyticsTracker.init(application, selectedSite)
+        AnalyticsTracker.init(
+            application,
+            selectedSite,
+            prefs,
+            getWooVersion,
+            appCoroutineScope,
+        )
 
         AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
     }
@@ -387,8 +442,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun onJetpackTimeoutError(event: OnJetpackTimeoutError) {
         with(event) {
             // Replace numeric IDs with a placeholder so events can be aggregated
-            val genericPath = apiPath.replace(REGEX_API_NUMERIC_PARAM, "/ID/")
-            val protocol = REGEX_API_JETPACK_TUNNEL_METHOD.find(apiPath)?.groups?.get(1)?.value ?: ""
+            val genericPath = apiPath?.replace(REGEX_API_NUMERIC_PARAM, "/ID/")
+            val protocol = REGEX_API_JETPACK_TUNNEL_METHOD.find(apiPath ?: "")?.groups?.get(1)?.value ?: ""
 
             val properties = mapOf(
                 "path" to genericPath,
@@ -413,5 +468,32 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             stat = AnalyticsEvent.APPLICATION_OPENED,
             properties = mapOf(AnalyticsTracker.KEY_WIDGETS to widgets)
         )
+    }
+
+    private fun refreshDataPeriodically() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val dataSyncWorkRequest = PeriodicWorkRequestBuilder<UpdateDataOnBackgroundWorker>(
+            UpdateDataOnBackgroundWorker.REFRESH_TIME,
+            TimeUnit.HOURS
+        )
+            .setInitialDelay(
+                UpdateDataOnBackgroundWorker.REFRESH_TIME,
+                TimeUnit.HOURS
+            )
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(application).enqueueUniquePeriodicWork(
+            UpdateDataOnBackgroundWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            dataSyncWorkRequest
+        )
+    }
+
+    private fun clearRefreshDataPeriodically() {
+        WorkManager.getInstance(application).cancelUniqueWork(UpdateDataOnBackgroundWorker.WORK_NAME)
     }
 }

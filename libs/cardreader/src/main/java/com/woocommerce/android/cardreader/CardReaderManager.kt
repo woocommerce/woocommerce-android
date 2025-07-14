@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader
 
+import androidx.annotation.ColorRes
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -12,6 +13,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,11 +43,16 @@ interface CardReaderManager {
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
     ): Flow<CardReaderDiscoveryEvents>
 
+    fun setupTapToPayUx(config: TapToPayUxConfig)
+
     fun startConnectionToReader(cardReader: CardReader, locationId: String)
     suspend fun disconnectReader(): Boolean
 
     suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus>
-    suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus>
+    suspend fun refundInteracPayment(
+        refundParams: RefundParams,
+        refundConfig: RefundConfig
+    ): Flow<CardInteracRefundStatus>
 
     suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
     fun cancelPayment(paymentData: PaymentData)
@@ -57,6 +64,15 @@ interface CardReaderManager {
     enum class SimulatorUpdateFrequency {
         NEVER,
         ALWAYS,
+        LOW_BATTERY_ERROR,
+        LOW_BATTERY_SUCCEED_CONNECT,
         RANDOM
     }
+
+    data class TapToPayUxConfig(
+        @ColorRes val primaryColor: Int,
+        @ColorRes val successColor: Int,
+        @ColorRes val errorColor: Int,
+        val isDarkMode: Boolean,
+    )
 }

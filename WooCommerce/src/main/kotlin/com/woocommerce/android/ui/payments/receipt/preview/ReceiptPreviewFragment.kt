@@ -1,0 +1,174 @@
+package com.woocommerce.android.ui.payments.receipt.preview
+
+import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentReceiptPreviewBinding
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.PrintHtmlHelper
+import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
+import java.net.MalformedURLException
+import java.net.URL
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
+    val viewModel: ReceiptPreviewViewModel by viewModels()
+
+    @Inject lateinit var printHtmlHelper: PrintHtmlHelper
+
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject lateinit var receiptHtmlInterceptor: ReceiptHtmlInterceptor
+
+    private var _binding: FragmentReceiptPreviewBinding? = null
+    private val binding get() = _binding!!
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
+    private var urlToLoad: String? = null
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentReceiptPreviewBinding.bind(view)
+        setupToolbar(binding)
+        initViews(binding, savedInstanceState)
+        initObservers(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentReceiptPreviewBinding) {
+        binding.toolbar.title = getString(R.string.receipt_preview_toolbar_title)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+        setupToolbarMenu()
+    }
+
+    private fun setupToolbarMenu() {
+        binding.toolbar.inflateMenu(R.menu.menu_receipt_preview)
+    }
+
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_print -> {
+                viewModel.onPrintClicked()
+                true
+            }
+
+            R.id.menu_send -> {
+                viewModel.onShareClicked()
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
+        printHtmlHelper.getAndClearPrintJobResult()?.let {
+            viewModel.onPrintResult(it)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // onSaveInstanceState might be called after onDestroyView, so we need to check if `binding` is null.
+        _binding?.receiptPreviewPreviewWebview?.saveState(outState)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun initViews(binding: FragmentReceiptPreviewBinding, savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            binding.receiptPreviewPreviewWebview.restoreState(savedInstanceState)
+        } else {
+            with(binding.receiptPreviewPreviewWebview) {
+                webViewClient = object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView,
+                        webResourceRequest: WebResourceRequest
+                    ): Boolean {
+                        return viewModel.isReceiptDomainTrustable(webResourceRequest.url.toString())
+                    }
+
+                    override fun shouldInterceptRequest(
+                        view: WebView,
+                        request: WebResourceRequest
+                    ): WebResourceResponse? =
+                        if (request.url.toString() == urlToLoad) {
+                            interceptAndModifyReceiptResponse(request)
+                        } else {
+                            null
+                        }
+
+                    override fun onPageFinished(view: WebView, url: String) {
+                        viewModel.onReceiptLoaded()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun interceptAndModifyReceiptResponse(request: WebResourceRequest): WebResourceResponse? {
+        return try {
+            val connection = URL(request.url.toString()).openConnection()
+            val inputStream = connection.getInputStream()
+            val originalHtml = inputStream.bufferedReader().use { it.readText() }
+
+            val modifiedHtml = receiptHtmlInterceptor.interceptHtmlContent(originalHtml)
+
+            WebResourceResponse(
+                "text/html",
+                "UTF-8",
+                modifiedHtml.byteInputStream()
+            )
+        } catch (e: MalformedURLException) {
+            throw IllegalArgumentException("Invalid receipt URL: ${request.url}", e)
+        } catch (e: IOException) {
+            WooLog.e(WooLog.T.ORDERS, "Failed to read content from receipt URL: ${request.url}", e)
+            null
+        }
+    }
+
+    private fun initObservers(binding: FragmentReceiptPreviewBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner) {
+            UiHelpers.updateVisibility(binding.receiptPreviewPreviewWebview, it.isContentVisible)
+            UiHelpers.updateVisibility(binding.receiptPreviewProgressBar, it.isProgressVisible)
+        }
+        viewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                is LoadUrl -> {
+                    urlToLoad = it.url
+                    binding.receiptPreviewPreviewWebview.loadUrl(it.url)
+                }
+                is PrintReceipt -> printHtmlHelper.printReceipt(requireActivity(), it.receiptUrl, it.documentName)
+                is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
+                else -> it.isHandled = false
+            }
+        }
+    }
+}

@@ -7,70 +7,130 @@ import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import org.intellij.lang.annotations.Language
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import java.sql.Date
 import java.time.Instant
 
 object ProductTestUtils {
+
+    @Language("JSON")
+    private val DEFAULT_PRODUCT_ATTRIBUTES =
+        """
+            [
+              {
+                "id": 1,
+                "name":"Color",
+                "position":"0",
+                "visible":"true",
+                "variation":"true",
+                "options": ["Blue","Green","Red"]
+              }
+            ]
+        """.trimIndent()
+
+    @Language("JSON")
+    private val DOWNLOADS =
+        """
+            [
+              {
+                "id": 1,
+                "name": "test",
+                "file": "https://testurl"
+              }
+            ]
+        """.trimIndent()
+
     fun generateProduct(
         productId: Long = 1L,
         parentID: Long = 0L,
         isVirtual: Boolean = false,
         isVariable: Boolean = false,
         isPurchasable: Boolean = true,
+        isDownloadable: Boolean = true,
         customStatus: String? = null,
         variationIds: String = if (isVariable) "[123]" else "[]",
         productType: String? = null,
         amount: String = "20.00",
+        productName: String = "product $productId",
+        imageUrl: String? = null,
+        isStockManaged: Boolean = false,
+        productCombinesVariationQuantities: Boolean = false,
+        productAttributes: String = DEFAULT_PRODUCT_ATTRIBUTES
     ): Product {
-        return WCProductModel(2).apply {
-            dateCreated = "2018-01-05T05:14:30Z"
-            localSiteId = 1
-            remoteProductId = productId
-            parentId = parentID
-            status = customStatus ?: "publish"
-            type = productType ?: if (isVariable) "variable" else "simple"
-            stockStatus = "instock"
-            price = amount
-            salePrice = "10.00"
-            regularPrice = "30.00"
-            averageRating = "3.0"
-            name = "product 1"
-            description = "product 1 description"
-            images = "[]"
-            downloadable = true
-            downloads = """[
-                                {
-                                    "id": 1,
-                                    "name": "test",
-                                    "file": "https://testurl"
-                                }
-                            ]"""
-            weight = "10"
-            length = "1"
-            width = "2"
-            height = "3"
-            variations = variationIds
-            attributes = """[
-                                {
-                                    "id": 1,
-                                    "name":"Color",
-                                    "position":0",
-                                    "visible":"true",
-                                    "variation":"true",
-                                    "options": ["Blue","Green","Red"]
-                                }
-                            ]"""
-            categories = ""
-            ratingCount = 4
-            groupedProductIds = "[10,11]"
-            ratingCount = 4
-            shortDescription = "short desc"
-            virtual = isVirtual
-            stockQuantity = 4.2
-            purchasable = isPurchasable
-        }.toAppModel()
+        return generateWCProductModel(
+            productId = productId,
+            parentID = parentID,
+            isVirtual = isVirtual,
+            isVariable = isVariable,
+            isPurchasable = isPurchasable,
+            isDownloadable = isDownloadable,
+            customStatus = customStatus,
+            variationIds = variationIds,
+            productType = productType,
+            amount = amount,
+            productName = productName,
+            imageUrl = imageUrl,
+            isStockManaged = isStockManaged,
+            productCombinesVariationQuantities = productCombinesVariationQuantities,
+            productAttributes = productAttributes
+        ).toAppModel()
+    }
+
+    fun generateWCProductModel(
+        productId: Long = 1L,
+        parentID: Long = 0L,
+        isVirtual: Boolean = false,
+        isVariable: Boolean = false,
+        isPurchasable: Boolean = true,
+        isDownloadable: Boolean = true,
+        customStatus: String? = null,
+        variationIds: String = if (isVariable) "[123]" else "[]",
+        productType: String? = null,
+        amount: String = "20.00",
+        productName: String = "product $productId",
+        imageUrl: String? = null,
+        isStockManaged: Boolean = false,
+        productCombinesVariationQuantities: Boolean = false,
+        productAttributes: String = DEFAULT_PRODUCT_ATTRIBUTES
+    ): WCProductModel {
+        return WCProductModel(
+            dateCreated = "2018-01-05T05:14:30Z",
+            localSiteId = LocalId(2),
+            remoteId = RemoteId(productId),
+            parentId = parentID,
+            status = customStatus ?: "publish",
+            type = productType ?: if (isVariable) "variable" else "simple",
+            stockStatus = "instock",
+            price = amount,
+            salePrice = "10.00",
+            regularPrice = "30.00",
+            averageRating = "3.0",
+            name = productName,
+            description = "product 1 description",
+            images = if (imageUrl != null) """[{"src":"$imageUrl"}]""" else "[]",
+            downloadable = isDownloadable,
+            downloads = DOWNLOADS,
+            weight = "10",
+            length = "1",
+            width = "2",
+            height = "3",
+            variations = variationIds,
+            attributes = productAttributes,
+            categories = "",
+            ratingCount = 4,
+            groupedProductIds = "[10,11]",
+            shortDescription = "short desc",
+            virtual = isVirtual,
+            stockQuantity = 4.2,
+            purchasable = isPurchasable,
+            manageStock = isStockManaged,
+            combineVariationQuantities = productCombinesVariationQuantities,
+            permalink = "https://example.com/product/1",
+        )
     }
 
     fun generateProductWithTagsAndCategories(productId: Long = 1L): Product {
@@ -107,19 +167,27 @@ object ProductTestUtils {
             .toMutableList()
             .apply { add(generateProduct(6, isVariable = true)) }
 
-    private fun generateProductVariation(
+    fun generateProductVariation(
         productId: Long = 1L,
-        variationId: Long = 1L
+        variationId: Long = 1L,
+        amount: String = "10.00",
+        isVirtual: Boolean = false,
+        isDownloadable: Boolean = false,
+        isPurchasable: Boolean = true,
+        productAttributes: String = "",
     ): ProductVariation {
-        return WCProductVariationModel(2).apply {
-            dateCreated = "2018-01-05T05:14:30Z"
-            localSiteId = 1
-            remoteProductId = productId
-            remoteVariationId = variationId
-            price = "10.00"
-            image = ""
-            attributes = ""
-        }.toAppModel().also { it.priceWithCurrency = "$10.00" }
+        return WCProductVariationModel(LocalId(2)).copy(
+            dateCreated = "2018-01-05T05:14:30Z",
+            localSiteId = LocalId(1),
+            remoteProductId = RemoteId(productId),
+            remoteVariationId = RemoteId(variationId),
+            price = amount,
+            image = "",
+            attributes = productAttributes,
+            virtual = isVirtual,
+            downloadable = isDownloadable,
+            purchasable = isPurchasable,
+        ).toAppModel().also { it.priceWithCurrency = "$10.00" }
     }
 
     fun generateProductVariationList(productId: Long = 1L): List<ProductVariation> {
@@ -158,7 +226,8 @@ object ProductTestUtils {
             id = imageId,
             name = "Image $imageId",
             source = "Image $imageId source",
-            dateCreated = Date.from(Instant.EPOCH)
+            dateCreated = Date.from(Instant.EPOCH),
+            isCoverImage = false
         )
 
     fun generateProductImagesList() =

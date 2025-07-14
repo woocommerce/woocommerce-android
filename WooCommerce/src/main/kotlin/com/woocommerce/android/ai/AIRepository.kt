@@ -6,7 +6,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAICompletionsResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIQueryResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.ResponseFormat
 import org.wordpress.android.fluxc.store.jetpackai.JetpackAIStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,7 +21,7 @@ class AIRepository @Inject constructor(
         const val PRODUCT_SHARING_FEATURE = "woo_android_share_product"
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
         const val PRODUCT_CREATION_FEATURE = "woo_android_product_creation"
-        const val PRODUCT_NAME_FEATURE = "woo_android_product_name"
+        const val ORDER_DETAIL_THANK_YOU_NOTE = "woo_android_order_detail_thank_you_note"
     }
 
     suspend fun generateProductSharingText(
@@ -35,7 +36,7 @@ class AIRepository @Inject constructor(
             productDescription.orEmpty(),
             languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_SHARING_FEATURE)
+        return fetchJetpackAIQuery(prompt, PRODUCT_SHARING_FEATURE)
     }
 
     suspend fun generateProductDescription(
@@ -48,24 +49,11 @@ class AIRepository @Inject constructor(
             features,
             languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_DESCRIPTION_FEATURE)
+        return fetchJetpackAIQuery(prompt, PRODUCT_DESCRIPTION_FEATURE)
     }
 
-    suspend fun generateProductName(
-        keywords: String,
-        languageISOCode: String = "en"
-    ): Result<String> {
-        val prompt = AIPrompts.generateProductNamePrompt(
-            keywords,
-            languageISOCode
-        )
-
-        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_NAME_FEATURE)
-    }
-
-    @Suppress("LongParameterList")
+    @Suppress("LongParameterList", "MagicNumber")
     suspend fun generateProduct(
-        productName: String,
         productKeyWords: String,
         tone: String,
         weightUnit: String,
@@ -75,9 +63,8 @@ class AIRepository @Inject constructor(
         existingTags: List<ProductTag>,
         languageISOCode: String
     ): Result<String> {
-        return fetchJetpackAICompletionsForSite(
+        return fetchJetpackAIQuery(
             prompt = AIPrompts.generateProductCreationPrompt(
-                name = productName,
                 keywords = productKeyWords,
                 tone = tone,
                 weightUnit = weightUnit,
@@ -87,29 +74,59 @@ class AIRepository @Inject constructor(
                 existingTags = existingTags.map { it.name },
                 languageISOCode = languageISOCode
             ),
-            feature = PRODUCT_CREATION_FEATURE
+            feature = PRODUCT_CREATION_FEATURE,
+            format = ResponseFormat.JSON,
+            maxTokens = 4000 // Specify a higher limit for max_tokens to avoid truncated responses, see pe5sF9-2UY-p2
+        ).map {
+            // OpenAI sometimes returns the JSON response wrapped in a code block Markdown syntax, we remove it
+            // see: https://community.openai.com/t/why-do-some-responses-message-content-start-with-json/573289
+            it.removePrefix("```json").removeSuffix("```")
+        }
+    }
+
+    suspend fun generateOrderThankYouNote(
+        customerName: String,
+        productName: String,
+        productDescription: String?,
+        languageISOCode: String = "en"
+    ): Result<String> {
+        val prompt = AIPrompts.generateThankYouNotePrompt(
+            customerName = customerName,
+            productName = productName,
+            productDescription = productDescription.orEmpty(),
+            languageISOCode = languageISOCode
         )
+        return fetchJetpackAIQuery(prompt, ORDER_DETAIL_THANK_YOU_NOTE)
     }
 
     suspend fun identifyISOLanguageCode(text: String, feature: String): Result<String> {
         val prompt = AIPrompts.generateLanguageIdentificationPrompt(text)
-        return fetchJetpackAICompletionsForSite(prompt, feature)
+        return fetchJetpackAIQuery(prompt, feature)
     }
 
-    private suspend fun fetchJetpackAICompletionsForSite(
+    private suspend fun fetchJetpackAIQuery(
         prompt: String,
-        feature: String
+        feature: String,
+        format: ResponseFormat = ResponseFormat.TEXT,
+        maxTokens: Int? = null
     ): Result<String> = withContext(Dispatchers.IO) {
-        jetpackAIStore.fetchJetpackAICompletions(selectedSite.get(), prompt, feature).run {
+        jetpackAIStore.fetchJetpackAIQuery(
+            site = selectedSite.get(),
+            question = prompt,
+            feature = feature,
+            format = format,
+            stream = false,
+            maxTokens = maxTokens
+        ).run {
             when (this) {
-                is JetpackAICompletionsResponse.Success -> {
-                    WooLog.d(WooLog.T.AI, "Fetching Jetpack AI completions succeeded")
-                    Result.success(completion)
+                is JetpackAIQueryResponse.Success -> {
+                    WooLog.d(WooLog.T.AI, "Fetching Jetpack AI query succeeded")
+                    Result.success(choices[0].message?.content ?: "")
                 }
 
-                is JetpackAICompletionsResponse.Error -> {
-                    WooLog.w(WooLog.T.AI, "Fetching Jetpack AI completions failed: $message")
-                    Result.failure(this.mapToException())
+                is JetpackAIQueryResponse.Error -> {
+                    WooLog.w(WooLog.T.AI, "Fetching Jetpack AI query failed: $message")
+                    Result.failure(mapToException())
                 }
             }
         }
@@ -120,7 +137,7 @@ class AIRepository @Inject constructor(
         val errorType: String
     ) : Exception(errorMessage)
 
-    private fun JetpackAICompletionsResponse.Error.mapToException() =
+    private fun JetpackAIQueryResponse.Error.mapToException() =
         JetpackAICompletionsException(
             errorMessage = message ?: "Unable to fetch AI completions",
             errorType = type.name

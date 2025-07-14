@@ -43,6 +43,7 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
     private val mlKitException = mock<MlKitException>().also {
         whenever(it.errorCode).thenReturn(CODE_SCANNER_CANCELLED)
     }
+
     @Before
     fun setup() {
         mapper = GoogleCodeScannerErrorMapper()

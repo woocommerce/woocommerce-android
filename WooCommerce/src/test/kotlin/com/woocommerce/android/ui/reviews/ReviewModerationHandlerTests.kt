@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION", "ForbiddenComment")
+@file:Suppress("DEPRECATION_ERROR", "ForbiddenComment")
 // TODO: @malinajirka Issue: https://github.com/woocommerce/woocommerce-android/issues/6899
 
 package com.woocommerce.android.ui.reviews
@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
@@ -26,6 +25,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
@@ -36,7 +36,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 
 @ExperimentalCoroutinesApi
 class ReviewModerationHandlerTests {
-    private val selectedSite: SelectedSite = mock() {
+    private val selectedSite: SelectedSite = mock {
         on { get() } doReturn SiteModel()
     }
     private val productStore: WCProductStore = mock()
@@ -86,7 +86,10 @@ class ReviewModerationHandlerTests {
 
             val latestStatus = runTestAndCollectLastStatus {
                 handler.postModerationRequest(review, HOLD)
-                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                testScheduler.apply {
+                    advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                    runCurrent()
+                }
             }
 
             assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUBMITTED)
@@ -98,17 +101,20 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
-                            status = HOLD.toString()
-                        }
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
+                            status = HOLD.toString(),
+                        )
                     )
                 )
             }
 
             val latestStatus = runTestAndCollectLastStatus {
                 handler.postModerationRequest(review, HOLD)
-                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                testScheduler.apply {
+                    advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                    runCurrent()
+                }
             }
 
             assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUCCESS)
@@ -120,18 +126,24 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
                             status = HOLD.toString()
-                        }
+                        )
                     )
                 )
             }
 
             val statusList = runTestAndReturnLastEmittedStatusList {
                 handler.postModerationRequest(review, HOLD)
-                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
-                advanceTimeBy(ReviewModerationHandler.SUCCESS_DELAY)
+                testScheduler.apply {
+                    advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                    runCurrent()
+                }
+                testScheduler.apply {
+                    advanceTimeBy(ReviewModerationHandler.SUCCESS_DELAY)
+                    runCurrent()
+                }
             }
 
             assertThat(statusList).isEmpty()
@@ -149,7 +161,10 @@ class ReviewModerationHandlerTests {
 
         val latestStatus = runTestAndCollectLastStatus {
             handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+            testScheduler.apply {
+                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                runCurrent()
+            }
         }
 
         assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.ERROR)
@@ -167,8 +182,14 @@ class ReviewModerationHandlerTests {
 
         val statusList = runTestAndReturnLastEmittedStatusList {
             handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
-            advanceTimeBy(ReviewModerationHandler.ERROR_SNACKBAR_DELAY)
+            testScheduler.apply {
+                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                runCurrent()
+            }
+            testScheduler.apply {
+                advanceTimeBy(ReviewModerationHandler.ERROR_SNACKBAR_DELAY)
+                runCurrent()
+            }
         }
 
         assertThat(statusList).isEmpty()
@@ -180,7 +201,10 @@ class ReviewModerationHandlerTests {
 
         val latestStatus = runTestAndCollectLastStatus {
             handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY / 2)
+            testScheduler.apply {
+                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY / 2)
+                runCurrent()
+            }
             handler.undoOperation(review)
         }
 
@@ -194,10 +218,10 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
                             status = HOLD.toString()
-                        }
+                        )
                     )
                 )
             }
@@ -219,10 +243,10 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
                             status = HOLD.toString()
-                        }
+                        )
                     )
                 )
             }
@@ -244,10 +268,10 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
                             status = HOLD.toString()
-                        }
+                        )
                     )
                 )
             }

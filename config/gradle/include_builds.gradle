@@ -12,25 +12,6 @@ if (localBuilds.exists()) {
     https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/ConfigurableIncludedBuild.html#dependencySubstitution-org.gradle.api.Action-
     */
 
-    if (ext.has("localFluxCPath")) {
-        includeBuild(ext.localFluxCPath) {
-            dependencySubstitution {
-                println "Substituting fluxc with the local build"
-                substitute module(gradle.ext.fluxCBinaryPath) using project(':fluxc')
-                substitute module(gradle.ext.fluxCWooCommercePluginBinaryPath) using project(':plugins:woocommerce')
-            }
-        }
-    }
-
-    if (ext.has("localLoginFlowPath")) {
-        includeBuild(ext.localLoginFlowPath) {
-            dependencySubstitution {
-                println "Substituting login-flow with the local build"
-                substitute module("$gradle.ext.loginFlowBinaryPath") using project(':WordPressLoginFlow')
-            }
-        }
-    }
-
     if (ext.has("localMediaPickerPath")) {
         includeBuild(ext.localMediaPickerPath) {
             dependencySubstitution {
@@ -39,7 +20,6 @@ if (localBuilds.exists()) {
                 substitute module("$gradle.ext.mediaPickerDomainBinaryPath") using project(':mediapicker:domain')
                 substitute module("$gradle.ext.mediaPickerSourceDeviceBinaryPath") using project(':mediapicker:source-device')
                 substitute module("$gradle.ext.mediaPickerSourceGifBinaryPath") using project(':mediapicker:source-gif')
-                substitute module("$gradle.ext.mediaPickerSourceWordPressBinaryPath") using project(':mediapicker:source-wordpress')
             }
         }
     }

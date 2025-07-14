@@ -26,20 +26,21 @@ data class Notification(
     val data: String? = null
 ) : Parcelable {
     @IgnoredOnParcel
-    val isOrderNotification = noteType == WooNotificationType.NEW_ORDER
+    val isOrderNotification = noteType is WooNotificationType.NewOrder
 
     @IgnoredOnParcel
-    val isReviewNotification = noteType == WooNotificationType.PRODUCT_REVIEW
+    val isReviewNotification = noteType is WooNotificationType.ProductReview
+
+    @IgnoredOnParcel
+    val isBlazeNotification = noteType is WooNotificationType.BlazeStatusUpdate
 
     /**
      * Notifications are grouped based on the notification type and the store the notification belongs to.
-     * @param channelId - string resource of [getChannelId]
-     * remoteSiteId - remoteSiteId for the store the notification is from
      *
      * For instance: a new order notification from Store 1 with remoteSiteId = 12345, would return:
-     * wooandroid_notification_channel_order_id 12345
+     * "NEW_ORDER 12345"
      */
-    fun getGroup(channelId: String): String = "$channelId $remoteSiteId"
+    fun getGroup(): String = "${channelType.name} $remoteSiteId"
 
     /**
      * This method returns a group notification id based on the notification type
@@ -76,6 +77,11 @@ fun NotificationModel.getUniqueId(): Long {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> this.meta?.ids?.order ?: 0L
         NotificationModel.Kind.COMMENT -> this.meta?.ids?.comment ?: 0L
+        NotificationModel.Kind.BLAZE_APPROVED_NOTE,
+        NotificationModel.Kind.BLAZE_REJECTED_NOTE,
+        NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
+        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.meta?.ids?.campaignId ?: 0L
+
         else -> 0L
     }
 }
@@ -92,6 +98,11 @@ fun NotificationModel.getNoteMessage(resourceProvider: ResourceProvider): String
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> this.getMessageSnippet()
         NotificationModel.Kind.COMMENT -> "${this.getTitleSnippet()}: ${this.getMessageSnippet()}"
+        NotificationModel.Kind.BLAZE_APPROVED_NOTE,
+        NotificationModel.Kind.BLAZE_REJECTED_NOTE,
+        NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
+        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.getTitleSnippet()
+
         else -> resourceProvider.getString(R.string.support_push_notification_message)
     }
 }

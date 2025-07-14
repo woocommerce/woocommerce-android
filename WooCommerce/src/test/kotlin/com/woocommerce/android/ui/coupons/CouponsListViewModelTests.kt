@@ -75,7 +75,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
         setup {
             whenever(couponListHandler.fetchCoupons(null, true)).doSuspendableAnswer {
                 delay(1L)
-                return@doSuspendableAnswer Result.success(Unit)
+                return@doSuspendableAnswer Result.success(true)
             }
         }
 
@@ -176,7 +176,8 @@ class CouponsListViewModelTests : BaseUnitTest() {
     @Test
     fun `when searching coupons fails, then show an error`() = testBlocking {
         setup {
-            whenever(couponListHandler.fetchCoupons(any(), anyBoolean())).thenReturn(Result.failure(Exception()))
+            whenever(couponListHandler.fetchCoupons(any(), anyBoolean(), anyBoolean()))
+                .thenReturn(Result.failure(Exception()))
         }
 
         viewModel.onSearchQueryChanged("Search")

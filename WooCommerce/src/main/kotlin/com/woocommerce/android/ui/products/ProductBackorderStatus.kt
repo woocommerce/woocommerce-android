@@ -12,8 +12,11 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductBack
 
 sealed class ProductBackorderStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {
     @Parcelize object No : ProductBackorderStatus(R.string.product_backorders_no)
+
     @Parcelize object Yes : ProductBackorderStatus(R.string.product_backorders_yes)
+
     @Parcelize object Notify : ProductBackorderStatus(R.string.product_backorders_notify)
+
     @Parcelize object NotAvailable : ProductBackorderStatus()
     class Custom(value: String) : ProductBackorderStatus(value = value)
 

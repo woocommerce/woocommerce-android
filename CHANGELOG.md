@@ -1,6 +1,213 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.8
+This release introduces a completely redesigned shipping labels feature that will make handling shipments a breeze. We've improved barcode scanning in POS with clearer error messages, refreshed in-person payments with new Woo colors, and fixed crashes and memory issues for a smoother, more reliable experience.
+
+## 22.7
+This update makes managing your store even smoother! We’ve refreshed the order filtering UI, made the POS easier to access via the tab bar, and added barcode support to set SKU and Unique ID fields—plus fixed a bug so you can now clear those fields when needed.
+
+## 22.6
+This release brings smoother order creation, better UI on tablets, and enhanced accessibility. POS now supports HID barcode scanners, sends detailed receipts, and checks feature availability for WooCommerce 10.0+. We've also improved refunds, payments UI, and large screen support.
+
+## 22.5
+We've enhanced your WooCommerce experience with this update! Enjoy smoother order creation with our improved custom amount editing form, better tablet navigation with the added toolbar for Variation Attributes, faster product searches with our enhanced POS algorithms, and a new Coupons search feature to help you find discounts quickly. Happy selling!
+
+## 22.4
+This update brings product search and coupon support to Woo POS, making in-person selling smoother than ever. We've also polished the coupon creation flow and improved the "Custom amount" UI. Plus, a pesky crash caused by malformed tax data is now fixed for a more stable experience.
+
+## 22.3
+We've streamlined the WooCommerce mobile app! Product types are now seamlessly integrated into the POS menu. This updated design makes managing product information during checkout simple and intuitive.
+
+## 22.2
+We've made important improvements in this update! Crashes related to currency formatting, the "Add custom amount" screen, and the Jetpack Installation screen have all been resolved for a smoother and more reliable experience. Enjoy the enhanced stability in your WooCommerce mobile app!
+
+## 22.1
+This update brings several improvements to the WooCommerce app, including the removal of the "Collect Payment" flow, replaced by a custom order creation process. We've enhanced the display of disabled products in completed orders, fixed crashes in POS and custom amount dialogs, and improved the visibility of order count badges. The Woo upgrade dialog has been redesigned, and currency codes now appear in the Custom Amounts screen.
+
+## 22.0
+We've streamlined your experience with improved Jetpack integration for easier setup. Payment processing now includes low battery alerts and better handling of minimum transaction amounts. We've enhanced order management by fixing redundant network requests and improving printing instructions visibility. Dark mode icon colors on notification banners are fixed, and payment status accessibility in POS is boosted. Tablet users will enjoy smoother animations during payment collection.
+
+## 21.9
+We’ve squashed a pesky bug that could cause a crash when adding a new payment card in the Blaze campaign form. This update ensures a smoother and more reliable experience—enjoy hassle-free payments with WooCommerce! 🚀
+
+## 21.8
+Our latest update brings a smoother WooCommerce experience! The Dashboard now adapts beautifully to tablets, and accessibility in in-person payments has been improved. We've also fixed currency mismatches in order editing and made product selection more flexible. Plus, enjoy better stability, refined UI elements, and a seamless experience when accessing Analytics reports. Update now! 🚀
+
+## 21.7
+We've improved WooCommerce app! This time we've fixed several bugs and focused on improving user interface. Keep your feedback falling in; it helps us figure how to improve Woo for you. Happy selling!
+
+## 21.6
+Experience a smoother WooCommerce app with enhanced tablet and landscape support, a fresh new look aligned with our branding, and faster image loading. UK users can now enjoy POS access, retry failed image uploads effortlessly, and tag product cover photos with ease. Update now for these improvements!
+
+## 21.5
+Get ready for a smoother experience! We’ve optimized receipt scaling, added Puerto Rico for in-person payments, and improved Blaze Campaigns display. Enjoy faster product gallery loading, better bulk order updates, and real-time image upload indicators. Plus, WooPayments onboarding is now easier than ever!
+
+## 21.4
+This update brings several improvements to the WooCommerce mobile app. Dashboard menus now adapt better to larger fonts, and we've resolved layout issues in Settings. You'll also experience fewer crashes, with fixes for order details, plugin activation, and refunds. Merchants can now bulk update order statuses, barcode scanning is more reliable, and accessing plugin updates is quicker than ever. Additionally, sites can now be hidden from the site picker.
+
+## 21.3
+In this update, we've improved the WooCommerce app with several fixes and enhancements. The "One-time shipping" label now correctly matches its availability in Product Subscriptions, and issues with product conversion have been resolved. We've also streamlined the card reader payment flow for faster transactions, fixed a barcode scanner crash, and improved login error handling. Plus, if your site has no products, the Blaze Campaign screen now offers an easy way to create one.
+
+## 21.2
+Seamless updates are here! Smoother Jetpack activation with new account creation. Say goodbye to bugs: order refresh, shipping edits, and receipt fetch issues are fixed. We've renamed Deposits to Payouts and improved media uploads for Jetpack sites. Update now for a better WooCommerce experience!
+
+## 21.1
+Our latest update brings key enhancements to streamline your WooCommerce experience! We’ve fixed editing permissions for orders in different currencies, optimized the payments hub view, enabled easy receipt sharing via Google SMS, and fixed date range selection to correctly use your timezone. Enjoy smoother operations!
+
+## 21.0
+Enjoy a smoother experience with improved design throughout the app. Plus, now your product images load faster and look even better with new AVIF format support. Update now for a cleaner, sharper WooCommerce app experience!
+
+## 20.8
+We’ve improved your WooCommerce app experience with some key updates! The "Learn More" link for the Pay in Person option in payment settings is now fixed, and we've streamlined the Blaze campaign creation process by adding an objective selection feature. Update now to enjoy a smoother workflow!
+
+## 20.7
+In this update, we’ve improved the barcode scanner for more accurate readings and resolved issues with coupons unexpectedly disappearing during order creation. Merchants can now view and edit custom fields for products and orders directly in the app. We also fixed login errors and refined the "Tap to Pay" instructions for better clarity. Enjoy these enhancements and more!
+
+## 20.6
+We're excited to bring you new features in our WooCommerce app! Users can now set a password to protect products when signed in with site credentials, enhancing security for WooCommerce 8.1.0 and above. Also, promoting a Blaze product from the campaign detail will now trigger a smoother native flow. Enjoy the updates!
+
+## 20.5
+We’re excited to bring you a smoother experience with our latest update! We've resolved an issue that prevented renaming Product Variation Attributes and fixed a bug related to notification removal. Plus, users can now easily select product images when creating Blaze ads, and the Blaze feature is now fully enabled for sites with the Blaze for WooCommerce plugin active. Enjoy the improvements!
+
+## 20.4
+We've enhanced your WooCommerce app experience! You can now effortlessly scan tracking numbers when adding them to orders. Plus, we've fixed an issue with shipping labels, ensuring accurate weight calculations for packages with multiple items. Enjoy a smoother, more reliable app experience!
+
+## 20.3
+We’ve made several enhancements to boost your experience! This update fixes crashes on the orders list screen, resolves issues with the Jetpack plugin installation, and corrects toolbar glitches in the Package details and Order Tracking screens. We’ve also added a helpful blaze campaign reminder if you leave a campaign creation unfinished. Enjoy smoother navigation and a more reliable app!
+
+## 20.2
+Create Blaze Evergreen campaigns effortlessly with our latest update! We've also improved tablet navigation—now you'll be redirected to the order details screen after payment for a smoother experience. Update today and enjoy the enhancements!
+
+## 20.1
+We've improved your experience with our latest update! We've resolved the issue where the Orders screen would get stuck, addressed incorrect pin errors for UK and Canadian stores, fixed a rare crash in order editing, and enhanced usability on small screens. Enjoy smoother performance and better reliability!
+
+## 20.0
+We’ve improved your WooCommerce experience with several key updates: card reader tutorial images are now visible on tablets, QR code scanning is disabled during login, and the “Write with AI” issue with the keyboard has been fixed. Plus, you can now process card-present payments for orders marked as failed.
+
+## 19.9
+We've enhanced your refund experience! Now, each refund item on the refund screen includes detailed subtotal and taxes fields, giving you clearer insights into your transactions. Update now to enjoy smoother, more transparent refunds!
+
+## 19.8
+In our latest update, we've added a button in Google Campaign analytics for easier paid campaign creation. The Contact Support Form now includes a Site Address field. Enjoy seamless in-person payments illustrations in landscape mode, and benefit from background updates for order lists and dashboard analytics.
+
+## 19.7
+Get ready for a better WooCommerce experience with our latest update! Now, create and manage Google Ads campaigns seamlessly. Enjoy enhanced stability on the order detail screen and get helpful tips with our new AI-powered advice box during product creation. Update now for a smoother, smarter app!
+
+## 19.6
+Boost your WooCommerce experience with our latest update! Dive into enhanced analytics for Google Ads campaigns in the Analytics Hub, streamline package photo flow with our revamped Product Creation AI V2, and enjoy more reliable login. Plus, we've fixed cash payment assignments and improved button statuses on the More screen. Update now for a smoother, smarter store management!
+
+## 19.5
+We're excited to bring you the latest update for our WooCommerce mobile app! Customize your experience with themed app icons, and enjoy the new Customer Section in the Hub Menu, where merchants can effortlessly manage customer contacts and delve into customer analytics. Plus, under the hood, we've enhanced compatibility with Android 14. Discover these improvements and more in our latest release!
+
+## 19.4
+Explore our latest update with Inbox Notes now available in both the Dynamic Dashboard and the Hub Menu. This new feature offers a centralized, non-intrusive way to keep you informed about important updates, feature announcements, and essential information. Upgrade today to stay in the loop effortlessly!
+
+## 19.3
+We're thrilled to bring you an enhanced experience with our latest update! We've resolved a crash on the Receipt Preview screen and improved error messages when editing Min/Max Quantities. Plus, the Blaze button visibility issue on the product detail screen has been fixed, ensuring smoother navigation. Update now for a seamless WooCommerce mobile app experience!
+
+## 19.2
+Now, seamlessly sync with our new WearOS app for instant updates on store data and orders. Plus, enjoy added flexibility with edit support for Min/Max Quantities directly from product details. Update your WooCommerce app now for a seamless and enhanced experience!
+
+## 19.1
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
+## 19.0
+Discover the latest improvements in our WooCommerce mobile app! We've enhanced payment dialogs for a better experience on larger screens, resolved issues with push notifications, and fixed a login bug that prevented error messages from displaying. Plus, our new dashboard cards give merchants deeper insights into their stores. Update now for a smoother, more informative experience!
+
+## 18.9
+Exciting updates are here! Now, you can manage orders more efficiently with multiple shipping lines per order. Enjoy a smoother navigation with the redesigned More Menu. Plus, we've added a handy feature to calculate change for cash payments. Update your WooCommerce app now for a seamless and enhanced experience!
+
+## 18.8
+In this release, we've honed in on enhancing the app's efficiency by ironing out bugs and executing vital improvements. These updates aim to empower your business journey. Your feedback is our roadmap to continuous development, so please, keep it flowing.
+
+## 18.7
+We've fixed an issue that caused the app to crash during screen rotation, ensuring a smoother shopping experience. Update now to enjoy a more stable and reliable app!
+
+## 18.6
+Enjoy enhanced functionality in our latest app update! We've improved the 'Tap To Pay' feature, introducing a new navigation path from the summary to the 'About Tap To Pay' screen, and revised its description for better clarity. Additionally, selecting shipping methods has been made more flexible, allowing you to choose specific options directly when adding or editing shipping details on an order. Update your app today for a smoother and more efficient experience!
+
+## 18.5
+Discover a more personalized shopping experience with the latest update to MyStore! We're excited to introduce a customizable dashboard that lets you tailor your view with a variety of unique cards. Streamline your management tasks and enjoy a dashboard designed just for you. Update now to start customizing your app experience!
+
+## 18.4
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
+## 18.3
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
+## 18.2
+In our latest update, we're enhancing your WooCommerce experience! We're transitioning from simple payments to a more customizable order creation flow, enabling you to set the desired amount with ease. Plus, our improved Analytics Hub now provides insights into Product Bundles and Gift Cards, offering a more comprehensive view of your business stats, given those extensions are active. Enjoy the upgrade!
+
+## 18.1
+Introducing refined features in our WooCommerce mobile app! We've enhanced the accuracy of visitor stats to offer you more precise insights. Enjoy a better understanding of your customer interactions, further helping you optimize your strategies. Update now for a superior user experience.
+
+## 18.0
+Discover a smoother shopping experience in our latest update! We've squashed some pesky bugs in the products section for a flawless selection and viewing, especially in 2-pane mode. Photos now shine brighter with our enhanced screens. Transitioning between panes? We've polished that too, ensuring seamless shifts. Plus, we're introducing a helpful confirmation dialog for unsaved changes. Most excitingly, dive into your store's performance with custom date ranges in the My Store tab. Update now for these improvements and more!
+
+## 17.8
+Discover our latest update to your WooCommerce mobile app! Now, seamlessly log in with your site credentials on Jetpack-connected sites, as an alternative to WP.com email login. Experience instant refreshing of product list. Plus, managing your inventory is easier than ever with our new bulk stock status update feature. For added convenience, you can now move orders directly to trash. Last but not least, we optimised the order creation flow for tablet devices! Enjoy 💜
+
+## 17.7
+Exciting news for WooCommerce app users! We've fixed a bug to keep product searches intact after changes, and optimized the product viewing experience on tablets with a two-pane layout. Customize your analytics with ease in the Analytics Hub. Plus, orders made in the app are now clearly tagged, improving tracking. Dive into a smoother, more personalized shopping and selling journey. Update your app now!
+
+## 17.6
+Dive into a more personalized experience with our latest update that lets you filter orders by customers or products with ease. Plus, connecting with your customers is now just a tap away – reach out directly via WhatsApp or Telegram. Don't miss the new order attribution details on your order screen, giving you insights at a glance. Update now for a smoother, more efficient shop management experience!
+
+## 17.5
+We're thrilled to roll out a shiny new update that marks our first leap towards jazzing up order management on tablets! This update brings a slicker interface, turning the task of managing orders into a breeze on your tablet. Keep your eyes peeled for more enhancements as we keep working to make your experience even cooler!
+
+## 17.4
+We're excited to offer support for third-party Passkey providers. This update is designed to provide WordPress.com users with more flexibility and convenience in how they manage their account's security. Get ready to say goodbye to password fatigue and hello to a smoother, secure login experience!
+
+## 17.3
+We've enhanced the shipping label creation flow to ensure a smoother and more intuitive experience. This improvement aims to streamline your order fulfillment process, making it faster and more efficient. Please continue sending us feedback – we are listening!
+
+## 17.2
+This version includes optimizations for speed and reliability. We are committed to continuously improving the app, making managing your online store more efficient and hassle-free.
+
+## 17.1
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
+## 17.0
+Get ready for a smoother experience with our latest update! We've ironed out the pesky bug that kept gift cards from showing up in the 'totals' section during order creation and editing. Managing your sales with our WooCommerce app is now more seamless than ever. Update now and enjoy the hassle-free enhancements!
+
+## 16.9
+Fresh out of the oven! Our latest WooCommerce app update brings you a sleeker shopping cart experience. We've handily relocated the order creation to the bottom of your screen for easy thumb access, giving you more room to navigate. Plus, we've streamlined your workflow by detaching the order editing from the creation process. Get ready for a tidier, more efficient way to manage your sales. Tap "Update" and feel the difference!
+
+## 16.8
+We've polished your WooCommerce app experience! Check out the sleek new design for the deposit summary on the payments screen. Say goodbye to crashes after resetting your selected site, and enjoy a smoother store switching process right after you create a new store. Plus, managing custom amounts is now a breeze with our full-screen feature. Update now for a more seamless and stable business management journey!
+
+## 16.7
+In our latest update, we've fine-tuned the In Person Payments onboarding flow for a more seamless and intuitive experience. Additionally, we've addressed various fixes to enhance the stability and performance of animations. Update now to enjoy a smoother and more reliable WooCommerce experience!
+
+## 16.6
+Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!
+
+## 16.5
+The latest WooCommerce app version focuses on stability improvements! Additionally, WooPayments users can now seamlessly switch between currencies on the Deposits Summary view. Upgrade now for a smoother WooCommerce experience!
+
+## 16.4
+We're excited to introduce some new features! Our latest update allows you to charge tax for custom amounts and set one-time shipping for subscription products. You can also set subscription products as "virtual products". Plus, we've added an AI feature that generates a thank-you note on the completed order's details screen. Enjoy our new and improved WooCommerce app!
+
+## 16.3
+In this update, we've made managing your WooCommerce store even easier! You can now view your balances and deposits directly on the Payments screen if you're a WooCommerce Payments user. Additionally, we've added the ability to create or edit subscription products. And, to make order creation smoother, we now support bundle products. Enjoy the improved functionality and keep your feedback coming!
+
+## 16.2
+Welcome to the latest update of our WooCommerce mobile app! We're excited to unveil a redesigned Payments and Customers section, enhancing your order creation workflow. This update aligns with our design specifications, making it easier to input custom amounts. Enjoy a more intuitive, user-friendly experience. Update now!
+
+## 16.1
+Discover a more seamless WooCommerce experience with our latest update! We've introduced a new feature allowing you to input custom amounts during order creation, providing you with greater flexibility. Also, we've enhanced our error handling for a smoother Jetpack Connection, especially when using a custom admin URL. Enjoy a more streamlined and efficient app, designed for your convenience.
+
+## 16.0
+Welcome to the latest update of WooCommerce! We've redesigned the order's item list for a more intuitive flow. Blaze experience is now more efficient with improved campaign creation. Also, introducing the Product Creation via AI using package photos for getting automatic title and descriptions. Enjoy a seamless shopping experience!
+
+## 15.9
+We're thrilled to introduce the new Tap to Pay feature, now available for merchants in the UK and Canada. This means that UK and Canadian-based businesses can now provide a faster and more convenient payment experience to their customers, all from the palm of your hand. Update now and start boosting your sales with Tap to Pay in WooCommerce!
+
+## 15.8
+This update brings crucial bug fixes, ensuring a smoother experience. It also introduces the ability to update tax rates when editing orders, providing you with greater control. Stay tuned for more exciting features in upcoming releases. Thank you for choosing WooCommerce.
+
 ## 15.7
 Enhance your WooCommerce experience with our latest update. In-Person Payments now notify you about card reader updates, keeping transactions smooth. We've boosted Order Creation - the customers list uses cached data for speed, and customers without address information are properly displayed. Can't find a customer with an email? There's a shortcut to create that manually. Plus, Product Creation uses AI to suggest new categories and tags. Upgrade for a more efficient WooCommerce experience.
 
@@ -59,7 +266,7 @@ This release includes several bug fixes and improvements to help you get your bu
 We've introduced a new feature that allows you to search for products by SKU in the product selector screen, making it even easier to find the items you're looking for. Please try it out and share your feedback!
 
 ## 13.8
-Exciting news! You can now scan the barcode of a product when creating an order from the app! No need to manually scroll in search of a product anymore! We also fixed a couple of crash issues in the order list and product detail screens. Please continue to send us feedback – we are listening! 
+Exciting news! You can now scan the barcode of a product when creating an order from the app! No need to manually scroll in search of a product anymore! We also fixed a couple of crash issues in the order list and product detail screens. Please continue to send us feedback – we are listening!
 
 ## 13.7
 Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!

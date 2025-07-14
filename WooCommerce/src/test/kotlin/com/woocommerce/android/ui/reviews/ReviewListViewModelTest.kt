@@ -14,7 +14,8 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
-import org.assertj.core.api.Assertions
+import kotlinx.coroutines.flow.flowOf
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -73,7 +74,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
@@ -93,7 +95,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         verify(reviewListRepository, times(1)).fetchProductReviews(loadMore = false)
         verify(reviewListRepository, times(2)).getCachedProductReviews()
-        Assertions.assertThat(reviewList).isEqualTo(reviews)
+        assertThat(reviewList).isEqualTo(reviews)
         assertTrue(hasUnread)
     }
 
@@ -116,7 +118,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         verify(reviewListRepository, times(0)).fetchProductReviews(any(), any())
         verify(reviewListRepository, times(1)).getCachedProductReviews()
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
@@ -124,7 +126,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(false).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(RequestResult.ERROR).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.ERROR)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
@@ -149,15 +152,16 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         verify(reviewListRepository, times(1)).fetchProductReviews(loadMore = false)
         verify(reviewListRepository, times(1)).getCachedProductReviews()
-        Assertions.assertThat(reviewList).isEqualTo(reviews)
+        assertThat(reviewList).isEqualTo(reviews)
         assertFalse(hasUnread)
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.review_fetch_error))
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.review_fetch_error))
     }
 
     @Test
     fun `Show and hide review list skeleton correctly`() = testBlocking {
         doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         val skeletonShown = mutableListOf<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -166,13 +170,136 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        Assertions.assertThat(skeletonShown).containsExactly(true, false)
+        assertThat(skeletonShown).containsExactly(true, false)
     }
+
+    @Test
+    fun `given fetch review success and notification error, when view model started, then cached data shown`() =
+        testBlocking {
+            // GIVEN
+            val reviews2 = ProductReviewTestUtils.generateProductReviewList()
+            doReturn(
+                reviews,
+                reviews2,
+            ).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
+            doReturn(
+                flowOf(
+                    ReviewListRepository.FetchReviewsResult.NotificationsFetched(RequestResult.ERROR),
+                    ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS),
+                )
+            ).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+
+            val reviewList = ArrayList<ProductReview>()
+            viewModel.reviewList.observeForever {
+                reviewList.clear()
+                reviewList.addAll(it)
+            }
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            assertThat(reviewList).isEqualTo(reviews2)
+        }
+
+    @Test
+    fun `given fetch review success and notification success, when view model started, then last cached data shown`() =
+        testBlocking {
+            // GIVEN
+            val reviews2 = ProductReviewTestUtils.generateProductReviewList()
+            val reviews3 = ProductReviewTestUtils.generateProductReviewList()
+            doReturn(
+                reviews,
+                reviews2,
+                reviews3,
+            ).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
+            doReturn(
+                flowOf(
+                    ReviewListRepository.FetchReviewsResult.NotificationsFetched(RequestResult.SUCCESS),
+                    ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS),
+                )
+            ).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+
+            val reviewList = ArrayList<ProductReview>()
+            viewModel.reviewList.observeForever {
+                reviewList.clear()
+                reviewList.addAll(it)
+            }
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            assertThat(reviewList).isEqualTo(reviews3)
+        }
+
+    @Test
+    fun `given fetch review error and notification success, when view model started, then cached data shown`() =
+        testBlocking {
+            // GIVEN
+            val reviews2 = ProductReviewTestUtils.generateProductReviewList()
+            doReturn(
+                reviews,
+                reviews2,
+            ).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
+            doReturn(
+                flowOf(
+                    ReviewListRepository.FetchReviewsResult.NotificationsFetched(RequestResult.SUCCESS),
+                    ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.ERROR),
+                )
+            ).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+
+            val reviewList = ArrayList<ProductReview>()
+            viewModel.reviewList.observeForever {
+                reviewList.clear()
+                reviewList.addAll(it)
+            }
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            assertThat(reviewList).isEqualTo(reviews2)
+        }
+
+    @Test
+    fun `given fetch review error and notification error, when view model started, then data from cache set once`() =
+        testBlocking {
+            // GIVEN
+            val reviews2 = ProductReviewTestUtils.generateProductReviewList()
+            doReturn(
+                reviews,
+                reviews2,
+            ).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
+            doReturn(
+                flowOf(
+                    ReviewListRepository.FetchReviewsResult.NotificationsFetched(RequestResult.ERROR),
+                    ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.ERROR),
+                )
+            ).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+
+            val reviewList = ArrayList<ProductReview>()
+            viewModel.reviewList.observeForever {
+                reviewList.clear()
+                reviewList.addAll(it)
+            }
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            assertThat(reviewList).isEqualTo(reviews)
+        }
 
     @Test
     fun `Shows and hides review list load more progress correctly`() = testBlocking {
         doReturn(true).whenever(reviewListRepository).canLoadMore
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = true)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = true)
 
         val isLoadingMore = mutableListOf<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -180,7 +307,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
         }
 
         viewModel.loadMoreReviews()
-        Assertions.assertThat(isLoadingMore).containsExactly(true, false)
+        assertThat(isLoadingMore).containsExactly(true, false)
     }
 
     @Test
@@ -199,7 +326,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Test
     fun `Refreshing reviews list handled correctly`() = testBlocking {
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         var hasUnread = false
         val isRefreshing = mutableListOf<Boolean>()
@@ -209,7 +337,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
         }
 
         viewModel.forceRefreshReviews()
-        Assertions.assertThat(isRefreshing).containsExactly(true, false)
+        assertThat(isRefreshing).containsExactly(true, false)
         assertTrue(hasUnread)
     }
 
@@ -223,7 +351,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
         }
 
         viewModel.markAllReviewsAsRead()
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
@@ -242,8 +370,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         viewModel.markAllReviewsAsRead()
 
-        Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.SUCCESS)
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_success))
+        assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.SUCCESS)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_success))
     }
 
     @Test
@@ -262,8 +390,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         viewModel.markAllReviewsAsRead()
 
-        Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.ERROR)
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_error))
+        assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.ERROR)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_error))
     }
 
     @Test
@@ -281,7 +409,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
             viewModel.onUnreadReviewsFilterChanged(isEnabled = true)
 
-            Assertions.assertThat(skeletonShown).containsExactly(true, false)
+            assertThat(skeletonShown).containsExactly(true, false)
         }
 
     @Test

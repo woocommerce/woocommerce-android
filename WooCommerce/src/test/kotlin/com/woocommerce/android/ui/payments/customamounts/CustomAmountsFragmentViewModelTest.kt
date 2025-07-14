@@ -1,0 +1,385 @@
+package com.woocommerce.android.ui.payments.customamounts
+
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.CurrencyCode
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
+import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
+import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
+import java.math.BigDecimal
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
+
+    private val tracker: AnalyticsTrackerWrapper = mock()
+    private val currencySymbolFinder: CurrencySymbolFinder = mock()
+    private val store: WooCommerceStore = mock()
+    private val selectedSite: SelectedSite = mock()
+    private lateinit var viewModel: CustomAmountsViewModel
+
+    @Before
+    fun setup() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel.EMPTY,
+                orderTotal = null,
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+    }
+
+    @Test
+    fun `when view model is initialised, then done button is not enabled`() {
+        assertFalse(viewModel.viewState.isDoneButtonEnabled)
+    }
+
+    @Test
+    fun `when custom amount is zero, then done button is not enabled`() {
+        viewModel.currentPrice = BigDecimal.ZERO
+
+        assertFalse(viewModel.viewState.isDoneButtonEnabled)
+    }
+
+    @Test
+    fun `when custom amount is not zero, then done button is enabled`() {
+        viewModel.currentPrice = BigDecimal.TEN
+
+        assertTrue(viewModel.viewState.isDoneButtonEnabled)
+    }
+
+    @Test
+    fun `when custom amount dialog is opened for adding, then proper event is tracked`() {
+        verify(tracker).track(ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED)
+    }
+
+    @Test
+    fun `when custom amount dialog is opened for editing, then proper event is tracked`() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = FIXED_CUSTOM_AMOUNT
+                ),
+                orderTotal = null
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        verify(tracker).track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
+    }
+
+    // region Percentage based custom amounts
+    @Test
+    fun `when percentage is zero, then done button is not enabled`() {
+        viewModel.currentPercentage = BigDecimal.ZERO
+
+        assertFalse(viewModel.viewState.isDoneButtonEnabled)
+    }
+
+    @Test
+    fun `when percentage is not zero and order total is not zero, then done button is enabled`() {
+        val args = CustomAmountsFragmentArgs(
+            customAmountUIModel = CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "",
+                type = PERCENTAGE_CUSTOM_AMOUNT
+            ),
+            orderTotal = "100"
+        )
+        viewModel = CustomAmountsViewModel(
+            args.toSavedStateHandle(), tracker, currencySymbolFinder, store, selectedSite
+        )
+        viewModel.currentPercentage = BigDecimal.TEN
+
+        assertTrue(viewModel.viewState.isDoneButtonEnabled)
+    }
+
+    @Test
+    fun `when custom amount is opened for editing in percentage mode, then proper percentage is calculated from current price`() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = FIXED_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal("5.00"))
+    }
+
+    @Test
+    fun `when custom amount is modified by adding a certain percentage, then proper current price is calculated`() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = FIXED_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+        viewModel.currentPercentage = BigDecimal("20")
+
+        assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(BigDecimal("40.00"))
+    }
+
+    @Test
+    fun `when view model is initiated as fixed custom amount type, then assign proper custom amount type to view state`() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = FIXED_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.type).isEqualTo(FIXED_CUSTOM_AMOUNT)
+    }
+
+    @Test
+    fun `when view model is initiated as percentage custom amount type, then assign proper custom amount type to view state`() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.type).isEqualTo(PERCENTAGE_CUSTOM_AMOUNT)
+    }
+
+    @Test
+    fun `when custom amount dialog is opened to edit, then update view state to populate all values`() {
+        val customAmountUIModel = CustomAmountsFragmentArgs(
+            customAmountUIModel = CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "",
+                type = PERCENTAGE_CUSTOM_AMOUNT
+            ),
+            orderTotal = "200"
+        )
+        viewModel = CustomAmountsViewModel(
+            customAmountUIModel.toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.id).isEqualTo(
+            customAmountUIModel.customAmountUIModel.id
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(
+            customAmountUIModel.customAmountUIModel.amount
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.name).isEqualTo(
+            customAmountUIModel.customAmountUIModel.name
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.type).isEqualTo(
+            customAmountUIModel.customAmountUIModel.type
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.taxStatus).isEqualTo(
+            customAmountUIModel.customAmountUIModel.taxStatus
+        )
+    }
+
+    @Test
+    fun `when order total is zero, then current percentage is zero`() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = "0"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal.ZERO)
+    }
+
+    @Test
+    fun `when order total is null, then current percentage is zero`() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = null
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal.ZERO)
+    }
+
+    @Test
+    fun `when currency code is not null, then return order currency symbol`() {
+        whenever(currencySymbolFinder.findCurrencySymbol("USD")).thenReturn("$")
+
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT,
+                    currencyCode = CurrencyCode("USD")
+                ),
+                orderTotal = null
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+        assertThat(viewModel.viewState.currencySymbol?.value).isEqualTo("$")
+    }
+
+    @Test
+    fun `when currency code is null, then return site currency symbol`() {
+        val site: SiteModel = SiteModel().apply { id = 1 }
+        val settings = WCSettingsTestUtils.generateSettings(site.localId()).copy(currencyCode = "INR")
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(store.getSiteSettings(site)).thenReturn(settings)
+        whenever(currencySymbolFinder.findCurrencySymbol("INR")).thenReturn("₹")
+
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT,
+                ),
+                orderTotal = null
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        assertThat(viewModel.viewState.currencySymbol?.value).isEqualTo("₹")
+    }
+
+    @Test
+    fun `given create mode with percentage type, when getting current percentage, then uses full order total`() {
+        // GIVEN
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.ZERO,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        // WHEN
+        viewModel.currentPrice = BigDecimal("40")
+
+        // THEN
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal("20.00"))
+    }
+
+    @Test
+    fun `given edit mode with fixed amount type, when getting current percentage, then uses full order total`() {
+        // GIVEN
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 1L,
+                    amount = BigDecimal("50"),
+                    name = "Test",
+                    type = FIXED_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        // WHEN
+        viewModel.currentPrice = BigDecimal("40")
+
+        // THEN: Percentage should be calculated based on full order total
+        // 40 / 200 * 100 = 20%
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal("20.00"))
+    }
+    //endregion
+}

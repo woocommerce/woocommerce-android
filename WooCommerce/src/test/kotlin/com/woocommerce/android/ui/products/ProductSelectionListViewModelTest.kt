@@ -2,9 +2,10 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -38,7 +39,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
         remoteProductId = PRODUCT_REMOTE_ID,
         groupedProductListType = GroupedProductListType.GROUPED,
         excludedProductIds = excludedProductIdsNavArgs.toLongArray()
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private lateinit var viewModel: ProductSelectionListViewModel
 
@@ -57,7 +58,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
                 this.removeIf { it.remoteId == excludedIds }
             }
         }
-        doReturn(expectedProductList).whenever(productRepository).fetchProductList(
+        doReturn(Result.success(expectedProductList)).whenever(productRepository).fetchProductList(
             excludedProductIds = excludedProductIds
         )
 
@@ -96,7 +97,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList(
             excludedProductIds = excludedProductIds
         )
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(
+        doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList(
             excludedProductIds = excludedProductIds
         )
 
@@ -114,7 +115,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     fun `Shows and hides product list load more progress correctly`() =
         testBlocking {
             doReturn(true).whenever(productRepository).canLoadMoreProducts
-            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(
+            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList(
                 excludedProductIds = excludedProductIds
             )
 
@@ -152,7 +153,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
                 }
             }
 
-            doReturn(expectedProductList).whenever(productRepository).fetchProductList(
+            doReturn(Result.success(expectedProductList)).whenever(productRepository).fetchProductList(
                 excludedProductIds = excludedProductIds
             )
 

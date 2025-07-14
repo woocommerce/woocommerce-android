@@ -14,6 +14,7 @@ import javax.inject.Named
 )
 @Module
 class DummyInterceptorModule {
-    @Provides @IntoSet @Named("network-interceptors")
+    @Provides @IntoSet
+    @Named("network-interceptors")
     fun provideNetworkInterceptor(): Interceptor = Interceptor { it.proceed(it.request()) }
 }

@@ -24,7 +24,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 @ExperimentalCoroutinesApi
 class TrackStoreSnapshotTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
-    private val selectedSiteModel: SiteModel = mock() {
+    private val selectedSiteModel: SiteModel = mock {
         on { id }.thenReturn(1)
         on { siteId }.thenReturn(2L)
         on { selfHostedSiteId }.thenReturn(3L)

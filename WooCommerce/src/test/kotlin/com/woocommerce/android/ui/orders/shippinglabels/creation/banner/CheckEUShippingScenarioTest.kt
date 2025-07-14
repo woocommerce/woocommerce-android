@@ -23,6 +23,7 @@ import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class CheckEUShippingScenarioTest : BaseUnitTest() {
@@ -267,7 +268,7 @@ internal class CheckEUShippingScenarioTest : BaseUnitTest() {
         destinationCountryCode: String
     ) = WaitingForInput(
         data = StateMachineData(
-            order = Order.EMPTY,
+            order = Order.getEmptyOrder(Date(), Date()),
             stepsState = emptyStepState.copy(
                 originAddressStep = OriginAddressStep(
                     StepStatus.READY,

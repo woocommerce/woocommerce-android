@@ -11,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -58,12 +59,15 @@ class ParameterRepository @Inject constructor(
     }
 
     private fun loadParameters(): SiteParameters {
-        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite.get())
+        val site = selectedSite.get()
+        val siteSettings = wooCommerceStore.getSiteSettings(site)
         val currencyCode = siteSettings?.currencyCode
-        val currencySymbol = wooCommerceStore.getSiteCurrency(selectedSite.get(), currencyCode)
-        val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
-        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get()).let {
-            Pair(it?.weightUnit, it?.dimensionUnit)
+        val currencySymbol = wooCommerceStore.getSiteCurrency(site, currencyCode)
+        val gmtOffset = site.timezone?.toFloat() ?: 0f
+        val (weightUnit, dimensionUnit) = runBlocking {
+            wooCommerceStore.getProductSettings(site).let {
+                Pair(it?.weightUnit, it?.dimensionUnit)
+            }
         }
         val currencyFormattingParameters = siteSettings?.let {
             CurrencyFormattingParameters(

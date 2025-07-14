@@ -11,16 +11,18 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 abstract class SyncStrategyTest : BaseUnitTest() {
     protected val orderCreateEditRepository = mock<OrderCreateEditRepository> {
-        onBlocking { createOrUpdateDraft(any()) } doAnswer InlineClassesAnswer {
+        onBlocking { createOrUpdateOrder(any(), any(), any()) } doAnswer InlineClassesAnswer {
             val order = it.arguments.first() as Order
             Result.success(order.copy(total = order.total + BigDecimal.TEN))
         }
     }
-    protected val order = Order.EMPTY.copy(items = OrderTestUtils.generateTestOrderItems())
+
+    protected val order = Order.getEmptyOrder(Date(), Date()).copy(items = OrderTestUtils.generateTestOrderItems())
     protected val orderDraftChanges = MutableStateFlow(order)
     protected val retryTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 

@@ -22,6 +22,8 @@ class EmojiUtils @Inject constructor() {
         val secondLetter = REGIONAL_INDICATOR_OFFSET + Character.codePointAt(countryCodeCaps, 1)
         return if (!countryCodeCaps[0].isLetter() || !countryCodeCaps[1].isLetter()) {
             countryCode
-        } else String(Character.toChars(firstLetter)) + String(Character.toChars(secondLetter))
+        } else {
+            String(Character.toChars(firstLetter)) + String(Character.toChars(secondLetter))
+        }
     }
 }

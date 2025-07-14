@@ -198,15 +198,19 @@ class ShippingCarrierRatesAdapter(
                     if (rateItem.isTrackingAvailable) {
                         options.add(
                             binding.root.resources.getString(
-                                if (rateItem.carrier == USPS) string.shipping_label_rate_included_options_usps_tracking
-                                else string.shipping_label_rate_included_options_tracking
+                                if (rateItem.carrier == USPS) {
+                                    string.shipping_label_rate_included_options_usps_tracking
+                                } else {
+                                    string.shipping_label_rate_included_options_tracking
+                                }
                             )
                         )
                     }
                     if (rateItem.isInsuranceAvailable) {
                         options.add(
                             binding.root.resources.getString(
-                                string.shipping_label_rate_included_options_insurance, rateItem.insuranceCoverage
+                                string.shipping_label_rate_included_options_insurance,
+                                rateItem.insuranceCoverage
                             )
                         )
                     }

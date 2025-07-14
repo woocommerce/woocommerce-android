@@ -1,0 +1,31 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/rest/v1.1/sites/161477129/stats/summary/",
+    "queryParameters": {
+      "date": {
+        "matches": "(.*)"
+      },
+      "period": {
+        "equalTo": "month"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "date": "{{fnow format='yyyy-MM-dd'}}",
+      "period": "month",
+      "views": 440,
+      "visitors": 440,
+      "likes": 0,
+      "reblogs": 0,
+      "comments": 0,
+      "followers": 1
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Connection": "keep-alive"
+    }
+  }
+}

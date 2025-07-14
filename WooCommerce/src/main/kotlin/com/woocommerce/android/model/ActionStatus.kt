@@ -14,18 +14,21 @@ enum class ActionStatus {
     PENDING {
         override fun isComplete() = false
     },
+
     /**
      * Requested action has been submitted to the API.
      */
     SUBMITTED {
         override fun isComplete() = false
     },
+
     /**
      * Requested action completed successfully.
      */
     SUCCESS {
         override fun isComplete() = true
     },
+
     /**
      * Requested action did not complete successfully and resulted in an error.
      */

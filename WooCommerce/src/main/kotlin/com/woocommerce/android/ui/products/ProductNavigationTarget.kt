@@ -1,17 +1,23 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.SubscriptionDetails
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
-import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType
 import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
+import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 /**
@@ -26,15 +32,16 @@ sealed class ProductNavigationTarget : Event() {
         val title: String,
         val subject: String
     ) : ProductNavigationTarget()
+
     data class ShareProductWithAI(
         val permalink: String,
         val title: String,
         val description: String? = null
     ) : ProductNavigationTarget()
+
     data class ViewProductVariations(
         val remoteId: Long,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
-        val isReadOnlyMode: Boolean = false
     ) : ProductNavigationTarget()
 
     data class ViewProductInventory(
@@ -83,6 +90,7 @@ sealed class ProductNavigationTarget : Event() {
     object ExitProduct : ProductNavigationTarget()
     data class ViewProductCategories(val remoteId: Long) : ProductNavigationTarget()
     object AddProductCategory : ProductNavigationTarget()
+    data class EditCategory(val category: ProductCategory) : ProductNavigationTarget()
     data class ViewProductTags(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductDetailBottomSheet(val productType: ProductType) : ProductNavigationTarget()
     data class ViewProductTypes(
@@ -130,6 +138,16 @@ sealed class ProductNavigationTarget : Event() {
         val selectedVariationIds: Set<Long>,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
         val productSourceForTracking: ProductSourceForTracking,
+        val selectionMode: ProductSelectorViewModel.SelectionMode,
+        val screenMode: VariationSelectorViewModel.ScreenMode,
+        val orderCurrency: String? = null,
+    ) : ProductNavigationTarget()
+
+    data class NavigateToProductConfiguration(val productId: Long) : ProductNavigationTarget()
+    data class EditProductConfiguration(
+        val itemId: Long,
+        val productId: Long,
+        val configuration: ProductConfiguration
     ) : ProductNavigationTarget()
 
     data class NavigateToProductFilter(
@@ -141,12 +159,18 @@ sealed class ProductNavigationTarget : Event() {
         val restrictions: List<ProductRestriction>
     ) : ProductNavigationTarget()
 
-    data class ViewProductSubscription(
-        val subscription: SubscriptionDetails,
-        val sale: SaleDetails? = null
+    data class ViewProductSubscriptionExpiration(
+        val subscription: SubscriptionDetails
     ) : ProductNavigationTarget()
 
-    data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()
+    data class ViewProductSubscriptionFreeTrial(
+        val subscription: SubscriptionDetails
+    ) : ProductNavigationTarget()
+
+    data class ViewProductQuantityRules(
+        val quantityRules: QuantityRules,
+        val exitAnalyticsEvent: AnalyticsEvent
+    ) : ProductNavigationTarget()
 
     data class ViewBundleProducts(val productId: Long) : ProductNavigationTarget()
 
@@ -156,4 +180,6 @@ sealed class ProductNavigationTarget : Event() {
         val permalink: String,
         val productName: String
     ) : ProductNavigationTarget()
+
+    data class ViewCustomFields(val productId: Long) : ProductNavigationTarget()
 }

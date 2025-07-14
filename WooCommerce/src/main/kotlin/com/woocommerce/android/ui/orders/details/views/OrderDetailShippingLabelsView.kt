@@ -7,11 +7,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.databinding.OrderDetailShippingLabelListBinding
-import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import java.math.BigDecimal
 
 class OrderDetailShippingLabelsView @JvmOverloads constructor(
@@ -21,10 +21,12 @@ class OrderDetailShippingLabelsView @JvmOverloads constructor(
 ) : ConstraintLayout(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailShippingLabelListBinding.inflate(LayoutInflater.from(ctx), this, true)
 
+    @Suppress("LongParameterList")
     fun updateShippingLabels(
-        shippingLabels: List<ShippingLabel>,
+        shippingLabels: List<ShippingLabelModel>,
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
+        isRevampWooShippingEnabled: Boolean,
         productClickListener: OrderProductActionListener,
         shippingLabelClickListener: OnShippingLabelClickListener
     ) {
@@ -33,7 +35,8 @@ class OrderDetailShippingLabelsView @JvmOverloads constructor(
                 formatCurrencyForDisplay = formatCurrencyForDisplay,
                 productImageMap = productImageMap,
                 listener = shippingLabelClickListener,
-                productClickListener = productClickListener
+                productClickListener = productClickListener,
+                isRevampWooShippingEnabled = isRevampWooShippingEnabled
             )
         binding.shippingLabelList.apply {
             setHasFixedSize(true)

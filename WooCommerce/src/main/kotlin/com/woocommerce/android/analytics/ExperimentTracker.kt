@@ -1,6 +1,6 @@
 package com.woocommerce.android.analytics
 
-import com.google.firebase.analytics.ktx.ParametersBuilder
+import com.google.firebase.analytics.ParametersBuilder
 
 interface ExperimentTracker {
     companion object {

@@ -7,8 +7,8 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.products.WCProductPropertyView
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.propertyviews.WCProductPropertyView
 
 class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.layout.product_property_view) {
     fun bind(item: PropertyGroup) {

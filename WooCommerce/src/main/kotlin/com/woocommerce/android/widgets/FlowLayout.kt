@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
 import com.woocommerce.android.R
 
 /**
@@ -36,13 +35,13 @@ open class FlowLayout @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec) - ViewCompat.getPaddingEnd(this) -
-            ViewCompat.getPaddingStart(this)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec) - this.getPaddingEnd() -
+            this.getPaddingStart()
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val growHeight = widthMode != MeasureSpec.UNSPECIFIED
         var width = 0
         var height = paddingTop
-        var currentWidth = ViewCompat.getPaddingStart(this)
+        var currentWidth = this.getPaddingStart()
         var currentHeight = 0
         var newLine = false
         var spacing = 0
@@ -62,7 +61,7 @@ open class FlowLayout @JvmOverloads constructor(
                 height += currentHeight + mVerticalSpacing
                 currentHeight = 0
                 width = Math.max(width, currentWidth - spacing)
-                currentWidth = ViewCompat.getPaddingStart(this)
+                currentWidth = this.getPaddingStart()
                 newLine = true
             } else {
                 newLine = false
@@ -77,7 +76,7 @@ open class FlowLayout @JvmOverloads constructor(
         if (!newLine) {
             width = Math.max(width, currentWidth - spacing)
         }
-        width += ViewCompat.getPaddingEnd(this)
+        width += this.getPaddingEnd()
         height += currentHeight + paddingBottom
         setMeasuredDimension(resolveSize(width, widthMeasureSpec), resolveSize(height, heightMeasureSpec))
     }
@@ -106,7 +105,7 @@ open class FlowLayout @JvmOverloads constructor(
     override fun generateLayoutParams(p: ViewGroup.LayoutParams): LayoutParams {
         return LayoutParams(p.width, p.height)
     }
-    class LayoutParams : ViewGroup.MarginLayoutParams {
+    class LayoutParams : MarginLayoutParams {
         internal var x: Int = 0
         internal var y: Int = 0
         var horizontalSpacing: Int = -1

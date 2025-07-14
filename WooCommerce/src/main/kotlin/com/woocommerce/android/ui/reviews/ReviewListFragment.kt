@@ -51,6 +51,7 @@ class ReviewListFragment :
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var selectedSite: SelectedSite
 
     private var _reviewsAdapter: ReviewListAdapter? = null

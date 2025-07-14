@@ -5,11 +5,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListFragmentArgs
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
@@ -24,6 +24,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -52,7 +53,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, false).copy(remoteId = productRemoteId)
     private lateinit var viewModel: VariationListViewModel
     private val variations = ProductTestUtils.generateProductVariationList(productRemoteId)
-    private val savedState = VariationListFragmentArgs(remoteProductId = productRemoteId).initSavedStateHandle()
+    private val savedState = VariationListFragmentArgs(remoteProductId = productRemoteId).toSavedStateHandle()
 
     @Before
     fun setup() {
@@ -81,7 +82,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product variation list view correctly`() {
+    fun `Displays the product variation list view correctly`() = runTest {
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
 
         createViewModel()
@@ -97,6 +98,9 @@ class VariationListViewModelTest : BaseUnitTest() {
     fun `Do not fetch product variations from api when not connected`() =
         testBlocking {
             doReturn(false).whenever(networkStatus).isConnected()
+            doReturn(
+                emptyList<ProductVariation>()
+            ).whenever(variationRepository).getProductVariationList(productRemoteId)
 
             createViewModel()
 
@@ -209,6 +213,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `Refresh variations list and hide progress bar if variation generation is successful`() = testBlocking {
         // given
+        doReturn(emptyList<ProductVariation>()).whenever(variationRepository).getProductVariationList(productRemoteId)
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
         }
@@ -247,6 +252,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         // given
         variationRepository.stub {
             onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
+            onBlocking { getProductVariationList(productRemoteId) } doReturn emptyList()
         }
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
@@ -374,6 +380,28 @@ class VariationListViewModelTest : BaseUnitTest() {
         )
         // Then variation limit error is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
+    }
+
+    @Test
+    fun `When generated variations succeeds, then parent product is updated`() = testBlocking {
+        // Given a valid variation candidates list
+        val variationCandidates = List(5) { id ->
+            listOf(VariantOption(id.toLong(), "Number", id.toString()))
+        }
+        val expectedUpdatedProduct = product.copy(name = "Updated Product")
+
+        productRepository.stub {
+            onBlocking { fetchAndGetProduct(productRemoteId) } doReturn expectedUpdatedProduct
+        }
+        createViewModel()
+        viewModel.start()
+
+        // When AddAllVariations succeed
+        viewModel.onGenerateVariationsConfirmed(variationCandidates)
+
+        // Then parent product is updated
+        verify(productRepository).fetchAndGetProduct(productRemoteId)
+        assertThat(viewModel.viewStateLiveData.liveData.value?.parentProduct).isEqualTo(expectedUpdatedProduct)
     }
 
     @Test

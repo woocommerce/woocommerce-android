@@ -36,7 +36,12 @@ object CreateShippingLabelTestUtils {
 
     fun generatePackage(id: String = "id", provider: String = "provider"): ShippingPackage {
         return ShippingPackage(
-            id, "title1", false, provider, PackageDimensions(1.0f, 1.0f, 1.0f), 1f
+            id,
+            "title1",
+            false,
+            provider,
+            PackageDimensions(1.0f, 1.0f, 1.0f),
+            1f
         )
     }
 

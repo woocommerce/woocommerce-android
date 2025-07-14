@@ -50,7 +50,9 @@ class CouponSelectorViewModel @Inject constructor(
                 if (it.index != 0 && it.value == LoadingState.Idle) {
                     // When resetting to Idle, wait a bit to make sure the coupons list has been fetched from DB
                     LOADING_STATE_DELAY
-                } else 0L
+                } else {
+                    0L
+                }
             }
             .map { it.value },
     ) { coupons, loadingState ->

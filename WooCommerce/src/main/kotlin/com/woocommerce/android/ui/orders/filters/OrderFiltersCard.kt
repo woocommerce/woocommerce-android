@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.filters
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import androidx.annotation.StringRes
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -33,7 +34,18 @@ class OrderFiltersCard @JvmOverloads constructor(
         }
     }
 
+    fun isEnabled(value: Boolean) {
+        binding.btnOrderFilter.isEnabled = value
+    }
+
     private fun setFiltersTitle(@StringRes stringId: Int) {
         binding.filtersTitle.text = context.getString(stringId)
+    }
+
+    fun updateLastUpdate(value: String?) {
+        binding.lastUpdate.apply {
+            visibility = if (value.isNullOrEmpty()) View.GONE else View.VISIBLE
+            text = value
+        }
     }
 }

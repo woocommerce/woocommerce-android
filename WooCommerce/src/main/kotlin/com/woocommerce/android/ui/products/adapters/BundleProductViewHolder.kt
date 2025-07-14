@@ -2,11 +2,11 @@ package com.woocommerce.android.ui.products.adapters
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.BundledProductItemViewBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.BundledProduct
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -33,7 +33,7 @@ class BundleProductViewHolder(val viewBinding: BundledProductItemViewBinding) :
             else -> {
                 size = imageSize
                 val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
-                GlideApp.with(viewBinding.productImage)
+                Glide.with(viewBinding.productImage)
                     .load(photonUrl)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)

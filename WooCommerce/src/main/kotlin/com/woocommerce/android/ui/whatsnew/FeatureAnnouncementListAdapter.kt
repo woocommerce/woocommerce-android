@@ -10,9 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FeatureAnnouncementListItemBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.FeatureAnnouncementItem
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementListAdapter.FeatureAnnouncementViewHolder
 import com.woocommerce.android.util.WooLog
@@ -82,7 +82,7 @@ class FeatureAnnouncementListAdapter :
             imgUrl: String,
             placeholder: Drawable?
         ) {
-            GlideApp.with(context)
+            Glide.with(context)
                 .load(imgUrl)
                 .placeholder(placeholder)
                 .error(placeholder)
@@ -110,7 +110,7 @@ class FeatureAnnouncementListAdapter :
                 return
             }
 
-            GlideApp.with(context)
+            Glide.with(context)
                 .load(imageData)
                 .placeholder(placeholder)
                 .error(placeholder)

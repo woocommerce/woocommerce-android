@@ -9,6 +9,21 @@
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/statsCustomDateRangeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawableEnd="@drawable/ic_edit_pencil_small_16dp"
+        android:drawablePadding="@dimen/minor_100"
+        android:padding="@dimen/minor_100"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:textColor="@color/color_primary"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:text="4 Feb 2024 - 16 Feb 2024" />
+
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/statsDateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,9 +50,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
+        android:baselineAligned="false"
         android:gravity="bottom"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
+        android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/orders_layout"
@@ -74,9 +89,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceHeadline6"
+                app:layout_constraintBottom_toTopOf="@+id/visitorsLabelTextview"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/visitorsLabelTextview"
                 tools:text="1567" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -86,21 +101,21 @@
                 android:text="@string/dashboard_stats_visitors"
                 android:textAppearance="?attr/textAppearanceCaption"
                 android:textColor="@color/color_on_surface_high"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/emptyVisitorsStatsGroup"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:visibility="gone"
-                app:constraint_referenced_ids="emptyVisitorStatsIndicator, jetpackIconImageView" />
+                app:constraint_referenced_ids="emptyVisitorStatsIndicator, emptyVisitorStatsIcon" />
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/jetpackIconImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/emptyVisitorStatsIcon"
+                android:layout_width="@dimen/image_minor_40"
+                android:layout_height="@dimen/image_minor_40"
                 android:src="@drawable/ic_jetpack_logo"
                 app:layout_constraintBottom_toTopOf="@id/emptyVisitorStatsIndicator"
                 app:layout_constraintStart_toEndOf="@id/emptyVisitorStatsIndicator" />
@@ -109,11 +124,11 @@
                 android:id="@+id/emptyVisitorStatsIndicator"
                 android:layout_width="@dimen/major_200"
                 android:layout_height="@dimen/minor_100"
-                android:background="@color/skeleton_color"
                 android:layout_marginBottom="@dimen/minor_100"
+                android:background="@color/skeleton_color"
+                app:layout_constraintBottom_toTopOf="@+id/visitorsLabelTextview"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/visitorsLabelTextview" />
+                app:layout_constraintRight_toRightOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -127,9 +142,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceHeadline6"
+                app:layout_constraintBottom_toTopOf="@+id/conversionLabelTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/conversionLabelTextView"
                 tools:text="4.5%" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -139,20 +154,20 @@
                 android:text="@string/dashboard_stats_conversion"
                 android:textAppearance="?attr/textAppearanceCaption"
                 android:textColor="@color/color_on_surface_high"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <View
                 android:id="@+id/emptyConversionRateIndicator"
                 android:layout_width="@dimen/major_200"
                 android:layout_height="@dimen/minor_100"
-                android:background="@color/skeleton_color"
                 android:layout_marginBottom="@dimen/minor_100"
+                android:background="@color/skeleton_color"
                 android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/conversionLabelTextView"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/conversionLabelTextView" />
+                app:layout_constraintRight_toRightOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
@@ -161,9 +176,9 @@
         android:id="@+id/lastUpdatedTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
         android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="@color/color_on_surface_medium"
-        tools:text="Last updated 11:25 AM"
-        android:layout_marginTop="@dimen/major_100"/>
+        tools:text="Last updated 11:25 AM" />
 
 </LinearLayout>

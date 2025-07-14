@@ -38,6 +38,7 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @return layout resource id of the header
      */
     @LayoutRes val headerResourceId: Int? = sectionParameters.headerResourceId
+
     /**
      * Return the layout resource id of the footer
      * @return layout resource id of the footer
@@ -55,11 +56,13 @@ abstract class Section(sectionParameters: SectionParameters) {
      * @return layout resource id of the loading view
      */
     @LayoutRes val loadingResourceId: Int? = sectionParameters.loadingResourceId
+
     /**
      * Return the layout resource id of the failed view
      * @return layout resource id of the failed view
      */
     @LayoutRes val failedResourceId: Int? = sectionParameters.failedResourceId
+
     /**
      * Return the layout resource id of the empty view
      * @return layout resource id of the empty view

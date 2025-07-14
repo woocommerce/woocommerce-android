@@ -1,0 +1,74 @@
+package com.woocommerce.android.ui.orders.wooshippinglabels
+
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShipmentMap
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
+import kotlinx.coroutines.flow.first
+import javax.inject.Inject
+
+class SplitShipment @Inject constructor(
+    private val selectedSite: SelectedSite,
+    private val wooShippingLabelRepository: WooShippingLabelRepository,
+    private val configDataStore: WooShippingConfigDataStore,
+) {
+
+    suspend operator fun invoke(orderId: Long, shipments: List<ShipmentUIModel>): Result<List<ShipmentUIModel>> {
+        return selectedSite.getOrNull()?.let {
+            val shipmentMap = shipments.toShipmentMap()
+
+            val response = wooShippingLabelRepository.updateShipments(
+                site = it,
+                orderId = orderId,
+                shipments = shipmentMap,
+                shipmentIdsToUpdate = getShipmentsToUpdate(shipments)
+            )
+            val result = response.model
+            if (response.isError || result == null) {
+                Result.failure(Exception("Split shipment failed"))
+            } else {
+                updateCachedShipments(orderId, result.data)
+                // Update remote ids
+                val newShipments = shipments.map { it.copy(remoteId = it.localId) }
+                Result.success(newShipments)
+            }
+        } ?: Result.failure(Exception("No site selected"))
+    }
+
+    /**
+     * Returns a map of remote shipment IDs to their updated local shipment IDs.
+     *
+     * This is used to inform the backend which existing shipments (identified by `remoteId`)
+     * have been modified (and now have a different local `id`). Only shipments that already exist
+     * remotely (`remoteId != null`) and whose local ID has changed are included in this map.
+     *
+     * This mapping helps the backend update the correct shipment mapping during a split operation.
+     */
+    private fun getShipmentsToUpdate(shipments: List<ShipmentUIModel>): Map<String, Int> = shipments.filter {
+        it.remoteId != null && it.localId != it.remoteId
+    }.associate { it.remoteId!! to it.localId.toInt() }
+
+    private fun List<ShipmentUIModel>.toShipmentMap() = associate {
+        it.localId to it.items.map { item -> Item(id = item.itemId, subItems = item.subItems()) }
+    }
+
+    /**
+     * The endpoint expects subItems in the format:
+     * if quantity is greater than 1, list of subItems e.g: ["6230-sub-0", "6230-sub-1"]
+     * if quantity is 1, an empty list
+     */
+    private fun ShippableItemModel.subItems() = if (quantity > 1) {
+        List(quantity.toInt()) { index -> "$itemId-sub-$index" }
+    } else {
+        emptyList()
+    }
+
+    private suspend fun updateCachedShipments(orderId: Long, newShipments: ShipmentMap) {
+        configDataStore.observeConfig(orderId).first()?.let {
+            configDataStore.saveConfig(orderId, it.copy(shipments = newShipments))
+        }
+    }
+}

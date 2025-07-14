@@ -46,9 +46,13 @@ class OrderFulfillFragment :
     private val viewModel: OrderFulfillViewModel by viewModels()
 
     @Inject lateinit var navigator: OrderNavigator
+
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var productImageMap: ProductImageMap
+
     @Inject lateinit var dateUtils: DateUtils
 
     private var undoSnackbar: Snackbar? = null

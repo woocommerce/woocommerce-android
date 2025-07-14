@@ -32,6 +32,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
@@ -52,7 +53,13 @@ class OrderFulfillViewModel @Inject constructor(
 
     private val navArgs: OrderFulfillFragmentArgs by savedState.navArgs()
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _productList = MutableLiveData<List<Item>>()
@@ -112,10 +119,14 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     fun hasVirtualProductsOnly(): Boolean {
-        return if (order.items.isNotEmpty()) {
-            val remoteProductIds = order.getProductIds()
-            repository.hasVirtualProductsOnly(remoteProductIds)
-        } else false
+        return runBlocking {
+            if (order.items.isNotEmpty()) {
+                val remoteProductIds = order.getProductIds()
+                repository.hasVirtualProductsOnly(remoteProductIds)
+            } else {
+                false
+            }
+        }
     }
 
     fun onMarkOrderCompleteButtonClicked() {
@@ -157,7 +168,8 @@ class OrderFulfillViewModel @Inject constructor(
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             repository.getOrderShipmentTrackingByTrackingNumber(
-                navArgs.orderId, trackingNumber
+                navArgs.orderId,
+                trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -197,7 +209,8 @@ class OrderFulfillViewModel @Inject constructor(
     fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val onOrderChanged = repository.deleteOrderShipmentTracking(
-                navArgs.orderId, shipmentTracking.toDataModel()
+                navArgs.orderId,
+                shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
                 analyticsTrackerWrapper.track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
@@ -217,7 +230,9 @@ class OrderFulfillViewModel @Inject constructor(
     fun onBackButtonClicked() {
         if (viewState.shouldRefreshShipmentTracking) {
             triggerEvent(ExitWithResult(true, key = KEY_REFRESH_SHIPMENT_TRACKING_RESULT))
-        } else triggerEvent(Exit)
+        } else {
+            triggerEvent(Exit)
+        }
     }
 
     private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(

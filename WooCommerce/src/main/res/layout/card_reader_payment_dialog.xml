@@ -1,163 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/color_surface_elevated"
+    android:gravity="center_horizontal"
+    android:minWidth="@dimen/payments_dialog_width"
+    android:minHeight="@dimen/payments_dialog_height"
+    android:paddingTop="@dimen/major_75"
+    android:paddingBottom="@dimen/major_75">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="@dimen/payments_dialog_width"
-        android:layout_height="@dimen/payments_dialog_height"
-        android:background="@color/color_surface_elevated"
-        android:paddingTop="@dimen/major_150"
-        android:paddingBottom="@dimen/major_75">
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/header_label"
+        style="@style/Woo.TextView.Subtitle2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_125"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:maxLines="1"
+        android:textColor="@color/color_on_surface_high"
+        app:autoSizeMaxTextSize="@dimen/text_minor_100"
+        app:autoSizeMinTextSize="@dimen/text_minor_80"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toTopOf="@id/amount_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Getting ready to collect payment" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/header_label"
-            style="@style/Woo.TextView.Subtitle2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_125"
-            android:layout_marginTop="0dp"
-            android:gravity="center_horizontal"
-            android:maxLines="1"
-            android:textColor="@color/color_on_surface_high"
-            app:autoSizeMaxTextSize="@dimen/text_minor_100"
-            app:autoSizeMinTextSize="@dimen/text_minor_80"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintBottom_toTopOf="@id/amount_label"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Getting ready to collect payment" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/amount_label"
+        style="@style/Woo.TextView.Headline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small_medium"
+        android:maxLines="1"
+        app:autoSizeMaxTextSize="@dimen/text_major_25"
+        app:autoSizeMinTextSize="@dimen/text_minor_130"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_label"
+        tools:text="$50.00" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/amount_label"
-            style="@style/Woo.TextView.Headline6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small_medium"
-            android:maxLines="1"
-            app:autoSizeMaxTextSize="@dimen/text_major_25"
-            app:autoSizeMinTextSize="@dimen/text_minor_130"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header_label"
-            tools:text="$50.00" />
+    <ImageView
+        android:id="@+id/illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small_medium"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toTopOf="@id/content_group"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/amount_label"
+        tools:srcCompat="@drawable/img_card_reader_available" />
 
-        <ImageView
-            android:id="@+id/illustration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_125"
-            android:contentDescription="@null"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/amount_label"
-            tools:srcCompat="@drawable/img_card_reader_available" />
+    <FrameLayout
+        android:id="@+id/progress_bar_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/major_175"
+        android:paddingBottom="@dimen/major_150"
+        app:layout_constraintBottom_toTopOf="@id/content_group"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/amount_label">
 
-        <FrameLayout
-            android:id="@+id/progress_bar_wrapper"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/major_175"
-            android:paddingBottom="@dimen/major_150"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/amount_label">
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/progress_bar_large"
+            android:layout_height="@dimen/progress_bar_large"
+            android:layout_marginTop="@dimen/minor_25" />
+    </FrameLayout>
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="@dimen/progress_bar_large"
-                android:layout_height="@dimen/progress_bar_large"
-                android:layout_marginTop="@dimen/minor_25" />
-        </FrameLayout>
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/content_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="illustration,progress_bar_wrapper" />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/content_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="illustration,progress_bar_wrapper" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/payment_state_label"
+        style="@style/Woo.TextView.Subtitle2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_125"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:textColor="@color/color_on_surface_high"
+        app:autoSizeMinTextSize="@dimen/text_minor_60"
+        app:autoSizeStepGranularity="2sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toTopOf="@id/hint_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/content_group"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Reader is ready" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/payment_state_label"
-            style="@style/Woo.TextView.Subtitle2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_125"
-            android:layout_marginTop="@dimen/major_100"
-            android:gravity="center_horizontal"
-            android:maxLines="2"
-            android:textColor="@color/color_on_surface_high"
-            app:autoSizeMinTextSize="@dimen/text_minor_60"
-            app:autoSizeStepGranularity="2sp"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/content_group"
-            tools:text="Reader is ready" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hint_label"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_125"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/receipt_sent_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/payment_state_label"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Tap or insert to pay" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/hint_label"
-            style="@style/Woo.TextView.Body2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_125"
-            android:layout_marginTop="@dimen/margin_small_medium"
-            android:gravity="center_horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/payment_state_label"
-            tools:text="Tap or insert to pay" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/receipt_sent_label"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_125"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/buttons_group"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hint_label"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="A receipt has been emailed to xyz" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/receipt_sent_label"
-            style="@style/Woo.TextView.Body2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_125"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:gravity="center_horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/content_group"
-            tools:text="A receipt has been emailed to xyz" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/buttons_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="primary_action_btn,secondary_action_btn,tertiary_action_btn" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/primary_action_btn"
-            style="@style/Woo.Button.Colored"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Send receipt" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/primary_action_btn"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_150"
+        android:layout_marginTop="@dimen/margin_small_medium"
+        app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttons_group"
+        app:layout_constraintVertical_bias="1"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Send receipt" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/secondary_action_btn"
-            style="@style/Woo.Button.Outlined"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            app:layout_constraintBottom_toTopOf="@id/tertiary_action_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Print receipt" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/secondary_action_btn"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_150"
+        app:layout_constraintBottom_toTopOf="@id/tertiary_action_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/primary_action_btn"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Print receipt" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/tertiary_action_btn"
-            style="@style/Woo.Button.TextButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            android:textAllCaps="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Save for later" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/tertiary_action_btn"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_150"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/secondary_action_btn"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Save for later" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

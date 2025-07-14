@@ -7,31 +7,29 @@
     android:background="@color/color_surface">
 
     <ImageView
+        android:id="@+id/image_prologue_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_prologue_bg_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/prologue_carousel_shape_color" />
+
+    <ImageView
         android:id="@+id/image_prologue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/image_major_64"
+        android:layout_marginTop="96dp"
         android:layout_marginBottom="@dimen/image_major_72"
         android:importantForAccessibility="no"
+        android:src="@drawable/ic_woo_logo_white_99dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/img_woo_logo" />
-
-    <ImageView
-        android:id="@+id/image_prologue_bg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_350"
-        android:adjustViewBounds="true"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
-        app:srcCompat="@drawable/img_prologue_bg" />
+        app:tint="@color/color_woo_logo" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
@@ -41,14 +39,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
-        android:layout_marginBottom="@dimen/major_150"
         tools:background="@color/blue_dark" />
 
     <com.woocommerce.android.widgets.WCViewPagerIndicator
         android:id="@+id/viewPagerIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/major_150"
+        android:layout_marginBottom="31dp"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toTopOf="@+id/button_next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -58,28 +56,26 @@
         style="@style/Woo.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="4dp"
         android:text="@string/next"
         android:textAllCaps="false"
         app:layout_constraintBottom_toTopOf="@id/button_skip"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintWidth_percent="@dimen/prologue_width_percent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_skip"
         style="@style/Woo.Button.TextButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:layout_marginBottom="@dimen/major_150"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="5dp"
         android:text="@string/skip"
         android:textAllCaps="false"
+        android:textColor="@color/color_on_surface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.5" />
-
+        app:layout_constraintWidth_percent="@dimen/prologue_width_percent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

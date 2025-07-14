@@ -13,8 +13,6 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -35,6 +33,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
+import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
@@ -42,6 +42,7 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResul
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.PENDING_VERIFICATION
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_FRAUD
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_LISTED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_OTHER
@@ -53,8 +54,6 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-
-const val WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION = "4.0.0"
 
 /**
  * This class is used to check if the selected store is ready to accept In Person Payments. The app should check store's
@@ -77,7 +76,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache,
-    private val cardReaderTracker: CardReaderTracker,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
 ) {
     suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
         val cachedValue = cardReaderOnboardingCheckResultCache.value
@@ -110,7 +109,7 @@ class CardReaderOnboardingChecker @Inject constructor(
                     )
                 }
         }.also {
-            cardReaderTracker.trackOnboardingState(it)
+            paymentsFlowTracker.trackOnboardingState(it)
         }
     }
 
@@ -133,8 +132,9 @@ class CardReaderOnboardingChecker @Inject constructor(
         val countryCode = getStoreCountryCode()
         cardReaderTrackingInfoKeeper.setCountry(countryCode)
         val cardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)
-        if (cardReaderConfig !is CardReaderConfigForSupportedCountry)
+        if (cardReaderConfig !is CardReaderConfigForSupportedCountry) {
             return StoreCountryNotSupported(countryCode)
+        }
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
@@ -154,6 +154,7 @@ class CardReaderOnboardingChecker @Inject constructor(
                     )
                     updatePluginExplicitlySelectedFlag(true)
                 }
+
                 !isPluginExplicitlySelected() -> {
                     return ChoosePaymentGatewayProvider
                 }
@@ -164,23 +165,30 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         val preferredPlugin = getUserSelectedPluginOrActivatedPlugin(wcPayPluginInfo, stripePluginInfo)
 
-        if (!isPluginInstalled(preferredPlugin)) when (preferredPlugin.type) {
-            WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
-            STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
+        if (!isPluginInstalled(preferredPlugin)) {
+            when (preferredPlugin.type) {
+                WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
+                STRIPE_EXTENSION_GATEWAY -> error("Developer error:`preferredPlugin` should be WCPay")
+            }
         }
 
-        if (!isPluginSupportedInCountry(preferredPlugin.type, cardReaderConfig))
+        if (!isPluginSupportedInCountry(preferredPlugin.type, cardReaderConfig)) {
             return PluginIsNotSupportedInTheCountry(preferredPlugin.type, countryCode!!)
+        }
 
         if (!isPluginVersionSupported(
                 preferredPlugin,
                 getMinimumSupportedVersionForPlugin(preferredPlugin.type, cardReaderConfig)
             )
-        ) return PluginUnsupportedVersion(preferredPlugin.type)
+        ) {
+            return PluginUnsupportedVersion(preferredPlugin.type)
+        }
 
-        if (!isPluginActivated(preferredPlugin.info)) when (preferredPlugin.type) {
-            WOOCOMMERCE_PAYMENTS -> return WcpayNotActivated
-            STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
+        if (!isPluginActivated(preferredPlugin.info)) {
+            when (preferredPlugin.type) {
+                WOOCOMMERCE_PAYMENTS -> return WcpayNotActivated
+                STRIPE_EXTENSION_GATEWAY -> error("Developer error:`preferredPlugin` should be WCPay")
+            }
         }
 
         val fluxCPluginType = preferredPlugin.type.toInPersonPaymentsPluginType()
@@ -198,30 +206,38 @@ class CardReaderOnboardingChecker @Inject constructor(
             )
         }
         if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(preferredPlugin.type)
-        if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) return PluginInTestModeWithLiveStripeAccount(
-            preferredPlugin.type
-        )
+        if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) {
+            return PluginInTestModeWithLiveStripeAccount(
+                preferredPlugin.type
+            )
+        }
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview(preferredPlugin.type)
-        if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement(
-            preferredPlugin.type
-        )
-        if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
-            paymentAccount.currentDeadline,
-            preferredPlugin.type,
-            preferredPlugin.info?.version,
-            requireNotNull(countryCode)
-        )
+        if (isStripeAccountOverdueRequirements(paymentAccount)) {
+            return StripeAccountOverdueRequirement(
+                preferredPlugin.type
+            )
+        }
+        if (isStripeAccountPendingRequirements(paymentAccount)) {
+            return StripeAccountPendingRequirement(
+                paymentAccount.currentDeadline,
+                preferredPlugin.type,
+                preferredPlugin.info?.version,
+                requireNotNull(countryCode)
+            )
+        }
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
         if (
             !isCashOnDeliveryDisabledStateSkipped() &&
             !cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
-        ) return CashOnDeliveryDisabled(
-            requireNotNull(countryCode),
-            preferredPlugin.type,
-            preferredPlugin.info?.version
-        )
+        ) {
+            return CashOnDeliveryDisabled(
+                requireNotNull(countryCode),
+                preferredPlugin.type,
+                preferredPlugin.info?.version
+            )
+        }
 
         return OnboardingCompleted(
             preferredPlugin.type,
@@ -369,7 +385,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             paymentAccount.status == REJECTED_OTHER
 
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status != COMPLETE && paymentAccount.status != ENABLED
+        paymentAccount.status !in listOf(COMPLETE, ENABLED, PENDING_VERIFICATION)
 
     private fun updateSharedPreferences(
         status: CardReaderOnboardingStatus,

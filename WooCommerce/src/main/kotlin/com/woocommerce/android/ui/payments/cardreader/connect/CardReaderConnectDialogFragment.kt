@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.cardreader.connect
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Activity.RESULT_OK
+import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -12,15 +13,18 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.ComponentDialog
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.NavGraphPaymentFlowDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderConnectDialogBinding
@@ -41,9 +45,11 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectE
 import com.woocommerce.android.ui.payments.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.UiHelpers.getIllustrationVisibilityForAccessibility
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
@@ -84,6 +90,14 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.setCanceledOnTouchOutside(false)
         return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = ComponentDialog(requireContext(), theme)
+        dialog.onBackPressedDispatcher.addCallback(dialog) {
+            viewModel.onBackPressed()
+        }
+        return dialog
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -151,7 +165,13 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
 
     private fun moveToState(binding: CardReaderConnectDialogBinding, viewState: CardReaderConnectViewState) {
         UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
-        UiHelpers.setImageOrHideInLandscape(binding.illustration, viewState.illustration)
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustration, viewState.illustration)
+            .also {
+                if (binding.illustration.isVisible) {
+                    binding.illustration.visibility =
+                        requireContext().getIllustrationVisibilityForAccessibility(resources.configuration.fontScale)
+                }
+            }
         UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
         UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
         UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
@@ -165,10 +185,6 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
         }
         binding.tertiaryActionBtn.setOnClickListener {
             viewState.onTertiaryActionClicked?.invoke()
-        }
-
-        with(binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {
-            topMargin = resources.getDimensionPixelSize(viewState.illustrationTopMargin)
         }
 
         updateMultipleReadersFoundRecyclerView(binding, viewState)
@@ -213,7 +229,8 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     WooPermissionUtils.requestScanAndConnectBluetoothPermission(requestBluetoothPermissionsLauncher)
                 }
                 is CheckBluetoothEnabled -> {
-                    @Suppress("DEPRECATION") val btAdapter = BluetoothAdapter.getDefaultAdapter()
+                    @Suppress("DEPRECATION")
+                    val btAdapter = BluetoothAdapter.getDefaultAdapter()
                     event.onBluetoothCheckResult(btAdapter?.isEnabled ?: false)
                 }
                 is RequestEnableBluetooth -> {
@@ -243,13 +260,19 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                         result = event.data as Boolean,
                     )
                 }
+                is CardReaderConnectEvent.ReturnToWooPos -> {
+                    parentFragmentManager.setFragmentResult(
+                        WooPosCardReaderActivity.WOO_POS_CARD_PAYMENT_REQUEST_KEY,
+                        Bundle()
+                    )
+                }
                 is CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))
                 is CardReaderConnectEvent.ShowToastString ->
                     ToastUtils.showToast(requireContext(), event.message)
-                is CardReaderConnectEvent.OpenWPComWebView ->
+                is CardReaderConnectEvent.OpenAuthenticatedWebView ->
                     findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+                        NavGraphPaymentFlowDirections.actionGlobalAuthenticatedWebViewFragment(urlToLoad = event.url)
                     )
                 is CardReaderConnectEvent.OpenGenericWebView ->
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)

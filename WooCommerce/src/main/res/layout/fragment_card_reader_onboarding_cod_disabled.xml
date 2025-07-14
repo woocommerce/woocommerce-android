@@ -11,10 +11,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_large"
+        android:layout_marginTop="@dimen/major_150"
         android:gravity="center"
         android:paddingHorizontal="@dimen/major_200"
         android:text="@string/card_reader_onboarding_cash_on_delivery_disabled_error_header"
-        app:layout_constraintBottom_toTopOf="@id/illustration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,27 +24,41 @@
         android:id="@+id/illustration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_275"
-        app:layout_constraintBottom_toTopOf="@id/textLabel"
+        android:layout_marginTop="@dimen/major_150"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textHeader"
-        tools:src="@drawable/img_products_error" />
+        tools:src="@drawable/ic_woo_illustrated_icon" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textLabel"
         style="@style/TextAppearance.Woo.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_275"
+        android:layout_marginTop="@dimen/major_250"
         android:gravity="center"
         android:paddingHorizontal="@dimen/major_200"
         android:text="@string/card_reader_onboarding_cash_on_delivery_disabled_error_hint"
         android:textColor="@color/color_on_surface_high"
-        app:layout_constraintBottom_toTopOf="@id/skipCashOnDelivery"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/illustration" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textSupport"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:paddingVertical="@dimen/major_100"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textLabel"
+        tools:text="@string/card_reader_onboarding_contact_us" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/skipCashOnDelivery"

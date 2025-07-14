@@ -57,7 +57,9 @@ class RefreshBundledProductsTest : BaseUnitTest() {
                 quantityMin = null,
                 quantityMax = null,
                 quantityDefault = null,
-                isOptional = false
+                isOptional = false,
+                attributesDefault = null,
+                variationIds = null
             )
         }
     }

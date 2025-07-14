@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCRemoveButton
 
 @Composable
 fun OrderCreateCouponEditScreen(
@@ -31,12 +33,11 @@ fun OrderCreateCouponEditScreen(
         )
 
         if (state.value?.isRemoveButtonVisible == true) {
-            WCColoredButton(
+            WCRemoveButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { onCouponRemoved() }
-            ) {
-                Text(stringResource(id = R.string.order_creation_remove_coupon))
-            }
+                onClick = { onCouponRemoved() },
+                text = stringResource(id = R.string.order_creation_remove_coupon)
+            )
         }
     }
 }
@@ -45,12 +46,13 @@ fun OrderCreateCouponEditScreen(
 @Composable
 fun OrderCreateCouponEditionScreenPreview() {
     OrderCreateCouponEditScreen(
-        state = object : State<OrderCreateCouponDetailsViewModel.ViewState?> {
-            override val value: OrderCreateCouponDetailsViewModel.ViewState
-                get() = OrderCreateCouponDetailsViewModel.ViewState(
+        state = remember {
+            mutableStateOf(
+                OrderCreateCouponDetailsViewModel.ViewState(
                     "code",
                     true,
                 )
+            )
         },
         onCouponRemoved = {}
     )

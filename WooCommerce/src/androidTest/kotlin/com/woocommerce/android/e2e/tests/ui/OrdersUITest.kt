@@ -10,6 +10,8 @@ import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.util.MocksReader
 import com.woocommerce.android.e2e.helpers.util.OrderData
 import com.woocommerce.android.e2e.helpers.util.iterator
+import com.woocommerce.android.e2e.rules.Retry
+import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.orders.OrderListScreen
@@ -35,6 +37,9 @@ class OrdersUITest : TestBase() {
     @get:Rule(order = 3)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
 
+    @get:Rule(order = 4)
+    var retryTestRule = RetryTestRule()
+
     @Before
     fun setUp() {
         WelcomeScreen
@@ -47,10 +52,10 @@ class OrdersUITest : TestBase() {
         TabNavComponent().gotoOrdersScreen()
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eCreateOrderTest() {
         val note = "Just a placeholder text"
-        val status = "Processing"
         val ordersJSONArray = MocksReader().readOrderToArray()
 
         for (orderJSON in ordersJSONArray.iterator()) {
@@ -60,14 +65,10 @@ class OrdersUITest : TestBase() {
             // https://github.com/woocommerce/woocommerce-android/issues/8724
             OrderListScreen()
                 .createFABTap()
-                .assertNewOrderScreen()
-                .updateOrderStatus(status)
+                .addCustomerNote(note)
                 .addProductTap()
                 .assertProductsSelectorScreen(composeTestRule)
                 .selectProduct(composeTestRule, orderData.productName)
-                .editCustomerNote(note)
-                .addShipping()
-                .addFee()
                 .createOrder()
                 .assertSingleOrderScreenWithProduct(orderData)
                 .goBackToOrdersScreen()

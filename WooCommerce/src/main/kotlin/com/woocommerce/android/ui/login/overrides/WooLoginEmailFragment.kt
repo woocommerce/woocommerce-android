@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.overrides
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -14,10 +15,15 @@ import org.wordpress.android.login.LoginEmailFragment
 class WooLoginEmailFragment : LoginEmailFragment() {
     companion object {
         private const val ARG_PREFILLED_EMAIL = "prefilled_email"
-        fun newInstance(prefilledEmail: String? = null): LoginEmailFragment {
+        private const val ARG_SHOW_SITE_CREDENTIALS_FALLBACK = "show_site_credentials_fallback"
+        fun newInstance(
+            prefilledEmail: String? = null,
+            showSiteCredentialsFallback: Boolean = true
+        ): LoginEmailFragment {
             val fragment = WooLoginEmailFragment()
             val args = Bundle()
             args.putString(ARG_PREFILLED_EMAIL, prefilledEmail)
+            args.putBoolean(ARG_SHOW_SITE_CREDENTIALS_FALLBACK, showSiteCredentialsFallback)
             fragment.arguments = args
             return fragment
         }
@@ -25,6 +31,7 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     interface Listener {
         fun onWhatIsWordPressLinkClicked()
+        fun onLoginWithSiteCredentialsFallbackClicked()
     }
 
     private lateinit var wooLoginEmailListener: Listener
@@ -38,14 +45,30 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         whatIsWordPressText.setOnClickListener {
             wooLoginEmailListener.onWhatIsWordPressLinkClicked()
         }
-        val prefilledEmail = requireArguments().getString(ARG_PREFILLED_EMAIL)
-        if (prefilledEmail.isNotNullOrEmpty()) {
-            mEmailInput?.editText?.setText(prefilledEmail)
+        val showSiteCredentialsFallback = requireArguments().getBoolean(ARG_SHOW_SITE_CREDENTIALS_FALLBACK, false)
+        val loginWithSiteCredentials = rootView.findViewById<Button>(R.id.login_with_site_credentials)
+        if (showSiteCredentialsFallback) {
+            loginWithSiteCredentials.setOnClickListener {
+                wooLoginEmailListener.onLoginWithSiteCredentialsFallbackClicked()
+            }
+            loginWithSiteCredentials.visibility = View.VISIBLE
+        } else {
+            loginWithSiteCredentials.visibility = View.GONE
         }
     }
 
     override fun setupLabel(label: TextView) {
         // NO-OP, For this custom screen, the correct label is set in the layout
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val prefilledEmail = requireArguments().getString(ARG_PREFILLED_EMAIL)
+        if (prefilledEmail.isNotNullOrEmpty()) {
+            mEmailInput?.editText?.setText(prefilledEmail)
+            next(prefilledEmail)
+            requireArguments().clear()
+        }
     }
 
     override fun onResume() {

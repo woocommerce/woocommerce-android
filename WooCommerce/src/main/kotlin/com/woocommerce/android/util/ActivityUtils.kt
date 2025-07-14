@@ -23,15 +23,13 @@ object ActivityUtils {
             return false
         }
 
-        val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_APP_EMAIL)
+        val intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_EMAIL)
         val emailApps = context.packageManager.intentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        return !emailApps.isEmpty()
+        return emailApps.isNotEmpty()
     }
 
     fun openEmailClient(context: Context) {
-        val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_APP_EMAIL)
+        val intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_EMAIL)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
@@ -86,7 +84,9 @@ object ActivityUtils {
 
     fun previewPDFFile(activity: Activity, file: File) {
         val pdfUri = FileProvider.getUriForFile(
-            activity, "${activity.packageName}.provider", file
+            activity,
+            "${activity.packageName}.provider",
+            file
         )
 
         val sendIntent = Intent(Intent.ACTION_VIEW)
@@ -141,10 +141,36 @@ object ActivityUtils {
         val title = context.resources.getText(R.string.share_store_dialog_title)
         context.startActivity(Intent.createChooser(sendIntent, title))
     }
+
+    @Suppress("SwallowedException")
+    fun isAppInstalled(context: Context, packageName: String): Boolean {
+        return try {
+            val pm = context.packageManager
+            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
+    fun openWhatsApp(context: Context, phoneNumber: String) {
+        val uri = Uri.parse("whatsapp://send?phone=$phoneNumber")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        context.startActivity(intent)
+    }
+
+    fun openTelegram(context: Context, telephone: String) {
+        val uri = Uri.parse("tg://resolve?phone=$telephone")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        context.startActivity(intent)
+    }
 }
 
 @Suppress("MagicNumber")
 inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
     SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+    else ->
+        @Suppress("DEPRECATION")
+        getParcelableExtra(key)
+            as? T
 }

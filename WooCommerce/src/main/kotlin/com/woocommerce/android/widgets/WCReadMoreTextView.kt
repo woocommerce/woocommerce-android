@@ -22,6 +22,7 @@ class WCReadMoreTextView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyle) {
     private val defaultMaxLines = context.resources.getInteger(R.integer.default_max_lines_read_more_textview)
     private val binding = WcReadMoreTextviewLayoutBinding.inflate(LayoutInflater.from(context), this, true)
+    private var globalLayoutListener: OnGlobalLayoutListener? = null
 
     fun show(content: String, @StringRes dialogCaptionId: Int, maxLines: Int = defaultMaxLines) {
         if (binding.textContent.text.toString() == content && binding.textContent.maxLines == maxLines) {
@@ -30,9 +31,14 @@ class WCReadMoreTextView @JvmOverloads constructor(
 
         binding.textContent.text = content
 
-        binding.textContent.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+        globalLayoutListener?.let {
+            binding.textContent.viewTreeObserver.removeOnGlobalLayoutListener(it)
+        }
+
+        globalLayoutListener = object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 binding.textContent.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                globalLayoutListener = null
                 if (binding.textContent.lineCount > maxLines) {
                     binding.textContent.maxLines = maxLines
                     binding.btnReadMore.visibility = View.VISIBLE
@@ -41,7 +47,16 @@ class WCReadMoreTextView @JvmOverloads constructor(
                     binding.btnReadMore.visibility = View.GONE
                 }
             }
-        })
+        }
+        binding.textContent.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        globalLayoutListener?.let {
+            binding.textContent.viewTreeObserver.removeOnGlobalLayoutListener(it)
+            globalLayoutListener = null
+        }
     }
 
     private fun showFullContent(content: String, @StringRes dialogCaptionId: Int) {

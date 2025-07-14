@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.QueryType
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -74,11 +75,11 @@ class GetComponentOptionsTest : BaseUnitTest() {
             defaultOptionId = defaultId
         )
         whenever(getProductsByIds(component.queryIds)).doReturn(emptyList())
-        whenever(productRepository.fetchProductOrLoadFromCache(defaultId)).doReturn(sampleProduct)
+        whenever(productRepository.fetchAndGetProduct(defaultId)).doReturn(sampleProduct)
 
         val result = sut.invoke(component)
 
-        verify(productRepository).fetchProductOrLoadFromCache(defaultId)
+        verify(productRepository).fetchAndGetProduct(defaultId)
         assertThat(result.default).isEqualTo(defaultName)
     }
 

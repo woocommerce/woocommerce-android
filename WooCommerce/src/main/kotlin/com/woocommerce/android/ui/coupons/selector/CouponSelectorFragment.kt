@@ -45,7 +45,6 @@ class CouponSelectorFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-
                 is MultiLiveEvent.Event.ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_COUPON_SELECTOR_RESULT, it.data)
                 }

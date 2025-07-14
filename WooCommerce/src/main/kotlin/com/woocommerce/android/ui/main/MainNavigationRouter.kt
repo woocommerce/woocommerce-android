@@ -1,13 +1,13 @@
 package com.woocommerce.android.ui.main
 
 import android.view.View
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import androidx.navigation.fragment.NavHostFragment
 
 interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
     fun isChildFragmentShowing(): Boolean
 
-    fun showProductDetail(remoteProductId: Long, enableTrash: Boolean = false)
+    fun showProductDetail(remoteProductId: Long, enableTrash: Boolean = false, popUpToProductList: Boolean = false)
     fun showProductDetailWithSharedTransition(
         remoteProductId: Long,
         sharedView: View,
@@ -17,17 +17,21 @@ interface MainNavigationRouter {
 
     fun showOrderDetail(
         orderId: Long,
+        navHostFragment: NavHostFragment? = null,
         remoteNoteId: Long = 0,
-        launchedFromNotification: Boolean = false
+        launchedFromNotification: Boolean = false,
+        startPaymentsFlow: Boolean = false,
     )
 
     fun showOrderDetailWithSharedTransition(
         orderId: Long,
+        allOrderIds: List<Long>,
         remoteNoteId: Long = 0,
         sharedView: View
     )
 
-    fun showAddProduct()
+    fun showAddProduct(imageUris: List<String> = emptyList())
+
     fun showReviewDetail(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
@@ -50,6 +54,4 @@ interface MainNavigationRouter {
 
     fun showFeedbackSurvey()
     fun showSettingsScreen()
-
-    fun showAnalytics(targetPeriod: StatsTimeRangeSelection.SelectionType)
 }

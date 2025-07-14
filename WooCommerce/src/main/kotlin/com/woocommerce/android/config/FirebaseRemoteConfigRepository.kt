@@ -2,7 +2,7 @@ package com.woocommerce.android.config
 
 import androidx.annotation.VisibleForTesting
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -21,13 +21,16 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     companion object {
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
+
+        const val KEY_ENABLE_JETPACK_APP_PASSWORDS_EXPERIMENT = "wcandroid_enable_jetpack_app_passwords_experiment_2"
     }
 
     private val minimumFetchIntervalInSeconds =
-        if (PackageUtils.isDebugBuild())
+        if (PackageUtils.isDebugBuild()) {
             DEBUG_INTERVAL // 10 seconds
-        else
+        } else {
             RELEASE_INTERVAL // 12 hours
+        }
 
     private val changesTrigger = MutableSharedFlow<Unit>(replay = 1)
 
@@ -35,7 +38,9 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     override val fetchStatus: Flow<RemoteConfigFetchStatus> = _fetchStatus.asStateFlow()
 
     private val defaultValues by lazy {
-        mapOf<String, String>()
+        mapOf(
+            KEY_ENABLE_JETPACK_APP_PASSWORDS_EXPERIMENT to false.toString()
+        )
     }
 
     init {
@@ -68,4 +73,8 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     @VisibleForTesting
     fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }
+
+    override fun isJetpackAppPasswordsExperimentEnabled(): Boolean {
+        return remoteConfig.getBoolean(KEY_ENABLE_JETPACK_APP_PASSWORDS_EXPERIMENT)
+    }
 }

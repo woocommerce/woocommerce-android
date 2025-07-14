@@ -1,16 +1,19 @@
 package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
+import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,6 +31,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
@@ -68,10 +72,19 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         on { moreMenuPaymentsFeatureWasClicked }.thenReturn(flowOf(true))
     }
 
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn false
+        onBlocking { invoke() } doReturn true
     }
+
+    private val isGoogleForWooEnabled: IsGoogleForWooEnabled = mock {
+        onBlocking { invoke() } doReturn true
+    }
+
+    private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()
+
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+
+    private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
@@ -87,9 +100,12 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
             planRepository = planRepository,
             resourceProvider = resourceProvider,
+            blazeCampaignsStore = blazeCampaignsStore,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
-            appPrefsWrapper = appPrefsWrapper,
-            isBlazeEnabled = isBlazeEnabled
+            isBlazeEnabled = isBlazeEnabled,
+            isGoogleForWooEnabled = isGoogleForWooEnabled,
+            hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -109,7 +125,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(false)
 
         // THEN
-        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
+        val paymentsButton =
+            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_payments)
         assertThat(paymentsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_surface
@@ -142,7 +159,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(false)
 
         // THEN
-        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
+        val paymentsButton =
+            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.badgeState).isNull()
     }
 
@@ -157,7 +175,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val states = viewModel.moreMenuViewState.captureValues()
 
         // THEN
-        val reviewsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_reviews }
+        val reviewsButton =
+            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_reviews }
         assertThat(reviewsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
         assertThat(reviewsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_primary
@@ -317,7 +336,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             prefsChanges.emit(false)
 
             // THEN
-            assertThat(states.last().generalMenuItems.first().badgeState).isNotNull
+            assertThat(
+                states.last().menuSections.flatMap { it.items }.first {
+                    it.title == R.string.more_menu_button_payments
+                }.badgeState
+            ).isNotNull
         }
 
     @Test
@@ -333,7 +356,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(true)
 
         // THEN
-        assertThat(states.last().generalMenuItems.first().badgeState).isNull()
+        assertThat(states.last().menuSections.flatMap { it.items }.first().badgeState).isNull()
     }
 
     @Test
@@ -368,5 +391,59 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // THEN
         assertThat(states.last().sitePlan).isEqualTo("")
+    }
+
+    @Test
+    fun `given no blaze campaigns, when user clicks on blaze, then start campaign creation`() = testBlocking {
+        setup {
+            whenever(blazeCampaignsStore.getBlazeCampaigns(any())).thenReturn(emptyList())
+        }
+
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val button = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_blaze }
+        val event = viewModel.event.runAndCaptureValues {
+            button.onClick()
+        }.last()
+
+        assertThat(event).isInstanceOf(MoreMenuEvent.OpenBlazeCampaignCreationEvent::class.java)
+    }
+
+    @Test
+    fun `given existing blaze campaigns, when user clicks on blaze, then show campaigns list`() = testBlocking {
+        setup {
+            whenever(blazeCampaignsStore.getBlazeCampaigns(any()))
+                .thenReturn(listOf(mock()))
+        }
+
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val button = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_blaze }
+        val event = viewModel.event.runAndCaptureValues {
+            button.onClick()
+        }.last()
+
+        assertThat(event).isEqualTo(MoreMenuEvent.OpenBlazeCampaignListEvent)
+    }
+
+    @Test
+    fun `when building state, then all optional buttons start with loading state`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(isBlazeEnabled.invoke()).thenReturn(true)
+            whenever(isGoogleForWooEnabled.invoke()).thenReturn(true)
+            whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
+            whenever(moreMenuRepository.isInboxEnabled()).thenReturn(true)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        val items = states.first().menuSections.flatMap { it.items }
+        assertThat(items.first { it.title == R.string.more_menu_button_blaze }.state)
+            .isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_google }.state)
+            .isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_inbox }.state)
+            .isEqualTo(MoreMenuItemButton.State.Loading)
     }
 }

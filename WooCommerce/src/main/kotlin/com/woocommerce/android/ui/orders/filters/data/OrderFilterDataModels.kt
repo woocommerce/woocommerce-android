@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.orders.filters.data
 
 enum class OrderListFilterCategory {
     ORDER_STATUS,
-    DATE_RANGE
+    DATE_RANGE,
+    PRODUCT,
+    CUSTOMER
 }
 
 enum class DateRange(val filterKey: String) {

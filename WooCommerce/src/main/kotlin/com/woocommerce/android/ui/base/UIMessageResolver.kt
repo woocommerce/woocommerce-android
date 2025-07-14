@@ -227,8 +227,25 @@ interface UIMessageResolver {
      * @param [stringArgs] Optional. One or more format argument stringArgs
      */
     fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
-        snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), BaseTransientBottomBar.LENGTH_LONG
+        snackbarRoot,
+        snackbarRoot.context.getString(stringResId, *stringArgs),
+        BaseTransientBottomBar.LENGTH_LONG
     ).apply {
+        anchorViewId?.let { setAnchorView(it) }
+    }
+
+    /**
+     * Create and return a snackbar with the provided [UiString].
+     *
+     * @param [stringResId] The string resource id of the base message
+     * @param [stringArgs] Optional. One or more format argument stringArgs
+     */
+    fun getUiStringSnack(message: UiString) = when (message) {
+        is UiString.UiStringRes ->
+            Snackbar.make(snackbarRoot, message.stringRes, BaseTransientBottomBar.LENGTH_LONG)
+
+        is UiString.UiStringText -> Snackbar.make(snackbarRoot, message.text, BaseTransientBottomBar.LENGTH_LONG)
+    }.apply {
         anchorViewId?.let { setAnchorView(it) }
     }
 
@@ -263,13 +280,59 @@ interface UIMessageResolver {
         val snackbar = when (message) {
             is UiString.UiStringRes ->
                 Snackbar.make(snackbarRoot, message.stringRes, BaseTransientBottomBar.LENGTH_LONG)
+
             is UiString.UiStringText -> Snackbar.make(snackbarRoot, message.text, BaseTransientBottomBar.LENGTH_LONG)
         }.apply {
             anchorViewId?.let { setAnchorView(it) }
         }
         snackbar.show()
     }
+
+    /**
+     * Shows a Snackbar with an action.
+     * The Snackbar will use a length: [BaseTransientBottomBar.LENGTH_LONG].
+     *
+     * @param message the message to display
+     * @param actionText the action text
+     * @param action the callback to invoke when the action is clicked
+     */
+    fun showActionSnack(@StringRes message: Int, @StringRes actionText: Int, action: View.OnClickListener) {
+        val snackbar = getSnackbarWithAction(
+            view = snackbarRoot,
+            msg = snackbarRoot.context.getString(message),
+            actionString = snackbarRoot.context.getString(actionText),
+            actionListener = action,
+            anchorViewId = anchorViewId
+        )
+
+        snackbar.show()
+    }
+
+    /**
+     * Shows a Snackbar with an action.
+     * The Snackbar will use a length: [BaseTransientBottomBar.LENGTH_LONG].
+     *
+     * @param message the message to display
+     * @param actionText the action text
+     * @param action the callback to invoke when the action is clicked
+     */
+    fun showActionSnack(
+        message: String,
+        actionText: String,
+        action: View.OnClickListener
+    ) {
+        val snackbar = getSnackbarWithAction(
+            view = snackbarRoot,
+            msg = message,
+            actionString = actionText,
+            actionListener = action,
+            anchorViewId = anchorViewId
+        )
+
+        snackbar.show()
+    }
 }
+
 private fun getIndefiniteSnackbarWithAction(
     view: View,
     msg: String,

@@ -10,6 +10,8 @@ import org.wordpress.android.util.AppLog as WordPressAppLog
  * Simple wrapper for Android log calls, enables registering listeners for log events.
  *
  * Simplified version of [org.wordpress.android.util.AppLog].
+ *
+ * Note: If you want to reference these enum values in tests, you must duplicate them here: WooPosProductsDataSourceTest.kt
  */
 object WooLog {
     // T for Tag
@@ -37,6 +39,12 @@ object WooLog {
         WOO_TRIAL,
         AI,
         BARCODE_SCANNER,
+        THEMES,
+        BLAZE,
+        GOOGLE_ADS,
+        POS,
+        CUSTOM_FIELDS,
+        SHIPPING_LABELS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
@@ -44,7 +52,7 @@ object WooLog {
     enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
-    private const val MAX_ENTRIES = 99
+    private const val MAX_ENTRIES = 999
     val logEntries = RollingLogEntries(MAX_ENTRIES)
 
     init {

@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+agents:
+  queue: "android"
+
+steps:
+  - label: "dependency analysis"
+    command: |
+      .buildkite/commands/restore-cache.sh
+      echo "--- 📊 Analyzing"
+      ./gradlew buildHealth
+    plugins: [$CI_TOOLKIT]
+    artifact_paths:
+      - "build/reports/dependency-analysis/build-health-report.*"
+
+notify:
+  - slack:
+      channels:
+        - "#android-core-notifs"
+      message: "Dependency analysis succeeded."
+    if: build.state == "passed"
+  - slack:
+      channels:
+        - "#android-core-notifs"
+      message: "Dependency analysis failed."
+    if: build.state == "failed"

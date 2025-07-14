@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.getTimeString
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
+import com.woocommerce.android.ui.orders.SalesChannelTag
 import java.util.Date
 
 typealias EditStatusClickListener = (View) -> Unit
@@ -44,6 +45,17 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 binding.orderStatusHeader.isVisible = false
             }
         }
+
+        updatePosTag(order)
+    }
+
+    private fun updatePosTag(order: Order) {
+        if (order.salesChannel == Order.SalesChannel.POS) {
+            binding.orderStatusPosTag.isVisible = true
+            binding.orderStatusPosTag.tag = SalesChannelTag(context.getString(R.string.pos_badge))
+        } else {
+            binding.orderStatusPosTag.isVisible = false
+        }
     }
 
     private fun getFormattedDate(date: Date): String {
@@ -61,7 +73,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         this.mode = mode
         when (mode) {
             Mode.OrderEdit -> {
-                binding.orderStatusEditButton.isVisible = false
                 binding.orderStatusEditImage.isVisible = true
                 with(binding.orderStatusContainer) {
                     isClickable = true
@@ -70,8 +81,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 }
             }
             Mode.OrderCreation -> {
-                binding.orderStatusEditImage.isVisible = false
-                with(binding.orderStatusEditButton) {
+                with(binding.orderStatusEditImage) {
                     isVisible = true
                     setOnClickListener(editOrderStatusClickListener)
                 }

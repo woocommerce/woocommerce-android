@@ -10,5 +10,7 @@ class GetSelectedOrderFiltersCount @Inject constructor(
     operator fun invoke(): Int =
         orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
             .plus(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.DATE_RANGE))
+            .plus(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.PRODUCT))
+            .plus(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.CUSTOMER))
             .size
 }

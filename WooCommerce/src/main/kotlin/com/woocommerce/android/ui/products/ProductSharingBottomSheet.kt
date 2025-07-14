@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.AppConstants.FADE_ANIMATION_DELAY_MS
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.component.FeedbackRequest
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -45,7 +46,6 @@ import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Regenerate
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.WriteWithAI
 import com.woocommerce.android.ui.products.ProductSharingViewModel.ProductSharingViewState
-import com.woocommerce.android.ui.products.ai.AiFeedbackForm
 
 @Composable
 fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
@@ -109,7 +109,10 @@ fun ProductShareWithAI(
                     enter = fadeIn(animationSpec = tween(FADE_ANIMATION_DELAY_MS)),
                     exit = fadeOut(animationSpec = tween(FADE_ANIMATION_DELAY_MS))
                 ) {
-                    AiFeedbackForm(onDescriptionFeedbackReceived)
+                    FeedbackRequest(
+                        feedbackRequestText = R.string.ai_feedback_form_message,
+                        onFeedbackReceived = onDescriptionFeedbackReceived
+                    )
                 }
             }
 

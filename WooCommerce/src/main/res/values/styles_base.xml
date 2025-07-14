@@ -18,6 +18,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="navigationIcon">@drawable/ic_back_24dp</item>
         <item name="android:theme">@style/Widget.Woo.Toolbar.Surface</item>
         <item name="android:background">@color/color_toolbar</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
     </style>
     <style name="Widget.Woo.Toolbar.Surface" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
         <item name="actionMenuTextColor">@color/color_primary_selector</item>
@@ -31,9 +33,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:layout_height">@dimen/toolbar_height</item>
     </style>
-    <style name="Woo.CollapsedToolbarLayout" parent="Widget.MaterialComponents.Toolbar.Surface">
+    <style name="Woo.CollapsedToolbarLayout" parent="@style/Widget.Design.CollapsingToolbar">
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
         <item name="android:background">@color/color_toolbar</item>
+        <item name="statusBarScrim">@android:color/transparent</item>
         <item name="collapsedTitleTextAppearance">
             @style/TextAppearance.Woo.CollapsingToolbar.Collapsed
         </item>
@@ -58,9 +61,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
         AppBarLayout Style
     -->
     <style name="Woo.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
-        <item name="android:fitsSystemWindows">true</item>
         <item name="elevation">0dp</item>
         <item name="liftOnScroll">true</item>
+        <item name="android:background">@color/color_toolbar</item>
     </style>
 
     <!--
@@ -385,7 +388,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="endIconTint">@color/color_on_surface_medium_selector</item>
         <item name="endIconTintMode">src_atop</item>
         <item name="android:cursorVisible">false</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:background">@drawable/custom_ripple</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">true</item>
     </style>
@@ -473,6 +476,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="rippleColor">?colorPrimaryVariant</item>
+        <item name="backgroundTint">@color/primary_colored_button_background</item>
     </style>
 
     <!--  Circular button filled with color  -->
@@ -532,16 +536,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tint">@color/woo_white</item>
         <item name="backgroundTint">?colorPrimary</item>
     </style>
-
-    <!--  Button used in Jetpack Installation dialogs   -->
-    <style name="Woo.JetpackButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
-        <item name="android:paddingStart">@dimen/major_100</item>
-        <item name="android:paddingEnd">@dimen/major_100</item>
-        <item name="backgroundTint">@color/jetpack_button_color</item>
-    </style>
-
-
 
     <!-- Set at the theme level so no need to set directly on the component -->
     <style name="Widget.Woo.WCToggleOutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
@@ -777,6 +771,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.AztecText.SourceEditor">
+        <item name="android:imeOptions">flagNoExtractUi</item>
         <item name="android:inputType">textNoSuggestions|textMultiLine</item>
         <item name="attributeColor">@color/editor_attribute_color</item>
         <item name="codeBackgroundColor">@color/editor_code_bg_color</item>
@@ -810,5 +805,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Theme.Woo.BottomSheet" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bottomsheet_rounded</item>
+    </style>
+
+    <style name="Woo.Theme.BottomSheetDialog.Resizeable" parent="Woo.Theme.BottomSheetDialog">
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="Woo.Theme.CalendarView" parent="android:Widget.CalendarView">
+        <item name="android:textColorPrimary">@color/color_on_surface_medium</item>
     </style>
 </resources>

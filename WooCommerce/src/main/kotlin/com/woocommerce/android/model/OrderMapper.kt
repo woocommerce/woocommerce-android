@@ -3,15 +3,19 @@ package com.woocommerce.android.model
 import com.woocommerce.android.extensions.CASH_PAYMENTS
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.Order.Item
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
-import org.wordpress.android.fluxc.model.OrderEntity
-import org.wordpress.android.fluxc.model.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.get
+import org.wordpress.android.fluxc.model.order.FeeLine
 import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
 import org.wordpress.android.fluxc.model.order.OrderAddress
+import org.wordpress.android.fluxc.model.order.ShippingLine
 import org.wordpress.android.fluxc.model.order.TaxLine
+import org.wordpress.android.fluxc.model.order.WCLineTaxEntry
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.CHARGE_ID_KEY
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.SHIPPING_PHONE_KEY
-import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -20,15 +24,18 @@ import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.LineItem as WCLineItem
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
-class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
-    fun toAppModel(databaseEntity: OrderEntity): Order {
-        val metaDataList = databaseEntity.getMetaDataList()
+class OrderMapper @Inject constructor(
+    private val getLocations: GetLocations,
+    private val dateUtils: DateUtils,
+) {
+    suspend fun toAppModel(databaseEntity: OrderEntity): Order {
+        val metaDataList = databaseEntity.metaData
         return Order(
             id = databaseEntity.orderId,
             number = databaseEntity.number,
-            dateCreated = DateTimeUtils.dateUTCFromIso8601(databaseEntity.dateCreated) ?: Date(),
-            dateModified = DateTimeUtils.dateUTCFromIso8601(databaseEntity.dateModified) ?: Date(),
-            datePaid = DateTimeUtils.dateUTCFromIso8601(databaseEntity.datePaid),
+            dateCreated = dateUtils.getDateUsingSiteTimeZone(databaseEntity.dateCreated) ?: Date(),
+            dateModified = dateUtils.getDateUsingSiteTimeZone(databaseEntity.dateModified) ?: Date(),
+            datePaid = dateUtils.getDateUsingSiteTimeZone(databaseEntity.datePaid),
             status = Order.Status.fromValue(databaseEntity.status),
             total = databaseEntity.total.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             productsTotal = databaseEntity.getOrderSubtotal().toBigDecimal(),
@@ -59,20 +66,21 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             shippingPhone = metaDataList.getOrEmpty(SHIPPING_PHONE_KEY),
             paymentUrl = databaseEntity.paymentUrl,
             isEditable = databaseEntity.isEditable,
+            selectedGiftCard = databaseEntity.giftCardCode,
+            giftCardDiscountedAmount = databaseEntity.giftCardAmount
+                .toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            shippingTax = databaseEntity.shippingTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            salesChannel = if (databaseEntity.createdVia.lowercase() == "pos-rest-api") {
+                Order.SalesChannel.POS
+            } else {
+                Order.SalesChannel.NON_POS
+            },
         )
     }
 
-    private fun List<WCMetaData>.getOrNull(key: String): String? = firstOrNull {
-        it.key == key
-    }.let {
-        it?.value?.toString()
-    }
+    private fun List<WCMetaData>.getOrNull(key: String): String? = get(key)?.valueAsString
 
-    private fun List<WCMetaData>.getOrEmpty(key: String): String = find {
-        it.key == key
-    }.let {
-        it?.value?.toString().orEmpty()
-    }
+    private fun List<WCMetaData>.getOrEmpty(key: String): String = getOrNull(key).orEmpty()
 
     private fun List<WCFeeLine>.mapFeesLines(): List<Order.FeeLine> = map {
         Order.FeeLine(
@@ -84,7 +92,8 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
                 FeeLineTaxStatus.Taxable -> Order.FeeLine.FeeLineTaxStatus.TAXABLE
                 FeeLineTaxStatus.None -> Order.FeeLine.FeeLineTaxStatus.NONE
                 else -> Order.FeeLine.FeeLineTaxStatus.UNKNOWN
-            }
+            },
+            taxes = it.taxes?.mapLineTaxes() ?: emptyList()
         )
     }
 
@@ -105,10 +114,12 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             methodId = it.methodId,
             methodTitle = it.methodTitle ?: StringUtils.EMPTY,
             totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            taxes = it.taxes?.mapLineTaxes() ?: emptyList(),
         )
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun List<WCLineItem>.mapLineItems(): List<Item> =
         this.filter { it.productId != null && it.id != null }
             .map {
@@ -120,13 +131,17 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
                     it.sku ?: "",
                     it.quantity ?: 0f,
                     it.subtotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    it.subtotalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.variationId ?: 0,
                     it.getAttributeList().map { attribute ->
                         Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
                     },
-                    it.bundledBy?.toLongOrNull() ?: it.compositeParent?.toLongOrNull()
+                    it.bundledBy?.toLongOrNull() ?: it.compositeParent?.toLongOrNull(),
+                    configurationKey = it.configurationKey,
+                    containsMetadata = it.metaData?.isNotEmpty() ?: false,
+                    taxes = it.taxes?.mapLineTaxes() ?: emptyList()
                 )
             }
 
@@ -166,6 +181,13 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             code = it.code,
             id = it.id,
             discount = it.discount,
+        )
+    }
+
+    private fun List<WCLineTaxEntry>.mapLineTaxes(): List<Order.LineTaxEntry> = map {
+        Order.LineTaxEntry(
+            rateId = it.rateId ?: 0L,
+            taxAmount = it.total ?: BigDecimal.ZERO,
         )
     }
 }

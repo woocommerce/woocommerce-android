@@ -33,6 +33,7 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
     }
 
     private var listener: Listener? = null
+
     @Inject lateinit var analyticsListener: LoginAnalyticsListener
 
     override fun onStart() {

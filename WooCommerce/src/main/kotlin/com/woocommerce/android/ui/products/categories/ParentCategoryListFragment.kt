@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.categories
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -14,8 +13,10 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +29,9 @@ class ParentCategoryListFragment :
     OnProductCategoryClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: AddProductCategoryViewModel by hiltNavGraphViewModels(R.id.nav_graph_add_product_category)
+    private val viewModel: AddProductCategoryViewModel by fixedHiltNavGraphViewModels(
+        navGraphId = R.id.nav_graph_add_product_category
+    )
 
     private lateinit var parentCategoryListAdapter: ParentCategoryListAdapter
 
@@ -57,8 +60,7 @@ class ParentCategoryListFragment :
         viewModel.fetchParentCategories()
     }
 
-    override fun getFragmentTitle() = getString(R.string.product_add_category)
-
+    @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -80,6 +82,16 @@ class ParentCategoryListFragment :
                 viewModel.refreshParentCategories()
             }
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_add_category),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
+        )
     }
 
     private fun setupObservers(viewModel: AddProductCategoryViewModel) {
@@ -135,7 +147,11 @@ class ParentCategoryListFragment :
         viewModel.onLoadMoreParentCategoriesRequested()
     }
 
-    override fun onProductCategoryClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {
-        viewModel.onParentCategorySelected(productCategoryItemUiModel.category.remoteCategoryId)
+    override fun onProductCategoryChecked(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+        viewModel.onCategorySelected(productCategoryItemUiModel.category.remoteCategoryId)
+    }
+
+    override fun onProductCategorySelected(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+        viewModel.onCategorySelected(productCategoryItemUiModel.category.remoteCategoryId)
     }
 }

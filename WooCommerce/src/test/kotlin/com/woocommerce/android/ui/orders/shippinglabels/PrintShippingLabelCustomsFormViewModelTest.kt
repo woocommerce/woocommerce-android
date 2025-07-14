@@ -1,12 +1,13 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModel.PrintCustomsForm
 import com.woocommerce.android.util.FileDownloader
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -37,7 +38,7 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     private fun initViewModel() {
         viewModel = PrintShippingLabelCustomsFormViewModel(
             savedStateHandle = PrintShippingLabelCustomsFormFragmentArgs(urls.toTypedArray(), true)
-                .initSavedStateHandle(),
+                .toSavedStateHandle(),
             fileDownloader = fileDownloader,
             fileUtils = fileUtils
         )

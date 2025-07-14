@@ -28,26 +28,31 @@ object FileUploadUtils {
         mediaStore: MediaStore,
         mediaPickerUtils: MediaPickerUtils
     ): MediaModel? {
-        // "fetch" the media - necessary to support choosing from Downloads, Google Photos, etc.
-        fetchMedia(context, localUri)?.let { fetchedUri ->
-            mediaPickerUtils.getFilePath(fetchedUri)?.let { filePath ->
-                val path = if (MediaUtils.isValidImage(filePath)) {
-                    // optimize the image if the setting is enabled
-                    getOptimizedImagePath(context, filePath)
-                } else filePath
+        val fetchedUri = fetchMedia(context, localUri) ?: run {
+            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > fetched media path is null or empty")
+            return null
+        }
 
-                val mimeType = getMimeType(context, localUri, fetchedUri) ?: return null
+        val filePath = mediaPickerUtils.getFilePath(fetchedUri) ?: run {
+            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $fetchedUri")
+            return null
+        }
 
-                val file = File(path)
-                if (file.exists()) {
-                    return createMediaModel(mediaStore, fetchedUri, path, localSiteId, mimeType)
-                } else {
-                    WooLog.w(T.MEDIA, "mediaModelFromLocalUri > file does not exist, $path")
-                }
-            } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to get path from uri, $fetchedUri")
-        } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > fetched media path is null or empty")
+        val path = if (MediaUtils.isValidImage(filePath)) {
+            getOptimizedImagePath(context, filePath)
+        } else {
+            filePath
+        }
 
-        return null
+        val mimeType = getMimeType(context, localUri, fetchedUri) ?: return null
+
+        val file = File(path)
+        if (!file.exists()) {
+            WooLog.w(T.MEDIA, "mediaModelFromLocalUri > file does not exist, $path")
+            return null
+        }
+
+        return createMediaModel(mediaStore, fetchedUri, path, localSiteId, mimeType)
     }
 
     private fun getMimeType(context: Context, originalUri: Uri, fetchedUri: Uri): String? {
@@ -67,9 +72,7 @@ object FileUploadUtils {
         localSiteId: Int,
         mimeType: String
     ): MediaModel? {
-        val media = mediaStore.instantiateMediaModel()
-        var filename = FluxCMediaUtils.getFileName(fetchedUri.path)
-
+        var filename = FluxCMediaUtils.getFileName(fetchedUri.path) ?: ""
         val fileExtension: String = filename
             .substringAfterLast(delimiter = ".", missingDelimiterValue = "")
             .ifBlank {
@@ -84,15 +87,23 @@ object FileUploadUtils {
                 return null
             }
 
-        media.fileName = filename
-        media.title = filename
-        media.filePath = path
-        media.localSiteId = localSiteId
-        media.fileExtension = fileExtension
-        media.mimeType = mimeType
-        media.uploadDate = DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000)
-
-        return media
+        val media = MediaModel(
+            localSiteId,
+            DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000),
+            filename,
+            path,
+            fileExtension,
+            mimeType,
+            filename,
+            null
+        )
+        val instantiatedMedia = mediaStore.instantiateMediaModel(media)
+        return if (instantiatedMedia != null) {
+            instantiatedMedia
+        } else {
+            WooLog.w(T.MEDIA, "We couldn't instantiate the media")
+            null
+        }
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -127,10 +138,6 @@ object FileUploadUtils {
      * @return A local {@link Uri} or null if the download failed
      */
     private fun fetchMedia(context: Context, mediaUri: Uri): Uri? {
-        if (MediaUtils.isInMediaStore(mediaUri)) {
-            return mediaUri
-        }
-
         return try {
             MediaUtils.downloadExternalMedia(context.applicationContext, mediaUri)
         } catch (e: IllegalStateException) {

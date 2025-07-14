@@ -7,8 +7,8 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
-import com.woocommerce.android.extensions.exhaustive
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.di.PointOfSaleMode
+import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -29,17 +30,23 @@ import javax.inject.Inject
 class CardReaderStatusCheckerViewModel
 @Inject constructor(
     savedState: SavedStateHandle,
+    @StoreManagementMode storeManagementModePaymentsFlowTracker: PaymentsFlowTracker,
+    @PointOfSaleMode pointOfSaleModePaymentsFlowTracker: PaymentsFlowTracker,
     private val cardReaderManager: CardReaderManager,
     private val cardReaderChecker: CardReaderOnboardingChecker,
-    private val cardReaderTracker: CardReaderTracker,
     private val appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderStatusCheckerDialogFragmentArgs by savedState.navArgs()
+    private val paymentsFlowTracker: PaymentsFlowTracker
 
     override val _event = SingleLiveEvent<MultiLiveEvent.Event>()
     override val event: LiveData<MultiLiveEvent.Event> = _event
 
     init {
+        paymentsFlowTracker = when (arguments.cardReaderFlowParam) {
+            is CardReaderFlowParam.WooPosConnection -> pointOfSaleModePaymentsFlowTracker
+            else -> storeManagementModePaymentsFlowTracker
+        }
         launch {
             checkStatus()
         }
@@ -70,11 +77,12 @@ class CardReaderStatusCheckerViewModel
                     handleOnboardingStatus(param)
                 }
             }
-        }.exhaustive
+            is CardReaderFlowParam.WooPosConnection -> handleOnboardingStatus(param)
+        }
     }
 
     private suspend fun handleNotSelectedReaderTypeConnected(param: CardReaderFlowParam) {
-        cardReaderTracker.trackAutomaticReadDisconnectWhenConnectedAnotherType()
+        paymentsFlowTracker.trackAutomaticReadDisconnectWhenConnectedAnotherType()
         cardReaderManager.disconnectReader()
         handleOnboardingStatus(param)
     }
@@ -88,6 +96,7 @@ class CardReaderStatusCheckerViewModel
                     triggerEvent(StatusCheckerEvent.NavigateToWelcome(param, arguments.cardReaderType))
                 }
             }
+
             else -> triggerEvent(
                 StatusCheckerEvent.NavigateToOnboarding(
                     CardReaderOnboardingParams.Failed(param, state),

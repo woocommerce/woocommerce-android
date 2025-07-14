@@ -84,5 +84,6 @@
 
     <style name="Widget.LoginFlow.Button.Tertiary" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textColor">@color/light_colored_button_text_secondary</item>
     </style>
 </resources>

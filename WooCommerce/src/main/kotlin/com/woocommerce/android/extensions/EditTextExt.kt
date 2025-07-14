@@ -11,7 +11,8 @@ fun EditText.showKeyboardWithDelay(delayMs: Long = DEFAULT_KEYBOARD_DELAY) {
     postDelayed(
         {
             ActivityUtils.showKeyboard(this)
-        }, delayMs
+        },
+        delayMs
     )
 }
 

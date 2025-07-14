@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.woocommerce.android.ui.mystore.data";
+option java_multiple_files = true;
+
+message CustomDateRange {
+  uint64 start_date_millis = 1;
+  uint64 end_date_millis = 2;
+}

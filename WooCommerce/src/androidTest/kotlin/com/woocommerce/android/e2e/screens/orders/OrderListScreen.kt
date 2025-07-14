@@ -15,8 +15,7 @@ import org.hamcrest.Matchers
 
 class OrderListScreen : Screen(R.id.ordersList) {
     fun selectOrder(index: Int): SingleOrderScreen {
-        val correctedIndex = index + 1 // account for the header
-        selectItemAtIndexInRecyclerView(correctedIndex, R.id.ordersList, R.id.linearLayout)
+        selectItemAtIndexInRecyclerView(index, R.id.ordersList, R.id.linearLayout)
         return SingleOrderScreen()
     }
 
@@ -34,7 +33,9 @@ class OrderListScreen : Screen(R.id.ordersList) {
     }
 
     fun openSearchPane(): OrderListScreen {
-        clickOn(R.id.menu_search)
+        if (!Screen.isElementFocused(androidx.appcompat.R.id.search_src_text)) {
+            clickOn(R.id.menu_search)
+        }
         return this
     }
 
@@ -47,13 +48,21 @@ class OrderListScreen : Screen(R.id.ordersList) {
 
     fun enterAbsentSearchTerm(term: String): OrderListScreen {
         typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        // If we don't expect for results, we wait for "no results" situation
-        waitForElementToBeDisplayed(R.id.empty_view_title)
+        // We don't expect results, so we wait for "no results" situation
+        waitForElementToBeDisplayed(
+            Espresso.onView(ViewMatchers.withText(containsString("couldn't find")))
+        )
         return this
     }
 
-    fun leaveSearchMode(): OrderListScreen {
-        if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
+    fun leaveOrClearSearchMode(): OrderListScreen {
+        // to support test on tablets - search bar is displayed on split screen
+        // clearing search bar so test can continue in a clean state
+        if (Screen.isElementDisplayed(R.id.orderDetail_container)) {
+            clearSearchBar(androidx.appcompat.R.id.search_src_text)
+            return this
+        } // to support test on phones
+        else if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
             // Double pressBack is needed because first one only removes the focus
             // from search field, while the second one leaves the search mode.
             Espresso.pressBack()
@@ -73,6 +82,17 @@ class OrderListScreen : Screen(R.id.ordersList) {
     }
 
     fun assertOrderCard(order: OrderData): OrderListScreen {
+        // Wait for the order card to appear first. This is sometimes
+        // flaky on Firebase because of low emulator performance.
+        waitForElementToBeDisplayed(
+            Espresso.onView(
+                Matchers.allOf(
+                    ViewMatchers.withId(R.id.orderNum),
+                    ViewMatchers.withText("#${order.id}")
+                )
+            )
+        )
+
         // Using quite a complex matcher to make sure that all expected
         // order details belong to the same order card.
         Espresso.onView(

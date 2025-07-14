@@ -51,15 +51,20 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         val onCashOnDeliveryEnabledSuccessfully: (() -> Unit),
         val onEnableCashOnDeliveryClicked: (() -> Unit),
         val onLearnMoreActionClicked: (() -> Unit),
+        val onContactSupportActionClicked: (() -> Unit),
         val shouldShowProgress: Boolean = false,
         val cashOnDeliveryEnabledSuccessfully: Boolean? = null
     ) : CardReaderOnboardingViewState(R.layout.fragment_card_reader_onboarding_cod_disabled) {
-        val cardIllustration = R.drawable.img_products_error
+        val cardIllustration = R.drawable.ic_woo_illustrated_icon
         val headerLabel = UiString.UiStringRes(
             R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header
         )
         val cashOnDeliveryHintLabel = UiString.UiStringRes(
             R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint
+        )
+        val contactSupportLabel = UiString.UiStringRes(
+            R.string.card_reader_onboarding_contact_us,
+            containsHtml = true
         )
         val skipCashOnDeliveryButtonLabel = UiString.UiStringRes(
             R.string.skip
@@ -219,12 +224,16 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             val dueDate: String?
         ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),
-            hintLabel = if (dueDate != null) UiString.UiStringRes(
-                R.string.card_reader_onboarding_account_pending_requirements_hint,
-                listOf(UiString.UiStringText(dueDate))
-            ) else UiString.UiStringRes(
-                R.string.card_reader_onboarding_account_pending_requirements_without_date_hint,
-            ),
+            hintLabel = if (dueDate != null) {
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_pending_requirements_hint,
+                    listOf(UiString.UiStringText(dueDate))
+                )
+            } else {
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_pending_requirements_without_date_hint,
+                )
+            },
             actionButtonPrimary = ActionButton(
                 label = UiString.UiStringRes(R.string.skip),
                 action = onPrimaryActionClicked
@@ -351,7 +360,8 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
                 R.string.card_reader_onboarding_stripe_extension_unsupported_version_hint
             ),
             learnMoreLabel = UiString.UiStringRes(
-                R.string.card_reader_onboarding_learn_more, containsHtml = true
+                R.string.card_reader_onboarding_learn_more,
+                containsHtml = true
             ),
             refreshButtonLabel = UiString.UiStringRes(
                 R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button

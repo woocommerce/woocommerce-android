@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.cardreader
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.payments.tracking.TrackingInfo
 import kotlin.math.roundToInt
 
 private const val PERCENT_100 = 100

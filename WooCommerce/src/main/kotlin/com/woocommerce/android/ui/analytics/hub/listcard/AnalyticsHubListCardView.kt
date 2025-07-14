@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.DataViewState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState
+import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
+import com.woocommerce.android.ui.analytics.hub.toReportCard
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
@@ -26,12 +26,13 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     val binding = AnalyticsListCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
+    var onSeeReportClickListener: SeeReportClickListener? = null
 
     internal fun updateInformation(viewState: AnalyticsHubListViewState) {
         when (viewState) {
-            is LoadingViewState -> setSkeleton()
-            is DataViewState -> setDataViewState(viewState)
-            is NoDataState -> setNoDataViewState(viewState)
+            is AnalyticsHubListViewState.LoadingViewState -> setSkeleton()
+            is AnalyticsHubListViewState.DataViewState -> setDataViewState(viewState)
+            is AnalyticsHubListViewState.NoDataState -> setNoDataViewState(viewState)
         }
     }
 
@@ -50,7 +51,7 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
         binding.noDataText.visibility = GONE
     }
 
-    private fun setDataViewState(viewState: DataViewState) {
+    private fun setDataViewState(viewState: AnalyticsHubListViewState.DataViewState) {
         skeletonView.hide()
         binding.analyticsCardTitle.text = viewState.title
         binding.analyticsItemsTitle.text = viewState.subTitle
@@ -69,6 +70,7 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             adapter = AnalyticsHubListAdapter(viewState.items)
+            visibility = VISIBLE
         }
         binding.analyticsItemsTag.isVisible = viewState.delta != null
         binding.analyticsCardTitle.visibility = VISIBLE
@@ -77,9 +79,20 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
         binding.analyticsListLeftHeader.visibility = VISIBLE
         binding.analyticsListRightHeader.visibility = VISIBLE
         binding.noDataText.visibility = GONE
+        if (viewState.reportUrl != null) {
+            binding.reportGroup.visibility = VISIBLE
+            binding.reportText.setOnClickListener {
+                onSeeReportClickListener?.let {
+                    val card = viewState.card.toReportCard()
+                    if (card != null) it(viewState.reportUrl, card)
+                }
+            }
+        } else {
+            binding.reportGroup.visibility = GONE
+        }
     }
 
-    private fun setNoDataViewState(viewState: NoDataState) {
+    private fun setNoDataViewState(viewState: AnalyticsHubListViewState.NoDataState) {
         skeletonView.hide()
         binding.noDataText.text = viewState.message
         binding.analyticsCardTitle.visibility = GONE
@@ -89,9 +102,11 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
         binding.noDataText.visibility = VISIBLE
+        binding.reportGroup.visibility = GONE
+        binding.analyticsItemsList.visibility = GONE
     }
 
-    private fun getDeltaTagText(viewState: DataViewState) =
+    private fun getDeltaTagText(viewState: AnalyticsHubListViewState.DataViewState) =
         ctx.resources.getString(
             R.string.analytics_information_card_delta,
             viewState.sign,
@@ -110,7 +125,10 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
         }
 
         private fun getDeltaTagBackgroundColor(context: Context) =
-            if (delta > 0) ContextCompat.getColor(context, R.color.analytics_delta_positive_color)
-            else ContextCompat.getColor(context, R.color.analytics_delta_tag_negative_color)
+            if (delta > 0) {
+                ContextCompat.getColor(context, R.color.analytics_delta_positive_color)
+            } else {
+                ContextCompat.getColor(context, R.color.analytics_delta_tag_negative_color)
+            }
     }
 }

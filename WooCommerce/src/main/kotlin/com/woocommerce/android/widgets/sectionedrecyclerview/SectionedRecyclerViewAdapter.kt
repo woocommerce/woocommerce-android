@@ -63,7 +63,8 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
     private fun getItemViewHolder(parent: ViewGroup, section: Section): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
             section.itemResourceId,
-            parent, false
+            parent,
+            false
         )
         // get the item viewholder from the section
         return section.getItemViewHolder(view)

@@ -3,15 +3,12 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation.banner
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class CheckEUShippingScenario @Inject constructor() {
     operator fun invoke(shippingStateTransitions: Flow<Transition>) = flow {
-        if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled().not()) emit(false)
-
         shippingStateTransitions.collect {
             when (it.state) {
                 is WaitingForInput -> emit(it.state.data.isEUShippingConditionMet())

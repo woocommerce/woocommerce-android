@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="prologue_width_percent" format="float" type="dimen">0.5</item>
+    <dimen name="prologue_button_skip_bottom_margin">9dp</dimen>
+    <dimen name="prologue_button_horizontal_margin">16dp</dimen>
+</resources>

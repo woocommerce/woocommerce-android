@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -20,6 +21,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.GROUPED_PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_DETAILS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
@@ -32,7 +34,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_CARRIER_RATES
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_SERVICE_PACKAGE_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.UNREAD_FILTERED_REVIEW_LIST
-import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private val binding = WcEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
@@ -44,6 +45,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         ORDER_LIST_CREATE_TEST_ORDER,
         ORDER_LIST_LOADING,
         ORDER_LIST_FILTERED,
+        ORDER_DETAILS,
         PRODUCT_LIST,
         REVIEW_LIST,
         UNREAD_FILTERED_REVIEW_LIST,
@@ -57,31 +59,59 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         SHIPPING_LABEL_SERVICE_PACKAGE_LIST
     }
 
-    init {
-        checkOrientation()
-    }
-
     private var lastEmptyViewType: EmptyViewType? = null
+    private var globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    private var fadingOutDelayHandler: Handler? = null
 
-    /**
-     * Hide the image in landscape since there isn't enough room for it on most devices
-     */
-    private fun checkOrientation() {
-        binding.emptyViewImage.isVisible = !DisplayUtils.isLandscape(context)
+    private fun isParentViewHeightSufficient(): Boolean {
+        var isSufficient = false
+        val parentView = this.parent as? View
+        parentView?.let {
+            val parentHeightDp = it.height / context.resources.displayMetrics.density
+            isSufficient = parentHeightDp >= MINIMUM_HEIGHT_DP
+        }
+        return isSufficient
     }
 
+    init {
+        // Add a global layout listener to check the height of the parent view
+        globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                // Remove the listener to prevent it from being called multiple times
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+                globalLayoutListener = null
+                // Update the visibility based on the parent view's height
+                binding.emptyViewImage.isVisible = isParentViewHeightSufficient()
+            }
+        }
+        viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        globalLayoutListener?.let {
+            viewTreeObserver.removeOnGlobalLayoutListener(it)
+            globalLayoutListener = null
+        }
+        fadingOutDelayHandler?.removeCallbacksAndMessages(null)
+        fadingOutDelayHandler = null
+    }
+
+    @Suppress("LongMethod", "ComplexMethod")
     fun show(
         type: EmptyViewType,
         searchQueryOrFilter: String? = null,
         onButtonClick: (() -> Unit)? = null
     ) {
-        checkOrientation()
+        binding.emptyViewImage.isVisible = isParentViewHeightSufficient()
 
         // if empty view is already showing and it's a different type, fade out the existing view before fading in
         if (visibility == View.VISIBLE && type != lastEmptyViewType) {
             WooAnimUtils.fadeOut(this, Duration.SHORT)
             val durationMs = Duration.SHORT.toMillis(context) + 50L
-            Handler(Looper.getMainLooper()).postDelayed(
+            fadingOutDelayHandler?.removeCallbacksAndMessages(null)
+            fadingOutDelayHandler = Handler(Looper.getMainLooper())
+            fadingOutDelayHandler?.postDelayed(
                 {
                     show(type, searchQueryOrFilter, onButtonClick)
                 },
@@ -94,6 +124,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         val message: String?
         val buttonText: String?
         val isTitleBold: Boolean
+
         @DrawableRes val drawableId: Int
 
         when (type) {
@@ -109,8 +140,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 isTitleBold = false
                 title = null
                 message = context.getString(R.string.product_list_empty)
-                buttonText = null
-                drawableId = R.drawable.img_empty_products
+                buttonText = context.getString(R.string.grouped_product_add)
+                drawableId = R.drawable.img_empty_grouped_product
             }
 
             ORDER_LIST -> {
@@ -143,6 +174,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_empty_search
+            }
+
+            ORDER_DETAILS -> {
+                isTitleBold = true
+                title = context.getString(R.string.empty_order_detail_title)
+                message = context.getString(R.string.empty_order_detail_message)
+                buttonText = null
+                drawableId = R.drawable.img_empty_orders_no_orders
             }
 
             PRODUCT_LIST -> {
@@ -276,5 +315,9 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility == View.VISIBLE) {
             WooAnimUtils.fadeOut(this, Duration.SHORT)
         }
+    }
+
+    companion object {
+        private const val MINIMUM_HEIGHT_DP = 400
     }
 }

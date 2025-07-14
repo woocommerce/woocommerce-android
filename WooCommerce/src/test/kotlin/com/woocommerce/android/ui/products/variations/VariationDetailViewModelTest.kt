@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -13,7 +12,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,8 +27,8 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -69,7 +68,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         on { getParameters(any(), any<SavedStateHandle>()) } doReturn (siteParams)
     }
     private val variationRepository: VariationDetailRepository = mock {
-        onBlocking { getVariationByProductType(any(), any()) } doReturn TEST_VARIATION
+        onBlocking { getVariation(any(), any()) } doReturn TEST_VARIATION
         onBlocking { fetchVariation(any(), any()) } doAnswer {
             OnVariationChanged(it.arguments[0] as Long, it.arguments[1] as Long)
         }
@@ -92,7 +91,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val savedState = VariationDetailFragmentArgs(
         TEST_VARIATION.remoteProductId,
         TEST_VARIATION.remoteVariationId
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     @Before
     fun setup() {
@@ -104,8 +103,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
             currencyFormatter = mock(),
             parameterRepository = parameterRepository,
             resources = resourceProvider,
-            mediaFileUploadHandler = mediaFileUploadHandler,
-            getProductVariationQuantityRules = mock()
+            mediaFileUploadHandler = mediaFileUploadHandler
         )
     }
 
@@ -153,18 +151,40 @@ class VariationDetailViewModelTest : BaseUnitTest() {
                 TEST_VARIATION.remoteVariationId,
                 "uri",
                 UploadStatus.Failed(
-                    MediaModel(),
-                    GENERIC_ERROR,
-                    "error"
+                    mediaErrorType = GENERIC_ERROR,
+                    mediaErrorMessage = "error"
                 )
             )
         )
         errorEvents.emit(errors)
 
         assertThat(sut.event.value).matches {
-            it is ShowActionSnackbar &&
+            it is ShowActionStringSnackbar &&
                 it.message == errorMessage
         }
+    }
+
+    @Test
+    fun `Display error message on min-max quantities update product error`() = testBlocking {
+        val displayErrorMessage = "This is an error message"
+        val result = WCProductStore.OnVariationUpdated(remoteProductId = 1, remoteVariationId = 2)
+        result.error = WCProductStore.ProductError(
+            type = WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY,
+            message = displayErrorMessage
+        )
+        doReturn(result).whenever(variationRepository).updateVariation(any())
+
+        setup()
+
+        var showUpdateProductError: VariationDetailViewModel.ShowUpdateVariationError? = null
+        sut.event.observeForever {
+            if (it is VariationDetailViewModel.ShowUpdateVariationError) showUpdateProductError = it
+        }
+
+        sut.onUpdateButtonClicked()
+
+        assertThat(showUpdateProductError?.message)
+            .isEqualTo(displayErrorMessage)
     }
 
     @Test

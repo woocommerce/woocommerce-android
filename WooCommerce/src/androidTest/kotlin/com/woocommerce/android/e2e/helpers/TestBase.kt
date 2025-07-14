@@ -53,7 +53,11 @@ internal class UnlocalizedDateHelper : HandlebarsHelper<Any?>() {
         val localeCode: String? = options.hash("locale", "en_US_POSIX")
         var date = Date()
         if (offset != null) {
-            date = DateOffset(offset).shift(date)
+            // Uppercase the unit using the invariant locale as a workaround for a bug in DateOffset
+            val fixedOffset = offset.split(" ").let { strings ->
+                "${strings[0]} ${strings[1].uppercase()}"
+            }
+            date = DateOffset(fixedOffset).shift(date)
         }
         var locale: Locale = Locale.getDefault()
         if (localeCode != null) {
@@ -75,13 +79,19 @@ internal class LocaleAwareRenderableDate(date: Date, format: String?, timezone: 
             }
             return if (mFormat == "unix") {
                 java.lang.String.valueOf(mDate.getTime() / DIVIDE_MILLISECONDS_TO_SECONDS)
-            } else formatCustom()
+            } else {
+                formatCustom()
+            }
         }
-        return if (mTimezoneName != null) ISO8601Utils.format(
-            mDate,
-            false,
-            TimeZone.getTimeZone(mTimezoneName)
-        ) else ISO8601Utils.format(mDate, false)
+        return if (mTimezoneName != null) {
+            ISO8601Utils.format(
+                mDate,
+                false,
+                TimeZone.getTimeZone(mTimezoneName)
+            )
+        } else {
+            ISO8601Utils.format(mDate, false)
+        }
     }
 
     private fun formatCustom(): String {

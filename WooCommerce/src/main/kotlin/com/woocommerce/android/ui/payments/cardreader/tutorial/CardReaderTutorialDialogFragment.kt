@@ -21,6 +21,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CardReaderTutorialDialogFragment : PaymentsBaseDialogFragment(R.layout.card_reader_tutorial_dialog) {
     private val args: CardReaderTutorialDialogFragmentArgs by navArgs()
+
     @Inject lateinit var appPrefs: AppPrefs
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,10 +59,11 @@ class CardReaderTutorialDialogFragment : PaymentsBaseDialogFragment(R.layout.car
     private fun navigateNext() {
         when (val param = args.cardReaderFlowParam) {
             is CardReaderFlowParam.CardReadersHub -> findNavController().popBackStack()
+            is CardReaderFlowParam.WooPosConnection -> error("Not supported param: $param")
             is CardReaderFlowParam.PaymentOrRefund -> {
                 val action = CardReaderTutorialDialogFragmentDirections
                     .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(param, args.cardReaderType)
-                findNavController().navigateSafely(action, skipThrottling = true)
+                findNavController().navigateSafely(action)
             }
         }
     }

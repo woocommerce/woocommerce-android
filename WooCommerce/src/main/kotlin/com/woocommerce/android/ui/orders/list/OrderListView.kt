@@ -58,6 +58,17 @@ class OrderListView @JvmOverloads constructor(
     }
 
     /**
+     * Opens the first order. Used in tablets in a 2 pane layout where the first order needs to be opened by default
+     */
+    fun openFirstOrder() {
+        ordersAdapter.openFirstOrder()
+    }
+
+    fun openOrder(orderId: Long, startPaymentsFlow: Boolean = false) {
+        ordersAdapter.openOrder(orderId, startPaymentsFlow)
+    }
+
+    /**
      * Submit new paged list data to the adapter
      */
     fun submitPagedList(list: PagedList<OrderListItemUIType>?) {
@@ -77,7 +88,9 @@ class OrderListView @JvmOverloads constructor(
      * clear order list adapter data
      */
     fun clearAdapterData() {
-        ordersAdapter.submitList(null)
+        if (::ordersAdapter.isInitialized) {
+            ordersAdapter.submitList(null)
+        }
     }
 
     /**

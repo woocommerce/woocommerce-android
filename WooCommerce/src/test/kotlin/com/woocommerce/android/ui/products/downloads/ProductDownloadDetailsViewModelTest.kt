@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.products.downloads
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductFile
-import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.*
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.AddFileAndExitEvent
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -21,12 +22,12 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductDownloadDetailsViewModel
     private val file = ProductFile(id = "id", name = "file", url = "url")
     private val savedStateForEditing = ProductDownloadDetailsFragmentArgs(isEditing = true, productFile = file)
-        .initSavedStateHandle()
+        .toSavedStateHandle()
     private val savedStateForAdding = ProductDownloadDetailsFragmentArgs(
         isEditing = false,
         productFile = file.copy(id = null)
     )
-        .initSavedStateHandle()
+        .toSavedStateHandle()
 
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.product_downloadable_files_edit_title) } doReturn "file"
@@ -50,7 +51,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     fun `test display the correct title if name is empty`() {
         val file = file.copy(name = "")
         val savedState = ProductDownloadDetailsFragmentArgs(isEditing = true, productFile = file)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         viewModel = ProductDownloadDetailsViewModel(
             savedState,
             resourceProvider

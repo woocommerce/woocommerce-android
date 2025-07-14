@@ -1,4 +1,5 @@
 @file:Suppress("MaxLineLength") // this is needed for the long link in kdoc.
+
 package com.woocommerce.android.cardreader.payments
 
 /**

@@ -2,21 +2,22 @@
 
 ### OAuth2 Authentication
 
-The WooCommerce for Android app connects to stores via WordPress.com APIs so if a WooCommerce store is not hosted on WordPress.com, it will require the [Jetpack plugin][jetpack] to setup a common interface for communicating with a self-hosted store. In order to use these APIs, you will need a client ID and a client secret key. These details will be
+The WooCommerce for Android app previously connected to stores exclusively via WordPress.com APIs. This meant that if a WooCommerce store was not hosted on WordPress.com, users could not connect to it using the app and it will require the [Jetpack plugin][jetpack] to setup a common interface for communicating with a self-hosted store. In order to use these APIs, you will need a client ID and a client secret key. These details will be
 used to authenticate your application and verify that the API calls being
 made are valid. You can create an application or view details for your existing
 applications with our [WordPress.com applications manager][wp-com-apps].
+
+Now the app also supports a new system for making authenticated requests to various WordPress APIs — [Application Passwords](https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/), but to build the app you still need to provide `app_id` and `app_secret` fields
 
 When creating your application, you should select "**Native client**" for the application type.
 The "**Website URL**", "**Redirect URLs**", and "**Javascript Origins**" fields are required but not used for
 the mobile apps. Just use "**[https://localhost](https://localhost)**".
 
 Once you've created your application in the [applications manager][wp-com-apps], you'll
-need to edit the `./gradle.properties` file and change the
-`wp.oauth.app_id` and `wp.oauth.app_secret` fields. Then you can compile and
-run the app on a device or an emulator and try to login with a WordPress.com
-account. Note that authenticating to WordPress.com via Google is not supported
-in development builds of the app, only in the official release.
+need to update the `wc.oauth.app_id` and `wc.oauth.app_secret` fields in `secrets.properties`.
+See [setup instructions][setup] for more details about secrets file. Then you can compile and run the app on a device or an emulator and 
+try to login with a WordPress.com account. Note that authenticating to WordPress.com via Google is 
+not supported in development builds of the app, only in the official release.
 
 Note that credentials created with our [WordPress.com applications manager][wp-com-apps]
 allow login only and not signup. New accounts must be created using the [official app][wp-app]
@@ -32,23 +33,24 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 
 ### Configuration Files
 
-#### Main `gradle.properties`
+#### `secrets.properties`
+
+The `secrets.properties` file is used to store sensitive information that should not be checked into version control. This file is located at `~/.configure/woocommerce-android/secrets/secrets.properties`.
 
 | Property                   | Description |
 |:---------------------------|:------------|
-|wc.oauth.app_id            | Required to build the app. See [OAuth2 Authentication](#oauth2-authentication)|
+| wc.oauth.app_id            | Required to build the app. See [OAuth2 Authentication](#oauth2-authentication)|
 | wc.oauth.app_secret        | Required to build the app. See [OAuth2 Authentication](#oauth2-authentication) |
 | wc.zendesk_app_id          | Used for Zendesk integration. Can be ignored.|
 | wc.zendesk.domain          | Used for Zendesk integration. Can be ignored.|
 | wc.zendesk.oauth_client_id | Used for Zendesk integration. Can be ignored.|
-| wc.reset_db_on_downgrade   | Debug/Beta builds: If `true` will drop all tables and recreate the db if a database downgrade is detected. |
 | wc.sentry.dsn              | Used for Sentry integration. Can be ignored.|
 
 ### Using detekt
 
 The woocommerce-android project uses [detekt][detekt] for Kotlin linting and code style check.
 
-You can run detekt using `./gradlew detekt`.
+You can run detekt using `./gradlew detektAll`.
 
 You can also view errors and warnings in realtime with the Detekt plugin.
 
@@ -81,3 +83,4 @@ that can't be shared publicly. More documentation and guides can be found on the
 [google-ident]: https://cloud.google.com/identity-platform/docs/
 [detekt]: https://detekt.github.io/detekt/
 [jetpack]: https://wordpress.org/plugins/jetpack/
+[setup]: ../README.md#-setup-instructions

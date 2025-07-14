@@ -13,8 +13,8 @@ class TerminalListenerImplTest {
     private val listener = TerminalListenerImpl(logWrapper)
 
     @Test
-    fun `when reader unexpectedly disconnected, then not connected status emitted`() {
-        listener.onUnexpectedReaderDisconnect(mock())
+    fun `when reader disconnects, then not connected status emitted`() {
+        listener.onConnectionStatusChange(ConnectionStatus.NOT_CONNECTED)
 
         assertThat(listener.readerStatus.value).isEqualTo(CardReaderStatus.NotConnected())
     }

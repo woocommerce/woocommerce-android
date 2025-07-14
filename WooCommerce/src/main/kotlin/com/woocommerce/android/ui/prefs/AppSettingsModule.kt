@@ -11,6 +11,5 @@ import dagger.hilt.android.scopes.ActivityScoped
 abstract class AppSettingsModule {
     @ActivityScoped
     @Binds
-    abstract fun provideAppSettingsPresenter(appSettingsPresenter: AppSettingsPresenter):
-        AppSettingsContract.Presenter
+    abstract fun provideAppSettingsPresenter(appSettingsPresenter: AppSettingsPresenter): AppSettingsContract.Presenter
 }

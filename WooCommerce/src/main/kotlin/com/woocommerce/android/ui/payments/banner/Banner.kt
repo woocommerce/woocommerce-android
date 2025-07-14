@@ -137,8 +137,11 @@ private fun BackgroundImage(bannerState: JitmState.Banner) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(
-                        if (isSystemInDarkTheme()) icon.urlDarkMode
-                        else icon.urlLightMode
+                        if (isSystemInDarkTheme()) {
+                            icon.urlDarkMode
+                        } else {
+                            icon.urlLightMode
+                        }
                     )
                     .decoderFactory(SvgDecoder.Factory())
                     .build(),
@@ -153,7 +156,7 @@ private fun BackgroundImage(bannerState: JitmState.Banner) {
 private fun BadgeIcon(bannerState: JitmState.Banner) {
     when (val icon = bannerState.badgeIcon) {
         is JitmState.Banner.LabelOrRemoteIcon.Label -> {
-            val bcgColor = colorResource(id = R.color.woo_purple_10)
+            val bcgColor = colorResource(id = R.color.woo_purple_0)
             Text(
                 text = UiHelpers.getTextOfUiString(LocalContext.current, icon.label),
                 color = colorResource(id = R.color.woo_purple_60),
@@ -176,8 +179,11 @@ private fun BadgeIcon(bannerState: JitmState.Banner) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(
-                        if (isSystemInDarkTheme()) icon.urlDarkMode
-                        else icon.urlLightMode
+                        if (isSystemInDarkTheme()) {
+                            icon.urlDarkMode
+                        } else {
+                            icon.urlLightMode
+                        }
                     )
                     .decoderFactory(SvgDecoder.Factory())
                     .build(),

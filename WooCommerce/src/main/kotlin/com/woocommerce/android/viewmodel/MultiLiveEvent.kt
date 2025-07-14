@@ -1,5 +1,6 @@
 package com.woocommerce.android.viewmodel
 
+import android.app.Activity
 import android.content.DialogInterface.OnClickListener
 import android.view.View
 import androidx.annotation.MainThread
@@ -11,6 +12,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.ui.dialog.DialogParams
+import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.dialog.WooDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -111,7 +115,14 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         }
 
         data class ShowActionSnackbar(
+            @StringRes val message: Int,
+            @StringRes val actionText: Int,
+            val action: View.OnClickListener
+        ) : Event()
+
+        data class ShowActionStringSnackbar(
             val message: String,
+            val actionText: String,
             val action: View.OnClickListener
         ) : Event()
 
@@ -124,7 +135,36 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
 
         data class ExitWithResult<out T>(val data: T, val key: String? = null) : Event()
 
+        data class LaunchUrlInAuthenticatedWebView(val url: String) : Event()
+
         data class LaunchUrlInChromeTab(val url: String) : Event()
+
+        data class ShowDialogFragment(
+            @StringRes val titleId: Int? = null,
+            @StringRes val messageId: Int? = null,
+            @StringRes val positiveButtonId: Int? = null,
+            @StringRes val negativeButtonId: Int? = null,
+            @StringRes val neutralButtonId: Int? = null,
+            val cancelable: Boolean = true
+        ) : Event() {
+            fun showIn(
+                fragmentManager: androidx.fragment.app.FragmentManager,
+                listener: WooDialogFragment.DialogInteractionListener
+            ) {
+                val dialogParams = DialogParams(
+                    titleId = titleId,
+                    messageId = messageId,
+                    positiveButtonId = positiveButtonId,
+                    negativeButtonId = negativeButtonId,
+                    neutralButtonId = neutralButtonId,
+                    cancelable = cancelable
+                )
+                val dialogFragment = WooDialogFragment.newInstance(dialogParams).apply {
+                    setDialogInteractionListener(listener)
+                }
+                dialogFragment.show(fragmentManager, WooDialogFragment.TAG)
+            }
+        }
 
         data class ShowDialog(
             @StringRes val titleId: Int? = null,
@@ -134,8 +174,26 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             @StringRes val neutralButtonId: Int? = null,
             val positiveBtnAction: OnClickListener? = null,
             val negativeBtnAction: OnClickListener? = null,
-            val neutralBtnAction: OnClickListener? = null
+            val neutralBtnAction: OnClickListener? = null,
+            val cancelable: Boolean = true,
+            val onDismiss: (() -> Unit)? = null
         ) : Event() {
+            fun showIn(activity: Activity) {
+                WooDialog.showDialog(
+                    activity = activity,
+                    titleId = this.titleId,
+                    messageId = this.messageId,
+                    positiveButtonId = this.positiveButtonId,
+                    posBtnAction = this.positiveBtnAction,
+                    negativeButtonId = this.negativeButtonId,
+                    negBtnAction = this.negativeBtnAction,
+                    neutralButtonId = this.neutralButtonId,
+                    neutBtAction = this.neutralBtnAction,
+                    cancellable = this.cancelable,
+                    onDismiss = this.onDismiss
+                )
+            }
+
             companion object {
                 fun buildDiscardDialogEvent(
                     messageId: Int = string.discard_message,
@@ -152,5 +210,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
                 )
             }
         }
+
+        data class OpenUrl(val url: String) : Event()
     }
 }

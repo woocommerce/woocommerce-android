@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -50,7 +51,9 @@ class ProductCategorySelectorViewModel @Inject constructor(
                 if (index != 0 && loadingState == LoadingState.Idle) {
                     // When resetting to Idle, wait a bit to make sure the data has been fetched from DB
                     LOADING_STATE_DELAY
-                } else 0L
+                } else {
+                    0L
+                }
             }
             .map { it.value }
     ) { categories, selectedCategories, searchQuery, loadingState ->
@@ -93,6 +96,10 @@ class ProductCategorySelectorViewModel @Inject constructor(
         triggerEvent(ExitWithResult(selectedCategories.value))
     }
 
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     private fun monitorSearchQuery() {
         viewModelScope.launch {
             searchQuery
@@ -113,8 +120,11 @@ class ProductCategorySelectorViewModel @Inject constructor(
                     loadingState.value = LoadingState.Loading
                     listHandler.fetchCategories(searchQuery = query)
                         .onFailure {
-                            val message = if (query.isEmpty()) R.string.product_category_selector_loading_failed
-                            else R.string.product_category_selector_search_failed
+                            val message = if (query.isEmpty()) {
+                                R.string.product_category_selector_loading_failed
+                            } else {
+                                R.string.product_category_selector_search_failed
+                            }
                             triggerEvent(ShowSnackbar(message))
                         }
                     loadingState.value = LoadingState.Idle

@@ -27,10 +27,10 @@ import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.FILL
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.WRAP
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT_SPACE
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
@@ -78,13 +78,27 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             currencyEditText.imeOptions = value
         }
 
+    val siteParameters = parameterRepository.getParameters()
+
+    var orderCurrency: String? = null
+        set(value) {
+            field = value
+            siteParameters.currencyFormattingParameters?.let {
+                when (it.currencyPosition) {
+                    LEFT, LEFT_SPACE -> prefixText = orderCurrency
+                    RIGHT, RIGHT_SPACE -> suffixText = orderCurrency
+                }
+            }
+        }
+
     init {
         context.obtainStyledAttributes(
             attrs,
             R.styleable.WCMaterialOutlinedCurrencyEditTextView
         ).use { a ->
             val usesFullFormatting = a.getBoolean(
-                R.styleable.WCMaterialOutlinedCurrencyEditTextView_usesFullFormatting, usesFullFormatting
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView_usesFullFormatting,
+                usesFullFormatting
             )
             currencyEditText = when (usesFullFormatting) {
                 true -> FullFormattingCurrencyEditText(context)
@@ -129,12 +143,10 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             )
         }
 
-        val siteParameters = parameterRepository.getParameters()
-
         siteParameters.currencyFormattingParameters?.let {
             when (it.currencyPosition) {
-                LEFT, LEFT_SPACE -> prefixText = siteParameters.currencySymbol.orEmpty()
-                RIGHT, RIGHT_SPACE -> suffixText = siteParameters.currencySymbol.orEmpty()
+                LEFT, LEFT_SPACE -> prefixText = orderCurrency ?: siteParameters.currencySymbol.orEmpty()
+                RIGHT, RIGHT_SPACE -> suffixText = orderCurrency ?: siteParameters.currencySymbol.orEmpty()
             }
         }
         currencyEditText.initView(siteParameters.currencyFormattingParameters)

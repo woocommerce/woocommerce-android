@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.cardreader.detail
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -12,12 +13,12 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
 import com.woocommerce.android.extensions.copyToClipboard
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expandHitArea
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
@@ -42,14 +43,29 @@ private const val HIT_AREA_EXPANSION_DP = 16
 class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_detail) {
     val viewModel: CardReaderDetailViewModel by viewModels()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
+        setupToolbar(binding)
 
         observeEvents(binding)
         observeViewState(binding)
         initResultHandlers()
+    }
+
+    private fun setupToolbar(binding: FragmentCardReaderDetailBinding) {
+        binding.toolbar.title = resources.getString(R.string.payments_hub_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun observeEvents(binding: FragmentCardReaderDetailBinding) {
@@ -109,7 +125,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         enforcedUpdateDivider.visibility = enforcedUpdateTv.visibility
                         with(readerNameTv) {
                             UiHelpers.setTextOrHide(this, state.readerName)
-                            setOnLongClickListener { state.onReaderNameLongClick(); true }
+                            setOnLongClickListener {
+                                state.onReaderNameLongClick()
+                                true
+                            }
                             expandHitArea(0, dpToPx(requireContext(), HIT_AREA_EXPANSION_DP))
                         }
                         UiHelpers.setTextOrHide(readerBatteryTv, state.readerBattery)
@@ -133,7 +152,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 is NotConnectedState -> {
                     with(binding.readerDisconnectedState) {
                         UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
-                        UiHelpers.setImageOrHideInLandscape(cardReaderDetailIllustration, state.illustration)
+                        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+                            cardReaderDetailIllustration,
+                            state.illustration
+                        )
                         UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
                         UiHelpers.setTextOrHide(cardReaderDetailFirstHintNumberLabel, state.firstHintNumber)
                         UiHelpers.setTextOrHide(cardReaderDetailSecondHintLabel, state.secondHintLabel)
@@ -151,7 +173,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 }
                 Loading -> {
                 }
-            }.exhaustive
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
@@ -13,18 +14,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.google.android.material.textview.MaterialTextView
-import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.NavGraphPaymentFlowDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentPaymentsHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySurveyScreen
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -41,6 +41,9 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun getFragmentTitle() = resources.getString(R.string.payments_hub_title)
     val viewModel: PaymentsHubViewModel by viewModels()
 
@@ -48,10 +51,21 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentPaymentsHubBinding.bind(view)
-
+        setupToolbar(binding)
         initViews(binding)
         observeEvents()
         observeViewState(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentPaymentsHubBinding) {
+        binding.toolbar.title = resources.getString(R.string.payments_hub_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun initViews(binding: FragmentPaymentsHubBinding) {
@@ -74,7 +88,7 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 }
                 is PaymentsHubViewModel.PaymentsHubEvents.NavigateToPurchaseCardReaderFlow -> {
                     findNavController().navigate(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                        NavGraphPaymentFlowDirections.actionGlobalAuthenticatedWebViewFragment(
                             urlToLoad = event.url,
                             title = resources.getString(event.titleRes)
                         )
@@ -98,13 +112,12 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                         )
                     )
                 }
-                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToPaymentCollectionScreen -> {
-                    findNavController().navigate(
-                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToSimplePayments()
-                    )
-                }
                 is PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                    ChromeCustomTabUtils.launchUrl(
+                        context = requireContext(),
+                        url = event.url,
+                        height = ChromeCustomTabUtils.Height.Partial.ThreeQuarters,
+                    )
                 }
                 is PaymentsHubViewModel.PaymentsHubEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
@@ -112,18 +125,12 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 is PaymentsHubViewModel.PaymentsHubEvents.ShowToast -> {
                     ToastUtils.showToast(context, getString(event.message))
                 }
-                is NavigateToTapTooPaySummaryScreen -> {
+                is NavigateToTapToPaySummaryScreen -> {
                     findNavController().navigate(
                         PaymentsHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment(
                             TapToPaySummaryFragment.TestTapToPayFlow.BeforePayment
                         )
                     )
-                }
-                is NavigateToTapTooPaySurveyScreen -> {
-                    NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.PAYMENTS_HUB_TAP_TO_PAY)
-                        .apply {
-                            findNavController().navigateSafely(this)
-                        }
                 }
                 is MultiLiveEvent.Event.ShowDialog -> {
                     event.showDialog()
@@ -157,8 +164,11 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 (adapter as PaymentsHubAdapter).setItems(state.rows)
                 updatePadding(
                     bottom = resources.getDimensionPixelSize(
-                        if (state.onboardingErrorAction?.text != null) R.dimen.major_400
-                        else R.dimen.major_100
+                        if (state.onboardingErrorAction?.text != null) {
+                            R.dimen.major_400
+                        } else {
+                            R.dimen.major_100
+                        }
                     )
                 )
             }

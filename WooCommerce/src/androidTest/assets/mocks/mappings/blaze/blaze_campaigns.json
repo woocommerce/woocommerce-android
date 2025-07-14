@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/wpcom/v2/sites/([0-9]+)/wordads/dsp/api/v1/search/campaigns/site/([0-9]+)\\?(.*)"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "total_items": 0,
+      "campaigns": [],
+      "total_pages": 0,
+      "page": 1
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Connection": "keep-alive"
+    }
+  }
+}

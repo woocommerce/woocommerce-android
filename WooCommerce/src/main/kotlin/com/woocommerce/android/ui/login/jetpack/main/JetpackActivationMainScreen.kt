@@ -11,12 +11,13 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -56,7 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.annotatedStringResLegacy
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -80,7 +81,6 @@ fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun JetpackActivationMainScreen(
     viewState: JetpackActivationMainViewModel.ViewState,
@@ -101,6 +101,7 @@ fun JetpackActivationMainScreen(
                 .padding(paddingValues)
                 .padding(dimensionResource(id = R.dimen.major_100))
                 .verticalScroll(rememberScrollState())
+                .height(IntrinsicSize.Max)
         ) {
             JetpackToWooHeader(isError = viewState is JetpackActivationMainViewModel.ViewState.ErrorViewState)
 
@@ -109,8 +110,11 @@ fun JetpackActivationMainScreen(
             transition.AnimatedContent(
                 contentKey = { it is JetpackActivationMainViewModel.ViewState.ErrorViewState },
                 transitionSpec = {
-                    fadeIn(animationSpec = tween(DefaultDurationMillis, delayMillis = DefaultDurationMillis)) with
-                        fadeOut(animationSpec = tween(DefaultDurationMillis))
+                    fadeIn(
+                        animationSpec = tween(
+                            DefaultDurationMillis, delayMillis = DefaultDurationMillis
+                        )
+                    ) togetherWith fadeOut(animationSpec = tween(DefaultDurationMillis))
                 },
                 modifier = Modifier.weight(1f)
             ) { targetState ->
@@ -119,6 +123,7 @@ fun JetpackActivationMainScreen(
                         viewState = targetState,
                         onContinueClick = onContinueClick
                     )
+
                     is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
                         viewState = targetState,
                         onGetHelpClick = onGetHelpClick,
@@ -141,11 +146,17 @@ private fun ProgressState(
         modifier = modifier
     ) {
         val title = if (viewState.isDone) {
-            if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title_done
-            else R.string.login_jetpack_installation_steps_screen_title_done
+            if (viewState.isJetpackInstalled) {
+                R.string.login_jetpack_connection_steps_screen_title_done
+            } else {
+                R.string.login_jetpack_installation_steps_screen_title_done
+            }
         } else {
-            if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title
-            else R.string.login_jetpack_installation_steps_screen_title
+            if (viewState.isJetpackInstalled) {
+                R.string.login_jetpack_connection_steps_screen_title
+            } else {
+                R.string.login_jetpack_installation_steps_screen_title
+            }
         }
         Text(
             text = stringResource(id = title),
@@ -159,7 +170,7 @@ private fun ProgressState(
             R.string.login_jetpack_steps_screen_subtitle
         }
         Text(
-            text = annotatedStringRes(stringResId = subtitle, viewState.siteUrl),
+            text = annotatedStringResLegacy(stringResId = subtitle, viewState.siteUrl),
             style = MaterialTheme.typography.body1
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -225,12 +236,18 @@ private fun AnimatedVisibilityScope.ErrorState(
             )
         }
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
         val subtitle = when {
             viewState.errorCode == FORBIDDEN_ERROR_CODE &&
                 viewState.stepType == JetpackActivationMainViewModel.StepType.Connection ->
                 R.string.login_jetpack_installation_error_connection_permission_message
+
             viewState.errorCode == FORBIDDEN_ERROR_CODE ->
                 R.string.login_jetpack_installation_error_plugin_permission_message
+
+            viewState.stepType == JetpackActivationMainViewModel.StepType.Connection ->
+                R.string.login_jetpack_installation_error_connection_message
+
             else -> R.string.login_jetpack_installation_error_generic_message
         }
         Text(
@@ -238,10 +255,15 @@ private fun AnimatedVisibilityScope.ErrorState(
             style = MaterialTheme.typography.body1
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-        val suggestion = if (viewState.errorCode == FORBIDDEN_ERROR_CODE) {
-            R.string.login_jetpack_installation_error_forbidden_suggestion
-        } else {
-            R.string.login_jetpack_installation_retry_or_contact_support
+
+        val suggestion = when {
+            viewState.errorCode == FORBIDDEN_ERROR_CODE ->
+                R.string.login_jetpack_installation_error_forbidden_suggestion
+
+            viewState.stepType == JetpackActivationMainViewModel.StepType.Connection ->
+                R.string.login_jetpack_installation_error_connection_suggestion
+
+            else -> R.string.login_jetpack_installation_error_generic_suggestion
         }
         Text(
             text = stringResource(id = suggestion),
@@ -283,10 +305,13 @@ private fun AnimatedVisibilityScope.ErrorState(
             val retryButton = when (viewState.stepType) {
                 JetpackActivationMainViewModel.StepType.Installation ->
                     R.string.login_jetpack_installation_retry_installing
+
                 JetpackActivationMainViewModel.StepType.Activation ->
                     R.string.login_jetpack_installation_retry_activating
+
                 JetpackActivationMainViewModel.StepType.Connection ->
                     R.string.login_jetpack_installation_retry_authorizing
+
                 else -> null
             }
             retryButton?.let {
@@ -317,9 +342,11 @@ private fun JetpackActivationStep(
             JetpackActivationMainViewModel.StepState.Idle -> {
                 IdleCircle(indicatorModifier)
             }
+
             JetpackActivationMainViewModel.StepState.Ongoing -> {
                 CircularProgressIndicator(indicatorModifier)
             }
+
             JetpackActivationMainViewModel.StepState.Success -> {
                 Image(
                     painter = painterResource(id = R.drawable.ic_progress_circle_complete),
@@ -327,6 +354,7 @@ private fun JetpackActivationStep(
                     modifier = indicatorModifier
                 )
             }
+
             is JetpackActivationMainViewModel.StepState.Error -> {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_gridicons_notice),
@@ -342,11 +370,17 @@ private fun JetpackActivationStep(
             Text(
                 text = stringResource(id = step.type.title),
                 style = MaterialTheme.typography.subtitle1,
-                fontWeight = if (isIdle) FontWeight.Normal
-                else FontWeight.Bold,
+                fontWeight = if (isIdle) {
+                    FontWeight.Normal
+                } else {
+                    FontWeight.Bold
+                },
                 color = colorResource(
-                    id = if (isIdle) R.color.color_on_surface_medium
-                    else R.color.color_on_surface
+                    id = if (isIdle) {
+                        R.color.color_on_surface_medium
+                    } else {
+                        R.color.color_on_surface
+                    }
                 )
             )
 
@@ -374,6 +408,7 @@ private fun ConnectionStepHint(connectionStep: JetpackActivationMainViewModel.Co
                     R.string.login_jetpack_steps_authorizing_validation,
                     R.color.color_on_surface_medium
                 )
+
             else ->
                 Pair(
                     R.string.login_jetpack_steps_authorizing_done,

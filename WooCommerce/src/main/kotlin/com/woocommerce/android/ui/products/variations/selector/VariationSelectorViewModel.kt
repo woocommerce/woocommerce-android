@@ -13,7 +13,12 @@ import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
 import com.woocommerce.android.ui.products.selector.ProductSelectorTracker
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.CouponEdition
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderEditing
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderListFilter
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.Undefined
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
@@ -64,13 +69,14 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private val navArgs: VariationSelectorFragmentArgs by savedState.navArgs()
-    private val productSelectorFlow = navArgs.productSelectorFlow
+    private val productSelectorFlow: ProductSelectorFlow = navArgs.productSelectorFlow
 
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedVariationIds = savedState.getStateFlow(viewModelScope, navArgs.variationIds.toSet())
     private val product: Deferred<Product?> = async {
         repository.getProduct(navArgs.productId)
     }
+    val screenMode = navArgs.screenMode
 
     val viewSate = combine(
         variationListHandler.getVariationsFlow(navArgs.productId),
@@ -79,7 +85,9 @@ class VariationSelectorViewModel @Inject constructor(
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
                     STATE_UPDATE_DELAY
-                } else 0L
+                } else {
+                    0L
+                }
             }
             .map { it.value },
         selectedVariationIds
@@ -95,7 +103,11 @@ class VariationSelectorViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             loadingState.value = LOADING
-            variationListHandler.fetchVariations(productId = navArgs.productId, forceRefresh = true)
+            variationListHandler.fetchVariations(
+                productId = navArgs.productId,
+                forceRefresh = true,
+                orderCurrency = navArgs.orderCurrency
+            )
             loadingState.value = IDLE
         }
     }
@@ -114,7 +126,13 @@ class VariationSelectorViewModel @Inject constructor(
             else -> resourceProvider.getString(stockStatus.stringResource)
         }
 
-        val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
+        val price = price?.let {
+            PriceUtils.formatCurrency(
+                price,
+                navArgs.orderCurrency ?: currencyCode,
+                currencyFormatter
+            )
+        }
 
         val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
 
@@ -137,15 +155,17 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private fun trackClearSelectionButtonClicked() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+        when (productSelectorFlow) {
+            OrderCreation,
+            OrderEditing -> {
                 tracker.trackClearSelectionButtonClicked(
                     productSelectorFlow,
                     ProductSelectorTracker.ProductSelectorSource.VariationSelector
                 )
             }
-            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
+            CouponEdition -> {}
+            OrderListFilter -> {}
+            Undefined -> {}
         }
     }
 
@@ -160,22 +180,26 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private fun trackVariationSelected() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+        when (productSelectorFlow) {
+            OrderCreation,
+            OrderEditing -> {
                 tracker.trackItemSelected(productSelectorFlow)
             }
-            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
+            CouponEdition -> {}
+            OrderListFilter -> {}
+            Undefined -> {}
         }
     }
 
     private fun trackVariationUnselected() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+        when (productSelectorFlow) {
+            OrderCreation,
+            OrderEditing -> {
                 tracker.trackItemUnselected(productSelectorFlow)
             }
-            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
+            CouponEdition -> {}
+            OrderListFilter -> {}
+            Undefined -> {}
         }
     }
 
@@ -220,5 +244,9 @@ class VariationSelectorViewModel @Inject constructor(
 
     enum class LoadingState {
         IDLE, LOADING, APPENDING
+    }
+
+    enum class ScreenMode {
+        DIALOG, FULLSCREEN
     }
 }

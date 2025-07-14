@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
+import android.widget.SearchView.OnQueryTextListener
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -15,10 +18,16 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.ui.products.ProductDetailViewModel
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment.Companion.ARG_ADDED_CATEGORY
+import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment.Companion.ARG_CATEGORY_UPDATE_RESULT
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.CategoryUpdateResult
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.UpdateAction.Add
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.UpdateAction.Delete
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.UpdateAction.Update
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -35,6 +44,9 @@ class ProductCategoriesFragment :
 
     private var _binding: FragmentProductCategoriesListBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var searchMenuItem: MenuItem
+    private lateinit var searchView: SearchView
 
     override fun getFragmentTitle() = getString(R.string.product_categories)
 
@@ -57,8 +69,71 @@ class ProductCategoriesFragment :
         setupObservers(viewModel)
         setupResultHandlers()
         viewModel.fetchProductCategories()
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_categories),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitProductCategories)
+                }
+
+                toolbar.inflateMenu(R.menu.menu_search)
+                searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
+                searchView = searchMenuItem.actionView as SearchView
+                searchView.queryHint = getString(R.string.product_category_selector_search_hint)
+
+                initSearchView()
+            }
+        )
     }
 
+    private fun initSearchView() {
+        viewModel.productCategoriesViewStateData.liveData.value?.let {
+            if (it.isSearchOpen) {
+                searchMenuItem.expandActionView()
+                searchView.setQuery(it.searchQuery, false)
+            } else {
+                searchMenuItem.collapseActionView()
+            }
+        }
+
+        val textQueryListener = object : OnQueryTextListener, SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (isAdded) {
+                    viewModel.onProductCategorySearchQueryChanged(query.orEmpty())
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (isAdded) {
+                    viewModel.onProductCategorySearchQueryChanged(newText.orEmpty())
+                }
+                return true
+            }
+        }
+
+        searchMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                if (isAdded) {
+                    viewModel.onProductCategorySearchStateChanged(open = true)
+                    searchView.setOnQueryTextListener(textQueryListener)
+                }
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                if (isAdded) {
+                    searchView.setOnQueryTextListener(null)
+                    viewModel.onProductCategorySearchStateChanged(open = false)
+                }
+                return true
+            }
+        })
+    }
+
+    @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -71,7 +146,10 @@ class ProductCategoriesFragment :
             adapter = productCategoriesAdapter
             addItemDecoration(
                 AlignedDividerDecoration(
-                    activity, DividerItemDecoration.VERTICAL, R.id.categoryName, clipToMargin = false
+                    activity,
+                    DividerItemDecoration.VERTICAL,
+                    R.id.categoryName,
+                    clipToMargin = false
                 )
             )
         }
@@ -85,6 +163,7 @@ class ProductCategoriesFragment :
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productCategoriesViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
@@ -104,8 +183,18 @@ class ProductCategoriesFragment :
             }
         }
 
-        viewModel.productCategories.observe(viewLifecycleOwner) {
-            showProductCategories(it)
+        viewModel.productCategories.observe(viewLifecycleOwner) { categories ->
+            if (categories != null) {
+                try {
+                    showProductCategories(categories)
+                } catch (e: IllegalArgumentException) {
+                    WooLog.e(WooLog.T.PRODUCTS, "Error: ${e.message}", e)
+                } catch (e: Exception) {
+                    WooLog.e(WooLog.T.PRODUCTS, "Unexpected error in showProductCategories", e)
+                }
+            } else {
+                WooLog.e(WooLog.T.PRODUCTS, "Received null categories")
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -117,13 +206,19 @@ class ProductCategoriesFragment :
     }
 
     private fun setupResultHandlers() {
-        handleResult<ProductCategory>(ARG_ADDED_CATEGORY) { category ->
-            viewModel.onProductCategoryAdded(category)
+        handleResult<CategoryUpdateResult>(ARG_CATEGORY_UPDATE_RESULT) { categoryUpdateResult ->
+            when (categoryUpdateResult.action) {
+                Add -> viewModel.onProductCategoryAdded(categoryUpdateResult.updatedCategory)
+                Update -> viewModel.productCategoryEdited(categoryUpdateResult.updatedCategory)
+                Delete -> viewModel.productCategoryDeleted(categoryUpdateResult.updatedCategory)
+            }
         }
     }
 
     private fun showProductCategories(productCategories: List<ProductCategory>) {
-        val product = requireNotNull(viewModel.getProduct().productDraft)
+        val product = requireNotNull(viewModel.getProduct().productDraft) {
+            "Product draft was null when trying to show categories"
+        }
         val sortedList = viewModel.sortAndStyleProductCategories(product, productCategories)
         productCategoriesAdapter.setProductCategories(sortedList)
     }
@@ -156,11 +251,11 @@ class ProductCategoriesFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitProductCategories())
+        viewModel.onBackButtonClicked(ExitProductCategories)
         return false
     }
 
-    override fun onProductCategoryClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+    override fun onProductCategoryChecked(productCategoryItemUiModel: ProductCategoryItemUiModel) {
         val product = requireNotNull(viewModel.getProduct().productDraft)
         val selectedCategories = product.categories.toMutableList()
 
@@ -180,5 +275,9 @@ class ProductCategoriesFragment :
         if (changeRequired) {
             viewModel.updateProductDraft(categories = selectedCategories)
         }
+    }
+
+    override fun onProductCategorySelected(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+        viewModel.onEditCategory(productCategoryItemUiModel.category)
     }
 }

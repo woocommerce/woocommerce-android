@@ -11,7 +11,9 @@ fun List<OrderFilterOptionUiModel>.markOptionAllIfNothingSelected() =
                 else -> it
             }
         }
-    } else this
+    } else {
+        this
+    }
 
 fun List<OrderFilterOptionUiModel>.isAnyFilterOptionSelected() =
     any { it.isSelected && it.key != OrderFilterOptionUiModel.DEFAULT_ALL_KEY }

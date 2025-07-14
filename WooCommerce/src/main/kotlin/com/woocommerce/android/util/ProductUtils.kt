@@ -3,7 +3,7 @@ package com.woocommerce.android.util
 import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.orders.creation.ProductUIModel
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -34,27 +34,15 @@ fun Product.getStockText(resourceProvider: ResourceProvider): String {
     }
 }
 
-fun ProductUIModel.getStockText(context: Context): String {
+fun OrderCreationProduct.getStockText(context: Context): String {
     return getStockText(
-        this.stockStatus,
+        this.productInfo.stockStatus,
         null,
-        this.stockQuantity
+        this.productInfo.stockQuantity
     ) { resId: Int, param: Any? ->
         param?.let {
             context.getString(resId, it)
         } ?: context.getString(resId)
-    }
-}
-
-fun ProductUIModel.getStockText(resourceProvider: ResourceProvider): String {
-    return getStockText(
-        this.stockStatus,
-        null,
-        this.stockQuantity
-    ) { resId: Int, param: Any? ->
-        param?.let {
-            resourceProvider.getString(resId, it)
-        } ?: resourceProvider.getString(resId)
     }
 }
 
@@ -96,5 +84,12 @@ private fun getInStockText(
         }
 
         else -> getString(R.string.product_stock_status_instock, null)
+    }
+}
+
+fun OrderCreationProduct.getVariationAttributesAndStockText(context: Context): String {
+    return buildString {
+        append(item.attributesDescription.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY)
+        append(getStockText(context))
     }
 }

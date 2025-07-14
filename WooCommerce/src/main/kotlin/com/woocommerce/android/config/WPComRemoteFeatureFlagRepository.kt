@@ -22,7 +22,7 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
      * @param appVersion (Optional) In the backend, a remote feature flag can be set with various rules based on
      * app version. This parameter can be used to work with those rules.
      */
-    suspend fun fetchFeatureFlags(appVersion: String = ""): Result<Unit> {
+    suspend fun fetchAndCacheFeatureFlags(appVersion: String = ""): Result<Unit> {
         // Empty string are parameters not used by this app.
         val result = featureFlagsStore.fetchFeatureFlags(
             buildNumber = "",

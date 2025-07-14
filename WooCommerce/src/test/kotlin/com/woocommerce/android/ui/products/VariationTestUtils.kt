@@ -9,6 +9,7 @@ fun generateVariation(): ProductVariation {
         remoteProductId = 1,
         remoteVariationId = 2,
         sku = "sku",
+        globalUniqueId = "globalUniqueId",
         image = null,
         price = null,
         regularPrice = null,
@@ -33,6 +34,10 @@ fun generateVariation(): ProductVariation {
         length = 0f,
         width = 0f,
         height = 0f,
-        weight = 0f
+        weight = 0f,
+        minAllowedQuantity = null,
+        maxAllowedQuantity = null,
+        groupOfQuantity = null,
+        overrideProductQuantities = false
     )
 }

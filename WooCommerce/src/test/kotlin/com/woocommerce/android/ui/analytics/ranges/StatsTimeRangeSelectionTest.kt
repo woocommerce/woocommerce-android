@@ -33,7 +33,7 @@ internal class StatsTimeRangeSelectionTest {
 
     @Before
     fun setUp() {
-        testLocale = Locale.UK
+        testLocale = Locale.getDefault()
         testTimeZone = TimeZone.getDefault()
         testCalendar = Calendar.getInstance(testLocale)
         testCalendar.timeZone = testTimeZone
@@ -47,11 +47,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentYear()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2020-01-01"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2019-01-01"),
             end = midDayFrom("2019-02-28")
         )
@@ -60,7 +60,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = YEAR_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -72,11 +73,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is last year, then generate expected date information`() {
         // Given
         val today = midDayFrom("2020-02-29")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2019-01-01"),
             end = dayEndFrom("2019-12-31")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2018-01-01"),
             end = dayEndFrom("2018-12-31")
         )
@@ -85,7 +86,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_YEAR.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -100,11 +102,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentQuarter()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-01-01"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2021-10-01"),
             end = midDayFrom("2021-11-15")
         )
@@ -113,7 +115,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = QUARTER_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -125,11 +128,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is last quarter, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-05-15")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-01-01"),
             end = dayEndFrom("2022-03-31")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2021-10-01"),
             end = dayEndFrom("2021-12-31")
         )
@@ -138,7 +141,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_QUARTER.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -153,11 +157,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentMonth()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2010-07-01"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2010-06-01"),
             end = midDayFrom("2010-06-30")
         )
@@ -166,7 +170,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = MONTH_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -178,11 +183,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is last month, then generate expected date information`() {
         // Given
         val today = midDayFrom("2010-07-15")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2010-06-01"),
             end = dayEndFrom("2010-06-30")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2010-05-01"),
             end = dayEndFrom("2010-05-31")
         )
@@ -191,7 +196,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_MONTH.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -206,11 +212,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentWeek()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-06-27"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-06-20"),
             end = midDayFrom("2022-06-24")
         )
@@ -219,7 +225,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = WEEK_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -231,11 +238,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is last week, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-07-01")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-06-20"),
             end = dayEndFrom("2022-06-26")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-06-13"),
             end = dayEndFrom("2022-06-19")
         )
@@ -244,7 +251,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_WEEK.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -259,11 +267,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentDay()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-07-01"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-06-30"),
             end = midDayFrom("2022-06-30")
         )
@@ -272,7 +280,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = TODAY.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -284,11 +293,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is yesterday, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-07-01")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-06-30"),
             end = dayEndFrom("2022-06-30")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-06-29"),
             end = dayEndFrom("2022-06-29")
         )
@@ -297,7 +306,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = YESTERDAY.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // Then
@@ -308,11 +318,11 @@ internal class StatsTimeRangeSelectionTest {
     @Test
     fun `when selection type is custom, then generate expected date information`() {
         // Given
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-12-05"),
             end = dayEndFrom("2022-12-07")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-12-02"),
             end = dayEndFrom("2022-12-04")
         )
@@ -337,7 +347,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = YEAR_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -345,8 +356,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Jul 1, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jan 1 - Jul 1, 2021")
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 – Jul 1, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jan 1 – Jul 1, 2021")
     }
 
     @Test
@@ -356,7 +367,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_YEAR.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -364,8 +376,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Dec 31, 2021")
-        assertThat(previousRangeDescription).isEqualTo("Jan 1 - Dec 31, 2020")
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 – Dec 31, 2021")
+        assertThat(previousRangeDescription).isEqualTo("Jan 1 – Dec 31, 2020")
     }
 
     @Test
@@ -375,7 +387,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = QUARTER_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -383,8 +396,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Feb 15, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Oct 1 - Nov 15, 2021")
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 – Feb 15, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Oct 1 – Nov 15, 2021")
     }
 
     @Test
@@ -394,7 +407,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_QUARTER.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -402,8 +416,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Mar 31, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Oct 1 - Dec 31, 2021")
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 – Mar 31, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Oct 1 – Dec 31, 2021")
     }
 
     @Test
@@ -413,7 +427,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = MONTH_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -421,8 +436,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jul 1 - 31, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jun 1 - 30, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jul 1 – 31, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 1 – 30, 2022")
     }
 
     @Test
@@ -432,7 +447,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = MONTH_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -440,8 +456,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jul 1 - 20, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jun 1 - 20, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jul 1 – 20, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 1 – 20, 2022")
     }
 
     @Test
@@ -451,7 +467,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_MONTH.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -459,8 +476,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jun 1 - 30, 2022")
-        assertThat(previousRangeDescription).isEqualTo("May 1 - 31, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jun 1 – 30, 2022")
+        assertThat(previousRangeDescription).isEqualTo("May 1 – 31, 2022")
     }
 
     @Test
@@ -470,7 +487,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = WEEK_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -478,8 +496,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jul 25 - 29, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jul 18 - 22, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jul 25 – 29, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jul 18 – 22, 2022")
     }
 
     @Test
@@ -489,7 +507,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = WEEK_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -497,8 +516,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jun 27 - Jul 2, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jun 20 - 25, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jun 27 – Jul 2, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 20 – 25, 2022")
     }
 
     @Test
@@ -508,7 +527,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_WEEK.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -516,8 +536,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jul 18 - 24, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jul 11 - 17, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jul 18 – 24, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jul 11 – 17, 2022")
     }
 
     @Test
@@ -527,7 +547,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_WEEK.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -535,8 +556,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jun 27 - Jul 3, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jun 20 - 26, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jun 27 – Jul 3, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 20 – 26, 2022")
     }
 
     @Test
@@ -546,7 +567,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = TODAY.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -565,7 +587,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = YESTERDAY.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            referenceEndDate = Date()
         )
 
         // When
@@ -594,8 +617,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Dec 5 - 7, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Dec 2 - 4, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Dec 5 – 7, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Dec 2 – 4, 2022")
     }
 
     private fun midDayFrom(date: String): Date {

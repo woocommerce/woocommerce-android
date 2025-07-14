@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.coupons.edit
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +18,10 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
@@ -34,6 +37,7 @@ import androidx.compose.ui.text.toUpperCase
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.NullableBigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.NullableIntTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCListItemWithInlineSubtitle
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
@@ -55,14 +59,15 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
             onExcludeSaleItemsChanged = viewModel::onExcludeSaleItemsChanged,
             onAllowedEmailsButtonClicked = viewModel::onAllowedEmailsButtonClicked,
             onExcludeProductsButtonClick = viewModel::onExcludeProductsButtonClick,
-            onExcludeCategoriesButtonClick = viewModel::onExcludeCategoriesButtonClick
+            onExcludeCategoriesButtonClick = viewModel::onExcludeCategoriesButtonClick,
+            onBackPressed = viewModel::onBackPressed,
         )
     }
 }
 
 @Composable
 fun CouponRestrictionsScreen(
-    viewState: CouponRestrictionsViewModel.ViewState,
+    viewState: ViewState,
     onMinimumAmountChanged: (BigDecimal?) -> Unit,
     onMaximumAmountChanged: (BigDecimal?) -> Unit,
     onUsageLimitPerCouponChanged: (Int?) -> Unit,
@@ -73,77 +78,92 @@ fun CouponRestrictionsScreen(
     onAllowedEmailsButtonClicked: () -> Unit,
     onExcludeProductsButtonClick: () -> Unit,
     onExcludeCategoriesButtonClick: () -> Unit,
+    onBackPressed: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
-    Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-        modifier = Modifier
-            .background(color = MaterialTheme.colors.surface)
-            .verticalScroll(scrollState)
-            .padding(vertical = dimensionResource(id = R.dimen.major_100))
-            .fillMaxSize()
-    ) {
-        SpendingRestrictionField(
-            value = viewState.restrictions.minimumAmount,
-            onValueChange = onMinimumAmountChanged,
-            label = stringResource(id = R.string.coupon_restrictions_minimum_spend_hint, viewState.currencyCode),
-            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
-        )
+    BackHandler {
+        onBackPressed()
+    }
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = stringResource(id = R.string.coupon_edit_usage_restrictions),
+                onNavigationButtonClick = onBackPressed,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(color = MaterialTheme.colors.surface)
+                .verticalScroll(scrollState)
+                .padding(vertical = dimensionResource(id = R.dimen.major_100))
+        ) {
+            SpendingRestrictionField(
+                value = viewState.restrictions.minimumAmount,
+                onValueChange = onMinimumAmountChanged,
+                label = stringResource(id = R.string.coupon_restrictions_minimum_spend_hint, viewState.currencyCode),
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            )
 
-        SpendingRestrictionField(
-            value = viewState.restrictions.maximumAmount,
-            onValueChange = onMaximumAmountChanged,
-            label = stringResource(id = R.string.coupon_restrictions_maximum_spend_hint, viewState.currencyCode),
-            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
-        )
+            SpendingRestrictionField(
+                value = viewState.restrictions.maximumAmount,
+                onValueChange = onMaximumAmountChanged,
+                label = stringResource(id = R.string.coupon_restrictions_maximum_spend_hint, viewState.currencyCode),
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            )
 
-        WCOutlinedTypedTextField(
-            value = viewState.restrictions.usageLimit,
-            onValueChange = onUsageLimitPerCouponChanged,
-            label = stringResource(id = R.string.coupon_restrictions_limit_per_coupon_hint),
-            valueMapper = NullableIntTextFieldValueMapper(supportsNegativeValue = false),
-            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            placeholderText = stringResource(id = R.string.coupon_restrictions_limit_per_coupon_placeholder)
-        )
-
-        if (viewState.showLimitUsageToXItems) {
             WCOutlinedTypedTextField(
-                value = viewState.restrictions.limitUsageToXItems,
-                onValueChange = onLimitUsageToXItemsChanged,
-                label = stringResource(id = R.string.coupon_restrictions_amount_limit_hint),
+                value = viewState.restrictions.usageLimit,
+                onValueChange = onUsageLimitPerCouponChanged,
+                label = stringResource(id = R.string.coupon_restrictions_limit_per_coupon_hint),
                 valueMapper = NullableIntTextFieldValueMapper(supportsNegativeValue = false),
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                placeholderText = stringResource(id = R.string.coupon_restrictions_amount_limit_placeholder)
+                placeholderText = stringResource(id = R.string.coupon_restrictions_limit_per_coupon_placeholder)
             )
+
+            if (viewState.showLimitUsageToXItems) {
+                WCOutlinedTypedTextField(
+                    value = viewState.restrictions.limitUsageToXItems,
+                    onValueChange = onLimitUsageToXItemsChanged,
+                    label = stringResource(id = R.string.coupon_restrictions_amount_limit_hint),
+                    valueMapper = NullableIntTextFieldValueMapper(supportsNegativeValue = false),
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    placeholderText = stringResource(id = R.string.coupon_restrictions_amount_limit_placeholder)
+                )
+            }
+
+            WCOutlinedTypedTextField(
+                value = viewState.restrictions.usageLimitPerUser,
+                onValueChange = onUsageLimitPerUserChanged,
+                label = stringResource(id = R.string.coupon_restrictions_limit_per_user_hint),
+                valueMapper = NullableIntTextFieldValueMapper(supportsNegativeValue = false),
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                placeholderText = stringResource(id = R.string.coupon_restrictions_limit_per_user_placeholder)
+            )
+
+            AllowedEmailsButton(
+                allowedEmails = viewState.restrictions.restrictedEmails,
+                onClick = onAllowedEmailsButtonClicked
+            )
+
+            IndividualUseSwitch(
+                isForIndividualUse = viewState.restrictions.isForIndividualUse ?: false,
+                onIndividualUseChanged = onIndividualUseChanged
+            )
+            SaleItemsSwitch(
+                areSaleItemsExcluded = viewState.restrictions.areSaleItemsExcluded ?: false,
+                onExcludeSaleItemsChanged = onExcludeSaleItemsChanged
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+            ExclusionsSection(viewState, onExcludeProductsButtonClick, onExcludeCategoriesButtonClick)
         }
-
-        WCOutlinedTypedTextField(
-            value = viewState.restrictions.usageLimitPerUser,
-            onValueChange = onUsageLimitPerUserChanged,
-            label = stringResource(id = R.string.coupon_restrictions_limit_per_user_hint),
-            valueMapper = NullableIntTextFieldValueMapper(supportsNegativeValue = false),
-            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            placeholderText = stringResource(id = R.string.coupon_restrictions_limit_per_user_placeholder)
-        )
-
-        AllowedEmailsButton(
-            allowedEmails = viewState.restrictions.restrictedEmails,
-            onClick = onAllowedEmailsButtonClicked
-        )
-
-        IndividualUseSwitch(
-            isForIndividualUse = viewState.restrictions.isForIndividualUse ?: false,
-            onIndividualUseChanged = onIndividualUseChanged
-        )
-        SaleItemsSwitch(
-            areSaleItemsExcluded = viewState.restrictions.areSaleItemsExcluded ?: false,
-            onExcludeSaleItemsChanged = onExcludeSaleItemsChanged
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-        ExclusionsSection(viewState, onExcludeProductsButtonClick, onExcludeCategoriesButtonClick)
     }
 }
 
@@ -158,7 +178,7 @@ private fun SpendingRestrictionField(
         value = value,
         onValueChange = onValueChange,
         label = label,
-        valueMapper = NullableBigDecimalTextFieldValueMapper(supportsNegativeValue = false),
+        valueMapper = NullableBigDecimalTextFieldValueMapper.create(supportsNegativeValue = false),
         modifier = modifier,
         // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
         //  (https://issuetracker.google.com/issues/209835363)
@@ -269,15 +289,21 @@ private fun ExclusionsSection(
             color = colorResource(id = R.color.color_on_surface_medium)
         )
 
-        val productsButtonSuffix = if (viewState.restrictions.excludedProductIds.isEmpty()) ""
-        else " (${viewState.restrictions.excludedProductIds.size})"
+        val productsButtonSuffix = if (viewState.restrictions.excludedProductIds.isEmpty()) {
+            ""
+        } else {
+            " (${viewState.restrictions.excludedProductIds.size})"
+        }
         WCOutlinedButton(
             onClick = onExcludeProductsButtonClick,
             text = "${stringResource(R.string.coupon_restrictions_exclude_products)}$productsButtonSuffix",
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.restrictions.excludedProductIds.isEmpty()) Icons.Filled.Add
-                    else Icons.Filled.Edit,
+                    imageVector = if (viewState.restrictions.excludedProductIds.isEmpty()) {
+                        Icons.Filled.Add
+                    } else {
+                        Icons.Filled.Edit
+                    },
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )
@@ -286,15 +312,21 @@ private fun ExclusionsSection(
             modifier = Modifier.fillMaxWidth()
         )
 
-        val categoriesButtonSuffix = if (viewState.restrictions.excludedCategoryIds.isEmpty()) ""
-        else " (${viewState.restrictions.excludedCategoryIds.size})"
+        val categoriesButtonSuffix = if (viewState.restrictions.excludedCategoryIds.isEmpty()) {
+            ""
+        } else {
+            " (${viewState.restrictions.excludedCategoryIds.size})"
+        }
         WCOutlinedButton(
             onClick = onExcludeCategoriesButtonClick,
             text = "${stringResource(R.string.coupon_restrictions_exclude_categories)}$categoriesButtonSuffix",
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.restrictions.excludedCategoryIds.isEmpty()) Icons.Filled.Add
-                    else Icons.Filled.Edit,
+                    imageVector = if (viewState.restrictions.excludedCategoryIds.isEmpty()) {
+                        Icons.Filled.Add
+                    } else {
+                        Icons.Filled.Edit
+                    },
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )

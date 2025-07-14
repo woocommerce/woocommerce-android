@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -68,7 +67,7 @@ class CardReaderStatusCheckerDialogFragment : PaymentsBaseDialogFragment(R.layou
                         )
                 }
                 else -> event.isHandled = false
-            }.exhaustive
+            }
         }
     }
 }

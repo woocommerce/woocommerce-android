@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
@@ -13,27 +11,36 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
-import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_AUTOMATIC_TIMEOUT_RETRY
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.drop
+import com.woocommerce.android.extensions.filter
 import com.woocommerce.android.extensions.filterNotNull
-import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.extensions.runWithContext
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
+import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
@@ -46,14 +53,11 @@ import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersC
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.RetryLoadingOrders
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
-import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDismissed
-import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDismissedForever
-import com.woocommerce.android.ui.payments.feedback.ipp.MarkIPPFeedbackSurveyAsCompleted
-import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -61,78 +65,87 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import okio.utf8Size
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
+import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
+import org.wordpress.android.fluxc.store.ListStore.ListErrorType.PARSE_ERROR
+import org.wordpress.android.fluxc.store.ListStore.ListErrorType.TIMEOUT_ERROR
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
-import org.wordpress.android.mediapicker.util.filter
+import java.util.Locale
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@Suppress("LeakingThis")
+@Suppress("LargeClass")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val orderListRepository: OrderListRepository,
     private val orderDetailRepository: OrderDetailRepository,
-    private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val fetcher: FetchOrdersRepository,
     private val resourceProvider: ResourceProvider,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
-    private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData,
-    private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner,
     private val shouldShowCreateTestOrderScreen: ShouldShowCreateTestOrderScreen,
-    private val markFeedbackBannerAsDismissed: MarkFeedbackBannerAsDismissed,
-    private val markFeedbackBannerAsDismissedForever: MarkFeedbackBannerAsDismissedForever,
-    private val markFeedbackBannerAsCompleted: MarkIPPFeedbackSurveyAsCompleted,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val feedbackPrefs: FeedbackPrefs,
     private val barcodeScanningTracker: BarcodeScanningTracker,
+    private val notificationChannelsHandler: NotificationChannelsHandler,
+    private val appPrefs: AppPrefsWrapper,
+    private val showTestNotification: ShowTestNotification,
+    private val dateUtils: DateUtils,
+    private val shouldUpdateOrdersList: ShouldUpdateOrdersList,
+    private val observeOrdersListLastUpdate: ObserveOrdersListLastUpdate,
+    private val dataSourceLazyProvider: Lazy<OrderListItemDataSource>,
 ) : ScopedViewModel(savedState), LifecycleOwner {
+    companion object {
+        const val BULK_UPDATE_COUNT_LIMIT = 100
+    }
+
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
 
-    private val simplePaymentsAndOrderCreationFeedbackState
-        get() = feedbackPrefs.getFeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-        )?.feedbackState ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
 
     val performanceObserver: LifecycleObserver = orderListTransactionLauncher
-
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     internal var ordersPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
-    private val dataSource by lazy {
-        OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
-    }
+    private val dataSource
+        get() = dataSourceLazyProvider.get()
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
     internal var viewState by viewStateLiveData
 
@@ -143,18 +156,17 @@ class OrderListViewModel @Inject constructor(
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
 
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
-    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage.map {
-        if (it == false) {
-            orderListTransactionLauncher.onListFetched()
-        }
-        it
-    }
+    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
     private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
 
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
+
+    val orderId: LiveData<Long> = savedState.getLiveData<Long>("orderId")
+
+    var orderIdAndPositionBackup = mutableMapOf<Long, Int>()
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData(
@@ -166,17 +178,29 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
-    var isSearching = false
+    private var activeWCOrderListDescriptor: WCOrderListDescriptor? = null
+
+    var isSearching: Boolean
+        get() = viewState.isSearching
+        set(value) {
+            viewState = viewState.copy(isSearching = value)
+        }
+
     private var dismissListErrors = false
     var searchQuery = ""
 
-    private val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean
-        get() {
-            val simplePaymentsAndOrderFeedbackDismissed =
-                simplePaymentsAndOrderCreationFeedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED
-            val isIPPSurveyFeedbackHidden = viewState.ippFeedbackBannerState is IPPSurveyFeedbackBannerState.Hidden
-            return isIPPSurveyFeedbackHidden && !simplePaymentsAndOrderFeedbackDismissed
-        }
+    private var _lastUpdateOrdersList = MutableStateFlow<Long?>(null)
+    val lastUpdateOrdersList: LiveData<String?> = _lastUpdateOrdersList
+        .map { lastUpdateMillis ->
+            if (lastUpdateMillis == null) return@map null
+            String.format(
+                Locale.getDefault(),
+                resourceProvider.getString(R.string.last_update),
+                dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
+            )
+        }.asLiveData()
+
+    fun isSelecting() = viewState.orderListState == ViewState.OrderListState.Selecting
 
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
@@ -202,30 +226,57 @@ class OrderListViewModel @Inject constructor(
             }
         }
 
-        displayIPPFeedbackOrOrdersBannerOrJitm()
+        displayOrdersBannerOrJitm()
+
+        isFetchingFirstPage.filter { !it }
+            .observeForever {
+                // When first page is fetched
+                orderListTransactionLauncher.onListFetched()
+                checkChaChingSoundSettings()
+            }
     }
 
     fun loadOrders() {
-        ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
+        val listDescriptor = getWCOrderListDescriptorWithFilters()
+        activeWCOrderListDescriptor = listDescriptor
+        ordersPagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         viewState = viewState.copy(
             filterCount = getSelectedOrderFiltersCount(),
             isErrorFetchingDataBannerVisible = false
         )
-        activatePagedListWrapper(ordersPagedListWrapper!!)
-        fetchOrdersAndOrderDependencies()
+        activatePagedListWrapper(
+            pagedListWrapper = ordersPagedListWrapper!!,
+            shouldRetry = true
+        )
+        val listId = listDescriptor.uniqueIdentifier.value
+        launch {
+            if (shouldUpdateOrdersList(listDescriptor)) {
+                fetchOrdersAndOrderDependencies()
+            } else {
+                // List is displayed from cache
+                orderListTransactionLauncher.onListFetched()
+            }
+            observeOrdersListLastUpdate(listId).collect {
+                _lastUpdateOrdersList.value = it
+            }
+        }
     }
 
     /**
      * Creates and activates a new list with the search and filter params provided. This should only be used
      * by the search component portion of the order list view.
-     *
-     * NOTE: Although technically the "PROCESSING" tab is a filtered list, it should not use this method. The
-     * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
         val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
+        activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    fun changeTroubleshootingBannerVisibility(show: Boolean) {
+        viewState = viewState.copy(
+            shouldDisplayTroubleshootingBanner = show,
+        )
     }
 
     /**
@@ -269,6 +320,7 @@ class OrderListViewModel @Inject constructor(
                 SUCCESS -> {
                     viewState = viewState.copy(arePaymentGatewaysFetched = true)
                 }
+
                 else -> {
                     /* do nothing */
                 }
@@ -284,7 +336,8 @@ class OrderListViewModel @Inject constructor(
             // Fetch and load order status options
             when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
                 SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
-                else -> { /* do nothing */
+                else -> {
+                    /* do nothing */
                 }
             }
         }
@@ -297,6 +350,10 @@ class OrderListViewModel @Inject constructor(
 
     private fun trackScanClickedEvent() {
         analyticsTracker.track(ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+
+    fun trackConnectivityTroubleshootClicked() {
+        analyticsTracker.track(ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED)
     }
 
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
@@ -314,11 +371,16 @@ class OrderListViewModel @Inject constructor(
                     }
                 )
             }
+
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_LIST)
                 triggerEvent(
                     OrderListEvent.OnBarcodeScanned(status.code, status.format)
                 )
+            }
+
+            CodeScannerStatus.NotFound -> {
+                // do nothing
             }
         }
     }
@@ -327,29 +389,19 @@ class OrderListViewModel @Inject constructor(
      * Track user clicked to open an order and the status of that order, along with some
      * data about the order custom fields
      */
-    fun trackOrderClickEvent(orderId: Long, orderStatus: String) = launch {
-        val (customFieldsCount, customFieldsSize) =
-            orderDetailRepository.getOrderMetadata(orderId)
-                .map { it.value.utf8Size() }
-                .let {
-                    Pair(
-                        // amount of custom fields in the order
-                        it.size,
-                        // total size in bytes of all custom fields in the order
-                        if (it.isEmpty()) 0 else it.reduce(Long::plus)
-                    )
-                }
-
+    fun trackOrderClickEvent(orderId: Long, orderStatus: String, isTwoPaneLayout: Boolean) {
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_OPEN,
             mapOf(
                 AnalyticsTracker.KEY_ID to orderId,
                 AnalyticsTracker.KEY_STATUS to orderStatus,
-                AnalyticsTracker.KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
-                AnalyticsTracker.KEY_CUSTOM_FIELDS_SIZE to customFieldsSize
+                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(isTwoPaneLayout)
             )
         )
     }
+
+    private fun getScreenSizeClassNameForAnalytics(isTwoPaneLayout: Boolean) =
+        IsScreenInTwoPaneLayout(isTwoPaneLayout).deviceTypeToAnalyticsString
 
     /**
      * Activates the provided list by first removing the LiveData sources for the active list,
@@ -359,8 +411,12 @@ class OrderListViewModel @Inject constructor(
      */
     private fun activatePagedListWrapper(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
-        isFirstInit: Boolean = false
+        isFirstInit: Boolean = false,
+        shouldRetry: Boolean = false
     ) {
+        // This flag is used to ensure that we only retry the first time a timeout happens
+        var noTimeoutHappened = true
+
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
         clearLiveDataSources(this.activePagedListWrapper)
@@ -368,17 +424,9 @@ class OrderListViewModel @Inject constructor(
         listenToEmptyViewStateLiveData(pagedListWrapper)
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
+            viewState = viewState.copy(isBulkUpdating = false)
             pagedList?.let {
-                // We are re-checking the ipp feedback survey banner logic on every order fetch
-                // from the API. This is primarily being done because when the app migrates
-                // WCDatabase from v22 to v23, we clear all the orders in the database and fetch
-                // it freshly. After the update, on the very first launch, the ipp feedback survey banner logic
-                // returns that there are no IPP orders since the database is not filled with any orders
-                // (The API call happens after the database check). After the API returns, we re-check the logic
-                // so that the database is populated by now and we can show the correct banner.
-                // This also helps in updating the feedback survey banner according to the order changes
-                // on pull-to-refresh.
-                displayIPPFeedbackOrOrdersBannerOrJitm()
+                displayOrdersBannerOrJitm()
                 _pagedListData.value = it
             }
         }
@@ -396,14 +444,26 @@ class OrderListViewModel @Inject constructor(
             .filter { !dismissListErrors }
             .filterNotNull()
             .observe(this) { error ->
-                if (error.type == ListStore.ListErrorType.PARSE_ERROR) {
-                    viewState = viewState.copy(
-                        isErrorFetchingDataBannerVisible = true,
-                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
-                        isSimplePaymentsAndOrderCreationFeedbackVisible = false
-                    )
-                } else {
-                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+                when (error.type) {
+                    PARSE_ERROR -> {
+                        viewState = viewState.copy(
+                            isErrorFetchingDataBannerVisible = true,
+                        )
+                    }
+
+                    TIMEOUT_ERROR -> {
+                        when {
+                            shouldRetry && noTimeoutHappened -> {
+                                analyticsTracker.track(ORDERS_LIST_AUTOMATIC_TIMEOUT_RETRY)
+                                triggerEvent(RetryLoadingOrders)
+                            }
+
+                            else -> changeTroubleshootingBannerVisibility(show = true)
+                        }
+                        noTimeoutHappened = false
+                    }
+
+                    else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
             }
         this.activePagedListWrapper = pagedListWrapper
@@ -415,24 +475,15 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private fun displayIPPFeedbackOrOrdersBannerOrJitm() {
+    private fun displayOrdersBannerOrJitm() {
         viewModelScope.launch {
-            val bannerData = getIPPFeedbackBannerData()
             when {
-                shouldShowFeedbackBanner() && bannerData != null -> {
+                !viewState.shouldDisplayTroubleshootingBanner -> {
                     viewState = viewState.copy(
-                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
-                    )
-                    trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
-                }
-                !isSimplePaymentsAndOrderCreationFeedbackVisible -> {
-                    viewState = viewState.copy(
-                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
                         jitmEnabled = true
                     )
                 }
             }
-            refreshOrdersBannerVisibility()
         }
     }
 
@@ -446,6 +497,10 @@ class OrderListViewModel @Inject constructor(
             _isEmpty.removeSource(isEmpty)
             _isFetchingFirstPage.removeSource(isFetchingFirstPage)
             _isLoadingMore.removeSource(isLoadingMore)
+
+            _isFetchingFirstPage.value = false
+            _isEmpty.value = false
+            _isLoadingMore.value = false
         }
     }
 
@@ -479,6 +534,7 @@ class OrderListViewModel @Inject constructor(
                             EmptyViewType.ORDER_LIST_LOADING
                         }
                     }
+
                     isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
                     viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                     else -> when {
@@ -507,17 +563,6 @@ class OrderListViewModel @Inject constructor(
         orderListRepository.onCleanup()
         orderListTransactionLauncher.clear()
         super.onCleared()
-    }
-
-    @Suppress("unused", "DEPRECATION")
-    @Subscribe(threadMode = MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        when (event.causeOfChange) {
-            // A child fragment made a change that requires a data refresh.
-            UPDATE_ORDER_STATUS -> activePagedListWrapper?.fetchFirstPage()
-            else -> {
-            }
-        }
     }
 
     @Suppress("unused")
@@ -553,23 +598,57 @@ class OrderListViewModel @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderSummariesFetched(event: OnOrderSummariesFetched) {
+        fun WPAPINetworkingMode.toTrackingValue(): String {
+            return when (this) {
+                is WPAPINetworkingMode.ApplicationPasswords -> "app_passwords"
+                is WPAPINetworkingMode.ApplicationPasswordsWithJetpack -> "app_passwords_with_jetpack"
+                is WPAPINetworkingMode.JetpackTunnel -> "jetpack_tunnel"
+            }
+        }
+
         // Only track if this is not from a search query
         if (!event.listDescriptor.searchQuery.isNullOrEmpty()) {
             return
         }
 
-        launch {
-            val totalDurationInSeconds = event.duration.toDouble() / 1_000
-            val totalCompletedOrders = orderListRepository
-                .getCachedOrderStatusOptions()[CoreOrderStatus.COMPLETED.value]?.statusCount
+        if (event.isError) {
             AnalyticsTracker.track(
-                AnalyticsEvent.ORDERS_LIST_LOADED,
-                mapOf(
-                    AnalyticsTracker.KEY_TOTAL_DURATION to totalDurationInSeconds,
-                    AnalyticsTracker.KEY_STATUS to event.listDescriptor.statusFilter,
-                    AnalyticsTracker.KEY_TOTAL_COMPLETED_ORDERS to totalCompletedOrders
-                )
+                AnalyticsEvent.ORDER_LIST_LOAD_ERROR,
+                properties = mapOf(
+                    "request_type" to event.networkingMode?.toTrackingValue()
+                ).filterNotNull(),
+                errorType = event.error.type.name,
+                errorContext = this::class.simpleName,
+                errorDescription = event.error.message,
             )
+        } else {
+            launch {
+                val totalDurationInSeconds = event.duration.toDouble() / 1_000
+                val totalCompletedOrders = orderListRepository
+                    .getCachedOrderStatusOptions()[CoreOrderStatus.COMPLETED.value]?.statusCount
+                AnalyticsTracker.track(
+                    AnalyticsEvent.ORDERS_LIST_LOADED,
+                    mapOf(
+                        AnalyticsTracker.KEY_TOTAL_DURATION to totalDurationInSeconds,
+                        AnalyticsTracker.KEY_STATUS to event.listDescriptor.statusFilter,
+                        AnalyticsTracker.KEY_TOTAL_COMPLETED_ORDERS to totalCompletedOrders,
+                        "request_type" to event.networkingMode?.toTrackingValue()
+                    )
+                )
+
+                if (event.networkingMode is WPAPINetworkingMode.JetpackTunnel &&
+                    (event.networkingMode as WPAPINetworkingMode.JetpackTunnel).isFallback
+                ) {
+                    val error = (event.networkingMode as WPAPINetworkingMode.JetpackTunnel).applicationPasswordsError
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.ORDERS_LIST_APP_PASSWORDS_FAILURE,
+                        properties = mapOf(
+                            "network_error_code" to error?.volleyError?.networkResponse?.statusCode,
+                            "error_api_code" to error?.errorCode,
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -586,6 +665,28 @@ class OrderListViewModel @Inject constructor(
         val pagedList = _pagedListData.value ?: return
         (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
         triggerEvent(OrderListEvent.NotifyOrderChanged(position))
+    }
+
+    fun updateOrderSelectedStatus(orderId: Long, isTablet: Boolean = true) {
+        val pagedList = _pagedListData.value ?: return
+        if (isTablet) {
+            pagedList.map { orderItem ->
+                if (orderItem is OrderListItemUIType.OrderListItemUI) {
+                    orderItem.isSelected = orderItem.orderId == orderId
+                }
+            }
+        } else {
+            pagedList.map { orderItem ->
+                if (orderItem is OrderListItemUIType.OrderListItemUI) {
+                    orderItem.isSelected = false
+                }
+            }
+        }
+        triggerEvent(OrderListEvent.NotifyOrderSelectionChanged)
+    }
+
+    fun clearOrderId() {
+        savedState["orderId"] = -1L
     }
 
     fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
@@ -689,77 +790,268 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun onDismissIPPFeedbackBannerClicked() {
-        _event.postValue(OrderListEvent.ShowIPPDismissConfirmationDialog)
+    private fun checkChaChingSoundSettings() {
+        fun recreateNotificationChannel() {
+            notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
+            triggerEvent(
+                Event.ShowActionStringSnackbar(
+                    message = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar),
+                    actionText = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar_action),
+                    action = {
+                        launch {
+                            showTestNotification(
+                                title = resourceProvider.getString(R.string.cha_ching_sound_test_notification_title),
+                                message = resourceProvider.getString(
+                                    R.string.cha_ching_sound_test_notification_message
+                                ),
+                                channelType = NotificationChannelType.NEW_ORDER,
+                                dismissDelay = 10.seconds
+                            )
+                        }
+                    }
+                )
+            )
+        }
+
+        if (notificationChannelsHandler.checkNewOrderNotificationSound() == NewOrderNotificationSoundStatus.DISABLED &&
+            !appPrefs.chaChingSoundIssueDialogDismissed
+        ) {
+            analyticsTracker.track(AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_SHOWN)
+            triggerEvent(
+                Event.ShowDialog(
+                    titleId = R.string.cha_ching_sound_issue_dialog_title,
+                    messageId = R.string.cha_ching_sound_issue_dialog_message,
+                    positiveButtonId = R.string.cha_ching_sound_issue_dialog_turn_on_sound,
+                    negativeButtonId = R.string.cha_ching_sound_issue_dialog_keep_silent,
+                    positiveBtnAction = { _, _ ->
+                        analyticsTracker.track(
+                            AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_SOURCE to "order_list")
+                        )
+                        recreateNotificationChannel()
+                    },
+                    negativeBtnAction = { _, _ ->
+                        analyticsTracker.track(AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_DISMISSED)
+                        appPrefs.chaChingSoundIssueDialogDismissed = true
+                    },
+                    cancelable = false
+                )
+            )
+        }
     }
 
-    fun onIPPFeedbackBannerCTAClicked() {
-        trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_CTA_TAPPED)
+    fun trashOrder(orderId: Long) {
+        fun updateExcludedOrders(excludedOrderIds: List<Long>?) {
+            val listDescriptor = activeWCOrderListDescriptor?.copy(
+                excludedIds = excludedOrderIds?.takeIf { it.isNotEmpty() }
+            ) ?: return
+            activeWCOrderListDescriptor = listDescriptor
+            val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+            activatePagedListWrapper(pagedListWrapper)
+        }
 
-        val bannerState = viewState.ippFeedbackBannerState as IPPSurveyFeedbackBannerState.Visible
-        _event.postValue(OrderListEvent.OpenIPPFeedbackSurveyLink(bannerState.bannerData.url))
-        markFeedbackBannerAsCompleted()
-        viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
-
-        refreshOrdersBannerVisibility()
-    }
-
-    fun onIPPFeedbackBannerDismissedForever() {
-        trackIPPBannerEvent(
-            AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
-            KEY_IPP_BANNER_REMIND_LATER to false
+        fun excludeOrder() = updateExcludedOrders(
+            excludedOrderIds = (activeWCOrderListDescriptor?.excludedIds ?: emptyList()) + orderId
         )
 
-        markFeedbackBannerAsDismissedForever()
-        viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
+        fun cancelExcludingOrder() = updateExcludedOrders(activeWCOrderListDescriptor?.excludedIds?.minus(orderId))
 
-        refreshOrdersBannerVisibility()
-    }
+        fun handleTrashing() {
+            launch {
+                orderListRepository
+                    .trashOrder(orderId)
+                    .onFailure { triggerEvent(ShowErrorSnack(R.string.orderlist_order_trashed_error)) }
 
-    fun onIPPFeedbackBannerDismissedShowLater() {
-        trackIPPBannerEvent(
-            AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
-            KEY_IPP_BANNER_REMIND_LATER to true
-        )
+                cancelExcludingOrder()
+            }
+        }
 
-        markFeedbackBannerAsDismissed()
-        viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
+        excludeOrder()
 
-        refreshOrdersBannerVisibility()
-    }
-
-    private fun refreshOrdersBannerVisibility() {
-        viewState = viewState.copy(
-            isSimplePaymentsAndOrderCreationFeedbackVisible = isSimplePaymentsAndOrderCreationFeedbackVisible
-        )
-    }
-
-    private fun trackIPPBannerEvent(event: AnalyticsEvent, vararg customProps: Pair<String, Any>) {
-        analyticsTracker.track(event, getIPPBannerEventProps(*customProps))
-    }
-
-    private fun getIPPBannerEventProps(vararg customArgs: Pair<String, Any>): Map<String, Any> {
-        val bannerData = (viewState.ippFeedbackBannerState as IPPSurveyFeedbackBannerState.Visible).bannerData
-
-        return customArgs.toMap() + mapOf(
-            KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
-            KEY_IPP_BANNER_CAMPAIGN_NAME to bannerData.campaignName
-        )
-    }
-
-    fun onDismissOrderCreationSimplePaymentsFeedback() {
-        analyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+        triggerEvent(
+            Event.ShowUndoSnackbar(
+                message = resourceProvider.getString(R.string.orderlist_order_trashed, orderId),
+                undoAction = { cancelExcludingOrder() },
+                dismissAction = object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        if (event != DISMISS_EVENT_ACTION) {
+                            handleTrashing()
+                        }
+                    }
+                }
             )
         )
-        refreshOrdersBannerVisibility()
+    }
+
+    fun onSelectionChanged(count: Int) {
+        when {
+            count == 0 -> exitSelectionMode()
+            count >= BULK_UPDATE_COUNT_LIMIT -> {
+                viewState = viewState.copy(selectionCount = count)
+                showMaximumBulkSelectionNotice()
+            }
+
+            count > 0 && !isSelecting() -> enterSelectionMode(count)
+            count > 0 -> viewState = viewState.copy(selectionCount = count)
+        }
+    }
+
+    private fun showMaximumBulkSelectionNotice() {
+        val message = resourceProvider.getString(
+            R.string.orderlist_bulk_update_maximum_reached,
+            BULK_UPDATE_COUNT_LIMIT
+        )
+        triggerEvent(OrderListEvent.ShowSnackbarString(message))
+    }
+
+    private fun enterSelectionMode(count: Int) {
+        analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_SELECTION_ENABLED)
+        viewState = viewState.copy(
+            orderListState = ViewState.OrderListState.Selecting,
+            selectionCount = count,
+            isAddOrderButtonVisible = false
+        )
+    }
+
+    private fun exitSelectionMode() {
+        viewState = viewState.copy(
+            orderListState = ViewState.OrderListState.Browsing,
+            selectionCount = null,
+            isAddOrderButtonVisible = true
+        )
+    }
+
+    fun onBulkUpdateStatusClicked() {
+        analyticsTracker.track(
+            AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
+                AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to viewState.selectionCount
+            )
+        )
+
+        launch(dispatchers.io) {
+            orderDetailRepository
+                .getOrderStatusOptions().toTypedArray()
+                .runWithContext(dispatchers.main) {
+                    triggerEvent(
+                        OrderListEvent.ShowUpdateStatusDialog(
+                            currentStatus = "", // Intentionally set as empty string to show no status selected
+                            orderStatusList = it
+                        )
+                    )
+                }
+        }
+    }
+
+    fun onBulkOrderStatusChanged(orderIds: List<Long>, newStatus: Order.Status) {
+        if (networkStatus.isConnected()) {
+            if (orderIds.isEmpty()) {
+                val errorMessage = "Trying to bulk update order status but order Ids list is empty"
+                trackBulkOrderUpdateFailure()
+                if (BuildConfig.DEBUG) {
+                    throw IllegalStateException(errorMessage)
+                } else {
+                    WooLog.e(WooLog.T.ORDERS, errorMessage)
+                }
+            } else {
+                analyticsTracker.track(
+                    AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_CONFIRMED,
+                    mapOf(
+                        AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
+                        AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to viewState.selectionCount
+                    )
+                )
+
+                viewState = viewState.copy(isBulkUpdating = true)
+                launch {
+                    val result = orderListRepository.bulkUpdateOrderStatus(
+                        orderIds = orderIds,
+                        newStatus = newStatus
+                    )
+
+                    handleBulkUpdateResult(result)
+                }
+            }
+        } else {
+            trackBulkOrderUpdateFailure()
+            triggerEvent(Event.ShowSnackbar(R.string.offline_error))
+        }
+        exitSelectionMode()
+    }
+
+    private fun handleBulkUpdateResult(result: BulkUpdateOrderResult) {
+        when (result) {
+            is BulkUpdateOrderResult.AllSuccess,
+            is BulkUpdateOrderResult.PartialSuccess -> {
+                // Prepare to show a success message after the list has been updated
+                val observable = ordersPagedListWrapper?.data?.drop(1)
+                observable?.observe(
+                    this,
+                    object : Observer<PagedOrdersList> {
+                        override fun onChanged(value: PagedOrdersList) {
+                            val message = when (result) {
+                                is BulkUpdateOrderResult.AllSuccess -> resourceProvider.getString(
+                                    R.string.orderlist_bulk_update_status_updated
+                                )
+
+                                is BulkUpdateOrderResult.PartialSuccess -> resourceProvider.getString(
+                                    R.string.orderlist_bulk_update_result_partial_success,
+                                    result.successCount,
+                                    result.failureCount
+                                )
+
+                                else -> resourceProvider.getString(R.string.orderlist_bulk_update_status_updated)
+                            }
+                            triggerEvent(OrderListEvent.ShowSnackbarString(message))
+                            observable.removeObserver(this)
+                        }
+                    }
+                )
+
+                ordersPagedListWrapper?.fetchFirstPage()
+                trackBulkOrderUpdateSuccess()
+            }
+
+            is BulkUpdateOrderResult.NoOrdersUpdated,
+            is BulkUpdateOrderResult.AllFailed,
+            is BulkUpdateOrderResult.Error -> {
+                viewState = viewState.copy(isBulkUpdating = false)
+                trackBulkOrderUpdateFailure()
+                val messageRes = when (result) {
+                    is BulkUpdateOrderResult.NoOrdersUpdated ->
+                        R.string.orderlist_bulk_update_result_no_orders_updated
+
+                    is BulkUpdateOrderResult.AllFailed -> R.string.orderlist_bulk_update_result_all_failed
+                    is BulkUpdateOrderResult.Error -> R.string.error_generic
+                    else -> R.string.error_generic
+                }
+                triggerEvent(Event.ShowSnackbar(messageRes))
+            }
+        }
+    }
+
+    private fun trackBulkOrderUpdateSuccess() {
+        analyticsTracker.track(
+            AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
+            )
+        )
+    }
+
+    private fun trackBulkOrderUpdateFailure() {
+        analyticsTracker.track(
+            AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_FAILURE,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
+            )
+        )
     }
 
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
+        data class ShowSnackbarString(val message: String) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
         data class OpenPurchaseCardReaderLink(
             val url: String,
@@ -773,9 +1065,7 @@ class OrderListViewModel @Inject constructor(
 
         data class NotifyOrderChanged(val position: Int) : OrderListEvent()
 
-        object ShowIPPDismissConfirmationDialog : OrderListEvent()
-
-        data class OpenIPPFeedbackSurveyLink(val url: String) : OrderListEvent()
+        object NotifyOrderSelectionChanged : OrderListEvent()
 
         object OpenBarcodeScanningFragment : OrderListEvent()
 
@@ -790,6 +1080,31 @@ class OrderListViewModel @Inject constructor(
         ) : Event()
 
         data class VMKilledWhenScanningInProgress(@StringRes val message: Int) : Event()
+
+        data object RetryLoadingOrders : OrderListEvent()
+
+        data class ShowUpdateStatusDialog(
+            val currentStatus: String,
+            val orderStatusList: Array<Order.OrderStatus>
+        ) : OrderListEvent() {
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (javaClass != other?.javaClass) return false
+
+                other as ShowUpdateStatusDialog
+
+                if (currentStatus != other.currentStatus) return false
+                if (!orderStatusList.contentEquals(other.orderStatusList)) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = currentStatus.hashCode()
+                result = 31 * result + orderStatusList.contentHashCode()
+                return result
+            }
+        }
     }
 
     @Parcelize
@@ -797,22 +1112,21 @@ class OrderListViewModel @Inject constructor(
         val isRefreshPending: Boolean = false,
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0,
-        val ippFeedbackBannerState: IPPSurveyFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
-        val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
         val jitmEnabled: Boolean = false,
-        val isErrorFetchingDataBannerVisible: Boolean = false
+        val isErrorFetchingDataBannerVisible: Boolean = false,
+        val shouldDisplayTroubleshootingBanner: Boolean = false,
+        val orderListState: OrderListState? = null,
+        val isSearching: Boolean = false,
+        val isBulkUpdating: Boolean = false,
+        val selectionCount: Int? = null,
+        val isAddOrderButtonVisible: Boolean = true
     ) : Parcelable {
         @IgnoredOnParcel
+        val isBottomNavBarVisible = !isSearching && orderListState != OrderListState.Selecting
+
+        @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
-    }
 
-    sealed class IPPSurveyFeedbackBannerState : Parcelable {
-        @Parcelize
-        object Hidden : IPPSurveyFeedbackBannerState()
-
-        @Parcelize
-        data class Visible(
-            val bannerData: GetIPPFeedbackBannerData.IPPFeedbackBanner,
-        ) : IPPSurveyFeedbackBannerState()
+        enum class OrderListState { Selecting, Browsing }
     }
 }

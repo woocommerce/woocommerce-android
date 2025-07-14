@@ -8,10 +8,11 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.useMockedAPI
+import com.woocommerce.android.e2e.rules.Retry
+import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.products.ProductListScreen
-import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -35,6 +36,9 @@ class ProductsRealAPI : TestBase() {
 
     @get:Rule(order = 3)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
+
+    @get:Rule(order = 4)
+    var retryTestRule = RetryTestRule()
 
     companion object {
         @BeforeClass
@@ -68,13 +72,11 @@ class ProductsRealAPI : TestBase() {
         ProductListScreen()
             .leaveSearchMode()
 
-        FilterScreen()
-            .leaveFilterScreenToProducts()
-
         WelcomeScreen
             .logoutIfNeeded(composeTestRule)
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eRealApiProductsSearchUsual() {
         ProductListScreen()
@@ -89,13 +91,13 @@ class ProductsRealAPI : TestBase() {
             .enterSearchTerm(productCappuccino.name)
             .assertProductCard(productCappuccino)
             .assertProductsCount(1)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             // Search for 'productSalad'
             .openSearchPane()
             .enterSearchTerm(productSalad.name)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             // Search for non-existing product
             .openSearchPane()
             .enterAbsentSearchTerm("Unexisting Product")
@@ -107,6 +109,7 @@ class ProductsRealAPI : TestBase() {
             .assertProductsCount(2)
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eRealApiProductsSearchBySKU() {
         ProductListScreen()
@@ -116,7 +119,7 @@ class ProductsRealAPI : TestBase() {
             .enterSearchTerm(productSalad.sku)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             // Search for variations sharing a part of SKU
             .openSearchPane()
             .tapSearchSKU()
@@ -124,16 +127,17 @@ class ProductsRealAPI : TestBase() {
             .assertProductCard(productCappuccinoAlmondMedium)
             .assertProductCard(productCappuccinoAlmondLarge)
             .assertProductsCount(2)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             // Search for exact variation SKU
             .openSearchPane()
             .tapSearchSKU()
             .enterSearchTerm(productCappuccinoAlmondLarge.sku)
             .assertProductCard(productCappuccinoAlmondLarge)
             .assertProductsCount(1)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eRealApiProductsFilter() {
         ProductListScreen()
@@ -157,6 +161,7 @@ class ProductsRealAPI : TestBase() {
             .assertProductsCount(0)
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eRealApiProductsSort() {
         ProductListScreen()

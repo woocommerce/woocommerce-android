@@ -4,12 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductChildItemBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.OrderProduct
@@ -49,6 +50,12 @@ class OrderDetailProductChildItemListAdapter(
         private val binding: OrderDetailProductChildItemBinding
     ) :
         RecyclerView.ViewHolder(binding.root) {
+
+        private val context = binding.root.context
+
+        private val emptyTotalColor = context.getColorCompat(R.color.color_on_surface_disabled)
+        private val defaultTotalColor = context.getColorCompat(R.color.color_on_surface_high)
+
         fun bind(
             productItem: OrderProduct.ProductItem,
             productImageMap: ProductImageMap,
@@ -61,7 +68,12 @@ class OrderDetailProductChildItemListAdapter(
 
             binding.productInfoName.text = item.name
             val orderTotal = formatCurrencyForDisplay(item.total)
-            binding.productInfoTotal.text = orderTotal
+            val totalColor = if (item.total.compareTo(BigDecimal.ZERO) == 0) emptyTotalColor else defaultTotalColor
+
+            binding.productInfoTotal.apply {
+                text = orderTotal
+                setTextColor(totalColor)
+            }
 
             val productPrice = formatCurrencyForDisplay(item.price)
             val attributes = item.attributesDescription
@@ -76,7 +88,7 @@ class OrderDetailProductChildItemListAdapter(
             productImage?.let {
                 val imageCornerRadius = itemView.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
-                GlideApp.with(binding.productInfoIcon)
+                Glide.with(binding.productInfoIcon)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_product)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))

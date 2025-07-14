@@ -1,0 +1,231 @@
+import io.sentry.android.gradle.extensions.InstrumentationFeature
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.google.dagger.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.sentry)
+    alias(libs.plugins.dependency.analysis)
+}
+
+sentry {
+    includeSourceContext = true
+    autoUploadSourceContext = true
+    tracingInstrumentation {
+        enabled = true
+        features = [InstrumentationFeature.DATABASE]
+        logcat {
+            enabled = false
+        }
+    }
+    autoInstallation {
+        enabled = false
+    }
+    includeDependenciesReport = false
+    /* Sentry won't send source context or add performance instrumentations for debug builds
+    so we can save build times. Sending events will still work in debug builds
+    (if enabled in WCCrashLoggingDataProvider).
+    */
+    ignoredBuildTypes = ["debug"]
+}
+
+def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
+def versionCodeDifferenceBetweenAppAndWear = 50000
+
+android {
+    namespace = 'com.woocommerce.android'
+    compileSdk = gradle.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId "com.woocommerce.android"
+        minSdk = gradle.ext.minSdkVersion
+        targetSdk = gradle.ext.targetSdkVersion
+        versionName "${versionProperties.getProperty("versionName")}w"
+        versionCode versionProperties.getProperty("versionCode").toInteger() + versionCodeDifferenceBetweenAppAndWear
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
+    }
+    buildFeatures {
+        buildConfig = true
+        compose = true
+    }
+    packaging {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+
+    flavorDimensions = ["buildType"]
+    productFlavors {
+        // Used for release/beta builds. Usually shouldn't be build locally.
+        // AppName: WooCommerce
+        vanilla {
+            dimension "buildType"
+        }
+
+        // Used for local development - preferred variant for developers.
+        // AppName: WooCommerce (Dev)
+        wasabi {
+            applicationId "com.woocommerce.android.dev"
+            dimension "buildType"
+            isDefault = true
+
+            resConfigs("en", "xxhdpi")
+        }
+
+        // Used for CI builds on PRs (downloadable apks). Can be used locally when a developer needs
+        // to install multiple versions of the app on the same device.
+        // AppName: WooCommerce (PreAlpha)
+        jalapeno {
+            applicationId "com.woocommerce.android.prealpha"
+            dimension "buildType"
+        }
+    }
+
+    signingConfigs {
+        if (["uploadStoreFile", "uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"].count { !secretProperties.containsKey(it) } == 0) {
+            logger.info("App signing properties found in secrets.properties, configuring signing for release builds.")
+            release {
+                storeFile = rootProject.file(secretProperties.get("uploadStoreFile"))
+                storePassword = secretProperties.get("uploadStorePassword")
+                keyAlias = secretProperties.get("uploadKeyAlias")
+                keyPassword = secretProperties.get("uploadKeyPassword")
+            }
+            android.buildTypes.release.signingConfig = android.signingConfigs.release
+        }
+
+        if (secretProperties.containsKey("debugStoreFile")) {
+            logger.info("Debug signing properties found in secrets.properties, configuring signing for debug builds.")
+            def sharedDebugStore = file(secretProperties.get("debugStoreFile").replaceFirst("^~", System.getProperty("user.home")))
+            if (sharedDebugStore.exists()) {
+                debug {
+                    storeFile sharedDebugStore
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    // Project
+    implementation project(":libs:commons")
+    implementation(project(":libs:fluxc"))
+    implementation(project(":libs:fluxc-plugin"))
+    implementation(libs.wordpress.utils) {
+        exclude group: "com.mcxiaoke.volley"
+        exclude group: "com.android.support"
+    }
+    implementation(libs.automattic.tracks.android)
+    implementation(libs.automattic.tracks.crashlogging)
+
+    // WearOS
+    implementation(libs.google.play.services.wearable)
+    implementation(libs.androidx.wear.tiles.main)
+    implementation(libs.androidx.wear.tiles.material)
+    implementation(libs.google.horologist.compose.tools)
+    implementation(libs.google.horologist.tiles)
+    implementation(libs.google.horologist.compose.layout)
+    implementation(libs.androidx.wear.watchface.complications.data.source.ktx)
+    implementation(libs.androidx.wear.compose.material)
+    implementation(libs.androidx.wear.compose.foundation)
+    implementation(libs.androidx.wear.tooling.preview)
+
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui.main)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material.main)
+    implementation(libs.androidx.compose.animation.main)
+    implementation(libs.androidx.compose.ui.tooling.main)
+    implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.ui.text.google.fonts)
+
+    // Android Support
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.main)
+    implementation(libs.google.gson)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // Dagger & Hilt
+    implementation(libs.google.dagger.hilt.android.main)
+    implementation(libs.androidx.hilt.navigation.fragment)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.androidx.hilt.compiler)
+    ksp(libs.google.dagger.hilt.compiler)
+    implementation(libs.google.dagger.android.support)
+    ksp(libs.google.dagger.android.processor)
+
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.androidx.arch.core.testing) {
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+    }
+
+    // Debug dependencies
+    debugImplementation(libs.facebook.flipper.main)
+    debugImplementation(libs.facebook.soloader)
+    debugImplementation(libs.facebook.flipper.network.plugin) {
+        // Force Flipper to use the okhttp version defined in the fluxc module
+        // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
+        // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
+        exclude group: 'com.squareup.okhttp3'
+    }
+    lintChecks(libs.android.security.lint)
+}
+
+android.buildTypes.all { buildType ->
+    (secretProperties + developerProperties).any { property ->
+        if (property.key.toLowerCase().startsWith("wc.")) {
+            buildType.buildConfigField "String", property.key.replace("wc.", "").replace(".", "_").toUpperCase(),
+                    "\"${property.value}\""
+        }
+        if (property.key.toLowerCase().startsWith("wc.res.")) {
+            buildType.resValue "string", property.key.replace("wc.res.", "").replace(".", "_").toLowerCase(),
+                    "${property.value}"
+        }
+    }
+}
+
+static def loadPropertiesFromFile(inputFile) {
+    def properties = new Properties()
+    inputFile.withInputStream { stream ->
+        properties.load(stream)
+    }
+    return properties
+}

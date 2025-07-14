@@ -1,0 +1,83 @@
+package com.woocommerce.android.ui.products.shipping
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.databinding.ProductShippingClassItemBinding
+import com.woocommerce.android.model.ShippingClass
+
+/**
+ * RecyclerView adapter which shows a list of product shipping classes, the first of which will
+ * be "No shipping class" so the user can choose to clear this value.
+ */
+class ProductShippingClassAdapter(
+    private val onItemClicked: (ShippingClass) -> Unit = { },
+    private val onLoadMoreRequested: () -> Unit = { }
+) : RecyclerView.Adapter<ProductShippingClassAdapter.ViewHolder>() {
+    private var items = listOf<ShippingClass>()
+    private var selectedShippingClassId: Long = -1
+
+    override fun getItemCount() = items.size
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(
+            ProductShippingClassItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(position)
+
+        if (position > 0 && position == itemCount - 1) {
+            onLoadMoreRequested()
+        }
+    }
+
+    fun update(newItems: List<ShippingClass>, selectedItemId: Long = -1) {
+        selectedShippingClassId = selectedItemId
+        val diffResult = DiffUtil.calculateDiff(ShippingClassDiffCallback(items, newItems))
+        items = newItems
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    inner class ViewHolder(val viewBinding: ProductShippingClassItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        init {
+            itemView.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position > -1) {
+                    onItemClicked(items[position])
+                }
+            }
+        }
+
+        fun bind(position: Int) {
+            viewBinding.text.text = items[position].name
+            viewBinding.text.isChecked = items[position].remoteShippingClassId == selectedShippingClassId
+        }
+    }
+
+    inner class ShippingClassDiffCallback(
+        private val oldList: List<ShippingClass>,
+        private val newList: List<ShippingClass>
+    ) : DiffUtil.Callback() {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].remoteShippingClassId == newList[newItemPosition].remoteShippingClassId
+        }
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val old = oldList[oldItemPosition]
+            val new = newList[newItemPosition]
+            return old == new
+        }
+    }
+}

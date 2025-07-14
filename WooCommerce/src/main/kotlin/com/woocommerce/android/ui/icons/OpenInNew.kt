@@ -1,4 +1,5 @@
 @file:Suppress("MagicNumber")
+
 package com.woocommerce.android.ui.icons
 
 import androidx.compose.material.icons.materialIcon

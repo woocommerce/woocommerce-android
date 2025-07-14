@@ -1,20 +1,20 @@
 package com.woocommerce.android.ui.orders
 
-import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.FeedbackPrefs
+import androidx.lifecycle.MutableLiveData
+import androidx.paging.PagedList
+import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
+import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
@@ -27,21 +27,26 @@ import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersC
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
+import com.woocommerce.android.ui.orders.list.BulkUpdateOrderResult
 import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
+import com.woocommerce.android.ui.orders.list.ObserveOrdersListLastUpdate
+import com.woocommerce.android.ui.orders.list.OrderListFragmentArgs
+import com.woocommerce.android.ui.orders.list.OrderListItemDataSource
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.IPPSurveyFeedbackBannerState
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.BULK_UPDATE_COUNT_LIMIT
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
-import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
-import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
+import com.woocommerce.android.ui.orders.list.ShouldUpdateOrdersList
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
@@ -53,6 +58,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -61,6 +67,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -86,28 +93,34 @@ import kotlin.test.assertTrue
 class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
-    private val orderListRepository: OrderListRepository = mock()
+    private val orderListRepository: OrderListRepository = mock {
+        onBlocking { fetchPaymentGateways() } doReturn RequestResult.SUCCESS
+        onBlocking { fetchOrderStatusOptionsFromApi() } doReturn RequestResult.SUCCESS
+    }
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val dispatcher: Dispatcher = mock()
-    private val orderStore: WCOrderStore = mock()
-    private val resourceProvider: ResourceProvider = mock()
-    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { it.arguments[0].toString() }
+        on { getString(any(), any()) } doAnswer { it.arguments[0].toString() + it.arguments[1].toString() }
+    }
 
     private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
-    private val orderFetcher: FetchOrdersRepository = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery =
         mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
-    private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
     private val shouldShowCreateTestOrderScreen: ShouldShowCreateTestOrderScreen = mock()
-    private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
-    private val feedbackPrefs = mock<FeedbackPrefs>()
     private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
+    private val notificationChannelsHandler = mock<NotificationChannelsHandler>()
+    private val appPrefs = mock<AppPrefsWrapper>()
+    private val showTestNotification = mock<ShowTestNotification>()
+    private val shouldUpdateOrdersList = mock<ShouldUpdateOrdersList>()
+    private val observeOrdersListLastUpdate = mock<ObserveOrdersListLastUpdate>()
+    private val orderListItemDataSource = mock<OrderListItemDataSource>()
 
     @Before
     fun setup() = testBlocking {
@@ -131,34 +144,36 @@ class OrderListViewModelTest : BaseUnitTest() {
         ).doReturn(pagedListWrapper)
         doReturn(true).whenever(networkStatus).isConnected()
 
+        whenever(shouldUpdateOrdersList.invoke(any())).doReturn(true)
+        whenever(observeOrdersListLastUpdate.invoke(any())).doReturn(flowOf(1721598780075L))
+
         viewModel = createViewModel()
     }
 
     private fun createViewModel() = OrderListViewModel(
-        savedState = savedStateHandle,
+        savedState = OrderListFragmentArgs().toSavedStateHandle(),
         dispatchers = coroutinesTestRule.testDispatchers,
         orderListRepository = orderListRepository,
         orderDetailRepository = orderDetailRepository,
-        orderStore = orderStore,
         listStore = listStore,
         networkStatus = networkStatus,
         dispatcher = dispatcher,
         selectedSite = selectedSite,
-        fetcher = orderFetcher,
         resourceProvider = resourceProvider,
         getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
         getWCOrderListDescriptorWithFiltersAndSearchQuery = getWCOrderListDescriptorWithFiltersAndSearchQuery,
         getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
         orderListTransactionLauncher = mock(),
-        getIPPFeedbackBannerData = getIPPFeedbackBannerData,
-        shouldShowFeedbackBanner = shouldShowFeedbackBanner,
         shouldShowCreateTestOrderScreen = shouldShowCreateTestOrderScreen,
-        markFeedbackBannerAsDismissed = mock(),
-        markFeedbackBannerAsDismissedForever = mock(),
-        markFeedbackBannerAsCompleted = mock(),
         analyticsTracker = analyticsTracker,
-        feedbackPrefs = feedbackPrefs,
         barcodeScanningTracker = barcodeScanningTracker,
+        notificationChannelsHandler = notificationChannelsHandler,
+        appPrefs = appPrefs,
+        showTestNotification = showTestNotification,
+        dateUtils = mock(),
+        shouldUpdateOrdersList = shouldUpdateOrdersList,
+        observeOrdersListLastUpdate = observeOrdersListLastUpdate,
+        dataSourceLazyProvider = { orderListItemDataSource }
     )
 
     @Test
@@ -174,14 +189,32 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Load orders activates list wrapper`() = testBlocking {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
+        whenever(shouldUpdateOrdersList.invoke(any())).doReturn(true)
 
         viewModel.loadOrders()
 
         assertNotNull(viewModel.ordersPagedListWrapper)
         assertNotNull(viewModel.activePagedListWrapper)
-        verify(viewModel.ordersPagedListWrapper, times(1))?.fetchFirstPage()
-        verify(viewModel.ordersPagedListWrapper, times(1))?.invalidateData()
         assertEquals(viewModel.ordersPagedListWrapper, viewModel.activePagedListWrapper)
+
+        verify(viewModel.ordersPagedListWrapper, times(1))?.invalidateData()
+        // When should update list is true, then fetch the first page
+        verify(viewModel.ordersPagedListWrapper, times(1))?.fetchFirstPage()
+    }
+
+    @Test
+    fun `Load orders with cache doesn't fetch data`() = testBlocking {
+        whenever(shouldUpdateOrdersList.invoke(any())).doReturn(false)
+
+        viewModel.loadOrders()
+
+        assertNotNull(viewModel.ordersPagedListWrapper)
+        assertNotNull(viewModel.activePagedListWrapper)
+        assertEquals(viewModel.ordersPagedListWrapper, viewModel.activePagedListWrapper)
+
+        // When should update list is false, then DON'T fetch the first page and rely on cached data (DB)
+        verify(viewModel.ordersPagedListWrapper, never())?.fetchFirstPage()
+        verify(viewModel.ordersPagedListWrapper, times(1))?.invalidateData()
     }
 
     /**
@@ -212,9 +245,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     /* Test order status options are emitted via [OrderListViewModel.orderStatusOptions]
-    * once fetched, and verify expected methods are called the correct number of
-    * times.
-    */
+     * once fetched, and verify expected methods are called the correct number of
+     * times.
+     */
     @Test
     fun `Request to fetch order status options emits options`() = testBlocking {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
@@ -521,7 +554,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then the order status is changed optimistically
         val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(optimisticChangeEvent is MultiLiveEvent.Event.ShowUndoSnackbar)
+        assertTrue(optimisticChangeEvent is ShowUndoSnackbar)
 
         advanceTimeBy(1_001)
 
@@ -556,7 +589,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then the order status is changed optimistically
         val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(optimisticChangeEvent is MultiLiveEvent.Event.ShowUndoSnackbar)
+        assertTrue(optimisticChangeEvent is ShowUndoSnackbar)
 
         advanceTimeBy(1_001)
 
@@ -566,402 +599,51 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given IPP banner should be shown, when ViewModel init, then Orders banner is hidden`() = testBlocking {
+    fun `when fetching orders for the first time fails with timeout, then trigger a retry event`() = testBlocking {
         // given
-        whenever(shouldShowFeedbackBanner()).thenReturn(true)
-        whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
+        var lastReceivedEvent: Event? = null
+        val listError = MutableLiveData(null as ListStore.ListError?)
+        whenever(pagedListWrapper.listError).doReturn(listError)
+        whenever(pagedListWrapper.fetchFirstPage()) doAnswer {
+            listError.value = ListStore.ListError(ListStore.ListErrorType.TIMEOUT_ERROR)
+        }
+        viewModel.event.observeForever {
+            lastReceivedEvent = it
+        }
 
         // when
-        viewModel = createViewModel()
+        viewModel.loadOrders()
 
         // then
-        assertFalse(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
+        assertThat(lastReceivedEvent).isEqualTo(OrderListEvent.RetryLoadingOrders)
     }
 
     @Test
-    fun `given IPP not shown and SP and Orders dismissed and TTP enabled, when ViewModel init, then JITM shown`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(false)
-            val featureFeedbackSettings = mock<FeatureFeedbackSettings> {
-                on { feedbackState }.thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-            }
-            whenever(
-                feedbackPrefs.getFeatureFeedbackSettings(
-                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-                )
-            ).thenReturn(featureFeedbackSettings)
-
-            // when
-            viewModel = createViewModel()
-
-            // then
-            assertThat(viewModel.viewState.jitmEnabled).isEqualTo(true)
-        }
-
-    @Test
-    fun `when onDismissOrderCreationSimplePaymentsFeedback called, then FEATURE_FEEDBACK_BANNER tracked`() =
-        testBlocking {
-            // when
-            viewModel.onDismissOrderCreationSimplePaymentsFeedback()
-
-            // then
-            verify(analyticsTracker).track(
-                AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-                mapOf(
-                    AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
-                    AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-                )
-            )
-        }
-
-    @Test
-    fun `when onDismissOrderCreationSimplePaymentsFeedback called, then order banner visibility changed`() =
-        testBlocking {
-            // given
-            val featureFeedbackSettings = mock<FeatureFeedbackSettings> {
-                on { feedbackState }.thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-            }
-            whenever(
-                feedbackPrefs.getFeatureFeedbackSettings(
-                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-                )
-            ).thenReturn(featureFeedbackSettings)
-
-            // when
-            viewModel.onDismissOrderCreationSimplePaymentsFeedback()
-
-            // then
-            assertThat(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible).isEqualTo(false)
-        }
-
-    @Test
-    fun `given IPP banner should be shown, when ViewModel init, then IPP banner is shown`() = testBlocking {
+    fun `when retrying to fetch orders fails with timeout, then display the troubleshooting banner`() = testBlocking {
         // given
-        whenever(shouldShowFeedbackBanner()).thenReturn(true)
-        whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
+        var lastReceivedEvent: Event? = null
+        var shouldDisplayTroubleshootingBanner: Boolean? = null
+        val listError = MutableLiveData(null as ListStore.ListError?)
+        whenever(pagedListWrapper.listError).doReturn(listError)
+        whenever(pagedListWrapper.fetchFirstPage()) doAnswer {
+            listError.value = ListStore.ListError(ListStore.ListErrorType.TIMEOUT_ERROR)
+        }
+        viewModel.event.observeForever {
+            lastReceivedEvent = it
+        }
+        viewModel.viewStateLiveData.observeForever { _, new ->
+            shouldDisplayTroubleshootingBanner = new.shouldDisplayTroubleshootingBanner
+        }
 
         // when
-        viewModel = createViewModel()
+        viewModel.loadOrders()
+        assertThat(lastReceivedEvent).isEqualTo(OrderListEvent.RetryLoadingOrders)
+        assertThat(shouldDisplayTroubleshootingBanner).isFalse
+        viewModel.fetchOrdersAndOrderDependencies()
 
         // then
-        assertTrue(viewModel.viewState.ippFeedbackBannerState is IPPSurveyFeedbackBannerState.Visible)
+        assertThat(shouldDisplayTroubleshootingBanner).isTrue
     }
-
-    @Test
-    fun `given IPP banner should not be shown, when ViewModel init, then Orders banner is shown`() = testBlocking {
-        // given
-        whenever(shouldShowFeedbackBanner()).thenReturn(false)
-
-        // when
-        viewModel = createViewModel()
-
-        // then
-        assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
-    }
-
-    @Test
-    fun `given IPP banner should not be shown, when ViewModel init, then IPP banner is hidden`() = testBlocking {
-        // given
-        whenever(shouldShowFeedbackBanner()).thenReturn(false)
-
-        // when
-        viewModel = createViewModel()
-
-        // then
-        assertTrue(viewModel.viewState.ippFeedbackBannerState is IPPSurveyFeedbackBannerState.Hidden)
-    }
-
-    @Test
-    fun `given IPP banner is shown, when user clicks dismiss button, then dismissal dialog shouLd be displayed`() =
-        testBlocking {
-            // given
-            viewModel.viewState =
-                viewModel.viewState.copy(
-                    ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA)
-                )
-
-            // when
-            viewModel.onDismissIPPFeedbackBannerClicked()
-
-            // then
-            assertEquals(OrderListEvent.ShowIPPDismissConfirmationDialog, viewModel.event.value)
-        }
-
-    @Test
-    fun `given IPP banner is shown, when CTA is clicked, then survey is opened`() {
-        // given
-        viewModel.viewState =
-            viewModel.viewState.copy(
-                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
-                    FAKE_IPP_FEEDBACK_BANNER_DATA
-                )
-            )
-
-        // when
-        viewModel.onIPPFeedbackBannerCTAClicked()
-
-        // then
-        assertEquals(
-            OrderListEvent.OpenIPPFeedbackSurveyLink(FAKE_IPP_FEEDBACK_BANNER_DATA.url),
-            viewModel.event.value
-        )
-    }
-
-    @Test
-    fun `given IPP banner is shown, when CTA is clicked, then IPP banner is hidden`() {
-        // given
-        viewModel.viewState =
-            viewModel.viewState.copy(
-                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
-                    FAKE_IPP_FEEDBACK_BANNER_DATA
-                )
-            )
-
-        // when
-        viewModel.onIPPFeedbackBannerCTAClicked()
-
-        // then
-        assertEquals(IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
-    }
-
-    @Test
-    fun `given IPP banner is shown, when CTA is clicked, then Orders banner is shown`() {
-        // given
-        viewModel.viewState =
-            viewModel.viewState.copy(
-                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
-                    FAKE_IPP_FEEDBACK_BANNER_DATA
-                )
-            )
-
-        // when
-        viewModel.onIPPFeedbackBannerCTAClicked()
-
-        // then
-        assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
-    }
-
-    @Test
-    fun `given IPP banner is shown, when dismiss forever is clicked, then IPP banner is hidden`() {
-        // given
-        viewModel.viewState =
-            viewModel.viewState.copy(
-                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
-                    FAKE_IPP_FEEDBACK_BANNER_DATA
-                )
-            )
-
-        // when
-        viewModel.onIPPFeedbackBannerDismissedForever()
-
-        // then
-        assertEquals(IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
-    }
-
-    @Test
-    fun `given IPP banner is shown, when dismiss forever is clicked, then Orders banner is shown`() {
-        // given
-        viewModel.viewState =
-            viewModel.viewState.copy(
-                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
-                    FAKE_IPP_FEEDBACK_BANNER_DATA
-                )
-            )
-
-        // when
-        viewModel.onIPPFeedbackBannerDismissedForever()
-
-        // then
-        assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
-    }
-
-    @Test
-    fun `given IPP banner is shown, when dismissed temporarily, then IPP banner is hidden`() {
-        // given
-        viewModel.viewState =
-            viewModel.viewState.copy(
-                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
-                    FAKE_IPP_FEEDBACK_BANNER_DATA
-                )
-            )
-
-        // when
-        viewModel.onIPPFeedbackBannerDismissedShowLater()
-
-        // then
-        assertEquals(IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
-    }
-
-    @Test
-    fun `given IPP banner is shown, when dismissed temporarily, then Orders banner is shown`() {
-        // given
-        viewModel.viewState =
-            viewModel.viewState.copy(
-                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
-                    FAKE_IPP_FEEDBACK_BANNER_DATA
-                )
-            )
-
-        // when
-        viewModel.onIPPFeedbackBannerDismissedShowLater()
-
-        // then
-        assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
-    }
-
-    @Test
-    fun `given IPP banner is shown, when dismissed temporarily, then correct event is tracked`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
-            viewModel = createViewModel()
-
-            // when
-            viewModel.onIPPFeedbackBannerDismissedShowLater()
-
-            // then
-            verify(analyticsTracker).track(
-                AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
-                mapOf(
-                    KEY_IPP_BANNER_REMIND_LATER to true,
-                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
-                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
-                )
-            )
-        }
-
-    @Test
-    fun `given IPP banner is shown, when dismissed forever, then correct event is tracked`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
-            viewModel = createViewModel()
-
-            // when
-            viewModel.onIPPFeedbackBannerDismissedForever()
-
-            // then
-            verify(analyticsTracker).track(
-                AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
-                mapOf(
-                    KEY_IPP_BANNER_REMIND_LATER to false,
-                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
-                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
-                )
-            )
-        }
-
-    @Test
-    fun `given IPP banner is shown, when CTA clicked, then correct event is tracked`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
-            viewModel = createViewModel()
-
-            // when
-            viewModel.onIPPFeedbackBannerCTAClicked()
-
-            // then
-            verify(analyticsTracker).track(
-                AnalyticsEvent.IPP_FEEDBACK_BANNER_CTA_TAPPED,
-                mapOf(
-                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
-                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
-                )
-            )
-        }
-
-    @Test
-    fun `given IPP banner is not shown, then events are not tracked`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(false)
-
-            // when
-            viewModel = createViewModel()
-
-            // then
-            verify(analyticsTracker, never()).track(
-                AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN,
-                mapOf(
-                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
-                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
-                )
-            )
-        }
-
-    @Test
-    fun `given IPP banner is shown, then correct event is tracked`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
-
-            // when
-            viewModel = createViewModel()
-
-            // then
-            verify(analyticsTracker).track(
-                AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN,
-                mapOf(
-                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
-                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
-                )
-            )
-        }
-
-    @Test
-    fun `given IPP banner should be shown, when banner data is null, then event is not tracked`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(false)
-            assertNull(getIPPFeedbackBannerData())
-
-            // when
-            viewModel = createViewModel()
-
-            // then
-            verify(analyticsTracker, never()).track(
-                AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN,
-                mapOf(
-                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
-                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
-                )
-            )
-        }
-
-    @Test
-    fun `given IPP banner should be shown, when banner data is null, then Orders banner is shown`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(false)
-            assertNull(getIPPFeedbackBannerData())
-
-            // when
-            viewModel = createViewModel()
-
-            // then
-            assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
-        }
-
-    @Test
-    fun `given IPP banner should be shown, when banner data is null, then IPP banner is hidden`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(false)
-            assertNull(getIPPFeedbackBannerData())
-
-            // when
-            viewModel = createViewModel()
-
-            // then
-            assertEquals(IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
-        }
-
     // region barcode scanner
 
     @Test
@@ -1118,33 +800,326 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given should show feedback banner but the banner data is null, when ViewModel init, then JITM shown instead`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getIPPFeedbackBannerData()).thenReturn(null)
-            val featureFeedbackSettings = mock<FeatureFeedbackSettings> {
-                on { feedbackState }.thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-            }
-            whenever(
-                feedbackPrefs.getFeatureFeedbackSettings(
-                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-                )
-            ).thenReturn(featureFeedbackSettings)
+    fun `given cha-ching sound disabled, when order list is loaded, then show a dialog`() = testBlocking {
+        // given
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
+        whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
+        whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
-            // when
-            viewModel = createViewModel()
-
-            // then
-            assertThat(viewModel.viewState.ippFeedbackBannerState).isEqualTo(IPPSurveyFeedbackBannerState.Hidden)
-            assertThat(viewModel.viewState.jitmEnabled).isEqualTo(true)
+        // when
+        val events = viewModel.event.runAndCaptureValues {
+            viewModel.loadOrders()
         }
 
+        // then
+        assertThat(events).anyMatch {
+            it is Event.ShowDialog &&
+                it.titleId == R.string.cha_ching_sound_issue_dialog_title &&
+                it.messageId == R.string.cha_ching_sound_issue_dialog_message &&
+                it.positiveButtonId == R.string.cha_ching_sound_issue_dialog_turn_on_sound &&
+                it.negativeButtonId == R.string.cha_ching_sound_issue_dialog_keep_silent
+        }
+    }
+
+    @Test
+    fun `when cha-ching dialog is shown, then clicking turn on sound should re-create notification channel`() = testBlocking {
+        // given
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
+        whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
+        whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
+
+        // when
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.loadOrders()
+        }.first { it is Event.ShowDialog } as Event.ShowDialog
+        event.positiveBtnAction!!.onClick(null, 0)
+
+        // then
+        verify(notificationChannelsHandler).recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
+    }
+
+    @Test
+    fun `when cha-ching dialog is shown, then clicking turn keep silent should mark dialog as dismissed`() = testBlocking {
+        // given
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
+        whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
+        whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
+
+        // when
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.loadOrders()
+        }.first { it is Event.ShowDialog } as Event.ShowDialog
+        event.negativeBtnAction!!.onClick(null, 0)
+
+        // then
+        verify(appPrefs).chaChingSoundIssueDialogDismissed = true
+    }
+
+    @Test
+    fun `given cha-ching dialog dismissed, when order list is loaded, then don't show a dialog`() = testBlocking {
+        // given
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
+        whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(true)
+        whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
+
+        // when
+        val events = viewModel.event.runAndCaptureValues {
+            viewModel.loadOrders()
+        }
+
+        // then
+        assertThat(events).noneMatch {
+            it is Event.ShowDialog &&
+                it.titleId == R.string.cha_ching_sound_issue_dialog_title &&
+                it.messageId == R.string.cha_ching_sound_issue_dialog_message &&
+                it.positiveButtonId == R.string.cha_ching_sound_issue_dialog_turn_on_sound &&
+                it.negativeButtonId == R.string.cha_ching_sound_issue_dialog_keep_silent
+        }
+    }
+
+    @Test
+    fun `when order trash is requested, then trash order and show an undo snackbar`() = testBlocking {
+        whenever(orderListRepository.trashOrder(any())).thenReturn(Result.success(Unit))
+        viewModel.loadOrders()
+
+        val undoSnackbar = viewModel.event.runAndCaptureValues {
+            viewModel.trashOrder(1L)
+        }.last() as ShowUndoSnackbar
+        undoSnackbar.dismissAction.onDismissed(null, Snackbar.Callback.DISMISS_EVENT_TIMEOUT)
+
+        verify(orderListRepository).trashOrder(1L)
+    }
+
+    @Test
+    fun `when order trash fails, then show a snackbar`() = testBlocking {
+        whenever(orderListRepository.trashOrder(any())).thenReturn(Result.failure(Exception()))
+        viewModel.loadOrders()
+
+        val undoSnackbar = viewModel.event.runAndCaptureValues {
+            viewModel.trashOrder(1L)
+        }.last() as ShowUndoSnackbar
+        val event = viewModel.event.runAndCaptureValues {
+            undoSnackbar.dismissAction.onDismissed(null, Snackbar.Callback.DISMISS_EVENT_TIMEOUT)
+        }.last()
+
+        assertThat(event).isInstanceOf(ShowErrorSnack::class.java)
+    }
     //endregion
+
+    @Test
+    fun `when the search view is closed while a search is in progress, then isFetchingFirstPage is reset to false`() {
+        // Trying to simulate a quick search close
+        whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(true), MutableLiveData())
+
+        viewModel = createViewModel()
+
+        var isFetchingFirstPage: Boolean? = null
+        viewModel.isFetchingFirstPage.observeForever {
+            isFetchingFirstPage = it
+        }
+
+        viewModel.submitSearchOrFilter("query")
+        viewModel.onSearchClosed()
+
+        assertNotNull(isFetchingFirstPage)
+
+        // Check that isFetchingFirstPage is reset to default value (false) on clearLiveDataSources
+        assertFalse(isFetchingFirstPage)
+    }
+
+    @Test
+    fun `when selection count changes to greater than 0, then enter selection mode`() = testBlocking {
+        viewModel.onSelectionChanged(2)
+
+        assertThat(viewModel.isSelecting()).isTrue()
+        assertThat(viewModel.viewState.selectionCount).isEqualTo(2)
+        assertThat(viewModel.viewState.isAddOrderButtonVisible).isFalse()
+        assertThat(viewModel.viewState.orderListState).isEqualTo(OrderListViewModel.ViewState.OrderListState.Selecting)
+    }
+
+    @Test
+    fun `when selection count changes to 0, then exit selection mode`() = testBlocking {
+        // First enter selection mode
+        viewModel.onSelectionChanged(2)
+
+        // Then exit
+        viewModel.onSelectionChanged(0)
+
+        assertThat(viewModel.isSelecting()).isFalse()
+        assertThat(viewModel.viewState.selectionCount).isNull()
+        assertThat(viewModel.viewState.isAddOrderButtonVisible).isTrue()
+        assertThat(viewModel.viewState.orderListState).isEqualTo(OrderListViewModel.ViewState.OrderListState.Browsing)
+    }
+
+    @Test
+    fun `when in selection mode and count changes but stays above 0, then update count only`() = testBlocking {
+        // Enter selection mode
+        viewModel.onSelectionChanged(2)
+        val initialState = viewModel.viewState.orderListState
+
+        // Change count
+        viewModel.onSelectionChanged(3)
+
+        assertThat(viewModel.viewState.selectionCount).isEqualTo(3)
+        assertThat(viewModel.viewState.orderListState).isEqualTo(initialState)
+        assertThat(viewModel.isSelecting()).isTrue()
+    }
+
+    @Test
+    fun `when bulk update clicked, then trigger dialog event with status options`() = testBlocking {
+        // Given
+        val statusOptions = listOf(
+            Order.OrderStatus(CoreOrderStatus.COMPLETED.value, "Completed"),
+            Order.OrderStatus(CoreOrderStatus.PROCESSING.value, "Processing")
+        )
+        whenever(orderDetailRepository.getOrderStatusOptions()).thenReturn(statusOptions)
+
+        // When
+        viewModel.onBulkUpdateStatusClicked()
+
+        // Then
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.ShowUpdateStatusDialog::class.java)
+    }
+
+    @Test
+    fun `given offline, when bulk update status requested, then show offline error and exit selection mode`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(false)
+
+        // First enter selection mode
+        viewModel.onSelectionChanged(2)
+        viewModel.onBulkOrderStatusChanged(listOf(1L, 2L), Order.Status.Completed)
+
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message).isEqualTo(R.string.offline_error)
+        assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update fails, then show error message and exit selection`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.Error(Exception()))
+
+        // First enter selection mode
+        viewModel.onSelectionChanged(1)
+
+        viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
+
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message).isEqualTo(R.string.error_generic)
+        assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update results in no orders updated, then show message and exit selection mode`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.NoOrdersUpdated)
+
+        viewModel.onSelectionChanged(1)
+
+        viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
+
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message)
+            .isEqualTo(R.string.orderlist_bulk_update_result_no_orders_updated)
+        assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update fails for all orders, then show message and exit selection mode`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.AllFailed)
+
+        // First enter selection mode
+        viewModel.onSelectionChanged(1)
+
+        viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
+
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message)
+            .isEqualTo(R.string.orderlist_bulk_update_result_all_failed)
+        assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update fully succeeds, then refresh and exit selection mode`() = testBlocking {
+        // Given
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.AllSuccess)
+        val pagedListData = MutableLiveData<PagedList<OrderListItemUIType>>(mock())
+        whenever(pagedListWrapper.data).thenReturn(pagedListData)
+
+        // First load order to initialize orderPagedListWrapper, then enter selection mode
+        viewModel.loadOrders()
+        viewModel.onSelectionChanged(2)
+
+        // When
+        viewModel.onBulkOrderStatusChanged(listOf(1L, 2L), Order.Status.Completed)
+        // Sending a different instance of PagedList to trigger the Snackbar
+        pagedListData.value = mock()
+
+        // Then
+        assertThat(viewModel.isSelecting()).isFalse()
+        val expectedEvent = OrderListEvent.ShowSnackbarString(
+            resourceProvider.getString(R.string.orderlist_bulk_update_status_updated)
+        )
+        assertThat(viewModel.event.value).isEqualTo(expectedEvent)
+
+        // Invoked once during loadOrders() and once during onBulkOrderStatusChanged()
+        verify(viewModel.ordersPagedListWrapper, times(2))?.fetchFirstPage()
+    }
+
+    @Test
+    fun `when bulk update partially succeeds, then refresh and exit selection mode`() = testBlocking {
+        // Given
+        val successCount = 3
+        val failureCount = 2
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.PartialSuccess(successCount, failureCount))
+
+        // First load order to initialize orderPagedListWrapper, then enter selection mode
+        viewModel.loadOrders()
+        viewModel.onSelectionChanged(5)
+
+        // When
+        viewModel.onBulkOrderStatusChanged(listOf(1L, 2L, 3L, 4L, 5L), Order.Status.Completed)
+
+        // Then
+        assertThat(viewModel.isSelecting()).isFalse()
+
+        // Invoked once during loadOrders() and once during onBulkOrderStatusChanged()
+        verify(viewModel.ordersPagedListWrapper, times(2))?.fetchFirstPage()
+    }
+
+    @Test
+    fun `when selection count reaches limit, then show error message`() {
+        // when
+        viewModel.onSelectionChanged(BULK_UPDATE_COUNT_LIMIT)
+
+        // then
+        assertEquals(BULK_UPDATE_COUNT_LIMIT, viewModel.viewState.selectionCount)
+
+        viewModel.event.getOrAwaitValue().let { event ->
+            assertTrue(event is OrderListEvent.ShowSnackbarString)
+            assertEquals(
+                event.message,
+                resourceProvider.getString(
+                    R.string.orderlist_bulk_update_maximum_reached,
+                    BULK_UPDATE_COUNT_LIMIT
+                )
+            )
+        }
+    }
 
     private companion object {
         const val ANY_SEARCH_QUERY = "search query"
-
-        val FAKE_IPP_FEEDBACK_BANNER_DATA = GetIPPFeedbackBannerData.IPPFeedbackBanner(-1, -1, "", "")
     }
 }

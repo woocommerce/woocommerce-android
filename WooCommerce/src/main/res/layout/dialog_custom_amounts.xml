@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface"
+    android:paddingVertical="@dimen/major_100">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/headerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/captionText"
+                    style="@style/Woo.TextView.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:gravity="start"
+                    android:text="@string/custom_amounts_enter_amount"
+                    android:textSize="@dimen/text_major_25"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone"
+                    tools:visibility="gone" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/percentageLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_150"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:gravity="start"
+                    android:text="@string/custom_amounts_percentage_label"
+                    android:textSize="@dimen/text_major_25"
+                    android:textColor="@color/color_on_surface_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/currencyLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout">
+
+                <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+                    android:id="@+id/editPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:imeOptions="flagNoFullscreen|actionDone"
+                    android:textSize="@dimen/line_height_major_100"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:boxBackgroundMode="none"
+                    app:editTextLayoutMode="wrap"
+                    app:supportsEmptyState="false"
+                    app:supportsNegativeValues="false"
+                    app:usesFullFormatting="true"
+                    tools:hint="0.00" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/groupPercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="editPercentage, percentageSymbolText"/>
+
+                <EditText
+                    android:id="@+id/editPercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:imeOptions="flagNoFullscreen|actionDone"
+                    android:textSize="@dimen/line_height_major_100"
+                    android:inputType="numberDecimal"
+                    android:hint="@string/custom_amounts_percentage_hint"
+                    android:paddingBottom="@dimen/minor_00"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:paddingStart="@dimen/minor_25"
+                    android:paddingEnd="@dimen/minor_25"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/percentageSymbolText"
+                    app:layout_constraintWidth_percent="0.6"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintHorizontal_bias="0"
+                    tools:hint="100.00"/>
+
+                <TextView
+                    android:id="@+id/percentageSymbolText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/editPercentage"
+                    app:layout_constraintEnd_toStartOf="@id/updatedAmount"
+                    app:layout_constraintBottom_toBottomOf="@id/editPercentage"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    android:textSize="@dimen/line_height_major_100"
+                    android:paddingStart="@dimen/minor_25"
+                    android:paddingEnd="@dimen/minor_100"
+                    android:text="@string/custom_amounts_percentage_symbol"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/updatedAmount"
+                    style="@style/Woo.TextView.Headline6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_major_25"
+                    android:paddingEnd="@dimen/minor_100"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:gravity="end"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/percentageSymbolText"
+                    app:layout_constraintBottom_toBottomOf="@id/editPercentage"
+                    app:layout_constraintHorizontal_bias="1"
+                    tools:text="123423453456.99"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/custom_amount_divider"
+                style="@style/Woo.Divider"
+                android:background="@drawable/list_divider"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/currencyLayout" />
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/taxToggleComposeView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/minor_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/custom_amount_divider" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/customAmountNameCaptionText"
+                style="@style/Woo.TextView.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_150"
+                android:gravity="start"
+                android:text="@string/custom_amounts_name"
+                android:textSize="@dimen/text_major_25"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/taxToggleComposeView" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/customAmountNameText"
+                style="@style/Woo.TextView.Headline6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/minor_00"
+                android:gravity="start"
+                android:hint="@string/custom_amounts_add_custom_name_hint"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:paddingTop="@dimen/minor_00"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/customAmountNameCaptionText" />
+
+            <View
+                android:id="@+id/custom_amount_name_divider"
+                style="@style/Woo.Divider"
+                android:background="@drawable/list_divider"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customAmountNameText" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDelete"
+                style="@style/Woo.Button.Outlined"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
+                android:text="@string/custom_amounts_delete_custom_amount"
+                android:textColor="@color/woo_red_50"
+                app:strokeColor="@color/woo_red_50"
+                app:layout_constraintTop_toBottomOf="@id/custom_amount_name_divider"
+                tools:visibility="visible"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDone"
+                style="@style/Woo.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/major_100"
+                android:enabled="false"
+                android:text="@string/custom_amounts_add_custom_amount"
+                app:layout_goneMarginTop="@dimen/major_75"
+                app:layout_constraintTop_toBottomOf="@id/buttonDelete"/>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleSmallInverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/buttonDone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/buttonDone"
+                tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

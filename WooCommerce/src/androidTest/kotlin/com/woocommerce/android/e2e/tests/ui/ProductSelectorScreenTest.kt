@@ -30,7 +30,9 @@ class ProductSelectorScreenTest {
                     recentProducts = emptyList(),
                     selectedItemsCount = 0,
                     filterState = ProductSelectorViewModel.FilterState(emptyMap(), null),
-                    searchState = ProductSelectorViewModel.SearchState.EMPTY
+                    searchState = ProductSelectorViewModel.SearchState.EMPTY,
+                    selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE,
+                    productFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined
                 ),
                 onDoneButtonClick = {},
                 onClearButtonClick = {},
@@ -39,7 +41,9 @@ class ProductSelectorScreenTest {
                 onLoadMore = {},
                 onSearchQueryChanged = {},
                 onSearchTypeChanged = {},
-                onClearFiltersButtonClick = {}
+                onClearFiltersButtonClick = {},
+                trackConfigurableProduct = {},
+                onEditConfiguration = { _ -> }
             )
         }
 
@@ -57,7 +61,9 @@ class ProductSelectorScreenTest {
                     recentProducts = emptyList(),
                     selectedItemsCount = 0,
                     filterState = ProductSelectorViewModel.FilterState(emptyMap(), null),
-                    searchState = ProductSelectorViewModel.SearchState.EMPTY
+                    searchState = ProductSelectorViewModel.SearchState.EMPTY,
+                    selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE,
+                    productFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined
                 ),
                 onDoneButtonClick = {},
                 onClearButtonClick = {},
@@ -66,7 +72,9 @@ class ProductSelectorScreenTest {
                 onLoadMore = {},
                 onSearchQueryChanged = {},
                 onSearchTypeChanged = {},
-                onClearFiltersButtonClick = {}
+                onClearFiltersButtonClick = {},
+                trackConfigurableProduct = {},
+                onEditConfiguration = { _ -> }
             )
         }
 

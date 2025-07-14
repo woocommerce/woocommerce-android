@@ -24,8 +24,8 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -47,7 +47,8 @@ class AddonRepositoryTest : BaseUnitTest() {
     private val orderMapper = OrderMapper(
         getLocations = mock {
             on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
-        }
+        },
+        mock()
     )
 
     @Before
@@ -199,7 +200,8 @@ class AddonRepositoryTest : BaseUnitTest() {
     private fun configureSuccessfulAddonResponse() {
         whenever(
             productStoreMock.getProductByRemoteId(
-                testSite, remoteProductID
+                testSite,
+                remoteProductID
             )
         ).thenReturn(defaultWCProductModel)
 

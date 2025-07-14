@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.QueryType
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -31,7 +32,7 @@ class GetComponentOptions @Inject constructor(
     }
 
     private suspend fun getDefaultValue(remoteProductId: Long?): String? {
-        return remoteProductId?.let { repository.fetchProductOrLoadFromCache(it)?.name }
+        return remoteProductId?.let { repository.fetchAndGetProduct(it)?.name }
     }
 
     private suspend fun getCategoriesOptions(categoriesIds: List<Long>): List<ComponentOption> {

@@ -10,7 +10,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.QuantityRules
-import com.woocommerce.android.ui.products.models.QuantityRulesMapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -22,8 +21,7 @@ import javax.inject.Inject
 class VariationDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
-    private val coroutineDispatchers: CoroutineDispatchers,
-    private val quantityRulesMapper: QuantityRulesMapper
+    private val coroutineDispatchers: CoroutineDispatchers
 ) {
     suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): OnVariationChanged {
         return productStore.fetchSingleVariation(
@@ -79,41 +77,43 @@ class VariationDetailRepository @Inject constructor(
             .model?.let { true }
             ?: false
 
-    private fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
-        productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
-
     suspend fun getVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
         withContext(coroutineDispatchers.io) {
-            getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
-        }
-
-    private suspend fun getSubscriptionProductVariation(
-        remoteProductId: Long,
-        remoteVariationId: Long
-    ): SubscriptionProductVariation? {
-        return withContext(coroutineDispatchers.io) {
-            productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)?.let { model ->
-                SubscriptionProductVariation(model)
-            }
-        }
-    }
-
-    suspend fun getVariationByProductType(remoteProductId: Long, remoteVariationId: Long): ProductVariation? {
-        return withContext(coroutineDispatchers.io) {
             val productType = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId).let { model ->
                 ProductType.fromString(model?.type ?: "")
             }
-            when (productType) {
-                ProductType.VARIABLE_SUBSCRIPTION -> getSubscriptionProductVariation(remoteProductId, remoteVariationId)
-                else -> getVariation(remoteProductId, remoteVariationId)
+            getCachedWCVariation(remoteProductId, remoteVariationId)?.let { model ->
+                when (productType) {
+                    ProductType.VARIABLE_SUBSCRIPTION -> SubscriptionProductVariation(model)
+                    else -> model.toAppModel()
+                }
+            }
+        }
+
+    private suspend fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
+        productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
+
+    suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
+        return withContext(coroutineDispatchers.io) {
+            val variation = getCachedWCVariation(remoteProductId, remoteVariationId)
+            variation?.let {
+                QuantityRules(
+                    if (variation.minAllowedQuantity > 0) variation.minAllowedQuantity else null,
+                    if (variation.maxAllowedQuantity > 0) variation.maxAllowedQuantity else null,
+                    if (variation.groupOfQuantity > 0) variation.groupOfQuantity else null
+                )
             }
         }
     }
 
-    suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
-        return withContext(coroutineDispatchers.io) {
-            getCachedWCVariation(remoteProductId, remoteVariationId)?.metadata
-                ?.let { quantityRulesMapper.toAppModelFromVariationMetadata(it) }
+    suspend fun getVariationOrNull(remoteProductId: Long, remoteVariationId: Long): ProductVariation? {
+        return getVariation(remoteProductId, remoteVariationId) ?: run {
+            val fetchResult = fetchVariation(remoteProductId, remoteVariationId)
+            if (fetchResult.isError) {
+                null
+            } else {
+                getVariation(remoteProductId, remoteVariationId)
+            }
         }
     }
 }

@@ -15,15 +15,14 @@ class ProductSelectorRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    fun searchProductsInCache(
+    suspend fun searchProductsInCache(
         offset: Int,
         pageSize: Int,
         searchQuery: String,
         skuSearchOptions: WCProductStore.SkuSearchOptions,
     ): List<Product> {
-        return productStore.getProducts(
+        return productStore.searchCachedProducts(
             selectedSite.get(),
-            emptyMap(),
             searchQuery = searchQuery,
             skuSearchOptions = skuSearchOptions,
         ).let {
@@ -40,6 +39,7 @@ class ProductSelectorRepository @Inject constructor(
         offset: Int,
         pageSize: Int,
         skuSearchOption: WCProductStore.SkuSearchOptions,
+        orderCurrency: String? = null,
     ): Result<SearchResult> {
         return productStore.searchProducts(
             selectedSite.get(),
@@ -47,6 +47,7 @@ class ProductSelectorRepository @Inject constructor(
             offset = offset,
             pageSize = pageSize,
             skuSearchOptions = skuSearchOption,
+            orderCurrency = orderCurrency,
         ).let { result ->
             if (result.isError) {
                 WooLog.w(
@@ -72,16 +73,21 @@ class ProductSelectorRepository @Inject constructor(
         }
 
     suspend fun fetchProducts(
+        forceRefresh: Boolean = false,
         offset: Int,
         pageSize: Int,
-        filterOptions: Map<ProductFilterOption, String>
+        filterOptions: Map<ProductFilterOption, String>,
+        includeType: List<WCProductStore.IncludeType>,
+        orderCurrency: String? = null,
     ): Result<Boolean> {
         return productStore.fetchProducts(
             site = selectedSite.get(),
             offset = offset,
             pageSize = pageSize,
             filterOptions = filterOptions,
-            forceRefresh = false,
+            includeTypes = includeType,
+            forceRefresh = forceRefresh,
+            orderCurrency = orderCurrency
         )
             .let { result ->
                 if (result.isError) {

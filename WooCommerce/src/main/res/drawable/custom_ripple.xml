@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background shape or color -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- Ripple effect -->
+    <item android:left="@dimen/minor_10" android:top="@dimen/minor_75" android:right="@dimen/minor_10" android:bottom="@dimen/minor_00">
+        <ripple android:color="?attr/colorControlHighlight">
+            <item android:id="@android:id/mask">
+                <shape android:shape="rectangle">
+                    <solid android:color="?attr/colorAccent" />
+                </shape>
+            </item>
+        </ripple>
+    </item>
+</layer-list>
+
+

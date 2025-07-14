@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textLink"
-        style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_100"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textColor="@color/color_secondary"
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/image_minor_50"
+        android:layout_height="@dimen/image_minor_50"
+        android:layout_marginStart="@dimen/major_100"
+        android:importantForAccessibility="no"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="textLink" />
+        tools:srcCompat="@drawable/ic_external" />
 
-    <ImageView
-        android:id="@+id/iconExternal"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_100"
-        android:importantForAccessibility="no"
-        app:tint="@color/color_secondary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginHorizontal="@dimen/major_200"
+        android:layout_marginVertical="@dimen/major_100"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/divider"
-        app:srcCompat="@drawable/ic_external" />
+        app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="textLink" />
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
-        android:layout_marginTop="@dimen/major_100"
         android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/iconExternal" />
+        app:layout_constraintStart_toStartOf="@id/icon" />
 
 </merge>

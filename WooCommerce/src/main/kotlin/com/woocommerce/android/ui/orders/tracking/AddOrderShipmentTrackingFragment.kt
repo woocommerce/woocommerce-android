@@ -3,13 +3,12 @@ package com.woocommerce.android.ui.orders.tracking
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.MenuProvider
-import androidx.core.widget.doOnTextChanged
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppPrefs
@@ -20,6 +19,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment.Companion.KEY_BARCODE_SCANNING_SCAN_STATUS
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -27,7 +27,10 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SetScannedTrackingNumberEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.ShowTrackingNumberScanFailed
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -44,15 +47,17 @@ import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 @AndroidEntryPoint
 class AddOrderShipmentTrackingFragment :
     BaseFragment(R.layout.fragment_add_shipment_tracking),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
         const val KEY_ADD_SHIPMENT_TRACKING_RESULT = "key_add_shipment_tracking_result"
     }
 
     @Inject lateinit var networkStatus: NetworkStatus
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var navigator: OrderNavigator
+
     @Inject lateinit var dateUtils: DateUtils
 
     private val viewModel: AddOrderShipmentTrackingViewModel by viewModels()
@@ -61,9 +66,7 @@ class AddOrderShipmentTrackingFragment :
     private var progressDialog: CustomProgressDialog? = null
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
+        get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_add_shipment_tracking, container, false)
@@ -73,12 +76,27 @@ class AddOrderShipmentTrackingFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         val binding = FragmentAddShipmentTrackingBinding.bind(view)
+        setupToolbar(binding)
         initUi(binding)
         setupObservers(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentAddShipmentTrackingBinding) {
+        binding.toolbar.inflateMenu(R.menu.menu_add)
+        binding.toolbar.title = getString(R.string.order_shipment_tracking_toolbar_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_gridicons_cross_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            if (onRequestAllowBackPress()) {
+                findNavController().navigateUp()
+            }
+        }
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
     }
 
     private fun setupObservers(binding: FragmentAddShipmentTrackingBinding) {
@@ -142,6 +160,16 @@ class AddOrderShipmentTrackingFragment :
                     AppPrefs.setSelectedShipmentTrackingProviderName(event.carrier.name)
                     AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(event.carrier.isCustom)
                 }
+
+                is SetScannedTrackingNumberEvent -> {
+                    binding.trackingNumber.setText(event.trackingNumber)
+                    viewModel.onTrackingNumberEntered(event.trackingNumber)
+                }
+
+                is ShowTrackingNumberScanFailed -> {
+                    uiMessageResolver.showSnack(event.errorMessage)
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -149,11 +177,21 @@ class AddOrderShipmentTrackingFragment :
         handleResult<Carrier>(AddOrderTrackingProviderListFragment.SHIPMENT_TRACKING_PROVIDER_RESULT) {
             viewModel.onCarrierSelected(it)
         }
+
+        handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
+            viewModel.handleBarcodeScannedStatus(status)
+        }
     }
 
     private fun initUi(binding: FragmentAddShipmentTrackingBinding) {
         binding.carrier.setOnClickListener {
             viewModel.onCarrierClicked()
+        }
+
+        // Let's not hide the scan button with the error icon
+        binding.trackingNumberLayout.errorIconDrawable = null
+        binding.trackingNumberLayout.setEndIconOnClickListener {
+            viewModel.onScanTrackingNumberClicked()
         }
 
         binding.date.setOnClickListener {
@@ -168,13 +206,15 @@ class AddOrderShipmentTrackingFragment :
             dateShippedPickerDialog?.show()
         }
 
-        binding.customProviderName.doOnTextChanged { text, _, _, _ ->
+        binding.customProviderName.doAfterTextChanged { text ->
+            if (!binding.customProviderNameLayout.isVisible) return@doAfterTextChanged
             viewModel.onCustomCarrierNameEntered(text.toString())
         }
-        binding.trackingNumber.doOnTextChanged { text, _, _, _ ->
+        binding.trackingNumber.doAfterTextChanged { text ->
             viewModel.onTrackingNumberEntered(text.toString())
         }
-        binding.customProviderUrl.doOnTextChanged { text, _, _, _ ->
+        binding.customProviderUrl.doAfterTextChanged { text ->
+            if (!binding.customProviderUrlLayout.isVisible) return@doAfterTextChanged
             viewModel.onTrackingLinkEntered(text.toString())
         }
     }
@@ -195,14 +235,7 @@ class AddOrderShipmentTrackingFragment :
         }
     }
 
-    /**
-     * Reusing the same menu used for adding order notes
-     */
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_add, menu)
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_add -> {
                 activity?.let {

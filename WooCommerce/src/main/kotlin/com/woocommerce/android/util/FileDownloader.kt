@@ -15,7 +15,6 @@ class FileDownloader @Inject constructor(
      *
      * @return true if the download succeeded and false otherwise
      */
-    @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun downloadFile(url: String, destinationFile: File): Boolean {
         return try {
             if (destinationFile.exists()) destinationFile.delete()

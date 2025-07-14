@@ -47,4 +47,26 @@ if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
 }
 ```
 
-Once a feature is ready for release, you can remove the feature flag and the old code path.
+### Writing tests for logic that involves feature flag
+When writing tests for logic that involves feature flags, it's important to note that we cannot directly use the enum constant, as shown above. Instead, we should create a wrapper class that can be easily mocked during testing.
+
+```kotlin
+class IsShippingLabelsEnabled @Inject constructor() {
+    operator fun invoke(): Boolean = FeatureFlag.SHIPPING_LABELS_M4.isEnabled()
+}
+```
+
+```kotlin
+if (!isShippingLabelsEnabled()) {
+    binding.expandIcon.isVisible = false
+} else {
+    binding.expandIcon.isVisible = true
+}
+```
+
+Now, you can mock the `IsCardPresentEligible` class to write unit tests
+```kotlin
+whenever(isShippingLabelsEnabled.invoke()).thenReturn(true)
+```
+
+Once a feature is ready for release, **please remove the feature flag** and the old code path.

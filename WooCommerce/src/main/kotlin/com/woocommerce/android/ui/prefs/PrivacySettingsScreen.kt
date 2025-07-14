@@ -265,9 +265,15 @@ private fun Default() {
     WooThemeWithBackground {
         PrivacySettingsScreen(
             state = PrivacySettingsViewModel.State(
-                sendUsageStats = true, crashReportingEnabled = false, progressBarVisible = true
+                sendUsageStats = true,
+                crashReportingEnabled = false,
+                progressBarVisible = true
             ),
-            {}, {}, {}, {}, {}
+            {},
+            {},
+            {},
+            {},
+            {}
         )
     }
 }

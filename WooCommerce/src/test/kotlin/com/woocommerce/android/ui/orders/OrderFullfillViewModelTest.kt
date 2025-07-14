@@ -5,7 +5,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -55,7 +54,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val savedState =
-        OrderFulfillFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
+        OrderFulfillFragmentArgs(orderId = ORDER_ID).toSavedStateHandle()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
@@ -212,8 +211,9 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         var snackBar: ShowSnackbar? = null
         var exit: ExitWithResult<*>? = null
         viewModel.event.observeForever {
-            if (it is ExitWithResult<*>) exit = it
-            else if (it is ShowSnackbar) snackBar = it
+            if (it is ExitWithResult<*>) {
+                exit = it
+            } else if (it is ShowSnackbar) snackBar = it
         }
 
         viewModel.start()
@@ -235,8 +235,9 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         var snackbar: ShowSnackbar? = null
         var exit: ExitWithResult<*>? = null
         viewModel.event.observeForever {
-            if (it is ExitWithResult<*>) exit = it
-            else if (it is ShowSnackbar) snackbar = it
+            if (it is ExitWithResult<*>) {
+                exit = it
+            } else if (it is ShowSnackbar) snackbar = it
         }
 
         viewModel.order = order
@@ -478,8 +479,9 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         var exit: Exit? = null
         var exitWithResult: ExitWithResult<*>? = null
         viewModel.event.observeForever {
-            if (it is ExitWithResult<*>) exitWithResult = it
-            else if (it is Exit) exit = it
+            if (it is ExitWithResult<*>) {
+                exitWithResult = it
+            } else if (it is Exit) exit = it
         }
 
         viewModel.start()
@@ -492,7 +494,8 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         assertNull(exit)
         assertThat(exitWithResult).isEqualTo(
             ExitWithResult(
-                true, OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT
+                true,
+                OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT
             )
         )
     }
@@ -505,8 +508,9 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         var exit: Exit? = null
         var exitWithResult: ExitWithResult<*>? = null
         viewModel.event.observeForever {
-            if (it is ExitWithResult<*>) exitWithResult = it
-            else if (it is Exit) exit = it
+            if (it is ExitWithResult<*>) {
+                exitWithResult = it
+            } else if (it is Exit) exit = it
         }
 
         viewModel.start()

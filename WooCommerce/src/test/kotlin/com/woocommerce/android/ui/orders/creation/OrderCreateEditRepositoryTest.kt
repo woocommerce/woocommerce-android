@@ -4,15 +4,19 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderAttributionOrigin
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -31,7 +35,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import java.math.BigDecimal
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class OrderCreateEditRepositoryTest : BaseUnitTest() {
@@ -44,6 +50,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     private lateinit var orderUpdateStore: OrderUpdateStore
     private lateinit var selectedSite: SelectedSite
     private lateinit var wooCommerceStore: WooCommerceStore
+    private val getWooVersion: GetWooCorePluginCachedVersion = mock()
 
     private val defaultSiteModel = SiteModel()
 
@@ -71,7 +78,9 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             orderMapper = mock(),
             dispatchers = coroutinesTestRule.testDispatchers,
             wooCommerceStore = wooCommerceStore,
-            analyticsTrackerWrapper = trackerWrapper
+            analyticsTrackerWrapper = trackerWrapper,
+            listItemMapper = mock(),
+            getWooVersion = getWooVersion,
         )
     }
 
@@ -94,7 +103,11 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         val note = "note"
         whenever(
             orderUpdateStore.createSimplePayment(
-                eq(defaultSiteModel), eq("1"), eq(true), eq(null), eq(note)
+                eq(defaultSiteModel),
+                eq("1"),
+                eq(true),
+                eq(null),
+                eq(note)
             )
         )
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
@@ -104,25 +117,28 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         // THEN
         verify(orderUpdateStore).createSimplePayment(
-            eq(defaultSiteModel), eq("1"), eq(true), eq(null), eq(note)
+            eq(defaultSiteModel),
+            eq("1"),
+            eq(true),
+            eq(null),
+            eq(note)
         )
     }
 
     @Test
     fun `when AUTO_DRAFT is not supported then status is changed to PENDING`() = testBlocking {
         // Given a site using a version that doesn't support AUTO_DRAFT
-        whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
-            .thenReturn(SitePluginModel().apply { version = "6.2.0" })
-        whenever(orderUpdateStore.createOrder(any(), any()))
+        whenever(getWooVersion()).thenReturn("6.2.0")
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
-        val order = Order.EMPTY.copy(
+        val order = Order.getEmptyOrder(Date(), Date()).copy(
             id = 0L,
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT)
         )
 
-        // When the createOrUpdateDraft method is call
-        sut.createOrUpdateDraft(order)
+        // When the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
 
         // Then the order status is changed to PENDING
         val request = UpdateOrderRequest(
@@ -136,24 +152,23 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             couponLines = emptyList(),
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request)
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
     }
 
     @Test
     fun `when AUTO_DRAFT is supported then status is keep as AUTO_DRAFT`() = testBlocking {
         // Given a site using a version that support AUTO_DRAFT
-        whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
-            .thenReturn(SitePluginModel().apply { version = OrderCreateEditRepository.AUTO_DRAFT_SUPPORTED_VERSION })
-        whenever(orderUpdateStore.createOrder(any(), any()))
+        whenever(getWooVersion()).thenReturn(OrderCreateEditRepository.AUTO_DRAFT_SUPPORTED_VERSION)
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
-        val order = Order.EMPTY.copy(
+        val order = Order.getEmptyOrder(Date(), Date()).copy(
             id = 0L,
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT)
         )
 
-        // When the createOrUpdateDraft method is call
-        sut.createOrUpdateDraft(order)
+        // When the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
 
         // Then the order status is not changed
         val request = UpdateOrderRequest(
@@ -167,7 +182,64 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             couponLines = emptyList(),
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request)
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
+    }
+
+    @Test
+    fun `given the order is updated, when source is store management then createdVia value is null`() = testBlocking {
+        // GIVEN
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+            .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+
+        val order = Order.getEmptyOrder(Date(), Date()).copy(
+            id = 0L
+        )
+
+        // WHEN the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+        // THEN the order status is not changed
+        val request = UpdateOrderRequest(
+            status = WCOrderStatusModel(Order.Status.AUTO_DRAFT),
+            lineItems = emptyList(),
+            shippingAddress = null,
+            billingAddress = null,
+            customerNote = order.customerNote,
+            shippingLines = emptyList(),
+            feeLines = emptyList(),
+            couponLines = emptyList(),
+            createdVia = null,
+        )
+
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
+    }
+
+    @Test
+    fun `when source is point of sale then createdVia value is pos-rest-api`() = testBlocking {
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+            .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+
+        val order = Order.getEmptyOrder(Date(), Date()).copy(
+            id = 0L
+        )
+
+        // When the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order, source = OrderCreationSource.POINT_OF_SALE)
+
+        // Then the order status is not changed
+        val request = UpdateOrderRequest(
+            status = WCOrderStatusModel(Order.Status.AUTO_DRAFT),
+            lineItems = emptyList(),
+            shippingAddress = null,
+            billingAddress = null,
+            customerNote = order.customerNote,
+            shippingLines = emptyList(),
+            feeLines = emptyList(),
+            couponLines = emptyList(),
+            createdVia = "pos-rest-api",
+        )
+
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
     }
 
     @Test
@@ -207,5 +279,31 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             assertThat(setting).isNotNull
             assertThat(setting).isInstanceOf(TaxBasedOnSetting.BillingAddress::class.java)
         }
+    }
+
+    @Test
+    fun `when isGiftCardExtensionEnabled is called, then it should return the correct value`() = testBlocking {
+        // Given
+        val giftCardPluginName = "woocommerce-gift-cards/woocommerce-gift-cards"
+        val pluginMock = mock<SitePluginModel> {
+            on { name } doReturn giftCardPluginName
+            on { isActive } doReturn true
+            on { version } doReturn "1.16.6"
+        }
+        whenever(wooCommerceStore.getSitePlugins(defaultSiteModel, listOf(WOO_GIFT_CARDS)))
+            .thenReturn(listOf(pluginMock))
+
+        // When
+        val plugins = sut.fetchOrderSupportedPlugins()
+
+        // Then
+        assertThat(plugins).isNotEmpty
+        assertThat(plugins["woocommerce-gift-cards/woocommerce-gift-cards"]).isEqualTo(
+            WooPlugin(
+                isInstalled = true,
+                isActive = true,
+                version = "1.16.6"
+            )
+        )
     }
 }

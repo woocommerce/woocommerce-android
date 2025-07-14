@@ -4,7 +4,7 @@ import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_STORE_CREATION_READY
-import com.woocommerce.android.util.RemoteFeatureFlag.WOO_BLAZE
+import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import javax.inject.Inject
 
 class IsRemoteFeatureFlagEnabled @Inject constructor(
@@ -15,7 +15,7 @@ class IsRemoteFeatureFlagEnabled @Inject constructor(
             LOCAL_NOTIFICATION_STORE_CREATION_READY,
             LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES,
             LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES,
-            WOO_BLAZE ->
+            WOO_POS ->
                 PackageUtils.isDebugBuild() ||
                     wpComRemoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(featureFlag.remoteKey)
         }

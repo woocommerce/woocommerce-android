@@ -1,16 +1,17 @@
 package com.woocommerce.android.ui.coupons
 
 import com.woocommerce.android.WooException
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
+import com.woocommerce.android.ui.coupons.tracking.StoreManagementCouponCreationFlowTrackerEventProvider
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -22,17 +23,31 @@ class CouponRepository @Inject constructor(
     private val store: CouponStore,
     private val selectedSite: SelectedSite,
     private val dateUtils: DateUtils,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val posTrackingEventProvider: WooPosCouponCreationFlowTrackerEventProvider,
+    private val storeManagementTrackingEventProvider: StoreManagementCouponCreationFlowTrackerEventProvider,
 ) {
     suspend fun fetchCoupons(
         page: Int,
-        pageSize: Int
+        pageSize: Int,
+        couponIds: List<Long> = emptyList(),
+        isPosMode: Boolean = false
     ): Result<Boolean> {
-        return store.fetchCoupons(selectedSite.get(), page, pageSize)
+        return store.fetchCoupons(
+            site = selectedSite.get(),
+            page = page,
+            pageSize = pageSize,
+            couponIds = couponIds,
+            deleteOldData = page == 1 && couponIds.isEmpty()
+        )
             .let { result ->
                 if (result.isError) {
                     analyticsTrackerWrapper.track(
-                        AnalyticsEvent.COUPONS_LOAD_FAILED,
+                        if (isPosMode) {
+                            posTrackingEventProvider.COUPONS_LOAD_FAILED
+                        } else {
+                            storeManagementTrackingEventProvider.COUPONS_LOAD_FAILED
+                        },
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to result.error::class.java.simpleName,
                             AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.name,
@@ -46,13 +61,19 @@ class CouponRepository @Inject constructor(
                     )
                     Result.failure(WooException(result.error))
                 } else {
-                    analyticsTrackerWrapper.track(
-                        AnalyticsEvent.COUPONS_LOADED,
-                        mapOf(Pair(AnalyticsTracker.KEY_IS_LOADING_MORE, page > 1))
-                    )
+                    trackCouponsLoaded(isPosMode, page)
                     Result.success(result.model!!)
                 }
             }
+    }
+
+    private fun trackCouponsLoaded(isPosMode: Boolean, page: Int) {
+        if (!isPosMode) {
+            analyticsTrackerWrapper.track(
+                storeManagementTrackingEventProvider.COUPONS_LOADED,
+                mapOf(Pair(AnalyticsTracker.KEY_IS_LOADING_MORE, page > 1))
+            )
+        }
     }
 
     suspend fun searchCoupons(
@@ -84,8 +105,10 @@ class CouponRepository @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun observeCoupons(): Flow<List<Coupon>> = store.observeCoupons(selectedSite.get()).map {
+    fun observeCoupons(couponIds: List<Long> = emptyList()): Flow<List<Coupon>> = store.observeCoupons(
+        site = selectedSite.get(),
+        couponIds = couponIds
+    ).map {
         it.map { couponDataModel -> couponDataModel.toAppModel() }
     }
 
@@ -107,6 +130,22 @@ class CouponRepository @Inject constructor(
         return when {
             result.isError -> Result.failure(WooException(result.error))
             else -> Result.success(result.model!!.toAppModel())
+        }
+    }
+
+    suspend fun fetchMostActiveCoupons(
+        dateRange: StatsTimeRange,
+        limit: Int
+    ): Result<List<CouponPerformanceReport>> {
+        val result = store.fetchMostActiveCoupons(
+            site = selectedSite.get(),
+            dateRange = dateRange.start..dateRange.end,
+            limit = limit
+        )
+
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(result.model!!.map { it.toAppModel() })
         }
     }
 
@@ -138,7 +177,7 @@ class CouponRepository @Inject constructor(
         }
     }
 
-    suspend fun createCoupon(coupon: Coupon): Result<Unit> {
+    suspend fun createCoupon(coupon: Coupon): Result<Long?> {
         val request = coupon.createUpdateCouponRequest()
 
         val result = store.createCoupon(
@@ -148,8 +187,12 @@ class CouponRepository @Inject constructor(
 
         return when {
             result.isError -> Result.failure(WooException(result.error))
-            else -> Result.success(Unit)
+            else -> Result.success(result.model)
         }
+    }
+
+    suspend fun getCoupons(couponIds: List<Long>): List<Coupon> {
+        return store.getCoupons(selectedSite.get(), couponIds).map { it.toAppModel() }
     }
 
     private fun Coupon.createUpdateCouponRequest() =

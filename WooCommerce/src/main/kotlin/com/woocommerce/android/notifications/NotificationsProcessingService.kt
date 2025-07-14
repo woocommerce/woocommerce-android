@@ -51,6 +51,7 @@ class NotificationsProcessingService : Service() {
     }
 
     private lateinit var actionProcessor: ActionProcessor
+
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     override fun onBind(intent: Intent): IBinder? {
@@ -68,9 +69,8 @@ class NotificationsProcessingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Offload to a separate thread.
         actionProcessor = ActionProcessor(intent, startId)
-        Thread { actionProcessor.process() }.start()
+        actionProcessor.process()
 
         return START_NOT_STICKY
     }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/dashboard"
         android:icon="@drawable/as_menu_dashboard"
@@ -15,6 +14,11 @@
         android:id="@+id/products"
         android:icon="@drawable/as_menu_products_list"
         android:title="@string/products" />
+
+    <item
+        android:id="@+id/point_of_sale"
+        android:icon="@drawable/as_menu_pos"
+        android:title="@string/point_of_sale" />
 
     <item
         android:id="@+id/moreMenu"

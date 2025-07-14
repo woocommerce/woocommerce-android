@@ -1,0 +1,1 @@
+This release introduces a completely redesigned shipping labels feature that will make handling shipments a breeze. We've improved barcode scanning in POS with clearer error messages, refreshed in-person payments with new Woo colors, and fixed crashes and memory issues for a smoother, more reliable experience.

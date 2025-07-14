@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -27,7 +28,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPAC
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
 import com.woocommerce.android.databinding.ViewLoginNoStoresBinding
 import com.woocommerce.android.databinding.ViewLoginUserInfoBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
@@ -75,7 +75,8 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     private var userAvatarUrl: String? = null
     private var isJetpackConnectCustomTabOpened = false
 
-    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION")
+    private var progressDialog: ProgressDialog? = null
 
     /**
      * This flag, when set to true calls the CONNECT_SITE_INFO API to verify if Jetpack is
@@ -141,7 +142,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         }
 
         userAvatarUrl?.let {
-            GlideApp.with(this)
+            Glide.with(this)
                 .load(it)
                 .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.img_gravatar_placeholder))
                 .circleCrop()
@@ -177,7 +178,10 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
                     siteAddress?.let { viewModel.verifyJetpackAvailable(it) }
                 } else {
                     jetpackLoginListener?.showUsernamePasswordScreen(
-                        siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                        siteAddress,
+                        siteXmlRpcAddress,
+                        mInputUsername,
+                        mInputPassword
                     )
                 }
             }
@@ -239,7 +243,9 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             } else {
                 view?.let {
                     Snackbar.make(
-                        it, getString(R.string.login_jetpack_not_found), BaseTransientBottomBar.LENGTH_LONG
+                        it,
+                        getString(R.string.login_jetpack_not_found),
+                        BaseTransientBottomBar.LENGTH_LONG
                     ).show()
                 }
             }
@@ -268,7 +274,10 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
 
     private fun redirectToSiteCredentialsScreen() {
         jetpackLoginListener?.showUsernamePasswordScreen(
-            siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+            siteAddress,
+            siteXmlRpcAddress,
+            mInputUsername,
+            mInputPassword
         )
     }
 

@@ -7,6 +7,7 @@
     <integer name="stats_label_count_weeks">6</integer>
     <integer name="stats_label_count_months">6</integer>
     <integer name="stats_label_count_years">6</integer>
+    <integer name="stats_label_count_custom_range">6</integer>
     <integer name="default_max_lines_read_more_textview">10</integer>
 
     <!-- max # of chars that can be entered in dimension fields (ex: length, height, width) -->

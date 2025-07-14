@@ -1,0 +1,20 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.dependency.analysis)
+}
+
+android {
+    namespace = 'com.woocommerce.commons'
+    compileSdk = gradle.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdk = gradle.ext.minSdkVersion
+        targetSdk = gradle.ext.targetSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
+    }
+}

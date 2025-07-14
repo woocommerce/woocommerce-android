@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.R
+import com.woocommerce.android.config.RemoteConfigRepository
 import com.woocommerce.android.extensions.getBillingName
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.TimeGroup.GROUP_FUTURE
@@ -27,6 +28,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
+import javax.inject.Inject
 
 /**
  * Works with a [androidx.paging.PagedList] by providing the logic needed to fetch the data used to populate
@@ -35,12 +37,15 @@ import java.util.Date
  * @see [ListItemDataSourceInterface] and [org.wordpress.android.fluxc.model.list.datasource.InternalPagedListDataSource]
  * in FluxC to get a better understanding of how this works with the underlying internal list management code.
  */
-class OrderListItemDataSource(
+@Suppress("LongParameterList")
+class OrderListItemDataSource @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val networkStatus: NetworkStatus,
     private val fetcher: FetchOrdersRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val dateUtils: DateUtils,
+    private val remoteConfigRepository: RemoteConfigRepository
 ) : ListItemDataSourceInterface<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType> {
     override fun getItemsAndFetchIfNecessary(
         listDescriptor: WCOrderListDescriptor,
@@ -72,9 +77,14 @@ class OrderListItemDataSource(
                         ),
                         orderTotal = order.total,
                         status = order.status,
-                        dateCreated = order.dateCreated,
+                        dateCreated = getFormattedDateWithSiteTimeZone(order.dateCreated),
                         currencyCode = order.currency,
-                        isLastItemInSection = isLastItemByRemoteIdMap[order.orderId] ?: false
+                        isLastItemInSection = isLastItemByRemoteIdMap[order.orderId] ?: false,
+                        salesChannelLabel = if (order.createdVia == "pos-rest-api") {
+                            OrderListItemUI.SalesChannelLabel.Visible(resourceProvider.getString(R.string.pos_badge))
+                        } else {
+                            OrderListItemUI.SalesChannelLabel.Hidden
+                        }
                     )
                 }
             }
@@ -94,7 +104,13 @@ class OrderListItemDataSource(
         remoteItemIds: List<LocalOrRemoteId.RemoteId>,
         isListFullyFetched: Boolean
     ): List<OrderListItemIdentifier> {
-        val orderIds = remoteItemIds.map { it.value }
+        val orderIds = remoteItemIds.map { it.value }.let {
+            if (listDescriptor.excludedIds != null) {
+                it.filterNot { orderId -> listDescriptor.excludedIds!!.contains(orderId) }
+            } else {
+                it
+            }
+        }
         val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, orderIds)
             .let { summariesByRemoteId ->
                 val summaries = remoteItemIds.mapNotNull { summariesByRemoteId[it] }
@@ -105,7 +121,9 @@ class OrderListItemDataSource(
                     // a "loading" view for that item indefinitely.
                     val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, orderIds)
                     summaries.filter { cachedOrders.containsKey(it.orderId) }
-                } else summaries
+                } else {
+                    summaries
+                }
             }
 
         val listFuture = mutableListOf<OrderIdentifier>()
@@ -117,20 +135,22 @@ class OrderListItemDataSource(
         val mapToRemoteOrderIdentifier = { summary: WCOrderSummaryModel ->
             OrderIdentifier(summary.orderId)
         }
+
+        val currentSiteDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+
         orderSummaries.forEach {
-            // Default to today if the date cannot be parsed. This date is in UTC.
-            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
+            // Default to today if the date cannot be parsed.
+            val siteDate = dateUtils.getDateUsingSiteTimeZone(it.dateCreated) ?: Date()
 
             // Check if future-dated orders should be excluded from the results list.
             if (listDescriptor.excludeFutureOrders) {
-                val currentDate = Date()
-                if (DateUtils.isAfterDate(currentDate, date)) {
+                if (DateUtils.isAfterDate(currentSiteDate, siteDate)) {
                     // This order is dated for the future so skip adding it to the list
                     return@forEach
                 }
             }
 
-            when (TimeGroup.getTimeGroupForDate(date)) {
+            when (TimeGroup.getTimeGroupForDate(siteDate, currentSiteDate)) {
                 GROUP_FUTURE -> listFuture.add(mapToRemoteOrderIdentifier(it))
                 GROUP_TODAY -> listToday.add(mapToRemoteOrderIdentifier(it))
                 GROUP_YESTERDAY -> listYesterday.add(mapToRemoteOrderIdentifier(it))
@@ -170,7 +190,23 @@ class OrderListItemDataSource(
     }
 
     override fun fetchList(listDescriptor: WCOrderListDescriptor, offset: Long) {
-        val fetchOrderListPayload = FetchOrderListPayload(listDescriptor, offset)
+        val fetchOrderListPayload = FetchOrderListPayload(
+            listDescriptor = listDescriptor,
+            offset = offset,
+            useAppPasswordsForJetpackSites = remoteConfigRepository.isJetpackAppPasswordsExperimentEnabled()
+        )
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderListAction(fetchOrderListPayload))
+    }
+
+    private fun getFormattedDateWithSiteTimeZone(dateCreated: String): String? {
+        val currentSiteDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+        val siteDate = dateUtils.getDateUsingSiteTimeZone(dateCreated) ?: Date()
+        val iso8601DateString = dateUtils.getYearMonthDayStringFromDate(siteDate)
+
+        return if (DateTimeUtils.isSameYear(currentSiteDate, siteDate)) {
+            dateUtils.getShortMonthDayString(iso8601DateString)
+        } else {
+            dateUtils.getShortMonthDayAndYearString(iso8601DateString)
+        }
     }
 }

@@ -2,15 +2,11 @@ package com.woocommerce.android.ui.sitepicker
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
-import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
@@ -20,7 +16,6 @@ import javax.inject.Inject
 
 class SitePickerRepository @Inject constructor(
     private val siteStore: SiteStore,
-    private val dispatcher: Dispatcher,
     private val wooCommerceStore: WooCommerceStore
 ) {
     suspend fun getSites() = withContext(Dispatchers.IO) { siteStore.sites }
@@ -57,14 +52,13 @@ class SitePickerRepository @Inject constructor(
         wooCommerceStore.fetchSupportedApiVersion(site, overrideRetryPolicy = true)
 
     suspend fun fetchSiteInfo(siteAddress: String): Result<ConnectSiteInfoPayload> {
-        val action = SiteActionBuilder.newFetchConnectSiteInfoAction(siteAddress)
-        val event: OnConnectSiteInfoChecked = dispatcher.dispatchAndAwait(action)
+        val result = siteStore.fetchConnectSiteInfoSync(siteAddress)
 
-        return if (event.isError) {
-            AppLog.e(API, "onFetchedConnectSiteInfo has error: " + event.error.message)
-            Result.failure(FetchSiteInfoException(event.error.type, event.error.message))
+        return if (result.isError) {
+            AppLog.e(API, "onFetchedConnectSiteInfo has error: " + result.error.message)
+            Result.failure(FetchSiteInfoException(result.error.type, result.error.message))
         } else {
-            Result.success(event.info)
+            Result.success(result)
         }
     }
 

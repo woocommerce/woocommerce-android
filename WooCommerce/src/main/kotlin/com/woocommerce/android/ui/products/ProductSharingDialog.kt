@@ -8,15 +8,15 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
+import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductSharingDialog : BottomSheetDialogFragment() {
+class ProductSharingDialog : WCBottomSheetDialogFragment() {
     @Inject
     lateinit var navigator: ProductNavigator
     private val viewModel: ProductSharingViewModel by viewModels()
@@ -34,6 +34,7 @@ class ProductSharingDialog : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ProductNavigationTarget -> navigator.navigate(this, event)

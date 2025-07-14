@@ -60,8 +60,11 @@ fun JitmModal(state: JitmState.Modal) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(
-                                if (isSystemInDarkTheme()) state.backgroundDarkImageUrl
-                                else state.backgroundLightImageUrl
+                                if (isSystemInDarkTheme()) {
+                                    state.backgroundDarkImageUrl
+                                } else {
+                                    state.backgroundLightImageUrl
+                                }
                             )
                             .fallback(R.drawable.img_woo_generic_error)
                             .error(R.drawable.img_woo_generic_error)

@@ -13,10 +13,14 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
-import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
-import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
+import com.woocommerce.android.ui.products.grouped.GroupedProductListFragmentDirections
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType.CROSS_SELLS
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType.UPSELLS
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +28,8 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
     private var _binding: FragmentLinkedProductsBinding? = null
     private val binding get() = _binding!!
 
-    override fun getFragmentTitle() = getString(R.string.product_detail_linked_products)
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -108,10 +113,20 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
         binding.addCrossSellProducts.setOnClickListener {
             showGroupedProductFragment(CROSS_SELLS)
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_detail_linked_products),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitLinkedProducts)
+                }
+            }
+        )
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitLinkedProducts())
+        viewModel.onBackButtonClicked(ExitLinkedProducts)
         return false
     }
 

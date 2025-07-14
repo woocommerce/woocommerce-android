@@ -1,0 +1,224 @@
+package com.woocommerce.android.ui.orders.creation.shipping
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import java.math.BigDecimal
+
+@Composable
+fun ShippingLineFormSection(
+    shippingLineDetails: List<ShippingLineDetails>,
+    isEnabled: Boolean,
+    onAddClicked: () -> Unit,
+    onEditClicked: (id: Long) -> Unit,
+    formatCurrency: (amount: BigDecimal) -> String,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(shippingLineDetails.isNotEmpty()) {
+        Card(shape = RectangleShape, modifier = modifier) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(modifier = Modifier.padding(bottom = 16.dp)) {
+                    Text(
+                        text = stringResource(id = R.string.shipping),
+                        style = MaterialTheme.typography.h6,
+                        modifier = modifier
+                            .weight(2f, true)
+                            .align(Alignment.CenterVertically)
+                    )
+                    if (isEnabled) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(id = R.string.order_creation_add_shipping),
+                            modifier = Modifier
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    onAddClicked()
+                                }
+                                .align(Alignment.CenterVertically),
+                            tint = MaterialTheme.colors.primary
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_lock),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .size(dimensionResource(id = R.dimen.image_minor_40)),
+                            tint = MaterialTheme.colors.primary
+                        )
+                    }
+                }
+
+                shippingLineDetails.forEachIndexed { i, shippingDetails ->
+                    val itemModifier = if (i == 0) Modifier else Modifier.padding(top = 8.dp)
+                    ShippingLineEditCard(
+                        shippingLine = shippingDetails,
+                        isEnabled = isEnabled,
+                        onEdit = onEditClicked,
+                        formatCurrency = formatCurrency,
+                        modifier = itemModifier
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ShippingLineEditCard(
+    shippingLine: ShippingLineDetails,
+    isEnabled: Boolean,
+    formatCurrency: (amount: BigDecimal) -> String,
+    onEdit: (id: Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val rowModifier = if (isEnabled) {
+        modifier
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large)))
+            .clickable { onEdit(shippingLine.id) }
+    } else {
+        modifier
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = rowModifier
+            .fillMaxWidth()
+            .border(
+                brush = SolidColor(MaterialTheme.colors.onSurface.copy(alpha = 0.12f)),
+                width = 1.dp,
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
+            )
+            .padding(dimensionResource(id = R.dimen.major_100))
+
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(2f)
+                .align(Alignment.CenterVertically)
+        ) {
+            Text(
+                text = shippingLine.name,
+                style = TextStyle(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 18.sp
+                ),
+                color = colorResource(id = R.color.color_on_surface),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (shippingLine.shippingMethod != null) {
+                Text(
+                    text = shippingLine.shippingMethod.title,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    ),
+                    color = colorResource(id = R.color.color_on_surface_medium),
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = formatCurrency(shippingLine.amount),
+            style = TextStyle(
+                fontWeight = FontWeight.Normal,
+                fontSize = 18.sp
+            ),
+            color = colorResource(id = R.color.color_on_surface),
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
+        if (isEnabled) {
+            Icon(
+                imageVector = Icons.Outlined.Edit,
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(start = 16.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ShippingLineFormSectionLockedPreview() {
+    val shippingDetails = List(3) { i ->
+        ShippingLineDetails(
+            id = i * 1L,
+            shippingMethod = null,
+            amount = BigDecimal.TEN * i.toBigDecimal(),
+            name = "Shipping $i"
+        )
+    }
+    WooThemeWithBackground {
+        ShippingLineFormSection(
+            shippingLineDetails = shippingDetails,
+            formatCurrency = { it.toString() },
+            isEnabled = false,
+            onAddClicked = { },
+            onEditClicked = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun ShippingLineFormSectionPreview() {
+    val shippingDetails = List(3) { i ->
+        ShippingLineDetails(
+            id = i * 1L,
+            shippingMethod = null,
+            amount = BigDecimal.TEN * i.toBigDecimal(),
+            name = "Shipping $i"
+        )
+    }
+    WooThemeWithBackground {
+        ShippingLineFormSection(
+            shippingLineDetails = shippingDetails,
+            formatCurrency = { it.toString() },
+            isEnabled = true,
+            onAddClicked = { },
+            onEditClicked = { }
+        )
+    }
+}

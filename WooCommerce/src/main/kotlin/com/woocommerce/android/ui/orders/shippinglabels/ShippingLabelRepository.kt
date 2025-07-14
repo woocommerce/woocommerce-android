@@ -52,7 +52,9 @@ class ShippingLabelRepository @Inject constructor(
         shippingLabelId: Long
     ): ShippingLabel? {
         return shippingLabelStore.getShippingLabelById(
-            selectedSite.get(), orderId, shippingLabelId
+            selectedSite.get(),
+            orderId,
+            shippingLabelId
         )
             ?.let { shippingLabelMapper.toAppModel(it) }
     }

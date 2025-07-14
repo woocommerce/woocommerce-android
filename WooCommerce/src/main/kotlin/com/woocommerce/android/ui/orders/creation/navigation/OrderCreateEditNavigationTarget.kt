@@ -2,8 +2,11 @@ package com.woocommerce.android.ui.orders.creation.navigation
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.AutoTaxRateSettingState
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -16,17 +19,19 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     object EditCustomerNote : OrderCreateEditNavigationTarget()
     data class SelectItems(
         val selectedItems: List<ProductSelectorViewModel.SelectedItem>,
-        val restrictions: List<ProductRestriction>
+        val restrictions: List<ProductRestriction>,
+        val mode: OrderCreateEditViewModel.Mode,
+        val orderCurrency: String? = null,
     ) : OrderCreateEditNavigationTarget()
 
-    data class ShowProductDetails(
-        val item: Order.Item,
-        val currency: String,
-        val discountEditEnabled: Boolean,
+    data class ShowCreatedOrder(
+        val orderId: Long,
+        val startPaymentFlow: Boolean,
+        val isTablet: Boolean = false,
     ) : OrderCreateEditNavigationTarget()
+    data class EditShipping(val currentShippingLine: ShippingLine?, val orderCurrency: String? = null) :
+        OrderCreateEditNavigationTarget()
 
-    data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()
-    data class EditShipping(val currentShippingLine: ShippingLine?) : OrderCreateEditNavigationTarget()
     data class EditFee(
         val orderSubTotal: BigDecimal,
         val currentFeeValue: BigDecimal? = null
@@ -44,7 +49,33 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val couponLines: Collection<Order.CouponLine>
     ) : OrderCreateEditNavigationTarget()
 
-    data class TaxRatesInfoDialog(val state: TaxRatesInfoDialogViewState) : OrderCreateEditNavigationTarget()
-    data class TaxRateSelector(val state: TaxRatesInfoDialogViewState) : OrderCreateEditNavigationTarget()
-    data class AutoTaxRateSettingDetails(val state: AutoTaxRateSettingState) : OrderCreateEditNavigationTarget()
+    data class TaxRatesInfoDialog(val state: TaxRatesInfoDialogViewState) :
+        OrderCreateEditNavigationTarget()
+
+    data class TaxRateSelector(val state: TaxRatesInfoDialogViewState) :
+        OrderCreateEditNavigationTarget()
+
+    data class AutoTaxRateSettingDetails(val state: AutoTaxRateSettingState) :
+        OrderCreateEditNavigationTarget()
+
+    data class EditDiscount(
+        val item: OrderCreationProduct,
+        val currency: String,
+    ) : OrderCreateEditNavigationTarget()
+
+    data class CustomAmountDialog(
+        val customAmountUIModel: CustomAmountUIModel,
+        val orderTotal: String,
+    ) : OrderCreateEditNavigationTarget()
+
+    data class EditOrderCreationProductConfiguration(
+        val itemId: Long,
+        val productId: Long,
+        val configuration: ProductConfiguration
+    ) : OrderCreateEditNavigationTarget()
+
+    data class EditGiftCard(
+        val giftCard: String
+    ) : OrderCreateEditNavigationTarget()
+    object AddGiftCard : OrderCreateEditNavigationTarget()
 }

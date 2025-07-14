@@ -1,6 +1,6 @@
 package com.woocommerce.android.extensions
 
-import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 internal const val CASH_ON_DELIVERY_PAYMENT_TYPE = "cod"
 internal const val WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE = "woocommerce_payments"
@@ -15,5 +15,7 @@ val String.isCashPayment: Boolean
 fun OrderEntity.getBillingName(defaultValue: String): String {
     return if (billingFirstName.isEmpty() && billingLastName.isEmpty()) {
         defaultValue
-    } else "$billingFirstName $billingLastName"
+    } else {
+        "$billingFirstName $billingLastName"
+    }
 }

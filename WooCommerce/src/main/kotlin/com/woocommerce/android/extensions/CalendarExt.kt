@@ -77,6 +77,7 @@ private fun Calendar.setToDayFirstSecond() {
 }
 
 private fun Calendar.setToDayLastSecond() {
+    clear(Calendar.MILLISECOND)
     set(Calendar.SECOND, getMaximum(Calendar.SECOND))
     set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
     set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))

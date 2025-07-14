@@ -2,17 +2,17 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -31,20 +31,29 @@ import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.WooDialogFragment
+import com.woocommerce.android.ui.dialog.WooDialogFragment.DialogInteractionListener
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
-import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionExpirationFragment.Companion.KEY_SUBSCRIPTION_EXPIRATION_RESULT
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialFragment.Companion.KEY_SUBSCRIPTION_FREE_TRIAL_RESULT
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialViewModel.FreeTrialState
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
 import com.woocommerce.android.util.Optional
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionStringSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -58,21 +67,26 @@ class VariationDetailFragment :
     BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
     OnGalleryImageInteractionListener,
-    MenuProvider {
+    DialogInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
         const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var navigator: VariationNavigator
+    override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var navigator: VariationNavigator
 
     private var doneOrUpdateMenuItem: MenuItem? = null
 
     private var variationName = ""
         set(value) {
             field = value
-            updateActivityTitle()
+            _binding?.toolbar?.title = value
         }
 
     private val skeletonView = SkeletonView()
@@ -90,9 +104,25 @@ class VariationDetailFragment :
 
         _binding = FragmentVariationDetailBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+        reattachDialogInteractionListener()
+
         initializeViews(savedInstanceState)
         initializeViewModel()
+        setupTabletSecondPaneToolbar(
+            title = variationName,
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onExit()
+                }
+                onCreateMenu(toolbar)
+            }
+        )
+    }
+
+    private fun reattachDialogInteractionListener() {
+        val dialogFragment = parentFragmentManager.findFragmentByTag(WooDialogFragment.TAG) as? WooDialogFragment
+        dialogFragment?.setDialogInteractionListener(this)
     }
 
     override fun onDestroyView() {
@@ -112,17 +142,18 @@ class VariationDetailFragment :
         progressDialog?.dismiss()
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_variation_detail_fragment, menu)
-        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.inflateMenu(R.menu.menu_variation_detail_fragment)
+        doneOrUpdateMenuItem = toolbar.menu.findItem(R.id.menu_done)
+        onPrepareMenu()
     }
 
-    override fun onPrepareMenu(menu: Menu) {
+    private fun onPrepareMenu() {
         doneOrUpdateMenuItem?.isVisible = viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false
         doneOrUpdateMenuItem?.isEnabled = viewModel.variationViewStateData.liveData.value?.isDoneButtonEnabled ?: true
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED)
@@ -130,10 +161,12 @@ class VariationDetailFragment :
                 viewModel.onUpdateButtonClicked()
                 true
             }
+
             R.id.menu_delete -> {
                 viewModel.onDeleteVariationClicked()
                 true
             }
+
             else -> false
         }
     }
@@ -163,10 +196,20 @@ class VariationDetailFragment :
                 saleStartDate = it.saleStartDate,
                 saleEndDate = it.saleEndDate
             )
+
+            if (it.isSubscription) {
+                viewModel.onVariationSubscriptionChanged(
+                    price = it.regularPrice,
+                    period = it.subscriptionPeriod,
+                    periodInterval = it.subscriptionInterval,
+                    signUpFee = it.subscriptionSignUpFee,
+                )
+            }
         }
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.onVariationChanged(
                 sku = it.sku,
+                globalUniqueId = it.globalUniqueId,
                 stockStatus = it.stockStatus,
                 stockQuantity = it.stockQuantity,
                 backorderStatus = it.backorderStatus,
@@ -196,8 +239,27 @@ class VariationDetailFragment :
         handleResult<Array<VariantOption>>(KEY_VARIATION_ATTRIBUTES_RESULT) {
             viewModel.onVariationChanged(attributes = it)
         }
+        handleResult<Int>(KEY_SUBSCRIPTION_EXPIRATION_RESULT) { newExpiration ->
+            viewModel.onSubscriptionExpirationChanged(newExpiration)
+        }
+        handleResult<FreeTrialState>(KEY_SUBSCRIPTION_FREE_TRIAL_RESULT) { freeTrial ->
+            viewModel.onVariationSubscriptionChanged(trialLength = freeTrial.length, trialPeriod = freeTrial.period)
+        }
+
+        setupQuantityRulesHandleResult()
     }
 
+    private fun setupQuantityRulesHandleResult() {
+        handleResult<QuantityRules>(BaseProductEditorFragment.KEY_QUANTITY_RULES_DIALOG_RESULT) {
+            viewModel.onVariationChanged(
+                minAllowedQuantity = it.min,
+                maxAllowedQuantity = it.max,
+                groupOfQuantity = it.groupOf
+            )
+        }
+    }
+
+    @Suppress("LongMethod")
     private fun setupObservers(viewModel: VariationDetailViewModel) {
         viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.variation.takeIfNotEqualTo(old?.variation) { newVariation ->
@@ -241,17 +303,37 @@ class VariationDetailFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is ShowActionStringSnackbar -> displayProductImageUploadErrorSnackBar(
+                    event.message,
+                    event.actionText,
+                    event.action
+                )
+
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                 is VariationNavigationTarget -> {
                     navigator.navigate(this, event)
                 }
+
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
-                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                is ShowDialogFragment -> event.showIn(parentFragmentManager, this)
+                is VariationDetailViewModel.ShowUpdateVariationError -> showUpdateVariationError(event.message)
+                is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         }
+    }
+
+    override fun onPositiveButtonClicked() {
+        viewModel.onDeleteVariationConfirmed()
+    }
+
+    override fun onNegativeButtonClicked() {
+        viewModel.onDeleteVariationCancelled()
+    }
+
+    override fun onNeutralButtonClicked() {
+        // no-op
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
@@ -269,6 +351,14 @@ class VariationDetailFragment :
                 binding.imageGallery.showProductImage(it, this)
             }
         }
+    }
+
+    private fun showUpdateVariationError(message: String) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.variation_detail_update_variation_error)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 
     override fun onGalleryImageClicked(image: Image) {
@@ -317,12 +407,13 @@ class VariationDetailFragment :
 
     private fun displayProductImageUploadErrorSnackBar(
         message: String,
+        actionText: String,
         actionListener: View.OnClickListener
     ) {
         if (imageUploadErrorsSnackbar == null) {
             imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
-                actionText = getString(R.string.details),
+                actionText = actionText,
                 actionListener = actionListener
             )
         } else {
@@ -339,13 +430,7 @@ class VariationDetailFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return if (viewModel.event.value == Exit) {
-            true
-        } else {
-            viewModel.onExit()
-            false
-        }
+        viewModel.onExit()
+        return false
     }
-
-    override fun getFragmentTitle() = variationName
 }

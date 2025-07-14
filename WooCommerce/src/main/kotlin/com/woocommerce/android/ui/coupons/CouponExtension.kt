@@ -5,7 +5,6 @@ import com.woocommerce.android.util.CouponUtils
 import java.util.Date
 
 fun Coupon.toUiModel(couponUtils: CouponUtils, currencyCode: String?): CouponListItem {
-
     return CouponListItem(
         id = id,
         code = code,

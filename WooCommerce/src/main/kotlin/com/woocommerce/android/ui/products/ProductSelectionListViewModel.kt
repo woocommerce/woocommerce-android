@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -35,6 +37,12 @@ class ProductSelectionListViewModel @Inject constructor(
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val productSelectionListViewStateLiveData = LiveDataDelegate(savedState, ProductSelectionListViewState())
     private var productSelectionListViewState by productSelectionListViewStateLiveData
 
@@ -189,10 +197,14 @@ class ProductSelectionListViewModel @Inject constructor(
     ) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
-                _productList.value = productRepository.fetchProductList(
+                productRepository.fetchProductList(
                     loadMore,
                     excludedProductIds = excludedProductIds
-                )
+                ).onFailure {
+                    triggerEvent(ShowSnackbar(R.string.product_list_fetch_error))
+                }.getOrNull()?.let {
+                    _productList.value = it
+                }
             } else {
                 productRepository.searchProductList(
                     searchQuery = searchQuery,

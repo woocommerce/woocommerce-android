@@ -48,8 +48,9 @@ fun Modifier.drawShadow(
 
 @Stable
 fun Modifier.autoMirror(): Modifier = composed {
-    if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+    if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
         this.scale(scaleX = -1f, scaleY = 1f)
-    else
+    } else {
         this
+    }
 }

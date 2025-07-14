@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.details
 
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order
+import java.math.BigDecimal
 import javax.inject.Inject
 
 sealed class OrderProduct(open val product: Order.Item) {
@@ -9,6 +11,7 @@ sealed class OrderProduct(open val product: Order.Item) {
     data class GroupedProductItem(
         override val product: Order.Item,
         val children: List<ProductItem>,
+        val groupedProductTotal: BigDecimal,
         var isExpanded: Boolean = false
     ) : OrderProduct(product)
 }
@@ -44,11 +47,14 @@ class OrderProductMapper @Inject constructor() {
             val parent = itemsMap[parentId] ?: continue
             val children = childrenMap[parentId] ?: emptyList()
 
+            val childrenTotal = children.sumByBigDecimal { it.product.total }
+
             val groupedProduct =
                 OrderProduct.GroupedProductItem(
                     parent,
                     children,
-                    isExpanded.getOrDefault(parent.itemId, false)
+                    parent.total + childrenTotal,
+                    isExpanded.getOrDefault(parent.itemId, true),
                 )
             result.add(groupedProduct)
         }

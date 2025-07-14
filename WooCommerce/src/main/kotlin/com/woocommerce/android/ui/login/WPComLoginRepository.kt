@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticatePayload
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticateTwoFactorPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
 import org.wordpress.android.fluxc.store.AccountStore.FetchAuthOptionsPayload
@@ -76,15 +76,19 @@ class WPComLoginRepository @Inject constructor(
             }
     }
 
-    suspend fun requestMagicLink(emailOrUsername: String, flow: MagicLinkFlow, source: MagicLinkSource): Result<Unit> {
+    suspend fun requestMagicLink(
+        emailOrUsername: String,
+        flow: MagicLinkFlow,
+        isSignup: Boolean
+    ): Result<Unit> {
         WooLog.i(WooLog.T.LOGIN, "Submitting a Magic Link request")
 
         val action = AuthenticationActionBuilder.newSendAuthEmailAction(
             AuthEmailPayload(
                 emailOrUsername,
-                false,
+                isSignup,
                 flow,
-                source,
+                null,
                 AuthEmailPayloadScheme.WOOCOMMERCE
             )
         )
@@ -98,6 +102,7 @@ class WPComLoginRepository @Inject constructor(
                 )
                 Result.failure(OnChangedException(event.error))
             }
+
             else -> {
                 WooLog.i(WooLog.T.LOGIN, "Magic Link request sent successfully")
                 Result.success(Unit)
@@ -111,12 +116,14 @@ class WPComLoginRepository @Inject constructor(
         twoStepCode: String?,
         shouldRequestTwoStepCode: Boolean
     ): Result<Unit> {
-        val payload = AuthenticatePayload(emailOrUsername, password).apply {
-            this.twoStepCode = twoStepCode
-            this.shouldSendTwoStepSms = shouldRequestTwoStepCode
-        }
+        val payload = AuthenticateTwoFactorPayload(
+            emailOrUsername,
+            password,
+            twoStepCode.orEmpty(),
+            shouldRequestTwoStepCode
+        )
         val event: OnAuthenticationChanged =
-            dispatcher.dispatchAndAwait(AuthenticationActionBuilder.newAuthenticateAction(payload))
+            dispatcher.dispatchAndAwait(AuthenticationActionBuilder.newAuthenticateTwoFactorAction(payload))
 
         return if (event.isError) {
             WooLog.w(

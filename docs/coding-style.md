@@ -2,7 +2,7 @@
 
 Our code style guidelines are based on the [Android Code Style Guidelines for Contributors](https://developer.android.com/kotlin/style-guide). We only changed a few rules:
 
-* Line length is 120 characters
+* Line length is 120 characters with the exception of test names, which can be as long as necessary.
 * FIXME must not be committed in the repository use TODO instead. FIXME can be used in your own local repository only.
 
 We use [editorconfig](https://editorconfig.org/) to keep our setups in sync. Unfortunately, not every settings is supported, therefore if you want to use autoformatting feature of Android Studio it's better to adjust it's settings:

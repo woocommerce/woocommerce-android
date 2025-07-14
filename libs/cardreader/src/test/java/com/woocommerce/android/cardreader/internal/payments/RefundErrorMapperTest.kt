@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.Cancelled
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.DeclinedByBackendError
@@ -22,7 +23,7 @@ class RefundErrorMapperTest {
     private val refundParameters: RefundParams = mock()
 
     private val terminalException = mock<TerminalException>().also {
-        whenever(it.errorCode).thenReturn(TerminalException.TerminalErrorCode.DECLINED_BY_READER)
+        whenever(it.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_READER)
         whenever(it.errorMessage).thenReturn("Dummy error message")
     }
 
@@ -33,7 +34,7 @@ class RefundErrorMapperTest {
 
     @Test
     fun `when Terminal exception thrown, then refund params is used`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
         val refundParams = RefundParams(
             chargeId = "",
             amount = BigDecimal.TEN,
@@ -46,7 +47,7 @@ class RefundErrorMapperTest {
 
     @Test
     fun `when PAYMENT_DECLINED_BY_STRIPE_API Terminal exception thrown, then PAYMENT_DECLINED type returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
 
         val result = mapper.mapTerminalError(refundParameters, terminalException)
 
@@ -66,7 +67,7 @@ class RefundErrorMapperTest {
     @Test
     fun `when STRIPE_API_CONNECTION_ERROR Terminal exception thrown, then NO_NETWORK type returned`() {
         whenever(terminalException.errorCode).thenReturn(
-            TerminalException.TerminalErrorCode.STRIPE_API_CONNECTION_ERROR
+            TerminalErrorCode.STRIPE_API_CONNECTION_ERROR
         )
 
         val result = mapper.mapTerminalError(refundParameters, terminalException)
@@ -77,7 +78,7 @@ class RefundErrorMapperTest {
     @Test
     fun `when CANCELLED Terminal exception thrown, then CANCELLED type returned`() {
         whenever(terminalException.errorCode).thenReturn(
-            TerminalException.TerminalErrorCode.CANCELED
+            TerminalErrorCode.CANCELED
         )
 
         val result = mapper.mapTerminalError(refundParameters, terminalException)
@@ -87,7 +88,7 @@ class RefundErrorMapperTest {
 
     @Test
     fun `when PAYMENT_DECLINED Terminal exception throw with null code, then unknown type returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
         whenever(terminalException.apiError).thenReturn(mock())
 
         val result = mapper.mapTerminalError(refundParameters, terminalException)
@@ -517,7 +518,7 @@ class RefundErrorMapperTest {
     }
 
     private fun setupStripeApiCardDeclined(declineCode: String?) {
-        whenever(terminalException.errorCode).thenReturn(TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
         whenever(terminalException.apiError).thenReturn(mock())
         whenever(terminalException.apiError?.declineCode).thenReturn(declineCode)
     }

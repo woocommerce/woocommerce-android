@@ -27,8 +27,8 @@ fun <T : Any> SavedStateHandle.getStateFlow(
     initialValue: T,
     key: String = initialValue.javaClass.name
 ): MutableStateFlow<T> {
-    if (initialValue !is Parcelable && initialValue !is Serializable) {
-        error("getStateFlow supports only types that are either Parcelable or Serializable")
+    if (initialValue !is Parcelable && initialValue !is Serializable && !initialValue.javaClass.isPrimitive) {
+        error("getStateFlow supports only types that are either Parcelable or Serializable or primitives")
     }
 
     return getStateFlowInternal(scope, initialValue, key)
@@ -41,9 +41,26 @@ fun <T : Any?> SavedStateHandle.getNullableStateFlow(
     key: String = clazz.name
 ): MutableStateFlow<T> {
     if (!Parcelable::class.java.isAssignableFrom(clazz) &&
-        !Serializable::class.java.isAssignableFrom(clazz)
+        !Serializable::class.java.isAssignableFrom(clazz) &&
+        !clazz.isPrimitive
     ) {
-        error("getStateFlow supports only types that are either Parcelable or Serializable")
+        error("getStateFlow supports only types that are either Parcelable or Serializable or primitives")
+    }
+
+    return getStateFlowInternal(scope, initialValue, key)
+}
+
+fun <T : Any> SavedStateHandle.getNullableListStateFlow(
+    scope: CoroutineScope,
+    initialValue: List<T>?,
+    clazz: Class<out T>,
+    key: String = "list_${clazz.name}"
+): MutableStateFlow<List<T>?> {
+    if (!Parcelable::class.java.isAssignableFrom(clazz) &&
+        !Serializable::class.java.isAssignableFrom(clazz) &&
+        !clazz.isPrimitive
+    ) {
+        error("getStateFlow supports only types that are either Parcelable or Serializable or primitives")
     }
 
     return getStateFlowInternal(scope, initialValue, key)

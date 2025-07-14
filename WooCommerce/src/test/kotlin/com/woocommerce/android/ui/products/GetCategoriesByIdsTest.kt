@@ -11,6 +11,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -54,11 +56,11 @@ class GetCategoriesByIdsTest : BaseUnitTest() {
     }
 
     private val databaseCategories = List(3) { n ->
-        WCProductCategoryModel().apply {
-            localSiteId = 3
-            remoteCategoryId = n.toLong()
-            name = "category $n"
-        }
+        WCProductCategoryModel(
+            localSiteId = LocalId(3),
+            remoteCategoryId = RemoteId(n.toLong()),
+            name = "category $n",
+        )
     }
 
     private var productCategories = databaseCategories.map { it.toProductCategory() }

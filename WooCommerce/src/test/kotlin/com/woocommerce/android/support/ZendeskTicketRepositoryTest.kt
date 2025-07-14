@@ -10,6 +10,7 @@ import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationT
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
@@ -34,7 +35,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import zendesk.support.CreateRequest
 import zendesk.support.Request
 import zendesk.support.RequestProvider
@@ -46,7 +46,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private lateinit var requestProvider: RequestProvider
     private lateinit var envDataSource: ZendeskEnvironmentDataSource
     private lateinit var siteStore: SiteStore
-    private val wooStore: WooCommerceStore = mock()
+    private val ssrFetcher: WCSSRModelCachingFetcher = mock()
 
     @Before
     fun setup() {
@@ -77,7 +77,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = mock(),
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).single()
 
             // Then
@@ -102,7 +103,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
         }
 
@@ -138,7 +140,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
         }
 
@@ -169,7 +172,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
         }
         advanceUntilIdle()
@@ -199,7 +203,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = expectedSubject,
                 description = expectedDescription,
-                extraTags = expectedTags.toList()
+                extraTags = expectedTags.toList(),
+                siteAddress = "siteAddress"
             ).first()
         }
 
@@ -230,7 +235,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -262,7 +268,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -298,7 +305,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = listOf(ZendeskTags.jetpackTag)
+                    extraTags = listOf(ZendeskTags.jetpackTag),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -333,7 +341,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = listOf(ZendeskTags.jetpackTag)
+                    extraTags = listOf(ZendeskTags.jetpackTag),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -369,7 +378,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = listOf(ZendeskTags.jetpackTag)
+                    extraTags = listOf(ZendeskTags.jetpackTag),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -392,8 +402,9 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             }
             val expectedTags = arrayOf("application_password_authenticated")
             val captor = argumentCaptor<CreateRequest>()
-            wooStore.stub {
-                onBlocking { fetchSSR(selectedSite) } doReturn WooResult(model = WCSSRModel(123))
+
+            ssrFetcher.stub {
+                onBlocking { load(selectedSite) } doReturn WooResult(model = WCSSRModel(123))
             }
 
             // When
@@ -405,7 +416,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = selectedSite,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -437,7 +449,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -469,7 +482,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -504,7 +518,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -534,7 +549,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -548,11 +564,45 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when createRequest is called, then the request is created with the site address`() =
+        testBlocking {
+            // given
+            ssrFetcher.stub {
+                onBlocking { load(any()) } doReturn WooResult(model = WCSSRModel(123))
+            }
+
+            val siteAddress = "www.test.com"
+            val captor = argumentCaptor<CreateRequest>()
+            createSUT()
+
+            // when
+            sut.createRequest(
+                context = mock(),
+                origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                ticketType = TicketType.MobileApp,
+                selectedSite = SiteModel(),
+                subject = "subject",
+                description = "description",
+                extraTags = emptyList(),
+                siteAddress = siteAddress
+            ).first()
+
+            // then
+            verify(requestProvider).createRequest(captor.capture(), any())
+
+            val customFields = captor.firstValue.customFields
+            assertThat(customFields).anySatisfy {
+                assertThat(it.id).isEqualTo(TicketCustomField.siteAddress)
+                assertThat(it.valueString).isEqualTo(siteAddress)
+            }
+        }
+
+    @Test
     fun `given the ssr report is returned and site is selected, when creating the request, attach ssr`() =
         testBlocking {
             // given
-            wooStore.stub {
-                onBlocking { fetchSSR(any()) } doReturn WooResult(model = WCSSRModel(123))
+            ssrFetcher.stub {
+                onBlocking { load(any()) } doReturn WooResult(model = WCSSRModel(123))
             }
             val captor = argumentCaptor<CreateRequest>()
             createSUT()
@@ -565,7 +615,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = SiteModel(),
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
 
             // then
@@ -592,7 +643,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
 
             // then
@@ -608,14 +660,15 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     fun `given the site is selected but app fails on fetching ssr, when creating the request, attach empty ssr`() =
         testBlocking {
             // given
-            wooStore.stub {
-                onBlocking { fetchSSR(any()) } doReturn WooResult(
+            ssrFetcher.stub {
+                onBlocking { load(any()) } doReturn WooResult(
                     WooError(
                         WooErrorType.GENERIC_ERROR,
                         BaseRequest.GenericErrorType.NETWORK_ERROR
                     )
                 )
             }
+
             val captor = argumentCaptor<CreateRequest>()
             createSUT()
 
@@ -627,7 +680,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = SiteModel(),
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
 
             // then
@@ -646,7 +700,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             siteStore = siteStore,
             dispatchers = coroutinesTestRule.testDispatchers,
             mock(),
-            wooStore,
+            ssrFetcher
         )
     }
 

@@ -1,15 +1,13 @@
 package com.woocommerce.android.ui.orders.tracking
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogOrderTrackingProviderListBinding
@@ -18,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListAdapter.OnProviderClickListener
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -30,12 +29,14 @@ import javax.inject.Inject
 class AddOrderTrackingProviderListFragment :
     BaseFragment(R.layout.dialog_order_tracking_provider_list),
     OnQueryTextListener,
-    OnProviderClickListener,
-    MenuProvider {
+    OnProviderClickListener {
     companion object {
         const val TAG: String = "AddOrderTrackingProviderListFragment"
         const val SHIPMENT_TRACKING_PROVIDER_RESULT = "tracking-provider-result"
     }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -56,18 +57,28 @@ class AddOrderTrackingProviderListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         val binding = DialogOrderTrackingProviderListBinding.bind(view)
+        setupToolbar(binding)
 
         initUi(binding)
         setupObservers(binding)
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_search, menu)
-        val searchMenuItem = menu.findItem(R.id.menu_search)
+    private fun setupToolbar(binding: DialogOrderTrackingProviderListBinding) {
+        onCreateMenu(binding)
+        binding.toolbar.title = getString(R.string.order_shipment_tracking_provider_toolbar_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    private fun onCreateMenu(binding: DialogOrderTrackingProviderListBinding) {
+        binding.toolbar.inflateMenu(R.menu.menu_search)
+        val searchMenuItem = binding.toolbar.menu.findItem(R.id.menu_search)
         searchView = searchMenuItem!!.actionView as SearchView
         searchView?.let {
             val currentQuery = viewModel.trackingProviderListViewStateData.liveData.value?.query ?: ""
@@ -77,9 +88,6 @@ class AddOrderTrackingProviderListFragment :
             it.setOnQueryTextListener(this@AddOrderTrackingProviderListFragment)
         }
     }
-
-    override fun onMenuItemSelected(menuItem: MenuItem) = false
-
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -98,7 +106,7 @@ class AddOrderTrackingProviderListFragment :
 
             new.showSkeleton.takeIfNotEqualTo(old?.showSkeleton) { show ->
                 if (show) {
-                    skeletonView.show(binding.providersView, R.layout.skeleton_tracking_provider_list, delayed = true)
+                    skeletonView.show(binding.skeletonView, R.layout.skeleton_tracking_provider_list, delayed = true)
                 } else {
                     skeletonView.hide()
                 }

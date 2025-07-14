@@ -11,11 +11,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.VariationListItemBinding
-import com.woocommerce.android.di.GlideRequests
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
@@ -29,7 +29,7 @@ import org.wordpress.android.util.PhotonUtils
 
 class VariationListAdapter(
     private val context: Context,
-    private val glideRequest: GlideRequests,
+    private val glideRequest: RequestManager,
     private val loadMoreListener: OnLoadMoreListener,
     private val parentProduct: Product?,
     private val onItemClick: (variation: ProductVariation) -> Unit

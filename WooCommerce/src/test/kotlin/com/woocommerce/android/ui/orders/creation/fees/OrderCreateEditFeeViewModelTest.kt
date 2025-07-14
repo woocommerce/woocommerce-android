@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.fees
 
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeViewModel.RemoveFee
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeViewModel.UpdateFee
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -23,7 +22,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
         private val DEFAULT_FEE_VALUE = BigDecimal(250)
     }
     private lateinit var sut: OrderCreateEditFeeViewModel
-    private var savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL).initSavedStateHandle()
+    private var savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL).toSavedStateHandle()
 
     @Before
     fun setUp() = initSut()
@@ -39,7 +38,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
         savedState = OrderCreateEditFeeFragmentArgs(
             orderSubTotal = DEFAULT_ORDER_SUB_TOTAL,
             currentFeeValue = DEFAULT_FEE_VALUE
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         initSut()
         sut.event.observeForever { lastReceivedEvent = it }
 
@@ -60,7 +59,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
         savedState = OrderCreateEditFeeFragmentArgs(
             orderSubTotal = DEFAULT_ORDER_SUB_TOTAL,
             currentFeeValue = DEFAULT_FEE_VALUE
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         initSut()
         sut.event.observeForever { lastReceivedEvent = it }
 
@@ -83,7 +82,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
         savedState = OrderCreateEditFeeFragmentArgs(
             orderSubTotal = BigDecimal.ZERO,
             currentFeeValue = DEFAULT_FEE_VALUE
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         initSut()
         sut.event.observeForever { lastReceivedEvent = it }
 
@@ -115,7 +114,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
                 .round(MathContext(4))
 
         savedState = OrderCreateEditFeeFragmentArgs(orderSubtotal, feeTotal)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
         sut.event.observeForever { lastReceivedEvent = it }
 
@@ -237,7 +236,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when current fee is existent, then set showDisplayRemoveFeeButton to true`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, DEFAULT_FEE_VALUE)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -251,7 +250,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when current fee is null, then set showDisplayRemoveFeeButton to false`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -265,7 +264,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when order total is zero, then set shouldDisplayPercentageSwitch to false`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(BigDecimal.ZERO)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -279,7 +278,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when order total contains only the fee value itself, then set shouldDisplayPercentageSwitch to false`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(BigDecimal.ZERO, DEFAULT_FEE_VALUE)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -293,7 +292,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when order total is not zero, then set shouldDisplayPercentageSwitch to true`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -307,7 +306,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when fee value start as zero, then set isDoneButtonEnabled to false`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(BigDecimal.ZERO, BigDecimal.ZERO)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -321,7 +320,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when fee value starts as bigger than zero, then set isDoneButtonEnabled to true`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, DEFAULT_FEE_VALUE)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -335,7 +334,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when fee value starts as negative amount, then set isDoneButtonEnabled to true`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, BigDecimal(-25))
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -349,7 +348,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when fee amount is set to a negative value, then set isDoneButtonEnabled to true`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, DEFAULT_FEE_VALUE)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -367,7 +366,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when fee amount is set to zero, then set isDoneButtonEnabled to false`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, DEFAULT_FEE_VALUE)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->
@@ -385,7 +384,7 @@ class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     fun `when fee percentage is set to zero, then set isDoneButtonEnabled to false`() {
         var lastReceivedChange: Boolean? = null
         savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, DEFAULT_FEE_VALUE)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
         initSut()
 
         sut.viewStateData.observeForever { _, viewState ->

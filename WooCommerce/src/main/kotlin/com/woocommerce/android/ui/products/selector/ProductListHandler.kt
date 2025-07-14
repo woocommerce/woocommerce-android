@@ -10,8 +10,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import java.util.concurrent.atomic.AtomicBoolean
@@ -24,7 +26,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     private val mutex = Mutex()
     private val offset = MutableStateFlow(0)
-    private val canLoadMore = AtomicBoolean(true)
+    val canLoadMore = AtomicBoolean(false)
 
     private val searchQuery = MutableStateFlow("")
     private val searchType = MutableStateFlow(SearchType.DEFAULT)
@@ -44,12 +46,14 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }.flatMapLatest { it }
 
     suspend fun loadFromCacheAndFetch(
+        forceRefresh: Boolean = false,
         searchQuery: String = "",
         filters: Map<ProductFilterOption, String> = emptyMap(),
         searchType: SearchType,
+        includeType: List<WCProductStore.IncludeType> = emptyList(),
+        orderCurrency: String? = null,
     ): Result<Unit> = mutex.withLock {
         offset.value = 0
-        canLoadMore.set(true)
         searchResults.value = emptyList()
 
         this.searchQuery.value = searchQuery
@@ -60,32 +64,49 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
             when (searchType) {
                 SearchType.DEFAULT -> {
                     searchInCache()
-                    remoteSearch()
+                    remoteSearch(orderCurrency)
                 }
                 SearchType.SKU -> {
                     searchInCache()
-                    remoteSearch()
+                    remoteSearch(orderCurrency)
                 }
             }
         } else {
-            fetchProducts()
+            fetchProducts(forceRefresh, includeType, orderCurrency)
         }
     }
 
     // The implementation of loadMore has limited functionality. Essentially, more items from local cache are loaded
     // only after the remote request to fetch the previous page finishes successfully.
-    suspend fun loadMore() = mutex.withLock {
+    suspend fun loadMore(
+        includeTypes: List<WCProductStore.IncludeType> = emptyList(),
+        orderCurrency: String? = null
+    ) = mutex.withLock {
         if (!canLoadMore.get()) return@withLock Result.success(Unit)
         if (searchQuery.value.isEmpty()) {
-            fetchProducts()
+            fetchProducts(
+                includeTypes = includeTypes,
+                orderCurrency = orderCurrency
+            )
         } else {
             searchInCache()
             remoteSearch()
         }
     }
 
-    private suspend fun fetchProducts(): Result<Unit> {
-        return repository.fetchProducts(offset.value, PAGE_SIZE, productFilters.value).onSuccess {
+    private suspend fun fetchProducts(
+        forceRefresh: Boolean = false,
+        includeTypes: List<WCProductStore.IncludeType> = emptyList(),
+        orderCurrency: String? = null,
+    ): Result<Unit> {
+        return repository.fetchProducts(
+            forceRefresh,
+            offset.value,
+            PAGE_SIZE,
+            productFilters.value,
+            includeTypes,
+            orderCurrency
+        ).onSuccess {
             canLoadMore.set(it)
             offset.value += PAGE_SIZE
         }.map { }
@@ -97,17 +118,19 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         } else {
             SkuSearchOptions.Disabled
         }
-        repository.searchProductsInCache(
-            offset = offset.value,
-            pageSize = PAGE_SIZE,
-            searchQuery = searchQuery.value,
-            skuSearchOptions = searchOptions
-        ).let { loadedProducts ->
-            searchResults.update { list -> updateSearchResult(list, loadedProducts) }
+        runBlocking {
+            repository.searchProductsInCache(
+                offset = offset.value,
+                pageSize = PAGE_SIZE,
+                searchQuery = searchQuery.value,
+                skuSearchOptions = searchOptions,
+            ).let { loadedProducts ->
+                searchResults.update { list -> updateSearchResult(list, loadedProducts) }
+            }
         }
     }
 
-    private suspend fun remoteSearch(): Result<Unit> {
+    private suspend fun remoteSearch(orderCurrency: String? = null): Result<Unit> {
         val searchOptions = if (searchType.value == SearchType.SKU) {
             SkuSearchOptions.PartialMatch
         } else {
@@ -117,7 +140,8 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
             offset = offset.value,
             pageSize = PAGE_SIZE,
             searchQuery = searchQuery.value,
-            skuSearchOption = searchOptions
+            skuSearchOption = searchOptions,
+            orderCurrency = orderCurrency,
         ).onSuccess { result ->
             canLoadMore.set(result.canLoadMore)
             offset.value += PAGE_SIZE

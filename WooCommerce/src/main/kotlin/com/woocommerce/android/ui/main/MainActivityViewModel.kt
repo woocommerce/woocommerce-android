@@ -11,25 +11,18 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED
-import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
-import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
-import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
+import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER
+import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
-import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -40,7 +33,6 @@ import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -57,7 +49,6 @@ import javax.inject.Inject
 @Suppress("LongParameterList")
 class MainActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    dispatchers: CoroutineDispatchers,
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val notificationHandler: NotificationMessageHandler,
@@ -67,7 +58,6 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     private val privacyRepository: PrivacySettingsRepository,
-    storeProfilerRepository: StoreProfilerRepository,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
@@ -75,13 +65,6 @@ class MainActivityViewModel @Inject constructor(
     init {
         launch {
             featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
-        }
-
-        launch(dispatchers.io) {
-            if (selectedSite.exists()) {
-                // Upload any pending store profiler answers
-                storeProfilerRepository.uploadAnswers()
-            }
         }
     }
 
@@ -103,6 +86,7 @@ class MainActivityViewModel @Inject constructor(
     val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
 
     fun handleShortcutAction(action: String?) {
+        if (!selectedSite.exists()) return
         when (action) {
             SHORTCUT_PAYMENTS -> {
                 analyticsTrackerWrapper.track(
@@ -122,11 +106,12 @@ class MainActivityViewModel @Inject constructor(
 
     fun removeOrderNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
-            NotificationChannelType.NEW_ORDER, selectedSite.get().siteId
+            NotificationChannelType.NEW_ORDER,
+            selectedSite.get().siteId
         )
     }
 
-    fun handleIncomingNotification(localPushId: Int, notification: Notification?) {
+    fun onPushNotificationTapped(localPushId: Int, notification: Notification?) {
         notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
@@ -135,9 +120,8 @@ class MainActivityViewModel @Inject constructor(
                 changeSiteAndRestart(it.remoteSiteId, RestartActivityForPushNotification(localPushId, notification))
             } else {
                 when (localPushId) {
-                    it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
-                    it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
-                    else -> onSingleNotificationOpened(localPushId, it)
+                    it.getGroupPushId() -> onGroupMessageOpened(it)
+                    else -> onSinglePushNotificationOpened(localPushId, it)
                 }
             }
         } ?: run {
@@ -174,7 +158,7 @@ class MainActivityViewModel @Inject constructor(
             ResolveAppLink.Action.DoNothing -> {
                 // no-op
             }
-        }.exhaustive
+        }
     }
 
     private fun changeSiteAndRestart(remoteSiteId: Long, restartEvent: RestartActivityEvent) {
@@ -188,41 +172,54 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private fun onGroupMessageOpened(notificationChannelType: NotificationChannelType, remoteSiteId: Long) {
-        notificationHandler.markNotificationsOfTypeTapped(notificationChannelType)
-        notificationHandler.removeNotificationsOfTypeFromSystemsBar(notificationChannelType, remoteSiteId)
-        when (notificationChannelType) {
+    private fun onGroupMessageOpened(notification: Notification) {
+        notificationHandler.markNotificationsOfTypeTapped(notification.channelType)
+        notificationHandler.removeNotificationsOfTypeFromSystemsBar(notification.channelType, notification.remoteSiteId)
+        when (notification.channelType) {
             NotificationChannelType.NEW_ORDER -> triggerEvent(ViewOrderList)
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
-            else -> triggerEvent(ViewMyStoreStats)
-        }
-    }
-
-    private fun onZendeskNotificationOpened(localPushId: Int, remoteNoteId: Long) {
-        notificationHandler.markNotificationTapped(remoteNoteId)
-        notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
-        triggerEvent(ViewZendeskTickets)
-    }
-
-    private fun onSingleNotificationOpened(localPushId: Int, notification: Notification) {
-        notificationHandler.markNotificationTapped(notification.remoteNoteId)
-        notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
-        if (notification.channelType == NotificationChannelType.REVIEW) {
-            analyticsTrackerWrapper.track(REVIEW_OPEN)
-            triggerEvent(ViewReviewDetail(notification.uniqueId))
-        } else if (notification.channelType == NotificationChannelType.NEW_ORDER) {
-            if (siteStore.getSiteBySiteId(notification.remoteSiteId) != null) {
-                triggerEvent(ViewOrderDetail(notification.uniqueId, notification.remoteNoteId))
+            NotificationChannelType.OTHER -> if (notification.isBlazeNotification) {
+                triggerEvent(ViewBlazeCampaignList)
             } else {
-                // the site does not exist locally, open order list
-                triggerEvent(ViewOrderList)
+                triggerEvent(ViewMyStoreStats)
             }
         }
     }
 
+    private fun onSinglePushNotificationOpened(localPushId: Int, notification: Notification) {
+        notificationHandler.markNotificationTapped(notification.remoteNoteId)
+        notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
+        when (notification.noteType) {
+            is WooNotificationType.NewOrder -> {
+                when {
+                    siteStore.getSiteBySiteId(notification.remoteSiteId) != null -> triggerEvent(
+                        ViewOrderDetail(
+                            notification.uniqueId,
+                            notification.remoteNoteId
+                        )
+                    )
+
+                    else -> triggerEvent(ViewOrderList)
+                }
+            }
+
+            is WooNotificationType.ProductReview -> {
+                analyticsTrackerWrapper.track(REVIEW_OPEN)
+                triggerEvent(ViewReviewDetail(notification.uniqueId))
+            }
+
+            is WooNotificationType.BlazeStatusUpdate -> triggerEvent(
+                ViewBlazeCampaignDetail(campaignId = notification.uniqueId.toString())
+            )
+
+            is WooNotificationType.LocalReminder -> error("Local reminder notification should not be handled here")
+        }
+    }
+
     private fun determineMenuBadgeState(count: Int, features: List<MoreMenuNewFeature>) =
-        if (features.isNotEmpty()) NewFeature
-        else if (count > 0) UnseenReviews(count) else Hidden
+        if (features.isNotEmpty()) {
+            NewFeature
+        } else if (count > 0) UnseenReviews(count) else Hidden
 
     fun showFeatureAnnouncementIfNeeded() {
         launch {
@@ -275,7 +272,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onLocalNotificationTapped(notification: Notification) {
-        if (notification.remoteSiteId != selectedSite.get().siteId) {
+        if (notification.remoteSiteId != selectedSite.getOrNull()?.siteId) {
             changeSiteAndRestart(
                 notification.remoteSiteId,
                 RestartActivityForLocalNotification(notification)
@@ -287,15 +284,8 @@ class MainActivityViewModel @Inject constructor(
             )
             LocalNotificationType.fromString(notification.tag)?.let {
                 when (it) {
-                    FREE_TRIAL_EXPIRED,
-                    FREE_TRIAL_EXPIRING,
-                    SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
-
-                    FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
-
-                    STORE_CREATION_FINISHED,
-                    THREE_DAYS_AFTER_STILL_EXPLORING -> {
-                    }
+                    BLAZE_NO_CAMPAIGN_REMINDER,
+                    BLAZE_ABANDONED_CAMPAIGN_REMINDER -> triggerEvent(LaunchBlazeCampaignCreation)
                 }
             }
         }
@@ -326,17 +316,27 @@ class MainActivityViewModel @Inject constructor(
         triggerEvent(ShowPrivacySettingsWithError(requestedAnalyticsPreference))
     }
 
+    fun handleIncomingImages(imageUris: List<String>?) {
+        if (imageUris.isNullOrEmpty()) return
+
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATED_USING_SHARED_IMAGES)
+
+        triggerEvent(CreateNewProductUsingImages(imageUris))
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
-    object ViewZendeskTickets : Event()
     object ViewPayments : Event()
     object ViewTapToPay : Event()
     object RequestNotificationsPermission : Event()
-    data class ViewUrlInWebView(val url: String) : Event()
+    data class ViewUrlInWebView(
+        val url: String,
+    ) : Event()
+
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
-    data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
+    object LaunchBlazeCampaignCreation : Event()
 
     sealed class RestartActivityEvent : Event()
     data class RestartActivityForLocalNotification(val notification: Notification) : RestartActivityEvent()
@@ -345,13 +345,16 @@ class MainActivityViewModel @Inject constructor(
 
     data class RestartActivityForAppLink(val data: Uri) : RestartActivityEvent()
 
+    data class CreateNewProductUsingImages(val imageUris: List<String>) : Event()
+
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    data class ViewBlazeCampaignDetail(val campaignId: String) : Event()
+    object ViewBlazeCampaignList : Event()
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()
     data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()
-    object OpenFreeTrialSurvey : Event()
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object NewFeature : MoreMenuBadgeState()

@@ -26,7 +26,8 @@ class PrivacyBannerViewModel @Inject constructor(
 
     private val _state: MutableLiveData<State> = MutableLiveData(
         State(
-            analyticsSwitchEnabled = initialUserPreference, loading = false
+            analyticsSwitchEnabled = initialUserPreference,
+            loading = false
         )
     )
 
@@ -67,8 +68,11 @@ class PrivacyBannerViewModel @Inject constructor(
                     onFailure = {
                         triggerEvent(
                             ShowErrorOnSettings(
-                                requestedAnalyticsValue = if (analyticsPreference) RequestedAnalyticsValue.ENABLED
-                                else RequestedAnalyticsValue.DISABLE
+                                requestedAnalyticsValue = if (analyticsPreference) {
+                                    RequestedAnalyticsValue.ENABLED
+                                } else {
+                                    RequestedAnalyticsValue.DISABLE
+                                }
                             )
                         )
                     }

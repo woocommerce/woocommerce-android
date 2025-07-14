@@ -8,7 +8,7 @@
             },
             "path": {
                 "matches": "/wc/v3/payment_gateways(.*)"
-            },         
+            },
             "locale": {
                 "matches": "(.*)"
             }
@@ -112,7 +112,7 @@
                 "title": "Cash on delivery",
                 "description": "Pay with cash upon delivery.",
                 "order": 2,
-                "enabled": false,
+                "enabled": true,
                 "method_title": "Cash on delivery",
                 "method_description": "Have your customers pay with cash (or by other means) upon delivery.",
                 "method_supports": ["products"],

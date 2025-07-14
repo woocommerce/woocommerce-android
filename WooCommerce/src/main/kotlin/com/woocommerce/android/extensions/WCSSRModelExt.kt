@@ -4,7 +4,6 @@ package com.woocommerce.android.extensions
 
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.util.WooLog
-import org.apache.commons.io.FileUtils.byteCountToDisplaySize
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -38,7 +37,7 @@ fun WCSSRModel.formatResult(): String {
     sb.append(HEADING_SSR)
 
     // Environment
-    environment?.let { it ->
+    environment?.let {
         try {
             sb.append(formatEnvironmentData(JSONObject(it)))
         } catch (e: JSONException) {
@@ -110,7 +109,7 @@ private fun formatEnvironmentData(data: JSONObject): String {
 
     val memoryLimit = data.optString("wp_memory_limit", MISSING_VALUE)
     if (memoryLimit != MISSING_VALUE) {
-        sb.append("WP Memory Limit: ${byteCountToDisplaySize(memoryLimit.toLong())}\n")
+        sb.append("WP Memory Limit: ${memoryLimit.readableFileSize()}\n")
     }
 
     sb.append("WP Debug Mode: ${checkIfTrue(data.optBoolean("wp_debug_mode", false))}\n")
@@ -123,7 +122,7 @@ private fun formatEnvironmentData(data: JSONObject): String {
 
     val postMaxSize = data.optString("php_post_max_size", MISSING_VALUE)
     if (postMaxSize != MISSING_VALUE) {
-        sb.append("PHP Post Max Size: ${byteCountToDisplaySize(postMaxSize.toLong())}\n")
+        sb.append("PHP Post Max Size: ${postMaxSize.readableFileSize()}\n")
     }
 
     sb.append("PHP Time Limit: ${data.optString("php_max_execution_time", MISSING_VALUE)} s\n")
@@ -134,7 +133,7 @@ private fun formatEnvironmentData(data: JSONObject): String {
 
     val maxUploadSize = data.optString("max_upload_size", MISSING_VALUE)
     if (maxUploadSize != MISSING_VALUE) {
-        sb.append("PHP Post Max Size: ${byteCountToDisplaySize(maxUploadSize.toLong())}\n")
+        sb.append("Max Upload Size: ${maxUploadSize.readableFileSize()}\n")
     }
 
     sb.append("Default Timezone: ${data.optString("default_timezone", MISSING_VALUE)}\n")

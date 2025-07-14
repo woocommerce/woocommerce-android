@@ -5,12 +5,16 @@ import androidx.core.util.PatternsCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.gravatar.AvatarQueryOptions
+import com.gravatar.AvatarUrl
+import com.gravatar.DefaultAvatarOption
+import com.gravatar.types.Email
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.login.MagicLinkFlow
-import com.woocommerce.android.ui.login.MagicLinkSource
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -23,7 +27,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.util.GravatarUtils
+import org.wordpress.android.login.MagicLinkFallbackButton
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,14 +46,16 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
-            allowPasswordLogin = !navArgs.isAccountPasswordless,
+            magicLinkFallbackButton = navArgs.fallbackButton,
             isLoadingDialogShown = false
         )
     )
     val viewState = _viewState.asLiveData()
 
     init {
-        requestMagicLink()
+        if (navArgs.requestAtStart) {
+            requestMagicLink()
+        }
     }
 
     fun onRequestMagicLinkClick() = requestMagicLink()
@@ -58,8 +64,17 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
         triggerEvent(OpenEmailClient)
     }
 
-    fun onUsePasswordClick() {
-        triggerEvent(Exit)
+    fun onFallbackButtonClick() {
+        when (navArgs.fallbackButton) {
+            MagicLinkFallbackButton.Password -> triggerEvent(
+                ShowPasswordScreen(
+                    emailOrUsername = navArgs.emailOrUsername,
+                    jetpackStatus = navArgs.jetpackStatus
+                )
+            )
+            MagicLinkFallbackButton.UsernameAndPassword -> triggerEvent(ShowUsernameScreen(navArgs.jetpackStatus))
+            MagicLinkFallbackButton.None -> error("No fallback button should be shown")
+        }
     }
 
     fun onCloseClick() {
@@ -69,7 +84,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             JETPACK_SETUP_LOGIN_FLOW,
             mapOf(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_MAGIC_LINK,
-                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS,
+                AnalyticsTracker.KEY_IS_SIGN_UP to navArgs.isNewWpComAccount
             )
         )
     }
@@ -79,7 +95,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             JETPACK_SETUP_LOGIN_FLOW,
             mapOf(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_MAGIC_LINK,
-                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT,
+                AnalyticsTracker.KEY_IS_SIGN_UP to navArgs.isNewWpComAccount
             )
         )
 
@@ -87,24 +104,19 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
-            allowPasswordLogin = !navArgs.isAccountPasswordless,
+            magicLinkFallbackButton = navArgs.fallbackButton,
             isLoadingDialogShown = true
         )
-        val source = when {
-            !navArgs.jetpackStatus.isJetpackInstalled -> MagicLinkSource.JetpackInstallation
-            !navArgs.jetpackStatus.isJetpackConnected -> MagicLinkSource.JetpackConnection
-            else -> MagicLinkSource.WPComAuthentication
-        }
         wpComLoginRepository.requestMagicLink(
             emailOrUsername = navArgs.emailOrUsername,
-            flow = MagicLinkFlow.SiteCredentialsToWPCom,
-            source = source
+            flow = MagicLinkFlow.JetpackConnection,
+            isSignup = navArgs.isNewWpComAccount
         ).fold(
             onSuccess = {
                 _viewState.value = ViewState.MagicLinkSentState(
                     email = navArgs.emailOrUsername.takeIf { it.isAnEmail() },
                     isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
-                    allowPasswordLogin = !navArgs.isAccountPasswordless,
+                    magicLinkFallbackButton = navArgs.fallbackButton,
                 )
             },
             onFailure = {
@@ -115,7 +127,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
                     JETPACK_SETUP_LOGIN_FLOW,
                     mapOf(
                         AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_MAGIC_LINK,
-                        AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT
+                        AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT,
+                        AnalyticsTracker.KEY_IS_SIGN_UP to navArgs.isNewWpComAccount
                     )
                 )
             }
@@ -124,21 +137,24 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
 
     private fun avatarUrlFromEmail(email: String): String {
         val avatarSize = resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100)
-        return GravatarUtils.gravatarFromEmail(email, avatarSize, GravatarUtils.DefaultImage.STATUS_404)
+        return AvatarUrl(
+            Email(email),
+            AvatarQueryOptions(preferredSize = avatarSize, defaultAvatarOption = DefaultAvatarOption.Status404)
+        ).toString()
     }
 
     private fun String.isAnEmail() = PatternsCompat.EMAIL_ADDRESS.matcher(this).matches()
 
     sealed interface ViewState : Parcelable {
         val isJetpackInstalled: Boolean
-        val allowPasswordLogin: Boolean
+        val magicLinkFallbackButton: MagicLinkFallbackButton
 
         @Parcelize
         data class MagicLinkRequestState(
             val emailOrUsername: String,
             val avatarUrl: String,
             override val isJetpackInstalled: Boolean,
-            override val allowPasswordLogin: Boolean,
+            override val magicLinkFallbackButton: MagicLinkFallbackButton,
             val isLoadingDialogShown: Boolean
         ) : ViewState
 
@@ -146,9 +162,16 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
         data class MagicLinkSentState(
             val email: String?,
             override val isJetpackInstalled: Boolean,
-            override val allowPasswordLogin: Boolean
+            override val magicLinkFallbackButton: MagicLinkFallbackButton
         ) : ViewState
     }
 
     object OpenEmailClient : MultiLiveEvent.Event()
+
+    data class ShowPasswordScreen(
+        val emailOrUsername: String,
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
+
+    data class ShowUsernameScreen(val jetpackStatus: JetpackStatus) : MultiLiveEvent.Event()
 }

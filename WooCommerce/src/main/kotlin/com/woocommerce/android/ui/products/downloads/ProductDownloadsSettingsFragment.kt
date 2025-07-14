@@ -7,8 +7,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductDownloadsSettingsBinding
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.ProductDetailViewModel
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,6 +23,16 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
         _binding = FragmentProductDownloadsSettingsBinding.bind(view)
 
         setupObservers(viewModel)
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_downloadable_files_download_settings),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitProductDownloadsSettings)
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -65,7 +76,7 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitProductDownloadsSettings())
+        viewModel.onBackButtonClicked(ExitProductDownloadsSettings)
         return false
     }
 }

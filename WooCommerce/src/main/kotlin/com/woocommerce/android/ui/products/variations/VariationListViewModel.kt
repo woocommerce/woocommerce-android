@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -19,7 +18,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Hidden
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown.VariationsCardinality.MULTIPLE
@@ -41,6 +40,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.mediapicker.util.map
 import javax.inject.Inject
 
 /**
@@ -80,7 +80,7 @@ class VariationListViewModel @Inject constructor(
     private val isReadOnlyMode = navArgs.isReadOnlyMode
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
-    val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
+    val variationList: LiveData<List<ProductVariation>> = _variationList.map { variations ->
         variations.apply {
             viewState = viewState.copy(
                 isEmptyViewVisible = isEmpty,
@@ -93,6 +93,12 @@ class VariationListViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState(isAddVariationButtonVisible = isReadOnlyMode.not()))
     private var viewState by viewStateLiveData
 
@@ -164,7 +170,7 @@ class VariationListViewModel @Inject constructor(
                 ?.let { remove(it) }
         }?.toList().let { _variationList.value = it }
 
-        productRepository.fetchProductOrLoadFromCache(productID)
+        productRepository.fetchAndGetProduct(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
@@ -206,7 +212,7 @@ class VariationListViewModel @Inject constructor(
 
     private suspend fun syncProductToVariations(productID: Long) {
         loadVariations(productID, withSkeletonView = false)
-        productRepository.fetchProductOrLoadFromCache(productID)
+        productRepository.fetchAndGetProduct(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
@@ -333,7 +339,10 @@ class VariationListViewModel @Inject constructor(
                 RequestResult.SUCCESS -> {
                     tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
                     refreshVariations(remoteProductId)
-                    viewState = viewState.copy(progressDialogState = Hidden)
+
+                    viewState = productRepository.fetchAndGetProduct(remoteProductId)
+                        ?.let { viewState.copy(parentProduct = it, progressDialogState = Hidden) }
+                        ?: viewState.copy(progressDialogState = Hidden)
                 }
                 else -> {
                     tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)

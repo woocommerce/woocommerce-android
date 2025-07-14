@@ -17,8 +17,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class FCMMessageService : FirebaseMessagingService() {
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
+
     @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
+
     @Inject lateinit var registerDevice: RegisterDevice
+
     @Inject lateinit var invalidateDeviceRegistration: InvalidateDeviceRegistration
 
     private val job = Job()

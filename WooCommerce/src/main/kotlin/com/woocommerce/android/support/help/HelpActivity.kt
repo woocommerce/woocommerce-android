@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.updatePadding
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -17,7 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HELP_CON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
-import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
@@ -43,9 +44,13 @@ class HelpActivity : AppCompatActivity() {
     private val viewModel: HelpViewModel by viewModels()
 
     @Inject lateinit var accountRepository: AccountRepository
+
     @Inject lateinit var siteStore: SiteStore
+
     @Inject lateinit var supportHelper: SupportHelper
+
     @Inject lateinit var zendeskSettings: ZendeskSettings
+
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var binding: ActivityHelpBinding
@@ -61,8 +66,21 @@ class HelpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        zendeskSettings.setup(context = this)
+
         binding = ActivityHelpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.root.doOnApplyWindowInsets(consumeInsets = true) {
+            binding.root.updatePadding(
+                left = it.left,
+                right = it.right,
+                bottom = it.bottom
+            )
+            binding.appBarLayout.updatePadding(
+                top = it.top
+            )
+        }
 
         setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setHomeButtonEnabled(true)
@@ -107,7 +125,7 @@ class HelpActivity : AppCompatActivity() {
                         is ShowLoading -> {
                             binding.helpLoading.visibility = View.VISIBLE
                         }
-                    }.exhaustive
+                    }
                 }
                 else -> event.isHandled = false
             }
@@ -196,7 +214,7 @@ class HelpActivity : AppCompatActivity() {
         Zendesk FAQ once it's ready
         zendeskHelper
                 .showZendeskHelpCenter(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
-        */
+         */
     }
 
     private fun showApplicationLog() {

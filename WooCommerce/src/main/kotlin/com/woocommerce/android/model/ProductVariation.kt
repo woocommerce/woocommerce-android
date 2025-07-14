@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -28,6 +29,7 @@ open class ProductVariation(
     open val remoteProductId: Long,
     open val remoteVariationId: Long,
     open val sku: String,
+    open val globalUniqueId: String,
     open val image: Image?,
     open val price: BigDecimal?,
     open val regularPrice: BigDecimal?,
@@ -52,7 +54,11 @@ open class ProductVariation(
     override val length: Float,
     override val width: Float,
     override val height: Float,
-    override val weight: Float
+    override val weight: Float,
+    open val minAllowedQuantity: Int?,
+    open val maxAllowedQuantity: Int?,
+    open val groupOfQuantity: Int?,
+    open val overrideProductQuantities: Boolean?
 ) : Parcelable, IProduct, Comparable<ProductVariation> {
     val isSaleInEffect: Boolean
         get() {
@@ -72,6 +78,7 @@ open class ProductVariation(
             remoteVariationId == variation.remoteVariationId &&
                 remoteProductId == variation.remoteProductId &&
                 sku == variation.sku &&
+                globalUniqueId == variation.globalUniqueId &&
                 image?.id == variation.image?.id &&
                 regularPrice isEquivalentTo variation.regularPrice &&
                 salePrice isEquivalentTo variation.salePrice &&
@@ -93,7 +100,11 @@ open class ProductVariation(
                 weight == variation.weight &&
                 length == variation.length &&
                 height == variation.height &&
-                width == variation.width
+                width == variation.width &&
+                minAllowedQuantity == variation.minAllowedQuantity &&
+                maxAllowedQuantity == variation.maxAllowedQuantity &&
+                groupOfQuantity == variation.groupOfQuantity &&
+                overrideProductQuantities == variation.overrideProductQuantities
         } ?: false
     }
 
@@ -114,46 +125,82 @@ open class ProductVariation(
                     json.addProperty("id", variantImage.id)
                     json.addProperty("name", variantImage.name)
                     json.addProperty("src", variantImage.source)
-                    json.addProperty("date_created_gmt", variantImage.dateCreated.formatToYYYYmmDDhhmmss())
+                    json.addProperty(
+                        /* property = */
+                        "date_created_gmt",
+                        /* value = */
+                        variantImage.dateCreated?.formatToYYYYmmDDhhmmss() ?: ""
+                    )
                 }.toString()
             } ?: ""
         }
 
-        return (cachedVariation ?: WCProductVariationModel()).also {
-            it.remoteProductId = remoteProductId
-            it.remoteVariationId = remoteVariationId
-            it.sku = sku
-            it.image = imageToJson()
-            it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
-            it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
-            if (isSaleScheduled) {
-                saleStartDateGmt?.let { dateOnSaleFrom ->
-                    it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
-                }
-                it.dateOnSaleToGmt = saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+        fun getDateOnSaleFromGmt(): String {
+            return if (isSaleScheduled) {
+                saleStartDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
             } else {
-                it.dateOnSaleFromGmt = ""
-                it.dateOnSaleToGmt = ""
+                ""
             }
-            it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
-            it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
-            it.stockQuantity = stockQuantity
-            it.purchasable = isPurchasable
-            it.virtual = isVirtual
-            it.downloadable = isDownloadable
-            it.manageStock = isStockManaged
-            it.description = description
-            it.status = if (isVisible) PUBLISH.value else PRIVATE.value
-            it.shippingClass = shippingClass
-            it.shippingClassId = shippingClassId.toInt()
-            it.menuOrder = menuOrder
-            it.attributes = JsonArray().toString()
-            attributes.takeIf { list -> list.isNotEmpty() }
-                ?.forEach { variant -> it.addVariant(variant.asSourceModel()) }
-            it.length = if (length == 0f) "" else length.formatToString()
-            it.width = if (width == 0f) "" else width.formatToString()
-            it.weight = if (weight == 0f) "" else weight.formatToString()
-            it.height = if (height == 0f) "" else height.formatToString()
+        }
+
+        fun getDateOnSaleToGmt(): String {
+            return if (isSaleScheduled) {
+                saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+            } else {
+                ""
+            }
+        }
+
+        fun attributesToJson(): String {
+            val jsonArray = JsonArray()
+            attributes.forEach { variantOption ->
+                JsonObject().apply {
+                    addProperty("id", variantOption.id)
+                    addProperty("name", variantOption.name)
+                    addProperty("option", variantOption.option)
+                }.also { jsonArray.add(it) }
+            }
+            return jsonArray.toString()
+        }
+
+        return (cachedVariation ?: WCProductVariationModel()).copy(
+            remoteProductId = RemoteId(remoteProductId),
+            remoteVariationId = RemoteId(remoteVariationId),
+            sku = sku,
+            globalUniqueId = globalUniqueId,
+            image = imageToJson(),
+            regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString(),
+            salePrice = if (salePrice.isNotSet()) "" else salePrice.toString(),
+            dateOnSaleFromGmt = getDateOnSaleFromGmt(),
+            dateOnSaleToGmt = getDateOnSaleToGmt(),
+            stockStatus = ProductStockStatus.fromStockStatus(stockStatus),
+            backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus),
+            stockQuantity = stockQuantity,
+            purchasable = isPurchasable,
+            virtual = isVirtual,
+            downloadable = isDownloadable,
+            manageStock = isStockManaged,
+            description = description,
+            status = if (isVisible) PUBLISH.value else PRIVATE.value,
+            shippingClass = shippingClass,
+            shippingClassId = shippingClassId.toInt(),
+            menuOrder = menuOrder,
+            attributes = attributesToJson(),
+            length = if (length == 0f) "" else length.formatToString(),
+            width = if (width == 0f) "" else width.formatToString(),
+            weight = if (weight == 0f) "" else weight.formatToString(),
+            height = if (height == 0f) "" else height.formatToString(),
+            minAllowedQuantity = minAllowedQuantity ?: -1,
+            maxAllowedQuantity = maxAllowedQuantity ?: -1,
+            groupOfQuantity = groupOfQuantity ?: -1,
+            overrideProductQuantities = overrideProductQuantities ?: false,
+        ).let {
+            if (this@ProductVariation is SubscriptionProductVariation) {
+                // Subscription details are currently the only editable metadata fields from the app.
+                it.copy(metadata = subscriptionDetails?.toMetadataJson().toString())
+            } else {
+                it
+            }
         }
     }
 
@@ -168,6 +215,7 @@ open class ProductVariation(
         remoteProductId: Long = this.remoteProductId,
         remoteVariationId: Long = this.remoteVariationId,
         sku: String = this.sku,
+        globalUniqueId: String = this.globalUniqueId,
         image: Image? = this.image,
         price: BigDecimal? = this.price,
         regularPrice: BigDecimal? = this.regularPrice,
@@ -192,12 +240,17 @@ open class ProductVariation(
         length: Float = this.length,
         width: Float = this.width,
         height: Float = this.height,
-        weight: Float = this.weight
+        weight: Float = this.weight,
+        minAllowedQuantity: Int? = this.minAllowedQuantity,
+        maxAllowedQuantity: Int? = this.maxAllowedQuantity,
+        groupOfQuantity: Int? = this.groupOfQuantity,
+        overrideProductQuantities: Boolean? = this.overrideProductQuantities
     ): ProductVariation {
         return ProductVariation(
             remoteProductId = remoteProductId,
             remoteVariationId = remoteVariationId,
             sku = sku,
+            globalUniqueId = globalUniqueId,
             image = image,
             price = price,
             regularPrice = regularPrice,
@@ -222,7 +275,12 @@ open class ProductVariation(
             length = length,
             width = width,
             height = height,
-            weight = weight
+            weight = weight,
+            minAllowedQuantity = minAllowedQuantity,
+            maxAllowedQuantity = maxAllowedQuantity,
+            groupOfQuantity = groupOfQuantity,
+            overrideProductQuantities = overrideProductQuantities
+
         )
     }
 }
@@ -248,15 +306,17 @@ data class VariantOption(
 
 fun WCProductVariationModel.toAppModel(): ProductVariation {
     return ProductVariation(
-        remoteProductId = this.remoteProductId,
-        remoteVariationId = this.remoteVariationId,
+        remoteProductId = this.remoteProductId.value,
+        remoteVariationId = this.remoteVariationId.value,
         sku = this.sku,
+        globalUniqueId = this.globalUniqueId,
         image = this.getImageModel()?.let {
             Product.Image(
-                it.id,
-                it.name,
-                it.src,
-                DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
+                id = it.id,
+                name = it.name,
+                source = it.src,
+                dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
+                isCoverImage = false
             )
         },
         price = this.price.toBigDecimalOrNull(),
@@ -284,6 +344,10 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         length = this.length.toFloatOrNull() ?: 0f,
         width = this.width.toFloatOrNull() ?: 0f,
         height = this.height.toFloatOrNull() ?: 0f,
-        weight = this.weight.toFloatOrNull() ?: 0f
+        weight = this.weight.toFloatOrNull() ?: 0f,
+        minAllowedQuantity = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null,
+        maxAllowedQuantity = if (this.maxAllowedQuantity >= 0) this.maxAllowedQuantity else null,
+        groupOfQuantity = if (this.groupOfQuantity >= 0) this.groupOfQuantity else null,
+        overrideProductQuantities = this.overrideProductQuantities
     )
 }

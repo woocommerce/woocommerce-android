@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.pairMap
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.VariantOption
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -33,6 +33,12 @@ class EditVariationAttributesViewModel @Inject constructor(
 
     val editableVariationAttributeList = _editableVariationAttributeList
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
@@ -59,14 +65,17 @@ class EditVariationAttributesViewModel @Inject constructor(
     }
 
     fun exit() {
-        if (hasChanges) triggerEvent(
-            ExitWithResult(
-                viewState.updatedAttributeSelection
-                    .mapNotNull { it.toVariantOption() }
-                    .toTypedArray()
+        if (hasChanges) {
+            triggerEvent(
+                ExitWithResult(
+                    viewState.updatedAttributeSelection
+                        .mapNotNull { it.toVariantOption() }
+                        .toTypedArray()
+                )
             )
-        )
-        else triggerEvent(Exit)
+        } else {
+            triggerEvent(Exit)
+        }
     }
 
     fun updateData(attributeSelection: List<VariationAttributeSelectionGroup>) {
