@@ -1,2 +1,0 @@
-22.7 :
-Cette mise à jour rend la gestion de votre boutique encore plus fluide ! Nous avons actualisé l’interface utilisateur de filtrage des commandes, rendu le PDV plus facile d’accès via la barre d’onglets et ajouté la prise en charge des codes-barres pour définir les champs UGS et ID unique. Nous avons également corrigé un bug afin que vous puissiez désormais effacer ces champs si nécessaire.

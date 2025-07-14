@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.8
+This release introduces a completely redesigned shipping labels feature that will make handling shipments a breeze. We've improved barcode scanning in POS with clearer error messages, refreshed in-person payments with new Woo colors, and fixed crashes and memory issues for a smoother, more reliable experience.
+
 ## 22.7
 This update makes managing your store even smoother! We’ve refreshed the order filtering UI, made the POS easier to access via the tab bar, and added barcode support to set SKU and Unique ID fields—plus fixed a bug so you can now clear those fields when needed.
 

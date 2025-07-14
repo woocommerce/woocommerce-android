@@ -44,7 +44,9 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val refundStore: WCRefundStore = mock()
+    private val refundStore: WCRefundStore = mock {
+        onBlocking { getAllRefunds(any(), any()) } doReturn emptyList()
+    }
     private val currencyFormatter: CurrencyFormatter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {

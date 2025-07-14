@@ -4,6 +4,7 @@
 22.9
 -----
 - [*] Fixed infinite loading animation in Order details pane when order list is empty [https://github.com/woocommerce/woocommerce-android/pull/14316]
+- [*] Fixed rare crash on the Payment Selection screen. [https://github.com/woocommerce/woocommerce-android/pull/14318]
 
 22.8
 -----
@@ -16,6 +17,7 @@
 - [internal] Fixed a memory leak on the ProductDetailScreen [https://github.com/woocommerce/woocommerce-android/pull/14264]
 - [*] Fixed a crash that occurred when the third party plugin meddling with orders response [https://github.com/woocommerce/woocommerce-android/pull/14270]
 - [*] Added "POS" badge to orders created in the POS [https://github.com/woocommerce/woocommerce-android/pull/14230]
+- [***] We've completely redesigned the shipping label creation flow. [https://github.com/woocommerce/woocommerce-android/pull/14308]
 
 22.7
 -----

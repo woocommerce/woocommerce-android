@@ -1,2 +1,0 @@
-22.7:
-Esta actualización hace que la gestión de tu tienda sea aún más fluida. Hemos actualizado la interfaz de usuario para filtrar pedidos, facilitado el acceso al TPV a través de la barra de pestañas y añadido la compatibilidad con códigos de barras para configurar los campos SKU e ID único; también hemos corregido un error para que puedas borrar esos campos cuando sea necesario.

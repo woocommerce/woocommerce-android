@@ -1,2 +1,0 @@
-22.7:
-Questo aggiornamento rende la gestione del negozio ancora più fluida. Abbiamo aggiornato l'interfaccia utente dei filtri degli ordini, semplificato l'accesso al POS tramite la barra delle schede e aggiunto il supporto per i codici a barre per impostare i campi SKU e ID Univoco. Inoltre, abbiamo risolto un bug e ora è possibile cancellare tali campi a seconda delle necessità.

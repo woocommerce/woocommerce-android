@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
@@ -171,7 +172,9 @@ class IssueRefundViewModel @Inject constructor(
         )
 
     init {
-        refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
+        refunds = runBlocking {
+            refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
+        }
 
         viewModelScope.launch {
             initRefundItems()
