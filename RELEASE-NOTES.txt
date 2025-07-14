@@ -4,6 +4,7 @@
 22.9
 -----
 - [*] Fixed rare crash on the Payment Selection screen. [https://github.com/woocommerce/woocommerce-android/pull/14318]
+- [**] Added option to filter orders by Point of Sale sales channel in Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14286]
 
 22.8
 -----
