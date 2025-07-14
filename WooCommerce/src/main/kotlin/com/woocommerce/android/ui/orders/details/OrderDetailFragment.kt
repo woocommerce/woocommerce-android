@@ -413,9 +413,8 @@ class OrderDetailFragment :
                 binding.orderDetailProductList.isVisible = it
             }
             new.toolbarTitle.takeIfNotEqualTo(old?.toolbarTitle) {
-                val title = it ?: ""
-                screenTitle = title
-                binding.toolbar.title = title
+                screenTitle = it
+                binding.toolbar.title = it
             }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {

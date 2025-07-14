@@ -1059,7 +1059,7 @@ class OrderDetailViewModel @Inject constructor(
             isOrderDetailEmpty = true,
             isRefreshing = false,
             isOrderDetailSkeletonShown = false,
-            toolbarTitle = null
+            toolbarTitle = ""
         )
     }
 
