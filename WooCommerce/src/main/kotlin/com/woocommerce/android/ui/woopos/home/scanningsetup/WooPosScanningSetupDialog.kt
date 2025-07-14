@@ -147,12 +147,12 @@ fun WooPosScanningSetupDialog(
                             easing = FastOutSlowInEasing
                         )
                     ) togetherWith
-                    fadeOut(
-                        animationSpec = tween(
-                            durationMillis = 200,
-                            easing = FastOutSlowInEasing
+                        fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 200,
+                                easing = FastOutSlowInEasing
+                            )
                         )
-                    )
                 },
                 label = "step_transition",
             ) { step ->
@@ -543,7 +543,8 @@ private fun ScannerSetupInfoContent(
             text = step.message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+            modifier = Modifier
+                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
                 .fillMaxWidth()
         )
 
