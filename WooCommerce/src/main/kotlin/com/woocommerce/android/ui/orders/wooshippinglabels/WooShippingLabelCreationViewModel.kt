@@ -596,7 +596,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     trackShippingRatesLoading(isSuccess = true)
                 } else {
                     updateState(ShippingRatesState.Error)
-                    trackShippingRatesLoading(isSuccess = false, error = shippingRatesResult.exceptionOrNull()?.message)
+                    val error = shippingRatesResult.exceptionOrNull()?.message
+                        ?: if (shippingRatesResult.getOrNull()?.isEmpty() == true) "no_rates_available" else null
+                    trackShippingRatesLoading(isSuccess = false, error = error)
                 }
                 selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
