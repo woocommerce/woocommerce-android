@@ -308,7 +308,7 @@ private fun TestYourScannerContent(
 
         Box(
             modifier = Modifier
-                .size(200.dp)
+                .size(300.dp, 200.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
                 .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
@@ -363,7 +363,7 @@ private fun TestYourScannerTimeoutContent(
 
         Box(
             modifier = Modifier
-                .size(200.dp)
+                .size(300.dp, 200.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
                 .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),

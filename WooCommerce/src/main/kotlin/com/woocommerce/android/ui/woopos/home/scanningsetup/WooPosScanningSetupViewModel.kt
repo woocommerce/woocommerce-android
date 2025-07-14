@@ -240,14 +240,14 @@ class WooPosScanningSetupViewModel @Inject constructor(
     private fun createTestYourScannerStep() = ScanningSetupStep.TestYourScanner(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_message),
-        barcodeImageRes = R.drawable.ic_barcode,
+        barcodeImageRes = R.drawable.scanner_setup_test_barcode,
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
 
     private fun createTestYourScannerTimeoutStep() = ScanningSetupStep.TestYourScannerTimeout(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_message),
-        barcodeImageRes = R.drawable.ic_barcode,
+        barcodeImageRes = R.drawable.scanner_setup_test_barcode,
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
 
