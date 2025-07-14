@@ -5,8 +5,11 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -138,7 +141,51 @@ fun WooPosScanningSetupDialog(
             AnimatedContent(
                 targetState = state.currentStep,
                 transitionSpec = {
-                    fadeIn() togetherWith fadeOut()
+                    val stepOrder = mapOf(
+                        ScanningSetupStep.DeviceSelection::class to 0,
+                        ScanningSetupStep.ScannerHIDModeSetup::class to 1,
+                        ScanningSetupStep.ScannerPairModeSetup::class to 2,
+                        ScanningSetupStep.PairYourScanner::class to 3,
+                        ScanningSetupStep.TestYourScanner::class to 4,
+                        ScanningSetupStep.ScannerSetupSuccess::class to 5,
+                        ScanningSetupStep.ScannerSetupInfo::class to 6
+                    )
+                    
+                    val currentOrder = stepOrder[initialState::class] ?: 0
+                    val targetOrder = stepOrder[targetState::class] ?: 0
+                    val isMovingForward = targetOrder > currentOrder
+                    
+                    if (isMovingForward) {
+                        (slideInHorizontally(
+                            initialOffsetX = { width -> width },
+                            animationSpec = tween(400)
+                        ) + fadeIn(
+                            initialAlpha = 0.3f,
+                            animationSpec = tween(400)
+                        )) togetherWith
+                        (slideOutHorizontally(
+                            targetOffsetX = { width -> -width },
+                            animationSpec = tween(400)
+                        ) + fadeOut(
+                            targetAlpha = 0.3f,
+                            animationSpec = tween(300)
+                        ))
+                    } else {
+                        (slideInHorizontally(
+                            initialOffsetX = { width -> -width },
+                            animationSpec = tween(400)
+                        ) + fadeIn(
+                            initialAlpha = 0.3f,
+                            animationSpec = tween(400)
+                        )) togetherWith
+                        (slideOutHorizontally(
+                            targetOffsetX = { width -> width },
+                            animationSpec = tween(400)
+                        ) + fadeOut(
+                            targetAlpha = 0.3f,
+                            animationSpec = tween(300)
+                        ))
+                    }
                 },
                 label = "step_transition",
             ) { step ->
