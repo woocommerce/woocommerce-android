@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsMo
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
@@ -63,6 +64,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -297,7 +299,19 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             )
         } doReturn Result.success(defaultShippingRates)
     }
-    private val purchaseShippingLabel: PurchaseShippingLabel = mock()
+    private val purchaseShippingLabel: PurchaseShippingLabel = mock {
+        onBlocking {
+            invoke(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        } doReturn Result.success(
+            PurchasedLabelData(
+                labels = listOf(shippingLabelModel.copy(status = PURCHASED)),
+                origin = emptyMap(),
+                destination = emptyMap(),
+                rates = emptyMap()
+            )
+        )
+    }
+    private val markOrderAsComplete: MarkOrderAsComplete = mock()
     private val observeAccountSettings: ObserveAccountSettings = mock {
         on { invoke() } doReturn flowOf(defaultAccountSettings)
     }
@@ -311,6 +325,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         on { invoke(any(), any()) } doReturn false
     }
     private val fetchShippingLabelFile: FetchShippingLabelFile = mock()
+    private val observeShippingLabelStatus: ObserveShippingLabelStatus = mock()
     private val file: File = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
@@ -325,6 +340,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             fetchOriginAddresses = mock(),
             getShippingRates = getShippingRates,
             purchaseShippingLabel = purchaseShippingLabel,
+            markOrderAsComplete = markOrderAsComplete,
             observeAccountSettings = observeAccountSettings,
             fetchAccountSettings = mock(),
             addressValidationHelper = addressValidationHelper,
@@ -333,7 +349,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             shouldRequireCustoms = shouldRequireCustomsForm,
             shouldRequireITN = shouldRequireITN,
             fetchShippingLabelFile = fetchShippingLabelFile,
-            observeShippingLabelStatus = mock(),
+            observeShippingLabelStatus = observeShippingLabelStatus,
             downloadAndPrintInvoiceUseCase = mock(),
             analyticsTracker = analyticsTracker,
             savedState = savedState
@@ -732,12 +748,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val selectedRate = defaultShippingRates.values.first().first()
 
-        val ratesState = (
-            sut.viewState.runAndCaptureValues {
-                sut.onPackageSelected(defaultPackageData)
-                advanceUntilIdle()
-            }.last() as DataState
-            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
 
         ratesState.onSelectedShippingRateChanged(selectedRate)
 
@@ -756,12 +772,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val selectedRate = defaultShippingRates.values.first().first()
 
-        val ratesState = (
-            sut.viewState.runAndCaptureValues {
-                sut.onPackageSelected(defaultPackageData)
-                advanceUntilIdle()
-            }.last() as DataState
-            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
 
         ratesState.onSelectedShippingRateChanged(selectedRate)
 
@@ -774,28 +790,16 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onPurchaseShippingLabel succeed then track purchase_success`() = testBlocking {
-        val purchasedLabel = shippingLabelModel.copy(status = PURCHASED)
-        whenever(
-            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
-        ) doReturn Result.success(
-            PurchasedLabelData(
-                labels = listOf(purchasedLabel),
-                origin = emptyMap(),
-                destination = emptyMap(),
-                rates = emptyMap()
-            )
-        )
-
         createViewModel()
 
         val selectedRate = defaultShippingRates.values.first().first()
 
-        val ratesState = (
-            sut.viewState.runAndCaptureValues {
-                sut.onPackageSelected(defaultPackageData)
-                advanceUntilIdle()
-            }.last() as DataState
-            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
 
         ratesState.onSelectedShippingRateChanged(selectedRate)
 
@@ -817,12 +821,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val selectedRate = defaultShippingRates.values.first().first()
 
-        val ratesState = (
-            sut.viewState.runAndCaptureValues {
-                sut.onPackageSelected(defaultPackageData)
-                advanceUntilIdle()
-            }.last() as DataState
-            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
 
         ratesState.onSelectedShippingRateChanged(selectedRate)
 
@@ -834,6 +838,91 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             AnalyticsEvent.WCS_PURCHASE_STEP,
             mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to error)
         )
+    }
+
+    @Test
+    fun `when shipping label is purchased and markOrderComplete is true, then markOrderAsComplete is called`() =
+        testBlocking {
+            // Given
+            whenever(markOrderAsComplete(orderId)) doReturn Result.success(Unit)
+
+            // Mock observeShippingLabelStatus to emit a status update with the purchased label
+            whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
+                ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
+                    status = PURCHASED,
+                    shippingLabelModel = shippingLabelModel.copy(status = PURCHASED)
+                )
+            )
+
+            createViewModel()
+
+            // Set markOrderComplete to true
+            sut.onMarkOrderCompleteChange(true)
+
+            val selectedRate = defaultShippingRates.values.first().first()
+
+            val ratesState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last().let { viewState ->
+                (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            }
+
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+
+            advanceUntilIdle()
+
+            // When
+            sut.onPurchaseShippingLabel()
+            advanceUntilIdle()
+
+            // Then
+            verify(markOrderAsComplete).invoke(orderId)
+        }
+
+    @Test
+    fun `when markOrderAsComplete fails, then show a snackbar with error message`() = testBlocking {
+        // Given
+        whenever(markOrderAsComplete(orderId)) doReturn Result.failure(Exception("Error marking order as complete"))
+
+        // Mock observeShippingLabelStatus to emit a status update with the purchased label
+        whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
+            ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
+                status = PURCHASED,
+                shippingLabelModel = shippingLabelModel.copy(status = PURCHASED)
+            )
+        )
+
+        createViewModel()
+
+        // Set markOrderComplete to true
+        sut.onMarkOrderCompleteChange(true)
+
+        val selectedRate = defaultShippingRates.values.first().first()
+
+        val ratesState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last().let { viewState ->
+            (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        // When
+        sut.onPurchaseShippingLabel()
+        advanceUntilIdle()
+
+        // Then
+        verify(markOrderAsComplete).invoke(orderId)
+
+        // Verify that the ShowSnackbar event is triggered with the correct message
+        var showSnackbarEvent: Event.ShowSnackbar? = null
+        sut.event.observeForever { if (it is Event.ShowSnackbar) showSnackbarEvent = it }
+
+        assertThat(showSnackbarEvent?.message).isEqualTo(R.string.woo_shipping_labels_order_completion_error)
     }
 
     @Test
@@ -1358,17 +1447,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     fun `when UPS terms are accepted, then continue purchase`() = testBlocking {
         whenever(getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(Result.success(defaultShippingRates))
-        val purchasedLabel = shippingLabelModel.copy(status = PURCHASED)
-        whenever(
-            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
-        ) doReturn Result.success(
-            PurchasedLabelData(
-                labels = listOf(purchasedLabel),
-                origin = emptyMap(),
-                destination = emptyMap(),
-                rates = emptyMap()
-            )
-        )
 
         createViewModel()
         advanceUntilIdle()
