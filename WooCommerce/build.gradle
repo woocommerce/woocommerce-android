@@ -26,6 +26,8 @@ fladle {
     ]
     localResultsDir = "$rootDir/build/instrumented-tests"
 
+    useOrchestrator = true
+
     maxTestShards = 50
     shardTime = 120
     smartFlankGcsPath = "gs://fladle/woocommerce-android/smart-flank/JUnitReport.xml"
@@ -79,6 +81,7 @@ android {
         targetSdkVersion gradle.ext.targetSdkVersion
 
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
+        testInstrumentationRunnerArguments clearPackageData: 'true'
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
@@ -171,6 +174,7 @@ android {
 
     testOptions {
         animationsDisabled = true
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 
     signingConfigs {
@@ -429,6 +433,8 @@ dependencies {
     lintChecks(libs.android.security.lint)
 
     testImplementation(testFixtures(project(":libs:fluxc-plugin")))
+
+    androidTestUtil libs.androidx.test.orchestrator
 }
 
 protobuf {
