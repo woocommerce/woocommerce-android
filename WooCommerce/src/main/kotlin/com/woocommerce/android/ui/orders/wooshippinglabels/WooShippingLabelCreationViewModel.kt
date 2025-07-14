@@ -192,7 +192,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { getDestinationAddress() }
         launch { trackScreenShownEvent() }
         launch { getSavedShipments() }
-        launch { setDefaultPaperSize() }
+        launch { setAccountDefaults() }
         launch { getShippingAddresses() }
         launch { getOrderInformation() }
         launch { observePackageWeight() }
@@ -336,9 +336,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         order.drop(1).collectLatest { order -> shipments.value = getShipments(order) }
     }
 
-    private suspend fun setDefaultPaperSize() {
-        val paperSize = accountSettings.first()?.paperSize ?: WooShippingLabelPaperSize.LABEL
-        uiState.update { it.copy(paperSizeOption = paperSize) }
+    private suspend fun setAccountDefaults() {
+        accountSettings.first()?.let { accountSettings ->
+            uiState.update {
+                it.copy(
+                    paperSizeOption = accountSettings.paperSize,
+                    markOrderComplete = accountSettings.lastOrderCompleted
+                )
+            }
+        }
     }
 
     @Suppress("ComplexCondition")
