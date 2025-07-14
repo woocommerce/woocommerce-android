@@ -197,7 +197,7 @@ fun WooPosScanningSetupDialog(
 
                     is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
                         step = step,
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) }
                     )
 
                     is ScanningSetupStep.ScannerSetupInfo -> ScannerSetupInfoContent(
@@ -490,7 +490,7 @@ private fun SetupButtonsRow(
 @Composable
 private fun ScannerSetupSuccessContent(
     step: ScanningSetupStep.ScannerSetupSuccess,
-    onSecondaryClick: () -> Unit,
+    onPrimaryClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -521,7 +521,7 @@ private fun ScannerSetupSuccessContent(
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         WooPosOutlinedButton(
-            onClick = onSecondaryClick,
+            onClick = onPrimaryClick,
             text = step.moreInfoButtonText,
             modifier = Modifier.fillMaxWidth()
         )
@@ -631,7 +631,8 @@ fun WooPosScanningSetupDialogPreview() {
                         BarcodeReaderDevice.STAR_BSH_20B,
                         BarcodeReaderDevice.INATECK_BLUETOOTH,
                         BarcodeReaderDevice.OTHER
-                    )
+                    ),
+                    previousStep = null
                 ),
                 onDeviceSelected = {}
             )
