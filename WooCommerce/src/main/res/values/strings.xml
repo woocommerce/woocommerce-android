@@ -4495,7 +4495,7 @@
     <string name="woopos_scanning_setup_timeout_title">No scan data found yet</string>
     <string name="woopos_scanning_setup_timeout_message">Scan the barcode to test your scanner. If the issue continues, please check Bluetooth settings and try again.</string>
     <string name="woopos_scanning_setup_scan_failed_title">Scanning issue found</string>
-    <string name="woopos_scanning_setup_scan_failed_message">Please check the scanner’s manual and reset it to factory settings, then retry set up flow.</string>
+    <string name="woopos_scanning_setup_scan_failed_message">Please check the scanner’s manual and reset it to factory settings, then retry the setup flow.</string>
     <string name="woopos_scanning_setup_button_next">Next</string>
     <string name="woopos_scanning_setup_button_back">Back</string>
     <string name="woopos_scanning_setup_button_retry">Retry</string>
