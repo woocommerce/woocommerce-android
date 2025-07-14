@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -61,6 +62,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRate
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -166,7 +168,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         canEditSettings = true,
         storeOwnerName = "",
         storeOwnerUsername = "",
-        paperSize = WooShippingLabelPaperSize.LABEL
+        paperSize = WooShippingLabelPaperSize.LABEL,
+        lastOrderCompleted = false
     )
 
     private val defaultPackageData = PackageData(
@@ -843,10 +846,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `when shipping label is purchased and markOrderComplete is true, then markOrderAsComplete is called`() =
         testBlocking {
-            // Given
             whenever(markOrderAsComplete(orderId)) doReturn Result.success(Unit)
-
-            // Mock observeShippingLabelStatus to emit a status update with the purchased label
             whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
                 ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
                     status = PURCHASED,
@@ -856,36 +856,30 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
             createViewModel()
 
-            // Set markOrderComplete to true
             sut.onMarkOrderCompleteChange(true)
-
             val selectedRate = defaultShippingRates.values.first().first()
-
             val ratesState = sut.viewState.runAndCaptureValues {
                 sut.onPackageSelected(defaultPackageData)
                 advanceUntilIdle()
             }.last().let { viewState ->
                 (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
             }
-
             ratesState.onSelectedShippingRateChanged(selectedRate)
-
             advanceUntilIdle()
 
-            // When
             sut.onPurchaseShippingLabel()
             advanceUntilIdle()
 
-            // Then
             verify(markOrderAsComplete).invoke(orderId)
+            verify(analyticsTracker).track(
+                stat = AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED,
+                properties = mapOf(AnalyticsTracker.KEY_IS_REVAMPED_FLOW to true)
+            )
         }
 
     @Test
     fun `when markOrderAsComplete fails, then show a snackbar with error message`() = testBlocking {
-        // Given
         whenever(markOrderAsComplete(orderId)) doReturn Result.failure(Exception("Error marking order as complete"))
-
-        // Mock observeShippingLabelStatus to emit a status update with the purchased label
         whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
             ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
                 status = PURCHASED,
@@ -895,34 +889,33 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        // Set markOrderComplete to true
         sut.onMarkOrderCompleteChange(true)
 
         val selectedRate = defaultShippingRates.values.first().first()
-
         val ratesState = sut.viewState.runAndCaptureValues {
             sut.onPackageSelected(defaultPackageData)
             advanceUntilIdle()
         }.last().let { viewState ->
             (viewState as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
         }
-
         ratesState.onSelectedShippingRateChanged(selectedRate)
-
         advanceUntilIdle()
 
-        // When
         sut.onPurchaseShippingLabel()
         advanceUntilIdle()
 
-        // Then
         verify(markOrderAsComplete).invoke(orderId)
 
-        // Verify that the ShowSnackbar event is triggered with the correct message
-        var showSnackbarEvent: Event.ShowSnackbar? = null
-        sut.event.observeForever { if (it is Event.ShowSnackbar) showSnackbarEvent = it }
+        val showSnackbarEvent = sut.event.captureValues().filterIsInstance<Event.ShowSnackbar>().last()
+        assertThat(showSnackbarEvent.message).isEqualTo(R.string.woo_shipping_labels_order_completion_error)
 
-        assertThat(showSnackbarEvent?.message).isEqualTo(R.string.woo_shipping_labels_order_completion_error)
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED),
+            properties = eq(mapOf(AnalyticsTracker.KEY_IS_REVAMPED_FLOW to true)),
+            errorType = anyOrNull(),
+            errorContext = anyOrNull(),
+            errorDescription = anyOrNull()
+        )
     }
 
     @Test

@@ -37,7 +37,8 @@ class ObserveAccountSettingsTest : BaseUnitTest() {
         canEditSettings = true,
         storeOwnerName = "",
         storeOwnerUsername = "",
-        paperSize = WooShippingLabelPaperSize.LABEL
+        paperSize = WooShippingLabelPaperSize.LABEL,
+        lastOrderCompleted = false
     )
 
     val sut = ObserveAccountSettings(
