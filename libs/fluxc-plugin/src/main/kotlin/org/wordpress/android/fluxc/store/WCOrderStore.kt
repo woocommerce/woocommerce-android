@@ -1104,27 +1104,26 @@ class WCOrderStore @Inject internal constructor(
     }
 
     private fun handleFetchOrderStatusOptionsCompleted(payload: FetchOrderStatusOptionsResponsePayload) {
-        val onOrderStatusLabelsChanged: OnOrderStatusOptionsChanged
+        coroutineEngine.launch(API, this, "handleFetchOrderStatusOptionsCompleted") {
+            val onOrderStatusLabelsChanged: OnOrderStatusOptionsChanged
 
-        if (payload.isError) {
-            onOrderStatusLabelsChanged = OnOrderStatusOptionsChanged().also { it.error = payload.error }
-        } else {
-            onOrderStatusLabelsChanged = onOrderStatusOptionsChanged(payload)
+            if (payload.isError) {
+                onOrderStatusLabelsChanged = OnOrderStatusOptionsChanged().also { it.error = payload.error }
+            } else {
+                onOrderStatusLabelsChanged = onOrderStatusOptionsChanged(payload)
+            }
+
+            emitChange(onOrderStatusLabelsChanged)
         }
-
-        emitChange(onOrderStatusLabelsChanged)
     }
 
-    private fun onOrderStatusOptionsChanged(
+    private suspend fun onOrderStatusOptionsChanged(
         payload: FetchOrderStatusOptionsResponsePayload
     ): OnOrderStatusOptionsChanged {
-        val existingOptions = runBlocking { orderStatusDao.getOrderStatusOptions(payload.site.localId()) }
-        addOrUpdateOptions(payload, existingOptions).forEach {
-            runBlocking { orderStatusDao.upsertOrderStatus(it) }
-        }
-        deleteOptions(payload, existingOptions).forEach {
-            runBlocking { orderStatusDao.deleteOrderStatus(it) }
-        }
+        val existingOptions = orderStatusDao.getOrderStatusOptions(payload.site.localId())
+
+        orderStatusDao.upsertOrderStatuses(addOrUpdateOptions(payload, existingOptions))
+        orderStatusDao.deleteOrderStatuses(deleteOptions(payload, existingOptions))
 
         return OnOrderStatusOptionsChanged()
     }

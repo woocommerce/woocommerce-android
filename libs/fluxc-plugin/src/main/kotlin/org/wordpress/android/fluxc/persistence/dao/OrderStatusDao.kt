@@ -10,7 +10,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 @Dao
 internal abstract class OrderStatusDao {
     @Upsert
-    abstract suspend fun upsertOrderStatus(orderStatus: WCOrderStatusModel)
+    abstract suspend fun upsertOrderStatuses(statuses: List<WCOrderStatusModel>)
 
     @Query(
         """
@@ -33,5 +33,5 @@ internal abstract class OrderStatusDao {
     ): WCOrderStatusModel?
 
     @Delete
-    abstract suspend fun deleteOrderStatus(orderStatus: WCOrderStatusModel)
+    abstract suspend fun deleteOrderStatuses(statuses: List<WCOrderStatusModel>)
 }
