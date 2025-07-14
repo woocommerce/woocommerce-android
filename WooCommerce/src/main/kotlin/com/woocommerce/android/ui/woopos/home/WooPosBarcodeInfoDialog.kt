@@ -45,7 +45,8 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 
 @Composable
 fun WooPosBarcodeInfoDialog(
-    state: WooPosHomeState.BarcodeInfoDialog,
+    state: WooPosHomeState.DialogState.BarcodeInfoDialog,
+    isVisible: Boolean,
     onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -61,7 +62,7 @@ fun WooPosBarcodeInfoDialog(
         modifier = Modifier.semantics {
             disabled() // enforce talkback to read dialog content first while allowing to dismiss the dialog
         },
-        isVisible = state.isVisible,
+        isVisible = isVisible,
         dialogBackgroundContentDescription = dialogBackgroundContentDescription,
         onDismissRequest = onDismissRequest,
     ) {
@@ -263,7 +264,7 @@ fun WooPosBarcodeInfoDialog(
 }
 
 @Composable
-private fun getCombinedContentDescription(state: WooPosHomeState.BarcodeInfoDialog): String {
+private fun getCombinedContentDescription(state: WooPosHomeState.DialogState.BarcodeInfoDialog): String {
     val dialogContentDescription = stringResource(
         id = R.string.woopos_dialog_barcode_info_content_description
     )
@@ -283,7 +284,8 @@ fun BarcodeInfoDialogPreview() {
             contentAlignment = Alignment.Center
         ) {
             WooPosBarcodeInfoDialog(
-                state = WooPosHomeState.BarcodeInfoDialog(isVisible = true),
+                state = WooPosHomeState.DialogState.BarcodeInfoDialog,
+                isVisible = true,
                 onDismissRequest = {},
             )
         }

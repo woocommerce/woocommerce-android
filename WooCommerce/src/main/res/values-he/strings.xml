@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-17 16:54:04+0000
+Translation-Revision-Date: 2025-07-02 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="wpp_shipping_ups_tos_accept">לאשר ולהמשיך</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">בנוסף, הסכמתי ניתנת &lt;a href=\"ups-technology-agreement\"&gt;להסכם הטכנולוגיה של UPS®‎&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">לא אשלח &lt;a href=\"ups-prohibited-items\"&gt;פריטים אסורים&lt;/a&gt; ששליחתם אסורה לפי UPS®‎, ולא פריטים שנתונים לרגולוציה ללא ההרשאות הנדרשות.</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">יש הסכמה מצדי &lt;a href=\"ups-tos\"&gt;לתנאי השירות של UPS®‎&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_description">כדי להתחיל לשלוח מהכתובת הזו עם UPS®‎, אנחנו צריכים לקבל את הסכמתך לתנאים וההתניות הבאים:</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">מוצא המשלוח</string>
+    <string name="wpp_shipping_ups_tos_title">תנאים והתניות של UPS®‎</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">אין אפשרות לרענן את אמצעי התשלום</string>
+    <string name="woo_shipping_payment_method_added">אמצעי התשלום נוסף</string>
+    <string name="woo_shipping_payment_use_card_button">להשתמש בכרטיס הזה</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">לשלוח את הקבלה באימייל</string>
+    <string name="woo_shipping_payment_methods_info_footer">כרטיסי אשראי מתקבלים מהחשבון הבא של WordPress.com: ⁦%1$s⁩ &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">כרטיס אשראי או כרטיס חיוב חדשים</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">יש להוסיף אמצעי תשלום כדי  לרכוש תווית משלוח</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">להוסיף אמצעי תשלום</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">רק בעלי האתר יכולים לנהל את אמצעי התשלום של תוויות המשלוח. יש ליצור קשר עם הבעלים של החנות ⁦%1$s⁩ (⁦%2$s⁩) כדי לנהל את אמצעי התשלום.</string>
+    <string name="woo_shipping_payment_screen_description">יש לבחור אמצעי תשלום.</string>
+    <string name="woo_shipping_payment_screen_title">אמצעי תשלום</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">שגיאת שרת – %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">לערוך את אמצעי התשלום</string>
+    <string name="shipping_label_shipment_details_add_payment_method">להוסיף אמצעי תשלום</string>
+    <string name="shipping_label_shipment_details_payment_method">אמצעי תשלום</string>
+    <string name="point_of_sale">נקודת מכירה</string>
     <string name="no_network_message">אין רשת זמינה</string>
     <string name="media_loading_failed">העלאת מדיה נכשלה</string>
     <string name="media_library_title">ספריית המדיה של WordPress</string>
     <string name="woo_shipping_refund_note">לתשומת ליבך, בקשה זו להחזר כספי חלה רק על תווית משלוח שלא נעשה בה שימוש ולא תשפיע על ההזמנה עצמה.</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;ניתן לקבל החזר כספי עבור הסכום:&lt;/b&gt; %s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;תאריך הרכישה:&lt;/b&gt; %s</string>
-    <string name="woo_shipping_refund_description">לבקש החזר כספי עבור תווית המשלוח שלך שלא נעשה בה שימוש. תהליך ההחזר הכספי עבור תווית המשלוח יתחיל באופן מיידי. התהליך מסתיים בדרך כלל תוך 14 ימי עסקים.</string>
+    <string name="woo_shipping_refund_duration_description">לבקש החזר כספי עבור תווית המשלוח שלך שלא נעשה בה שימוש. תהליך ההחזר הכספי עבור תווית המשלוח יתחיל באופן מיידי. התהליך מסתיים בדרך כלל תוך %d ימי עסקים.</string>
     <string name="woo_shipping_refund_title">לבקש החזר כספי לתווית משלוח</string>
     <string name="woo_shipping_split_shipment_error">לא הצלחנו לחלק את המשלוחים. יש לנסות שוב.</string>
     <string name="woopos_cart_searching_for_item">מחפש</string>
@@ -31,7 +54,6 @@ Language: he_IL
     <string name="woopos_dialog_barcode_info_primary_message">• יש להגדיר ברקודים בשדה \"GTIN, UPC, EAN, ISBN\" שבמקטע \'מוצרים\' &gt; \'פרטי המוצר\' &gt; \'מלאי\'. </string>
     <string name="woopos_dialog_barcode_info_intro_message">אפשר לסרוק ברקוד באמצעות סורק חיצוני כדי לבנות עגלת קניות במהירות.</string>
     <string name="woopos_dialog_barcode_info_heading">סריקת ברקוד</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">הבקשה בוטלה</string>
     <string name="woopos_cart_barcode_scan_result_network_error">אין חיבור אינטרנט</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">פריט לא נתמך – %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">הפריט שנסרק לא מוכר</string>

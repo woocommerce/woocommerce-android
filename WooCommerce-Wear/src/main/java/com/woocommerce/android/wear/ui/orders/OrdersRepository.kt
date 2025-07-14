@@ -21,6 +21,7 @@ import com.woocommerce.commons.WearOrderedProduct
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
@@ -67,8 +68,10 @@ class OrdersRepository @Inject constructor(
     fun getOrderRefunds(
         selectedSite: SiteModel,
         orderId: Long
-    ) = refundStore.getAllRefunds(selectedSite, orderId)
-        .map { it.toAppModel() }
+    ) = runBlocking {
+        refundStore.getAllRefunds(selectedSite, orderId)
+            .map { it.toAppModel() }
+    }
 
     fun observeOrdersDataChanges(
         selectedSite: SiteModel

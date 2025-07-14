@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-18 14:54:04+0000
+Translation-Revision-Date: 2025-07-02 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="wpp_shipping_ups_tos_accept">Bekräfta och fortsätt</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">jag godkänner också &lt;a href=\"ups-technology-agreement\"&gt;UPS® teknikavtal&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">Jag kommer inte att skicka några &lt;a href=\"ups-prohibited-items\"&gt;förbjudna varor&lt;/a&gt; som UPS® inte tillåter, eller några reglerade varor utan nödvändiga tillstånd.</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">Jag godkänner &lt;a href=\"ups-tos\"&gt;UPS® användarvillkor&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_description">Om du vill börja skicka från den här adressen med UPS® måste du godkänna följande villkor:</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">Skickar från</string>
+    <string name="wpp_shipping_ups_tos_title">UPS® användarvillkor</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">Kan inte uppdatera dina betalningsmetoder</string>
+    <string name="woo_shipping_payment_method_added">Betalningsmetod tillagd</string>
+    <string name="woo_shipping_payment_use_card_button">Använd detta kort</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">Kvitto via e-post</string>
+    <string name="woo_shipping_payment_methods_info_footer">Kreditkort hämtas från följande WordPress.com-konto: %1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">Nytt kredit- eller betalkort</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">Lägg till en betalningsmetod för att  köpa en fraktetikett</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">Lägg till en betalningsmetod</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">Det är bara webbplatsens ägare som kan hantera betalningsmetoderna för fraktetiketter. Kontakta butiksägaren %1$s (%2$s) för att hantera betalningsmetoder.</string>
+    <string name="woo_shipping_payment_screen_description">Välj en betalningsmetod.</string>
+    <string name="woo_shipping_payment_screen_title">Betalningsmetod</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">Serverfel – %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">Redigera betalningsmetod</string>
+    <string name="shipping_label_shipment_details_add_payment_method">Lägg till betalningsmetod</string>
+    <string name="shipping_label_shipment_details_payment_method">Betalningsmetod</string>
+    <string name="point_of_sale">Point of Sale</string>
     <string name="no_network_message">Inget nätverk tillgängligt</string>
     <string name="media_loading_failed">Hämtningen av mediafiler misslyckades</string>
     <string name="media_library_title">WordPress mediabibliotek</string>
     <string name="woo_shipping_refund_note">Observera att denna återbetalningsbegäran endast gäller den oanvända fraktetiketten och inte påverkar själva beställningen.</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;Belopp som är berättigat för återbetalning:&lt;/b&gt; %s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Köpdatum:&lt;/b&gt; %s</string>
-    <string name="woo_shipping_refund_description">Begär en återbetalning för din oanvända fraktetikett. Återbetalningsprocessen för fraktetiketten startar omedelbart och är vanligtvis klar inom 14 arbetsdagar.</string>
+    <string name="woo_shipping_refund_duration_description">Begär en återbetalning för din oanvända fraktetikett. Återbetalningsprocessen för fraktetiketten startar omedelbart och är vanligtvis klar inom %d arbetsdagar.</string>
     <string name="woo_shipping_refund_title">Begär en återbetalning för fraktetikett</string>
     <string name="woo_shipping_split_shipment_error">Vi kunde inte dela upp försändelserna. Försök igen.</string>
     <string name="woopos_cart_searching_for_item">Söker</string>
@@ -31,7 +54,6 @@ Language: sv_SE
     <string name="woopos_dialog_barcode_info_primary_message">• Ställ in streckkoder i fältet \"GTIN, UPC, EAN, ISBN\" i Produkter &gt; Produktinformation &gt; Lager. </string>
     <string name="woopos_dialog_barcode_info_intro_message">Du kan skanna streckkoder med hjälp av en extern skanner för att snabbt skapa en varukorg.</string>
     <string name="woopos_dialog_barcode_info_heading">Streckkodsskanning</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">Begäran avbruten</string>
     <string name="woopos_cart_barcode_scan_result_network_error">Ingen internetanslutning</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Stöds ej – %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Okänt skannat objekt</string>

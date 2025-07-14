@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-17 16:54:04+0000
+Translation-Revision-Date: 2025-07-01 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="wpp_shipping_ups_tos_accept">Подтвердить и продолжить</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">Я также принимаю условия &lt;a href=\"ups-technology-agreement\"&gt;Соглашения о технологиях UPS®&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">Я обязуюсь не отправлять никакие &lt;a href=\"ups-prohibited-items\"&gt;предметы, запрещённые к пересылке&lt;/a&gt; правилами UPS®, а также никакие предметы, подлежащие регулированию, без необходимых разрешений.</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">Я подтверждаю своё согласие с &lt;a href=\"ups-tos\"&gt;условиями предоставления услуг UPS®&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_description">Чтобы приступить к доставке с этого адреса посредством UPS®, нам необходимо получить ваше согласие со следующими правилами и условиями.</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">Доставка из</string>
+    <string name="wpp_shipping_ups_tos_title">Правила и условия UPS®</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">Не удалось обновить способы оплаты</string>
+    <string name="woo_shipping_payment_method_added">Способ оплаты добавлен</string>
+    <string name="woo_shipping_payment_use_card_button">Использовать эту карту</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">Отправить чек по эл. почте</string>
+    <string name="woo_shipping_payment_methods_info_footer">Сведения о кредитных картах получены из следующей учётной записи WordPress.com: %1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">Новая кредитная или дебетовая карта</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">Добавьте способ оплаты для покупки транспортной этикетки </string>
+    <string name="woo_shipping_payment_no_payment_methods_title">Добавить способ оплаты</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">Только владелец сайта может управлять способами оплаты транспортных этикеток. Чтобы управлять способами оплаты, свяжитесь с владельцем магазина %1$s (%2$s).</string>
+    <string name="woo_shipping_payment_screen_description">Выберите способ оплаты.</string>
+    <string name="woo_shipping_payment_screen_title">Способ оплаты</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">Ошибка сервера — %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">Изменить способ оплаты</string>
+    <string name="shipping_label_shipment_details_add_payment_method">Добавить способ оплаты</string>
+    <string name="shipping_label_shipment_details_payment_method">Способ оплаты</string>
+    <string name="point_of_sale">Пункт продажи</string>
     <string name="no_network_message">Нет доступной сети.</string>
     <string name="media_loading_failed">Загрузка медиафайла неудалась</string>
     <string name="media_library_title">Библиотека файлов WordPress</string>
     <string name="woo_shipping_refund_note">Обратите внимание, что данный запрос на возврат средств касается исключительно неиспользованной транспортной этикетки, но не самого заказа.</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;Сумма к возврату:&lt;/b&gt; %s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Дата покупки:&lt;/b&gt; %s</string>
-    <string name="woo_shipping_refund_description">Запросить возврат стоимости неиспользованной транспортной этикетки Процесс возврата стоимости транспортной этикетки начинается немедленно и обычно занимает 14 рабочих дней.</string>
+    <string name="woo_shipping_refund_duration_description">Запросить возврат стоимости неиспользованной транспортной этикетки Процесс возврата стоимости транспортной этикетки начинается немедленно и обычно занимает %d раб. дн.</string>
     <string name="woo_shipping_refund_title">Запросить возврат стоимости транспортной этикетки</string>
     <string name="woo_shipping_split_shipment_error">Не удалось разделить доставку. Повторите попытку.</string>
     <string name="woopos_cart_searching_for_item">Поиск</string>
@@ -31,7 +54,6 @@ Language: ru
     <string name="woopos_dialog_barcode_info_primary_message">• Настройте штрихкоды в поле «GTIN, UPC, EAN, ISBN» в разделе «Товары &gt; Сведения о товаре &gt; Запасы». </string>
     <string name="woopos_dialog_barcode_info_intro_message">Чтобы быстро сформировать корзину, можно сканировать штрихкоды с помощью внешнего сканера.</string>
     <string name="woopos_dialog_barcode_info_heading">Сканирование штрихкодов</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">Запрос отменён</string>
     <string name="woopos_cart_barcode_scan_result_network_error">Отсутствует подключение к Интернету</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Товар не поддерживается — %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Сканирован неизвестный товар</string>

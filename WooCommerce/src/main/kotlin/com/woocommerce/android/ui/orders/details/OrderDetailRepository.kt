@@ -5,6 +5,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_REVAMPED_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.model.Order
@@ -97,7 +98,10 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchOrderShippingLabels(remoteOrderId: Long): List<ShippingLabel> {
+    suspend fun fetchOrderShippingLabels(
+        remoteOrderId: Long,
+        isRevampWooShippingEnabled: Boolean
+    ): List<ShippingLabel> {
         return withContext(dispatchers.io) {
             val result = shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
 
@@ -106,7 +110,10 @@ class OrderDetailRepository @Inject constructor(
             } else {
                 VALUE_API_SUCCESS
             }
-            AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
+            AnalyticsTracker.track(
+                AnalyticsEvent.SHIPPING_LABEL_API_REQUEST,
+                mapOf(KEY_FEEDBACK_ACTION to action, KEY_IS_REVAMPED_FLOW to isRevampWooShippingEnabled)
+            )
             result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }
                 ?.map { shippingLabelMapper.toAppModel(it) }
                 ?: emptyList()
@@ -239,11 +246,13 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    fun getOrderRefunds(orderId: Long) = refundStore
-        .getAllRefunds(selectedSite.get(), orderId)
-        .map { it.toAppModel() }
-        .reversed()
-        .sortedBy { it.id }
+    fun getOrderRefunds(orderId: Long) = runBlocking {
+        refundStore
+            .getAllRefunds(selectedSite.get(), orderId)
+            .map { it.toAppModel() }
+            .reversed()
+            .sortedBy { it.id }
+    }
 
     fun getOrderShipmentTrackingByTrackingNumber(
         orderId: Long,

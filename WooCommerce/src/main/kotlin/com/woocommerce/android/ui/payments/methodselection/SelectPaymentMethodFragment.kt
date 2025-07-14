@@ -194,7 +194,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             .actionSelectPaymentMethodFragmentToScanToPayDialogFragment(
                                 event.paymentUrl
                             )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateToCardReaderPaymentFlow -> {
@@ -203,7 +203,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             event.cardReaderFlowParam,
                             event.cardReaderType
                         )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateToCardReaderHubFlow -> {
@@ -211,7 +211,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFlow(
                             event.cardReaderFlowParam
                         )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateToCardReaderRefundFlow -> {
@@ -220,7 +220,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             event.cardReaderFlowParam,
                             event.cardReaderType
                         )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateBackToOrderList -> {
@@ -261,7 +261,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             .actionSelectPaymentMethodFragmentToChangeDueCalculatorFragment(
                                 orderId = event.order.id
                             )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateToTapToPaySummary -> {

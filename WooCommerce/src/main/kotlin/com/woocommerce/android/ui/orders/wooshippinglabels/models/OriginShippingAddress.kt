@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.models
 
 import android.os.Parcelable
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
+import com.woocommerce.android.model.Address
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -37,6 +38,20 @@ data class OriginShippingAddress(
             phone = null,
             isDefault = false,
             isVerified = false
+        )
+
+        fun fromAddress(address: Address) = EMPTY.copy(
+            company = address.company,
+            firstName = address.firstName,
+            lastName = address.lastName,
+            email = address.email,
+            address1 = address.address1,
+            address2 = address.address2,
+            city = address.city,
+            state = address.state.codeOrRaw,
+            postcode = address.postcode,
+            country = address.country.code,
+            phone = address.phone
         )
     }
 
