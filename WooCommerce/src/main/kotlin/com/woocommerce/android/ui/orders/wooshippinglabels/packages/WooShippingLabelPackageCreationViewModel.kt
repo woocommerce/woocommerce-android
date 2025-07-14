@@ -264,10 +264,15 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                         triggerEvent(
                             PackageSelected(customPackage.toPackageData(dimensionUnit = storeOptions.dimensionUnit))
                         )
+                        tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "saving_success"))
                     },
                     onFailure = {
                         triggerEvent(ShowLoadingDialog(false))
                         triggerEvent(ShowTemplateCreationErrorDialog)
+                        tracker.track(
+                            AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
+                            mapOf(KEY_STATE to "saving_failed", KEY_ERROR to it.message.orEmpty())
+                        )
                     }
                 ) ?: triggerEvent(
                 PackageSelected(
@@ -297,7 +302,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             ?.model?.firstOrNull()
             ?.let { PackageData.fromPackageDAO(it) }
             ?.let { Result.success(it) }
-            ?: Result.failure(Throwable("Failed to save package"))
+            ?: Result.failure(Throwable(response.error.type.toString()))
     }
 
     fun onCarrierPackageStarred(packageData: PackageData, isStarred: Boolean) {
