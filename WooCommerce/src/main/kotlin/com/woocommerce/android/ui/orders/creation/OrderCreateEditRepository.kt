@@ -181,13 +181,13 @@ class OrderCreateEditRepository @Inject constructor(
     private suspend fun Order.Status.toDataModel(): WCOrderStatusModel {
         val key = this.value
         return when {
-            key == AUTO_DRAFT && isAutoDraftSupported() -> WCOrderStatusModel(AUTO_DRAFT)
+            key == AUTO_DRAFT && isAutoDraftSupported() -> WCOrderStatusModel(statusKey = AUTO_DRAFT)
             // If AUTO_DRAFT is not supported, use PENDING state
-            key == AUTO_DRAFT && isAutoDraftSupported().not() -> WCOrderStatusModel(CoreOrderStatus.PENDING.value)
+            key == AUTO_DRAFT && isAutoDraftSupported().not() -> WCOrderStatusModel(statusKey = CoreOrderStatus.PENDING.value)
             else -> withContext(dispatchers.io) {
                 // Currently this query will run on the current thread, so forcing the usage of IO dispatcher
                 orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key)
-                    ?: WCOrderStatusModel(statusKey = key).apply { label = key }
+                    ?: WCOrderStatusModel(statusKey = key, label = key)
             }
         }
     }

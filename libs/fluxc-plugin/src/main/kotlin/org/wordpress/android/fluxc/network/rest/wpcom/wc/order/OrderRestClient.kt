@@ -1216,12 +1216,12 @@ class OrderRestClient @Inject constructor(
         response: OrderStatusApiResponse,
         site: SiteModel
     ): WCOrderStatusModel {
-        return WCOrderStatusModel().apply {
-            localSiteId = site.id
-            statusKey = response.slug ?: ""
-            label = response.name ?: ""
+        return WCOrderStatusModel(
+            localSiteId = site.localId(),
+            statusKey = response.slug ?: "",
+            label = response.name ?: "",
             statusCount = response.total
-        }
+        )
     }
 
     private fun orderShipmentTrackingResponseToModel(
