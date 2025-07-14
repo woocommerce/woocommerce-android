@@ -90,7 +90,7 @@ class OrderRestClientTest {
             requestTimeout = any(),
             retries = any()
         )
-        
+
         assertThat(paramsCaptor.firstValue).containsExactlyInAnyOrderEntriesOf(expectedParams)
     }
 
