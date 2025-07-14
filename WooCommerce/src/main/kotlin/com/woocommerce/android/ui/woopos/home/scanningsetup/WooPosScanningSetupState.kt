@@ -71,6 +71,15 @@ data class WooPosScanningSetupState(
         ) : ScanningSetupStep()
 
         @Parcelize
+        data class TestYourScannerScanFailed(
+            val title: String,
+            val message: String,
+            @DrawableRes val iconRes: Int,
+            val primaryButtonText: String,
+            val secondaryButtonText: String,
+        ) : ScanningSetupStep()
+
+        @Parcelize
         data class ScannerSetupSuccess(
             val title: String,
             val message: String,

@@ -130,6 +130,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
                     _dismissDialogEvent.emit(Unit)
                 }
             }
+
+            is ScanningSetupStep.TestYourScannerScanFailed -> {
+                _state.value = _state.value.copy(
+                    currentStep = createDeviceSelectionStep()
+                )
+            }
         }
     }
 
@@ -179,6 +185,15 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     currentStep = createScannerSetupSuccessStep()
                 )
+            }
+
+            is ScanningSetupStep.TestYourScannerScanFailed -> {
+                // TODO move to shared method
+                _state.value = _state.value.copy(
+                    currentStep = createTestYourScannerStep()
+                ).also {
+                    startAutoNavigationToTestYourScannerStep()
+                }
             }
         }
     }
@@ -235,6 +250,14 @@ class WooPosScanningSetupViewModel @Inject constructor(
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
 
+    private fun createTestYourScannerScanFailedStep() = ScanningSetupStep.TestYourScannerScanFailed(
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_message),
+        iconRes = R.drawable.ic_woo_pos_error_x,
+        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_retry),
+        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
+    )
+
     private fun createScannerSetupSuccessStep() = ScanningSetupStep.ScannerSetupSuccess(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_success_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_success_message),
@@ -263,7 +286,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
                         currentStep = createScannerSetupSuccessStep()
                     )
                 } else {
-                    // TODO
+                    _state.value = _state.value.copy(
+                        currentStep = createTestYourScannerScanFailedStep()
+                    )
                 }
             }
 

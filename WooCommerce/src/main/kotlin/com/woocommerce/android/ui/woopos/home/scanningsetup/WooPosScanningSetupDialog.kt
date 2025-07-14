@@ -207,6 +207,12 @@ fun WooPosScanningSetupDialog(
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
+
+                    is ScanningSetupStep.TestYourScannerScanFailed -> TestYourScannerScanFailedContent(
+                        step = step,
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    )
                 }
             }
         }
@@ -378,6 +384,54 @@ private fun TestYourScannerTimeoutContent(
             onClick = onSecondaryClick,
             text = step.secondaryButtonText,
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun TestYourScannerScanFailedContent(
+    step: ScanningSetupStep.TestYourScannerScanFailed,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = step.iconRes),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+        )
+
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
         )
     }
 }
@@ -599,7 +653,8 @@ private fun ScannerSetupInfoContent(
             text = step.message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+            modifier = Modifier
+                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
                 .fillMaxWidth()
         )
 
