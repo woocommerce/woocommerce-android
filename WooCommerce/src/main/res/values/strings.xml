@@ -4489,7 +4489,7 @@
     <string name="woopos_scanning_setup_info_bullet_1">Refer to your bluetooth barcode scanner in System Bluetooth settings.</string>
     <string name="woopos_scanning_setup_info_bullet_2">Scan barcodes while on the item list to add products to the cart.</string>
     <string name="woopos_scanning_setup_info_bullet_3">Ensure the search field is not enabled while scanning barcodes.</string>
-    <string name="woopos_scanning_setup_info_text">Tap the keyboard button if visible or enable it in OS settings under \"On-Screen Keyboard\"</string>
+    <string name="woopos_scanning_setup_info_text">Barcode scanner may hide keyboard. Tap keyboard icon or enable in OS settings under \"Physical Keyboard\"</string>
     <string name="woopos_scanning_setup_test_scanner_title">Test your scanner</string>
     <string name="woopos_scanning_setup_test_scanner_message">Scan this test barcode to verify your scanner is working correctly.</string>
     <string name="woopos_scanning_setup_button_next">Next</string>
