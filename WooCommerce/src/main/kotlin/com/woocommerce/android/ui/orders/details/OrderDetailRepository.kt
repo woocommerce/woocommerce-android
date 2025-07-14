@@ -246,11 +246,13 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    fun getOrderRefunds(orderId: Long) = refundStore
-        .getAllRefunds(selectedSite.get(), orderId)
-        .map { it.toAppModel() }
-        .reversed()
-        .sortedBy { it.id }
+    fun getOrderRefunds(orderId: Long) = runBlocking {
+        refundStore
+            .getAllRefunds(selectedSite.get(), orderId)
+            .map { it.toAppModel() }
+            .reversed()
+            .sortedBy { it.id }
+    }
 
     fun getOrderShipmentTrackingByTrackingNumber(
         orderId: Long,
