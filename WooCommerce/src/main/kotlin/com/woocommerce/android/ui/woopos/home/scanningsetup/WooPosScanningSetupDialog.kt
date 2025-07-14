@@ -739,3 +739,74 @@ fun WooPosScanningSetupDialogPreview() {
         }
     }
 }
+
+@WooPosPreview
+@Composable
+fun WooPosScanningSetupTestScannerStep() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            TestYourScannerContent(
+                step = ScanningSetupStep.TestYourScanner(
+                    title = "Test your scanner",
+                    message = "Scan the barcode below to test your scanner.",
+                    barcodeImageRes = R.drawable.scanner_setup_test_barcode,
+                    secondaryButtonText = "Skip"
+                ),
+                onSecondaryClick = {},
+                onBarcodeScanned = {}
+            )
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosScanningSetupTestScannerTimeoutStep() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            ScanningSetupStep.TestYourScannerTimeout(
+                title = "No scan data found yet",
+                message = "Scan the barcode to test your scanner. If the issue continues, please check Bluetooth settings and try again.",
+                barcodeImageRes = R.drawable.scanner_setup_test_barcode,
+                secondaryButtonText = "Back"
+            ).let { step ->
+                TestYourScannerTimeoutContent(
+                    step = step,
+                    onSecondaryClick = {},
+                    onBarcodeScanned = {}
+                )
+            }
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosScanningSetupTestScannerFailedStep() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            ScanningSetupStep.TestYourScannerScanFailed(
+                title = "Scanning issue found",
+                message = "Please check the scanner’s manual and reset it to factory settings, then retry the setup flow.",
+                iconRes = R.drawable.ic_woo_pos_error_x,
+                primaryButtonText = "Retry",
+                secondaryButtonText = "Back"
+            ).let { step ->
+                TestYourScannerScanFailedContent(
+                    step = step,
+                    onPrimaryClick = {},
+                    onSecondaryClick = {},
+                )
+            }
+        }
+    }
+}
