@@ -11,6 +11,16 @@ steps:
     agents:
       queue: "mac-metal"
 
+  - label: "Assemble"
+    command: |
+      echo "--- 🛠 Building"
+      ./gradlew :WooCommerce:assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+    artifact_paths:
+      - "**/build/outputs/apk/**/**/*"
+    agents:
+      queue: "mac-metal"
+
   - label: "Instrumented tests (ReviewsUITest)"
     command: |
       echo "--- 🧪 Testing"
