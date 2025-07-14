@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
@@ -283,9 +284,24 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 updateShipment(shipmentId, shipment.copy(label = newLabel.copy(originAddress = originAddress)))
 
                 if (result.status == ShippingLabelStatus.PURCHASED && uiState.value.markOrderComplete) {
-                    markOrderAsComplete(navArgs.orderId).onFailure {
-                        triggerEvent(Event.ShowSnackbar(R.string.woo_shipping_labels_order_completion_error))
-                    }
+                    markOrderAsComplete(navArgs.orderId).fold(
+                        onSuccess = {
+                            analyticsTracker.track(
+                                stat = AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED,
+                                properties = mapOf(AnalyticsTracker.KEY_IS_REVAMPED_FLOW to true)
+                            )
+                        },
+                        onFailure = {
+                            triggerEvent(Event.ShowSnackbar(R.string.woo_shipping_labels_order_completion_error))
+                            analyticsTracker.track(
+                                stat = AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED,
+                                properties = mapOf(AnalyticsTracker.KEY_IS_REVAMPED_FLOW to true),
+                                errorType = (it as? WooException)?.error?.type?.name,
+                                errorContext = this@WooShippingLabelCreationViewModel::javaClass.name,
+                                errorDescription = (it as? WooException)?.error?.message
+                            )
+                        }
+                    )
                 }
             }.launchIn(this)
         }
