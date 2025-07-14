@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingL
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowPackageTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPackagesFromStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.PackageDAO
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier.DHL
@@ -37,6 +38,10 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
@@ -152,6 +157,45 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
         verify(packageRepository, times(1)).createCustomPackage(any(), any())
     }
+
+    @Test
+    fun `when saveAsTemplate is true and saving succeed, track WCS_PACKAGE_SELECTION_STEP event with saving_success`() =
+        testBlocking {
+            whenever(packageRepository.createCustomPackage(any(), any())).thenReturn(
+                WooResult(
+                    listOf(
+                        PackageDAO(
+                            id = "1",
+                            name = "Saved Package 1",
+                            dimensions = "dimensions",
+                            weight = "weight",
+                            isLetter = false,
+                            dimensionUnit = "cm",
+                            weightUnit = "kg",
+                            saved = true
+                        )
+                    )
+                )
+            )
+
+            sut.onAddCustomPackageClick(savePackageAsTemplate = true)
+
+            verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "saving_success"))
+        }
+
+    @Test
+    fun `when saveAsTemplate is true and saving fails, track WCS_PACKAGE_SELECTION_STEP event with saving_failed`() =
+        testBlocking {
+            val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR)
+            whenever(packageRepository.createCustomPackage(any(), any())).thenReturn(WooResult(error))
+
+            sut.onAddCustomPackageClick(savePackageAsTemplate = true)
+
+            verify(tracker).track(
+                AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
+                mapOf(KEY_STATE to "saving_failed", KEY_ERROR to error.type.toString())
+            )
+        }
 
     @Test
     fun `onAddPackageClick skips createCustomPackage when saveAsTemplate is false`() = testBlocking {
