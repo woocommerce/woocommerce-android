@@ -90,12 +90,6 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
-            WooPosHomeUIEvent.ShowBarcodeInfoDialog -> {
-                _state.value = _state.value.copy(
-                    dialogState = DialogState.BarcodeInfoDialog
-                )
-            }
-
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
                 PaymentMethod.CASH
             )

@@ -76,7 +76,6 @@ import com.woocommerce.android.util.WooLog
 fun WooPosScanningSetupDialog(
     isVisible: Boolean,
     onDismissRequest: () -> Unit,
-    onShowBarcodeInfoDialog: () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<WooPosScanningSetupViewModel>()
     val context = LocalContext.current
@@ -85,11 +84,6 @@ fun WooPosScanningSetupDialog(
         viewModel.resetToInitialState()
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.showBarcodeInfoDialogEvent.collect {
-            onShowBarcodeInfoDialog()
-        }
-    }
     LaunchedEffect(Unit) {
         viewModel.openBluetoothSettingsEvent.collect {
             try {

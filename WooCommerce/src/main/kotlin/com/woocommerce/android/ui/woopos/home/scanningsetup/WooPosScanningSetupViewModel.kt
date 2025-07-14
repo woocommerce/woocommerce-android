@@ -31,9 +31,6 @@ class WooPosScanningSetupViewModel @Inject constructor(
     )
     val state: StateFlow<WooPosScanningSetupState> = _state.asStateFlow()
 
-    private val _showBarcodeInfoDialogEvent = MutableSharedFlow<Unit>()
-    val showBarcodeInfoDialogEvent: SharedFlow<Unit> = _showBarcodeInfoDialogEvent.asSharedFlow()
-
     private val _openBluetoothSettingsEvent = MutableSharedFlow<Unit>()
     val openBluetoothSettingsEvent: SharedFlow<Unit> = _openBluetoothSettingsEvent.asSharedFlow()
 
@@ -48,9 +45,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 )
 
                 when (event.device) {
-                    BarcodeReaderDevice.OTHER -> viewModelScope.launch {
-                        _showBarcodeInfoDialogEvent.emit(Unit)
-                    }
+                    BarcodeReaderDevice.OTHER -> _state.value = _state.value.copy(
+                        currentStep = createScannerSetupInfoStep()
+                    )
 
                     else -> _state.value = _state.value.copy(
                         currentStep = createScannerHIDModeSetupStep()
