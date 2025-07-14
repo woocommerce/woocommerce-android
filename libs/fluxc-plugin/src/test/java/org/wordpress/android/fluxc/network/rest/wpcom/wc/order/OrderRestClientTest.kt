@@ -48,7 +48,7 @@ class OrderRestClientTest {
         // Given
         val expectedCreatedVia = "pos-rest-api"
         val expectedParams = mapOf(
-            "per_page" to "25",
+            "per_page" to "60",
             "offset" to "0",
             "_fields" to "id,date_created_gmt,date_modified_gmt",
             "created_via" to expectedCreatedVia
@@ -57,10 +57,15 @@ class OrderRestClientTest {
 
         whenever(
             wooNetwork.executeGetGsonRequest(
-                site = testSite,
-                path = WOOCOMMERCE.orders.pathV3,
-                clazz = Array<OrderSummaryApiResponse>::class.java,
-                params = expectedParams
+                site = any(),
+                path = any(),
+                clazz = eq(Array<OrderSummaryApiResponse>::class.java),
+                params = any(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any()
             )
         ).thenReturn(mockResponse)
 
@@ -73,12 +78,20 @@ class OrderRestClientTest {
         orderRestClient.fetchOrderListSummaries(listDescriptor, 0, false)
 
         // Then
+        val paramsCaptor = argumentCaptor<Map<String, String>>()
         verify(wooNetwork).executeGetGsonRequest(
-            site = testSite,
-            path = WOOCOMMERCE.orders.pathV3,
-            clazz = Array<OrderSummaryApiResponse>::class.java,
-            params = expectedParams
+            site = eq(testSite),
+            path = eq(WOOCOMMERCE.orders.pathV3),
+            clazz = eq(Array<OrderSummaryApiResponse>::class.java),
+            params = paramsCaptor.capture(),
+            enableCaching = any(),
+            cacheTimeToLive = any(),
+            forced = any(),
+            requestTimeout = any(),
+            retries = any()
         )
+        
+        assertThat(paramsCaptor.firstValue).containsExactlyInAnyOrderEntriesOf(expectedParams)
     }
 
     @Test
@@ -91,7 +104,12 @@ class OrderRestClientTest {
                 site = any(),
                 path = any(),
                 clazz = eq(Array<OrderSummaryApiResponse>::class.java),
-                params = any()
+                params = any(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any()
             )
         ).thenReturn(mockResponse)
 
@@ -106,10 +124,15 @@ class OrderRestClientTest {
         // Then
         val paramsCaptor = argumentCaptor<Map<String, String>>()
         verify(wooNetwork).executeGetGsonRequest(
-            site = testSite,
-            path = WOOCOMMERCE.orders.pathV3,
-            clazz = Array<OrderSummaryApiResponse>::class.java,
-            params = paramsCaptor.capture()
+            site = eq(testSite),
+            path = eq(WOOCOMMERCE.orders.pathV3),
+            clazz = eq(Array<OrderSummaryApiResponse>::class.java),
+            params = paramsCaptor.capture(),
+            enableCaching = any(),
+            cacheTimeToLive = any(),
+            forced = any(),
+            requestTimeout = any(),
+            retries = any()
         )
 
         assertThat(paramsCaptor.firstValue).doesNotContainKey("created_via")
@@ -125,7 +148,12 @@ class OrderRestClientTest {
                 site = any(),
                 path = any(),
                 clazz = eq(Array<OrderSummaryApiResponse>::class.java),
-                params = any()
+                params = any(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any()
             )
         ).thenReturn(mockResponse)
 
@@ -140,10 +168,15 @@ class OrderRestClientTest {
         // Then
         val paramsCaptor = argumentCaptor<Map<String, String>>()
         verify(wooNetwork).executeGetGsonRequest(
-            site = testSite,
-            path = WOOCOMMERCE.orders.pathV3,
-            clazz = Array<OrderSummaryApiResponse>::class.java,
-            params = paramsCaptor.capture()
+            site = eq(testSite),
+            path = eq(WOOCOMMERCE.orders.pathV3),
+            clazz = eq(Array<OrderSummaryApiResponse>::class.java),
+            params = paramsCaptor.capture(),
+            enableCaching = any(),
+            cacheTimeToLive = any(),
+            forced = any(),
+            requestTimeout = any(),
+            retries = any()
         )
 
         assertThat(paramsCaptor.firstValue).doesNotContainKey("created_via")
@@ -160,7 +193,12 @@ class OrderRestClientTest {
                 site = any(),
                 path = any(),
                 clazz = eq(Array<OrderDto>::class.java),
-                params = any()
+                params = any(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any()
             )
         ).thenReturn(mockResponse)
 
@@ -175,10 +213,15 @@ class OrderRestClientTest {
         // Then
         val paramsCaptor = argumentCaptor<Map<String, String>>()
         verify(wooNetwork).executeGetGsonRequest(
-            site = testSite,
-            path = WOOCOMMERCE.orders.pathV3,
-            clazz = Array<OrderDto>::class.java,
-            params = paramsCaptor.capture()
+            site = eq(testSite),
+            path = eq(WOOCOMMERCE.orders.pathV3),
+            clazz = eq(Array<OrderDto>::class.java),
+            params = paramsCaptor.capture(),
+            enableCaching = any(),
+            cacheTimeToLive = any(),
+            forced = any(),
+            requestTimeout = any(),
+            retries = any()
         )
 
         assertThat(paramsCaptor.firstValue["created_via"]).isEqualTo(expectedCreatedVia)
