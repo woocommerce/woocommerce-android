@@ -12,5 +12,6 @@ class GetSelectedOrderFiltersCount @Inject constructor(
             .plus(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.DATE_RANGE))
             .plus(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.PRODUCT))
             .plus(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.CUSTOMER))
+            .plus(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.SALES_CHANNEL))
             .size
 }
