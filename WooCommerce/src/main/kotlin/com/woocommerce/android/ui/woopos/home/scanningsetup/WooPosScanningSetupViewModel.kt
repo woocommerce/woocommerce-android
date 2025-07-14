@@ -217,10 +217,3 @@ class WooPosScanningSetupViewModel @Inject constructor(
         private const val AUTO_NAVIGATION_DELAY_MS = 3000L
     }
 }
-
-sealed class WooPosScanningSetupUiEvent {
-    data object OnPrimaryButtonClicked : WooPosScanningSetupUiEvent()
-    data object OnSecondaryButtonClicked : WooPosScanningSetupUiEvent()
-    data object OnOpenBluetoothSettings : WooPosScanningSetupUiEvent()
-    data class OnDeviceSelected(val device: BarcodeReaderDevice) : WooPosScanningSetupUiEvent()
-}
