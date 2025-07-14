@@ -396,9 +396,7 @@ class WCOrderStore @Inject internal constructor(
         var searchResults: List<OrderEntity> = emptyList()
     ) : OnChanged<OrderError>()
 
-    class OnOrderStatusOptionsChanged(
-        var rowsAffected: Int
-    ) : OnChanged<OrderError>()
+    class OnOrderStatusOptionsChanged() : OnChanged<OrderError>()
 
     data class OnOrderShipmentProvidersChanged(
         val shipmentProvidersFetchedCount: Int
@@ -1109,7 +1107,7 @@ class WCOrderStore @Inject internal constructor(
         val onOrderStatusLabelsChanged: OnOrderStatusOptionsChanged
 
         if (payload.isError) {
-            onOrderStatusLabelsChanged = OnOrderStatusOptionsChanged(0).also { it.error = payload.error }
+            onOrderStatusLabelsChanged = OnOrderStatusOptionsChanged().also { it.error = payload.error }
         } else {
             onOrderStatusLabelsChanged = onOrderStatusOptionsChanged(payload)
         }
@@ -1128,7 +1126,7 @@ class WCOrderStore @Inject internal constructor(
             runBlocking { orderStatusDao.deleteOrderStatus(it) }
         }
 
-        return OnOrderStatusOptionsChanged(0)
+        return OnOrderStatusOptionsChanged()
     }
 
     @Suppress("NestedBlockDepth")
