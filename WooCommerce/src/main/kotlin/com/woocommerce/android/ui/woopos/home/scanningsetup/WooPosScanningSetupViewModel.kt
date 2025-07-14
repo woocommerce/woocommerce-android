@@ -101,12 +101,18 @@ class WooPosScanningSetupViewModel @Inject constructor(
             is ScanningSetupStep.PairYourScanner -> {
                 _state.value = _state.value.copy(
                     currentStep = createTestYourScannerStep()
-                )
-                startAutoNavigationToSuccess()
+                ).also {
+                    startAutoNavigationTo()
+                }
+
             }
 
             is ScanningSetupStep.TestYourScanner -> {
                 error("Primary button should not be available on TestYourScanner step")
+            }
+
+            is ScanningSetupStep.TestYourScannerTimeout -> {
+                error("Primary button should not be available on TestYourScannerTimeout step")
             }
 
             is ScanningSetupStep.ScannerSetupSuccess -> {
@@ -145,6 +151,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.TestYourScanner -> {
+                _state.value = _state.value.copy(
+                    currentStep = createPairYourScannerStep()
+                )
+            }
+
+            is ScanningSetupStep.TestYourScannerTimeout -> {
                 _state.value = _state.value.copy(
                     currentStep = createPairYourScannerStep()
                 )
@@ -208,6 +220,13 @@ class WooPosScanningSetupViewModel @Inject constructor(
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
     )
 
+    private fun createTestYourScannerTimeoutStep() = ScanningSetupStep.TestYourScannerTimeout(
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_message),
+        barcodeImageRes = R.drawable.ic_barcode,
+        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
+    )
+
     private fun createScannerSetupSuccessStep() = ScanningSetupStep.ScannerSetupSuccess(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_success_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_success_message),
@@ -227,19 +246,19 @@ class WooPosScanningSetupViewModel @Inject constructor(
         doneButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done)
     )
 
-    private fun startAutoNavigationToSuccess() {
+    private fun startAutoNavigationTo() {
         viewModelScope.launch {
             delay(AUTO_NAVIGATION_DELAY_MS)
             if (_state.value.currentStep is ScanningSetupStep.TestYourScanner) {
                 _state.value = _state.value.copy(
-                    currentStep = createScannerSetupSuccessStep()
+                    currentStep = createTestYourScannerTimeoutStep()
                 )
             }
         }
     }
 
     companion object {
-        private const val AUTO_NAVIGATION_DELAY_MS = 3000L
+        private const val AUTO_NAVIGATION_DELAY_MS = 10000L
     }
 }
 

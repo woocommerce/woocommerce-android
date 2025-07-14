@@ -63,6 +63,14 @@ data class WooPosScanningSetupState(
         ) : ScanningSetupStep()
 
         @Parcelize
+        data class TestYourScannerTimeout(
+            val title: String,
+            val message: String,
+            @DrawableRes val barcodeImageRes: Int,
+            val secondaryButtonText: String,
+        ) : ScanningSetupStep()
+
+        @Parcelize
         data class ScannerSetupSuccess(
             val title: String,
             val message: String,

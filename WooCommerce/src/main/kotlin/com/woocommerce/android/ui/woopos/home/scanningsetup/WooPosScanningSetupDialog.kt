@@ -184,6 +184,11 @@ fun WooPosScanningSetupDialog(
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
+                    is ScanningSetupStep.TestYourScannerTimeout -> TestYourScannerTimeoutContent(
+                        step = step,
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    )
+
                     is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
                         step = step,
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
@@ -262,6 +267,59 @@ private fun ScannerModeSetupContent(
 @Composable
 private fun TestYourScannerContent(
     step: ScanningSetupStep.TestYourScanner,
+    onSecondaryClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+        )
+
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                .background(Color.White)
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = step.barcodeImageRes),
+                contentDescription = stringResource(
+                    id = R.string.woopos_scanning_setup_barcode_content_description
+                ),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        WooPosOutlinedButton(
+            onClick = onSecondaryClick,
+            text = step.secondaryButtonText,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun TestYourScannerTimeoutContent(
+    step: ScanningSetupStep.TestYourScannerTimeout,
     onSecondaryClick: () -> Unit,
 ) {
     Column(
