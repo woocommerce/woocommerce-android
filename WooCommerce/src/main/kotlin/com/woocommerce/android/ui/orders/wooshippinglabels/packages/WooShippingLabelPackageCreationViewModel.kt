@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
@@ -131,7 +132,10 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                     updateSavedPackageUI(packageData = removedPackage, saved = true)
                     tracker.track(
                         AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
-                        mapOf(KEY_STATE to "removing_failed", KEY_ERROR to it.exceptionOrNull()?.message.orEmpty())
+                        mapOf(
+                            KEY_STATE to "removing_failed",
+                            KEY_ERROR to (it.exceptionOrNull() as? WooException)?.error?.type?.name.orEmpty()
+                        )
                     )
                 }
             }
@@ -336,7 +340,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                         AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
                         mapOf(
                             KEY_STATE to if (isStarred) "saving_failed" else "removing_failed",
-                            KEY_ERROR to it.exceptionOrNull()?.message.orEmpty()
+                            KEY_ERROR to (it.exceptionOrNull() as? WooException)?.error?.type?.name.orEmpty()
                         )
                     )
                 }
