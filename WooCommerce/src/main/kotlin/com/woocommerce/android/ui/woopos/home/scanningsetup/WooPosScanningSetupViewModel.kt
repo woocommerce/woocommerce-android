@@ -282,7 +282,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
         when (_state.value.currentStep) {
             is ScanningSetupStep.TestYourScanner,
             is ScanningSetupStep.TestYourScannerTimeout -> {
-                if (barcodeResult.barcode == BARCODE_TO_TEST) {
+                if (barcodeResult.barcode == TEST_BARCODE_EAN13) {
                     _state.value = _state.value.copy(
                         currentStep = createScannerSetupSuccessStep()
                     )
@@ -313,7 +313,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     companion object {
         private const val AUTO_NAVIGATION_DELAY_MS = 10000L
-        private const val BARCODE_TO_TEST = "1234567890128"
+        private const val TEST_BARCODE_EAN13 = "1234567890128"
     }
 }
 
