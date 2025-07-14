@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupS
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +41,8 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     private val _dismissDialogEvent = MutableSharedFlow<Unit>()
     val dismissDialogEvent: SharedFlow<Unit> = _dismissDialogEvent.asSharedFlow()
+
+    private var autoNavigationJob: Job? = null
 
     fun onUiEvent(event: WooPosScanningSetupUiEvent) {
         when (event) {
@@ -108,7 +111,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     currentStep = createTestYourScannerStep()
                 ).also {
-                    startAutoNavigationTo()
+                    startAutoNavigationToTestYourScannerStep()
                 }
 
             }
@@ -298,8 +301,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
         }
     }
 
-    private fun startAutoNavigationTo() {
-        viewModelScope.launch {
+    private fun startAutoNavigationToTestYourScannerStep() {
+        autoNavigationJob?.cancel()
+        autoNavigationJob = viewModelScope.launch {
             delay(AUTO_NAVIGATION_DELAY_MS)
             if (_state.value.currentStep is ScanningSetupStep.TestYourScanner) {
                 _state.value = _state.value.copy(
