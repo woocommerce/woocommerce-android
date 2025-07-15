@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -42,7 +41,6 @@ class MarkOrderAsCompleteTest : BaseUnitTest() {
         val result = markOrderAsComplete(orderId)
 
         // Then
-        advanceUntilIdle()
         verify(orderDetailRepository).updateOrderStatus(orderId, CoreOrderStatus.COMPLETED.value)
         assertTrue(result.isSuccess)
     }
@@ -60,11 +58,10 @@ class MarkOrderAsCompleteTest : BaseUnitTest() {
         val result = markOrderAsComplete(orderId)
 
         // Then
-        advanceUntilIdle()
         verify(orderDetailRepository).updateOrderStatus(orderId, CoreOrderStatus.COMPLETED.value)
         assertTrue(result.isFailure)
         val exception = result.exceptionOrNull()
         assertTrue(exception is OnChangedException)
-        assertEquals(error, (exception as OnChangedException).error)
+        assertEquals(error, exception.error)
     }
 }
