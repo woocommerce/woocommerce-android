@@ -126,24 +126,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
     }
 
     private fun handleBarcodeScanned(barcodeResult: BarcodeInputDetector.BarcodeResult) {
-        when (_state.value.currentStep) {
-            is ScanningSetupStep.TestYourScanner,
-            is ScanningSetupStep.TestYourScannerTimeout -> {
-                val selectedDevice = requireNotNull(_state.value.selectedDevice) { "Selected device cannot be null" }
-                if (barcodeResult.barcode == TEST_BARCODE_EAN13) {
-                    val nextStep = navigator.getNextStep(selectedDevice, _state.value.currentStep)
-                    _state.value = _state.value.copy(currentStep = nextStep)
-                } else {
-                    _state.value = _state.value.copy(
-                        currentStep = navigator.createTestYourScannerScanFailedStep()
-                    )
-                }
-            }
-
-            else -> {
-                error("Barcode scanning is not expected in the current step: ${_state.value.currentStep}")
-            }
-        }
+        val selectedDevice = requireNotNull(_state.value.selectedDevice) { "Selected device cannot be null" }
+        val nextStep = navigator.handleBarcodeScanned(selectedDevice, _state.value.currentStep, barcodeResult.barcode)
+        _state.value = _state.value.copy(currentStep = nextStep)
     }
 
     private fun startAutoNavigationToTestYourScannerFailedStep() {
@@ -160,6 +145,5 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     companion object {
         private const val AUTO_NAVIGATION_DELAY_MS = 10000L
-        private const val TEST_BARCODE_EAN13 = "1234567890128"
     }
 }

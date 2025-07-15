@@ -5,7 +5,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -20,7 +19,7 @@ class WooPosScanningSetupViewModelTest {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private val resourceProvider: ResourceProvider = mock()
+    private val navigator: ScannerSetupNavigator = mock()
 
     @Test
     fun `given initialized, when no action taken, then should start with DeviceSelection step`() = runTest {
@@ -236,97 +235,124 @@ class WooPosScanningSetupViewModelTest {
     }
 
     @Test
-    fun `given ScannerSetupInfo step, when verifying previousStep is tracked, then should maintain proper navigation history`() =
-        runTest {
-            // GIVEN
-            val viewModel = createViewModel()
+    fun `given STAR_BSH_20B device selected, when primary button clicked from HID mode setup, then should navigate directly to PairYourScanner`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.STAR_BSH_20B))
 
-            // WHEN
-            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.OTHER))
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
 
-            // THEN
-            val currentStep = viewModel.state.value.currentStep as ScanningSetupStep.ScannerSetupInfo
-            assertThat(currentStep.previousStep)
-                .isInstanceOf(ScanningSetupStep.DeviceSelection::class.java)
-        }
-
-    @Test
-    fun `given multi-step navigation, when checking previousStep chain, then should maintain proper navigation stack`() =
-        runTest {
-            // GIVEN
-            val viewModel = createViewModel()
-
-            // WHEN
-            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
-            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
-
-            // THEN
-            val currentStep = viewModel.state.value.currentStep as ScanningSetupStep.ScannerPairModeSetup
-            assertThat(currentStep.previousStep)
-                .isInstanceOf(ScanningSetupStep.ScannerHIDModeSetup::class.java)
-
-            val previousStep = currentStep.previousStep as ScanningSetupStep.ScannerHIDModeSetup
-            assertThat(previousStep.previousStep)
-                .isInstanceOf(ScanningSetupStep.DeviceSelection::class.java)
-        }
-
-    private fun createViewModel(): WooPosScanningSetupViewModel {
-        setupMockResourceProvider()
-        return WooPosScanningSetupViewModel(resourceProvider)
+        // THEN
+        assertThat(viewModel.state.value.currentStep)
+            .isInstanceOf(ScanningSetupStep.PairYourScanner::class.java)
     }
 
-    private fun setupMockResourceProvider() {
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_device_selection_title))
-            .thenReturn("Set up a barcode scanner")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_introduction_title))
-            .thenReturn("Introduction")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_introduction_message))
-            .thenReturn("Introduction message")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_title))
-            .thenReturn("Pair mode")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_message))
-            .thenReturn("Pair mode message")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_pair_your_scanner_title))
-            .thenReturn("Pair your scanner")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_pair_your_scanner_message, "TERA 1200"))
-            .thenReturn("Pair your scanner message TERA 1200")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_title))
-            .thenReturn("Test scanner")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_message))
-            .thenReturn("Test scanner message")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_success_title))
-            .thenReturn("Success")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_success_message))
-            .thenReturn("Success message")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_info_title))
-            .thenReturn("Info")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_info_message))
-            .thenReturn("Info message")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_1))
-            .thenReturn("Bullet 1")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_2))
-            .thenReturn("Bullet 2")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_info_bullet_3))
-            .thenReturn("Bullet 3")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_info_text))
-            .thenReturn("Info text")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_button_next))
-            .thenReturn("Next")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_button_back))
-            .thenReturn("Back")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_button_done))
-            .thenReturn("Done")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_go_to_settings))
-            .thenReturn("Go to settings")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_more_information))
-            .thenReturn("More information")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_device_tera_1200))
-            .thenReturn("TERA 1200")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_device_star_bsh_20b))
-            .thenReturn("STAR BSH 20B")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_device_inateck_bluetooth))
-            .thenReturn("INATECK Bluetooth")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_device_other))
-            .thenReturn("Other")
+
+    private fun createViewModel(): WooPosScanningSetupViewModel {
+        setupMockNavigator()
+        return WooPosScanningSetupViewModel(navigator)
+    }
+
+    private fun setupMockNavigator() {
+        val deviceSelectionStep = ScanningSetupStep.DeviceSelection(
+            title = "Set up a barcode scanner",
+            devices = listOf(
+                BarcodeReaderDevice.TERA_1200,
+                BarcodeReaderDevice.STAR_BSH_20B,
+                BarcodeReaderDevice.INATECK_BLUETOOTH,
+                BarcodeReaderDevice.OTHER
+            )
+        )
+
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(
+            title = "Introduction",
+            message = "Introduction message",
+            qrCodeImageRes = R.drawable.ic_barcode,
+            primaryButtonText = "Next",
+            secondaryButtonText = "Back"
+        )
+
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(
+            title = "Pair mode",
+            message = "Pair mode message",
+            qrCodeImageRes = R.drawable.ic_barcode,
+            primaryButtonText = "Next",
+            secondaryButtonText = "Back"
+        )
+
+        val pairYourScannerStep = ScanningSetupStep.PairYourScanner(
+            title = "Pair your scanner",
+            message = "Pair your scanner message TERA 1200",
+            iconRes = R.drawable.ic_woopos_bluetooth_settings,
+            primaryButtonText = "Next",
+            secondaryButtonText = "Back",
+            bluetoothSettingsButtonText = "Go to settings"
+        )
+
+        val testScannerStep = ScanningSetupStep.TestYourScanner(
+            title = "Test scanner",
+            message = "Test scanner message",
+            barcodeValue = "1234567890128",
+            secondaryButtonText = "Back"
+        )
+
+        val setupInfoStep = ScanningSetupStep.ScannerSetupInfo(
+            title = "Info",
+            message = "Info message",
+            bulletPoints = listOf("Bullet 1", "Bullet 2", "Bullet 3"),
+            infoText = "Info text",
+            backButtonText = "Back",
+            doneButtonText = "Done"
+        )
+
+        val testScannerTimeoutStep = ScanningSetupStep.TestYourScannerTimeout(
+            title = "Test scanner timeout",
+            message = "Test scanner timeout message",
+            barcodeValue = "1234567890128",
+            secondaryButtonText = "Back"
+        )
+
+        setupNavigatorMocks(
+            deviceSelectionStep,
+            hidModeStep,
+            pairModeStep,
+            pairYourScannerStep,
+            testScannerStep,
+            setupInfoStep,
+            testScannerTimeoutStep
+        )
+    }
+
+    private fun setupNavigatorMocks(
+        deviceSelectionStep: ScanningSetupStep.DeviceSelection,
+        hidModeStep: ScanningSetupStep.ScannerHIDModeSetup,
+        pairModeStep: ScanningSetupStep.ScannerPairModeSetup,
+        pairYourScannerStep: ScanningSetupStep.PairYourScanner,
+        testScannerStep: ScanningSetupStep.TestYourScanner,
+        setupInfoStep: ScanningSetupStep.ScannerSetupInfo,
+        testScannerTimeoutStep: ScanningSetupStep.TestYourScannerTimeout
+    ) {
+        whenever(navigator.createDeviceSelectionStep()).thenReturn(deviceSelectionStep)
+        whenever(navigator.createTestYourScannerTimeoutStep()).thenReturn(testScannerTimeoutStep)
+        whenever(navigator.restartFlow()).thenReturn(deviceSelectionStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.OTHER, deviceSelectionStep)).thenReturn(setupInfoStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, deviceSelectionStep)).thenReturn(hidModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep)).thenReturn(pairModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairModeStep)).thenReturn(pairYourScannerStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairYourScannerStep)).thenReturn(testScannerStep)
+        whenever(navigator.getPreviousStep(BarcodeReaderDevice.OTHER, setupInfoStep)).thenReturn(deviceSelectionStep)
+        whenever(navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, hidModeStep)).thenReturn(deviceSelectionStep)
+        whenever(navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, pairModeStep)).thenReturn(hidModeStep)
+        whenever(navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, pairYourScannerStep)).thenReturn(pairModeStep)
+        whenever(navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, testScannerStep)).thenReturn(pairYourScannerStep)
+
+        // Add STAR_BSH_20B support
+        whenever(navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, deviceSelectionStep)).thenReturn(hidModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, hidModeStep)).thenReturn(pairYourScannerStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, pairYourScannerStep)).thenReturn(testScannerStep)
+        whenever(navigator.getPreviousStep(BarcodeReaderDevice.STAR_BSH_20B, hidModeStep)).thenReturn(deviceSelectionStep)
+        whenever(navigator.getPreviousStep(BarcodeReaderDevice.STAR_BSH_20B, pairYourScannerStep)).thenReturn(hidModeStep)
+        whenever(navigator.getPreviousStep(BarcodeReaderDevice.STAR_BSH_20B, testScannerStep)).thenReturn(pairYourScannerStep)
     }
 }
