@@ -49,9 +49,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -68,8 +73,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 
 @Composable
@@ -559,6 +566,8 @@ private fun ScannerSetupBarcodesOnProductsContent(
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -573,8 +582,35 @@ private fun ScannerSetupBarcodesOnProductsContent(
             modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
         )
 
+        val visitDocumentationText = stringResource(id = R.string.woopos_scanning_setup_visit_documentation)
+        val linkAnnotation = LinkAnnotation.Url(
+            WOO_POS_BARCODE_DOC_URL
+        ) { urlAnnotation ->
+            ChromeCustomTabUtils.launchUrl(
+                context,
+                WOO_POS_BARCODE_DOC_URL,
+                enableSlideAnimation = true
+            )
+        }
+
+        val annotatedText = buildAnnotatedString {
+            append(step.message)
+            append(" ")
+            withStyle(
+                style = SpanStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline
+                )
+            ) {
+                withLink(linkAnnotation) {
+                    append(visitDocumentationText)
+                }
+            }
+            append(".")
+        }
+
         WooPosText(
-            text = step.message,
+            text = annotatedText,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(
