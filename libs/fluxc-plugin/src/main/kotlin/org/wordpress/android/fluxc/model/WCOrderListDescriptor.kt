@@ -14,7 +14,8 @@ data class WCOrderListDescriptor(
     val afterFilter: String? = null,
     val productId: Long? = null,
     val customerId: Long? = null,
-    val excludedIds: List<Long>? = null
+    val excludedIds: List<Long>? = null,
+    val createdViaFilter: String? = null
 ) : ListDescriptor {
     override val config: ListConfig = ListConfig.default
 
@@ -27,7 +28,8 @@ data class WCOrderListDescriptor(
                     "-af${afterFilter.orEmpty()}" +
                     "-p${productId ?: ""}" +
                     "-c${customerId ?: ""}" +
-                    "-efo$excludeFutureOrders"
+                    "-efo$excludeFutureOrders" +
+                    "-cv${createdViaFilter.orEmpty()}"
                     ).hashCode()
         )
     }

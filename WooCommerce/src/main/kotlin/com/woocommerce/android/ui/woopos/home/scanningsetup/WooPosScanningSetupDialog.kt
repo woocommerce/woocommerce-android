@@ -5,6 +5,8 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -12,6 +14,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +34,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -56,7 +62,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -73,7 +78,6 @@ import com.woocommerce.android.util.WooLog
 fun WooPosScanningSetupDialog(
     isVisible: Boolean,
     onDismissRequest: () -> Unit,
-    onShowBarcodeInfoDialog: () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<WooPosScanningSetupViewModel>()
     val context = LocalContext.current
@@ -82,11 +86,6 @@ fun WooPosScanningSetupDialog(
         viewModel.resetToInitialState()
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.showBarcodeInfoDialogEvent.collect {
-            onShowBarcodeInfoDialog()
-        }
-    }
     LaunchedEffect(Unit) {
         viewModel.openBluetoothSettingsEvent.collect {
             try {
@@ -140,7 +139,19 @@ fun WooPosScanningSetupDialog(
             AnimatedContent(
                 targetState = state.currentStep,
                 transitionSpec = {
-                    fadeIn() togetherWith fadeOut()
+                    fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 250,
+                            delayMillis = 200,
+                            easing = FastOutSlowInEasing
+                        )
+                    ) togetherWith
+                        fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 200,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
                 },
                 label = "step_transition",
             ) { step ->
@@ -199,7 +210,7 @@ fun WooPosScanningSetupDialog(
 
                     is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
                         step = step,
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) }
                     )
 
                     is ScanningSetupStep.ScannerSetupInfo -> ScannerSetupInfoContent(
@@ -473,14 +484,26 @@ private fun PairYourScannerContent(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value.toAdaptivePadding()))
 
-        WooPosOutlinedButtonSmall(
+        WooPosText(
             text = step.bluetoothSettingsButtonText,
-            onClick = onOpenBluetoothSettings,
+            style = WooPosTypography.BodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(bounded = true, radius = 150.dp),
+                    onClick = { onOpenBluetoothSettings() }
+                )
+                .padding(
+                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    vertical = WooPosSpacing.Small.value.toAdaptivePadding()
+                )
         )
 
-        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value.toAdaptivePadding()))
         Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         SetupButtonsRow(
@@ -591,7 +614,7 @@ private fun SetupButtonsRow(
 @Composable
 private fun ScannerSetupSuccessContent(
     step: ScanningSetupStep.ScannerSetupSuccess,
-    onSecondaryClick: () -> Unit,
+    onPrimaryClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -622,7 +645,7 @@ private fun ScannerSetupSuccessContent(
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         WooPosOutlinedButton(
-            onClick = onSecondaryClick,
+            onClick = onPrimaryClick,
             text = step.moreInfoButtonText,
             modifier = Modifier.fillMaxWidth()
         )
@@ -732,7 +755,8 @@ fun WooPosScanningSetupDialogPreview() {
                         BarcodeReaderDevice.STAR_BSH_20B,
                         BarcodeReaderDevice.INATECK_BLUETOOTH,
                         BarcodeReaderDevice.OTHER
-                    )
+                    ),
+                    previousStep = null
                 ),
                 onDeviceSelected = {}
             )

@@ -19,11 +19,13 @@ data class WooPosScanningSetupState(
         OTHER(R.string.woopos_scanning_setup_device_other)
     }
     sealed class ScanningSetupStep : Parcelable {
+        abstract val previousStep: ScanningSetupStep?
 
         @Parcelize
         data class DeviceSelection(
             val title: String,
             val devices: List<BarcodeReaderDevice>,
+            override val previousStep: ScanningSetupStep?
         ) : ScanningSetupStep()
 
         @Parcelize
@@ -33,6 +35,7 @@ data class WooPosScanningSetupState(
             @DrawableRes val qrCodeImageRes: Int,
             val primaryButtonText: String,
             val secondaryButtonText: String,
+            override val previousStep: ScanningSetupStep
         ) : ScanningSetupStep()
 
         @Parcelize
@@ -42,6 +45,7 @@ data class WooPosScanningSetupState(
             @DrawableRes val qrCodeImageRes: Int,
             val primaryButtonText: String,
             val secondaryButtonText: String,
+            override val previousStep: ScanningSetupStep
         ) : ScanningSetupStep()
 
         @Parcelize
@@ -52,6 +56,7 @@ data class WooPosScanningSetupState(
             val primaryButtonText: String,
             val secondaryButtonText: String,
             val bluetoothSettingsButtonText: String,
+            override val previousStep: ScanningSetupStep
         ) : ScanningSetupStep()
 
         @Parcelize
@@ -60,6 +65,7 @@ data class WooPosScanningSetupState(
             val message: String,
             @DrawableRes val barcodeImageRes: Int,
             val secondaryButtonText: String,
+            override val previousStep: ScanningSetupStep
         ) : ScanningSetupStep()
 
         @Parcelize
@@ -84,6 +90,7 @@ data class WooPosScanningSetupState(
             val title: String,
             val message: String,
             val moreInfoButtonText: String,
+            override val previousStep: ScanningSetupStep?
         ) : ScanningSetupStep()
 
         @Parcelize
@@ -94,6 +101,7 @@ data class WooPosScanningSetupState(
             val infoText: String,
             val backButtonText: String,
             val doneButtonText: String,
+            override val previousStep: ScanningSetupStep?
         ) : ScanningSetupStep()
     }
 }

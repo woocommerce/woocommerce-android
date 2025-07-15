@@ -908,6 +908,7 @@
     <string name="orderfilters_date_range_filter">Date Range</string>
     <string name="orderfilters_product_filter">Product</string>
     <string name="orderfilters_customer_filter">Customer</string>
+    <string name="orderfilters_sales_channel_filter">Sales Channel</string>
     <string name="orderfilters_selected_filter_fallback_display_value">Id: %d</string>
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
@@ -922,6 +923,7 @@
     <string name="orderfilters_date_range_filter_last_two_days">Last 2 Days</string>
     <string name="orderfilters_date_range_filter_last_7_days">Last 7 days</string>
     <string name="orderfilters_date_range_filter_last_30_days">Last 30 days</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">Point of Sale</string>
     <string name="orderfilters_date_range_filter_custom_range">Custom Range</string>
     <string name="orderfilters_date_range_picker_title">Select dates</string>
     <string name="orderfilters_date_range_start_date">Start Date</string>
@@ -4480,7 +4482,7 @@
     <string name="woopos_scanning_setup_scanner_pair_mode_message">Scan the Pair symbol to get the scanner ready for pairing.</string>
     <string name="woopos_scanning_setup_pair_your_scanner_title">Pair your scanner</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
-    <string name="woopos_scanning_setup_go_to_settings">Go to settings</string>
+    <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
     <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
     <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
     <string name="woopos_scanning_setup_more_information">More information</string>
