@@ -13,7 +13,7 @@ import javax.inject.Inject
 sealed interface WooPosEligibilityRetryState {
     object Loading : WooPosEligibilityRetryState
     object Eligible : WooPosEligibilityRetryState
-    object Ineligible : WooPosEligibilityRetryState
+    data class Ineligible(val reason: WooPosLaunchability.NonLaunchabilityReason) : WooPosEligibilityRetryState
 }
 
 @HiltViewModel
@@ -21,19 +21,22 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val canBeLaunchedInTab: WooPosCanBeLaunchedInTab
 ) : ViewModel() {
 
-    private val _retryState = MutableStateFlow<WooPosEligibilityRetryState?>(null)
-    val retryState: StateFlow<WooPosEligibilityRetryState?> = _retryState
+    private val _retryState = MutableStateFlow<WooPosEligibilityRetryState>(WooPosEligibilityRetryState.Loading)
+    val retryState: StateFlow<WooPosEligibilityRetryState> = _retryState
 
-    fun retryEligibilityCheck() {
+    fun initialize(reason: WooPosLaunchability.NonLaunchabilityReason) {
+        _retryState.value = WooPosEligibilityRetryState.Ineligible(reason)
+    }
+
+    fun retryEligibilityCheckTapped() {
         viewModelScope.launch {
             _retryState.value = WooPosEligibilityRetryState.Loading
 
             val result = canBeLaunchedInTab(forceRefresh = true)
 
-            _retryState.value = if (result is WooPosLaunchability.Launchable) {
-                WooPosEligibilityRetryState.Eligible
-            } else {
-                WooPosEligibilityRetryState.Ineligible
+            _retryState.value = when (result) {
+                is WooPosLaunchability.Launchable -> WooPosEligibilityRetryState.Eligible
+                is WooPosLaunchability.NotLaunchable -> WooPosEligibilityRetryState.Ineligible(result.reason)
             }
         }
     }
