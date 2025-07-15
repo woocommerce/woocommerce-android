@@ -37,7 +37,6 @@ import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
 @Composable
-@Suppress("UnusedParameter")
 fun WooPosEligibilityScreen(
     initialReason: WooPosLaunchability.NonLaunchabilityReason,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
