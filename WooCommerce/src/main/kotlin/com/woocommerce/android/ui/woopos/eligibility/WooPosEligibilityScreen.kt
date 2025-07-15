@@ -135,7 +135,7 @@ private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason
                 WooPosCanBeLaunchedInTab.MINIMUM_SUPPORTED_WC_VERSION
             )
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable ->
-            stringResource(R.string.woopos_eligibility_reason_site_settings_unavailable)
+            stringResource(R.string.woopos_eligibility_reason_check_connection)
         WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled ->
             stringResource(R.string.woopos_eligibility_reason_feature_switch_disabled)
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> {
@@ -148,7 +148,7 @@ private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason
             )
         }
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected ->
-            stringResource(R.string.woopos_eligibility_reason_no_site_selected)
+            stringResource(R.string.woopos_eligibility_reason_check_connection)
     }
 }
 
