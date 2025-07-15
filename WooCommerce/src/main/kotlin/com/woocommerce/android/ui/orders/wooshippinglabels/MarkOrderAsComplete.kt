@@ -16,8 +16,7 @@ class MarkOrderAsComplete @Inject constructor(
             orderId = orderId,
             newStatus = CoreOrderStatus.COMPLETED.value
         )
-            .filter { it is UpdateOrderResult.RemoteUpdateResult }
-            .first()
+            .first { it is UpdateOrderResult.RemoteUpdateResult }
 
         return when {
             result.event.isError -> Result.failure(OnChangedException(result.event.error))
