@@ -7,11 +7,6 @@ import javax.inject.Inject
 
 class WooPosScannerSetupNavigator @Inject constructor() {
     fun getNextStep(device: BarcodeReaderDevice, currentStep: ScanningSetupStep): ScanningSetupStep {
-        if (currentStep is ScanningSetupStep.DeviceSelection) {
-            val stepSequence = ScannerConfigurations.getStepSequence(device)
-            return stepSequence.first()
-        }
-
         val stepSequence = ScannerConfigurations.getStepSequence(device)
         val currentIndex = stepSequence.indexOf(currentStep)
 

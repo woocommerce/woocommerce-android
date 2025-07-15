@@ -24,6 +24,7 @@ data class WooPosScanningSetupState(
         fun getStepSequence(device: BarcodeReaderDevice): List<ScanningSetupStep> {
             return when (device) {
                 BarcodeReaderDevice.TERA_1200 -> listOf(
+                    ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
                     ScanningSetupStep.ScannerPairModeSetup(),
                     ScanningSetupStep.PairYourScanner(),
@@ -32,6 +33,7 @@ data class WooPosScanningSetupState(
                 )
 
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
+                    ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.star_bsh_20b_setup_qr),
                     ScanningSetupStep.PairYourScanner(),
                     ScanningSetupStep.TestYourScanner,
@@ -39,6 +41,7 @@ data class WooPosScanningSetupState(
                 )
 
                 BarcodeReaderDevice.INATECK_BLUETOOTH -> listOf(
+                    ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
                     ScanningSetupStep.ScannerPairModeSetup(),
                     ScanningSetupStep.PairYourScanner(),
@@ -47,6 +50,7 @@ data class WooPosScanningSetupState(
                 )
 
                 BarcodeReaderDevice.OTHER -> listOf(
+                    ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerSetupInfo
                 )
             }
