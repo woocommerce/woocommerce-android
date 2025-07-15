@@ -594,11 +594,9 @@ private fun ScannerSetupBarcodesOnProductsContent(
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .border(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline,
+                    color = WooPosTheme.colors.outlineVariant,
                     shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
                 )
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
