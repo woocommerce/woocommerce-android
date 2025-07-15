@@ -25,21 +25,32 @@ class WooPosScannerSetupNavigator @Inject constructor() {
     }
 
     fun getPreviousStep(device: BarcodeReaderDevice, currentStep: ScanningSetupStep): ScanningSetupStep {
-        val stepSequence = ScannerConfigurations.getStepSequence(device)
-        val currentIndex = stepSequence.indexOf(currentStep)
+        // Handle special branching steps that aren't in the main sequences
+        return when (currentStep) {
+            is ScanningSetupStep.TestYourScannerTimeout,
+            is ScanningSetupStep.TestYourScannerScanFailed -> {
+                getPreviousStep(device, ScanningSetupStep.TestYourScanner)
+            }
+            else -> {
+                val stepSequence = ScannerConfigurations.getStepSequence(device)
+                val currentIndex = stepSequence.indexOf(currentStep)
 
-        if (currentIndex <= 0) {
-            return ScanningSetupStep.DeviceSelection
+                if (currentIndex <= 0) {
+                    return ScanningSetupStep.DeviceSelection
+                }
+
+                val previousIndex = currentIndex - 1
+                return stepSequence[previousIndex]
+            }
         }
-
-        val previousIndex = currentIndex - 1
-        return stepSequence[previousIndex]
     }
 
     fun getNextStepForValidBarcode(device: BarcodeReaderDevice, currentStep: ScanningSetupStep): ScanningSetupStep {
         return when (currentStep) {
             is ScanningSetupStep.TestYourScanner,
-            is ScanningSetupStep.TestYourScannerTimeout -> getNextStep(device, currentStep)
+            is ScanningSetupStep.TestYourScannerTimeout -> {
+                getNextStep(device, ScanningSetupStep.TestYourScanner)
+            }
             else -> error("Barcode scanning is not expected in step: ${currentStep::class.simpleName}")
         }
     }
