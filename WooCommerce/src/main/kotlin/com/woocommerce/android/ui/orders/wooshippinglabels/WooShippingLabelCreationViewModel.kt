@@ -297,7 +297,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                                 stat = AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED,
                                 properties = mapOf(AnalyticsTracker.KEY_IS_REVAMPED_FLOW to true),
                                 errorType = (it as? WooException)?.error?.type?.name,
-                                errorContext = this@WooShippingLabelCreationViewModel::javaClass.name,
+                                errorContext = this@WooShippingLabelCreationViewModel.javaClass.simpleName,
                                 errorDescription = (it as? WooException)?.error?.message
                             )
                         }
