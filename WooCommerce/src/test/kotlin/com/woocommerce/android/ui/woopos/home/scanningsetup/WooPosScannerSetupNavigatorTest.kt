@@ -10,6 +10,15 @@ class WooPosScannerSetupNavigatorTest {
     private val navigator = WooPosScannerSetupNavigator()
 
     @Test
+    fun `given getInitialStep called, when invoked, then should return DeviceSelection`() {
+        // WHEN
+        val initialStep = navigator.getInitialStep()
+
+        // THEN
+        assertThat(initialStep).isInstanceOf(ScanningSetupStep.DeviceSelection::class.java)
+    }
+
+    @Test
     fun `given DeviceSelection step, when TERA_1200 selected, then should navigate to ScannerHIDModeSetup`() {
         // GIVEN
         val deviceSelectionStep = ScanningSetupStep.DeviceSelection

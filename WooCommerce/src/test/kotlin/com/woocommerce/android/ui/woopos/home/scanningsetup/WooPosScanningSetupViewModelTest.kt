@@ -322,6 +322,7 @@ class WooPosScanningSetupViewModelTest {
         }
 
     private fun createViewModel(): WooPosScanningSetupViewModel {
+        whenever(navigator.getInitialStep()).thenReturn(ScanningSetupStep.DeviceSelection)
         return WooPosScanningSetupViewModel(navigator)
     }
 }

@@ -25,7 +25,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
     private val _state = MutableStateFlow(
         WooPosScanningSetupState(
             isVisible = false,
-            currentStep = ScanningSetupStep.DeviceSelection,
+            currentStep = navigator.getInitialStep(),
             selectedDevice = null
         )
     )
@@ -102,7 +102,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
         val previousStep = if (selectedDevice != null) {
             navigator.getPreviousStep(selectedDevice, _state.value.currentStep)
         } else {
-            ScanningSetupStep.DeviceSelection
+            navigator.getInitialStep()
         }
 
         requireNotNull(previousStep) { "Previous step cannot be null if secondary button present" }
@@ -111,7 +111,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     fun resetToInitialState() {
         _state.value = _state.value.copy(
-            currentStep = ScanningSetupStep.DeviceSelection,
+            currentStep = navigator.getInitialStep(),
             selectedDevice = null
         )
     }
