@@ -702,7 +702,6 @@ fun WooPosScanningSetupDialogPreview() {
                         BarcodeReaderDevice.INATECK_BLUETOOTH,
                         BarcodeReaderDevice.OTHER
                     ),
-                    previousStep = null
                 ),
                 onDeviceSelected = {}
             )
@@ -745,16 +744,6 @@ fun WooPosScanningSetupTestScannerFailedStep() {
                 iconRes = R.drawable.ic_woo_pos_error_x,
                 primaryButtonText = "Retry",
                 secondaryButtonText = "Back",
-                previousStep = ScanningSetupStep.DeviceSelection(
-                    title = "Set up a barcode scanner",
-                    devices = listOf(
-                        BarcodeReaderDevice.TERA_1200,
-                        BarcodeReaderDevice.STAR_BSH_20B,
-                        BarcodeReaderDevice.INATECK_BLUETOOTH,
-                        BarcodeReaderDevice.OTHER
-                    ),
-                    previousStep = null
-                ),
             ).let { step ->
                 TestYourScannerScanFailedContent(
                     step = step,
