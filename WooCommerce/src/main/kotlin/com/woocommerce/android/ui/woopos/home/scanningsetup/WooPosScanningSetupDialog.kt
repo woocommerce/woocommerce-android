@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,6 +72,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosScanningSetupDialog(
@@ -80,8 +82,20 @@ fun WooPosScanningSetupDialog(
     val viewModel = hiltViewModel<WooPosScanningSetupViewModel>()
     val context = LocalContext.current
 
-    LaunchedEffect(isVisible) {
-        viewModel.resetToInitialState()
+    val isClosing = remember { mutableStateOf(false) }
+
+    LaunchedEffect(isClosing.value) {
+        if (isClosing.value) {
+            // Delay to allow the dialog to close before resetting state
+            delay(300)
+            viewModel.resetToInitialState()
+            isClosing.value = false
+        }
+    }
+
+    val onDismissRequestWrapper: () -> Unit = {
+        onDismissRequest()
+        isClosing.value = true
     }
 
     LaunchedEffect(Unit) {
@@ -97,13 +111,13 @@ fun WooPosScanningSetupDialog(
     }
     LaunchedEffect(Unit) {
         viewModel.dismissDialogEvent.collect {
-            onDismissRequest()
+            onDismissRequestWrapper()
         }
     }
 
     WooPosDialogWrapper(
         isVisible = isVisible,
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = onDismissRequestWrapper,
         dialogBackgroundContentDescription = stringResource(
             id = R.string.woopos_scanning_setup_dialog_content_description
         )
@@ -117,7 +131,7 @@ fun WooPosScanningSetupDialog(
             Row {
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
-                    onClick = onDismissRequest,
+                    onClick = onDismissRequestWrapper,
                     modifier = Modifier
                 ) {
                     Icon(
