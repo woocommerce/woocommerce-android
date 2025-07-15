@@ -31,9 +31,6 @@ class WooPosScanningSetupViewModel @Inject constructor(
     )
     val state: StateFlow<WooPosScanningSetupState> = _state.asStateFlow()
 
-    private val _showBarcodeInfoDialogEvent = MutableSharedFlow<Unit>()
-    val showBarcodeInfoDialogEvent: SharedFlow<Unit> = _showBarcodeInfoDialogEvent.asSharedFlow()
-
     private val _openBluetoothSettingsEvent = MutableSharedFlow<Unit>()
     val openBluetoothSettingsEvent: SharedFlow<Unit> = _openBluetoothSettingsEvent.asSharedFlow()
 
@@ -48,12 +45,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 )
 
                 when (event.device) {
-                    BarcodeReaderDevice.OTHER -> viewModelScope.launch {
-                        _showBarcodeInfoDialogEvent.emit(Unit)
-                    }
+                    BarcodeReaderDevice.OTHER -> _state.value = _state.value.copy(
+                        currentStep = createScannerSetupInfoStep(_state.value.currentStep)
+                    )
 
                     else -> _state.value = _state.value.copy(
-                        currentStep = createScannerHIDModeSetupStep()
+                        currentStep = createScannerHIDModeSetupStep(_state.value.currentStep)
                     )
                 }
             }
@@ -89,18 +86,19 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
             is ScanningSetupStep.ScannerHIDModeSetup -> {
                 _state.value = _state.value.copy(
-                    currentStep = createScannerPairModeSetupStep()
+                    currentStep = createScannerPairModeSetupStep(_state.value.currentStep)
                 )
             }
 
             is ScanningSetupStep.ScannerPairModeSetup -> {
                 _state.value = _state.value.copy(
-                    currentStep = createPairYourScannerStep()
+                    currentStep = createPairYourScannerStep(_state.value.currentStep)
                 )
             }
+
             is ScanningSetupStep.PairYourScanner -> {
                 _state.value = _state.value.copy(
-                    currentStep = createTestYourScannerStep()
+                    currentStep = createTestYourScannerStep(_state.value.currentStep)
                 )
                 startAutoNavigationToSuccess()
             }
@@ -110,7 +108,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.ScannerSetupSuccess -> {
-                error("Primary button should not be available on ScannerSetupSuccess step")
+                error("Not implemented yet")
             }
 
             is ScanningSetupStep.ScannerSetupInfo -> {
@@ -122,46 +120,10 @@ class WooPosScanningSetupViewModel @Inject constructor(
     }
 
     private fun handleSecondaryButtonClick() {
-        when (_state.value.currentStep) {
-            is ScanningSetupStep.DeviceSelection -> error(
-                "Secondary button should not be available on DeviceSelection step"
-            )
-
-            is ScanningSetupStep.ScannerHIDModeSetup -> {
-                _state.value = _state.value.copy(
-                    currentStep = createDeviceSelectionStep()
-                )
-            }
-
-            is ScanningSetupStep.ScannerPairModeSetup -> {
-                _state.value = _state.value.copy(
-                    currentStep = createScannerHIDModeSetupStep()
-                )
-            }
-            is ScanningSetupStep.PairYourScanner -> {
-                _state.value = _state.value.copy(
-                    currentStep = createScannerPairModeSetupStep()
-                )
-            }
-
-            is ScanningSetupStep.TestYourScanner -> {
-                _state.value = _state.value.copy(
-                    currentStep = createPairYourScannerStep()
-                )
-            }
-
-            is ScanningSetupStep.ScannerSetupSuccess -> {
-                _state.value = _state.value.copy(
-                    currentStep = createScannerSetupInfoStep()
-                )
-            }
-
-            is ScanningSetupStep.ScannerSetupInfo -> {
-                _state.value = _state.value.copy(
-                    currentStep = createScannerSetupSuccessStep()
-                )
-            }
-        }
+        val previousStep = requireNotNull(
+            _state.value.currentStep.previousStep
+        ) { "Previous step cannot be null if secondary button present" }
+        _state.value = _state.value.copy(currentStep = previousStep)
     }
 
     private fun createDeviceSelectionStep() = ScanningSetupStep.DeviceSelection(
@@ -171,25 +133,32 @@ class WooPosScanningSetupViewModel @Inject constructor(
             BarcodeReaderDevice.STAR_BSH_20B,
             BarcodeReaderDevice.INATECK_BLUETOOTH,
             BarcodeReaderDevice.OTHER
-        )
+        ),
+        previousStep = null
     )
 
-    private fun createScannerHIDModeSetupStep() = ScanningSetupStep.ScannerHIDModeSetup(
+    private fun createScannerHIDModeSetupStep(previousStep: ScanningSetupStep) = ScanningSetupStep.ScannerHIDModeSetup(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_introduction_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_introduction_message),
         qrCodeImageRes = R.drawable.ic_barcode,
         primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
-        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
+        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+        previousStep = previousStep
     )
 
-    private fun createScannerPairModeSetupStep() = ScanningSetupStep.ScannerPairModeSetup(
-        title = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_title),
-        message = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_message),
-        qrCodeImageRes = R.drawable.ic_barcode,
-        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
-        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
-    )
-    private fun createPairYourScannerStep() = ScanningSetupStep.PairYourScanner(
+    private fun createScannerPairModeSetupStep(previousStep: ScanningSetupStep) =
+        ScanningSetupStep.ScannerPairModeSetup(
+            title = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_title),
+            message = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_message),
+            qrCodeImageRes = R.drawable.ic_barcode,
+            primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
+            secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+            previousStep = previousStep
+        )
+
+    private fun createPairYourScannerStep(
+        previousStep: ScanningSetupStep
+    ) = ScanningSetupStep.PairYourScanner(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_pair_your_scanner_title),
         message = resourceProvider.getString(
             R.string.woopos_scanning_setup_pair_your_scanner_message,
@@ -198,23 +167,28 @@ class WooPosScanningSetupViewModel @Inject constructor(
         iconRes = R.drawable.ic_woopos_bluetooth_settings,
         primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
-        bluetoothSettingsButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_go_to_settings)
+        bluetoothSettingsButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_go_to_settings),
+        previousStep = previousStep
     )
 
-    private fun createTestYourScannerStep() = ScanningSetupStep.TestYourScanner(
+    private fun createTestYourScannerStep(
+        previousStep: ScanningSetupStep
+    ) = ScanningSetupStep.TestYourScanner(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_message),
         barcodeImageRes = R.drawable.ic_barcode,
-        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back)
+        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+        previousStep = previousStep
     )
 
     private fun createScannerSetupSuccessStep() = ScanningSetupStep.ScannerSetupSuccess(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_success_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_success_message),
-        moreInfoButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_more_information)
+        moreInfoButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_more_information),
+        previousStep = null
     )
 
-    private fun createScannerSetupInfoStep() = ScanningSetupStep.ScannerSetupInfo(
+    private fun createScannerSetupInfoStep(previousStep: ScanningSetupStep) = ScanningSetupStep.ScannerSetupInfo(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_info_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_info_message),
         bulletPoints = listOf(
@@ -224,7 +198,8 @@ class WooPosScanningSetupViewModel @Inject constructor(
         ),
         infoText = resourceProvider.getString(R.string.woopos_scanning_setup_info_text),
         backButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
-        doneButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done)
+        doneButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done),
+        previousStep = previousStep
     )
 
     private fun startAutoNavigationToSuccess() {
@@ -241,11 +216,4 @@ class WooPosScanningSetupViewModel @Inject constructor(
     companion object {
         private const val AUTO_NAVIGATION_DELAY_MS = 3000L
     }
-}
-
-sealed class WooPosScanningSetupUiEvent {
-    data object OnPrimaryButtonClicked : WooPosScanningSetupUiEvent()
-    data object OnSecondaryButtonClicked : WooPosScanningSetupUiEvent()
-    data object OnOpenBluetoothSettings : WooPosScanningSetupUiEvent()
-    data class OnDeviceSelected(val device: BarcodeReaderDevice) : WooPosScanningSetupUiEvent()
 }

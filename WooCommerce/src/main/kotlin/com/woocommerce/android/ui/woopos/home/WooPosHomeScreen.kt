@@ -194,9 +194,6 @@ private fun Dialogs(
         isVisible = dialogState is WooPosHomeState.DialogState.ScanningSetupDialog,
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.DismissScanningSetupDialog)
-        },
-        onShowBarcodeInfoDialog = {
-            onHomeUIEvent(WooPosHomeUIEvent.ShowBarcodeInfoDialog)
         }
     )
 
