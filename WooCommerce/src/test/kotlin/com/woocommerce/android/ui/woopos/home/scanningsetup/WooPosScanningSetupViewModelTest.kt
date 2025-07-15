@@ -391,33 +391,38 @@ class WooPosScanningSetupViewModelTest {
     }
 
     @Test
-    fun `given ScannerSetupBarcodesOnProducts state, when created, then should have correct string content`() = runTest {
-        // GIVEN
-        val viewModel = createViewModel()
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+    fun `given ScannerSetupBarcodesOnProducts state, when created, then should have correct string content`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
+            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
 
-        advanceTimeBy(3100)
+            advanceTimeBy(3100)
 
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
 
-        // WHEN
-        val step = viewModel.state.value.currentStep as ScanningSetupStep.ScannerSetupBarcodesOnProducts
+            // WHEN
+            val step = viewModel.state.value.currentStep as ScanningSetupStep.ScannerSetupBarcodesOnProducts
 
-        // THEN
-        assertThat(step.title).isEqualTo("How to set up barcodes on products")
-        assertThat(step.message).isEqualTo("You can set up barcodes in the GTIN, UPC, EAN, ISBN field in the product's inventory tab. For more details")
-        assertThat(step.doneButtonText).isEqualTo("Done")
-        assertThat(step.backButtonText).isEqualTo("Back")
-    }
+            // THEN
+            assertThat(step.title).isEqualTo("How to set up barcodes on products")
+            assertThat(step.message).isEqualTo(
+                "You can set up barcodes in the GTIN, UPC, EAN, ISBN field in the product's inventory tab. " +
+                    "For more details"
+            )
+            assertThat(step.doneButtonText).isEqualTo("Done")
+            assertThat(step.backButtonText).isEqualTo("Back")
+        }
 
     private fun createViewModel(): WooPosScanningSetupViewModel {
         setupMockResourceProvider()
         return WooPosScanningSetupViewModel(resourceProvider)
     }
 
+    @Suppress("LongMethod")
     private fun setupMockResourceProvider() {
         whenever(resourceProvider.getString(R.string.woopos_scanning_setup_device_selection_title))
             .thenReturn("Set up a barcode scanner")
@@ -471,9 +476,15 @@ class WooPosScanningSetupViewModelTest {
             .thenReturn("INATECK Bluetooth")
         whenever(resourceProvider.getString(R.string.woopos_scanning_setup_device_other))
             .thenReturn("Other")
-        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_barcodes_on_products_title))
-            .thenReturn("How to set up barcodes on products")
+        whenever(
+            resourceProvider.getString(
+                R.string.woopos_scanning_setup_barcodes_on_products_title
+            )
+        ).thenReturn("How to set up barcodes on products")
         whenever(resourceProvider.getString(R.string.woopos_scanning_setup_barcodes_on_products_message))
-            .thenReturn("You can set up barcodes in the GTIN, UPC, EAN, ISBN field in the product's inventory tab. For more details")
+            .thenReturn(
+                "You can set up barcodes in the GTIN, UPC, EAN, ISBN field in the product's inventory tab. " +
+                    "For more details"
+            )
     }
 }
