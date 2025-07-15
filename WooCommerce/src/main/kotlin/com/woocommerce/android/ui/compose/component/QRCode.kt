@@ -26,6 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -101,7 +102,7 @@ fun BarcodeEAN13Code(
             codeColor = codeColor,
             overlayId = overlayId,
         ),
-        contentDescription = "EAN13 Barcode Code",
+        contentDescription = stringResource(id = R.string.barcode_ean13_content_description),
         contentScale = ContentScale.FillBounds,
     )
 }
