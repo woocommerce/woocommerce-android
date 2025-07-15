@@ -119,7 +119,7 @@ class WooPosScanningSetupViewModelTest {
             .thenReturn(ScanningSetupStep.PairYourScanner())
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
             .thenReturn(ScanningSetupStep.TestYourScanner)
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScanner))
+        whenever(navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScanner))
             .thenReturn(mockNextStep)
         val viewModel = createViewModel()
 
@@ -154,6 +154,8 @@ class WooPosScanningSetupViewModelTest {
                 .thenReturn(ScanningSetupStep.PairYourScanner())
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
                 .thenReturn(ScanningSetupStep.TestYourScanner)
+            whenever(navigator.getNextStepForInvalidBarcode(ScanningSetupStep.TestYourScanner))
+                .thenReturn(ScanningSetupStep.TestYourScannerScanFailed)
             val viewModel = createViewModel()
 
             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
@@ -189,7 +191,7 @@ class WooPosScanningSetupViewModelTest {
                 .thenReturn(ScanningSetupStep.PairYourScanner())
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
                 .thenReturn(ScanningSetupStep.TestYourScanner)
-            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScannerTimeout))
+            whenever(navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScannerTimeout))
                 .thenReturn(mockNextStep)
             val viewModel = createViewModel()
 
@@ -225,6 +227,10 @@ class WooPosScanningSetupViewModelTest {
             .thenReturn(ScanningSetupStep.PairYourScanner())
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
             .thenReturn(ScanningSetupStep.TestYourScanner)
+        whenever(navigator.isStillOnTestBarcodeStep(ScanningSetupStep.TestYourScanner))
+            .thenReturn(true)
+        whenever(navigator.getTestBarcodeTimeoutStep(ScanningSetupStep.TestYourScanner))
+            .thenReturn(ScanningSetupStep.TestYourScannerTimeout)
         val viewModel = createViewModel()
 
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
@@ -257,6 +263,8 @@ class WooPosScanningSetupViewModelTest {
                 .thenReturn(ScanningSetupStep.PairYourScanner())
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
                 .thenReturn(ScanningSetupStep.TestYourScanner)
+            whenever(navigator.getNextStepForInvalidBarcode(ScanningSetupStep.TestYourScanner))
+                .thenReturn(ScanningSetupStep.TestYourScannerScanFailed)
             val viewModel = createViewModel()
 
             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))

@@ -343,4 +343,88 @@ class WooPosScannerSetupNavigatorTest {
         // THEN
         assertThat(previousStep).isInstanceOf(ScanningSetupStep.DeviceSelection::class.java)
     }
+
+    @Test
+    fun `given TestYourScanner step, when valid barcode scanned, then should navigate to next step`() {
+        // GIVEN
+        val currentStep = ScanningSetupStep.TestYourScanner
+
+        // WHEN
+        val nextStep = navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, currentStep)
+
+        // THEN
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerSetupSuccess::class.java)
+    }
+
+    @Test
+    fun `given TestYourScanner step, when invalid barcode scanned, then should navigate to TestYourScannerScanFailed`() {
+        // GIVEN
+        val currentStep = ScanningSetupStep.TestYourScanner
+
+        // WHEN
+        val nextStep = navigator.getNextStepForInvalidBarcode(currentStep)
+
+        // THEN
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.TestYourScannerScanFailed::class.java)
+    }
+
+    @Test
+    fun `given TestYourScannerTimeout step, when valid barcode scanned, then should navigate to next step`() {
+        // GIVEN
+        val currentStep = ScanningSetupStep.TestYourScannerTimeout
+
+        // WHEN
+        val nextStep = navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, currentStep)
+
+        // THEN
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerSetupSuccess::class.java)
+    }
+
+    @Test
+    fun `given TestYourScannerTimeout step, when invalid barcode scanned, then should navigate to TestYourScannerScanFailed`() {
+        // GIVEN
+        val currentStep = ScanningSetupStep.TestYourScannerTimeout
+
+        // WHEN
+        val nextStep = navigator.getNextStepForInvalidBarcode(currentStep)
+
+        // THEN
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.TestYourScannerScanFailed::class.java)
+    }
+
+    @Test
+    fun `given TestYourScanner step, when checking if still on test barcode step, then should return true`() {
+        // GIVEN
+        val currentStep = ScanningSetupStep.TestYourScanner
+
+        // WHEN
+        val isStillOnTestBarcodeStep = navigator.isStillOnTestBarcodeStep(currentStep)
+
+        // THEN
+        assertThat(isStillOnTestBarcodeStep).isTrue()
+    }
+
+    @Test
+    fun `given DeviceSelection step, when checking if still on test barcode step, then should return false`() {
+        // GIVEN
+        val currentStep = ScanningSetupStep.DeviceSelection
+
+        // WHEN
+        val isStillOnTestBarcodeStep = navigator.isStillOnTestBarcodeStep(currentStep)
+
+        // THEN
+        assertThat(isStillOnTestBarcodeStep).isFalse()
+    }
+
+    @Test
+    fun `given TestYourScanner step, when timeout occurs, then should navigate to TestYourScannerTimeout`() {
+        // GIVEN
+        val currentStep = ScanningSetupStep.TestYourScanner
+
+        // WHEN
+        val timeoutStep = navigator.getTestBarcodeTimeoutStep(currentStep)
+
+        // THEN
+        assertThat(timeoutStep).isInstanceOf(ScanningSetupStep.TestYourScannerTimeout::class.java)
+    }
 }
