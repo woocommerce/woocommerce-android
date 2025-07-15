@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
+import com.woocommerce.android.ui.compose.component.BarcodeEAN13Code
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -68,6 +69,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.WooLog
@@ -190,9 +193,26 @@ fun WooPosScanningSetupDialog(
                         }
                     )
 
-                    is ScanningSetupStep.TestYourScanner -> TestYourScannerContent(
-                        step = step,
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    is ScanningSetupStep.TestYourScanner -> TestScannerContent(
+                        title = step.title,
+                        message = step.message,
+                        barcodeValue = step.barcodeValue,
+                        secondaryButtonText = step.secondaryButtonText,
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
+                        onBarcodeScanned = { barcodeResult ->
+                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
+                        }
+                    )
+
+                    is ScanningSetupStep.TestYourScannerTimeout -> TestScannerContent(
+                        title = step.title,
+                        message = step.message,
+                        barcodeValue = step.barcodeValue,
+                        secondaryButtonText = step.secondaryButtonText,
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
+                        onBarcodeScanned = { barcodeResult ->
+                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
+                        }
                     )
 
                     is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
@@ -201,6 +221,12 @@ fun WooPosScanningSetupDialog(
                     )
 
                     is ScanningSetupStep.ScannerSetupInfo -> ScannerSetupInfoContent(
+                        step = step,
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    )
+
+                    is ScanningSetupStep.TestYourScannerScanFailed -> TestYourScannerScanFailedContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
@@ -271,8 +297,58 @@ private fun ScannerModeSetupContent(
 }
 
 @Composable
-private fun TestYourScannerContent(
-    step: ScanningSetupStep.TestYourScanner,
+private fun TestScannerContent(
+    title: String,
+    message: String,
+    barcodeValue: String,
+    secondaryButtonText: String,
+    onSecondaryClick: () -> Unit,
+    onBarcodeScanned: (BarcodeInputDetector.BarcodeResult) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .listenForBarcodes(onBarcodeScanned),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+        )
+
+        BarcodeEAN13Code(
+            barcodeValue,
+            300.dp,
+            150.dp,
+            codeColor = MaterialTheme.colorScheme.onSurface,
+            backgroundColor = MaterialTheme.colorScheme.surfaceBright
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        WooPosOutlinedButton(
+            onClick = onSecondaryClick,
+            text = secondaryButtonText,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun TestYourScannerScanFailedContent(
+    step: ScanningSetupStep.TestYourScannerScanFailed,
+    onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
 ) {
     Column(
@@ -281,44 +357,38 @@ private fun TestYourScannerContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = step.iconRes),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
         WooPosText(
             text = step.title,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
 
         WooPosText(
             text = step.message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
-        Box(
-            modifier = Modifier
-                .size(200.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-                .background(Color.White)
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = step.barcodeImageRes),
-                contentDescription = stringResource(
-                    id = R.string.woopos_scanning_setup_barcode_content_description
-                ),
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-
-        WooPosOutlinedButton(
-            onClick = onSecondaryClick,
-            text = step.secondaryButtonText,
-            modifier = Modifier.fillMaxWidth()
+        SetupButtonsRow(
+            primaryButtonText = step.primaryButtonText,
+            secondaryButtonText = step.secondaryButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
         )
     }
 }
@@ -636,6 +706,62 @@ fun WooPosScanningSetupDialogPreview() {
                 ),
                 onDeviceSelected = {}
             )
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosScanningSetupTestScannerStep() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            TestScannerContent(
+                title = "Test your scanner",
+                message = "Scan the barcode below to test your scanner.",
+                barcodeValue = "123456789012",
+                secondaryButtonText = "Skip",
+                onSecondaryClick = {},
+                onBarcodeScanned = {}
+            )
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosScanningSetupTestScannerFailedStep() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            ScanningSetupStep.TestYourScannerScanFailed(
+                title = "Scanning issue found",
+                message = "Please check the scanner’s manual and reset it to factory settings, then retry the setup " +
+                    "flow.",
+                iconRes = R.drawable.ic_woo_pos_error_x,
+                primaryButtonText = "Retry",
+                secondaryButtonText = "Back",
+                previousStep = ScanningSetupStep.DeviceSelection(
+                    title = "Set up a barcode scanner",
+                    devices = listOf(
+                        BarcodeReaderDevice.TERA_1200,
+                        BarcodeReaderDevice.STAR_BSH_20B,
+                        BarcodeReaderDevice.INATECK_BLUETOOTH,
+                        BarcodeReaderDevice.OTHER
+                    ),
+                    previousStep = null
+                ),
+            ).let { step ->
+                TestYourScannerScanFailedContent(
+                    step = step,
+                    onPrimaryClick = {},
+                    onSecondaryClick = {},
+                )
+            }
         }
     }
 }
