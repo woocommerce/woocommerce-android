@@ -108,10 +108,18 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.ScannerSetupSuccess -> {
-                error("Not implemented yet")
+                _state.value = _state.value.copy(
+                    currentStep = createScannerSetupBarcodesOnProductsStep(_state.value.currentStep)
+                )
             }
 
             is ScanningSetupStep.ScannerSetupInfo -> {
+                viewModelScope.launch {
+                    _dismissDialogEvent.emit(Unit)
+                }
+            }
+
+            is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> {
                 viewModelScope.launch {
                     _dismissDialogEvent.emit(Unit)
                 }
@@ -186,6 +194,15 @@ class WooPosScanningSetupViewModel @Inject constructor(
         message = resourceProvider.getString(R.string.woopos_scanning_setup_success_message),
         moreInfoButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_more_information),
         previousStep = null
+    )
+
+    private fun createScannerSetupBarcodesOnProductsStep(
+        previousStep: ScanningSetupStep
+    ) = ScanningSetupStep.ScannerSetupBarcodesOnProducts(
+        title = resourceProvider.getString(R.string.woopos_scanning_setup_barcodes_on_products_title),
+        message = resourceProvider.getString(R.string.woopos_scanning_setup_barcodes_on_products_message),
+        doneButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done),
+        previousStep = previousStep
     )
 
     private fun createScannerSetupInfoStep(previousStep: ScanningSetupStep) = ScanningSetupStep.ScannerSetupInfo(

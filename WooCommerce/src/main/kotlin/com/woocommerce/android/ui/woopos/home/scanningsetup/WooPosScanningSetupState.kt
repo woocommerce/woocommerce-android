@@ -86,5 +86,13 @@ data class WooPosScanningSetupState(
             val doneButtonText: String,
             override val previousStep: ScanningSetupStep?
         ) : ScanningSetupStep()
+
+        @Parcelize
+        data class ScannerSetupBarcodesOnProducts(
+            val title: String,
+            val message: String,
+            val doneButtonText: String,
+            override val previousStep: ScanningSetupStep?
+        ) : ScanningSetupStep()
     }
 }

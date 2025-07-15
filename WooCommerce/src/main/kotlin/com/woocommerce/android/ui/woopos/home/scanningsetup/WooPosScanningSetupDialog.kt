@@ -205,6 +205,11 @@ fun WooPosScanningSetupDialog(
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
+
+                    is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> ScannerSetupBarcodesOnProductsContent(
+                        step = step,
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) }
+                    )
                 }
             }
         }
@@ -529,6 +534,76 @@ private fun ScannerSetupSuccessContent(
 }
 
 @Composable
+private fun ScannerSetupSuccessIcon(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(88.dp)
+            .background(WooPosTheme.colors.success, CircleShape)
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
+            tint = WooPosTheme.colors.onSuccess,
+            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
+            modifier = Modifier.size(40.dp)
+        )
+    }
+}
+
+@Composable
+private fun ScannerSetupBarcodesOnProductsContent(
+    step: ScanningSetupStep.ScannerSetupBarcodesOnProducts,
+    onPrimaryClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.img_pos_inventory_setup),
+            contentDescription = stringResource(id = R.string.woopos_scanning_setup_barcodes_on_products_image_description),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
+                )
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        WooPosButton(
+            onClick = onPrimaryClick,
+            text = step.doneButtonText,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
 private fun ScannerSetupInfoContent(
     step: ScanningSetupStep.ScannerSetupInfo,
     onPrimaryClick: () -> Unit,
@@ -593,25 +668,6 @@ private fun BulletPointItem(text: String) {
         style = WooPosTypography.BodyLarge,
         modifier = Modifier.fillMaxWidth()
     )
-}
-
-@Composable
-private fun ScannerSetupSuccessIcon(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(88.dp)
-            .background(WooPosTheme.colors.success, CircleShape)
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
-            tint = WooPosTheme.colors.onSuccess,
-            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
-            modifier = Modifier.size(40.dp)
-        )
-    }
 }
 
 @FontScalePreviews
