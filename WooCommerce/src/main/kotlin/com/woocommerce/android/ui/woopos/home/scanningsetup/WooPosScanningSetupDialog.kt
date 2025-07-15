@@ -318,20 +318,13 @@ private fun TestYourScannerContent(
             modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
-        Box(
-            modifier = Modifier
-                .size(350.dp, 200.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-                .background(Color.White)
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
-            contentAlignment = Alignment.Center
-        ) {
-            BarcodeEAN13Code(
-                step.barcodeValue,
-                300.dp,
-                150.dp
-            )
-        }
+        BarcodeEAN13Code(
+            step.barcodeValue,
+            300.dp,
+            150.dp,
+            codeColor = MaterialTheme.colorScheme.onSurface,
+            backgroundColor = MaterialTheme.colorScheme.surfaceBright
+        )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
@@ -371,20 +364,13 @@ private fun TestYourScannerTimeoutContent(
             modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
-        Box(
-            modifier = Modifier
-                .size(350.dp, 200.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-                .background(Color.White)
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
-            contentAlignment = Alignment.Center
-        ) {
-            BarcodeEAN13Code(
-                step.barcodeValue,
-                300.dp,
-                150.dp
-            )
-        }
+        BarcodeEAN13Code(
+            step.barcodeValue,
+            300.dp,
+            150.dp,
+            codeColor = MaterialTheme.colorScheme.onSurface,
+            backgroundColor = MaterialTheme.colorScheme.surfaceBright
+        )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
