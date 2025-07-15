@@ -36,11 +36,11 @@ class WooPosScannerSetupNavigator @Inject constructor() {
                 val currentIndex = stepSequence.indexOf(currentStep)
 
                 if (currentIndex <= 0) {
-                    return ScanningSetupStep.DeviceSelection
+                    ScanningSetupStep.DeviceSelection
+                } else {
+                    val previousIndex = currentIndex - 1
+                    stepSequence[previousIndex]
                 }
-
-                val previousIndex = currentIndex - 1
-                return stepSequence[previousIndex]
             }
         }
     }
