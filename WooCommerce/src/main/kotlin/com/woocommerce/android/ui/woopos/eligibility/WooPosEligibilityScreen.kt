@@ -18,7 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -27,6 +29,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -38,14 +41,25 @@ import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 fun WooPosEligibilityScreen(
     initialReason: WooPosLaunchability.NonLaunchabilityReason,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    viewModel: WooPosEligibilityViewModel = hiltViewModel()
 ) {
-    val retryState = viewModel.retryState.collectAsState().value
-
+    val viewModel: WooPosEligibilityViewModel = hiltViewModel()
     LaunchedEffect(Unit) {
         viewModel.initialize(initialReason)
     }
+    val retryState = viewModel.retryState.collectAsState().value
+    WooPosEligibilityScreen(
+        onNavigationEvent = onNavigationEvent,
+        retryState = retryState,
+        onRetry = { viewModel.retryEligibilityCheck() }
+    )
+}
 
+@Composable
+fun WooPosEligibilityScreen(
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    retryState: WooPosEligibilityRetryState,
+    onRetry: () -> Unit,
+) {
     LaunchedEffect(retryState) {
         if (retryState is WooPosEligibilityRetryState.Eligible) {
             onNavigationEvent(WooPosNavigationEvent.OpenHomeFromSplash)
@@ -93,7 +107,7 @@ fun WooPosEligibilityScreen(
 
         WooPosButton(
             text = stringResource(id = R.string.woopos_eligibility_retry_check_label),
-            onClick = { viewModel.retryEligibilityCheck() },
+            onClick = onRetry,
             state = if (retryState is WooPosEligibilityRetryState.Loading) {
                 WooPosButtonState.LOADING
             } else {
@@ -139,11 +153,21 @@ private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason
     }
 }
 
-@Preview(showBackground = true)
+private class NonLaunchabilityReasonProvider : PreviewParameterProvider<WooPosLaunchability.NonLaunchabilityReason> {
+    override val values = WooPosLaunchability.NonLaunchabilityReason.entries.asSequence()
+}
+
+@WooPosPreview
 @Composable
-private fun WooPosEligibilityScreenPreview() {
-    WooPosEligibilityScreen(
-        initialReason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency,
-        onNavigationEvent = {}
-    )
+private fun WooPosEligibilityScreenPreview(
+    @PreviewParameter(NonLaunchabilityReasonProvider::class)
+    reason: WooPosLaunchability.NonLaunchabilityReason
+) {
+    WooPosTheme {
+        WooPosEligibilityScreen(
+            onNavigationEvent = {},
+            retryState = WooPosEligibilityRetryState.Ineligible(reason),
+            onRetry = {}
+        )
+    }
 }
