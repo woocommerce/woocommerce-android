@@ -806,7 +806,8 @@ fun WooPosScanningSetupTestScannerTimeoutStep() {
         ) {
             ScanningSetupStep.TestYourScannerTimeout(
                 title = "No scan data found yet",
-                message = "Scan the barcode to test your scanner. If the issue continues, please check Bluetooth settings and try again.",
+                message = "Scan the barcode to test your scanner. If the issue continues, please check Bluetooth " +
+                    "settings and try again.",
                 barcodeImageRes = R.drawable.scanner_setup_test_barcode,
                 secondaryButtonText = "Back",
                 previousStep = ScanningSetupStep.DeviceSelection(
@@ -840,7 +841,8 @@ fun WooPosScanningSetupTestScannerFailedStep() {
         ) {
             ScanningSetupStep.TestYourScannerScanFailed(
                 title = "Scanning issue found",
-                message = "Please check the scanner’s manual and reset it to factory settings, then retry the setup flow.",
+                message = "Please check the scanner’s manual and reset it to factory settings, then retry the setup " +
+                    "flow.",
                 iconRes = R.drawable.ic_woo_pos_error_x,
                 primaryButtonText = "Retry",
                 secondaryButtonText = "Back",
