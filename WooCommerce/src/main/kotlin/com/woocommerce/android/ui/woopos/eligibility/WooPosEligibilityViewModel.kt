@@ -28,7 +28,7 @@ class WooPosEligibilityViewModel @Inject constructor(
         _retryState.value = WooPosEligibilityRetryState.Ineligible(reason)
     }
 
-    fun retryEligibilityCheck() {
+    fun retryEligibilityCheckTapped() {
         viewModelScope.launch {
             _retryState.value = WooPosEligibilityRetryState.Loading
 

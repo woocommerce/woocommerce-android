@@ -49,7 +49,7 @@ fun WooPosEligibilityScreen(
     WooPosEligibilityScreen(
         onNavigationEvent = onNavigationEvent,
         retryState = retryState,
-        onRetry = { viewModel.retryEligibilityCheck() }
+        onRetry = { viewModel.retryEligibilityCheckTapped() }
     )
 }
 

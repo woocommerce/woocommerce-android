@@ -27,7 +27,7 @@ class WooPosEligibilityViewModelTest {
         val sut = createSut()
 
         // WHEN
-        sut.retryEligibilityCheck()
+        sut.retryEligibilityCheckTapped()
 
         // THEN
         coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
@@ -44,7 +44,7 @@ class WooPosEligibilityViewModelTest {
         val sut = createSut()
 
         // WHEN
-        sut.retryEligibilityCheck()
+        sut.retryEligibilityCheckTapped()
 
         // THEN
         coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
