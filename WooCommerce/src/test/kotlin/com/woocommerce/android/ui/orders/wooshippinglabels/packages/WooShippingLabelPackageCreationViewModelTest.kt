@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
@@ -39,6 +40,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -648,8 +650,9 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 savedPackages = initialSavedPackages
             )
         )
-        val error = "test_error"
-        whenever(updateSavedCarrierPackages(any(), any(), any(), any())).thenReturn(Result.failure(Exception(error)))
+        val wooError = WooError(type = WooErrorType.API_ERROR, original = GenericErrorType.UNKNOWN)
+        val wooException = WooException(wooError)
+        whenever(updateSavedCarrierPackages(any(), any(), any(), any())).thenReturn(Result.failure(wooException))
 
         sut = WooShippingLabelPackageCreationViewModel(
             SavedStateHandle(),
@@ -667,7 +670,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // Verify WCS_PACKAGE_SELECTION_STEP event is tracked with "removing_failed" property
-        val expectedProperty = mapOf(KEY_STATE to "removing_failed", KEY_ERROR to error)
+        val expectedProperty = mapOf(KEY_STATE to "removing_failed", KEY_ERROR to WooErrorType.API_ERROR.name)
         verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, expectedProperty)
     }
 
