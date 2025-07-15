@@ -37,7 +37,6 @@ class OrderSummaryDaoChunksTest {
         )
             .addTypeConverter(CurrencyPositionConverter(Mockito.mock()))
             .setQueryCallback({ sqlQuery, _ ->
-                println(sqlQuery)
                 logs.append(sqlQuery)
                     .append("\n")
             }, Executors.newSingleThreadExecutor())
