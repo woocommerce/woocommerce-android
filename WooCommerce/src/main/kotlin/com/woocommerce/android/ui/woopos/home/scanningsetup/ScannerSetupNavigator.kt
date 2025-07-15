@@ -22,7 +22,7 @@ class ScannerSetupNavigator @Inject constructor() {
         return stepSequence[nextIndex]
     }
 
-    fun getPreviousStep(device: BarcodeReaderDevice, currentStep: ScanningSetupStep): ScanningSetupStep? {
+    fun getPreviousStep(device: BarcodeReaderDevice, currentStep: ScanningSetupStep): ScanningSetupStep {
         val stepSequence = ScannerConfigurations.getStepSequence(device)
         val currentIndex = stepSequence.indexOf(currentStep)
 
