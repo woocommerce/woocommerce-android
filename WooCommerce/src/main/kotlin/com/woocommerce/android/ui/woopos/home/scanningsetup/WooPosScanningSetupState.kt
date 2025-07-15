@@ -92,6 +92,7 @@ data class WooPosScanningSetupState(
             val title: String,
             val message: String,
             val doneButtonText: String,
+            val backButtonText: String,
             override val previousStep: ScanningSetupStep?
         ) : ScanningSetupStep()
     }

@@ -208,7 +208,8 @@ fun WooPosScanningSetupDialog(
 
                     is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> ScannerSetupBarcodesOnProductsContent(
                         step = step,
-                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) }
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
                 }
             }
@@ -556,6 +557,7 @@ private fun ScannerSetupSuccessIcon(
 private fun ScannerSetupBarcodesOnProductsContent(
     step: ScanningSetupStep.ScannerSetupBarcodesOnProducts,
     onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -575,12 +577,18 @@ private fun ScannerSetupBarcodesOnProductsContent(
             text = step.message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+            modifier = Modifier.padding(
+                bottom = WooPosSpacing.Large.value.toAdaptivePadding(),
+                start = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                end = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+            )
         )
 
         Image(
             painter = painterResource(id = R.drawable.img_pos_inventory_setup),
-            contentDescription = stringResource(id = R.string.woopos_scanning_setup_barcodes_on_products_image_description),
+            contentDescription = stringResource(
+                id = R.string.woopos_scanning_setup_barcodes_on_products_image_description
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
@@ -595,10 +603,11 @@ private fun ScannerSetupBarcodesOnProductsContent(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
-        WooPosButton(
-            onClick = onPrimaryClick,
-            text = step.doneButtonText,
-            modifier = Modifier.fillMaxWidth()
+        SetupButtonsRow(
+            primaryButtonText = step.doneButtonText,
+            secondaryButtonText = step.backButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
         )
     }
 }

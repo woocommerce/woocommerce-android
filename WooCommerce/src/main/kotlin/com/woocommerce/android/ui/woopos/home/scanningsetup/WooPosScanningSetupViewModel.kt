@@ -202,6 +202,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_barcodes_on_products_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_barcodes_on_products_message),
         doneButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_done),
+        backButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
         previousStep = previousStep
     )
 
