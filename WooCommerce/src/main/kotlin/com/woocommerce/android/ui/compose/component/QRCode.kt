@@ -59,9 +59,11 @@ fun QRCode(
             .background(
                 color = colorResource(id = R.color.woo_white)
             ),
-        painter = rememberQrBitmapPainter(
+        painter = rememberBarcodeBitmapPainter(
             content,
-            size = size,
+            barcodeFormat = BarcodeFormat.QR_CODE,
+            widthPx = size,
+            heightPx = size,
             overlayId = overlayId,
         ),
         contentDescription = "QR Code",
@@ -69,14 +71,48 @@ fun QRCode(
     )
 }
 
+
 @Composable
-private fun rememberQrBitmapPainter(
+fun BarcodeEAN13Code(
     content: String,
-    size: Dp,
+    widthPx: Dp,
+    heightPx: Dp,
+    @DrawableRes overlayId: Int? = null,
+) {
+    Image(
+        modifier = Modifier
+            .size(widthPx, heightPx)
+            .border(
+                width = 5.dp,
+                color = colorResource(id = R.color.woo_white),
+            )
+            .padding(4.dp)
+            .background(
+                color = colorResource(id = R.color.woo_white)
+            ),
+        painter = rememberBarcodeBitmapPainter(
+            content,
+            barcodeFormat = BarcodeFormat.EAN_13,
+            widthPx = widthPx,
+            heightPx = heightPx,
+            overlayId = overlayId,
+        ),
+        contentDescription = "EAN13 Barcode Code",
+        contentScale = ContentScale.FillBounds,
+    )
+}
+
+@Composable
+private fun rememberBarcodeBitmapPainter(
+    content: String,
+    barcodeFormat: BarcodeFormat,
+    widthPx: Dp,
+    heightPx: Dp,
     @DrawableRes overlayId: Int?,
 ): BitmapPainter {
     val density = LocalDensity.current
-    val sizePx = with(density) { size.roundToPx() }
+    val widthPx = with(density) { widthPx.roundToPx() }
+    val heightPx = with(density) { heightPx.roundToPx() }
 
     var bitmap by remember(content) { mutableStateOf<Bitmap?>(null) }
 
@@ -86,7 +122,7 @@ private fun rememberQrBitmapPainter(
         if (bitmap != null) return@LaunchedEffect
 
         launch(Dispatchers.IO) {
-            val newBitmap = generateQr(content, sizePx, pixelColor)
+            val newBitmap = generateCode(content, barcodeFormat, widthPx, heightPx, pixelColor)
 
             bitmap = newBitmap
         }
@@ -99,7 +135,7 @@ private fun rememberQrBitmapPainter(
                 toBitmap(intrinsicWidth, intrinsicHeight)
             }
         }
-        val currentBitmap = bitmap ?: Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
+        val currentBitmap = bitmap ?: Bitmap.createBitmap(widthPx, heightPx, Bitmap.Config.ARGB_8888)
             .apply {
                 eraseColor(Color.TRANSPARENT)
             }
@@ -113,13 +149,19 @@ private fun rememberQrBitmapPainter(
     }
 }
 
-private fun generateQr(content: String, sizePx: Int, pixelColor: Int): Bitmap? {
+private fun generateCode(
+    content: String,
+    barcodeFormat: BarcodeFormat,
+    widthPx: Int,
+    heightPx: Int,
+    pixelColor: Int
+): Bitmap? {
     val bitmapMatrix = try {
         MultiFormatWriter().encode(
             content,
-            BarcodeFormat.QR_CODE,
-            sizePx,
-            sizePx,
+            barcodeFormat,
+            widthPx,
+            heightPx,
             mapOf(
                 EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H,
                 EncodeHintType.MARGIN to 0,
@@ -130,12 +172,12 @@ private fun generateQr(content: String, sizePx: Int, pixelColor: Int): Bitmap? {
         null
     }
 
-    val matrixWidth = bitmapMatrix?.width ?: sizePx
-    val matrixHeight = bitmapMatrix?.height ?: sizePx
+    val matrixWidth = bitmapMatrix?.width ?: widthPx
+    val matrixHeight = bitmapMatrix?.height ?: heightPx
 
     val newBitmap = Bitmap.createBitmap(
-        bitmapMatrix?.width ?: sizePx,
-        bitmapMatrix?.height ?: sizePx,
+        bitmapMatrix?.width ?: widthPx,
+        bitmapMatrix?.height ?: heightPx,
         Bitmap.Config.ARGB_8888,
     )
 
@@ -171,6 +213,20 @@ fun QRCodePreview() {
         QRCode(
             content = "https://woocommerce.com",
             size = 150.dp,
+            overlayId = R.drawable.img_woo_white
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun EAN13CodePreview() {
+    WooThemeWithBackground {
+        BarcodeEAN13Code(
+            content = "https://woocommerce.com",
+            widthPx = 150.dp,
+            heightPx = 80.dp,
             overlayId = R.drawable.img_woo_white
         )
     }
