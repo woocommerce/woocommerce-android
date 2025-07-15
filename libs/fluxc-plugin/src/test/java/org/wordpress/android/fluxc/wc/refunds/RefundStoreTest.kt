@@ -1,58 +1,65 @@
 package org.wordpress.android.fluxc.wc.refunds
 
-import com.yarolegovich.wellsql.WellSql
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
+import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
+import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_ID
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
-import org.wordpress.android.fluxc.persistence.WCRefundSqlUtils
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
+import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCRefundStore.Companion.DEFAULT_PAGE
+import org.wordpress.android.fluxc.store.WCRefundStore.Companion.DEFAULT_PAGE_SIZE
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class RefundStoreTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private val restClient = mock<RefundRestClient>()
-    private val site = mock<SiteModel>()
-    private val mapper = RefundMapper()
+    private val site = SiteModel()
+    private val mapper = RefundMapper(Gson())
     private lateinit var store: WCRefundStore
+    private lateinit var refundDao: RefundDao
 
     private val orderId = 1L
     private val refundId = REFUND_RESPONSE.refundId
-    private val error = WooError(INVALID_ID, NOT_FOUND, "Invalid order ID")
+    private val error = WooError(
+        WooErrorType.INVALID_ID,
+        BaseRequest.GenericErrorType.NOT_FOUND,
+        "Invalid order ID"
+    )
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
-        val config = SingleStoreWellSqlConfigForTests(
-                appContext,
-                listOf(WCRefundSqlUtils.RefundBuilder::class.java),
-                WellSqlConfig.ADDON_WOOCOMMERCE
-        )
-        WellSql.init(config)
-        config.reset()
+        refundDao = databaseRule.db.refundDao
 
         store = WCRefundStore(
-                restClient,
-                initCoroutineEngine(),
-                mapper
+            restClient,
+            initCoroutineEngine(),
+            mapper,
+            refundDao,
         )
     }
 
@@ -62,7 +69,7 @@ class RefundStoreTest {
         val result = fetchAllTestRefunds()
 
         assertThat(result.model?.size).isEqualTo(data.size)
-        assertThat(result.model?.first()).isEqualTo(mapper.map(data.first()))
+        assertThat(result.model?.first()).isEqualTo(mapper.toModel(data.first()))
 
         val invalidRequestResult = store.fetchAllRefunds(site, 2)
         assertThat(invalidRequestResult.model).isNull()
@@ -76,7 +83,7 @@ class RefundStoreTest {
         val refunds = store.getAllRefunds(site, orderId)
 
         assertThat(refunds.size).isEqualTo(1)
-        assertThat(refunds.first()).isEqualTo(mapper.map(REFUND_RESPONSE))
+        assertThat(refunds.first()).isEqualTo(mapper.toModel(REFUND_RESPONSE))
 
         val invalidRequestResult = store.getAllRefunds(site, 2)
         assertThat(invalidRequestResult.size).isEqualTo(0)
@@ -86,7 +93,7 @@ class RefundStoreTest {
     fun `fetch specific refund`() = test {
         val refund = fetchSpecificTestRefund()
 
-        assertThat(refund.model).isEqualTo(mapper.map(REFUND_RESPONSE))
+        assertThat(refund.model).isEqualTo(mapper.toModel(REFUND_RESPONSE))
     }
 
     @Test
@@ -94,19 +101,19 @@ class RefundStoreTest {
         fetchSpecificTestRefund()
         val refund = store.getRefund(site, orderId, refundId)
 
-        assertThat(refund).isEqualTo(mapper.map(REFUND_RESPONSE))
+        assertThat(refund).isEqualTo(mapper.toModel(REFUND_RESPONSE))
     }
 
     private suspend fun fetchSpecificTestRefund(): WooResult<WCRefundModel> {
         val fetchRefundsPayload = WooPayload(
-                REFUND_RESPONSE
+            REFUND_RESPONSE
         )
         whenever(restClient.fetchRefund(site, orderId, refundId)).thenReturn(
                 fetchRefundsPayload
         )
 
         whenever(restClient.fetchRefund(site, 2, refundId)).thenReturn(
-                WooPayload(error)
+            WooPayload(error)
         )
         return store.fetchRefund(site, orderId, refundId)
     }
@@ -114,27 +121,27 @@ class RefundStoreTest {
     private suspend fun fetchAllTestRefunds(): WooResult<List<WCRefundModel>> {
         val data = arrayOf(REFUND_RESPONSE, REFUND_RESPONSE)
         val fetchRefundsPayload = WooPayload(
-                data
+            data
         )
         whenever(
-                restClient.fetchAllRefunds(
-                        site,
-                        orderId,
-                        WCRefundStore.DEFAULT_PAGE,
-                        WCRefundStore.DEFAULT_PAGE_SIZE
-                )
+            restClient.fetchAllRefunds(
+                site,
+                orderId,
+                DEFAULT_PAGE,
+                DEFAULT_PAGE_SIZE
+            )
         ).thenReturn(
                 fetchRefundsPayload
         )
         whenever(
-                restClient.fetchAllRefunds(
-                        site,
-                        2,
-                        WCRefundStore.DEFAULT_PAGE,
-                        WCRefundStore.DEFAULT_PAGE_SIZE
-                )
+            restClient.fetchAllRefunds(
+                site,
+                2,
+                DEFAULT_PAGE,
+                DEFAULT_PAGE_SIZE
+            )
         ).thenReturn(
-                WooPayload(error)
+            WooPayload(error)
         )
         return store.fetchAllRefunds(site, orderId)
     }

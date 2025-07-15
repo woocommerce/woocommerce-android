@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,17 +26,18 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
     private var previousNotice: NoticeType? = null
 
     operator fun invoke(
-        shippingAddresses: Flow<WooShippingAddresses?>,
+        shippingAddresses: Flow<List<WooShippingAddresses>>,
         customsState: Flow<List<CustomsState>>,
         selectedIndexFlow: Flow<Int>,
         coroutineScope: CoroutineScope,
     ) = combine(
-        shippingAddresses.filterNotNull(),
+        shippingAddresses.filter { it.isNotEmpty() },
         customsState,
         selectedIndexFlow,
         isDismissedFlow
     ) { addresses, customs, selectedIndex, isDismissed ->
-        val noticeType = getNoticeType(addresses, customs[selectedIndex], isDismissed) ?: return@combine null
+        val noticeType =
+            getNoticeType(addresses[selectedIndex], customs[selectedIndex], isDismissed) ?: return@combine null
         getNoticeBannerUiState(noticeType).also { state ->
             previousNotice = state.type
             if (state.autoDismiss) {

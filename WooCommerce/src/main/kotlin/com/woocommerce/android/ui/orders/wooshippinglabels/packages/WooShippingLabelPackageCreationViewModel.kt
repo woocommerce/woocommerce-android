@@ -5,6 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPackagesFromStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
@@ -14,7 +19,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPa
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CustomPackageCreationData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StoreOptionsForPackages
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -33,7 +38,8 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val fetchPackages: FetchPackagesFromStore,
     private val updateSavedCarrierPackages: UpdateSavedCarrierPackages,
-    private val packageRepository: WooShippingLabelPackageRepository
+    private val packageRepository: WooShippingLabelPackageRepository,
+    private val tracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = savedState.getStateFlow(
@@ -67,8 +73,17 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
     private fun loadData(): Job {
         return launch {
+            tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to VALUE_STARTED))
             fetchPackages().let { response ->
                 _viewState.update { viewState -> viewState.copy(packagesState = response) }
+                if (response is PackagesState.Data) {
+                    tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "loading_success"))
+                } else if (response is PackagesState.Error) {
+                    tracker.track(
+                        AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
+                        mapOf(KEY_STATE to "loading_failed", KEY_ERROR to response.error)
+                    )
+                }
             }
         }
     }
@@ -97,20 +112,29 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     }
 
     fun onSavedPackageRemoved(removedPackage: PackageData) {
-        _viewState.update { viewState ->
-            val packagesState = viewState.packagesData ?: return@update viewState
-            viewState.copy(
-                packagesState = packagesState.copy(
-                    savedPackages = packagesState.savedPackages.filterNot { it.id == removedPackage.id }
-                )
-            )
-        }
+        // Update UI
+        updateSavedPackageUI(packageData = removedPackage, saved = false)
+
+        // Send to backend
         launch {
             updateSavedCarrierPackages(
                 savePackage = false,
                 packageId = removedPackage.id,
                 isUserDefined = removedPackage.isUserDefined,
-            )
+            ).let {
+                if (it.isSuccess) {
+                    tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "removing_success"))
+                } else {
+                    triggerEvent(Event.ShowSnackbar(R.string.woo_shipping_labels_package_removing_error))
+
+                    // If the removal fails, revert the UI change
+                    updateSavedPackageUI(packageData = removedPackage, saved = true)
+                    tracker.track(
+                        AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
+                        mapOf(KEY_STATE to "removing_failed", KEY_ERROR to it.exceptionOrNull()?.message.orEmpty())
+                    )
+                }
+            }
         }
     }
 
@@ -129,6 +153,8 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             ?.flatMap { it.packages }
             ?.find { it.isSelected }
             ?.let { triggerEvent(PackageSelected(it)) }
+
+        tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
     }
 
     fun onAddSavedPackageClick() {
@@ -136,6 +162,8 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             ?.savedPackages
             ?.find { it.isSelected }
             ?.let { triggerEvent(PackageSelected(it)) }
+
+        tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
     }
 
     fun onAddCustomPackageClick(savePackageAsTemplate: Boolean) {
@@ -145,6 +173,8 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         } else {
             triggerEvent(PackageSelected(customPackage.toPackageData(dimensionUnit = storeOptions.dimensionUnit)))
         }
+
+        tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
     }
 
     fun onPackageTypeSpinnerClick() {
@@ -271,30 +301,84 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     }
 
     fun onCarrierPackageStarred(packageData: PackageData, isStarred: Boolean) {
-        _viewState.update { viewState ->
-            val packages = viewState.packagesData ?: return@update viewState
-            val updatedCarrierPackages = packages.carrierPackages.mapValues { (_, packageGroupList) ->
-                packageGroupList.map { packageGroup ->
-                    val updatedPackages = packageGroup.packages.map {
-                        when {
-                            it.id == packageData.id -> it.copy(isStarred = isStarred)
-                            else -> it
-                        }
-                    }
-                    packageGroup.copy(packages = updatedPackages)
-                }
-            }
-            viewState.copy(
-                packagesState = packages.copy(carrierPackages = updatedCarrierPackages)
-            )
-        }
+        // Update UI
+        updateSavedPackageUI(packageData = packageData, saved = isStarred)
+
+        // Send to backend
         launch {
             updateSavedCarrierPackages(
                 savePackage = isStarred,
                 packageId = packageData.id,
                 isUserDefined = packageData.isUserDefined,
                 carrierPackages = _viewState.value.packagesData?.carrierPackages ?: emptyMap()
+            ).let {
+                if (it.isSuccess) {
+                    tracker.track(
+                        AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
+                        mapOf(KEY_STATE to if (isStarred) "saving_success" else "removing_success")
+                    )
+                } else {
+                    val errorMessage = if (isStarred) {
+                        R.string.woo_shipping_labels_package_saving_error
+                    } else {
+                        R.string.woo_shipping_labels_package_removing_error
+                    }
+                    triggerEvent(Event.ShowSnackbar(errorMessage))
+
+                    // If failed, revert the UI change
+                    updateSavedPackageUI(packageData = packageData, saved = !isStarred)
+                    tracker.track(
+                        AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
+                        mapOf(KEY_STATE to "saving_failed", KEY_ERROR to it.exceptionOrNull()?.message.orEmpty())
+                    )
+                }
+            }
+        }
+    }
+
+    private fun updateSavedPackageUI(packageData: PackageData, saved: Boolean) {
+        _viewState.update { viewState ->
+            val packages = viewState.packagesData ?: return
+            val updatedCarrierPackages = starCarrierPackage(
+                carrierPackages = packages.carrierPackages,
+                star = saved,
+                packageId = packageData.id
             )
+            val updatedSavedPackages = if (saved) {
+                packages.savedPackages + packageData
+            } else {
+                packages.savedPackages.filterNot { it.id == packageData.id }
+            }
+            viewState.copy(
+                packagesState = packages.copy(
+                    carrierPackages = updatedCarrierPackages,
+                    savedPackages = updatedSavedPackages
+                )
+            )
+        }
+    }
+
+    /**
+     * Updates the starred state of a specific carrier package.
+     *
+     * This function iterates through the provided carrier packages and updates the `isStarred`
+     * property of the package that matches the given `packageId`.
+     *
+     * @param carrierPackages A map of carrier packages to be updated.
+     * @param star The new starred state to be set for the package.
+     * @param packageId The ID of the package to be updated.
+     * @return A new map with the updated package information.
+     */
+    private fun starCarrierPackage(
+        carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
+        star: Boolean,
+        packageId: String
+    ) = carrierPackages.mapValues { (_, packageGroupList) ->
+        packageGroupList.map { packageGroup ->
+            val updatedPackages = packageGroup.packages.map {
+                if (it.id == packageId) it.copy(isStarred = star) else it
+            }
+            packageGroup.copy(packages = updatedPackages)
         }
     }
 
@@ -310,7 +394,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
     @Parcelize
     sealed class PackagesState : Parcelable {
-        data object Error : PackagesState()
+        data class Error(val error: String = "") : PackagesState()
         data object Waiting : PackagesState()
         data class Data(
             val storeOptions: StoreOptionsForPackages,
@@ -344,8 +428,8 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         ENVELOPE(R.string.woo_shipping_labels_package_creation_envelope_type)
     }
 
-    data class PackageSelected(val packageData: PackageData) : MultiLiveEvent.Event()
-    data class ShowPackageTypeDialog(val currentSelection: PackageType) : MultiLiveEvent.Event()
-    data class ShowLoadingDialog(val show: Boolean) : MultiLiveEvent.Event()
-    object ShowTemplateCreationErrorDialog : MultiLiveEvent.Event()
+    data class PackageSelected(val packageData: PackageData) : Event()
+    data class ShowPackageTypeDialog(val currentSelection: PackageType) : Event()
+    data class ShowLoadingDialog(val show: Boolean) : Event()
+    object ShowTemplateCreationErrorDialog : Event()
 }

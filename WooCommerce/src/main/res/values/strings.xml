@@ -908,6 +908,7 @@
     <string name="orderfilters_date_range_filter">Date Range</string>
     <string name="orderfilters_product_filter">Product</string>
     <string name="orderfilters_customer_filter">Customer</string>
+    <string name="orderfilters_sales_channel_filter">Sales Channel</string>
     <string name="orderfilters_selected_filter_fallback_display_value">Id: %d</string>
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
@@ -922,6 +923,7 @@
     <string name="orderfilters_date_range_filter_last_two_days">Last 2 Days</string>
     <string name="orderfilters_date_range_filter_last_7_days">Last 7 days</string>
     <string name="orderfilters_date_range_filter_last_30_days">Last 30 days</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">Point of Sale</string>
     <string name="orderfilters_date_range_filter_custom_range">Custom Range</string>
     <string name="orderfilters_date_range_picker_title">Select dates</string>
     <string name="orderfilters_date_range_start_date">Start Date</string>
@@ -1125,6 +1127,7 @@
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
     <string name="shipping_label_preview_pdf_app_missing">Unable to preview shipping label. Please install a PDF viewer app and try again.</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297mm)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
     <string name="print_receipt_label_info_step_count_1" translatable="false">1</string>
@@ -4328,7 +4331,7 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
-    <string name="woopos_barcode_scanning_title">Barcode scanning</string>
+    <string name="woopos_barcode_scanning_title">Set up a barcode scanner</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
@@ -4475,6 +4478,36 @@
     <string name="woopos_eligibility_reason_no_site_selected">Check your internet connection and try relaunching the app. If the issue persists, please contact support.</string>
     <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
 
+
+    <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>
+    <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
+    <string name="woopos_scanning_setup_device_selection_title">Set up a barcode scanner</string>
+    <string name="woopos_scanning_setup_device_selection_message">Select a model from the list:</string>
+    <string name="woopos_scanning_setup_introduction_title">Scanner set up</string>
+    <string name="woopos_scanning_setup_introduction_message">Scan the Bluetooth HID symbol.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">Scanner set up</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">Scan the Pair symbol to get the scanner ready for pairing.</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">Pair your scanner</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
+    <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
+    <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
+    <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
+    <string name="woopos_scanning_setup_more_information">More information</string>
+    <string name="woopos_scanning_setup_info_title">Scanner set up</string>
+    <string name="woopos_scanning_setup_info_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
+    <string name="woopos_scanning_setup_info_bullet_1">Refer to your bluetooth barcode scanner in System Bluetooth settings.</string>
+    <string name="woopos_scanning_setup_info_bullet_2">Scan barcodes while on the item list to add products to the cart.</string>
+    <string name="woopos_scanning_setup_info_bullet_3">Ensure the search field is not enabled while scanning barcodes.</string>
+    <string name="woopos_scanning_setup_info_text">Barcode scanner may hide keyboard. Tap keyboard icon or enable in OS settings under \"Physical Keyboard\"</string>
+    <string name="woopos_scanning_setup_test_scanner_title">Test your scanner</string>
+    <string name="woopos_scanning_setup_test_scanner_message">Scan this test barcode to verify your scanner is working correctly.</string>
+    <string name="woopos_scanning_setup_button_next">Next</string>
+    <string name="woopos_scanning_setup_button_back">Back</string>
+    <string name="woopos_scanning_setup_button_done">Done</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_inateck_bluetooth">Inateck Bluetooth</string>
+    <string name="woopos_scanning_setup_device_other">Other</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4640,6 +4673,8 @@
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
+    <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
+    <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>

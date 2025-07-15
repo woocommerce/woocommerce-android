@@ -23,6 +23,11 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
 
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
+
     override fun onCreate() {
         super.onCreate()
 
@@ -44,12 +49,6 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
         remoteConfigRepository.get().fetchRemoteConfig()
 
         appInitializer.get().init(this)
-    }
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
     }
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector

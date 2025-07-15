@@ -78,11 +78,11 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsT
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarVisuals
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRatesSection
@@ -153,8 +153,8 @@ fun WooShippingLabelCreationScreen(
     shippingLines: List<ShippingLineSummaryUI>,
     paymentsSectionUI: PaymentsSectionUI,
     purchaseSectionUI: PurchaseSectionUI,
-    shippingAddresses: WooShippingAddresses,
-    onSelectedShipmentChanged: (index: Int) -> Unit,
+    shippingAddresses: List<WooShippingAddresses>,
+    onSelectedShipmentChanged: (Int) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onSelectPackageClick: () -> Unit,
@@ -255,8 +255,8 @@ private fun LabelCreationScreenWithBottomSheet(
     paymentsSectionUI: PaymentsSectionUI,
     purchaseSectionUI: PurchaseSectionUI,
     onSelectPackageClick: () -> Unit,
-    shippingAddresses: WooShippingAddresses,
-    onSelectedShipmentChanged: (index: Int) -> Unit,
+    shippingAddresses: List<WooShippingAddresses>,
+    onSelectedShipmentChanged: (Int) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
@@ -284,6 +284,7 @@ private fun LabelCreationScreenWithBottomSheet(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val selectedShipment = shipmentUIList[uiState.selectedIndex]
+    val selectedAddress = shippingAddresses[uiState.selectedIndex]
 
     var bottomSheetPeekHeight by remember { mutableStateOf(0.dp) }
 
@@ -306,7 +307,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 totalItems = totalItems,
                 totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
-                shippingAddresses = shippingAddresses,
+                shippingAddresses = selectedAddress,
                 shipmentCostUI = selectedShipment.shipmentCostUI,
                 paymentsSectionUI = paymentsSectionUI,
                 purchaseSectionUI = purchaseSectionUI,
@@ -461,11 +462,12 @@ private fun CreateShippingCards(
     Column {
         val isExpanded = remember { mutableStateOf(false) }
 
-        if (shipmentUI.purchased) {
+        if (shipmentUI.purchased && shipmentUI.shipmentPrintLabelUI != null) {
             PrintShippingLabelSection(
                 status = shipmentUI.status,
-                isCustomsFormAvailable = shipmentUI.isCustomsFormAvailable,
-                isRefundAvailable = shipmentUI.isRefundAvailable,
+                isCustomsFormAvailable = shipmentUI.shipmentPrintLabelUI.isCustomsFormAvailable,
+                isRefundAvailable = shipmentUI.shipmentPrintLabelUI.isRefundAvailable,
+                availablePaperSizes = shipmentUI.shipmentPrintLabelUI.availablePrintSizes,
                 selectedLabelPaperSizeOption = uiState.paperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
                 onPrintShippingLabelClicked = onPrintShippingLabelClicked,
@@ -843,6 +845,7 @@ private fun WooShippingLabelCreationScreenPreview() {
                     hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
                     shippingRatesState = ShippingLabelSampleData.getShippingRatesSection(),
                     shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
+                    shipmentPrintLabelUI = ShippingLabelSampleData.getShipmentPrintLabelUI(),
                 )
             ),
             shouldShowSplitShipmentButton = true,
@@ -853,10 +856,12 @@ private fun WooShippingLabelCreationScreenPreview() {
             purchaseSectionUI = ShippingLabelSampleData.getPurchaseSection(),
             modifier = Modifier.fillMaxSize(),
             onSelectPackageClick = {},
-            shippingAddresses = WooShippingAddresses(
-                shipFrom = ShippingLabelSampleData.getShipFrom(),
-                shipTo = ShippingLabelSampleData.getShipTo(),
-                originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
+            shippingAddresses = listOf(
+                WooShippingAddresses(
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
+                )
             ),
             onSelectedShipmentChanged = {},
             onOriginAddressSelected = {},

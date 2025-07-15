@@ -3,7 +3,10 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.provider.Settings
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -11,6 +14,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,14 +34,15 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -46,9 +51,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -57,39 +64,24 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 
 @Composable
 fun WooPosScanningSetupDialog(
     isVisible: Boolean,
     onDismissRequest: () -> Unit,
-    onShowBarcodeInfoDialog: () -> Unit = {},
 ) {
     val viewModel = hiltViewModel<WooPosScanningSetupViewModel>()
     val context = LocalContext.current
 
     LaunchedEffect(isVisible) {
-        viewModel.resetToWelcomeState()
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.openUrlEvent.collect { url ->
-            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.showBarcodeInfoDialogEvent.collect {
-            onShowBarcodeInfoDialog()
-        }
+        viewModel.resetToInitialState()
     }
 
     LaunchedEffect(Unit) {
@@ -98,41 +90,70 @@ fun WooPosScanningSetupDialog(
                 val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
                 context.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
+                (context.applicationContext as WooCommerce).appInitializer.get().crashLogging.sendReport(e)
                 WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
             }
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.dismissDialogEvent.collect {
+            onDismissRequest()
         }
     }
 
     WooPosDialogWrapper(
         isVisible = isVisible,
         onDismissRequest = onDismissRequest,
-        dialogBackgroundContentDescription = "Scanner setup dialog"
+        dialogBackgroundContentDescription = stringResource(
+            id = R.string.woopos_scanning_setup_dialog_content_description
+        )
     ) {
         val state by viewModel.state.collectAsState()
-        Box(
+        Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surfaceBright)
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
         ) {
+            Row {
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
+                    onClick = onDismissRequest,
+                    modifier = Modifier
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = stringResource(
+                            id = R.string.woopos_exit_dialog_confirmation_close_content_description
+                        ),
+                        modifier = Modifier
+                            .size(40.dp),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
             AnimatedContent(
                 targetState = state.currentStep,
                 transitionSpec = {
-                    fadeIn() togetherWith fadeOut()
+                    fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 250,
+                            delayMillis = 200,
+                            easing = FastOutSlowInEasing
+                        )
+                    ) togetherWith
+                        fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 200,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
                 },
                 label = "step_transition",
-                modifier = Modifier.padding(top = WooPosSpacing.XLarge.value.toAdaptivePadding()),
             ) { step ->
                 when (step) {
-                    is ScanningSetupStep.Welcome -> WelcomeContent(
-                        step = step,
-                        onBluetoothSelected = {
-                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBluetoothScannerSelected)
-                        },
-                        onViewDocumentation = {
-                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnViewDocumentation)
-                        }
-                    )
-
                     is ScanningSetupStep.DeviceSelection -> DeviceSelectionContent(
                         step = step,
                         onDeviceSelected = { device ->
@@ -140,25 +161,27 @@ fun WooPosScanningSetupDialog(
                         },
                     )
 
-                    is ScanningSetupStep.Introduction -> IntroductionContent(
-                        step = step,
+                    is ScanningSetupStep.ScannerHIDModeSetup -> ScannerModeSetupContent(
+                        title = step.title,
+                        message = step.message,
+                        qrCodeImageRes = step.qrCodeImageRes,
+                        primaryButtonText = step.primaryButtonText,
+                        secondaryButtonText = step.secondaryButtonText,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
-                    is ScanningSetupStep.BluetoothWarning -> BluetoothWarningContent(
-                        step = step,
+                    is ScanningSetupStep.ScannerPairModeSetup -> ScannerModeSetupContent(
+                        title = step.title,
+                        message = step.message,
+                        qrCodeImageRes = step.qrCodeImageRes,
+                        primaryButtonText = step.primaryButtonText,
+                        secondaryButtonText = step.secondaryButtonText,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
-                    is ScanningSetupStep.BluetoothPairing -> BarcodeStepContent(
-                        step = step,
-                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
-                    )
-
-                    is ScanningSetupStep.PairOnYourDevice -> PairOnYourDeviceContent(
+                    is ScanningSetupStep.PairYourScanner -> PairYourScannerContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
@@ -167,197 +190,37 @@ fun WooPosScanningSetupDialog(
                         }
                     )
 
-                    is ScanningSetupStep.TestYourScanner -> BarcodeStepContent(
+                    is ScanningSetupStep.TestYourScanner -> TestYourScannerContent(
+                        step = step,
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    )
+
+                    is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
+                        step = step,
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) }
+                    )
+
+                    is ScanningSetupStep.ScannerSetupInfo -> ScannerSetupInfoContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
-
-                    is ScanningSetupStep.ScannerSetupComplete -> SetupCompleteContent(
-                        step = step,
-                        onDone = onDismissRequest
-                    )
                 }
             }
-
-            IconButton(
-                onClick = onDismissRequest,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-            ) {
-                Icon(
-                    Icons.Default.Close,
-                    contentDescription = stringResource(
-                        id = R.string.woopos_exit_dialog_confirmation_close_content_description
-                    ),
-                    modifier = Modifier
-                        .size(40.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            }
         }
     }
 }
 
 @Composable
-private fun WelcomeContent(
-    step: ScanningSetupStep.Welcome,
-    onBluetoothSelected: () -> Unit,
-    onViewDocumentation: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        WooPosText(
-            text = step.title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = step.message,
-            style = WooPosTypography.BodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
-        )
-
-        WooPosOutlinedButton(
-            onClick = onBluetoothSelected,
-            text = step.setupButtonText,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-        WooPosOutlinedButton(
-            onClick = onViewDocumentation,
-            text = step.documentationButtonText,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun IntroductionContent(
-    step: ScanningSetupStep.Introduction,
+private fun ScannerModeSetupContent(
+    title: String,
+    message: String,
+    @DrawableRes qrCodeImageRes: Int,
+    primaryButtonText: String,
+    secondaryButtonText: String,
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        WooPosText(
-            text = step.title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = step.message,
-            style = WooPosTypography.BodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
-        )
-
-        SetupButtonsRow(
-            primaryButtonText = step.primaryButtonText,
-            secondaryButtonText = step.secondaryButtonText,
-            onPrimaryClick = onPrimaryClick,
-            onSecondaryClick = onSecondaryClick
-        )
-    }
-}
-
-@Composable
-private fun BluetoothWarningContent(
-    step: ScanningSetupStep.BluetoothWarning,
-    onPrimaryClick: () -> Unit,
-    onSecondaryClick: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        WooPosText(
-            text = step.title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = step.message,
-            style = WooPosTypography.BodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
-        )
-
-        SetupButtonsRow(
-            primaryButtonText = step.primaryButtonText,
-            secondaryButtonText = step.secondaryButtonText,
-            onPrimaryClick = onPrimaryClick,
-            onSecondaryClick = onSecondaryClick
-        )
-    }
-}
-
-@Composable
-private fun BarcodeStepContent(
-    step: ScanningSetupStep,
-    onPrimaryClick: () -> Unit,
-    onSecondaryClick: () -> Unit,
-) {
-    val title: String
-    val message: String
-    val barcodeRes: Int
-    val instruction: String
-    val primaryText: String
-    val secondaryText: String
-
-    when (step) {
-        is ScanningSetupStep.BluetoothPairing -> {
-            title = step.title
-            message = step.message
-            barcodeRes = step.barcodeImageRes
-            instruction = step.instructionText
-            primaryText = step.primaryButtonText
-            secondaryText = step.secondaryButtonText
-        }
-
-        is ScanningSetupStep.PairOnYourDevice -> {
-            title = step.title
-            message = step.message
-            barcodeRes = step.barcodeImageRes
-            instruction = step.instructionText
-            primaryText = step.primaryButtonText
-            secondaryText = step.secondaryButtonText
-        }
-
-        is ScanningSetupStep.TestYourScanner -> {
-            title = step.title
-            message = step.message
-            barcodeRes = step.barcodeImageRes
-            instruction = step.instructionText
-            primaryText = step.primaryButtonText
-            secondaryText = step.secondaryButtonText
-        }
-
-        else -> error("Invalid step type for BarcodeStepContent: $step")
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -388,26 +251,19 @@ private fun BarcodeStepContent(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = barcodeRes),
-                contentDescription = "Barcode",
+                painter = painterResource(id = qrCodeImageRes),
+                contentDescription = stringResource(
+                    id = R.string.woopos_scanning_setup_barcode_content_description
+                ),
                 modifier = Modifier.fillMaxSize()
             )
         }
 
-        WooPosText(
-            text = instruction,
-            style = WooPosTypography.BodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(
-                top = WooPosSpacing.Large.value.toAdaptivePadding(),
-                bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()
-            )
-        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         SetupButtonsRow(
-            primaryButtonText = primaryText,
-            secondaryButtonText = secondaryText,
+            primaryButtonText = primaryButtonText,
+            secondaryButtonText = secondaryButtonText,
             onPrimaryClick = onPrimaryClick,
             onSecondaryClick = onSecondaryClick
         )
@@ -415,8 +271,61 @@ private fun BarcodeStepContent(
 }
 
 @Composable
-private fun PairOnYourDeviceContent(
-    step: ScanningSetupStep.PairOnYourDevice,
+private fun TestYourScannerContent(
+    step: ScanningSetupStep.TestYourScanner,
+    onSecondaryClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+        )
+
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                .background(Color.White)
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = step.barcodeImageRes),
+                contentDescription = stringResource(
+                    id = R.string.woopos_scanning_setup_barcode_content_description
+                ),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        WooPosOutlinedButton(
+            onClick = onSecondaryClick,
+            text = step.secondaryButtonText,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun PairYourScannerContent(
+    step: ScanningSetupStep.PairYourScanner,
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
     onOpenBluetoothSettings: () -> Unit,
@@ -427,74 +336,57 @@ private fun PairOnYourDeviceContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = step.iconRes),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
         WooPosText(
             text = step.title,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
 
         WooPosText(
             text = step.message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
-        WooPosOutlinedButton(
+        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value.toAdaptivePadding()))
+
+        WooPosText(
             text = step.bluetoothSettingsButtonText,
-            onClick = onOpenBluetoothSettings,
+            style = WooPosTypography.BodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()),
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(bounded = true, radius = 150.dp),
+                    onClick = { onOpenBluetoothSettings() }
+                )
+                .padding(
+                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    vertical = WooPosSpacing.Small.value.toAdaptivePadding()
+                )
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         SetupButtonsRow(
             primaryButtonText = step.primaryButtonText,
             secondaryButtonText = step.secondaryButtonText,
             onPrimaryClick = onPrimaryClick,
             onSecondaryClick = onSecondaryClick
-        )
-    }
-}
-
-@Composable
-private fun SetupCompleteContent(
-    step: ScanningSetupStep.ScannerSetupComplete,
-    onDone: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SetupCompleteCheckIcon(
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = step.title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = step.message,
-            style = WooPosTypography.BodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
-        )
-
-        WooPosButton(
-            onClick = onDone,
-            text = step.primaryButtonText,
-            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -518,7 +410,7 @@ private fun DeviceSelectionContent(
         )
 
         WooPosText(
-            text = "Select a model from the list:",
+            text = stringResource(id = R.string.woopos_scanning_setup_device_selection_message),
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
@@ -561,7 +453,7 @@ private fun DeviceSelectionItem(
         contentAlignment = Alignment.Center
     ) {
         WooPosText(
-            text = device.displayName,
+            text = stringResource(device.displayNameRes),
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
         )
@@ -596,25 +488,128 @@ private fun SetupButtonsRow(
 }
 
 @Composable
-private fun SetupCompleteCheckIcon(
+private fun ScannerSetupSuccessContent(
+    step: ScanningSetupStep.ScannerSetupSuccess,
+    onPrimaryClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ScannerSetupSuccessIcon()
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        WooPosOutlinedButton(
+            onClick = onPrimaryClick,
+            text = step.moreInfoButtonText,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun ScannerSetupInfoContent(
+    step: ScanningSetupStep.ScannerSetupInfo,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = step.title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = step.message,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .fillMaxWidth()
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding()),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
+        ) {
+            step.bulletPoints.forEach { bulletPoint ->
+                BulletPointItem(text = bulletPoint)
+            }
+        }
+
+        WooPosText(
+            text = step.infoText,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+        )
+
+        SetupButtonsRow(
+            primaryButtonText = step.doneButtonText,
+            secondaryButtonText = step.backButtonText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
+    }
+}
+
+@Composable
+private fun BulletPointItem(text: String) {
+    WooPosText(
+        text = "• $text",
+        style = WooPosTypography.BodyLarge,
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun ScannerSetupSuccessIcon(
     modifier: Modifier = Modifier,
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(166.dp)
-            .shadow(
-                elevation = WooPosElevation.Medium.value,
-                shape = CircleShape,
-                clip = false
-            )
+            .size(88.dp)
             .background(WooPosTheme.colors.success, CircleShape)
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
             tint = WooPosTheme.colors.onSuccess,
             contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
-            modifier = Modifier.size(72.dp)
+            modifier = Modifier.size(40.dp)
         )
     }
 }
@@ -628,15 +623,18 @@ fun WooPosScanningSetupDialogPreview() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            WelcomeContent(
-                step = ScanningSetupStep.Welcome(
-                    title = "Start using a barcode scanner",
-                    message = "Choose the type of scanner you'd like to connect",
-                    setupButtonText = "Set up a barcode scanner",
-                    documentationButtonText = "View barcode scanner documentation"
+            DeviceSelectionContent(
+                step = ScanningSetupStep.DeviceSelection(
+                    title = "Set up a barcode scanner",
+                    devices = listOf(
+                        BarcodeReaderDevice.TERA_1200,
+                        BarcodeReaderDevice.STAR_BSH_20B,
+                        BarcodeReaderDevice.INATECK_BLUETOOTH,
+                        BarcodeReaderDevice.OTHER
+                    ),
+                    previousStep = null
                 ),
-                onBluetoothSelected = {},
-                onViewDocumentation = {}
+                onDeviceSelected = {}
             )
         }
     }

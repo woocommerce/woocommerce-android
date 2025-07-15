@@ -708,6 +708,7 @@ class OrderListFragment :
                     }
 
                     EmptyViewType.ORDER_LIST_FILTERED -> {
+                        communicationViewModel.notifyOrdersEmpty()
                         emptyView.show(emptyViewType)
                     }
 
@@ -954,6 +955,7 @@ class OrderListFragment :
     }
 
     private fun hideEmptyView() {
+        communicationViewModel.notifyOrdersLoaded()
         emptyView.hide()
     }
 

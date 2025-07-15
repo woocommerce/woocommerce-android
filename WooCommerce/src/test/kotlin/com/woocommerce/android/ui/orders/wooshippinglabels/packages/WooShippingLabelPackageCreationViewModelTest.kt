@@ -2,6 +2,10 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageSelected
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType.ENVELOPE
@@ -45,6 +49,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
     }
     private val updateSavedCarrierPackages: UpdateSavedCarrierPackages = mock()
 
+    private val tracker: AnalyticsTrackerWrapper = mock()
+
     @Before
     fun setUp() {
         whenever(
@@ -63,8 +69,14 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            tracker
         )
+    }
+
+    @Test
+    fun `when started, track started event`() = testBlocking {
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to VALUE_STARTED))
     }
 
     @Test
@@ -94,6 +106,43 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
         verify(packageRepository, times(0)).createCustomPackage(any(), any())
         assertThat(lastEvent).isEqualTo(PackageSelected(customPackageData.toPackageData("cm")))
+    }
+
+    @Test
+    fun `onAddCustomPackageClick triggers selected track`() = testBlocking {
+        sut.onAddCustomPackageClick(savePackageAsTemplate = false)
+
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
+    }
+
+    @Test
+    fun `onAddCarrierPackageClick triggers selected track`() = testBlocking {
+        sut.onAddCarrierPackageClick()
+
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
+    }
+
+    @Test
+    fun `onAddSavedPackageClick triggers selected track`() = testBlocking {
+        sut.onAddSavedPackageClick()
+
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
+    }
+
+    @Test
+    fun `onSavedPackageRemoved triggers removing_success track`() = testBlocking {
+        val packageToRemove = PackageData(
+            id = "1",
+            name = "Package 1 - Carrier 1",
+            dimensions = "10 x 10 x 10",
+            weight = "10",
+            isSelected = false,
+            isLetter = false,
+            isStarred = true
+        )
+        sut.onSavedPackageRemoved(packageToRemove)
+
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "removing_success"))
     }
 
     @Test
@@ -206,7 +255,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onSavedPackageSelected(package1, true)
@@ -259,7 +309,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onCarrierPackageSelected(package1, true)
@@ -343,7 +394,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             resourceProvider,
             fetchPackages,
             updateSavedCarrierPackages,
-            packageRepository
+            packageRepository,
+            mock()
         )
 
         sut.viewState.observeForever { lastViewState = it }
@@ -399,7 +451,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 resourceProvider,
                 fetchPackages,
                 updateSavedCarrierPackages,
-                packageRepository
+                packageRepository,
+                mock()
             )
             advanceUntilIdle()
 
@@ -428,4 +481,154 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             assertThat(updatedPackage).isNotNull
             assertThat(updatedPackage?.isStarred).isTrue
         }
+
+    @Test
+    fun `when starring a package, then update saved packages`() = testBlocking {
+        val carrier: Carrier = USPS
+        val packageToStar = PackageData(
+            id = "1",
+            name = "Package 1 - Carrier 1",
+            dimensions = "10 x 10 x 10",
+            weight = "10",
+            isSelected = false,
+            isLetter = false,
+            isStarred = false // Initially not starred
+        )
+        val initialCarrierPackages = mapOf(
+            carrier to listOf(CarrierPackageGroup(groupName = "Group A", packages = listOf(packageToStar)))
+        )
+        val initialSavedPackages = emptyList<PackageData>()
+
+        whenever(fetchPackages()).thenReturn(
+            Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
+                carrierPackages = initialCarrierPackages,
+                savedPackages = initialSavedPackages
+            )
+        )
+
+        sut = WooShippingLabelPackageCreationViewModel(
+            SavedStateHandle(),
+            selectedSite,
+            resourceProvider,
+            fetchPackages,
+            updateSavedCarrierPackages,
+            packageRepository,
+            mock()
+        )
+        advanceUntilIdle()
+
+        var lastViewState: ViewState? = null
+        sut.viewState.observeForever { lastViewState = it }
+
+        // Star a package
+        sut.onCarrierPackageStarred(packageData = packageToStar, isStarred = true)
+        advanceUntilIdle()
+
+        // Verify it's added to saved packages
+        val savedPackages = lastViewState?.packagesData?.savedPackages
+        assertThat(savedPackages).hasSize(1)
+        assertThat(savedPackages).contains(packageToStar)
+    }
+
+    @Test
+    fun `when unstarring a package, then update saved packages`() = testBlocking {
+        val carrier: Carrier = USPS
+        val packageToUnstar = PackageData(
+            id = "1",
+            name = "Package 1 - Carrier 1",
+            dimensions = "10 x 10 x 10",
+            weight = "10",
+            isSelected = false,
+            isLetter = false,
+            isStarred = true // Initially starred
+        )
+        val initialCarrierPackages = mapOf(
+            carrier to listOf(CarrierPackageGroup(groupName = "Group A", packages = listOf(packageToUnstar)))
+        )
+        val initialSavedPackages = listOf(packageToUnstar)
+
+        whenever(fetchPackages()).thenReturn(
+            Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
+                carrierPackages = initialCarrierPackages,
+                savedPackages = initialSavedPackages
+            )
+        )
+
+        sut = WooShippingLabelPackageCreationViewModel(
+            SavedStateHandle(),
+            selectedSite,
+            resourceProvider,
+            fetchPackages,
+            updateSavedCarrierPackages,
+            packageRepository,
+            mock()
+        )
+        advanceUntilIdle()
+
+        var lastViewState: ViewState? = null
+        sut.viewState.observeForever { lastViewState = it }
+
+        // Unstar a package
+        sut.onCarrierPackageStarred(packageToUnstar, false)
+        advanceUntilIdle()
+
+        // Verify it's removed from saved packages
+        val savedPackages = lastViewState?.packagesData?.savedPackages
+        assertThat(savedPackages).isEmpty()
+    }
+
+    @Test
+    fun `when removing a package from saved, then update carrier packages`() = testBlocking {
+        val carrier: Carrier = USPS
+        val packageToRemove = PackageData(
+            id = "1",
+            name = "Package 1 - Carrier 1",
+            dimensions = "10 x 10 x 10",
+            weight = "10",
+            isSelected = false,
+            isLetter = false,
+            isStarred = true
+        )
+        val initialCarrierPackages = mapOf(
+            carrier to listOf(CarrierPackageGroup(groupName = "Group A", packages = listOf(packageToRemove)))
+        )
+        val initialSavedPackages = listOf(packageToRemove)
+
+        whenever(fetchPackages()).thenReturn(
+            Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
+                carrierPackages = initialCarrierPackages,
+                savedPackages = initialSavedPackages
+            )
+        )
+
+        sut = WooShippingLabelPackageCreationViewModel(
+            SavedStateHandle(),
+            selectedSite,
+            resourceProvider,
+            fetchPackages,
+            updateSavedCarrierPackages,
+            packageRepository,
+            mock()
+        )
+        advanceUntilIdle()
+
+        var lastViewState: ViewState? = null
+        sut.viewState.observeForever { lastViewState = it }
+
+        // Act
+        sut.onSavedPackageRemoved(packageToRemove)
+        advanceUntilIdle()
+
+        // Assert
+        // Verify it's removed from saved packages
+        val savedPackages = lastViewState?.packagesData?.savedPackages
+        assertThat(savedPackages).isEmpty()
+
+        // Verify the carrier package is unstarred
+        val carrierPackage = lastViewState?.packagesData?.carrierPackages?.get(USPS)?.first()?.packages?.first()
+        assertThat(carrierPackage?.isStarred).isFalse
+    }
 }

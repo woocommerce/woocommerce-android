@@ -71,6 +71,7 @@ import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmptyNotified
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoadingNotified
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
@@ -380,6 +381,10 @@ class OrderDetailFragment :
                     viewModel.showLoadingView()
                 }
 
+                is OrdersLoaded -> {
+                    viewModel.onOrdersLoaded()
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -407,7 +412,7 @@ class OrderDetailFragment :
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
             }
-            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) {
+            new.toolbarTitle.takeIfNotEqualTo(old?.toolbarTitle) {
                 screenTitle = it
                 binding.toolbar.title = it
             }
