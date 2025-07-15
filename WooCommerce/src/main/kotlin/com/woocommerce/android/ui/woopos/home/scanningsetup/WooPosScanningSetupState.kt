@@ -63,7 +63,7 @@ data class WooPosScanningSetupState(
         data class TestYourScanner(
             val title: String,
             val message: String,
-            @DrawableRes val barcodeImageRes: Int,
+            val barcodeValue: String,
             val secondaryButtonText: String,
             override val previousStep: ScanningSetupStep
         ) : ScanningSetupStep()
@@ -72,7 +72,7 @@ data class WooPosScanningSetupState(
         data class TestYourScannerTimeout(
             val title: String,
             val message: String,
-            @DrawableRes val barcodeImageRes: Int,
+            val barcodeValue: String,
             val secondaryButtonText: String,
             override val previousStep: ScanningSetupStep,
         ) : ScanningSetupStep()

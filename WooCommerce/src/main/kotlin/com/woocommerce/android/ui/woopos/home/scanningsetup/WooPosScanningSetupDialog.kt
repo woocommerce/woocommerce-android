@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
+import com.woocommerce.android.ui.compose.component.BarcodeEAN13Code
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -319,18 +320,16 @@ private fun TestYourScannerContent(
 
         Box(
             modifier = Modifier
-                .size(300.dp, 200.dp)
+                .size(350.dp, 200.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
                 .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = step.barcodeImageRes),
-                contentDescription = stringResource(
-                    id = R.string.woopos_scanning_setup_barcode_content_description
-                ),
-                modifier = Modifier.fillMaxSize()
+            BarcodeEAN13Code(
+                step.barcodeValue,
+                300.dp,
+                150.dp
             )
         }
 
@@ -374,18 +373,16 @@ private fun TestYourScannerTimeoutContent(
 
         Box(
             modifier = Modifier
-                .size(300.dp, 200.dp)
+                .size(350.dp, 200.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
                 .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = step.barcodeImageRes),
-                contentDescription = stringResource(
-                    id = R.string.woopos_scanning_setup_barcode_content_description
-                ),
-                modifier = Modifier.fillMaxSize()
+            BarcodeEAN13Code(
+                step.barcodeValue,
+                300.dp,
+                150.dp
             )
         }
 
@@ -776,7 +773,7 @@ fun WooPosScanningSetupTestScannerStep() {
                 step = ScanningSetupStep.TestYourScanner(
                     title = "Test your scanner",
                     message = "Scan the barcode below to test your scanner.",
-                    barcodeImageRes = R.drawable.scanner_setup_test_barcode,
+                    barcodeValue = "123456789012",
                     secondaryButtonText = "Skip",
                     previousStep = ScanningSetupStep.DeviceSelection(
                         title = "Set up a barcode scanner",
@@ -808,7 +805,7 @@ fun WooPosScanningSetupTestScannerTimeoutStep() {
                 title = "No scan data found yet",
                 message = "Scan the barcode to test your scanner. If the issue continues, please check Bluetooth " +
                     "settings and try again.",
-                barcodeImageRes = R.drawable.scanner_setup_test_barcode,
+                barcodeValue = "123456789012",
                 secondaryButtonText = "Back",
                 previousStep = ScanningSetupStep.DeviceSelection(
                     title = "Set up a barcode scanner",
