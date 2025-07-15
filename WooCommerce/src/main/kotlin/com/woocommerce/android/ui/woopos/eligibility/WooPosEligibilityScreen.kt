@@ -20,10 +20,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -158,7 +158,7 @@ private class NonLaunchabilityReasonProvider : PreviewParameterProvider<WooPosLa
 
 @WooPosPreview
 @Composable
-private fun WooPosEligibilityScreenPreview(
+fun WooPosEligibilityScreenPreview(
     @PreviewParameter(NonLaunchabilityReasonProvider::class)
     reason: WooPosLaunchability.NonLaunchabilityReason
 ) {
