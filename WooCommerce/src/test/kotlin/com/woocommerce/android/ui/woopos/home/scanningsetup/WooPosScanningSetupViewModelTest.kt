@@ -53,6 +53,8 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given ScannerSetupInfo step, when primary button clicked, then should emit dismiss dialog event`() = runTest {
         // GIVEN
+        whenever(navigator.getNextStep(BarcodeReaderDevice.OTHER, ScanningSetupStep.DeviceSelection))
+            .thenReturn(ScanningSetupStep.ScannerSetupInfo)
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.OTHER))
 
