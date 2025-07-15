@@ -105,7 +105,11 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.PairYourScanner -> {
-                moveToTestYourScannerStep()
+                _state.value = _state.value.copy(
+                    currentStep = createTestYourScannerStep(_state.value.currentStep)
+                ).also {
+                    startAutoNavigationToTestYourScannerStep()
+                }
             }
 
             is ScanningSetupStep.TestYourScanner -> {
@@ -161,15 +165,17 @@ class WooPosScanningSetupViewModel @Inject constructor(
         previousStep = previousStep
     )
 
-    private fun createScannerPairModeSetupStep(previousStep: ScanningSetupStep) = ScanningSetupStep.ScannerPairModeSetup(
-        title = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_title),
-        message = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_message),
-        qrCodeImageRes = R.drawable.ic_barcode,
-        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
-        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
-        previousStep = previousStep
-    )
-    private fun createPairYourScannerStep() = ScanningSetupStep.PairYourScanner(
+    private fun createScannerPairModeSetupStep(previousStep: ScanningSetupStep) =
+        ScanningSetupStep.ScannerPairModeSetup(
+            title = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_title),
+            message = resourceProvider.getString(R.string.woopos_scanning_setup_scanner_pair_mode_message),
+            qrCodeImageRes = R.drawable.ic_barcode,
+            primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_next),
+            secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+            previousStep = previousStep
+        )
+
+    private fun createPairYourScannerStep(previousStep: ScanningSetupStep) = ScanningSetupStep.PairYourScanner(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_pair_your_scanner_title),
         message = resourceProvider.getString(
             R.string.woopos_scanning_setup_pair_your_scanner_message,
@@ -192,22 +198,24 @@ class WooPosScanningSetupViewModel @Inject constructor(
         previousStep = previousStep,
     )
 
-    private fun createTestYourScannerTimeoutStep() = ScanningSetupStep.TestYourScannerTimeout(
-        title = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_title),
-        message = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_message),
-        barcodeImageRes = R.drawable.scanner_setup_test_barcode,
-        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
-        previousStep = ,
-    )
+    private fun createTestYourScannerTimeoutStep(previousStep: ScanningSetupStep) =
+        ScanningSetupStep.TestYourScannerTimeout(
+            title = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_title),
+            message = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_message),
+            barcodeImageRes = R.drawable.scanner_setup_test_barcode,
+            secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+            previousStep = previousStep,
+        )
 
-    private fun createTestYourScannerScanFailedStep() = ScanningSetupStep.TestYourScannerScanFailed(
-        title = resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_title),
-        message = resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_message),
-        iconRes = R.drawable.ic_woo_pos_error_x,
-        primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_retry),
-        secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
-        previousStep =
-    )
+    private fun createTestYourScannerScanFailedStep(previousStep: ScanningSetupStep) =
+        ScanningSetupStep.TestYourScannerScanFailed(
+            title = resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_title),
+            message = resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_message),
+            iconRes = R.drawable.ic_woo_pos_error_x,
+            primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_retry),
+            secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+            previousStep = previousStep,
+        )
 
     private fun createScannerSetupSuccessStep() = ScanningSetupStep.ScannerSetupSuccess(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_success_title),
@@ -240,7 +248,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
                     )
                 } else {
                     _state.value = _state.value.copy(
-                        currentStep = createTestYourScannerScanFailedStep()
+                        currentStep = createTestYourScannerScanFailedStep(_state.value.currentStep)
                     )
                 }
             }
@@ -257,7 +265,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             delay(AUTO_NAVIGATION_DELAY_MS)
             if (_state.value.currentStep is ScanningSetupStep.TestYourScanner) {
                 _state.value = _state.value.copy(
-                    currentStep = createTestYourScannerTimeoutStep()
+                    currentStep = createTestYourScannerTimeoutStep(_state.value.currentStep)
                 )
             }
         }

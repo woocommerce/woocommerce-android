@@ -74,6 +74,7 @@ data class WooPosScanningSetupState(
             val message: String,
             @DrawableRes val barcodeImageRes: Int,
             val secondaryButtonText: String,
+            override val previousStep: ScanningSetupStep,
         ) : ScanningSetupStep()
 
         @Parcelize
@@ -83,6 +84,7 @@ data class WooPosScanningSetupState(
             @DrawableRes val iconRes: Int,
             val primaryButtonText: String,
             val secondaryButtonText: String,
+            override val previousStep: ScanningSetupStep,
         ) : ScanningSetupStep()
 
         @Parcelize

@@ -777,7 +777,17 @@ fun WooPosScanningSetupTestScannerStep() {
                     title = "Test your scanner",
                     message = "Scan the barcode below to test your scanner.",
                     barcodeImageRes = R.drawable.scanner_setup_test_barcode,
-                    secondaryButtonText = "Skip"
+                    secondaryButtonText = "Skip",
+                    previousStep = ScanningSetupStep.DeviceSelection(
+                        title = "Set up a barcode scanner",
+                        devices = listOf(
+                            BarcodeReaderDevice.TERA_1200,
+                            BarcodeReaderDevice.STAR_BSH_20B,
+                            BarcodeReaderDevice.INATECK_BLUETOOTH,
+                            BarcodeReaderDevice.OTHER
+                        ),
+                        previousStep = null
+                    ),
                 ),
                 onSecondaryClick = {},
                 onBarcodeScanned = {}
@@ -798,7 +808,17 @@ fun WooPosScanningSetupTestScannerTimeoutStep() {
                 title = "No scan data found yet",
                 message = "Scan the barcode to test your scanner. If the issue continues, please check Bluetooth settings and try again.",
                 barcodeImageRes = R.drawable.scanner_setup_test_barcode,
-                secondaryButtonText = "Back"
+                secondaryButtonText = "Back",
+                previousStep = ScanningSetupStep.DeviceSelection(
+                    title = "Set up a barcode scanner",
+                    devices = listOf(
+                        BarcodeReaderDevice.TERA_1200,
+                        BarcodeReaderDevice.STAR_BSH_20B,
+                        BarcodeReaderDevice.INATECK_BLUETOOTH,
+                        BarcodeReaderDevice.OTHER
+                    ),
+                    previousStep = null
+                ),
             ).let { step ->
                 TestYourScannerTimeoutContent(
                     step = step,
@@ -823,7 +843,17 @@ fun WooPosScanningSetupTestScannerFailedStep() {
                 message = "Please check the scanner’s manual and reset it to factory settings, then retry the setup flow.",
                 iconRes = R.drawable.ic_woo_pos_error_x,
                 primaryButtonText = "Retry",
-                secondaryButtonText = "Back"
+                secondaryButtonText = "Back",
+                previousStep = ScanningSetupStep.DeviceSelection(
+                    title = "Set up a barcode scanner",
+                    devices = listOf(
+                        BarcodeReaderDevice.TERA_1200,
+                        BarcodeReaderDevice.STAR_BSH_20B,
+                        BarcodeReaderDevice.INATECK_BLUETOOTH,
+                        BarcodeReaderDevice.OTHER
+                    ),
+                    previousStep = null
+                ),
             ).let { step ->
                 TestYourScannerScanFailedContent(
                     step = step,
