@@ -193,16 +193,22 @@ fun WooPosScanningSetupDialog(
                         }
                     )
 
-                    is ScanningSetupStep.TestYourScanner -> TestYourScannerContent(
-                        step = step,
+                    is ScanningSetupStep.TestYourScanner -> TestScannerContent(
+                        title = step.title,
+                        message = step.message,
+                        barcodeValue = step.barcodeValue,
+                        secondaryButtonText = step.secondaryButtonText,
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
                         onBarcodeScanned = { barcodeResult ->
                             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
                         }
                     )
 
-                    is ScanningSetupStep.TestYourScannerTimeout -> TestYourScannerTimeoutContent(
-                        step = step,
+                    is ScanningSetupStep.TestYourScannerTimeout -> TestScannerContent(
+                        title = step.title,
+                        message = step.message,
+                        barcodeValue = step.barcodeValue,
+                        secondaryButtonText = step.secondaryButtonText,
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
                         onBarcodeScanned = { barcodeResult ->
                             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
@@ -291,8 +297,11 @@ private fun ScannerModeSetupContent(
 }
 
 @Composable
-private fun TestYourScannerContent(
-    step: ScanningSetupStep.TestYourScanner,
+private fun TestScannerContent(
+    title: String,
+    message: String,
+    barcodeValue: String,
+    secondaryButtonText: String,
     onSecondaryClick: () -> Unit,
     onBarcodeScanned: (BarcodeInputDetector.BarcodeResult) -> Unit
 ) {
@@ -304,7 +313,7 @@ private fun TestYourScannerContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         WooPosText(
-            text = step.title,
+            text = title,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -312,14 +321,14 @@ private fun TestYourScannerContent(
         )
 
         WooPosText(
-            text = step.message,
+            text = message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
         BarcodeEAN13Code(
-            step.barcodeValue,
+            barcodeValue,
             300.dp,
             150.dp,
             codeColor = MaterialTheme.colorScheme.onSurface,
@@ -330,53 +339,7 @@ private fun TestYourScannerContent(
 
         WooPosOutlinedButton(
             onClick = onSecondaryClick,
-            text = step.secondaryButtonText,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun TestYourScannerTimeoutContent(
-    step: ScanningSetupStep.TestYourScannerTimeout,
-    onSecondaryClick: () -> Unit,
-    onBarcodeScanned: (BarcodeInputDetector.BarcodeResult) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .listenForBarcodes(onBarcodeScanned),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        WooPosText(
-            text = step.title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = step.message,
-            style = WooPosTypography.BodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
-        )
-
-        BarcodeEAN13Code(
-            step.barcodeValue,
-            300.dp,
-            150.dp,
-            codeColor = MaterialTheme.colorScheme.onSurface,
-            backgroundColor = MaterialTheme.colorScheme.surfaceBright
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-
-        WooPosOutlinedButton(
-            onClick = onSecondaryClick,
-            text = step.secondaryButtonText,
+            text = secondaryButtonText,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -755,61 +718,14 @@ fun WooPosScanningSetupTestScannerStep() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            TestYourScannerContent(
-                step = ScanningSetupStep.TestYourScanner(
-                    title = "Test your scanner",
-                    message = "Scan the barcode below to test your scanner.",
-                    barcodeValue = "123456789012",
-                    secondaryButtonText = "Skip",
-                    previousStep = ScanningSetupStep.DeviceSelection(
-                        title = "Set up a barcode scanner",
-                        devices = listOf(
-                            BarcodeReaderDevice.TERA_1200,
-                            BarcodeReaderDevice.STAR_BSH_20B,
-                            BarcodeReaderDevice.INATECK_BLUETOOTH,
-                            BarcodeReaderDevice.OTHER
-                        ),
-                        previousStep = null
-                    ),
-                ),
+            TestScannerContent(
+                title = "Test your scanner",
+                message = "Scan the barcode below to test your scanner.",
+                barcodeValue = "123456789012",
+                secondaryButtonText = "Skip",
                 onSecondaryClick = {},
                 onBarcodeScanned = {}
             )
-        }
-    }
-}
-
-@WooPosPreview
-@Composable
-fun WooPosScanningSetupTestScannerTimeoutStep() {
-    WooPosTheme {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            ScanningSetupStep.TestYourScannerTimeout(
-                title = "No scan data found yet",
-                message = "Scan the barcode to test your scanner. If the issue continues, please check Bluetooth " +
-                    "settings and try again.",
-                barcodeValue = "123456789012",
-                secondaryButtonText = "Back",
-                previousStep = ScanningSetupStep.DeviceSelection(
-                    title = "Set up a barcode scanner",
-                    devices = listOf(
-                        BarcodeReaderDevice.TERA_1200,
-                        BarcodeReaderDevice.STAR_BSH_20B,
-                        BarcodeReaderDevice.INATECK_BLUETOOTH,
-                        BarcodeReaderDevice.OTHER
-                    ),
-                    previousStep = null
-                ),
-            ).let { step ->
-                TestYourScannerTimeoutContent(
-                    step = step,
-                    onSecondaryClick = {},
-                    onBarcodeScanned = {}
-                )
-            }
         }
     }
 }
