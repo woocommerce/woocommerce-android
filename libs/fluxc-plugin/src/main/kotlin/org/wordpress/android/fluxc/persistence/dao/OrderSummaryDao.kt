@@ -27,13 +27,25 @@ internal abstract class OrderSummaryDao {
             }
     }
 
-    @Query("SELECT * FROM OrderSummaryEntity WHERE siteId = :siteId AND orderId IN (:remoteOrderIds)")
+    @Query(
+        """
+        SELECT * FROM OrderSummaryEntity
+        WHERE siteId = :siteId
+        AND orderId IN (:remoteOrderIds)
+        """
+    )
     protected abstract suspend fun getOrderSummariesForSubset(
         siteId: LocalId,
         remoteOrderIds: List<RemoteId>
     ): List<WCOrderSummaryModel>
 
-    @Query("DELETE FROM OrderSummaryEntity WHERE siteId = :siteId AND orderId = :remoteOrderId")
+    @Query(
+        """
+        DELETE FROM OrderSummaryEntity
+        WHERE siteId = :siteId
+        AND orderId = :remoteOrderId
+        """
+    )
     abstract suspend fun deleteOrderSummaryById(siteId: LocalId, remoteOrderId: RemoteId)
 
     private companion object {
