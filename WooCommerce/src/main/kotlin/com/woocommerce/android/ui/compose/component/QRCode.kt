@@ -73,7 +73,6 @@ fun QRCode(
     )
 }
 
-
 @Composable
 fun BarcodeEAN13Code(
     content: String,
@@ -113,7 +112,7 @@ private fun rememberBarcodeBitmapPainter(
     barcodeFormat: BarcodeFormat,
     widthDp: Dp,
     heightDp: Dp,
-    codeColor: Color = colorResource(id=R.color.woo_black_90),
+    codeColor: Color = colorResource(id = R.color.woo_black_90),
     @DrawableRes overlayId: Int?,
 ): BitmapPainter {
     val density = LocalDensity.current
