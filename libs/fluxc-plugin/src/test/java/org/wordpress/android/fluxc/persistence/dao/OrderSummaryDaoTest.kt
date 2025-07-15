@@ -11,12 +11,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.utils.FakeOrderSummaryGenerator.asOrderSummaries
 
 @RunWith(RobolectricTestRunner::class)
 class OrderSummaryDaoTest {
@@ -40,7 +40,7 @@ class OrderSummaryDaoTest {
 
     @Test
     fun testUpsertOrderSummaries() = runTest {
-        val orderSummaries = createOrderSummariesWith(1, 2, 3)
+        val orderSummaries = (1..3).asOrderSummaries(site.localId())
 
         sut.upsertOrderSummaries(orderSummaries)
 
@@ -53,7 +53,7 @@ class OrderSummaryDaoTest {
 
     @Test
     fun testGetOrderSummariesForRemoteIds() = runTest {
-        val orderSummaries = createOrderSummariesWith(1, 2, 3)
+        val orderSummaries = (1..3).asOrderSummaries(site.localId())
 
         sut.upsertOrderSummaries(orderSummaries)
 
@@ -63,7 +63,7 @@ class OrderSummaryDaoTest {
 
     @Test
     fun testDeleteOrderSummaryById() = runTest {
-        val orderSummaries = createOrderSummariesWith(1, 2)
+        val orderSummaries = (1..2).asOrderSummaries(site.localId())
         sut.upsertOrderSummaries(orderSummaries)
 
         sut.deleteOrderSummaryById(site.localId(), RemoteId(1L))
@@ -78,7 +78,7 @@ class OrderSummaryDaoTest {
     @Test
     @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added")
     fun testDeleteSiteDeletesAllOrderSummaries() = runTest {
-        val orderSummaries = createOrderSummariesWith(1, 2, 3)
+        val orderSummaries = (1..3).asOrderSummaries(site.localId())
         sut.upsertOrderSummaries(orderSummaries)
 
         SiteSqlUtils().deleteSite(site)
@@ -88,22 +88,6 @@ class OrderSummaryDaoTest {
             listOf(RemoteId(1L), RemoteId(2L), RemoteId(3L))
         )
         assertThat(result).isEmpty()
-    }
-
-    private fun createOrderSummariesWith(vararg ids: Number): List<WCOrderSummaryModel> {
-        return ids.map {
-            createOrderSummary(site.localId(), RemoteId(it.toLong()))
-        }
-    }
-
-    private fun createOrderSummary(siteId: LocalId, orderId: RemoteId): WCOrderSummaryModel {
-        return WCOrderSummaryModel(
-            siteId = siteId,
-            orderId = orderId,
-            dateCreated = "2023-01-01T10:00:00Z"
-        ).apply {
-            dateModified = "2023-01-01T10:00:00Z"
-        }
     }
 
     private fun ListAssert<WCOrderSummaryModel?>?.containsOnlyIds(vararg ids: Number) {
