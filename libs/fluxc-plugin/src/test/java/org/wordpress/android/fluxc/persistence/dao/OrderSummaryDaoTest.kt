@@ -39,19 +39,6 @@ class OrderSummaryDaoTest {
     }
 
     @Test
-    fun testUpsertOrderSummaries() = runTest {
-        val orderSummaries = (1..3).asOrderSummaries(site.localId())
-
-        sut.upsertOrderSummaries(orderSummaries)
-
-        val result = sut.getOrderSummaries(
-            site.localId(),
-            listOf(1, 2, 3).asRemoteIds()
-        )
-        assertThat(result).containsOnlyIds(1, 2, 3)
-    }
-
-    @Test
     fun testGetOrderSummariesForRemoteIds() = runTest {
         val orderSummaries = (1..3).asOrderSummaries(site.localId())
 
