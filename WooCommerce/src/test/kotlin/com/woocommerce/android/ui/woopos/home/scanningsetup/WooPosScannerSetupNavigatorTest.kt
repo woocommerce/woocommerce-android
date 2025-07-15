@@ -6,9 +6,8 @@ import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupS
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class ScannerSetupNavigatorTest {
-
-    private val navigator = ScannerSetupNavigator()
+class WooPosScannerSetupNavigatorTest {
+    private val navigator = WooPosScannerSetupNavigator()
 
     @Test
     fun `given DeviceSelection step, when TERA_1200 selected, then should navigate to ScannerHIDModeSetup`() {

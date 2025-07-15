@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosScanningSetupViewModel @Inject constructor(
-    private val navigator: ScannerSetupNavigator
+    private val navigator: WooPosScannerSetupNavigator
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(

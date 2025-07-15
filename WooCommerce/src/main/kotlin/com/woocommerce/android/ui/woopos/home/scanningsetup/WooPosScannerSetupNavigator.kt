@@ -5,7 +5,7 @@ import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupS
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import javax.inject.Inject
 
-class ScannerSetupNavigator @Inject constructor() {
+class WooPosScannerSetupNavigator @Inject constructor() {
     fun getNextStep(device: BarcodeReaderDevice, currentStep: ScanningSetupStep): ScanningSetupStep {
         val stepSequence = ScannerConfigurations.getStepSequence(device)
         val currentIndex = stepSequence.indexOf(currentStep)

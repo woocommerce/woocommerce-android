@@ -21,7 +21,7 @@ class WooPosScanningSetupViewModelTest {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private val navigator: ScannerSetupNavigator = mock()
+    private val navigator: WooPosScannerSetupNavigator = mock()
 
     @Test
     fun `given initialized, when no action taken, then should start with DeviceSelection step`() = runTest {
