@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.Companion.TEST_BARCODE_EAN13
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -24,7 +25,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
     private val _state = MutableStateFlow(
         WooPosScanningSetupState(
             isVisible = false,
-            currentStep = navigator.createDeviceSelectionStep(),
+            currentStep = ScanningSetupStep.DeviceSelection,
             selectedDevice = null
         )
     )
@@ -69,13 +70,6 @@ class WooPosScanningSetupViewModel @Inject constructor(
         }
     }
 
-    fun resetToInitialState() {
-        _state.value = _state.value.copy(
-            currentStep = navigator.restartFlow(),
-            selectedDevice = null
-        )
-    }
-
     private fun handlePrimaryButtonClick() {
         when (_state.value.currentStep) {
             is ScanningSetupStep.ScannerHIDModeSetup,
@@ -103,6 +97,25 @@ class WooPosScanningSetupViewModel @Inject constructor(
         }
     }
 
+    private fun handleSecondaryButtonClick() {
+        val selectedDevice = _state.value.selectedDevice
+        val previousStep = if (selectedDevice != null) {
+            navigator.getPreviousStep(selectedDevice, _state.value.currentStep)
+        } else {
+            ScanningSetupStep.DeviceSelection
+        }
+
+        requireNotNull(previousStep) { "Previous step cannot be null if secondary button present" }
+        _state.value = _state.value.copy(currentStep = previousStep)
+    }
+
+    fun resetToInitialState() {
+        _state.value = _state.value.copy(
+            currentStep = ScanningSetupStep.DeviceSelection,
+            selectedDevice = null
+        )
+    }
+
     private fun navigateToNextStep() {
         val selectedDevice = requireNotNull(_state.value.selectedDevice) { "Selected device cannot be null" }
         val nextStep = navigator.getNextStep(selectedDevice, _state.value.currentStep)
@@ -113,21 +126,20 @@ class WooPosScanningSetupViewModel @Inject constructor(
         }
     }
 
-    private fun handleSecondaryButtonClick() {
-        val selectedDevice = _state.value.selectedDevice
-        val previousStep = if (selectedDevice != null) {
-            navigator.getPreviousStep(selectedDevice, _state.value.currentStep)
-        } else {
-            navigator.createDeviceSelectionStep()
-        }
-
-        requireNotNull(previousStep) { "Previous step cannot be null if secondary button present" }
-        _state.value = _state.value.copy(currentStep = previousStep)
-    }
-
     private fun handleBarcodeScanned(barcodeResult: BarcodeInputDetector.BarcodeResult) {
         val selectedDevice = requireNotNull(_state.value.selectedDevice) { "Selected device cannot be null" }
-        val nextStep = navigator.handleBarcodeScanned(selectedDevice, _state.value.currentStep, barcodeResult.barcode)
+        val nextStep = when (val currentStep = _state.value.currentStep) {
+            is ScanningSetupStep.TestYourScanner,
+            is ScanningSetupStep.TestYourScannerTimeout -> {
+                if (barcodeResult.barcode == TEST_BARCODE_EAN13) {
+                    navigator.getNextStep(selectedDevice, currentStep)
+                } else {
+                    ScanningSetupStep.TestYourScannerScanFailed
+                }
+            }
+
+            else -> error("Barcode scanning is not expected in step: ${currentStep::class.simpleName}")
+        }
         _state.value = _state.value.copy(currentStep = nextStep)
     }
 
@@ -137,7 +149,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             delay(AUTO_NAVIGATION_DELAY_MS)
             if (_state.value.currentStep is ScanningSetupStep.TestYourScanner) {
                 _state.value = _state.value.copy(
-                    currentStep = navigator.createTestYourScannerTimeoutStep()
+                    currentStep = ScanningSetupStep.TestYourScannerTimeout
                 )
             }
         }

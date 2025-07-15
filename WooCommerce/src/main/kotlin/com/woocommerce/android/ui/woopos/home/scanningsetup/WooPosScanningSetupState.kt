@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -19,138 +20,226 @@ data class WooPosScanningSetupState(
         OTHER(R.string.woopos_scanning_setup_device_other)
     }
 
-    enum class ScannerStepType {
-        HID_MODE_SETUP,
-        PAIR_MODE_SETUP,
-        PAIR_YOUR_SCANNER,
-        TEST_YOUR_SCANNER,
-        SETUP_SUCCESS,
-        SETUP_INFO
-    }
-
-    data class ScannerConfiguration(
-        val device: BarcodeReaderDevice,
-        val stepSequence: List<ScannerStepType>
-    ) {
-        companion object {
-            val configurations = mapOf(
-                BarcodeReaderDevice.TERA_1200 to ScannerConfiguration(
-                    device = BarcodeReaderDevice.TERA_1200,
-                    stepSequence = listOf(
-                        ScannerStepType.HID_MODE_SETUP,
-                        ScannerStepType.PAIR_MODE_SETUP,
-                        ScannerStepType.PAIR_YOUR_SCANNER,
-                        ScannerStepType.TEST_YOUR_SCANNER,
-                        ScannerStepType.SETUP_SUCCESS
-                    )
-                ),
-                BarcodeReaderDevice.STAR_BSH_20B to ScannerConfiguration(
-                    device = BarcodeReaderDevice.STAR_BSH_20B,
-                    stepSequence = listOf(
-                        ScannerStepType.HID_MODE_SETUP,
-                        ScannerStepType.PAIR_YOUR_SCANNER,
-                        ScannerStepType.TEST_YOUR_SCANNER,
-                        ScannerStepType.SETUP_SUCCESS
-                    )
-                ),
-                BarcodeReaderDevice.INATECK_BLUETOOTH to ScannerConfiguration(
-                    device = BarcodeReaderDevice.INATECK_BLUETOOTH,
-                    stepSequence = listOf(
-                        ScannerStepType.HID_MODE_SETUP,
-                        ScannerStepType.PAIR_MODE_SETUP,
-                        ScannerStepType.PAIR_YOUR_SCANNER,
-                        ScannerStepType.TEST_YOUR_SCANNER,
-                        ScannerStepType.SETUP_SUCCESS
-                    )
-                ),
-                BarcodeReaderDevice.OTHER to ScannerConfiguration(
-                    device = BarcodeReaderDevice.OTHER,
-                    stepSequence = listOf(
-                        ScannerStepType.SETUP_INFO
-                    )
+    object ScannerConfigurations {
+        fun getStepSequence(device: BarcodeReaderDevice): List<ScanningSetupStep> {
+            return when (device) {
+                BarcodeReaderDevice.TERA_1200 -> listOf(
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
+                    ScanningSetupStep.ScannerPairModeSetup(),
+                    ScanningSetupStep.PairYourScanner(),
+                    ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.ScannerSetupSuccess
                 )
-            )
 
-            fun getConfiguration(device: BarcodeReaderDevice): ScannerConfiguration {
-                return configurations[device] ?: error("No configuration found for device: $device")
+                BarcodeReaderDevice.STAR_BSH_20B -> listOf(
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.star_bsh_20b_setup_qr),
+                    ScanningSetupStep.PairYourScanner(),
+                    ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.ScannerSetupSuccess
+                )
+
+                BarcodeReaderDevice.INATECK_BLUETOOTH -> listOf(
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
+                    ScanningSetupStep.ScannerPairModeSetup(),
+                    ScanningSetupStep.PairYourScanner(),
+                    ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.ScannerSetupSuccess
+                )
+
+                BarcodeReaderDevice.OTHER -> listOf(
+                    ScanningSetupStep.ScannerSetupInfo
+                )
             }
         }
     }
+
     sealed class ScanningSetupStep : Parcelable {
         @Parcelize
-        data class DeviceSelection(
-            val title: String,
-            val devices: List<BarcodeReaderDevice>
-        ) : ScanningSetupStep()
+        data object DeviceSelection : ScanningSetupStep() {
+            @IgnoredOnParcel
+            val devices: List<BarcodeReaderDevice> = listOf(
+                BarcodeReaderDevice.TERA_1200,
+                BarcodeReaderDevice.STAR_BSH_20B,
+                BarcodeReaderDevice.INATECK_BLUETOOTH,
+                BarcodeReaderDevice.OTHER
+            )
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_device_selection_title
+        }
 
         @Parcelize
         data class ScannerHIDModeSetup(
-            val title: String,
-            val message: String,
-            @DrawableRes val qrCodeImageRes: Int,
-            val primaryButtonText: String,
-            val secondaryButtonText: String
-        ) : ScanningSetupStep()
+            @DrawableRes val qrCodeImageRes: Int
+        ) : ScanningSetupStep() {
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_introduction_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_introduction_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val primaryButtonTextRes = R.string.woopos_scanning_setup_button_next
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val secondaryButtonTextRes = R.string.woopos_scanning_setup_button_back
+        }
 
         @Parcelize
         data class ScannerPairModeSetup(
-            val title: String,
-            val message: String,
-            @DrawableRes val qrCodeImageRes: Int,
-            val primaryButtonText: String,
-            val secondaryButtonText: String
-        ) : ScanningSetupStep()
+            @DrawableRes val qrCodeImageRes: Int = R.drawable.ic_barcode
+        ) : ScanningSetupStep() {
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_scanner_pair_mode_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_scanner_pair_mode_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val primaryButtonTextRes = R.string.woopos_scanning_setup_button_next
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val secondaryButtonTextRes = R.string.woopos_scanning_setup_button_back
+        }
 
         @Parcelize
         data class PairYourScanner(
-            val title: String,
-            val message: String,
-            @DrawableRes val iconRes: Int,
-            val primaryButtonText: String,
-            val secondaryButtonText: String,
-            val bluetoothSettingsButtonText: String
-        ) : ScanningSetupStep()
+            @DrawableRes val iconRes: Int = R.drawable.ic_woopos_bluetooth_settings
+        ) : ScanningSetupStep() {
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_pair_your_scanner_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_pair_your_scanner_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val primaryButtonTextRes = R.string.woopos_scanning_setup_button_next
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val secondaryButtonTextRes = R.string.woopos_scanning_setup_button_back
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val bluetoothSettingsButtonTextRes = R.string.woopos_scanning_setup_go_to_settings
+        }
 
         @Parcelize
-        data class TestYourScanner(
-            val title: String,
-            val message: String,
-            val barcodeValue: String,
-            val secondaryButtonText: String
-        ) : ScanningSetupStep()
+        data object TestYourScanner : ScanningSetupStep() {
+            @IgnoredOnParcel val barcodeValue: String = TEST_BARCODE_EAN13
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_test_scanner_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_test_scanner_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val secondaryButtonTextRes = R.string.woopos_scanning_setup_button_back
+        }
 
         @Parcelize
-        data class TestYourScannerTimeout(
-            val title: String,
-            val message: String,
-            val barcodeValue: String,
-            val secondaryButtonText: String
-        ) : ScanningSetupStep()
+        data object TestYourScannerTimeout : ScanningSetupStep() {
+            @IgnoredOnParcel val barcodeValue: String = TEST_BARCODE_EAN13
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_timeout_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_timeout_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val secondaryButtonTextRes = R.string.woopos_scanning_setup_button_back
+        }
 
         @Parcelize
-        data class TestYourScannerScanFailed(
-            val title: String,
-            val message: String,
-            @DrawableRes val iconRes: Int,
-            val primaryButtonText: String,
-            val secondaryButtonText: String
-        ) : ScanningSetupStep()
+        data object TestYourScannerScanFailed : ScanningSetupStep() {
+            @get:DrawableRes
+            @IgnoredOnParcel
+            val iconRes: Int = R.drawable.ic_woo_pos_error_x
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_scan_failed_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_scan_failed_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val primaryButtonTextRes = R.string.woopos_scanning_setup_button_retry
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val secondaryButtonTextRes = R.string.woopos_scanning_setup_button_back
+        }
 
         @Parcelize
-        data class ScannerSetupSuccess(
-            val title: String,
-            val message: String,
-            val moreInfoButtonText: String
-        ) : ScanningSetupStep()
+        data object ScannerSetupSuccess : ScanningSetupStep() {
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_success_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_success_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val moreInfoButtonTextRes = R.string.woopos_scanning_setup_more_information
+        }
 
         @Parcelize
-        data class ScannerSetupInfo(
-            val title: String,
-            val message: String,
-            val bulletPoints: List<String>,
-            val infoText: String,
-            val backButtonText: String,
-            val doneButtonText: String
-        ) : ScanningSetupStep()
+        data object ScannerSetupInfo : ScanningSetupStep() {
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_info_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_info_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val infoTextRes = R.string.woopos_scanning_setup_info_text
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val backButtonTextRes = R.string.woopos_scanning_setup_button_back
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val doneButtonTextRes = R.string.woopos_scanning_setup_button_done
+
+            @IgnoredOnParcel
+            val bulletPointsRes = listOf(
+                R.string.woopos_scanning_setup_info_bullet_1,
+                R.string.woopos_scanning_setup_info_bullet_2,
+                R.string.woopos_scanning_setup_info_bullet_3
+            )
+        }
+    }
+
+    companion object {
+        const val TEST_BARCODE_EAN13 = "1234567890128"
     }
 }
