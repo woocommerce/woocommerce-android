@@ -318,7 +318,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val orderShippingEmail = order.shippingAddress.email.ifBlank { order.billingAddress.email }
 
             if (labelDestination == null) {
-                if (destinationAddress.value == WooShippingAddresses.EMPTY) {
+                if (destinationAddress.value == DestinationShippingAddress.EMPTY) {
                     val defaultDestination = DestinationShippingAddress(
                         address = order.shippingAddress.copy(email = orderShippingEmail),
                         isVerified = false
