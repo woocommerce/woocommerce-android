@@ -50,9 +50,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -73,8 +78,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.delay
 
@@ -242,6 +249,12 @@ fun WooPosScanningSetupDialog(
                     )
 
                     is ScanningSetupStep.TestYourScannerScanFailed -> TestYourScannerScanFailedContent(
+                        step = step,
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    )
+
+                    is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> ScannerSetupBarcodesOnProductsContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
@@ -614,6 +627,111 @@ private fun ScannerSetupSuccessContent(
 }
 
 @Composable
+private fun ScannerSetupSuccessIcon(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(88.dp)
+            .background(WooPosTheme.colors.success, CircleShape)
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
+            tint = WooPosTheme.colors.onSuccess,
+            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
+            modifier = Modifier.size(40.dp)
+        )
+    }
+}
+
+@Composable
+private fun ScannerSetupBarcodesOnProductsContent(
+    step: ScanningSetupStep.ScannerSetupBarcodesOnProducts,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = stringResource(step.titleRes),
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        val visitDocumentationText = stringResource(id = R.string.woopos_scanning_setup_visit_documentation)
+        val linkAnnotation = LinkAnnotation.Url(
+            WOO_POS_BARCODE_DOC_URL
+        ) { urlAnnotation ->
+            ChromeCustomTabUtils.launchUrl(
+                context,
+                WOO_POS_BARCODE_DOC_URL,
+                enableSlideAnimation = true
+            )
+        }
+
+        val annotatedText = buildAnnotatedString {
+            append(stringResource(step.messageRes))
+            append(" ")
+            withStyle(
+                style = SpanStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline
+                )
+            ) {
+                withLink(linkAnnotation) {
+                    append(visitDocumentationText)
+                }
+            }
+            append(".")
+        }
+
+        WooPosText(
+            text = annotatedText,
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(
+                bottom = WooPosSpacing.Large.value.toAdaptivePadding(),
+                start = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                end = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+            )
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.img_pos_inventory_setup),
+            contentDescription = stringResource(
+                id = R.string.woopos_scanning_setup_barcodes_on_products_image_description
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                .border(
+                    width = 1.dp,
+                    color = WooPosTheme.colors.outlineVariant,
+                    shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
+                )
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        SetupButtonsRow(
+            primaryButtonText = stringResource(step.doneButtonTextRes),
+            secondaryButtonText = stringResource(step.backButtonTextRes),
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
+    }
+}
+
+@Composable
 private fun ScannerSetupInfoContent(
     step: ScanningSetupStep.ScannerSetupInfo,
     onPrimaryClick: () -> Unit,
@@ -663,7 +781,7 @@ private fun ScannerSetupInfoContent(
         )
 
         SetupButtonsRow(
-            primaryButtonText = stringResource(step.doneButtonTextRes),
+            primaryButtonText = stringResource(step.nextButtonTextRes),
             secondaryButtonText = stringResource(step.backButtonTextRes),
             onPrimaryClick = onPrimaryClick,
             onSecondaryClick = onSecondaryClick
@@ -678,25 +796,6 @@ private fun BulletPointItem(text: String) {
         style = WooPosTypography.BodyLarge,
         modifier = Modifier.fillMaxWidth()
     )
-}
-
-@Composable
-private fun ScannerSetupSuccessIcon(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(88.dp)
-            .background(WooPosTheme.colors.success, CircleShape)
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
-            tint = WooPosTheme.colors.onSuccess,
-            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
-            modifier = Modifier.size(40.dp)
-        )
-    }
 }
 
 @FontScalePreviews

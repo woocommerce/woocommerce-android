@@ -7,6 +7,7 @@
 - [*] Fixed rare crash on the Payment Selection screen. [https://github.com/woocommerce/woocommerce-android/pull/14318]
 - [**] Added option to filter orders by Point of Sale sales channel in Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14286]
 - [*] Fixed keyboard not being shown when searching in Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14344]
+- [*] Added POS badge to Most recent orders section in the My store dashboard [https://github.com/woocommerce/woocommerce-android/pull/14328]
 
 22.8
 -----
