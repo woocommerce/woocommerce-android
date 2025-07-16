@@ -74,7 +74,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             is ScanningSetupStep.ScannerHIDModeSetup,
             is ScanningSetupStep.ScannerPairModeSetup,
             is ScanningSetupStep.PairYourScanner,
-            is ScanningSetupStep.ScannerSetupSuccess-> {
+            is ScanningSetupStep.ScannerSetupSuccess -> {
                 navigateToNextStep()
             }
 

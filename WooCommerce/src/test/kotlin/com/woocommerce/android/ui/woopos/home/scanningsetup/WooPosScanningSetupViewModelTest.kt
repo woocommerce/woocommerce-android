@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.Companion.TEST_BARCODE_EAN13
@@ -366,12 +367,14 @@ class WooPosScanningSetupViewModelTest {
         val step = viewModel.state.value.currentStep as ScanningSetupStep.DeviceSelection
 
         // THEN
-        assertThat(step.title).isEqualTo("Set up a barcode scanner")
+        assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_device_selection_title)
     }
 
     @Test
     fun `given ScannerHIDModeSetup state, when created, then should have correct string content`() = runTest {
         // GIVEN
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = android.R.drawable.ic_delete))
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
 
@@ -379,15 +382,20 @@ class WooPosScanningSetupViewModelTest {
         val step = viewModel.state.value.currentStep as ScanningSetupStep.ScannerHIDModeSetup
 
         // THEN
-        assertThat(step.title).isEqualTo("Introduction")
-        assertThat(step.message).isEqualTo("Introduction message")
-        assertThat(step.primaryButtonText).isEqualTo("Next")
-        assertThat(step.secondaryButtonText).isEqualTo("Back")
+        assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_introduction_title)
+        assertThat(step.messageRes).isEqualTo(R.string.woopos_scanning_setup_introduction_message)
+        assertThat(step.primaryButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_next)
+        assertThat(step.secondaryButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
     }
 
     @Test
     fun `given ScannerPairModeSetup state, when created, then should have correct string content`() = runTest {
         // GIVEN
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = android.R.drawable.ic_delete)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(hidModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
+            .thenReturn(ScanningSetupStep.ScannerPairModeSetup())
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
@@ -396,15 +404,23 @@ class WooPosScanningSetupViewModelTest {
         val step = viewModel.state.value.currentStep as ScanningSetupStep.ScannerPairModeSetup
 
         // THEN
-        assertThat(step.title).isEqualTo("Pair mode")
-        assertThat(step.message).isEqualTo("Pair mode message")
-        assertThat(step.primaryButtonText).isEqualTo("Next")
-        assertThat(step.secondaryButtonText).isEqualTo("Back")
+        assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_scanner_pair_mode_title)
+        assertThat(step.messageRes).isEqualTo(R.string.woopos_scanning_setup_scanner_pair_mode_message)
+        assertThat(step.primaryButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_next)
+        assertThat(step.secondaryButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
     }
 
     @Test
     fun `given PairYourScanner state, when created, then should have correct string content`() = runTest {
         // GIVEN
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = android.R.drawable.ic_delete)
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup()
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(hidModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
+            .thenReturn(pairModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairModeStep))
+            .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
@@ -414,16 +430,32 @@ class WooPosScanningSetupViewModelTest {
         val step = viewModel.state.value.currentStep as ScanningSetupStep.PairYourScanner
 
         // THEN
-        assertThat(step.title).isEqualTo("Pair your scanner")
-        assertThat(step.message).isEqualTo("Pair your scanner message TERA 1200")
-        assertThat(step.primaryButtonText).isEqualTo("Next")
-        assertThat(step.secondaryButtonText).isEqualTo("Back")
-        assertThat(step.bluetoothSettingsButtonText).isEqualTo("Go to settings")
+        assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_pair_your_scanner_title)
+        assertThat(step.messageRes).isEqualTo(
+            UiString.UiStringRes(
+                R.string.woopos_scanning_setup_pair_your_scanner_message,
+                listOf(UiString.UiStringRes(R.string.woopos_scanning_setup_device_tera_1200))
+            )
+        )
+        assertThat(step.primaryButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_next)
+        assertThat(step.secondaryButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
+        assertThat(step.bluetoothSettingsButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_go_to_settings)
     }
 
     @Test
     fun `given TestYourScanner state, when created, then should have correct string content`() = runTest {
         // GIVEN
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = android.R.drawable.ic_delete)
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup()
+        val pairYourScannerStep = ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(hidModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
+            .thenReturn(pairModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairModeStep))
+            .thenReturn(pairYourScannerStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairYourScannerStep))
+            .thenReturn(ScanningSetupStep.TestYourScanner)
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
@@ -434,14 +466,27 @@ class WooPosScanningSetupViewModelTest {
         val step = viewModel.state.value.currentStep as ScanningSetupStep.TestYourScanner
 
         // THEN
-        assertThat(step.title).isEqualTo("Test scanner")
-        assertThat(step.message).isEqualTo("Test scanner message")
-        assertThat(step.secondaryButtonText).isEqualTo("Back")
+        assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_test_scanner_title)
+        assertThat(step.messageRes).isEqualTo(R.string.woopos_scanning_setup_test_scanner_message)
+        assertThat(step.secondaryButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
     }
 
     @Test
     fun `given ScannerSetupSuccess state, when created, then should have correct string content`() = runTest {
         // GIVEN
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = android.R.drawable.ic_delete)
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup()
+        val pairYourScannerStep = ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(hidModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
+            .thenReturn(pairModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairModeStep))
+            .thenReturn(pairYourScannerStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairYourScannerStep))
+            .thenReturn(ScanningSetupStep.TestYourScanner)
+        whenever(navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScanner))
+            .thenReturn(ScanningSetupStep.ScannerSetupSuccess)
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
@@ -460,14 +505,16 @@ class WooPosScanningSetupViewModelTest {
         val step = viewModel.state.value.currentStep as ScanningSetupStep.ScannerSetupSuccess
 
         // THEN
-        assertThat(step.title).isEqualTo("Success")
-        assertThat(step.message).isEqualTo("Success message")
-        assertThat(step.moreInfoButtonText).isEqualTo("More information")
+        assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_success_title)
+        assertThat(step.messageRes).isEqualTo(R.string.woopos_scanning_setup_success_message)
+        assertThat(step.moreInfoButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_more_information)
     }
 
     @Test
     fun `given ScannerSetupInfo state, when created, then should have correct string content`() = runTest {
         // GIVEN
+        whenever(navigator.getNextStep(BarcodeReaderDevice.OTHER, ScanningSetupStep.DeviceSelection))
+            .thenReturn(ScanningSetupStep.ScannerSetupInfo)
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.OTHER))
 
@@ -475,18 +522,39 @@ class WooPosScanningSetupViewModelTest {
         val step = viewModel.state.value.currentStep as ScanningSetupStep.ScannerSetupInfo
 
         // THEN
-        assertThat(step.title).isEqualTo("Info")
-        assertThat(step.message).isEqualTo("Info message")
-        assertThat(step.bulletPoints).containsExactly("Bullet 1", "Bullet 2", "Bullet 3")
-        assertThat(step.infoText).isEqualTo("Info text")
-        assertThat(step.backButtonText).isEqualTo("Back")
-        assertThat(step.doneButtonText).isEqualTo("Done")
+        assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_info_title)
+        assertThat(step.messageRes).isEqualTo(R.string.woopos_scanning_setup_info_message)
+        assertThat(step.bulletPointsRes).containsExactly(
+            R.string.woopos_scanning_setup_info_bullet_1,
+            R.string.woopos_scanning_setup_info_bullet_2,
+            R.string.woopos_scanning_setup_info_bullet_3
+        )
+        assertThat(step.infoTextRes).isEqualTo(R.string.woopos_scanning_setup_info_text)
+        assertThat(step.backButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
+        assertThat(step.doneButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_done)
     }
 
     @Test
     fun `given ScannerSetupBarcodesOnProducts state, when created, then should have correct string content`() =
         runTest {
             // GIVEN
+            val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = android.R.drawable.ic_delete)
+            val pairModeStep = ScanningSetupStep.ScannerPairModeSetup()
+            val pairYourScannerStep = ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
+            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+                .thenReturn(hidModeStep)
+            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
+                .thenReturn(pairModeStep)
+            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairModeStep))
+                .thenReturn(pairYourScannerStep)
+            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairYourScannerStep))
+                .thenReturn(ScanningSetupStep.TestYourScanner)
+            whenever(
+                navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScanner)
+            )
+                .thenReturn(ScanningSetupStep.ScannerSetupSuccess)
+            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerSetupSuccess))
+                .thenReturn(ScanningSetupStep.ScannerSetupBarcodesOnProducts)
             val viewModel = createViewModel()
             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
@@ -508,13 +576,10 @@ class WooPosScanningSetupViewModelTest {
             val step = viewModel.state.value.currentStep as ScanningSetupStep.ScannerSetupBarcodesOnProducts
 
             // THEN
-            assertThat(step.title).isEqualTo("How to set up barcodes on products")
-            assertThat(step.message).isEqualTo(
-                "You can set up barcodes in the GTIN, UPC, EAN, ISBN field in the product's inventory tab. " +
-                    "For more details"
-            )
-            assertThat(step.doneButtonText).isEqualTo("Done")
-            assertThat(step.backButtonText).isEqualTo("Back")
+            assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_barcodes_on_products_title)
+            assertThat(step.messageRes).isEqualTo(R.string.woopos_scanning_setup_barcodes_on_products_message)
+            assertThat(step.doneButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_done)
+            assertThat(step.backButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
         }
 
     private fun createViewModel(): WooPosScanningSetupViewModel {
