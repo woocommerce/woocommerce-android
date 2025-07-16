@@ -608,7 +608,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             else -> {
                 val sortOrder = selectedRatesSortOrdersFlow.value[index]
                 updateState(ShippingRatesState.Loading(sortOrder))
-                val shippingRatesResult = getShippingRates(
+                getShippingRates(
                     shippingRatesInfo.orderId,
                     shippingRatesInfo.packageSelected,
                     shippingRatesInfo.shipTo,
@@ -617,16 +617,18 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     shippingRatesInfo.currencyCode,
                     shippingRatesInfo.customsData,
                     shippingRatesInfo.hazmatSelection
-                )
-                if (shippingRatesResult.isSuccess && shippingRatesResult.getOrThrow().isNotEmpty()) {
-                    shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
-                        set(index, shippingRatesResult.getOrThrow())
+                ).fold(
+                    onSuccess = { result ->
+                        shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
+                            set(index, result)
+                        }
+                        trackShippingRatesLoading(isSuccess = true)
+                    },
+                    onFailure = { exception ->
+                        updateState(ShippingRatesState.Error)
+                        trackShippingRatesLoading(isSuccess = false, error = exception.message)
                     }
-                    trackShippingRatesLoading(isSuccess = true)
-                } else {
-                    updateState(ShippingRatesState.Error)
-                    trackShippingRatesLoading(isSuccess = false, error = shippingRatesResult.exceptionOrNull()?.message)
-                }
+                )
                 selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
         }

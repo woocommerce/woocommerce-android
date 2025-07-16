@@ -113,4 +113,22 @@ class GetShippingRatesTest : BaseUnitTest() {
         assertTrue(result.isFailure)
         verify(mapper, never()).invoke(any(), any())
     }
+
+    @Test
+    fun `when shipping rates request returns empty list, then result is a failure`() = testBlocking {
+        whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any(), isNull()))
+            .doReturn(Result.success(emptyList()))
+
+        val result = sut.invoke(
+            orderId = 3L,
+            selectedPackage = defaultSelectedPackage,
+            shipTo = Address.EMPTY,
+            shipFrom = OriginShippingAddress.EMPTY,
+            weight = 15f,
+            currencyCode = "USD",
+            customsData = defaultCustomData
+        )
+
+        assertTrue(result.isFailure)
+    }
 }
