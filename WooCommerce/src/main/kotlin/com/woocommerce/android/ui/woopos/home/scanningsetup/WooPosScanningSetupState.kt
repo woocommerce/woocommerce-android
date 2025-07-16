@@ -28,7 +28,7 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
                     ScanningSetupStep.ScannerPairModeSetup(),
-                    ScanningSetupStep.PairYourScanner(deviceName = device.name),
+                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
@@ -36,7 +36,7 @@ data class WooPosScanningSetupState(
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
-                    ScanningSetupStep.PairYourScanner(deviceName = device.name),
+                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
@@ -45,7 +45,7 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
                     ScanningSetupStep.ScannerPairModeSetup(),
-                    ScanningSetupStep.PairYourScanner(deviceName = device.name),
+                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
@@ -117,7 +117,7 @@ data class WooPosScanningSetupState(
         }
 
         @Parcelize
-        data class PairYourScanner(val deviceName: String) : ScanningSetupStep() {
+        data class PairYourScanner(@StringRes val deviceName: Int) : ScanningSetupStep() {
             @get:DrawableRes
             @IgnoredOnParcel
             val iconRes: Int = R.drawable.ic_woopos_bluetooth_settings
@@ -131,7 +131,7 @@ data class WooPosScanningSetupState(
                 UiString.UiStringRes(
                     R.string.woopos_scanning_setup_pair_your_scanner_message,
                     listOf(
-                        UiString.UiStringText(
+                        UiString.UiStringRes(
                             deviceName
                         )
                     )
