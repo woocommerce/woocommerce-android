@@ -29,7 +29,8 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.ScannerPairModeSetup(),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
-                    ScanningSetupStep.ScannerSetupSuccess
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
 
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
@@ -37,7 +38,8 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
-                    ScanningSetupStep.ScannerSetupSuccess
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
 
                 BarcodeReaderDevice.INATECK_BLUETOOTH -> listOf(
@@ -46,7 +48,8 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.ScannerPairModeSetup(),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
-                    ScanningSetupStep.ScannerSetupSuccess
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
 
                 BarcodeReaderDevice.OTHER -> listOf(
