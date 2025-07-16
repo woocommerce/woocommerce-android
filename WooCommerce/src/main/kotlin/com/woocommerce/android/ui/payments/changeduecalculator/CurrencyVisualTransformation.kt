@@ -4,21 +4,25 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
 
 class CurrencyVisualTransformation(
     private val currencySymbol: String,
-    private val currencyPosition: WCSettingsModel.CurrencyPosition
+    private val currencyPosition: CurrencyPosition
 ) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val transformedText = when (currencyPosition) {
-            WCSettingsModel.CurrencyPosition.RIGHT -> {
+            RIGHT -> {
                 text.text + currencySymbol
             }
-            WCSettingsModel.CurrencyPosition.RIGHT_SPACE -> {
+            RIGHT_SPACE -> {
                 text.text + " " + currencySymbol
             }
-            WCSettingsModel.CurrencyPosition.LEFT_SPACE -> {
+            LEFT_SPACE -> {
                 currencySymbol + " " + text.text
             }
             else -> {
@@ -27,16 +31,16 @@ class CurrencyVisualTransformation(
         }
 
         val adjustedPrefixLength = when (currencyPosition) {
-            WCSettingsModel.CurrencyPosition.LEFT_SPACE -> currencySymbol.length + 1
-            WCSettingsModel.CurrencyPosition.RIGHT_SPACE -> currencySymbol.length + 1
-            WCSettingsModel.CurrencyPosition.LEFT -> currencySymbol.length
+            LEFT_SPACE -> currencySymbol.length + 1
+            RIGHT_SPACE -> currencySymbol.length + 1
+            LEFT -> currencySymbol.length
             else -> 0
         }
 
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
-                return if (currencyPosition == WCSettingsModel.CurrencyPosition.LEFT ||
-                    currencyPosition == WCSettingsModel.CurrencyPosition.LEFT_SPACE
+                return if (currencyPosition == LEFT ||
+                    currencyPosition == LEFT_SPACE
                 ) {
                     offset + adjustedPrefixLength
                 } else {
@@ -45,8 +49,8 @@ class CurrencyVisualTransformation(
             }
 
             override fun transformedToOriginal(offset: Int): Int {
-                return if (currencyPosition == WCSettingsModel.CurrencyPosition.LEFT ||
-                    currencyPosition == WCSettingsModel.CurrencyPosition.LEFT_SPACE
+                return if (currencyPosition == LEFT ||
+                    currencyPosition == LEFT_SPACE
                 ) {
                     (offset - adjustedPrefixLength).coerceAtLeast(0)
                 } else {

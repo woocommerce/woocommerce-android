@@ -25,9 +25,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date

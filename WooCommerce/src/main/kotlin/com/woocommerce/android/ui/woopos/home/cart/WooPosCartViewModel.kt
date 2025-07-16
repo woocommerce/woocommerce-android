@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -17,7 +16,6 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.common.util.WooPosScannerDetectionUtil
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
@@ -41,12 +39,12 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosBarcodeEventTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
@@ -69,8 +67,7 @@ class WooPosCartViewModel @Inject constructor(
     private val searchByIdentifier: WooPosSearchByIdentifier,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
-    private val scannerDetectionUtil: WooPosScannerDetectionUtil,
-    @ApplicationContext private val context: Context,
+    private val barcodeEventTracker: WooPosBarcodeEventTracker,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -131,8 +128,8 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
 
-            is WooPosCartUIEvent.OnBarcodeScanned -> {
-                onBarcodeScanned(event.barcode, event.metadata)
+            is WooPosCartUIEvent.OnBarcodeEvent -> {
+                onBarcodeEvent(event.result)
             }
         }
     }
@@ -218,8 +215,8 @@ class WooPosCartViewModel @Inject constructor(
                         removeCouponsFromCart()
                     }
 
-                    is ParentToChildrenEvent.BarcodeScanned -> {
-                        onBarcodeScanned(event.barcode, event.metadata)
+                    is ParentToChildrenEvent.BarcodeEvent -> {
+                        onBarcodeEvent(event.result)
                     }
                 }
             }
@@ -352,59 +349,78 @@ class WooPosCartViewModel @Inject constructor(
         _state.value = WooPosCartState()
     }
 
-    private fun onBarcodeScanned(barcode: String, metadata: BarcodeInputDetector.ScanMetadata) {
-        trackBarcodeScanned(barcode, metadata)
+    private suspend fun handleNewTransactionIfNeeded() {
+        if (_state.value.body == WooPosCartState.Body.Empty) {
+            childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+            analyticsTracker.track(InteractionWithCustomerStarted)
+        }
+    }
 
+    private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
         if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
             return
         }
 
         viewModelScope.launch {
-            if (_state.value.body == WooPosCartState.Body.Empty) {
-                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+            barcodeEventTracker.trackBarcodeEvent(result)
 
-                analyticsTracker.track(InteractionWithCustomerStarted)
+            when (result) {
+                is BarcodeInputDetector.BarcodeResult.Success -> {
+                    processBarcodeSuccess(result.barcode)
+                }
+                is BarcodeInputDetector.BarcodeResult.Error -> {
+                    processBarcodeError(result)
+                }
             }
-            val itemNumber = getItemNumber()
-
-            WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode).let { loadingItem ->
-                analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = loadingItem))
-                updateCartItem(loadingItem)
-            }
-
-            val searchResult = searchByIdentifier(barcode)
-
-            if (!isItemStillInCart(itemNumber)) {
-                wooPosLogWrapper.w("Item no longer in the cart. Ignoring barcode scan result.")
-                return@launch
-            }
-
-            val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
-            if (cartItem is WooPosCartItemViewState.Error) {
-                soundHelper.playBarcodeScanFailure()
-            }
-
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
-            updateCartItem(cartItem)
         }
     }
 
-    private fun trackBarcodeScanned(barcode: String, metadata: BarcodeInputDetector.ScanMetadata) {
-        viewModelScope.launch {
-            val connectedScanner = scannerDetectionUtil.detectConnectedScanner(context)
-            val scannerInfo = scannerDetectionUtil.getScannerInfoString(connectedScanner)
+    private suspend fun processBarcodeSuccess(barcode: String) {
+        handleNewTransactionIfNeeded()
+        val itemNumber = getItemNumber()
 
-            val isNumericOnly = barcode.all { it.isDigit() }
-
-            analyticsTracker.track(
-                WooPosAnalyticsEvent.Event.BarcodeScanned(
-                    scanDurationMs = metadata.scanDurationMs,
-                    isNumericOnly = isNumericOnly,
-                    barcodeLength = barcode.length,
-                    scannerInfo = scannerInfo,
-                )
-            )
+        WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode).let { loadingItem ->
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = loadingItem))
+            updateCartItem(loadingItem)
         }
+
+        val searchResult = searchByIdentifier(barcode)
+
+        if (!isItemStillInCart(itemNumber)) {
+            wooPosLogWrapper.w("Item no longer in the cart. Ignoring barcode scan result.")
+            return
+        }
+
+        val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
+        if (cartItem is WooPosCartItemViewState.Error) {
+            soundHelper.playBarcodeScanFailure()
+        }
+
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
+        updateCartItem(cartItem)
+    }
+
+    private suspend fun processBarcodeError(result: BarcodeInputDetector.BarcodeResult.Error) {
+        handleNewTransactionIfNeeded()
+        val itemNumber = getItemNumber()
+        val errorMessage = when (result.failureReason) {
+            BarcodeInputDetector.FailureReason.TOO_SHORT -> {
+                resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_too_short)
+            }
+            BarcodeInputDetector.FailureReason.NO_TERMINATOR -> {
+                resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_no_terminator)
+            }
+        }
+
+        val errorItem = WooPosCartItemViewState.Error(
+            itemNumber = itemNumber,
+            name = result.barcode,
+            message = errorMessage
+        )
+
+        soundHelper.playBarcodeScanFailure()
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = errorItem))
+        updateCartItem(errorItem)
     }
 
     private fun isItemStillInCart(itemNumber: Int): Boolean {

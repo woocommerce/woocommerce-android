@@ -1,12 +1,11 @@
 package org.wordpress.android.fluxc.store
 
-import android.content.Context
-import androidx.room.Room
+import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.doReturn
@@ -26,7 +25,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.dto.CustomerDTO
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
@@ -35,33 +34,27 @@ import org.wordpress.android.fluxc.tools.initCoroutineEngine
 @RunWith(RobolectricTestRunner::class)
 class WCCustomerStoreTest {
 
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private val restClient: CustomerRestClient = mock()
 
-    private lateinit var roomDb: WCAndroidDatabase
     private lateinit var customerDao: CustomerDao
     private lateinit var sut: WCCustomerStore
 
     @Before
     fun setUp() {
-        val appContext = ApplicationProvider.getApplicationContext<Context>()
-        roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        customerDao = roomDb.customerDao
+        customerDao = databaseRule.db.customerDao
 
         sut = WCCustomerStore(
             restClient,
             initCoroutineEngine(),
             WCCustomerMapper(),
             customerDao,
-            roomDb.customerFromAnalyticsDao,
+            databaseRule.db.customerFromAnalyticsDao,
             WCCustomerFromAnalyticsMapper()
         )
-    }
-
-    @After
-    fun closeDb() {
-        roomDb.close()
     }
 
     @Test

@@ -6,12 +6,13 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAccountSettingsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -22,10 +23,20 @@ import javax.inject.Inject
 class WooShippingLabelRepository @Inject constructor(
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
+    private val eligibilityDataStore: WooShippingEligibilityDataStore,
     private val configDataStore: WooShippingConfigDataStore,
     private val accountSettingsDataStore: WooShippingAccountSettingsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
+    suspend fun fetchShippingEligibility(
+        site: SiteModel,
+        orderId: Long,
+    ) = restClient.fetchShippingEligibility(site = site, orderId = orderId).asWooResult().also { response ->
+        response.model
+            ?.takeIf { response.isError.not() }
+            ?.let { eligibilityDataStore.saveEligibility(orderId, it.isEligible) }
+    }
+
     suspend fun fetchShippingLabelPrinting(
         site: SiteModel,
         labelIds: List<Long>,
@@ -102,36 +113,32 @@ class WooShippingLabelRepository @Inject constructor(
         orderId: Long,
         shippableItems: List<Long>,
         selectedPackage: PackageData,
-        shipmentId: String,
+        shipmentId: Int,
         shipTo: Address,
         shipFrom: OriginShippingAddress,
-        selectedRate: WooShippingRateModel,
+        selectedRate: WooShippingSelectedRateModel,
         weight: Float,
         lastOrderComplete: Boolean,
-        customsData: List<CustomsData>?,
+        customsData: CustomsData?,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): WooResult<PurchasedLabelData> {
-        val origin = mapper.toOriginAddressPurchaseDTO(shipFrom)
-        val destination = mapper.toDestinationAddressDTO(shipTo)
-        val packageDTO = mapper.toPackagePurchaseDTO(
-            selectedPackage = selectedPackage,
-            selectedRate = selectedRate,
-            shippableItems = shippableItems,
-            weight = weight
-        )
-        val rateDTO = mapper.toRateDTO(selectedRate)
-        val customsDTO = customsData?.let { mapper.toCustomsDTO(it) }
-        val hazmatDTO = mapper.toHazmatDTO(hazmatSelection)
         return restClient.purchaseShippingLabel(
             site = site,
             orderId = orderId,
-            origin = origin,
-            destination = destination,
-            selectedPackage = packageDTO,
-            shipmentId = shipmentId,
-            selectedRate = rateDTO,
-            customs = customsDTO ?: emptyMap(),
-            hazmat = hazmatDTO,
+            origin = mapper.toOriginAddressPurchaseDTO(shipFrom),
+            destination = mapper.toDestinationAddressDTO(shipTo),
+            selectedPackage = mapper.toPackagePurchaseDTO(
+                shipmentId = shipmentId,
+                selectedPackage = selectedPackage,
+                selectedRate = selectedRate,
+                shippableItems = shippableItems,
+                weight = weight
+            ),
+            selectedRate = mapper.toRateDTO(selectedRate.rate),
+            parentRate = selectedRate.parentRate?.let { mapper.toRateDTO(it) },
+            selectedRateOptions = mapper.toSelectedRateOptions(selectedRate),
+            customs = customsData?.let { mapper.toCustomsDTO(it) },
+            hazmat = mapper.toHazmatDTO(hazmatSelection),
             markOrderComplete = lastOrderComplete
         ).asWooResult { mapper(it) }
     }
@@ -162,9 +169,9 @@ class WooShippingLabelRepository @Inject constructor(
         } else {
             WooResult(
                 WooError(
-                    type = WooErrorType.INVALID_RESPONSE,
+                    type = WooErrorType.API_ERROR,
                     original = GenericErrorType.INVALID_RESPONSE,
-                    message = "Address normalization failed"
+                    message = normalizedAddress.result?.errors?.keys?.first()
                 )
             )
         }

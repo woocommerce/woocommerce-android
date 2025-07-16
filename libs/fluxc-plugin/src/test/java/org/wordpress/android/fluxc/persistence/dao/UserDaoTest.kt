@@ -1,12 +1,11 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -15,13 +14,17 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class UserDaoTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private lateinit var sut: UserDao
-    private lateinit var database: WCAndroidDatabase
 
     private companion object {
         val site = SiteModel().apply {
@@ -43,16 +46,7 @@ class UserDaoTest {
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        sut = database.userDao
-    }
-
-    @After
-    fun closeDb() {
-        database.close()
+        sut = databaseRule.db.userDao
     }
 
     @Test

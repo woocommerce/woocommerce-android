@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_REVAMPED_FLOW
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
@@ -88,7 +89,7 @@ class OrderDetailTracker @Inject constructor(
         trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH)
     }
 
-    fun trackShippinhLabelTapped() {
+    fun trackShippingLabelTapped() {
         trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
     }
 
@@ -119,12 +120,10 @@ class OrderDetailTracker @Inject constructor(
         trackerWrapper.track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
     }
 
-    fun trackOrderEligibleForShippingLabelCreation(orderStatus: String) {
+    fun trackOrderEligibleForShippingLabelCreation(orderStatus: String, isRevampWooShippingEnabled: Boolean) {
         trackerWrapper.track(
             stat = AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
-            properties = mapOf(
-                "order_status" to orderStatus
-            )
+            properties = mapOf("order_status" to orderStatus, KEY_IS_REVAMPED_FLOW to isRevampWooShippingEnabled)
         )
     }
 

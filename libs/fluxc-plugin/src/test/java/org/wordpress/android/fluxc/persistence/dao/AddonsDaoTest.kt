@@ -1,13 +1,12 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -15,7 +14,7 @@ import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType
 import org.wordpress.android.fluxc.domain.GlobalAddonGroup
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity.LocalPriceType
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity.LocalTitleFormat
@@ -27,16 +26,15 @@ import org.wordpress.android.fluxc.persistence.entity.GlobalAddonGroupWithAddons
 
 @RunWith(RobolectricTestRunner::class)
 internal class AddonsDaoTest {
-    private lateinit var database: WCAndroidDatabase
     private lateinit var sut: AddonsDao
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
-        sut = database.addonsDao
+        sut = databaseRule.db.addonsDao
     }
 
     @Test
@@ -67,11 +65,6 @@ internal class AddonsDaoTest {
 
         val resultFromDatabase = sut.observeGlobalAddonsForSite(TEST_SITE_ID).first()
         assertThat(resultFromDatabase).containsOnly(expectedGlobalAddonGroupEntity)
-    }
-
-    @After
-    fun tearDown() {
-        database.close()
     }
 
     private companion object {

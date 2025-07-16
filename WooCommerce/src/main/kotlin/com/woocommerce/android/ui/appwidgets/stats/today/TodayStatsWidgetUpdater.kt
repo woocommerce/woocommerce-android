@@ -32,7 +32,7 @@ class TodayStatsWidgetUpdater @Inject constructor() : WidgetUpdater {
                 .build()
 
         WorkManager.getInstance(context)
-            .enqueueUniquePeriodicWork(uniqueName, ExistingPeriodicWorkPolicy.REPLACE, workRequest)
+            .enqueueUniquePeriodicWork(uniqueName, ExistingPeriodicWorkPolicy.UPDATE, workRequest)
     }
 
     override fun componentName(context: Context) = ComponentName(context, TodayStatsWidgetProvider::class.java)

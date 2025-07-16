@@ -2,6 +2,10 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.payment
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.orders.wooshippinglabels.FetchAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.ObserveAccountSettings
@@ -9,6 +13,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSetting
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
@@ -61,7 +66,8 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         canManagePayments = true,
         canEditSettings = true,
         storeOwnerName = "John Doe",
-        storeOwnerUsername = "johndoe"
+        storeOwnerUsername = "johndoe",
+        paperSize = WooShippingLabelPaperSize.LABEL
     )
 
     private val observeAccountSettings: ObserveAccountSettings = mock {
@@ -73,6 +79,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
     private val updatePaymentOptions: UpdatePaymentOptions = mock()
     private val webViewAuthenticator: WebViewAuthenticator = mock()
     private val userAgent: UserAgent = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
     private val savedStateHandle = SavedStateHandle()
 
     private lateinit var viewModel: WooShippingEditPaymentViewModel
@@ -85,7 +92,8 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
             fetchAccountSettings = fetchAccountSettings,
             updatePaymentOptions = updatePaymentOptions,
             webViewAuthenticator = webViewAuthenticator,
-            userAgent = userAgent
+            userAgent = userAgent,
+            tracker = tracker
         )
     }
 
@@ -97,6 +105,13 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.getOrAwaitValue()
         assertThat(state).isInstanceOf(WooShippingEditPaymentViewModel.ViewState.Loading::class.java)
+    }
+
+    @Test
+    fun `when screen is opened, then track started event`() = testBlocking {
+        setup()
+
+        verify(tracker).track(AnalyticsEvent.WCS_PAYMENT_STEP, mapOf(KEY_STATE to VALUE_STARTED))
     }
 
     @Test
@@ -140,6 +155,17 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         assertThat(webViewState.url).isEqualTo(defaultAccountSettings.paymentMethodOptions.addPaymentMethodUrl)
         assertThat(webViewState.userAgent).isEqualTo(userAgent)
         assertThat(webViewState.authenticator).isEqualTo(webViewAuthenticator)
+    }
+
+    @Test
+    fun `when add new payment method is clicked, then track add_payment_method_button_tapped event`() = testBlocking {
+        setup()
+
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
+        viewModel.viewState.runAndCaptureValues { initialState.onAddNewPaymentMethod() }
+
+        verify(tracker).track(AnalyticsEvent.WCS_PAYMENT_STEP, mapOf(KEY_STATE to "add_payment_method_button_tapped"))
     }
 
     @Test
@@ -195,6 +221,9 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         // Verify that the new payment method is selected
         val contentState = viewModel.viewState.getOrAwaitValue() as WooShippingEditPaymentViewModel.ViewState.Content
         assertThat(contentState.selectedPaymentMethodId).isEqualTo(2)
+
+        // Verify that payment_method_added event is tracked
+        verify(tracker).track(AnalyticsEvent.WCS_PAYMENT_STEP, mapOf(KEY_STATE to "payment_method_added"))
     }
 
     @Test
@@ -309,6 +338,9 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
                 selectedPaymentMethodId = newPaymentMethodId,
                 emailReceipts = !defaultAccountSettings.paymentMethodOptions.emailReceipts
             )
+
+            // Verify that payment_method_selected event is tracked
+            verify(tracker).track(AnalyticsEvent.WCS_PAYMENT_STEP, mapOf(KEY_STATE to "payment_method_selected"))
 
             // Verify that Exit event is triggered
             assertThat(events).anyMatch { it is Exit }

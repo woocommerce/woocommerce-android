@@ -338,8 +338,6 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
         val asCustomData: CustomsData
             get() = CustomsData(
-                packageId = "",
-                packageName = "",
                 contentType = contentType,
                 contentDescription = otherContentInput.currentInput,
                 restrictionType = restrictionType,
@@ -369,22 +367,6 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
         val errorMessageOrNull: Int?
             get() = run { this as? Error }?.errorMessageId
-    }
-
-    enum class ContentType(val resourceId: Int) {
-        MERCHANDISE(R.string.woo_shipping_labels_customs_content_merchandise),
-        GIFT(R.string.woo_shipping_labels_customs_content_gift),
-        RETURNED_GOODS(R.string.woo_shipping_labels_customs_content_returned_goods),
-        SAMPLE(R.string.woo_shipping_labels_customs_content_sample),
-        DOCUMENTS(R.string.woo_shipping_labels_customs_content_documents),
-        OTHER(R.string.woo_shipping_labels_customs_content_other)
-    }
-
-    enum class RestrictionType(val resourceId: Int) {
-        NONE(R.string.woo_shipping_labels_customs_restriction_none),
-        QUARANTINE(R.string.woo_shipping_labels_customs_restriction_quarantine),
-        SANITARY_INSPECTION(R.string.woo_shipping_labels_customs_restriction_sanitary),
-        OTHER(R.string.woo_shipping_labels_customs_restriction_other)
     }
 
     data class ShowContentTypeDialog(val currentSelection: ContentType) : MultiLiveEvent.Event()

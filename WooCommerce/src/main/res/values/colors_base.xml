@@ -129,7 +129,9 @@
     <color name="tag_bg_completed">@color/woo_blue_5</color>
     <color name="tag_bg_other">@color/woo_gray_5</color>
     <color name="tag_bg_main">@color/woo_purple_0</color>
+    <color name="tag_bg_pos">@color/woo_purple_5</color>
     <color name="tag_text_main">@color/color_primary</color>
+    <color name="tag_text_pos">@color/woo_purple_60</color>
     <color name="tag_task_label">@color/woo_gray_6</color>
     <color name="tag_task_label_text">@color/woo_black_90_alpha_060</color>
     <color name="tag_icon">@color/color_primary</color>
@@ -203,10 +205,6 @@
         Jetpack plugin installation dialog
     -->
     <color name="jetpack_install_progressbar">@color/jetpack_green_40</color>
-
-    <color name="reader_update_progress_color">@color/woo_purple_50</color>
-    <color name="reader_update_rest_color">@color/woo_purple_30</color>
-    <color name="reader_update_border_color">#533582</color>
 
     <!--
     Media picker colors

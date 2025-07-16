@@ -4,6 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.ui.orders.wooshippinglabels.FetchAccountSettings
@@ -36,7 +40,8 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     private val fetchAccountSettings: FetchAccountSettings,
     private val updatePaymentOptions: UpdatePaymentOptions,
     private val webViewAuthenticator: WebViewAuthenticator,
-    private val userAgent: UserAgent
+    private val userAgent: UserAgent,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val PAYMENT_METHOD_SUCCESS_URL = "me/payment-methods"
@@ -90,6 +95,10 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         .onStart { emit(ViewState.Loading) }
         .asLiveData()
 
+    init {
+        tracker.track(AnalyticsEvent.WCS_PAYMENT_STEP, mapOf(KEY_STATE to VALUE_STARTED))
+    }
+
     private suspend fun FlowCollector<ViewState>.initAddPaymentMethodWebView(accountSettings: AccountSettingsModel) {
         emit(
             ViewState.AddPaymentMethodWebView(
@@ -133,6 +142,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     }
 
     fun onAddNewPaymentMethod() {
+        tracker.track(AnalyticsEvent.WCS_PAYMENT_STEP, mapOf(KEY_STATE to "add_payment_method_button_tapped"))
         isAddPaymentMethodWebViewVisible.value = true
     }
 
@@ -164,6 +174,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
                 emailReceipts = emailReceipts
             ).fold(
                 onSuccess = {
+                    tracker.track(AnalyticsEvent.WCS_PAYMENT_STEP, mapOf(KEY_STATE to "payment_method_selected"))
                     triggerEvent(MultiLiveEvent.Event.Exit)
                 },
                 onFailure = {
@@ -190,6 +201,8 @@ class WooShippingEditPaymentViewModel @Inject constructor(
                         }
                         selectedPaymentMethod.value = newPaymentMethod?.paymentMethodId
                         triggerEvent(ShowSnackbar(R.string.woo_shipping_payment_method_added))
+
+                        tracker.track(AnalyticsEvent.WCS_PAYMENT_STEP, mapOf(KEY_STATE to "payment_method_added"))
                     }
                 },
                 onFailure = {

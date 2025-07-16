@@ -47,10 +47,6 @@ class WooPosItemsSearchHelper @Inject constructor(
                         updateLoadingState(isLoading = false)
                     }
 
-                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
-                        onCloseSearchClicked()
-                    }
-
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> {
                         onSearchChanged(event.query, event.query.length)
                     }
@@ -59,16 +55,19 @@ class WooPosItemsSearchHelper @Inject constructor(
                             onSearchChanged("", 0)
                         }
                     }
+                    is ParentToChildrenEvent.CheckoutClicked -> {
+                        closeSearchToPreventFocusAcquiringAfterNavigation()
+                    }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
-                    is ParentToChildrenEvent.BarcodeScanned -> Unit
+                    is ParentToChildrenEvent.BarcodeEvent -> Unit
                     is ParentToChildrenEvent.ItemClickedInItemsList -> Unit
-                    is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery -> Unit
                     is ParentToChildrenEvent.OrderCreated -> Unit
                     is ParentToChildrenEvent.CouponsRemoved -> Unit
                     is ParentToChildrenEvent.RemoveCouponsClicked -> Unit
                     is ParentToChildrenEvent.CouponsValidationFailed -> Unit
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
                 }
             }
         }
@@ -88,7 +87,9 @@ class WooPosItemsSearchHelper @Inject constructor(
         }
     }
 
-    fun onCloseSearchClicked() {
+    fun onCloseSearchClicked() = closeSearch()
+
+    fun closeSearch() {
         wasLastStateClosed = true
         viewStateFlow.value = viewStateFlow.value.copy(
             search = SearchState.Visible(
@@ -96,6 +97,8 @@ class WooPosItemsSearchHelper @Inject constructor(
             )
         )
     }
+
+    private fun closeSearchToPreventFocusAcquiringAfterNavigation() = closeSearch()
 
     fun onClearSearchClicked() {
         coroutineScope.launch {
