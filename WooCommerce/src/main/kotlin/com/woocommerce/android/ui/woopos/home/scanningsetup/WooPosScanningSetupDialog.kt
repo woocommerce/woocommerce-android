@@ -660,7 +660,7 @@ private fun ScannerSetupBarcodesOnProductsContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         WooPosText(
-            text = step.title,
+            text = stringResource(step.titleRes),
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -679,7 +679,7 @@ private fun ScannerSetupBarcodesOnProductsContent(
         }
 
         val annotatedText = buildAnnotatedString {
-            append(step.message)
+            append(stringResource(step.messageRes))
             append(" ")
             withStyle(
                 style = SpanStyle(
@@ -723,8 +723,8 @@ private fun ScannerSetupBarcodesOnProductsContent(
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         SetupButtonsRow(
-            primaryButtonText = step.doneButtonText,
-            secondaryButtonText = step.backButtonText,
+            primaryButtonText = stringResource(step.doneButtonTextRes),
+            secondaryButtonText = stringResource(step.backButtonTextRes),
             onPrimaryClick = onPrimaryClick,
             onSecondaryClick = onSecondaryClick
         )
