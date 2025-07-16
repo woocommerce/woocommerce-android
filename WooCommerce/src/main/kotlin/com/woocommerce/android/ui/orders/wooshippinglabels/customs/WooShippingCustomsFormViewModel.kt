@@ -203,10 +203,18 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     }
 
     fun onShippableProductTariffNumberChanged(itemIndex: Int, newValue: String) {
+        fun String.isValidHSTariffNumber(): Boolean {
+            val regex = Regex("""^(\d{1,2}\.?){3,6}$""")
+            if (!regex.matches(this)) return false
+
+            val digits = replace(Regex("""\D"""), "")
+            return digits.length in 6..12
+        }
+
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank()) {
-                false -> InputValue.Data(newValue)
-                true -> InputValue.Error(
+            when (newValue.isBlank() || newValue.isValidHSTariffNumber()) {
+                true -> InputValue.Data(newValue)
+                else -> InputValue.Error(
                     input = newValue,
                     errorMessageId = R.string.woo_shipping_labels_customs_product_details_tariff_missing
                 )
@@ -287,7 +295,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         productId = productId,
         name = title,
         description = "".asInputValueError,
-        tariffNumber = "".asInputValueError,
+        tariffNumber = InputValue.Data(""),
         quantity = quantity,
         originCountry = "",
         originCountryCode = "",
