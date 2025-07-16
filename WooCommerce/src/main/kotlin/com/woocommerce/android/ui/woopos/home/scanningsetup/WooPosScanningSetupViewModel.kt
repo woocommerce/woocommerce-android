@@ -74,14 +74,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
         when (_state.value.currentStep) {
             is ScanningSetupStep.ScannerHIDModeSetup,
             is ScanningSetupStep.ScannerPairModeSetup,
-            is ScanningSetupStep.PairYourScanner -> {
-                navigateToNextStep()
-            }
-
+            is ScanningSetupStep.PairYourScanner,
             is ScanningSetupStep.ScannerSetupInfo -> {
-                viewModelScope.launch {
-                    _dismissDialogEvent.emit(Unit)
-                }
+                navigateToNextStep()
             }
 
             is ScanningSetupStep.TestYourScannerScanFailed -> resetToInitialState()
@@ -93,7 +88,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
             is ScanningSetupStep.DeviceSelection,
             is ScanningSetupStep.TestYourScanner,
             is ScanningSetupStep.TestYourScannerTimeout ->
-                error("Primary button should not be available on ${_state.value.currentStep::class.simpleName} step")
+                error(
+                    "Primary button should not be available on ${_state.value.currentStep::class.simpleName} step"
+                )
         }
     }
 
