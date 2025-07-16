@@ -63,19 +63,20 @@ class OrderSummaryDaoChunksTest {
             val expectedFirstChunk = createExpectedQuery(200)
             val expectedSecondChunk = createExpectedQuery(50)
 
-            assertThat(logs.toString()).contains(
-                """
-            $expectedFirstChunk
-            $expectedSecondChunk
-            TRANSACTION SUCCESSFUL
-            END TRANSACTION
-            """.trimIndent()
+            val normalizedLogs = logs.lines().map { it.trim() }.filter { it.isNotEmpty() }.joinToString("\n")
+            assertThat(normalizedLogs).contains(
+                buildString {
+                    appendLine(expectedFirstChunk)
+                    appendLine(expectedSecondChunk)
+                    appendLine("TRANSACTION SUCCESSFUL")
+                    appendLine("END TRANSACTION")
+                }
             )
             assertThat(result).containsExactlyInAnyOrderElementsOf(orderSummaries)
         }
 
     private fun createExpectedQuery(itemCount: Int): String {
         val placeholders = List(itemCount) { "?" }.joinToString(",")
-        return "SELECT * FROM OrderSummaryEntity WHERE siteId = ? AND orderId IN ($placeholders)"
+        return "SELECT * FROM OrderSummaryEntity\nWHERE siteId = ?\nAND orderId IN ($placeholders)"
     }
 }
