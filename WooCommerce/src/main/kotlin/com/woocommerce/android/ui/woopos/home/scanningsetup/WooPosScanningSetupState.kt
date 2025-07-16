@@ -56,7 +56,8 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerSetupInfo,
                     ScanningSetupStep.TestYourScanner,
-                    ScanningSetupStep.ScannerSetupSuccess
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
             }
         }
