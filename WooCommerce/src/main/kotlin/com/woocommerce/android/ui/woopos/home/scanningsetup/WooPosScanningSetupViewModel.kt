@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +26,6 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(
         WooPosScanningSetupState(
-            isVisible = false,
             currentStep = createDeviceSelectionStep(),
             selectedDevice = null
         )
@@ -36,6 +37,8 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     private val _dismissDialogEvent = MutableSharedFlow<Unit>()
     val dismissDialogEvent: SharedFlow<Unit> = _dismissDialogEvent.asSharedFlow()
+
+    private var autoNavigationJob: Job? = null
 
     fun onUiEvent(event: WooPosScanningSetupUiEvent) {
         when (event) {
@@ -68,6 +71,10 @@ class WooPosScanningSetupViewModel @Inject constructor(
                     _openBluetoothSettingsEvent.emit(Unit)
                 }
             }
+
+            is WooPosScanningSetupUiEvent.OnBarcodeScanned -> {
+                handleBarcodeScanned(event.barcodeResult)
+            }
         }
     }
 
@@ -99,12 +106,17 @@ class WooPosScanningSetupViewModel @Inject constructor(
             is ScanningSetupStep.PairYourScanner -> {
                 _state.value = _state.value.copy(
                     currentStep = createTestYourScannerStep(_state.value.currentStep)
-                )
-                startAutoNavigationToSuccess()
+                ).also {
+                    startAutoNavigationToTestYourScannerStep()
+                }
             }
 
             is ScanningSetupStep.TestYourScanner -> {
                 error("Primary button should not be available on TestYourScanner step")
+            }
+
+            is ScanningSetupStep.TestYourScannerTimeout -> {
+                error("Primary button should not be available on TestYourScannerTimeout step")
             }
 
             is ScanningSetupStep.ScannerSetupSuccess -> {
@@ -117,6 +129,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 viewModelScope.launch {
                     _dismissDialogEvent.emit(Unit)
                 }
+            }
+
+            is ScanningSetupStep.TestYourScannerScanFailed -> {
+                _state.value = _state.value.copy(
+                    currentStep = createDeviceSelectionStep()
+                )
             }
 
             is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> {
@@ -164,9 +182,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             previousStep = previousStep
         )
 
-    private fun createPairYourScannerStep(
-        previousStep: ScanningSetupStep
-    ) = ScanningSetupStep.PairYourScanner(
+    private fun createPairYourScannerStep(previousStep: ScanningSetupStep) = ScanningSetupStep.PairYourScanner(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_pair_your_scanner_title),
         message = resourceProvider.getString(
             R.string.woopos_scanning_setup_pair_your_scanner_message,
@@ -184,16 +200,35 @@ class WooPosScanningSetupViewModel @Inject constructor(
     ) = ScanningSetupStep.TestYourScanner(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_test_scanner_message),
-        barcodeImageRes = R.drawable.ic_barcode,
+        barcodeValue = TEST_BARCODE_EAN13,
         secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
-        previousStep = previousStep
+        previousStep = previousStep,
     )
+
+    private fun createTestYourScannerTimeoutStep(previousStep: ScanningSetupStep) =
+        ScanningSetupStep.TestYourScannerTimeout(
+            title = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_title),
+            message = resourceProvider.getString(R.string.woopos_scanning_setup_timeout_message),
+            barcodeValue = TEST_BARCODE_EAN13,
+            secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+            previousStep = previousStep,
+        )
+
+    private fun createTestYourScannerScanFailedStep(previousStep: ScanningSetupStep) =
+        ScanningSetupStep.TestYourScannerScanFailed(
+            title = resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_title),
+            message = resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_message),
+            iconRes = R.drawable.ic_woo_pos_error_x,
+            primaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_retry),
+            secondaryButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_button_back),
+            previousStep = previousStep,
+        )
 
     private fun createScannerSetupSuccessStep() = ScanningSetupStep.ScannerSetupSuccess(
         title = resourceProvider.getString(R.string.woopos_scanning_setup_success_title),
         message = resourceProvider.getString(R.string.woopos_scanning_setup_success_message),
         moreInfoButtonText = resourceProvider.getString(R.string.woopos_scanning_setup_more_information),
-        previousStep = null
+        previousStep = null,
     )
 
     private fun createScannerSetupBarcodesOnProductsStep(
@@ -220,18 +255,41 @@ class WooPosScanningSetupViewModel @Inject constructor(
         previousStep = previousStep
     )
 
-    private fun startAutoNavigationToSuccess() {
-        viewModelScope.launch {
+    private fun handleBarcodeScanned(barcodeResult: BarcodeInputDetector.BarcodeResult) {
+        when (_state.value.currentStep) {
+            is ScanningSetupStep.TestYourScanner,
+            is ScanningSetupStep.TestYourScannerTimeout -> {
+                if (barcodeResult.barcode == TEST_BARCODE_EAN13) {
+                    _state.value = _state.value.copy(
+                        currentStep = createScannerSetupSuccessStep()
+                    )
+                } else {
+                    _state.value = _state.value.copy(
+                        currentStep = createTestYourScannerScanFailedStep(_state.value.currentStep)
+                    )
+                }
+            }
+
+            else -> {
+                error("Barcode scanning is not expected in the current step: ${_state.value.currentStep}")
+            }
+        }
+    }
+
+    private fun startAutoNavigationToTestYourScannerStep() {
+        autoNavigationJob?.cancel()
+        autoNavigationJob = viewModelScope.launch {
             delay(AUTO_NAVIGATION_DELAY_MS)
             if (_state.value.currentStep is ScanningSetupStep.TestYourScanner) {
                 _state.value = _state.value.copy(
-                    currentStep = createScannerSetupSuccessStep()
+                    currentStep = createTestYourScannerTimeoutStep(_state.value.currentStep)
                 )
             }
         }
     }
 
     companion object {
-        private const val AUTO_NAVIGATION_DELAY_MS = 3000L
+        private const val AUTO_NAVIGATION_DELAY_MS = 10000L
+        private const val TEST_BARCODE_EAN13 = "1234567890128"
     }
 }

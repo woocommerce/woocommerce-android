@@ -86,11 +86,12 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0
     }
 
-    private companion object {
-        const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
-        const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
-
+    companion object {
+        const val MINIMUM_SUPPORTED_WC_VERSION = "9.6.0"
         val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
+
+        private const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = MINIMUM_SUPPORTED_WC_VERSION
+        private const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
     }
 }
 

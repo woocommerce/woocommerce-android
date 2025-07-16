@@ -27,7 +27,7 @@ class WooPosEligibilityViewModelTest {
         val sut = createSut()
 
         // WHEN
-        sut.retryEligibilityCheck()
+        sut.retryEligibilityCheckTapped()
 
         // THEN
         coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
@@ -35,19 +35,33 @@ class WooPosEligibilityViewModelTest {
     }
 
     @Test
-    fun `given POS is ineligible on retry, should update state to Ineligible`() = runTest {
+    fun `given POS is ineligible on retry, should update state to Ineligible with reason`() = runTest {
         // GIVEN
+        val reason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(
-            WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
+            WooPosLaunchability.NotLaunchable(reason)
         )
         val sut = createSut()
 
         // WHEN
-        sut.retryEligibilityCheck()
+        sut.retryEligibilityCheckTapped()
 
         // THEN
         coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
-        assertThat(sut.retryState.value).isEqualTo(WooPosEligibilityRetryState.Ineligible)
+        assertThat(sut.retryState.value).isEqualTo(WooPosEligibilityRetryState.Ineligible(reason))
+    }
+
+    @Test
+    fun `initialize should set state to Ineligible with provided reason`() = runTest {
+        // GIVEN
+        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val sut = createSut()
+
+        // WHEN
+        sut.initialize(reason)
+
+        // THEN
+        assertThat(sut.retryState.value).isEqualTo(WooPosEligibilityRetryState.Ineligible(reason))
     }
 
     private fun createSut() = WooPosEligibilityViewModel(canBeLaunchedInTab)

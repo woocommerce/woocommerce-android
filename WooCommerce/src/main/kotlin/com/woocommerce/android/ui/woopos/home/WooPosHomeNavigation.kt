@@ -108,7 +108,7 @@ fun NavGraphBuilder.eligibilityScreen(
             ?: WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
 
         WooPosEligibilityScreen(
-            reason = reason,
+            initialReason = reason,
             onNavigationEvent = onNavigationEvent
         )
     }
