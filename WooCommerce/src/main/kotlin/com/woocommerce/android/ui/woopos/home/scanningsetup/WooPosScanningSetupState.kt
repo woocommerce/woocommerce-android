@@ -24,8 +24,8 @@ data class WooPosScanningSetupState(
             return when (device) {
                 BarcodeReaderDevice.TERA_1200 -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "%%SpecCodeAA"),
-                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "%%SpecCode99"),
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = TERA_1200_HID_SETUP_CODE),
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = TERA_1200_PAIRING_SETUP_CODE),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
@@ -33,7 +33,7 @@ data class WooPosScanningSetupState(
 
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "@FACDEF;INTERF10;KBWCTY0;TSUSET0D;"),
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = STAR_BSH_20B_ALL_IN_ONE_SETUP_CODE),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
@@ -243,5 +243,8 @@ data class WooPosScanningSetupState(
 
     companion object {
         const val TEST_BARCODE_EAN13 = "1234567890128"
+        private const val TERA_1200_HID_SETUP_CODE = "%%SpecCodeAA"
+        private const val TERA_1200_PAIRING_SETUP_CODE = "%%SpecCode99"
+        private const val STAR_BSH_20B_ALL_IN_ONE_SETUP_CODE = "@FACDEF;INTERF10;KBWCTY0;TSUSET0D;"
     }
 }
