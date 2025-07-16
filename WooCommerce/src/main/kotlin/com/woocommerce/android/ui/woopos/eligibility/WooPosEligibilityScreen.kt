@@ -13,6 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -69,6 +73,16 @@ fun WooPosEligibilityScreen(
         onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
     }
 
+    val lastIneligibleReason = remember {
+        mutableStateOf<WooPosLaunchability.NonLaunchabilityReason?>(null)
+    }
+
+    LaunchedEffect(retryState) {
+        if (retryState is WooPosEligibilityRetryState.Ineligible) {
+            lastIneligibleReason.value = retryState.reason
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -91,11 +105,9 @@ fun WooPosEligibilityScreen(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
 
-        val currentReason = (retryState as? WooPosEligibilityRetryState.Ineligible)?.reason
-
-        if (currentReason != null) {
+        lastIneligibleReason.value?.let { reason ->
             WooPosText(
-                text = getSuggestionText(currentReason),
+                text = getSuggestionText(reason),
                 style = WooPosTypography.BodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.width(547.dp)
