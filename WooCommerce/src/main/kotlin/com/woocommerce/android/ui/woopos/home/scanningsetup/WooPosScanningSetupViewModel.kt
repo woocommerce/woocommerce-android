@@ -78,6 +78,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 navigateToNextStep()
             }
 
+            is ScanningSetupStep.ScannerSetupSuccess,
             is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> {
                 viewModelScope.launch {
                     _dismissDialogEvent.emit(Unit)
@@ -85,10 +86,6 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             is ScanningSetupStep.TestYourScannerScanFailed -> resetToInitialState()
-
-            is ScanningSetupStep.ScannerSetupSuccess -> {
-                error("Not implemented yet")
-            }
 
             is ScanningSetupStep.DeviceSelection,
             is ScanningSetupStep.TestYourScanner,
