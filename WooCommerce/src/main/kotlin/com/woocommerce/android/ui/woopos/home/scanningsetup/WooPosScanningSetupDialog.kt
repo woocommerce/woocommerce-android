@@ -303,7 +303,7 @@ private fun ScannerModeSetupContent(
                 .size(172.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
-                .padding(WooPosSpacing.XSmall.value.toAdaptivePadding()),
+                .padding(WooPosSpacing.Small.value.toAdaptivePadding()),
             contentAlignment = Alignment.Center
         ) {
             Image(
