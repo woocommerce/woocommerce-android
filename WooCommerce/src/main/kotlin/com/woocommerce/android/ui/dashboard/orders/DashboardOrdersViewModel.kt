@@ -128,7 +128,8 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                                     },
                                     status = status,
                                     statusColor = order.status.color,
-                                    totalPrice = currencyFormatter.formatCurrency(order.total, order.currency)
+                                    totalPrice = currencyFormatter.formatCurrency(order.total, order.currency),
+                                    isPosOrder = order.salesChannel == Order.SalesChannel.POS
                                 )
                             },
                             filterOptions = statusOptions,
@@ -214,7 +215,8 @@ class DashboardOrdersViewModel @AssistedInject constructor(
             val customerName: String,
             val status: String,
             @ColorRes val statusColor: Int,
-            val totalPrice: String
+            val totalPrice: String,
+            val isPosOrder: Boolean = false
         )
     }
 
