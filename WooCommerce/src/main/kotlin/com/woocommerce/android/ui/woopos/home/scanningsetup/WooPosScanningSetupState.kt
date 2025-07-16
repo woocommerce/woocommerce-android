@@ -34,7 +34,7 @@ data class WooPosScanningSetupState(
 
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.star_bsh_20b_setup_qr),
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
                     ScanningSetupStep.PairYourScanner(),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
