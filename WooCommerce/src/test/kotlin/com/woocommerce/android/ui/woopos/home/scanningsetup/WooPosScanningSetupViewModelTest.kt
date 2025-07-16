@@ -39,7 +39,7 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given DeviceSelection step, when device selected, then should update state with selected device`() = runTest {
         // GIVEN
-        val mockNextStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
+        val mockNextStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
             .thenReturn(mockNextStep)
         val viewModel = createViewModel()
@@ -72,8 +72,8 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given ScannerSetupBarcodesOnProducts step, when primary button clicked, then should emit dismiss dialog event`() = runTest {
         // GIVEN
-        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
-        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
         val pairYourScannerStep = ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
             .thenReturn(hidModeStep)
@@ -130,7 +130,7 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given resetToInitialState called, when invoked, then should reset to initial state`() = runTest {
         // GIVEN
-        val mockNextStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
+        val mockNextStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
             .thenReturn(mockNextStep)
         val viewModel = createViewModel()
@@ -153,18 +153,18 @@ class WooPosScanningSetupViewModelTest {
         // GIVEN
         val mockNextStep = ScanningSetupStep.ScannerSetupSuccess
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
-            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = ""))
+            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
         whenever(
             navigator.getNextStep(
                 BarcodeReaderDevice.TERA_1200,
-                ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
+                ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
             )
         )
-            .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
+            .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
         whenever(
             navigator.getNextStep(
                 BarcodeReaderDevice.TERA_1200,
-                ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
             )
         )
             .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
@@ -198,18 +198,18 @@ class WooPosScanningSetupViewModelTest {
         runTest {
             // GIVEN
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
-                .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = ""))
+                .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
             whenever(
                 navigator.getNextStep(
                     BarcodeReaderDevice.TERA_1200,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
                 )
             )
-                .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
+                .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
             whenever(
                 navigator.getNextStep(
                     BarcodeReaderDevice.TERA_1200,
-                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
                 )
             )
                 .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
@@ -244,18 +244,18 @@ class WooPosScanningSetupViewModelTest {
             // GIVEN
             val mockNextStep = ScanningSetupStep.ScannerSetupSuccess
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
-                .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = ""))
+                .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
             whenever(
                 navigator.getNextStep(
                     BarcodeReaderDevice.TERA_1200,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
                 )
             )
-                .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
+                .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
             whenever(
                 navigator.getNextStep(
                     BarcodeReaderDevice.TERA_1200,
-                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
                 )
             )
                 .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
@@ -293,18 +293,18 @@ class WooPosScanningSetupViewModelTest {
     fun `given TestYourScanner step, when timeout reached, then should navigate to timeout step`() = runTest {
         // GIVEN
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
-            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = ""))
+            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
         whenever(
             navigator.getNextStep(
                 BarcodeReaderDevice.TERA_1200,
-                ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
+                ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
             )
         )
-            .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
+            .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
         whenever(
             navigator.getNextStep(
                 BarcodeReaderDevice.TERA_1200,
-                ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
             )
         )
             .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
@@ -339,18 +339,18 @@ class WooPosScanningSetupViewModelTest {
         runTest {
             // GIVEN
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
-                .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = ""))
+                .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
             whenever(
                 navigator.getNextStep(
                     BarcodeReaderDevice.TERA_1200,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
                 )
             )
-                .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
+                .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
             whenever(
                 navigator.getNextStep(
                     BarcodeReaderDevice.TERA_1200,
-                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
                 )
             )
                 .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
@@ -387,15 +387,15 @@ class WooPosScanningSetupViewModelTest {
     fun `given any step with secondary button, when secondary button clicked, then should delegate to navigator for previous step`() =
         runTest {
             // GIVEN
-            val mockPreviousStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
+            val mockPreviousStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
                 .thenReturn(mockPreviousStep)
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, mockPreviousStep))
-                .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
+                .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
             whenever(
                 navigator.getPreviousStep(
                     BarcodeReaderDevice.TERA_1200,
-                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
                 )
             )
                 .thenReturn(mockPreviousStep)
@@ -415,8 +415,8 @@ class WooPosScanningSetupViewModelTest {
     fun `given step with primary button, when primary button clicked, then should delegate to navigator for next step`() =
         runTest {
             // GIVEN
-            val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
-            val mockNextStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+            val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+            val mockNextStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
                 .thenReturn(hidModeStep)
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
@@ -448,7 +448,7 @@ class WooPosScanningSetupViewModelTest {
     fun `given ScannerHIDModeSetup state, when created, then should have correct string content`() = runTest {
         // GIVEN
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
-            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = ""))
+            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
 
@@ -465,11 +465,11 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given ScannerPairModeSetup state, when created, then should have correct string content`() = runTest {
         // GIVEN
-        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
             .thenReturn(hidModeStep)
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
-            .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
+            .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
@@ -487,8 +487,8 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given PairYourScanner state, when created, then should have correct string content`() = runTest {
         // GIVEN
-        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
-        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
             .thenReturn(hidModeStep)
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
@@ -519,8 +519,8 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given TestYourScanner state, when created, then should have correct string content`() = runTest {
         // GIVEN
-        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
-        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
         val pairYourScannerStep = ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
             .thenReturn(hidModeStep)
@@ -548,8 +548,8 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given ScannerSetupSuccess state, when created, then should have correct string content`() = runTest {
         // GIVEN
-        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
-        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
         val pairYourScannerStep = ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
             .thenReturn(hidModeStep)
@@ -612,8 +612,8 @@ class WooPosScanningSetupViewModelTest {
     fun `given ScannerSetupBarcodesOnProducts state, when created, then should have correct string content`() =
         runTest {
             // GIVEN
-            val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
-            val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+            val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+            val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
             val pairYourScannerStep = ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
                 .thenReturn(hidModeStep)

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.provider.Settings
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -62,7 +63,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.ui.compose.component.BarcodeEAN13Code
-import com.woocommerce.android.ui.compose.component.QRCode
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -189,7 +189,7 @@ fun WooPosScanningSetupDialog(
                     is ScanningSetupStep.ScannerHIDModeSetup -> ScannerModeSetupContent(
                         title = stringResource(step.titleRes),
                         message = stringResource(step.messageRes),
-                        qrCodeValue = step.qrCodeValue,
+                        qrCodeImageRes = step.qrCodeImageRes,
                         primaryButtonText = stringResource(step.primaryButtonTextRes),
                         secondaryButtonText = stringResource(step.secondaryButtonTextRes),
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
@@ -199,7 +199,7 @@ fun WooPosScanningSetupDialog(
                     is ScanningSetupStep.ScannerPairModeSetup -> ScannerModeSetupContent(
                         title = stringResource(step.titleRes),
                         message = stringResource(step.messageRes),
-                        qrCodeValue = step.qrCodeValue,
+                        qrCodeImageRes = step.qrCodeImageRes,
                         primaryButtonText = stringResource(step.primaryButtonTextRes),
                         secondaryButtonText = stringResource(step.secondaryButtonTextRes),
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
@@ -269,7 +269,7 @@ fun WooPosScanningSetupDialog(
 private fun ScannerModeSetupContent(
     title: String,
     message: String,
-    qrCodeValue: String,
+    @DrawableRes qrCodeImageRes: Int,
     primaryButtonText: String,
     secondaryButtonText: String,
     onPrimaryClick: () -> Unit,
@@ -306,9 +306,12 @@ private fun ScannerModeSetupContent(
                 .padding(WooPosSpacing.XSmall.value.toAdaptivePadding()),
             contentAlignment = Alignment.Center
         ) {
-            QRCode(
-                content = qrCodeValue,
-                size = 172.dp,
+            Image(
+                painter = painterResource(id = qrCodeImageRes),
+                contentDescription = stringResource(
+                    id = R.string.woopos_scanning_setup_barcode_content_description
+                ),
+                modifier = Modifier.size(168.dp)
             )
         }
 

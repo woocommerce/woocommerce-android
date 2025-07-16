@@ -54,7 +54,8 @@ class WooPosScannerSetupNavigatorTest {
             }
 
         // THEN
-        assertThat((step as ScanningSetupStep.ScannerHIDModeSetup).qrCodeValue).isEqualTo("%%SpecCodeAA")
+        assertThat((step as ScanningSetupStep.ScannerHIDModeSetup).qrCodeImageRes)
+            .isEqualTo(R.drawable.ic_woopos_reader_setup_code_hid_tera_1200)
     }
 
     @Test
@@ -81,7 +82,8 @@ class WooPosScannerSetupNavigatorTest {
             }
 
         // THEN
-        assertThat((step as ScanningSetupStep.ScannerPairModeSetup).qrCodeValue).isEqualTo("%%SpecCode99")
+        assertThat((step as ScanningSetupStep.ScannerPairModeSetup).qrCodeImageRes)
+            .isEqualTo(R.drawable.ic_woopos_reader_setup_code_pairing_tera_1200)
     }
 
     @Test
@@ -145,8 +147,8 @@ class WooPosScannerSetupNavigatorTest {
                 }
 
         // THEN
-        assertThat((step as ScanningSetupStep.ScannerHIDModeSetup).qrCodeValue)
-            .isEqualTo("@FACDEF;INTERF10;KBWCTY0;TSUSET0D;")
+        assertThat((step as ScanningSetupStep.ScannerHIDModeSetup).qrCodeImageRes)
+            .isEqualTo(R.drawable.ic_woopos_reader_setup_code_star_bsh_20)
     }
 
     @Test
