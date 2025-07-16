@@ -1,0 +1,79 @@
+package com.woocommerce.android.ui.woopos.home.scanningsetup
+
+import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
+import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScannerConfigurations
+import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
+import javax.inject.Inject
+
+class WooPosScannerSetupNavigator @Inject constructor() {
+    fun getInitialStep(): ScanningSetupStep = ScanningSetupStep.DeviceSelection
+
+    fun getNextStep(device: BarcodeReaderDevice, currentStep: ScanningSetupStep): ScanningSetupStep {
+        val stepSequence = ScannerConfigurations.getStepSequence(device)
+        val currentIndex = stepSequence.indexOf(currentStep)
+
+        if (currentIndex == -1) {
+            error("Current step not found in configuration for device: $device, current step: $currentStep")
+        }
+
+        val nextIndex = currentIndex + 1
+        if (nextIndex >= stepSequence.size) {
+            error("No next step available for device: $device, current step: $currentStep")
+        }
+
+        return stepSequence[nextIndex]
+    }
+
+    fun getPreviousStep(device: BarcodeReaderDevice, currentStep: ScanningSetupStep): ScanningSetupStep {
+        // Handle special branching steps that aren't in the main sequences
+        return when (currentStep) {
+            is ScanningSetupStep.TestYourScannerTimeout,
+            is ScanningSetupStep.TestYourScannerScanFailed -> {
+                ScanningSetupStep.TestYourScanner
+            }
+            else -> {
+                val stepSequence = ScannerConfigurations.getStepSequence(device)
+                val currentIndex = stepSequence.indexOf(currentStep)
+
+                if (currentIndex <= 0) {
+                    error("The step shouldn't have a back button: $currentStep")
+                } else {
+                    val previousIndex = currentIndex - 1
+                    stepSequence[previousIndex]
+                }
+            }
+        }
+    }
+
+    fun getNextStepForValidBarcode(device: BarcodeReaderDevice, currentStep: ScanningSetupStep): ScanningSetupStep {
+        return when (currentStep) {
+            is ScanningSetupStep.TestYourScanner,
+            is ScanningSetupStep.TestYourScannerTimeout -> {
+                getNextStep(device, ScanningSetupStep.TestYourScanner)
+            }
+            else -> error("Barcode scanning is not expected in step: ${currentStep::class.simpleName}")
+        }
+    }
+
+    fun getNextStepForInvalidBarcode(currentStep: ScanningSetupStep): ScanningSetupStep {
+        return when (currentStep) {
+            is ScanningSetupStep.TestYourScanner,
+            is ScanningSetupStep.TestYourScannerTimeout -> ScanningSetupStep.TestYourScannerScanFailed
+            else -> error("Barcode scanning is not expected in step: ${currentStep::class.simpleName}")
+        }
+    }
+
+    fun isStillOnTestBarcodeStep(currentStep: ScanningSetupStep): Boolean {
+        return when (currentStep) {
+            is ScanningSetupStep.TestYourScanner -> true
+            else -> false
+        }
+    }
+
+    fun getTestBarcodeTimeoutStep(currentStep: ScanningSetupStep): ScanningSetupStep {
+        return when (currentStep) {
+            is ScanningSetupStep.TestYourScanner -> ScanningSetupStep.TestYourScannerTimeout
+            else -> error("Test barcode timeout navigation is not supported for step: ${currentStep::class.simpleName}")
+        }
+    }
+}
