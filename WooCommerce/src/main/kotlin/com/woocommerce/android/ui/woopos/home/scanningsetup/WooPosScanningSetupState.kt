@@ -16,7 +16,6 @@ data class WooPosScanningSetupState(
     enum class BarcodeReaderDevice(@StringRes val displayNameRes: Int) {
         TERA_1200(R.string.woopos_scanning_setup_device_tera_1200),
         STAR_BSH_20B(R.string.woopos_scanning_setup_device_star_bsh_20b),
-        INATECK_BLUETOOTH(R.string.woopos_scanning_setup_device_inateck_bluetooth),
         OTHER(R.string.woopos_scanning_setup_device_other)
     }
 
@@ -27,22 +26,14 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "%%SpecCodeAA"),
                     ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "%%SpecCode99"),
-                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),                    ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
+                    ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
 
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "@FACDEF;INTERF10;KBWCTY0;TSUSET0D;"),
-                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
-                    ScanningSetupStep.TestYourScanner,
-                    ScanningSetupStep.ScannerSetupSuccess
-                )
-
-                BarcodeReaderDevice.INATECK_BLUETOOTH -> listOf(
-                    ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "#FNB0001000540#"),
-                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "#FNA#"),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
@@ -63,7 +54,6 @@ data class WooPosScanningSetupState(
             val devices: List<BarcodeReaderDevice> = listOf(
                 BarcodeReaderDevice.TERA_1200,
                 BarcodeReaderDevice.STAR_BSH_20B,
-                BarcodeReaderDevice.INATECK_BLUETOOTH,
                 BarcodeReaderDevice.OTHER
             )
 
