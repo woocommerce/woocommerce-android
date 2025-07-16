@@ -27,7 +27,7 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
                     ScanningSetupStep.ScannerPairModeSetup(),
-                    ScanningSetupStep.PairYourScanner(),
+                    ScanningSetupStep.PairYourScanner,
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
@@ -35,7 +35,7 @@ data class WooPosScanningSetupState(
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
-                    ScanningSetupStep.PairYourScanner(),
+                    ScanningSetupStep.PairYourScanner,
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
@@ -44,7 +44,7 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
                     ScanningSetupStep.ScannerPairModeSetup(),
-                    ScanningSetupStep.PairYourScanner(),
+                    ScanningSetupStep.PairYourScanner,
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
@@ -116,9 +116,11 @@ data class WooPosScanningSetupState(
         }
 
         @Parcelize
-        data class PairYourScanner(
-            @DrawableRes val iconRes: Int = R.drawable.ic_woopos_bluetooth_settings
-        ) : ScanningSetupStep() {
+        data object PairYourScanner : ScanningSetupStep() {
+            @get:DrawableRes
+            @IgnoredOnParcel
+            val iconRes: Int = R.drawable.ic_woopos_bluetooth_settings
+
             @get:StringRes
             @IgnoredOnParcel
             val titleRes = R.string.woopos_scanning_setup_pair_your_scanner_title
