@@ -28,13 +28,12 @@ class WooPosScannerSetupNavigatorTest {
 
         // THEN
         assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerHIDModeSetup::class.java)
-        assertThat((nextStep as ScanningSetupStep.ScannerHIDModeSetup).qrCodeImageRes).isEqualTo(R.drawable.ic_barcode)
     }
 
     @Test
     fun `given ScannerHIDModeSetup step, when TERA_1200 device, then should navigate to ScannerPairModeSetup`() {
         // GIVEN
-        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
 
         // WHEN
         val nextStep = navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep)
@@ -46,7 +45,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given ScannerPairModeSetup step, when TERA_1200 device, then should navigate to PairYourScanner`() {
         // GIVEN
-        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup()
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
 
         // WHEN
         val nextStep = navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairModeStep)
@@ -94,7 +93,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given ScannerHIDModeSetup step, when STAR_BSH_20B device, then should navigate directly to PairYourScanner`() {
         // GIVEN
-        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
 
         // WHEN
         val nextStep = navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, hidModeStep)
@@ -142,7 +141,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given ScannerHIDModeSetup step, when getting previous step, then should return DeviceSelection`() {
         // GIVEN
-        val currentStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        val currentStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "")
 
         // WHEN
         val previousStep = navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, currentStep)
@@ -154,7 +153,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given ScannerPairModeSetup step, when getting previous step for TERA_1200, then should return ScannerHIDModeSetup`() {
         // GIVEN
-        val currentStep = ScanningSetupStep.ScannerPairModeSetup()
+        val currentStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
 
         // WHEN
         val previousStep = navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, currentStep)
