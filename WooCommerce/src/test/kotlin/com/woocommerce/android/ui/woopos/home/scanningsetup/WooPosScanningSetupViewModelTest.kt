@@ -363,7 +363,14 @@ class WooPosScanningSetupViewModelTest {
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
 
         // WHEN
-        advanceTimeBy(3100)
+        viewModel.onUiEvent(
+            WooPosScanningSetupUiEvent.OnBarcodeScanned(
+                com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector.BarcodeResult.Success(
+                    barcode = "1234567890128",
+                    scanDurationMs = 100
+                )
+            )
+        )
         val step = viewModel.state.value.currentStep as ScanningSetupStep.ScannerSetupSuccess
 
         // THEN
@@ -400,7 +407,14 @@ class WooPosScanningSetupViewModelTest {
             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
 
-            advanceTimeBy(3100)
+            viewModel.onUiEvent(
+                WooPosScanningSetupUiEvent.OnBarcodeScanned(
+                    com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector.BarcodeResult.Success(
+                        barcode = "1234567890128",
+                        scanDurationMs = 100
+                    )
+                )
+            )
 
             viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
 
@@ -486,5 +500,15 @@ class WooPosScanningSetupViewModelTest {
                 "You can set up barcodes in the GTIN, UPC, EAN, ISBN field in the product's inventory tab. " +
                     "For more details"
             )
+        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_timeout_title))
+            .thenReturn("Timeout")
+        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_timeout_message))
+            .thenReturn("Timeout message")
+        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_title))
+            .thenReturn("Scan failed")
+        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_scan_failed_message))
+            .thenReturn("Scan failed message")
+        whenever(resourceProvider.getString(R.string.woopos_scanning_setup_button_retry))
+            .thenReturn("Retry")
     }
 }
