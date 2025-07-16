@@ -216,7 +216,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 true -> InputValue.Data(newValue)
                 else -> InputValue.Error(
                     input = newValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_product_details_tariff_missing
+                    errorMessageId = R.string.woo_shipping_labels_customs_product_details_tariff_invalid
                 )
             }.let { item.copy(tariffNumber = it) }
         }

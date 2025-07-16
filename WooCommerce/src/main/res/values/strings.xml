@@ -4583,7 +4583,7 @@
     <string name="woo_shipping_labels_customs_product_details_description">Description</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Missing Description</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS tariff number</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Missing tariff number</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">The tariff number must be between 6 and 12 digits long</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">Value per unit</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Weight per unit</string>
     <string name="woo_shipping_labels_customs_product_details_value_required">Value required</string>
