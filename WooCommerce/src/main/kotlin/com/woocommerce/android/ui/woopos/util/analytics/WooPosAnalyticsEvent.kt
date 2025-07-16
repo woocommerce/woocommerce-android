@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.util.analytics
 import com.woocommerce.android.analytics.IAnalyticsEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CartSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsHeaderType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListItemType
@@ -407,6 +408,30 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 }
             }
         }
+
+        data class IneligibleUIShown(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
+            override val name: String = "ineligible_ui_shown"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason.toAnalyticsReason()
+                    )
+                )
+            }
+        }
+
+        data class IneligibleUIRetryTapped(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
+            override val name: String = "ineligible_ui_retry_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason.toAnalyticsReason()
+                    )
+                )
+            }
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {
@@ -652,5 +677,15 @@ internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Str
     when (this) {
         is WooPosAnalyticsEvent -> addProperties(additionalProperties)
         else -> error("Cannot add properties to non-WooPosAnalytics event")
+    }
+}
+
+internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): String {
+    return when (this) {
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
+        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> "feature_switch_disabled"
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> "store_currency"
+        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
+        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
     }
 }
