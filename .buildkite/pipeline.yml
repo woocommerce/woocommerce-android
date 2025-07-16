@@ -27,7 +27,6 @@ steps:
       - label: "☢️ Danger - PR Check"
         command: danger
         key: danger
-        if: "build.pull_request.id != null"
         retry:
           manual:
             permit_on_passed: true
@@ -52,14 +51,12 @@ steps:
 
       - label: "Dependency Tree Diff"
         command: comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
-        if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/diff/*"
 
       - label: "Merged Manifest Diff"
         command: ".buildkite/commands/diff-merged-manifest.sh vanillaRelease"
-        if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/diff_manifest/**/**/*"
@@ -70,12 +67,10 @@ steps:
 
       - label: "🛠 Prototype Build: Mobile App"
         command: ".buildkite/commands/prototype-build.sh WooCommerce"
-        if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 
       - label: "🛠 Prototype Build: Wear App"
         command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
-        if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 
   ########################################
