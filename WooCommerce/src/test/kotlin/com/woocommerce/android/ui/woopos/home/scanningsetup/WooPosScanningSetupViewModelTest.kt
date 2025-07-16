@@ -2,12 +2,12 @@ package com.woocommerce.android.ui.woopos.home.scanningsetup
 
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -409,7 +409,7 @@ class WooPosScanningSetupViewModelTest {
 
             viewModel.onUiEvent(
                 WooPosScanningSetupUiEvent.OnBarcodeScanned(
-                    com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector.BarcodeResult.Success(
+                    BarcodeInputDetector.BarcodeResult.Success(
                         barcode = "1234567890128",
                         scanDurationMs = 100
                     )
