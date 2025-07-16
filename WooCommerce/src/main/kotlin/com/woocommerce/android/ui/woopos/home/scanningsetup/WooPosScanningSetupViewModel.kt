@@ -74,11 +74,11 @@ class WooPosScanningSetupViewModel @Inject constructor(
             is ScanningSetupStep.ScannerHIDModeSetup,
             is ScanningSetupStep.ScannerPairModeSetup,
             is ScanningSetupStep.PairYourScanner,
-            is ScanningSetupStep.ScannerSetupInfo -> {
+            is ScanningSetupStep.ScannerSetupInfo,
+            is ScanningSetupStep.ScannerSetupSuccess -> {
                 navigateToNextStep()
             }
 
-            is ScanningSetupStep.ScannerSetupSuccess,
             is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> {
                 viewModelScope.launch {
                     _dismissDialogEvent.emit(Unit)
