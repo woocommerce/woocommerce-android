@@ -116,7 +116,12 @@ class WooPosScanningSetupViewModelTest {
             )
         )
             .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")))
+        whenever(
+            navigator.getNextStep(
+                BarcodeReaderDevice.TERA_1200,
+                ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+            )
+        )
             .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
         whenever(
             navigator.getNextStep(
@@ -156,7 +161,12 @@ class WooPosScanningSetupViewModelTest {
                 )
             )
                 .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
-            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")))
+            whenever(
+                navigator.getNextStep(
+                    BarcodeReaderDevice.TERA_1200,
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                )
+            )
                 .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
             whenever(
                 navigator.getNextStep(
@@ -197,7 +207,12 @@ class WooPosScanningSetupViewModelTest {
                 )
             )
                 .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
-            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")))
+            whenever(
+                navigator.getNextStep(
+                    BarcodeReaderDevice.TERA_1200,
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                )
+            )
                 .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
             whenever(
                 navigator.getNextStep(
@@ -241,7 +256,12 @@ class WooPosScanningSetupViewModelTest {
             )
         )
             .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")))
+        whenever(
+            navigator.getNextStep(
+                BarcodeReaderDevice.TERA_1200,
+                ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+            )
+        )
             .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
         whenever(
             navigator.getNextStep(
@@ -282,7 +302,12 @@ class WooPosScanningSetupViewModelTest {
                 )
             )
                 .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
-            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")))
+            whenever(
+                navigator.getNextStep(
+                    BarcodeReaderDevice.TERA_1200,
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                )
+            )
                 .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
             whenever(
                 navigator.getNextStep(
@@ -322,7 +347,12 @@ class WooPosScanningSetupViewModelTest {
                 .thenReturn(mockPreviousStep)
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, mockPreviousStep))
                 .thenReturn(ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = ""))
-            whenever(navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")))
+            whenever(
+                navigator.getPreviousStep(
+                    BarcodeReaderDevice.TERA_1200,
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "")
+                )
+            )
                 .thenReturn(mockPreviousStep)
             val viewModel = createViewModel()
 
