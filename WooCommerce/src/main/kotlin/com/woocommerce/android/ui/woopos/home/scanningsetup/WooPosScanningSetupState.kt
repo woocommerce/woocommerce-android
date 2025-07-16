@@ -54,7 +54,10 @@ data class WooPosScanningSetupState(
 
                 BarcodeReaderDevice.OTHER -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerSetupInfo
+                    ScanningSetupStep.ScannerSetupInfo,
+                    ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
             }
         }
@@ -244,7 +247,7 @@ data class WooPosScanningSetupState(
 
             @get:StringRes
             @IgnoredOnParcel
-            val doneButtonTextRes = R.string.woopos_scanning_setup_button_done
+            val nextButtonTextRes = R.string.woopos_scanning_setup_button_next
 
             @IgnoredOnParcel
             val bulletPointsRes = listOf(

@@ -781,7 +781,7 @@ private fun ScannerSetupInfoContent(
         )
 
         SetupButtonsRow(
-            primaryButtonText = stringResource(step.doneButtonTextRes),
+            primaryButtonText = stringResource(step.nextButtonTextRes),
             secondaryButtonText = stringResource(step.backButtonTextRes),
             onPrimaryClick = onPrimaryClick,
             onSecondaryClick = onSecondaryClick

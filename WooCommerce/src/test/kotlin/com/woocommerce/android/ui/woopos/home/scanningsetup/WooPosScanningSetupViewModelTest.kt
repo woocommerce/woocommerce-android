@@ -53,12 +53,56 @@ class WooPosScanningSetupViewModelTest {
     }
 
     @Test
-    fun `given ScannerSetupInfo step, when primary button clicked, then should emit dismiss dialog event`() = runTest {
+    fun `given ScannerSetupInfo step, when primary button clicked, then should navigate to next step`() = runTest {
         // GIVEN
         whenever(navigator.getNextStep(BarcodeReaderDevice.OTHER, ScanningSetupStep.DeviceSelection))
             .thenReturn(ScanningSetupStep.ScannerSetupInfo)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.OTHER, ScanningSetupStep.ScannerSetupInfo))
+            .thenReturn(ScanningSetupStep.TestYourScanner)
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.OTHER))
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+
+        // THEN
+        assertThat(viewModel.state.value.currentStep).isEqualTo(ScanningSetupStep.TestYourScanner)
+    }
+
+    @Test
+    fun `given ScannerSetupBarcodesOnProducts step, when primary button clicked, then should emit dismiss dialog event`() = runTest {
+        // GIVEN
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = android.R.drawable.ic_delete)
+        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup()
+        val pairYourScannerStep = ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(hidModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
+            .thenReturn(pairModeStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairModeStep))
+            .thenReturn(pairYourScannerStep)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairYourScannerStep))
+            .thenReturn(ScanningSetupStep.TestYourScanner)
+        whenever(
+            navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScanner)
+        )
+            .thenReturn(ScanningSetupStep.ScannerSetupSuccess)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerSetupSuccess))
+            .thenReturn(ScanningSetupStep.ScannerSetupBarcodesOnProducts)
+        val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+        viewModel.onUiEvent(
+            WooPosScanningSetupUiEvent.OnBarcodeScanned(
+                BarcodeInputDetector.BarcodeResult.Success(
+                    barcode = "1234567890128",
+                    scanDurationMs = 100
+                )
+            )
+        )
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
 
         viewModel.dismissDialogEvent.test {
             // WHEN
@@ -531,7 +575,7 @@ class WooPosScanningSetupViewModelTest {
         )
         assertThat(step.infoTextRes).isEqualTo(R.string.woopos_scanning_setup_info_text)
         assertThat(step.backButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
-        assertThat(step.doneButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_done)
+        assertThat(step.nextButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_next)
     }
 
     @Test
