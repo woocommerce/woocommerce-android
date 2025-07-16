@@ -174,7 +174,13 @@ class WooShippingRatesDomainMapper @Inject constructor(
         return when {
             price == null -> "N/A"
             price.isEqualTo(BigDecimal.ZERO) -> resourceProvider.getString(R.string.free)
-            else -> formatCurrency(price, currencyCode)
+            else -> formatCurrency(price, currencyCode).let {
+                if (price > BigDecimal.ZERO) {
+                    resourceProvider.getString(R.string.woo_shipping_rate_extra_cost_format, it)
+                } else {
+                    it
+                }
+            }
         }
     }
 

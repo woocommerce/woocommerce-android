@@ -1,30 +1,30 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StoreOptionsForPackages
 import javax.inject.Inject
 
-class FetchPredefinedPackagesFromStore @Inject constructor(
+class FetchPackagesFromStore @Inject constructor(
     private val selectedSite: SelectedSite,
     private val packageRepository: WooShippingLabelPackageRepository
 ) {
-    suspend operator fun invoke(): PredefinedPackagesState {
-        val storePackages = selectedSite.getOrNull()
-            ?.let { packageRepository.fetchAllStorePackages(it) }
-            ?.takeIf { it.isError.not() }
-            ?.model
-            ?: return PredefinedPackagesState.Error
-
-        return PredefinedPackagesState.Data(
-            storeOptions = storePackages.storeOptions.toStoreOptionsForPackages(),
-            savedPackages = storePackages.savedPackages
-                .map { PackageData.fromPackageDAO(it) },
-            carrierPackages = storePackages.filterCarrierData()
-        )
+    suspend operator fun invoke(): PackagesState {
+        val result = packageRepository.fetchAllStorePackages(selectedSite.get())
+        val model = result.model
+        return if (!result.isError && model != null) {
+            val storePackages = model
+            PackagesState.Data(
+                storeOptions = storePackages.storeOptions.toStoreOptionsForPackages(),
+                savedPackages = storePackages.savedPackages.map { PackageData.fromPackageDAO(it) },
+                carrierPackages = storePackages.filterCarrierData()
+            )
+        } else {
+            PackagesState.Error(result.error.type.name)
+        }
     }
 
     private fun StorePackagesDAO.filterCarrierData(): Map<Carrier, List<CarrierPackageGroup>> {

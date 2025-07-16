@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.filters.data.DateRange.TODAY
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.SALES_CHANNEL
 import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import javax.inject.Inject
@@ -28,13 +29,17 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
         val orderStatusFilters = orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
             .joinToString(separator = ",")
 
+        val salesChannelFilters = orderFiltersRepository.getCurrentFilterSelection(SALES_CHANNEL)
+        val createdViaFilter = if (salesChannelFilters.contains("pos")) "pos-rest-api" else null
+
         return WCOrderListDescriptor(
             site = selectedSite.get(),
             statusFilter = orderStatusFilters,
             beforeFilter = rangeStartAndEnd.second,
             afterFilter = rangeStartAndEnd.first,
             productId = orderFiltersRepository.productFilter,
-            customerId = orderFiltersRepository.customerFilter
+            customerId = orderFiltersRepository.customerFilter,
+            createdViaFilter = createdViaFilter
         )
     }
 }

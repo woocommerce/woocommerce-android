@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel.Companion.SINGLE_QUANTITY
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.SelectableShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.SelectableShippableItemsUI
@@ -50,7 +51,9 @@ fun List<ShippableItemModel>.toUIModel(
     val shippableItemsUI = map { item -> item.toUIModel(currencyFormatter, dimensionUnit, weightUnit) }
     val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
     val formattedTotalWeight = getFormattedTotalWeight(weightUnit)
-    val shipmentCostUI = shippingRates.toShipmentCostUI(
+    val shipmentCostUI = getShipmentCostUI(
+        shipmentUIModel = shipmentUIModel,
+        ratesState = shippingRates,
         currencyFormatter = { currencyFormatter.formatCurrency(it, firstOrNull()?.currency.orEmpty()) }
     )
 
@@ -67,8 +70,11 @@ fun List<ShippableItemModel>.toUIModel(
         shipmentCostUI = shipmentCostUI,
         purchaseState = shipmentUIModel.purchaseState,
         status = shipmentUIModel.label?.status ?: ShippingLabelStatus.UNKNOWN,
-        isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true,
-        isCustomsFormAvailable = shipmentUIModel.label?.commercialInvoiceUrl.isNotNullOrEmpty()
+        shipmentPrintLabelUI = ShipmentPrintLabelUI(
+            availablePrintSizes = getPaperSizes(shipmentUIModel.label?.originAddress?.country?.code),
+            isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true,
+            isCustomsFormAvailable = shipmentUIModel.label?.commercialInvoiceUrl.isNotNullOrEmpty()
+        ),
     )
 }
 
@@ -146,12 +152,24 @@ fun Order.getShippingLinesSummary(
     }
 }
 
-private fun ShippingRatesState.toShipmentCostUI(
+private fun getShipmentCostUI(
+    shipmentUIModel: ShipmentUIModel,
+    ratesState: ShippingRatesState,
     currencyFormatter: (BigDecimal) -> String
 ): ShipmentCostUI? {
-    return when (this) {
-        is ShippingRatesState.DataState -> {
-            val selectedRate = selectedRate ?: return null
+    return when {
+        shipmentUIModel.purchased -> {
+            requireNotNull(shipmentUIModel.label)
+            ShipmentCostUI(
+                serviceName = shipmentUIModel.label.serviceName,
+                formattedBasePrice = currencyFormatter(shipmentUIModel.label.rate),
+                formattedTotalPrice = currencyFormatter(shipmentUIModel.label.rate),
+                optionsWithFees = emptyMap()
+            )
+        }
+
+        ratesState is ShippingRatesState.DataState -> {
+            val selectedRate = ratesState.selectedRate ?: return null
             val totalPrice = selectedRate.selectedRateOption.rate.price +
                 selectedRate.additionalSelectedOptions.sumOf { selectedRate.options.getValue(it).fee }
 
@@ -177,3 +195,10 @@ private fun ShippingRatesState.toShipmentCostUI(
         else -> null
     }
 }
+
+private fun getPaperSizes(countryCode: String?): List<WooShippingLabelPaperSize> =
+    if (countryCode.isNullOrEmpty() || countryCode.uppercase() in listOf("US", "CA", "MX", "DO")) {
+        WooShippingLabelPaperSize.entries.minus(WooShippingLabelPaperSize.A4)
+    } else {
+        WooShippingLabelPaperSize.entries
+    }

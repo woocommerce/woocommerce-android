@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -270,7 +271,7 @@ private fun OrderListItem(order: OrderItem, onOrderClicked: (OrderItem) -> Unit)
             .clickable(onClick = { onOrderClicked(order) })
             .padding(16.dp)
     ) {
-        val (number, date, name, status, total) = createRefs()
+        val (number, date, name, statusRow, total) = createRefs()
 
         Text(
             text = order.number,
@@ -305,17 +306,30 @@ private fun OrderListItem(order: OrderItem, onOrderClicked: (OrderItem) -> Unit)
                 }
         )
 
-        WCTag(
+        Row(
             modifier = Modifier
-                .constrainAs(status) {
+                .constrainAs(statusRow) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
                 },
-            text = order.status,
-            textColor = colorResource(id = R.color.color_on_secondary),
-            backgroundColor = colorResource(id = order.statusColor),
-            fontWeight = FontWeight.Normal
-        )
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            WCTag(
+                text = order.status,
+                textColor = colorResource(id = R.color.color_on_secondary),
+                backgroundColor = colorResource(id = order.statusColor),
+                fontWeight = FontWeight.Normal
+            )
+
+            if (order.isPosOrder) {
+                WCTag(
+                    text = stringResource(id = R.string.pos_badge),
+                    textColor = colorResource(id = R.color.tag_text_pos),
+                    backgroundColor = colorResource(id = R.color.tag_bg_pos),
+                    fontWeight = FontWeight.Normal
+                )
+            }
+        }
 
         Text(
             text = order.totalPrice,
@@ -323,7 +337,7 @@ private fun OrderListItem(order: OrderItem, onOrderClicked: (OrderItem) -> Unit)
             modifier = Modifier
                 .padding(top = 8.dp)
                 .constrainAs(total) {
-                    top.linkTo(status.bottom)
+                    top.linkTo(statusRow.bottom)
                     end.linkTo(parent.end)
                 }
         )
@@ -375,7 +389,8 @@ fun PreviewTopOrders() {
                 customerName = "John Doe",
                 status = "Processing",
                 statusColor = R.color.tag_bg_processing,
-                totalPrice = "$100.00"
+                totalPrice = "$100.00",
+                isPosOrder = true
             ),
             OrderItem(
                 id = 0L,
@@ -384,7 +399,8 @@ fun PreviewTopOrders() {
                 customerName = "Jane Doe",
                 status = "Completed",
                 statusColor = R.color.tag_bg_completed,
-                totalPrice = "$200.00"
+                totalPrice = "$200.00",
+                isPosOrder = false
             )
         ),
         selectedFilter = OrderStatusOption(

@@ -43,4 +43,8 @@ class WCSSRModelCachingFetcher @Inject constructor(
         cache[siteModel.siteId] = CachedSSR(fetched)
         return WooResult(fetched)
     }
+
+    suspend fun invalidate() = mutex.withLock {
+        cache.clear()
+    }
 }
