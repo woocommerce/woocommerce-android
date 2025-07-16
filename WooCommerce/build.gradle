@@ -22,7 +22,7 @@ fladle {
             "notPackage com.woocommerce.android.e2e.tests.screenshot"
     ]
     devices = [
-            ["model": "MediumPhone.arm", "version": "33"]
+            ["model": "MediumPhone.arm", "version": "35"]
     ]
     localResultsDir = "$rootDir/build/instrumented-tests"
 
