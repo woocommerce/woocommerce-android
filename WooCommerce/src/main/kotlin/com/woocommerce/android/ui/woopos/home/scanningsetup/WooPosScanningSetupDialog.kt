@@ -56,8 +56,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.ui.compose.component.BarcodeEAN13Code
-import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.component.QRCode
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -283,8 +283,9 @@ private fun ScannerModeSetupContent(
         )
 
         QRCode(
+            modifier = Modifier.padding(WooPosSpacing.Large.value.toAdaptivePadding()),
             content = qrCodeValue,
-            size = 300.dp,
+            size = 150.dp,
 //            codeColor = MaterialTheme.colorScheme.onSurface,
 //            backgroundColor = MaterialTheme.colorScheme.surfaceBright
         )
