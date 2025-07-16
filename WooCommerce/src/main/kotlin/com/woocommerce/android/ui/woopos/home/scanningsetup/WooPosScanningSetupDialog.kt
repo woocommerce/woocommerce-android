@@ -57,6 +57,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.ui.compose.component.BarcodeEAN13Code
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -425,7 +426,7 @@ private fun PairYourScannerContent(
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
 
         WooPosText(
-            text = stringResource(step.messageRes),
+            text = step.messageRes.getText(),
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
         )
