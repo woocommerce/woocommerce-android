@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.scanningsetup
 
 import app.cash.turbine.test
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.Companion.TEST_BARCODE_EAN13
@@ -116,8 +117,13 @@ class WooPosScanningSetupViewModelTest {
         )
             .thenReturn(ScanningSetupStep.ScannerPairModeSetup())
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup()))
-            .thenReturn(ScanningSetupStep.PairYourScanner())
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
+            .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
+        whenever(
+            navigator.getNextStep(
+                BarcodeReaderDevice.TERA_1200,
+                ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
+            )
+        )
             .thenReturn(ScanningSetupStep.TestYourScanner)
         whenever(navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScanner))
             .thenReturn(mockNextStep)
@@ -151,9 +157,13 @@ class WooPosScanningSetupViewModelTest {
             )
                 .thenReturn(ScanningSetupStep.ScannerPairModeSetup())
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup()))
-                .thenReturn(ScanningSetupStep.PairYourScanner())
-            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
-                .thenReturn(ScanningSetupStep.TestYourScanner)
+                .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
+            whenever(
+                navigator.getNextStep(
+                    BarcodeReaderDevice.TERA_1200,
+                    ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
+                )
+            ).thenReturn(ScanningSetupStep.TestYourScanner)
             whenever(navigator.getNextStepForInvalidBarcode(ScanningSetupStep.TestYourScanner))
                 .thenReturn(ScanningSetupStep.TestYourScannerScanFailed)
             val viewModel = createViewModel()
@@ -188,8 +198,13 @@ class WooPosScanningSetupViewModelTest {
             )
                 .thenReturn(ScanningSetupStep.ScannerPairModeSetup())
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup()))
-                .thenReturn(ScanningSetupStep.PairYourScanner())
-            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
+                .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
+            whenever(
+                navigator.getNextStep(
+                    BarcodeReaderDevice.TERA_1200,
+                    ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
+                )
+            )
                 .thenReturn(ScanningSetupStep.TestYourScanner)
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScanner))
                 .thenReturn(mockNextStep)
@@ -227,8 +242,13 @@ class WooPosScanningSetupViewModelTest {
         )
             .thenReturn(ScanningSetupStep.ScannerPairModeSetup())
         whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup()))
-            .thenReturn(ScanningSetupStep.PairYourScanner())
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
+            .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
+        whenever(
+            navigator.getNextStep(
+                BarcodeReaderDevice.TERA_1200,
+                ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
+            )
+        )
             .thenReturn(ScanningSetupStep.TestYourScanner)
         whenever(navigator.isStillOnTestBarcodeStep(ScanningSetupStep.TestYourScanner))
             .thenReturn(true)
@@ -263,8 +283,13 @@ class WooPosScanningSetupViewModelTest {
             )
                 .thenReturn(ScanningSetupStep.ScannerPairModeSetup())
             whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup()))
-                .thenReturn(ScanningSetupStep.PairYourScanner())
-            whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.PairYourScanner()))
+                .thenReturn(ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200))
+            whenever(
+                navigator.getNextStep(
+                    BarcodeReaderDevice.TERA_1200,
+                    ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
+                )
+            )
                 .thenReturn(ScanningSetupStep.TestYourScanner)
             whenever(navigator.getNextStepForInvalidBarcode(ScanningSetupStep.TestYourScanner))
                 .thenReturn(ScanningSetupStep.TestYourScannerScanFailed)

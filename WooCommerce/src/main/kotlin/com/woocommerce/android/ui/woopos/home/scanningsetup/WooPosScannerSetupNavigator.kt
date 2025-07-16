@@ -29,14 +29,14 @@ class WooPosScannerSetupNavigator @Inject constructor() {
         return when (currentStep) {
             is ScanningSetupStep.TestYourScannerTimeout,
             is ScanningSetupStep.TestYourScannerScanFailed -> {
-                getPreviousStep(device, ScanningSetupStep.TestYourScanner)
+                ScanningSetupStep.TestYourScanner
             }
             else -> {
                 val stepSequence = ScannerConfigurations.getStepSequence(device)
                 val currentIndex = stepSequence.indexOf(currentStep)
 
                 if (currentIndex <= 0) {
-                    ScanningSetupStep.DeviceSelection
+                    error("The step shouldn't have a back button: $currentStep")
                 } else {
                     val previousIndex = currentIndex - 1
                     stepSequence[previousIndex]

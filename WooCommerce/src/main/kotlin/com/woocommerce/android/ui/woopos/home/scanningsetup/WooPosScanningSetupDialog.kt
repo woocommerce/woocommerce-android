@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +56,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.ui.compose.component.BarcodeEAN13Code
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.component.QRCode
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -73,6 +75,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarc
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosScanningSetupDialog(
@@ -82,8 +85,20 @@ fun WooPosScanningSetupDialog(
     val viewModel = hiltViewModel<WooPosScanningSetupViewModel>()
     val context = LocalContext.current
 
-    LaunchedEffect(isVisible) {
-        viewModel.resetToInitialState()
+    val isClosing = remember { mutableStateOf(false) }
+
+    LaunchedEffect(isClosing.value) {
+        if (isClosing.value) {
+            // Delay to allow the dialog to close before resetting state
+            delay(300)
+            viewModel.resetToInitialState()
+            isClosing.value = false
+        }
+    }
+
+    val onDismissRequestWrapper: () -> Unit = {
+        onDismissRequest()
+        isClosing.value = true
     }
 
     LaunchedEffect(Unit) {
@@ -99,13 +114,13 @@ fun WooPosScanningSetupDialog(
     }
     LaunchedEffect(Unit) {
         viewModel.dismissDialogEvent.collect {
-            onDismissRequest()
+            onDismissRequestWrapper()
         }
     }
 
     WooPosDialogWrapper(
         isVisible = isVisible,
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = onDismissRequestWrapper,
         dialogBackgroundContentDescription = stringResource(
             id = R.string.woopos_scanning_setup_dialog_content_description
         )
@@ -119,7 +134,7 @@ fun WooPosScanningSetupDialog(
             Row {
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
-                    onClick = onDismissRequest,
+                    onClick = onDismissRequestWrapper,
                     modifier = Modifier
                 ) {
                     Icon(
@@ -414,7 +429,7 @@ private fun PairYourScannerContent(
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
 
         WooPosText(
-            text = stringResource(step.messageRes),
+            text = step.messageRes.getText(),
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
         )

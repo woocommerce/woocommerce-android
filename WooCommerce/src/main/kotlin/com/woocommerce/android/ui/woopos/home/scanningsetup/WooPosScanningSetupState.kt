@@ -4,12 +4,12 @@ import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WooPosScanningSetupState(
-    val isVisible: Boolean = false,
     val currentStep: ScanningSetupStep,
     val selectedDevice: BarcodeReaderDevice? = null
 ) : Parcelable {
@@ -27,15 +27,14 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "%%SpecCodeAA"),
                     ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "%%SpecCode99"),
-                    ScanningSetupStep.PairYourScanner(),
-                    ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),                    ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
 
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "@FACDEF;INTERF10;KBWCTY0;TSUSET0D;"),
-                    ScanningSetupStep.PairYourScanner(),
+                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
@@ -44,7 +43,7 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "#FNB0001000540#"),
                     ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "#FNA#"),
-                    ScanningSetupStep.PairYourScanner(),
+                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
                 )
@@ -116,16 +115,25 @@ data class WooPosScanningSetupState(
         }
 
         @Parcelize
-        data class PairYourScanner(
-            @DrawableRes val iconRes: Int = R.drawable.ic_woopos_bluetooth_settings
-        ) : ScanningSetupStep() {
+        data class PairYourScanner(@StringRes val deviceName: Int) : ScanningSetupStep() {
+            @get:DrawableRes
+            @IgnoredOnParcel
+            val iconRes: Int = R.drawable.ic_woopos_bluetooth_settings
+
             @get:StringRes
             @IgnoredOnParcel
             val titleRes = R.string.woopos_scanning_setup_pair_your_scanner_title
 
-            @get:StringRes
             @IgnoredOnParcel
-            val messageRes = R.string.woopos_scanning_setup_pair_your_scanner_message
+            val messageRes =
+                UiString.UiStringRes(
+                    R.string.woopos_scanning_setup_pair_your_scanner_message,
+                    listOf(
+                        UiString.UiStringRes(
+                            deviceName
+                        )
+                    )
+                )
 
             @get:StringRes
             @IgnoredOnParcel
