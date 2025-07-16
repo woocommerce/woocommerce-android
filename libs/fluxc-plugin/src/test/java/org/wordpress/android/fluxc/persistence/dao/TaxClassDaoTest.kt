@@ -121,4 +121,17 @@ class TaxClassDaoTest {
         val otherSiteResult = sut.getTaxClasses(LocalId(999))
         assertThat(otherSiteResult).containsExactly(differentSiteTaxClass)
     }
+
+    @Test
+    fun `when there are duplicate tax classes, replaceAll keeps the last one`() = runTest {
+        // given
+        val taxClasses = listOf(sampleTaxClass1, sampleTaxClass2, sampleTaxClass1)
+        sut.replaceAll(site.localId(), taxClasses)
+
+        // when
+        val result = sut.getTaxClasses(site.localId())
+
+        // then
+        assertThat(result).containsExactlyInAnyOrderElementsOf(listOf(sampleTaxClass1, sampleTaxClass2))
+    }
 }
