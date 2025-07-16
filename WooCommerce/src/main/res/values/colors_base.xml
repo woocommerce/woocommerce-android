@@ -350,4 +350,11 @@
     -->
     <color name="order_update_overlay_background">@color/woo_white_alpha_060</color>
 
+    <!--
+        WooPos colors
+    -->
+    <color name="woopos_bluetooth_icon_primary">@color/woo_purple_40</color>
+    <color name="woopos_bluetooth_icon_secondary">@color/woo_purple_10</color>
+    <color name="woopos_bluetooth_icon_tertiary">@color/woo_purple_80</color>
+
 </resources>
