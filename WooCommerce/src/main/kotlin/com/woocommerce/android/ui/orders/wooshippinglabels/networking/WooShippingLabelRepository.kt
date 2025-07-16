@@ -118,7 +118,7 @@ class WooShippingLabelRepository @Inject constructor(
         shipFrom: OriginShippingAddress,
         selectedRate: WooShippingSelectedRateModel,
         weight: Float,
-        lastOrderComplete: Boolean,
+        lastOrderCompleted: Boolean,
         customsData: CustomsData?,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): WooResult<PurchasedLabelData> {
@@ -139,7 +139,7 @@ class WooShippingLabelRepository @Inject constructor(
             selectedRateOptions = mapper.toSelectedRateOptions(selectedRate),
             customs = customsData?.let { mapper.toCustomsDTO(it) },
             hazmat = mapper.toHazmatDTO(hazmatSelection),
-            markOrderComplete = lastOrderComplete
+            lastOrderCompleted = lastOrderCompleted
         ).asWooResult { mapper(it) }
     }
 

@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
@@ -118,6 +119,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val fetchOriginAddresses: FetchOriginAddresses,
     private val getShippingRates: GetShippingRates,
     private val purchaseShippingLabel: PurchaseShippingLabel,
+    private val markOrderAsComplete: MarkOrderAsComplete,
     observeAccountSettings: ObserveAccountSettings,
     private val fetchAccountSettings: FetchAccountSettings,
     private val addressValidationHelper: AddressValidationHelper,
@@ -191,7 +193,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { getDestinationAddress() }
         launch { trackScreenShownEvent() }
         launch { getSavedShipments() }
-        launch { setDefaultPaperSize() }
+        launch { setAccountDefaults() }
         launch { getShippingAddresses() }
         launch { getOrderInformation() }
         launch { observePackageWeight() }
@@ -280,6 +282,27 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 // If result has a label model update the label with it. Otherwise, just update the status.
                 val newLabel = result.shippingLabelModel ?: shipment.label.copy(status = result.status)
                 updateShipment(shipmentId, shipment.copy(label = newLabel.copy(originAddress = originAddress)))
+
+                if (result.status == ShippingLabelStatus.PURCHASED && uiState.value.markOrderComplete) {
+                    markOrderAsComplete(navArgs.orderId).fold(
+                        onSuccess = {
+                            analyticsTracker.track(
+                                stat = AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED,
+                                properties = mapOf(AnalyticsTracker.KEY_IS_REVAMPED_FLOW to true)
+                            )
+                        },
+                        onFailure = {
+                            triggerEvent(Event.ShowSnackbar(R.string.woo_shipping_labels_order_completion_error))
+                            analyticsTracker.track(
+                                stat = AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED,
+                                properties = mapOf(AnalyticsTracker.KEY_IS_REVAMPED_FLOW to true),
+                                errorType = (it as? WooException)?.error?.type?.name,
+                                errorContext = this@WooShippingLabelCreationViewModel.javaClass.simpleName,
+                                errorDescription = (it as? WooException)?.error?.message
+                            )
+                        }
+                    )
+                }
             }.launchIn(this)
         }
     }
@@ -295,7 +318,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val orderShippingEmail = order.shippingAddress.email.ifBlank { order.billingAddress.email }
 
             if (labelDestination == null) {
-                if (destinationAddress.value == WooShippingAddresses.EMPTY) {
+                if (destinationAddress.value == DestinationShippingAddress.EMPTY) {
                     val defaultDestination = DestinationShippingAddress(
                         address = order.shippingAddress.copy(email = orderShippingEmail),
                         isVerified = false
@@ -329,9 +352,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         order.drop(1).collectLatest { order -> shipments.value = getShipments(order) }
     }
 
-    private suspend fun setDefaultPaperSize() {
-        val paperSize = accountSettings.first()?.paperSize ?: WooShippingLabelPaperSize.LABEL
-        uiState.update { it.copy(paperSizeOption = paperSize) }
+    private suspend fun setAccountDefaults() {
+        accountSettings.first()?.let { accountSettings ->
+            uiState.update {
+                it.copy(
+                    paperSizeOption = accountSettings.paperSize,
+                    markOrderComplete = accountSettings.lastOrderCompleted
+                )
+            }
+        }
     }
 
     @Suppress("ComplexCondition")

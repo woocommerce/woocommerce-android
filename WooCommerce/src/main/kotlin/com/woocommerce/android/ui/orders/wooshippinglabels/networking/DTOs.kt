@@ -22,7 +22,8 @@ data class EligibilityResponse(
 data class AccountSettingsDTO(
     val storeOptions: StoreOptionsDTO,
     val formData: FormDataDTO,
-    val formMeta: FormMetaDTO
+    val formMeta: FormMetaDTO,
+    val userMeta: UserMetaDTO,
 )
 
 data class StoreOptionsDTO(
@@ -45,6 +46,10 @@ data class FormMetaDTO(
     @SerializedName("can_edit_settings") val canEditSettings: Boolean = true,
     @SerializedName("master_user_name") val masterUserName: String = "",
     @SerializedName("master_user_wpcom_login") val masterUserWpcomLogin: String = ""
+)
+
+data class UserMetaDTO(
+    @SerializedName("last_order_completed") val lastOrderCompleted: Boolean,
 )
 
 data class PaymentMethodDTO(
