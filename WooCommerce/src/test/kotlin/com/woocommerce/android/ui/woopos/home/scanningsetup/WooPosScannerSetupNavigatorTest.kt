@@ -58,7 +58,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given PairYourScanner step, when TERA_1200 device, then should navigate to TestYourScanner`() {
         // GIVEN
-        val pairYourScannerStep = ScanningSetupStep.PairYourScanner()
+        val pairYourScannerStep = ScanningSetupStep.PairYourScanner("TERA_1200")
 
         // WHEN
         val nextStep = navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairYourScannerStep)
@@ -94,7 +94,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given ScannerHIDModeSetup step, when STAR_BSH_20B device, then should navigate directly to PairYourScanner`() {
         // GIVEN
-        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.star_bsh_20b_setup_qr)
+        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
 
         // WHEN
         val nextStep = navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, hidModeStep)
@@ -106,7 +106,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given PairYourScanner step, when STAR_BSH_20B device, then should navigate to TestYourScanner`() {
         // GIVEN
-        val pairYourScannerStep = ScanningSetupStep.PairYourScanner()
+        val pairYourScannerStep = ScanningSetupStep.PairYourScanner(deviceName = "STAR_BSH_20B")
 
         // WHEN
         val nextStep = navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, pairYourScannerStep)
@@ -167,7 +167,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given PairYourScanner step, when INATECK_BLUETOOTH device, then should navigate to TestYourScanner`() {
         // GIVEN
-        val pairYourScannerStep = ScanningSetupStep.PairYourScanner()
+        val pairYourScannerStep = ScanningSetupStep.PairYourScanner(deviceName = "INATECK_BLUETOOTH")
 
         // WHEN
         val nextStep = navigator.getNextStep(BarcodeReaderDevice.INATECK_BLUETOOTH, pairYourScannerStep)
@@ -227,7 +227,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given PairYourScanner step, when getting previous step for TERA_1200, then should return ScannerPairModeSetup`() {
         // GIVEN
-        val currentStep = ScanningSetupStep.PairYourScanner()
+        val currentStep = ScanningSetupStep.PairYourScanner(deviceName = "TERA_1200")
 
         // WHEN
         val previousStep = navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, currentStep)
@@ -239,7 +239,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given PairYourScanner step, when getting previous step for STAR_BSH_20B, then should return ScannerHIDModeSetup`() {
         // GIVEN
-        val currentStep = ScanningSetupStep.PairYourScanner()
+        val currentStep = ScanningSetupStep.PairYourScanner(deviceName = "STAR_BSH_20B")
 
         // WHEN
         val previousStep = navigator.getPreviousStep(BarcodeReaderDevice.STAR_BSH_20B, currentStep)
@@ -251,7 +251,7 @@ class WooPosScannerSetupNavigatorTest {
     @Test
     fun `given PairYourScanner step, when getting previous step for INATECK_BLUETOOTH, then should return ScannerPairModeSetup`() {
         // GIVEN
-        val currentStep = ScanningSetupStep.PairYourScanner()
+        val currentStep = ScanningSetupStep.PairYourScanner(deviceName = "INATECK_BLUETOOTH")
 
         // WHEN
         val previousStep = navigator.getPreviousStep(BarcodeReaderDevice.INATECK_BLUETOOTH, currentStep)
