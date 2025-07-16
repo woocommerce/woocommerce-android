@@ -25,8 +25,8 @@ data class WooPosScanningSetupState(
             return when (device) {
                 BarcodeReaderDevice.TERA_1200 -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
-                    ScanningSetupStep.ScannerPairModeSetup(),
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "%%SpecCodeAA"),
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "%%SpecCode99"),
                     ScanningSetupStep.PairYourScanner(),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
@@ -34,7 +34,7 @@ data class WooPosScanningSetupState(
 
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "@FACDEF;INTERF10;KBWCTY0;TSUSET0D;"),
                     ScanningSetupStep.PairYourScanner(),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
@@ -42,8 +42,8 @@ data class WooPosScanningSetupState(
 
                 BarcodeReaderDevice.INATECK_BLUETOOTH -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
-                    ScanningSetupStep.ScannerPairModeSetup(),
+                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeValue = "#FNB0001000540#"),
+                    ScanningSetupStep.ScannerPairModeSetup(qrCodeValue = "#FNA#"),
                     ScanningSetupStep.PairYourScanner(),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess
@@ -75,7 +75,7 @@ data class WooPosScanningSetupState(
 
         @Parcelize
         data class ScannerHIDModeSetup(
-            @DrawableRes val qrCodeImageRes: Int
+            val qrCodeValue: String
         ) : ScanningSetupStep() {
             @get:StringRes
             @IgnoredOnParcel
@@ -96,7 +96,7 @@ data class WooPosScanningSetupState(
 
         @Parcelize
         data class ScannerPairModeSetup(
-            @DrawableRes val qrCodeImageRes: Int = R.drawable.ic_barcode
+            val qrCodeValue: String
         ) : ScanningSetupStep() {
             @get:StringRes
             @IgnoredOnParcel
