@@ -24,7 +24,6 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(
         WooPosScanningSetupState(
-            isVisible = false,
             currentStep = navigator.getInitialStep(),
             selectedDevice = null
         )
