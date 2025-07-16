@@ -8,7 +8,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WooPosScanningSetupState(
-    val isVisible: Boolean = false,
     val currentStep: ScanningSetupStep,
     val selectedDevice: BarcodeReaderDevice? = null
 ) : Parcelable {
