@@ -24,7 +24,6 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(
         WooPosScanningSetupState(
-            isVisible = false,
             currentStep = navigator.getInitialStep(),
             selectedDevice = null
         )
@@ -77,6 +76,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
             is ScanningSetupStep.PairYourScanner,
             is ScanningSetupStep.ScannerSetupInfo -> {
                 navigateToNextStep()
+            }
+
+            is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> {
+                viewModelScope.launch {
+                    _dismissDialogEvent.emit(Unit)
+                }
             }
 
             is ScanningSetupStep.TestYourScannerScanFailed -> resetToInitialState()
