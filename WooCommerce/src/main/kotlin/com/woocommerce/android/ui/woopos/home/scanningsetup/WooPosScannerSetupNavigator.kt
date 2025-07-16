@@ -29,7 +29,7 @@ class WooPosScannerSetupNavigator @Inject constructor() {
         return when (currentStep) {
             is ScanningSetupStep.TestYourScannerTimeout,
             is ScanningSetupStep.TestYourScannerScanFailed -> {
-                getPreviousStep(device, ScanningSetupStep.TestYourScanner)
+                ScanningSetupStep.TestYourScanner
             }
             else -> {
                 val stepSequence = ScannerConfigurations.getStepSequence(device)
