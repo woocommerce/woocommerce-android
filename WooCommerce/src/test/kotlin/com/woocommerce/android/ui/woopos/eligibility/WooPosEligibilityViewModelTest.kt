@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.reset
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -92,11 +93,9 @@ class WooPosEligibilityViewModelTest {
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(reason))
         val sut = WooPosEligibilityViewModel(canBeLaunchedInTab, tracker)
 
-        // Put initial state to Ineligible (simulate initialize)
         sut.initialize(reason)
 
-        // Clear previous invocations
-        org.mockito.Mockito.reset(tracker)
+        reset(tracker)
 
         // WHEN
         sut.retryEligibilityCheckTapped()
