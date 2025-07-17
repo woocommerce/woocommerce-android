@@ -120,6 +120,10 @@ android {
             }
         }
     }
+
+    lintOptions {
+        checkDependencies = false
+    }
 }
 
 dependencies {

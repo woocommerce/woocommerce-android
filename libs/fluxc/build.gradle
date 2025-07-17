@@ -39,10 +39,6 @@ android {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
     }
-
-    lintOptions {
-        checkDependencies = false
-    }
 }
 
 android.buildTypes.all { buildType ->
