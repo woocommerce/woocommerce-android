@@ -8,6 +8,7 @@ sealed class WooPosScanningSetupUiEvent {
     data object OnPrimaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnSecondaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnOpenBluetoothSettings : WooPosScanningSetupUiEvent()
+    data object OnDismissed : WooPosScanningSetupUiEvent()
     data class OnDeviceSelected(val device: BarcodeReaderDevice) : WooPosScanningSetupUiEvent()
     data class OnBarcodeScanned(val barcodeResult: BarcodeInputDetector.BarcodeResult) : WooPosScanningSetupUiEvent()
 }

@@ -72,6 +72,15 @@ class WooPosScanningSetupAnalyticsTracker @Inject constructor(
         )
     }
 
+    suspend fun trackDismissed(device: BarcodeReaderDevice?, step: ScanningSetupStep?) {
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.BarcodeScannerSetupDismissed(
+                scanner = device?.toAnalyticsString(),
+                step = step?.toAnalyticsString()
+            )
+        )
+    }
+
     private fun BarcodeReaderDevice.toAnalyticsString(): String {
         return when (this) {
             BarcodeReaderDevice.TERA_1200 -> "tera_1200"

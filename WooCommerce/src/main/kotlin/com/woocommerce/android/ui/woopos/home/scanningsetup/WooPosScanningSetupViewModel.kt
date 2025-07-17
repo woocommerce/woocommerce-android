@@ -78,6 +78,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
             is WooPosScanningSetupUiEvent.OnBarcodeScanned -> {
                 handleBarcodeScanned(event.barcodeResult)
             }
+
+            WooPosScanningSetupUiEvent.OnDismissed -> {
+                viewModelScope.launch {
+                    analyticsTracker.trackDismissed(_state.value.selectedDevice, _state.value.currentStep)
+                }
+            }
         }
     }
 

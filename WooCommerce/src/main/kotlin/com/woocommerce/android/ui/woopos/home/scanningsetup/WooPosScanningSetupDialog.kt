@@ -111,6 +111,7 @@ fun WooPosScanningSetupDialog(
     }
 
     val onDismissRequestWrapper: () -> Unit = {
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDismissed)
         onDismissRequest()
         isClosing.value = true
     }

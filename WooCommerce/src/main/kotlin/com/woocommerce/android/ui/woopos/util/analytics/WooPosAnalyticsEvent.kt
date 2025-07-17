@@ -426,6 +426,23 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class BarcodeScannerSetupDismissed(val scanner: String?, val step: String?) : Event() {
+            override val name: String = "barcode_scanner_setup_dismissed"
+
+            init {
+                addProperties(
+                    buildMap {
+                        if (scanner != null) {
+                            put("scanner", scanner)
+                        }
+                        if (step != null) {
+                            put("step", step)
+                        }
+                    }
+                )
+            }
+        }
+
         data class SearchButtonTapped(
             val source: ItemsListSource,
         ) : Event() {
