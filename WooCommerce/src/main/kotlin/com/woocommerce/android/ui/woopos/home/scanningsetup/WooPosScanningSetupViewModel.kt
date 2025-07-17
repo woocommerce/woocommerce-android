@@ -70,6 +70,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
             WooPosScanningSetupUiEvent.OnOpenBluetoothSettings -> {
                 viewModelScope.launch {
+                    analyticsTracker.trackOpenSystemSettingsTapped(_state.value.selectedDevice!!)
                     _openBluetoothSettingsEvent.emit(Unit)
                 }
             }
