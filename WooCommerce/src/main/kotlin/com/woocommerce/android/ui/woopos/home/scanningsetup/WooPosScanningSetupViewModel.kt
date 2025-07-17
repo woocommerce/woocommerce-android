@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.Companion.TEST_BARCODE_EAN13
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosScanningSetupViewModel @Inject constructor(
-    private val navigator: WooPosScannerSetupNavigator
+    private val navigator: WooPosScannerSetupNavigator,
+    private val analyticsTracker: WooPosAnalyticsTracker
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -40,6 +43,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     fun onUiEvent(event: WooPosScanningSetupUiEvent) {
         when (event) {
+            WooPosScanningSetupUiEvent.OnDialogShown -> {
+                viewModelScope.launch {
+                    analyticsTracker.track(WooPosAnalyticsEvent.Event.BarcodeScannerSetupFlowShown)
+                }
+            }
+
             is WooPosScanningSetupUiEvent.OnDeviceSelected -> {
                 _state.value = _state.value.copy(
                     selectedDevice = event.device

@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupS
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.Companion.TEST_BARCODE_EAN13
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
@@ -15,6 +17,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
@@ -24,6 +27,7 @@ class WooPosScanningSetupViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val navigator: WooPosScannerSetupNavigator = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
     fun `given initialized, when no action taken, then should start with DeviceSelection step`() = runTest {
@@ -656,8 +660,20 @@ class WooPosScanningSetupViewModelTest {
             assertThat(step.backButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
         }
 
+    @Test
+    fun `when OnDialogShown event is sent, then should track barcode scanner setup flow shown event`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDialogShown)
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.BarcodeScannerSetupFlowShown)
+    }
+
     private fun createViewModel(): WooPosScanningSetupViewModel {
         whenever(navigator.getInitialStep()).thenReturn(ScanningSetupStep.DeviceSelection)
-        return WooPosScanningSetupViewModel(navigator)
+        return WooPosScanningSetupViewModel(navigator, analyticsTracker)
     }
 }

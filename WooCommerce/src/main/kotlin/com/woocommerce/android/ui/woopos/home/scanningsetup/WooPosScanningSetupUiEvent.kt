@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputD
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 
 sealed class WooPosScanningSetupUiEvent {
+    data object OnDialogShown : WooPosScanningSetupUiEvent()
     data object OnPrimaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnSecondaryButtonClicked : WooPosScanningSetupUiEvent()
     data object OnOpenBluetoothSettings : WooPosScanningSetupUiEvent()

@@ -93,6 +93,12 @@ fun WooPosScanningSetupDialog(
     val viewModel = hiltViewModel<WooPosScanningSetupViewModel>()
     val context = LocalContext.current
 
+    LaunchedEffect(isVisible) {
+        if (isVisible) {
+            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDialogShown)
+        }
+    }
+
     val isClosing = remember { mutableStateOf(false) }
 
     LaunchedEffect(isClosing.value) {
