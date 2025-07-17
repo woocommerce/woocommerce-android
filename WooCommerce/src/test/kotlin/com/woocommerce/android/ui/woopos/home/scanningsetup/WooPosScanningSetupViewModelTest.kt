@@ -145,7 +145,10 @@ class WooPosScanningSetupViewModelTest {
             // GIVEN
             val mockNextStep = ScanningSetupStep.ScannerSetupSuccess
             whenever(
-                navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScannerTimeout)
+                navigator.getNextStepForValidBarcode(
+                    BarcodeReaderDevice.TERA_1200,
+                    ScanningSetupStep.TestYourScannerTimeout
+                )
             ).thenReturn(mockNextStep)
             val viewModel = createViewModel(
                 initialStep = ScanningSetupStep.TestYourScannerTimeout,
