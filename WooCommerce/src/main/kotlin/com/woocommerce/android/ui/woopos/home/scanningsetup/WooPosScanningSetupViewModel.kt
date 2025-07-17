@@ -54,6 +54,14 @@ class WooPosScanningSetupViewModel @Inject constructor(
                     selectedDevice = event.device
                 )
 
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.BarcodeScannerSetupScannerSelected(
+                            scanner = event.device.name
+                        )
+                    )
+                }
+
                 val nextStep = navigator.getNextStep(event.device, _state.value.currentStep)
                 _state.value = _state.value.copy(currentStep = nextStep)
             }

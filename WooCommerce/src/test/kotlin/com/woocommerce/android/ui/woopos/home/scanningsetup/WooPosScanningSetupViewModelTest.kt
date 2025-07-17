@@ -672,6 +672,51 @@ class WooPosScanningSetupViewModelTest {
         verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.BarcodeScannerSetupFlowShown)
     }
 
+    @Test
+    fun `when TERA_1200 device is selected, then should track scanner selected event with tera_1200 scanner`() = runTest {
+        // GIVEN
+        val mockNextStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(mockNextStep)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.BarcodeScannerSetupScannerSelected("tera_1200"))
+    }
+
+    @Test
+    fun `when STAR_BSH_20B device is selected, then should track scanner selected event with star_bsh_20b scanner`() = runTest {
+        // GIVEN
+        val mockNextStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, ScanningSetupStep.DeviceSelection))
+            .thenReturn(mockNextStep)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.STAR_BSH_20B))
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.BarcodeScannerSetupScannerSelected("star_bsh_20b"))
+    }
+
+    @Test
+    fun `when OTHER device is selected, then should track scanner selected event with other scanner`() = runTest {
+        // GIVEN
+        val mockNextStep = ScanningSetupStep.ScannerSetupInfo
+        whenever(navigator.getNextStep(BarcodeReaderDevice.OTHER, ScanningSetupStep.DeviceSelection))
+            .thenReturn(mockNextStep)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.OTHER))
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.BarcodeScannerSetupScannerSelected("other"))
+    }
+
     private fun createViewModel(): WooPosScanningSetupViewModel {
         whenever(navigator.getInitialStep()).thenReturn(ScanningSetupStep.DeviceSelection)
         return WooPosScanningSetupViewModel(navigator, analyticsTracker)
