@@ -762,9 +762,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         // Find the shipment with the given labelId
         val shipmentIndex = shipments.value.indexOfFirst { it.label?.labelId == labelId }
 
-        // If the shipment is found, reset its purchased state
+        // If the shipment is found, reset its state
         if (shipmentIndex != -1) {
             updateShipment(shipmentIndex, shipments.value[shipmentIndex].copy(purchased = false, label = null))
+            selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(shipmentIndex, null) }
+            selectedPackagesFlow.value = selectedPackagesFlow.value.toMutableList().apply { set(shipmentIndex, null) }
         }
     }
 
