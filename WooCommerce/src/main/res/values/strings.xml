@@ -4492,13 +4492,17 @@
     <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
     <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
     <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
-    <string name="woopos_scanning_setup_more_information">More information</string>
+    <string name="woopos_scanning_setup_more_information">How to set up barcodes on products</string>
     <string name="woopos_scanning_setup_info_title">Scanner set up</string>
     <string name="woopos_scanning_setup_info_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
     <string name="woopos_scanning_setup_info_bullet_1">Refer to your bluetooth barcode scanner in System Bluetooth settings.</string>
     <string name="woopos_scanning_setup_info_bullet_2">Scan barcodes while on the item list to add products to the cart.</string>
     <string name="woopos_scanning_setup_info_bullet_3">Ensure the search field is not enabled while scanning barcodes.</string>
     <string name="woopos_scanning_setup_info_text">Barcode scanner may hide keyboard. Tap keyboard icon or enable in OS settings under \"Physical Keyboard\"</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">How to set up barcodes on products</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">You can set up barcodes in the GTIN, UPC, EAN, ISBN field in the product\'s inventory tab. For more details</string>
+    <string name="woopos_scanning_setup_visit_documentation">visit the documentation</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">Barcode setup inventory example</string>
     <string name="woopos_scanning_setup_test_scanner_title">Test your scanner</string>
     <string name="woopos_scanning_setup_test_scanner_message">Scan this test barcode to verify your scanner is working correctly.</string>
     <string name="woopos_scanning_setup_timeout_title">No scan data found yet</string>
@@ -4511,7 +4515,6 @@
     <string name="woopos_scanning_setup_button_done">Done</string>
     <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
-    <string name="woopos_scanning_setup_device_inateck_bluetooth">Inateck Bluetooth</string>
     <string name="woopos_scanning_setup_device_other">Other</string>
 
     <string name="customers_details_customer_section">Customer</string>

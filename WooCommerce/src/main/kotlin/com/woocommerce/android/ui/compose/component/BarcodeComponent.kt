@@ -47,12 +47,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun QRCode(
+    modifier: Modifier = Modifier,
     content: String,
     size: Dp,
     @DrawableRes overlayId: Int? = null,
 ) {
     Image(
-        modifier = Modifier
+        modifier = modifier
             .size(size)
             .border(
                 width = 5.dp,
