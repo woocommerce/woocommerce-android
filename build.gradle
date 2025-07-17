@@ -59,11 +59,9 @@ allprojects {
 
 subprojects {
     plugins.withType(com.android.build.gradle.AppPlugin) {
-        println("Setting up for ${project.name}")
         android {
             lintOptions {
                 sarifReport = gradle.ext.isCi
-                disable 'InvalidPackage'
                 baseline file("lint-baseline.xml")
             }
         }
