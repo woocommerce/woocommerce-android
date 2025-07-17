@@ -5,9 +5,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature
 import org.wordpress.android.fluxc.persistence.WhatsNewSqlUtils
@@ -17,6 +19,8 @@ import org.wordpress.android.fluxc.persistence.WhatsNewSqlUtils.WhatsNewAnnounce
 @RunWith(RobolectricTestRunner::class)
 class WhatsNewSqlUtilsTest {
     private lateinit var whatsNewSqlUtils: WhatsNewSqlUtils
+
+    val product: WCProductModel = mock()
 
     private val firstAnnouncement = WhatsNewAnnouncementModel(
             "15.0",
