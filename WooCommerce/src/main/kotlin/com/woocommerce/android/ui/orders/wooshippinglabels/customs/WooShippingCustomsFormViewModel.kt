@@ -8,16 +8,17 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -30,12 +31,11 @@ import javax.inject.Inject
 @HiltViewModel
 class WooShippingCustomsFormViewModel @Inject constructor(
     private val getAllCountries: GetAllCountries,
-    private val shouldRequireITN: ShouldRequireITN,
+    private val validateITN: ValidateITN,
     private val validateHSTariffNumber: ValidateHSTariffNumber,
+    private val dispatchers: CoroutineDispatchers,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val itnRegex by lazy { ITN_REGEX_STRING.toRegex() }
-
     private val navArgs: WooShippingCustomsFormFragmentArgs by savedState.navArgs()
     private val destinationCountryCode = navArgs.destinationCountryCode
 
@@ -48,19 +48,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     private var possibleLocations: List<Location>? = null
     private var itemIndexUnderCountrySelection: Int? = null
 
-    private val List<WooShippingCustomsProductUIModel>.isITNRequired: Boolean
-        get() {
-            val totalShippingValue = mapNotNull { it.shippingTotalValue }
-                .takeIf { it.isNotEmpty() }
-                ?.reduce { acc, current -> acc + current }
-                ?: BigDecimal.ZERO
-
-            return shouldRequireITN(destinationCountryCode, totalShippingValue)
-        }
-
     init {
         launch { loadCountries() }
-        observeShippableItemsChanges()
+        monitorITNValidationStatus()
     }
 
     private fun initViewState(): ViewState {
@@ -72,13 +62,43 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         }
     }
 
-    private fun observeShippableItemsChanges() {
-        _viewState
-            .map { Pair(it.shippingProducts, it.itnValue) }
-            .distinctUntilChanged()
-            .onEach { (products, itnValue) ->
-                onITNChanged(itnValue.currentInput, products.isITNRequired)
-            }.launchIn(viewModelScope)
+    private fun monitorITNValidationStatus() {
+        fun ValidateITN.ITNMissingCause.errorMessage() = when (this) {
+            ValidateITN.ITNMissingCause.TotalValue ->
+                R.string.woo_shipping_labels_customs_itn_required_total_value
+
+            is ValidateITN.ITNMissingCause.HSTariffValue ->
+                R.string.woo_shipping_labels_customs_itn_required_hs_tariff_value
+
+            ValidateITN.ITNMissingCause.DestinationCountry ->
+                R.string.woo_shipping_labels_customs_itn_required_destination_country
+        }
+
+        _viewState.map { it.asCustomData }
+            .map { customsData ->
+                validateITN(customsData, destinationCountryCode)
+            }
+            .flowOn(dispatchers.computation)
+            .onEach { validationResult ->
+                _viewState.update {
+                    val itnValue = it.itnValue.currentInput
+                    it.copy(
+                        itnValue = when (validationResult) {
+                            ValidateITN.ITNValidationResult.Valid -> InputValue.Data(itnValue)
+                            is ValidateITN.ITNValidationResult.Missing -> InputValue.Error(
+                                input = itnValue,
+                                errorMessageId = validationResult.cause.errorMessage()
+                            )
+
+                            ValidateITN.ITNValidationResult.InvalidFormat -> InputValue.Error(
+                                input = itnValue,
+                                errorMessageId = R.string.woo_shipping_labels_customs_itn_error_message
+                            )
+                        }
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun loadViewStateFromExistentCustomData(customData: CustomsData): ViewState {
@@ -160,26 +180,8 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         }
     }
 
-    fun onITNChanged(
-        newItnValue: String,
-        shouldRequireITN: Boolean = false
-    ) {
-        val input = when {
-            newItnValue.isBlank() && shouldRequireITN ->
-                InputValue.Error(
-                    input = newItnValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_itn_required_message
-                )
-
-            newItnValue.isNotBlank() && itnRegex.matches(newItnValue).not() ->
-                InputValue.Error(
-                    input = newItnValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_itn_error_message
-                )
-
-            else -> InputValue.Data(newItnValue)
-        }
-        _viewState.update { it.copy(itnValue = input) }
+    fun onITNChanged(newItnValue: String) {
+        _viewState.update { it.copy(itnValue = InputValue.Data(newItnValue)) }
     }
 
     fun onShippableProductExpanded(itemIndex: Int, isExpanded: Boolean) {
@@ -380,13 +382,4 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     data class ShowRestrictionTypeDialog(val currentSelection: RestrictionType) : MultiLiveEvent.Event()
     data class ShowCountrySelector(val countries: List<Location>) : MultiLiveEvent.Event()
     data class FinishCustomsForm(val customData: CustomsData) : MultiLiveEvent.Event()
-
-    companion object {
-        /**
-         * For information regarding the format of the ITN, check the Appendix A of
-         * [Export Compliance Customs Data Requirements](https://postalpro.usps.com/node/3973)
-         */
-        private const val ITN_REGEX_STRING =
-            """^(?:(?:AES X\d{14})|(?:NOEEI 30\.\d{1,2}(?:\([a-z]\)(?:\(\d\))?)?))${'$'}"""
-    }
 }

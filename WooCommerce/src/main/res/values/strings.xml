@@ -4578,7 +4578,9 @@
     <string name="woo_shipping_labels_customs_other_error_message">Type must not be empty</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Invalid ITN format</string>
     <string name="woo_shipping_labels_customs_itn_required_error">ITN is required</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">For shipments over $2,500, you need to obtain a 14-digit AES ITN for U.S. export reporting verification.</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">For shipments over $2,500, you need to obtain a 14-digit AES ITN for U.S. export reporting verification.</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">International Transaction Number is required for shipping items valued over $2,500 per tariff number.</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">International Transaction Number is required for shipments to the destination country.</string>
     <string name="woo_shipping_labels_customs_product_details_title">Product Details</string>
     <string name="woo_shipping_labels_customs_product_details_description">Description</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Missing Description</string>
