@@ -13,7 +13,7 @@ class ValidateHSTariffNumber @Inject constructor() {
         destinationCountryCode: String? = null
     ): WooShippingCustomsFormViewModel.InputValue {
         val shouldValidateHSTariffNumber = shouldRequireHSTariffNumber(destinationCountryCode) ||
-                tariffNumber.isNotEmpty()
+            tariffNumber.isNotEmpty()
         if (!shouldValidateHSTariffNumber) return WooShippingCustomsFormViewModel.InputValue.Data(tariffNumber)
 
         val digits = tariffNumber.replace(Regex("""\D"""), "")

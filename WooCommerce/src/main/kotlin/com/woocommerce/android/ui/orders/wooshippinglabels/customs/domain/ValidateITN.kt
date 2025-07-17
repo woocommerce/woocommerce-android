@@ -51,7 +51,7 @@ class ValidateITN @Inject constructor(
 
             customsData.items.totalValue > MAX_SHIPPING_ITEM_VALUE_FOR_CUSTOMS.toBigDecimal() &&
                 customsData.items.none { it.hsTariffNumber.isNotEmpty() } ->
-                    ITNValidationResult.Missing(ITNMissingCause.TotalValue)
+                ITNValidationResult.Missing(ITNMissingCause.TotalValue)
 
             customsData.classesAbove2500.isNotEmpty() ->
                 ITNValidationResult.Missing(ITNMissingCause.HSTariffValue(customsData.classesAbove2500.keys.first()))
