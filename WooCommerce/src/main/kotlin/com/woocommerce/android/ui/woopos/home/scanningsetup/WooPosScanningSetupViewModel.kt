@@ -155,6 +155,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             viewModelScope.launch { analyticsTracker.trackTestScanSuccess(selectedDevice) }
             navigator.getNextStepForValidBarcode(selectedDevice, _state.value.currentStep)
         } else {
+            viewModelScope.launch { analyticsTracker.trackTestScanFailed(selectedDevice, barcodeResult.barcode) }
             navigator.getNextStepForInvalidBarcode(_state.value.currentStep)
         }
         _state.value = _state.value.copy(currentStep = nextStep)

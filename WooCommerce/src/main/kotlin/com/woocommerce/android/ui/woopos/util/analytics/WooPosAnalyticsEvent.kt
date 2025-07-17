@@ -401,6 +401,19 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class BarcodeScannerSetupTestScanFailed(val scanner: String, val scanValue: String) : Event() {
+            override val name: String = "barcode_scanner_setup_test_scan_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "scan_value" to scanValue
+                    )
+                )
+            }
+        }
+
         data class SearchButtonTapped(
             val source: ItemsListSource,
         ) : Event() {
