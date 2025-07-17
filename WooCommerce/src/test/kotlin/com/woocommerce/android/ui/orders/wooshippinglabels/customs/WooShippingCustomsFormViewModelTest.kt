@@ -7,8 +7,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowCountrySelector
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowRestrictionTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ViewState
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,13 +20,14 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: WooShippingCustomsFormViewModel
     private lateinit var getAllCountries: GetAllCountries
-    private lateinit var shouldRequireITN: ShouldRequireITN
+    private lateinit var validateITN: ValidateITN
 
     @Before
     fun setup() {
@@ -46,8 +48,8 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
             onBlocking { invoke() } doReturn Result.success(mockLocations)
         }
 
-        shouldRequireITN = mock {
-            on { invoke(any(), any()) } doReturn false
+        validateITN = mock {
+            on { invoke(any(), any()) } doReturn ValidateITN.ITNValidationResult.Valid
         }
 
         createSut()
@@ -392,24 +394,17 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `onITNChanged with blank value should set error when ITN is required`() = testBlocking {
+    fun `when ITN is required, then setting an empty should trigger an error`() = testBlocking {
         // Given
-        val blankItn = ""
-        shouldRequireITN = mock {
-            on { invoke(any(), any()) } doReturn true
-        }
+        whenever(validateITN(any(), any())).thenReturn(
+            ValidateITN.ITNValidationResult.Missing(ValidateITN.ITNMissingCause.DestinationCountry)
+        )
         createSut()
 
-        // The second product in our setup is the expensive one,
-        // so expanding the second product will make the ITN required
-        var capturedViewState: ViewState? = null
-        viewModel.viewState.observeForever {
-            capturedViewState = it
-        }
-
         // When
-        viewModel.onShippableProductValuePerUnitChanged(1, "2600")
-        viewModel.onITNChanged(blankItn)
+        val capturedViewState = viewModel.viewState.runAndCaptureValues {
+            viewModel.onITNChanged("")
+        }.last()
 
         // Then
         assertThat(capturedViewState?.itnValue).isInstanceOf(InputValue.Error::class.java)
@@ -445,13 +440,14 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         )
 
         viewModel = WooShippingCustomsFormViewModel(
+            getAllCountries = getAllCountries,
+            validateITN = validateITN,
+            dispatchers = coroutinesTestRule.testDispatchers,
             savedState = WooShippingCustomsFormFragmentArgs(
                 shippableItems = arrayOf(testProduct, expensiveProduct),
                 destinationCountryCode = "CA",
                 customsData = null
-            ).toSavedStateHandle(),
-            getAllCountries = getAllCountries,
-            shouldRequireITN = shouldRequireITN
+            ).toSavedStateHandle()
         )
     }
 }
