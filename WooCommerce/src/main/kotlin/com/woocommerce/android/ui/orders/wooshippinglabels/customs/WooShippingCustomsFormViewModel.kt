@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
@@ -65,13 +66,16 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     private fun monitorITNValidationStatus() {
         fun ValidateITN.ITNMissingCause.errorMessage() = when (this) {
             ValidateITN.ITNMissingCause.TotalValue ->
-                R.string.woo_shipping_labels_customs_itn_required_total_value
+                UiString.UiStringRes(R.string.woo_shipping_labels_customs_itn_required_total_value)
 
             is ValidateITN.ITNMissingCause.HSTariffValue ->
-                R.string.woo_shipping_labels_customs_itn_required_hs_tariff_value
+                UiString.UiStringRes(
+                    stringRes = R.string.woo_shipping_labels_customs_itn_required_hs_tariff_value,
+                    params = listOf(UiString.UiStringText(this.hsTariffNumber))
+                )
 
             ValidateITN.ITNMissingCause.DestinationCountry ->
-                R.string.woo_shipping_labels_customs_itn_required_destination_country
+                UiString.UiStringRes(R.string.woo_shipping_labels_customs_itn_required_destination_country)
         }
 
         _viewState.map { it.asCustomData }
@@ -359,8 +363,13 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         data class Data(val input: String) : InputValue()
         data class Error(
             val input: String,
-            val errorMessageId: Int
-        ) : InputValue()
+            val errorMessageId: UiString
+        ) : InputValue() {
+            constructor(input: String, errorMessageId: Int) : this(
+                input = input,
+                errorMessageId = UiString.UiStringRes(errorMessageId)
+            )
+        }
 
         data object Empty : InputValue()
 
@@ -374,7 +383,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 is Empty -> ""
             }
 
-        val errorMessageOrNull: Int?
+        val errorMessageOrNull: UiString?
             get() = run { this as? Error }?.errorMessageId
     }
 
