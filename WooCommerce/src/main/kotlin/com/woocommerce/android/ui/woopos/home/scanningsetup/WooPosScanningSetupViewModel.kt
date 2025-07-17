@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.Companion.TEST_BARCODE_EAN13
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -22,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosScanningSetupViewModel @Inject constructor(
     private val navigator: WooPosScannerSetupNavigator,
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val analyticsTracker: WooPosScanningSetupAnalyticsTracker
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -45,7 +43,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
         when (event) {
             WooPosScanningSetupUiEvent.OnDialogShown -> {
                 viewModelScope.launch {
-                    analyticsTracker.track(WooPosAnalyticsEvent.Event.BarcodeScannerSetupFlowShown)
+                    analyticsTracker.trackDialogShown()
                 }
             }
 
@@ -55,11 +53,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 )
 
                 viewModelScope.launch {
-                    analyticsTracker.track(
-                        WooPosAnalyticsEvent.Event.BarcodeScannerSetupScannerSelected(
-                            scanner = event.device.name
-                        )
-                    )
+                    analyticsTracker.trackScannerSelected(event.device)
                 }
 
                 val nextStep = navigator.getNextStep(event.device, _state.value.currentStep)
@@ -87,6 +81,13 @@ class WooPosScanningSetupViewModel @Inject constructor(
     }
 
     private fun handlePrimaryButtonClick() {
+        val selectedDevice = _state.value.selectedDevice
+        if (selectedDevice != null) {
+            viewModelScope.launch {
+                analyticsTracker.trackNextTapped(selectedDevice, _state.value.currentStep)
+            }
+        }
+
         when (_state.value.currentStep) {
             is ScanningSetupStep.ScannerHIDModeSetup,
             is ScanningSetupStep.ScannerPairModeSetup,
@@ -115,6 +116,11 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     private fun handleSecondaryButtonClick() {
         val selectedDevice = _state.value.selectedDevice
+        if (selectedDevice != null) {
+            viewModelScope.launch {
+                analyticsTracker.trackBackTapped(selectedDevice, _state.value.currentStep)
+            }
+        }
         val previousStep = if (selectedDevice != null) {
             navigator.getPreviousStep(selectedDevice, _state.value.currentStep)
         } else {
