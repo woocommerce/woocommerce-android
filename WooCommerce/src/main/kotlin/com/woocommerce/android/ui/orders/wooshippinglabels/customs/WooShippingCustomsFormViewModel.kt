@@ -9,6 +9,7 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -32,6 +33,7 @@ import javax.inject.Inject
 class WooShippingCustomsFormViewModel @Inject constructor(
     private val getAllCountries: GetAllCountries,
     private val validateITN: ValidateITN,
+    private val validateHSTariffNumber: ValidateHSTariffNumber,
     private val dispatchers: CoroutineDispatchers,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -210,16 +212,8 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     }
 
     fun onShippableProductTariffNumberChanged(itemIndex: Int, newValue: String) {
-        fun String.isValidHSTariffNumber(): Boolean {
-            val regex = Regex("""^(\d{1,2}\.?){3,6}$""")
-            if (!regex.matches(this)) return false
-
-            val digits = replace(Regex("""\D"""), "")
-            return digits.length in 6..12
-        }
-
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank() || newValue.isValidHSTariffNumber()) {
+            when (newValue.isBlank() || validateHSTariffNumber(newValue)) {
                 true -> InputValue.Data(newValue)
                 else -> InputValue.Error(
                     input = newValue,
