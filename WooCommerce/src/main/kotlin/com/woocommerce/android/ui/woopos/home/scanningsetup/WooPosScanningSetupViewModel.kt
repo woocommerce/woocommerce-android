@@ -110,7 +110,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 }
             }
 
-            is ScanningSetupStep.TestYourScannerScanFailed -> resetToInitialState()
+            is ScanningSetupStep.TestYourScannerScanFailed -> {
+                viewModelScope.launch {
+                    analyticsTracker.trackRetryTapped(_state.value.selectedDevice!!)
+                }
+                resetToInitialState()
+            }
 
             is ScanningSetupStep.DeviceSelection,
             is ScanningSetupStep.TestYourScanner,

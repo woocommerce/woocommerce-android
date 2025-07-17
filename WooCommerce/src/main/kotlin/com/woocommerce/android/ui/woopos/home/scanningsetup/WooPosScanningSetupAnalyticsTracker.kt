@@ -81,6 +81,14 @@ class WooPosScanningSetupAnalyticsTracker @Inject constructor(
         )
     }
 
+    suspend fun trackRetryTapped(device: BarcodeReaderDevice) {
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.BarcodeScannerSetupRetryTapped(
+                scanner = device.toAnalyticsString()
+            )
+        )
+    }
+
     private fun BarcodeReaderDevice.toAnalyticsString(): String {
         return when (this) {
             BarcodeReaderDevice.TERA_1200 -> "tera_1200"
