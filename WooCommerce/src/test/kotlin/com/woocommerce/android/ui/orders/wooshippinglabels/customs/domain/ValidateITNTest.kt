@@ -7,14 +7,19 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionTy
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class ValidateITNTest : BaseUnitTest() {
-
-    private val validateITN = ValidateITN()
+    private val validateHSTariffNumber: ValidateHSTariffNumber = mock {
+        on { invoke(any()) } doReturn true
+    }
+    private val validateITN = ValidateITN(validateHSTariffNumber)
 
     // Valid ITN examples
     private val validAesItn = "AES X12345678901234"
@@ -206,7 +211,11 @@ class ValidateITNTest : BaseUnitTest() {
         val customsData = createCustomsData(
             itn = "",
             items = listOf(
-                createCustomsItem(value = BigDecimal("2499.99"), quantity = 1f, hsTariffNumber = "") // Total value: 2499.99
+                createCustomsItem(
+                    value = BigDecimal("2499.99"),
+                    quantity = 1f,
+                    hsTariffNumber = ""
+                ) // Total value: 2499.99
             )
         )
 
@@ -223,7 +232,11 @@ class ValidateITNTest : BaseUnitTest() {
         val customsData = createCustomsData(
             itn = "",
             items = listOf(
-                createCustomsItem(value = BigDecimal("2500.01"), quantity = 1f, hsTariffNumber = "") // Total value: 2500.01
+                createCustomsItem(
+                    value = BigDecimal("2500.01"),
+                    quantity = 1f,
+                    hsTariffNumber = ""
+                ) // Total value: 2500.01
             )
         )
 
