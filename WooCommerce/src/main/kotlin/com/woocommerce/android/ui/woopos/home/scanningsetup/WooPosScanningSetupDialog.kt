@@ -293,15 +293,17 @@ private fun ScannerModeSetupContent(
             text = message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         Box(
             modifier = Modifier
-                .size(200.dp)
+                .size(172.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+                .padding(WooPosSpacing.Small.value.toAdaptivePadding()),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -309,10 +311,11 @@ private fun ScannerModeSetupContent(
                 contentDescription = stringResource(
                     id = R.string.woopos_scanning_setup_barcode_content_description
                 ),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.size(168.dp)
             )
         }
 
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         SetupButtonsRow(

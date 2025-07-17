@@ -4515,7 +4515,6 @@
     <string name="woopos_scanning_setup_button_done">Done</string>
     <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
-    <string name="woopos_scanning_setup_device_inateck_bluetooth">Inateck Bluetooth</string>
     <string name="woopos_scanning_setup_device_other">Other</string>
 
     <string name="customers_details_customer_section">Customer</string>
