@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowCountrySelector
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowRestrictionTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ViewState
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.util.runAndCaptureValues
@@ -18,6 +19,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -26,13 +28,7 @@ import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
-    private lateinit var viewModel: WooShippingCustomsFormViewModel
-    private lateinit var getAllCountries: GetAllCountries
-    private lateinit var shouldRequireITN: ShouldRequireITN
-
-    @Before
-    fun setup() {
-        // Create mock locations for the tests
+    private val getAllCountries: GetAllCountries = mock {
         val mockLocations = listOf(
             mock<Location> {
                 on { code } doReturn "US"
@@ -43,22 +39,22 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
                 on { name } doReturn "Canada"
             }
         )
-
-        // Configure the mock to return our test locations
-        getAllCountries = mock {
-            onBlocking { invoke() } doReturn Result.success(mockLocations)
+        onBlocking { invoke() } doReturn Result.success(mockLocations)
+    }
+    private val validateHSTariffNumber: ValidateHSTariffNumber = mock {
+        on { invoke(any(), anyOrNull()) } doAnswer {
+            InputValue.Data(it.arguments[0] as String)
         }
+    }
 
-        validateITN = mock {
-            on { invoke(any(), any()) } doReturn ValidateITN.ITNValidationResult.Valid
-        }
+    private val validateITN: ValidateITN = mock {
+        on { invoke(any(), any()) } doReturn ValidateITN.ITNValidationResult.Valid
+    }
 
-        validateHSTariffNumber = mock {
-            on { invoke(any(), any()) } doAnswer {
-                InputValue.Data(it.arguments[0] as String)
-            }
-        }
+    private lateinit var viewModel: WooShippingCustomsFormViewModel
 
+    @Before
+    fun setup() {
         createSut()
     }
 
@@ -91,17 +87,6 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         }
         viewModel.onITNChanged(newItnValue)
         assertThat(capturedViewState?.itnValue).isEqualTo(InputValue.Data(newItnValue))
-    }
-
-    @Test
-    fun `onITNChanged should update itnValue with invalid input`() = testBlocking {
-        val newItnValue = "INVALID_ITN"
-        var capturedViewState: ViewState? = null
-        viewModel.viewState.observeForever {
-            capturedViewState = it
-        }
-        viewModel.onITNChanged(newItnValue)
-        assertThat(capturedViewState?.itnValue).isInstanceOf(InputValue.Error::class.java)
     }
 
     @Test
@@ -395,7 +380,7 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         }.last()
 
         // Then
-        assertThat(capturedViewState?.itnValue).isInstanceOf(InputValue.Error::class.java)
+        assertThat(capturedViewState.itnValue).isInstanceOf(InputValue.Error::class.java)
     }
 
     private fun createSut() {
@@ -430,8 +415,8 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         viewModel = WooShippingCustomsFormViewModel(
             getAllCountries = getAllCountries,
             validateITN = validateITN,
-            dispatchers = coroutinesTestRule.testDispatchers,
             validateHSTariffNumber = validateHSTariffNumber,
+            dispatchers = coroutinesTestRule.testDispatchers,
             savedState = WooShippingCustomsFormFragmentArgs(
                 shippableItems = arrayOf(testProduct, expensiveProduct),
                 destinationCountryCode = "CA",
