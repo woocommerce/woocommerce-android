@@ -24,7 +24,8 @@ class ValidateITN @Inject constructor() {
         get() = this.sumOf { it.totalValue }
 
     private val CustomsData.classesAbove2500: Map<String, List<CustomsItem>>
-        get() = this.items.groupBy { it.hsTariffNumber }
+        get() = this.items.filter { it.hsTariffNumber.isNotEmpty() }
+            .groupBy { it.hsTariffNumber }
             .filter { it.value.totalValue > MAX_SHIPPING_ITEM_VALUE_FOR_CUSTOMS.toBigDecimal() }
 
     operator fun invoke(
@@ -42,15 +43,17 @@ class ValidateITN @Inject constructor() {
                 }
             }
 
-            customsData.items.totalValue > MAX_SHIPPING_ITEM_VALUE_FOR_CUSTOMS.toBigDecimal() ->
-                ITNValidationResult.Missing(ITNMissingCause.TOTAL_VALUE)
-
             itnExemptCountries.contains(destinationCountry) -> ITNValidationResult.Valid
 
-            customsData.classesAbove2500.isNotEmpty() -> ITNValidationResult.Missing(ITNMissingCause.HS_TARIFF_VALUE)
+            customsData.items.totalValue > MAX_SHIPPING_ITEM_VALUE_FOR_CUSTOMS.toBigDecimal() &&
+                customsData.items.none { it.hsTariffNumber.isNotEmpty() } ->
+                    ITNValidationResult.Missing(ITNMissingCause.TotalValue)
+
+            customsData.classesAbove2500.isNotEmpty() ->
+                ITNValidationResult.Missing(ITNMissingCause.HSTariffValue(customsData.classesAbove2500.keys.first()))
 
             itnRequiredCountries.contains(destinationCountry) ->
-                ITNValidationResult.Missing(ITNMissingCause.DESTINATION_COUNTRY)
+                ITNValidationResult.Missing(ITNMissingCause.DestinationCountry)
 
             else -> ITNValidationResult.Valid
         }
@@ -62,9 +65,9 @@ class ValidateITN @Inject constructor() {
         data object InvalidFormat : ITNValidationResult
     }
 
-    enum class ITNMissingCause {
-        TOTAL_VALUE,
-        HS_TARIFF_VALUE,
-        DESTINATION_COUNTRY,
+    sealed interface ITNMissingCause {
+        data object TotalValue : ITNMissingCause
+        data class HSTariffValue(val hsTariffNumber: String) : ITNMissingCause
+        data object DestinationCountry : ITNMissingCause
     }
 }
