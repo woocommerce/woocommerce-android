@@ -68,7 +68,7 @@ object ShippingLabelSampleData {
 
     fun getPurchaseSection() = PurchaseSectionUI(
         isVisible = true,
-        isOrderCompleteToggleVisible = true,
+        isOrderAlreadyCompleted = false,
         markOrderComplete = true,
         formattedPrice = "$10.00",
         onPurchaseShippingLabel = {},

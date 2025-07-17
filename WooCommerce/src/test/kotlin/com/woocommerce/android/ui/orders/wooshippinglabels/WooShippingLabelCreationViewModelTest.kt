@@ -1396,7 +1396,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when order status is Completed, then mark order complete toggle is hidden`() = testBlocking {
+    fun `when order status is Completed, then calculate isOrderAlreadyCompleted correctly`() = testBlocking {
         val completedOrder = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
             status = Order.Status.Completed,
             shippingLines = defaultShippingLines,
@@ -1413,11 +1413,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertThat(dataState.purchaseSectionUI.isOrderCompleteToggleVisible).isFalse()
+        assertThat(dataState.purchaseSectionUI.isOrderAlreadyCompleted).isTrue()
     }
 
     @Test
-    fun `when order status is not Completed, then mark order complete toggle is visible`() = testBlocking {
+    fun `when order status is not Completed, then calculate isOrderAlreadyCompleted correctly`() = testBlocking {
         val processingOrder = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
             status = Order.Status.Processing,
             shippingLines = defaultShippingLines,
@@ -1434,6 +1434,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertThat(dataState.purchaseSectionUI.isOrderCompleteToggleVisible).isTrue()
+        assertThat(dataState.purchaseSectionUI.isOrderAlreadyCompleted).isFalse()
     }
 }

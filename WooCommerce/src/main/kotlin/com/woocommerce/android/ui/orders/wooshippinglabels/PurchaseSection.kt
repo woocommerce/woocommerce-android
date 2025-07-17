@@ -54,7 +54,7 @@ private fun PurchasesSectionPortrait(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        AnimatedVisibility(state.isOrderCompleteToggleVisible && orderCompleteToggleVisible) {
+        AnimatedVisibility(!state.isOrderAlreadyCompleted && orderCompleteToggleVisible) {
             MarkComplete(
                 markOrderComplete = state.markOrderComplete,
                 onMarkOrderCompleteChange = state.onMarkOrderCompleteChange
@@ -80,7 +80,7 @@ private fun PurchasesSectionLandscape(
         modifier = modifier
     ) {
         AnimatedVisibility(
-            visible = state.isOrderCompleteToggleVisible && orderCompleteToggleVisible,
+            visible = !state.isOrderAlreadyCompleted && orderCompleteToggleVisible,
             modifier = Modifier.weight(1f)
         ) {
             MarkComplete(
