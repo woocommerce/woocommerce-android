@@ -10,10 +10,10 @@ class ValidateHSTariffNumber @Inject constructor() {
     @Suppress("MagicNumber")
     operator fun invoke(
         tariffNumber: String,
-        destinationCountryCode: String
+        destinationCountryCode: String? = null
     ): WooShippingCustomsFormViewModel.InputValue {
-        val shouldValidateHSTariffNumber =
-            shouldRequireHSTariffNumber(destinationCountryCode) || tariffNumber.isNotEmpty()
+        val shouldValidateHSTariffNumber = shouldRequireHSTariffNumber(destinationCountryCode) ||
+                tariffNumber.isNotEmpty()
         if (!shouldValidateHSTariffNumber) return WooShippingCustomsFormViewModel.InputValue.Data(tariffNumber)
 
         val digits = tariffNumber.replace(Regex("""\D"""), "")
@@ -32,7 +32,7 @@ class ValidateHSTariffNumber @Inject constructor() {
         } ?: WooShippingCustomsFormViewModel.InputValue.Data(tariffNumber)
     }
 
-    private fun shouldRequireHSTariffNumber(destinationCountryCode: String) =
+    private fun shouldRequireHSTariffNumber(destinationCountryCode: String?) =
         destinationCountryCode in EU_UNION_COUNTRIES
 
     companion object {

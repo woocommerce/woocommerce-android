@@ -5,7 +5,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsItem
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class ValidateITN @Inject constructor() {
+class ValidateITN @Inject constructor(
+    private val validateHSTariffNumber: ValidateHSTariffNumber
+) {
     companion object {
         private val itnExemptCountries = listOf("CA")
         private val itnRequiredCountries = listOf("IR", "KP", "SY", "CU", "SD")
@@ -24,7 +26,9 @@ class ValidateITN @Inject constructor() {
         get() = this.sumOf { it.totalValue }
 
     private val CustomsData.classesAbove2500: Map<String, List<CustomsItem>>
-        get() = this.items.filter { it.hsTariffNumber.isNotEmpty() }
+        get() = this.items.filter {
+            it.hsTariffNumber.isNotEmpty() && validateHSTariffNumber(it.hsTariffNumber).isValid
+        }
             .groupBy { it.hsTariffNumber }
             .filter { it.value.totalValue > MAX_SHIPPING_ITEM_VALUE_FOR_CUSTOMS.toBigDecimal() }
 
