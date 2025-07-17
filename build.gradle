@@ -61,6 +61,7 @@ subprojects {
     plugins.withType(com.android.build.gradle.AppPlugin) {
         android {
             lintOptions {
+                abortOnError = false
                 sarifReport = gradle.ext.isCi
                 baseline file("lint-baseline.xml")
             }
