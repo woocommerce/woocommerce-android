@@ -29,7 +29,8 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.ScannerPairModeSetup(),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
-                    ScanningSetupStep.ScannerSetupSuccess
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
 
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
@@ -37,7 +38,8 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
-                    ScanningSetupStep.ScannerSetupSuccess
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
 
                 BarcodeReaderDevice.INATECK_BLUETOOTH -> listOf(
@@ -46,12 +48,16 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.ScannerPairModeSetup(),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
-                    ScanningSetupStep.ScannerSetupSuccess
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
 
                 BarcodeReaderDevice.OTHER -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerSetupInfo
+                    ScanningSetupStep.ScannerSetupInfo,
+                    ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
             }
         }
@@ -241,7 +247,7 @@ data class WooPosScanningSetupState(
 
             @get:StringRes
             @IgnoredOnParcel
-            val doneButtonTextRes = R.string.woopos_scanning_setup_button_done
+            val nextButtonTextRes = R.string.woopos_scanning_setup_button_next
 
             @IgnoredOnParcel
             val bulletPointsRes = listOf(
@@ -249,6 +255,25 @@ data class WooPosScanningSetupState(
                 R.string.woopos_scanning_setup_info_bullet_2,
                 R.string.woopos_scanning_setup_info_bullet_3
             )
+        }
+
+        @Parcelize
+        data object ScannerSetupBarcodesOnProducts : ScanningSetupStep() {
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_barcodes_on_products_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_barcodes_on_products_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val backButtonTextRes = R.string.woopos_scanning_setup_button_back
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val doneButtonTextRes = R.string.woopos_scanning_setup_button_done
         }
     }
 
