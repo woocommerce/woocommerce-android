@@ -7,6 +7,7 @@ import javax.inject.Inject
 class ValidateHSTariffNumber @Inject constructor() {
     private val regex by lazy { Regex("""^(\d{1,2}\.?){3,6}$""") }
 
+    @Suppress("MagicNumber")
     operator fun invoke(
         tariffNumber: String,
         destinationCountryCode: String
