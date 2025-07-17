@@ -9,6 +9,7 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -30,6 +31,7 @@ import javax.inject.Inject
 class WooShippingCustomsFormViewModel @Inject constructor(
     private val getAllCountries: GetAllCountries,
     private val shouldRequireITN: ShouldRequireITN,
+    private val validateHSTariffNumber: ValidateHSTariffNumber,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val itnRegex by lazy { ITN_REGEX_STRING.toRegex() }
@@ -204,22 +206,13 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     }
 
     fun onShippableProductTariffNumberChanged(itemIndex: Int, newValue: String) {
-        fun String.isValidHSTariffNumber(): Boolean {
-            val regex = Regex("""^(\d{1,2}\.?){3,6}$""")
-            if (!regex.matches(this)) return false
-
-            val digits = replace(Regex("""\D"""), "")
-            return digits.length in 6..12
-        }
-
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank() || newValue.isValidHSTariffNumber()) {
-                true -> InputValue.Data(newValue)
-                else -> InputValue.Error(
-                    input = newValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_product_details_tariff_invalid
+            item.copy(
+                tariffNumber = validateHSTariffNumber(
+                    tariffNumber = newValue,
+                    destinationCountryCode = destinationCountryCode
                 )
-            }.let { item.copy(tariffNumber = it) }
+            )
         }
     }
 
@@ -296,7 +289,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         productId = productId,
         name = title,
         description = "".asInputValueError,
-        tariffNumber = InputValue.Data(""),
+        tariffNumber = validateHSTariffNumber("", destinationCountryCode),
         quantity = quantity,
         originCountry = "",
         originCountryCode = "",
@@ -368,6 +361,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         ) : InputValue()
 
         data object Empty : InputValue()
+
+        val isValid: Boolean
+            get() = this is Data
 
         val currentInput
             get() = when (this) {
