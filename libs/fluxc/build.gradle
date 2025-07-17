@@ -39,6 +39,10 @@ android {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
     }
+
+    lintOptions {
+        checkDependencies = false
+    }
 }
 
 android.buildTypes.all { buildType ->
@@ -116,8 +120,6 @@ dependencies {
     testImplementation libs.mockito.kotlin
     testImplementation libs.assertj.core
     testImplementation libs.androidx.arch.core.testing
-
-    lintChecks libs.wordpress.lint
 }
 
 tasks.withType(KotlinCompile).configureEach {

@@ -206,7 +206,6 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    lintChecks(libs.android.security.lint)
 }
 
 android.buildTypes.all { buildType ->

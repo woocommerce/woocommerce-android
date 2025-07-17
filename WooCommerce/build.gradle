@@ -169,10 +169,7 @@ android {
     }
 
     lintOptions {
-        sarifReport = gradle.ext.isCi
         checkDependencies = true
-        disable 'InvalidPackage'
-        baseline file("lint-baseline.xml")
     }
 
     testOptions {
@@ -432,9 +429,6 @@ dependencies {
     implementation(libs.google.guava)
 
     implementation(libs.google.protobuf.javalite)
-
-    lintChecks(libs.android.security.lint)
-    lintChecks(libs.wordpress.lint)
 
     testImplementation(testFixtures(project(":libs:fluxc-plugin")))
 

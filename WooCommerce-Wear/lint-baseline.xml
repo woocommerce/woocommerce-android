@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.8.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.8.0)" variant="all" version="8.8.0">
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.commons.WearOrderedProduct&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val expectedProducts = listOf&lt;WearOrderedProduct>(mock())"
+        errorLine2="                                                          ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/ui/orders/details/FetchOrderProductsTest.kt"
+            line="56"
+            column="59"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.commons.WearOrder&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val expectedOrders = listOf&lt;WearOrder>(mock())"
+        errorLine2="                                               ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/ui/orders/list/FetchOrdersTest.kt"
+            line="87"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;org.wordpress.android.fluxc.model.WCRevenueStatsModel&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val revenueStats = mock&lt;WCRevenueStatsModel> {"
+        errorLine2="                           ^">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/complications/FetchStatsForComplicationsTest.kt"
+            line="39"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;org.wordpress.android.fluxc.model.WCRevenueStatsModel&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val revenueStats = mock&lt;WCRevenueStatsModel> {"
+        errorLine2="                           ^">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/complications/FetchStatsForComplicationsTest.kt"
+            line="68"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;org.wordpress.android.fluxc.model.WCRevenueStatsModel&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val revenueResponse = mock&lt;WCRevenueStatsModel> {"
+        errorLine2="                              ^">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/ui/stats/datasource/FetchStatsTest.kt"
+            line="110"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;org.wordpress.android.fluxc.persistence.entity.OrderEntity&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val order1 = mock&lt;OrderEntity> { on { dateCreated } doReturn &quot;1000&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/ui/orders/OrdersRepositoryTest.kt"
+            line="37"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;org.wordpress.android.fluxc.persistence.entity.OrderEntity&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val order2 = mock&lt;OrderEntity> { on { dateCreated } doReturn &quot;2000&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/ui/orders/OrdersRepositoryTest.kt"
+            line="38"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;org.wordpress.android.fluxc.persistence.entity.OrderEntity&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val order3 = mock&lt;OrderEntity> { on { dateCreated } doReturn &quot;1500&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/ui/orders/OrdersRepositoryTest.kt"
+            line="39"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.wear.settings.AppSettings.CrashReportEnabledSettings&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val settingsMock = mock&lt;CrashReportEnabledSettings>()"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/crashlogging/WCWearCrashLoggingDataProviderTest.kt"
+            line="63"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.wear.settings.AppSettings.CrashReportEnabledSettings&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val settingsMock = mock&lt;CrashReportEnabledSettings>()"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/wear/crashlogging/WCWearCrashLoggingDataProviderTest.kt"
+            line="74"
+            column="28"/>
+    </issue>
+
+</issues>

@@ -135,6 +135,61 @@
 
     <issue
         id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.PaymentInfo&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            cardReaderManager.collectPayment(mock())"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/CardReaderManagerImplTest.kt"
+            line="194"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.RefundConfig&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                cardReaderManager.refundInteracPayment(mock(), mock())"
+        errorLine2="                                                               ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/CardReaderManagerImplTest.kt"
+            line="207"
+            column="64"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.RefundParams&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                cardReaderManager.refundInteracPayment(mock(), mock())"
+        errorLine2="                                                       ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/CardReaderManagerImplTest.kt"
+            line="207"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.RefundConfig&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            cardReaderManager.refundInteracPayment(mock(), mock())"
+        errorLine2="                                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/CardReaderManagerImplTest.kt"
+            line="216"
+            column="60"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.RefundParams&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            cardReaderManager.refundInteracPayment(mock(), mock())"
+        errorLine2="                                                   ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/CardReaderManagerImplTest.kt"
+            line="216"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
         message="&apos;com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted&apos; is a data class, so mocking it should not be necessary"
         errorLine1="        cardReaderOnboardingCheckResultCache.value = CardReaderOnboardingCheckResultCache.Result.Cached(mock())"
         errorLine2="                                                                                                        ~~~~~~">
@@ -296,6 +351,336 @@
             file="src/test/kotlin/com/woocommerce/android/ui/payments/changeduecalculator/ChangeDueCalculatorViewModelTest.kt"
             line="108"
             column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.RefundConfiguration&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.collectRefund(mock(), mock()).first()"
+        errorLine2="                                                  ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectInteracRefundActionTest.kt"
+            line="42"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.RefundConfiguration&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.collectRefund(mock(), mock()).first()"
+        errorLine2="                                                  ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectInteracRefundActionTest.kt"
+            line="54"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.RefundConfiguration&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.collectRefund(mock(), mock()).toList()"
+        errorLine2="                                                  ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectInteracRefundActionTest.kt"
+            line="66"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.RefundConfiguration&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.collectRefund(mock(), mock()).toList()"
+        errorLine2="                                                  ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectInteracRefundActionTest.kt"
+            line="78"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.RefundConfiguration&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            action.collectRefund(mock(), mock()).collect { }"
+        errorLine2="                                         ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectInteracRefundActionTest.kt"
+            line="89"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectPaymentActionTest.kt"
+            line="36"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.collectPayment(mock()).first()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectPaymentActionTest.kt"
+            line="40"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.collectPayment(mock()).first()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectPaymentActionTest.kt"
+            line="52"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val updatedPaymentIntent = mock&lt;PaymentIntent>()"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectPaymentActionTest.kt"
+            line="59"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.collectPayment(mock()).first()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectPaymentActionTest.kt"
+            line="65"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectPaymentActionTest.kt"
+            line="73"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.collectPayment(mock()).toList()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectPaymentActionTest.kt"
+            line="77"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.collectPayment(mock()).toList()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectPaymentActionTest.kt"
+            line="89"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                action.collectPayment(mock()).collect { }"
+        errorLine2="                                      ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CollectPaymentActionTest.kt"
+            line="101"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="63"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="70"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val updatedPaymentIntent = mock&lt;PaymentIntent>()"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="91"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="104"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="223"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="237"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="251"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="265"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="279"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="329"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="342"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                     ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="356"
+            column="70"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                     ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="372"
+            column="70"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="427"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="440"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/CreatePaymentActionTest.kt"
+            line="453"
+            column="66"/>
     </issue>
 
     <issue
@@ -945,6 +1330,50 @@
             file="src/test/kotlin/com/woocommerce/android/util/FetchWooCorePluginVersionTest.kt"
             line="95"
             column="27"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.RefundParams&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                .thenReturn(CardInteracRefundStatus.InteracRefundFailure(Generic, &quot;&quot;, mock()))"
+        errorLine2="                                                                                      ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/InteracRefundManagerTest.kt"
+            line="91"
+            column="87"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.RefundParams&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                    CardInteracRefundStatus.InteracRefundFailure(Generic, &quot;&quot;, mock())"
+        errorLine2="                                                                              ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/InteracRefundManagerTest.kt"
+            line="105"
+            column="79"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.RefundParams&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                    CardInteracRefundStatus.InteracRefundFailure(Generic, expectedErrorMessage, mock())"
+        errorLine2="                                                                                                ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/InteracRefundManagerTest.kt"
+            line="120"
+            column="97"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.RefundParams&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                    CardInteracRefundStatus.InteracRefundFailure(expectedErrorType, &quot;Declined&quot;, mock())"
+        errorLine2="                                                                                                ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/InteracRefundManagerTest.kt"
+            line="138"
+            column="97"/>
     </issue>
 
     <issue
@@ -1851,6 +2280,963 @@
 
     <issue
         id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val testingPaymentIntent = mock&lt;PaymentIntent>()"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="39"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val originalPaymentIntent = mock&lt;PaymentIntent>()"
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="40"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val originalPaymentIntent = mock&lt;PaymentIntent>()"
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="51"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="63"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="72"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="81"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="90"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.NetworkError(&quot;error message&quot;))"
+        errorLine2="                                                   ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="97"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.GenericError(&quot;error message&quot;))"
+        errorLine2="                                                   ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="105"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.MissingOrder(&quot;error message&quot;))"
+        errorLine2="                                                   ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="113"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            mock(),"
+        errorLine2="            ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="122"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            mock(),"
+        errorLine2="            ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="133"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.api.ApiError&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        whenever(terminalException.apiError).thenReturn(mock())"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="146"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="149"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.api.ApiError&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        whenever(terminalException.apiError).thenReturn(mock())"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="157"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="160"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.api.ApiError&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        whenever(terminalException.apiError).thenReturn(mock())"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="168"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="171"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="180"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="189"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="198"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="207"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="216"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="225"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="234"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="243"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="252"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="261"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="270"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="279"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="288"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="297"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="306"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="315"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="324"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="333"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="342"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="351"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="360"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="369"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="378"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="387"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="396"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="405"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="414"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="423"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="432"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="441"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="450"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="459"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="468"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="477"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="486"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="495"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="504"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="513"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="522"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="531"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="540"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="549"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="558"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="567"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="576"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="585"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="594"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="603"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="612"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.api.ApiError&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        whenever(terminalException.apiError).thenReturn(mock())"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="620"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="624"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="635"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.api.ApiError&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        whenever(terminalException.apiError).thenReturn(mock())"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="643"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = mapper.mapTerminalError(mock(), terminalException)"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="648"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.api.ApiError&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        whenever(terminalException.apiError).thenReturn(mock())"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentErrorMapperTest.kt"
+            line="655"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.CardPresentDetails&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                                createPaymentIntent(SUCCEEDED, interacPresentDetails = mock())"
+        errorLine2="                                                                                       ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="314"
+            column="88"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.CardPresentDetails&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                                createPaymentIntent(CANCELED, interacPresentDetails = mock())"
+        errorLine2="                                                                                      ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="334"
+            column="87"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentMethodDetails&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            val paymentsMethodDetails = mock&lt;PaymentMethodDetails> {"
+        errorLine2="                                        ^">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="354"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.CardPresentDetails&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                on { cardPresentDetails }.thenReturn(mock())"
+        errorLine2="                                                     ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="355"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.Charge&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            val charge = mock&lt;Charge> {"
+        errorLine2="                         ^">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="358"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentMethodDetails&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            val paymentsMethodDetails = mock&lt;PaymentMethodDetails> {"
+        errorLine2="                                        ^">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="375"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.CardPresentDetails&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="                on { interacPresentDetails }.thenReturn(mock())"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="376"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.Charge&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            val charge = mock&lt;Charge> {"
+        errorLine2="                         ^">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="379"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            val paymentIntent = mock&lt;PaymentIntent>().also {"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="517"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            val paymentIntent = mock&lt;PaymentIntent>().also {"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="530"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            val paymentIntent = mock&lt;PaymentIntent>().also {"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="566"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        mock&lt;PaymentIntent>().also {"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="618"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.Charge&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            val charge = mock&lt;Charge>()"
+        errorLine2="                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="621"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentMethodDetails&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            whenever(charge.paymentMethodDetails).thenReturn(mock())"
+        errorLine2="                                                             ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentManagerTest.kt"
+            line="623"
+            column="62"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
         message="&apos;com.woocommerce.android.ui.payments.tracking.TrackingInfo&apos; is a data class, so mocking it should not be necessary"
         errorLine1="            val cardReaderTrackingInfo: TrackingInfo = mock {"
         errorLine2="                                                       ^">
@@ -2247,6 +3633,116 @@
 
     <issue
         id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.Refund&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[0] as RefundCallback).onSuccess(mock())"
+        errorLine2="                                                          ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessInteracRefundActionTest.kt"
+            line="34"
+            column="59"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.Refund&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[0] as RefundCallback).onSuccess(mock())"
+        errorLine2="                                                          ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessInteracRefundActionTest.kt"
+            line="58"
+            column="59"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessPaymentActionTest.kt"
+            line="32"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.processPayment(mock()).first()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessPaymentActionTest.kt"
+            line="36"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.processPayment(mock()).first()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessPaymentActionTest.kt"
+            line="48"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val updatedPaymentIntent = mock&lt;PaymentIntent>()"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessPaymentActionTest.kt"
+            line="55"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.processPayment(mock()).first()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessPaymentActionTest.kt"
+            line="61"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessPaymentActionTest.kt"
+            line="69"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.processPayment(mock()).toList()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessPaymentActionTest.kt"
+            line="73"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.models.PaymentIntent&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        val result = action.processPayment(mock()).toList()"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/actions/ProcessPaymentActionTest.kt"
+            line="85"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
         message="&apos;com.woocommerce.android.ui.products.models.SiteParameters&apos; is a data class, so mocking it should not be necessary"
         errorLine1="            parameters = mock(),"
         errorLine2="                         ~~~~~~">
@@ -2330,6 +3826,39 @@
         <location
             file="src/test/kotlin/com/woocommerce/android/ui/moremenu/customer/RefreshCustomerDataTests.kt"
             line="78"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.woocommerce.android.cardreader.payments.RefundParams&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="    private val refundParameters: RefundParams = mock()"
+        errorLine2="                                                 ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/RefundErrorMapperTest.kt"
+            line="23"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.api.ApiError&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        whenever(terminalException.apiError).thenReturn(mock())"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/RefundErrorMapperTest.kt"
+            line="92"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DoNotMockDataClass"
+        message="&apos;com.stripe.stripeterminal.external.api.ApiError&apos; is a data class, so mocking it should not be necessary"
+        errorLine1="        whenever(terminalException.apiError).thenReturn(mock())"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/RefundErrorMapperTest.kt"
+            line="522"
             column="57"/>
     </issue>
 
@@ -3941,6 +5470,28 @@
 
     <issue
         id="DoNotMockSealedClass"
+        message="&apos;com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry&apos; is a sealed type and has a restricted type hierarchy, use a subtype instead."
+        errorLine1="            val mockConfig = mock&lt;CardReaderConfigForSupportedCountry>()"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentUtilsTest.kt"
+            line="49"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="DoNotMockSealedClass"
+        message="&apos;com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry&apos; is a sealed type and has a restricted type hierarchy, use a subtype instead."
+        errorLine1="            val mockConfig = mock&lt;CardReaderConfigForSupportedCountry>()"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/test/java/com/woocommerce/android/cardreader/internal/payments/PaymentUtilsTest.kt"
+            line="60"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="DoNotMockSealedClass"
         message="&apos;com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType&apos; is a sealed type and has a restricted type hierarchy, use a subtype instead."
         errorLine1="            paymentsFlowTracker.trackSoftwareUpdateFailed(Failed(mock(), dummyMessage), requiredUpdate = false)"
         errorLine2="                                                                 ~~~~~~">
@@ -3982,6 +5533,5 @@
             line="51"
             column="85"/>
     </issue>
-
 
 </issues>
