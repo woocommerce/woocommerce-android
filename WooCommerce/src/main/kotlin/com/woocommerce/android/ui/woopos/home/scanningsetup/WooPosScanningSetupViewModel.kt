@@ -166,6 +166,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
         autoNavigationJob = viewModelScope.launch {
             delay(AUTO_NAVIGATION_DELAY_MS)
             if (navigator.isStillOnTestBarcodeStep(_state.value.currentStep)) {
+                analyticsTracker.trackTestScanTimedOut(_state.value.selectedDevice!!)
                 val timeoutStep = navigator.getTestBarcodeTimeoutStep(_state.value.currentStep)
                 _state.value = _state.value.copy(currentStep = timeoutStep)
             }

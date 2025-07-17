@@ -414,6 +414,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class BarcodeScannerSetupTestScanTimedOut(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_test_scan_timed_out"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
         data class SearchButtonTapped(
             val source: ItemsListSource,
         ) : Event() {
