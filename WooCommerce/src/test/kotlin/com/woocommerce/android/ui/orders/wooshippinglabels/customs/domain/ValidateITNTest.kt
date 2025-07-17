@@ -87,12 +87,12 @@ class ValidateITNTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when ITN is empty and total value exceeds limit, then validation result is Missing with TOTAL_VALUE cause`() {
+    fun `when ITN is empty and total value exceeds limit with no HS tariff numbers, then validation result is Missing with TotalValue cause`() {
         // Arrange
         val customsData = createCustomsData(
             itn = "",
             items = listOf(
-                createCustomsItem(value = BigDecimal("1000"), quantity = 3f) // Total value: 3000
+                createCustomsItem(value = BigDecimal("1000"), quantity = 3f, hsTariffNumber = "") // Total value: 3000
             )
         )
 
@@ -101,10 +101,7 @@ class ValidateITNTest : BaseUnitTest() {
 
         // Assert
         assertTrue(result is ValidateITN.ITNValidationResult.Missing)
-        assertEquals(
-            ValidateITN.ITNMissingCause.TOTAL_VALUE,
-            (result as ValidateITN.ITNValidationResult.Missing).cause
-        )
+        assertEquals(ValidateITN.ITNMissingCause.TotalValue, result.cause)
     }
 
     @Test
@@ -120,7 +117,7 @@ class ValidateITNTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when ITN is empty and total value exceeds limit for single item, then validation result is Missing with TOTAL_VALUE cause`() {
+    fun `when ITN is empty and total value exceeds limit for single item with HS tariff number, then validation result is Missing with HSTariffValue cause`() {
         // Arrange
         val customsData = createCustomsData(
             itn = "",
@@ -138,20 +135,23 @@ class ValidateITNTest : BaseUnitTest() {
 
         // Assert
         assertTrue(result is ValidateITN.ITNValidationResult.Missing)
-        assertEquals(ValidateITN.ITNMissingCause.TOTAL_VALUE, result.cause)
+        assertEquals(ValidateITN.ITNMissingCause.HSTariffValue("1234.56"), result.cause)
     }
 
     @Test
-    fun `when ITN is empty and destination country requires ITN, then validation result is Missing with DESTINATION_COUNTRY cause`() {
+    fun `when ITN is empty and destination country requires ITN, then validation result is Missing with DestinationCountry cause`() {
         // Arrange
-        val customsData = createCustomsData(itn = "")
+        val customsData = createCustomsData(
+            itn = "",
+            items = listOf(createCustomsItem(hsTariffNumber = "")) // Ensure no HS tariff numbers
+        )
 
         // Act
         val result = validateITN(customsData, "IR") // Iran requires ITN
 
         // Assert
         assertTrue(result is ValidateITN.ITNValidationResult.Missing)
-        assertEquals(ValidateITN.ITNMissingCause.DESTINATION_COUNTRY, result.cause)
+        assertEquals(ValidateITN.ITNMissingCause.DestinationCountry, result.cause)
     }
 
     @Test
@@ -160,7 +160,7 @@ class ValidateITNTest : BaseUnitTest() {
         val customsData = createCustomsData(
             itn = "",
             items = listOf(
-                createCustomsItem(value = BigDecimal("100"), quantity = 1f) // Total value: 100
+                createCustomsItem(value = BigDecimal("100"), quantity = 1f, hsTariffNumber = "") // Total value: 100
             )
         )
 
@@ -184,12 +184,12 @@ class ValidateITNTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when ITN is empty and total value is exactly at limit, then validation result is Valid`() {
+    fun `when ITN is empty and total value is exactly at limit with no HS tariff number, then validation result is Valid`() {
         // Arrange
         val customsData = createCustomsData(
             itn = "",
             items = listOf(
-                createCustomsItem(value = BigDecimal("2500"), quantity = 1f) // Total value: 2500
+                createCustomsItem(value = BigDecimal("2500"), quantity = 1f, hsTariffNumber = "") // Total value: 2500
             )
         )
 
@@ -201,12 +201,12 @@ class ValidateITNTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when ITN is empty and total value is slightly below limit, then validation result is Valid`() {
+    fun `when ITN is empty and total value is slightly below limit with no HS tariff number, then validation result is Valid`() {
         // Arrange
         val customsData = createCustomsData(
             itn = "",
             items = listOf(
-                createCustomsItem(value = BigDecimal("2499.99"), quantity = 1f) // Total value: 2499.99
+                createCustomsItem(value = BigDecimal("2499.99"), quantity = 1f, hsTariffNumber = "") // Total value: 2499.99
             )
         )
 
@@ -218,12 +218,12 @@ class ValidateITNTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when ITN is empty and total value is slightly above limit, then validation result is Missing with TOTAL_VALUE cause`() {
+    fun `when ITN is empty and total value is slightly above limit with no HS tariff number, then validation result is Missing with TotalValue cause`() {
         // Arrange
         val customsData = createCustomsData(
             itn = "",
             items = listOf(
-                createCustomsItem(value = BigDecimal("2500.01"), quantity = 1f) // Total value: 2500.01
+                createCustomsItem(value = BigDecimal("2500.01"), quantity = 1f, hsTariffNumber = "") // Total value: 2500.01
             )
         )
 
@@ -232,11 +232,11 @@ class ValidateITNTest : BaseUnitTest() {
 
         // Assert
         assertTrue(result is ValidateITN.ITNValidationResult.Missing)
-        assertEquals(ValidateITN.ITNMissingCause.TOTAL_VALUE, result.cause)
+        assertEquals(ValidateITN.ITNMissingCause.TotalValue, result.cause)
     }
 
     @Test
-    fun `when ITN is empty and multiple items with different HS tariff numbers exceed total limit, then validation result is Missing with TOTAL_VALUE cause`() {
+    fun `when ITN is empty and multiple items with different HS tariff numbers but none exceeds limit, then validation result is Valid`() {
         // Arrange
         val customsData = createCustomsData(
             itn = "",
@@ -251,7 +251,28 @@ class ValidateITNTest : BaseUnitTest() {
                     quantity = 1f,
                     hsTariffNumber = "7890.12"
                 ) // Total value: 1300
-                // Combined total: 2600, exceeds limit
+                // Each HS tariff number group is below the $2500 limit
+            )
+        )
+
+        // Act
+        val result = validateITN(customsData, "US")
+
+        // Assert
+        assertTrue(result is ValidateITN.ITNValidationResult.Valid)
+    }
+
+    @Test
+    fun `when ITN is empty and a single HS tariff number exceeds limit, then validation result is Missing with HSTariffValue cause`() {
+        // Arrange
+        val customsData = createCustomsData(
+            itn = "",
+            items = listOf(
+                createCustomsItem(
+                    value = BigDecimal("2600"),
+                    quantity = 1f,
+                    hsTariffNumber = "1234.56"
+                ) // Total value: 2600, exceeds the $2500 limit
             )
         )
 
@@ -260,11 +281,11 @@ class ValidateITNTest : BaseUnitTest() {
 
         // Assert
         assertTrue(result is ValidateITN.ITNValidationResult.Missing)
-        assertEquals(ValidateITN.ITNMissingCause.TOTAL_VALUE, result.cause)
+        assertEquals(ValidateITN.ITNMissingCause.HSTariffValue("1234.56"), result.cause)
     }
 
     @Test
-    fun `when ITN is empty and multiple items with same HS tariff number exceed total limit, then validation result is Missing with TOTAL_VALUE cause`() {
+    fun `when ITN is empty and multiple items with same HS tariff number exceed total limit, then validation result is Missing with HSTariffValue cause`() {
         // Arrange
         val customsData = createCustomsData(
             itn = "",
@@ -289,10 +310,7 @@ class ValidateITNTest : BaseUnitTest() {
 
         // Assert
         assertTrue(result is ValidateITN.ITNValidationResult.Missing)
-        assertEquals(
-            ValidateITN.ITNMissingCause.TOTAL_VALUE,
-            (result as ValidateITN.ITNValidationResult.Missing).cause
-        )
+        assertEquals(ValidateITN.ITNMissingCause.HSTariffValue("1234.56"), result.cause)
     }
 
     private fun createCustomsData(
@@ -316,7 +334,7 @@ class ValidateITNTest : BaseUnitTest() {
         quantity: Float = 1f,
         value: BigDecimal = BigDecimal("100"),
         weight: Float = 1f,
-        hsTariffNumber: String = "1234.56",
+        hsTariffNumber: String = "",
         originCountry: String = "United States",
         originCountryCode: String = "US"
     ): CustomsItem {
