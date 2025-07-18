@@ -488,7 +488,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
                 val destinationCountryCode = selectedAddress?.shipTo?.address?.country?.code.orEmpty()
                 val itnMissing = validateITN(
-                    customsData = currentItemCustomsData ?: shipments.value[index].createDefaultCustomsData(),
+                    customsData = currentItemCustomsData ?: shipments.value[index].items.createDefaultCustomsData(),
                     destinationCountry = destinationCountryCode
                 ) is ValidateITN.ITNValidationResult.Missing
 
@@ -972,7 +972,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val event = NavigateToCustomsFormEdit(
             destinationCountryCode = destinationCountryCode,
             customData = customsFormDataFlow.value[selectedShipmentIndex]
-                ?: shipments.value[selectedShipmentIndex].createDefaultCustomsData()
+                ?: shipments.value[selectedShipmentIndex].items.createDefaultCustomsData()
         )
         triggerEvent(event)
     }

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.customs
 
 import android.os.Parcelable
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
@@ -49,7 +48,7 @@ enum class RestrictionType(val resourceId: Int) {
     OTHER(R.string.woo_shipping_labels_customs_restriction_other)
 }
 
-fun ShipmentUIModel.createDefaultCustomsData(): CustomsData {
+fun List<ShippableItemModel>.createDefaultCustomsData(): CustomsData {
     return CustomsData(
         contentType = ContentType.MERCHANDISE,
         contentDescription = "",
@@ -57,7 +56,7 @@ fun ShipmentUIModel.createDefaultCustomsData(): CustomsData {
         restrictionDescription = "",
         isReturnToSender = false,
         itn = "",
-        items = items.map { it.createDefaultCustomsItem() }
+        items = map { it.createDefaultCustomsItem() }
     )
 }
 
