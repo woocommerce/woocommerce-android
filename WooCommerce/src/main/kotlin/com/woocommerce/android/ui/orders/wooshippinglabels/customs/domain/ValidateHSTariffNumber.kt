@@ -32,7 +32,8 @@ class ValidateHSTariffNumber @Inject constructor() {
         } ?: WooShippingCustomsFormViewModel.InputValue.Data(tariffNumber)
     }
 
-    private fun shouldRequireHSTariffNumber(destinationCountryCode: String) = destinationCountryCode in EU_UNION_COUNTRIES
+    private fun shouldRequireHSTariffNumber(destinationCountryCode: String) =
+        destinationCountryCode in EU_UNION_COUNTRIES
 
     companion object {
         private val EU_UNION_COUNTRIES = listOf(
