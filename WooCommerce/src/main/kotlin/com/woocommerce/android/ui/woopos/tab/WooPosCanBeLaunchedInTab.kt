@@ -36,7 +36,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         } else {
             getWooCoreVersion()
         } ?: return@withContext WooPosLaunchability.NotLaunchable(
-            WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
+            WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound
         )
 
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion)) {
@@ -100,6 +100,7 @@ sealed class WooPosLaunchability {
     data class NotLaunchable(val reason: NonLaunchabilityReason) : WooPosLaunchability()
 
     enum class NonLaunchabilityReason {
+        WooCommercePluginNotFound,
         UnsupportedWooCommerceVersion,
         SiteSettingsUnavailable,
         FeatureSwitchDisabled,

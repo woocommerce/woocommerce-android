@@ -16,7 +16,6 @@ data class WooPosScanningSetupState(
     enum class BarcodeReaderDevice(@StringRes val displayNameRes: Int) {
         TERA_1200(R.string.woopos_scanning_setup_device_tera_1200),
         STAR_BSH_20B(R.string.woopos_scanning_setup_device_star_bsh_20b),
-        INATECK_BLUETOOTH(R.string.woopos_scanning_setup_device_inateck_bluetooth),
         OTHER(R.string.woopos_scanning_setup_device_other)
     }
 
@@ -25,8 +24,12 @@ data class WooPosScanningSetupState(
             return when (device) {
                 BarcodeReaderDevice.TERA_1200 -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
-                    ScanningSetupStep.ScannerPairModeSetup(),
+                    ScanningSetupStep.ScannerHIDModeSetup(
+                        qrCodeImageRes = R.drawable.ic_woopos_reader_setup_code_hid_tera_1200
+                    ),
+                    ScanningSetupStep.ScannerPairModeSetup(
+                        qrCodeImageRes = R.drawable.ic_woopos_reader_setup_code_pairing_tera_1200
+                    ),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess,
@@ -35,17 +38,9 @@ data class WooPosScanningSetupState(
 
                 BarcodeReaderDevice.STAR_BSH_20B -> listOf(
                     ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
-                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
-                    ScanningSetupStep.TestYourScanner,
-                    ScanningSetupStep.ScannerSetupSuccess,
-                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
-                )
-
-                BarcodeReaderDevice.INATECK_BLUETOOTH -> listOf(
-                    ScanningSetupStep.DeviceSelection,
-                    ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode),
-                    ScanningSetupStep.ScannerPairModeSetup(),
+                    ScanningSetupStep.ScannerHIDModeSetup(
+                        qrCodeImageRes = R.drawable.ic_woopos_reader_setup_code_star_bsh_20
+                    ),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
                     ScanningSetupStep.ScannerSetupSuccess,
@@ -70,7 +65,6 @@ data class WooPosScanningSetupState(
             val devices: List<BarcodeReaderDevice> = listOf(
                 BarcodeReaderDevice.TERA_1200,
                 BarcodeReaderDevice.STAR_BSH_20B,
-                BarcodeReaderDevice.INATECK_BLUETOOTH,
                 BarcodeReaderDevice.OTHER
             )
 
@@ -102,7 +96,7 @@ data class WooPosScanningSetupState(
 
         @Parcelize
         data class ScannerPairModeSetup(
-            @DrawableRes val qrCodeImageRes: Int = R.drawable.ic_barcode
+            @DrawableRes val qrCodeImageRes: Int
         ) : ScanningSetupStep() {
             @get:StringRes
             @IgnoredOnParcel
