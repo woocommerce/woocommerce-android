@@ -20,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosScanningSetupViewModel @Inject constructor(
     private val navigator: WooPosScannerSetupNavigator,
-    private val analyticsTracker: WooPosScanningSetupAnalyticsTracker
+    private val analyticsTracker: WooPosScanningSetupAnalyticsTracker,
+    private val scannerDetectionService: WooPosScannerDetectionServiceForTracking,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -44,6 +45,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
             WooPosScanningSetupUiEvent.OnDialogShown -> {
                 viewModelScope.launch {
                     analyticsTracker.trackDialogShown()
+                }
+                scannerDetectionService.startPeriodicDetection(viewModelScope) {
+                    _state.value.selectedDevice
                 }
             }
 
@@ -144,6 +148,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
     }
 
     fun resetToInitialState() {
+        scannerDetectionService.stopPeriodicDetection()
         _state.value = _state.value.copy(
             currentStep = navigator.getInitialStep(),
             selectedDevice = null
@@ -182,6 +187,11 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 _state.value = _state.value.copy(currentStep = timeoutStep)
             }
         }
+    }
+
+    override fun onCleared() {
+        scannerDetectionService.stopPeriodicDetection()
+        super.onCleared()
     }
 
     companion object {

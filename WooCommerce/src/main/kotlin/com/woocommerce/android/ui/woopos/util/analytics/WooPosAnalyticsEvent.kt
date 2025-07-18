@@ -455,6 +455,19 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class BarcodeScannerSetupScannerConnected(val scanner: String, val scannerInfo: String) : Event() {
+            override val name: String = "barcode_scanner_setup_scanner_connected"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "scanner_info" to scannerInfo
+                    )
+                )
+            }
+        }
+
         data class SearchButtonTapped(
             val source: ItemsListSource,
         ) : Event() {

@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import javax.inject.Inject
 
 class WooPosScanningSetupAnalyticsTracker @Inject constructor(
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) {
     suspend fun trackDialogShown() {
         analyticsTracker.track(WooPosAnalyticsEvent.Event.BarcodeScannerSetupFlowShown)
@@ -85,6 +85,15 @@ class WooPosScanningSetupAnalyticsTracker @Inject constructor(
         analyticsTracker.track(
             WooPosAnalyticsEvent.Event.BarcodeScannerSetupRetryTapped(
                 scanner = device.toAnalyticsString()
+            )
+        )
+    }
+
+    suspend fun trackScannerConnected(device: BarcodeReaderDevice?, scannerInfo: String) {
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.BarcodeScannerSetupScannerConnected(
+                scanner = device?.toAnalyticsString() ?: "unknown",
+                scannerInfo = scannerInfo
             )
         )
     }

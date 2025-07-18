@@ -14,7 +14,7 @@ class WooPosScannerDetectionUtil @Inject constructor(
     private val context: Context,
     private val wooPosLogWrapper: WooPosLogWrapper,
 ) {
-    fun detectConnectedScanner(context: Context): ScannerInfo {
+    fun detectConnectedScanner(): ScannerInfo {
         val bluetoothScanner = detectBluetoothScanner()
         if (bluetoothScanner !is ScannerInfo.NoScannerDetected) {
             return bluetoothScanner

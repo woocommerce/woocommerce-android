@@ -29,7 +29,7 @@ class WooPosBarcodeEventTrackerTest {
                 barcode = "1234567890",
                 scanDurationMs = 150L
             )
-            whenever(scannerDetectionUtil.detectConnectedScanner(any())).thenReturn(mock())
+            whenever(scannerDetectionUtil.detectConnectedScanner()).thenReturn(mock())
             whenever(scannerDetectionUtil.getScannerInfoString(any())).thenReturn("USB Scanner")
 
             // WHEN
@@ -48,7 +48,7 @@ class WooPosBarcodeEventTrackerTest {
                 scanDurationMs = 100L,
                 failureReason = BarcodeInputDetector.FailureReason.TOO_SHORT,
             )
-            whenever(scannerDetectionUtil.detectConnectedScanner(any())).thenReturn(mock())
+            whenever(scannerDetectionUtil.detectConnectedScanner()).thenReturn(mock())
             whenever(scannerDetectionUtil.getScannerInfoString(any())).thenReturn("USB Scanner")
 
             // WHEN
