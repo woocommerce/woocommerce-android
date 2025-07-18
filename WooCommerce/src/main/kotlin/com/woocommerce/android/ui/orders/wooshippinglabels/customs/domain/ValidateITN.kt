@@ -19,7 +19,7 @@ class ValidateITN @Inject constructor(
          * [Export Compliance Customs Data Requirements](https://postalpro.usps.com/node/3973)
          */
         private const val ITN_REGEX_STRING =
-            """^(?:(?:AES X\d{14})|(?:NOEEI 30\.\d{1,2}(?:\([a-z]\)(?:\(\d\))?)?))${'$'}"""
+            """^(?:AES X\d{14}|NOEEI 30\.\d{1,2}(?:\([a-z]\)(?:\(\d\))?)?)${'$'}"""
     }
 
     private val List<CustomsItem>.totalValue: BigDecimal
