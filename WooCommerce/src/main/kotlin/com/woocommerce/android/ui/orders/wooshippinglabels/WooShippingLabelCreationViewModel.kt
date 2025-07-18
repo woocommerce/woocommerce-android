@@ -483,14 +483,17 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             customsFormDataFlow.filter { it.isNotEmpty() }
         ) { addresses, customsData ->
             customsData.mapIndexed { index, currentItemCustomsData ->
+                val shipment = shipments.value.getOrNull(index)
                 val selectedAddress = addresses.getOrNull(index)
                 val customsRequired = selectedAddress != null && shouldRequireCustoms(selectedAddress)
 
                 val destinationCountryCode = selectedAddress?.shipTo?.address?.country?.code.orEmpty()
-                val itnMissing = validateITN(
-                    customsData = currentItemCustomsData ?: shipments.value[index].items.createDefaultCustomsData(),
-                    destinationCountry = destinationCountryCode
-                ) is ValidateITN.ITNValidationResult.Missing
+                val itnMissing = (currentItemCustomsData ?: shipment?.items?.createDefaultCustomsData())?.let {
+                    validateITN(
+                        customsData = it,
+                        destinationCountry = destinationCountryCode
+                    )
+                } is ValidateITN.ITNValidationResult.Missing
 
                 when {
                     customsRequired && itnMissing -> ItnMissing
