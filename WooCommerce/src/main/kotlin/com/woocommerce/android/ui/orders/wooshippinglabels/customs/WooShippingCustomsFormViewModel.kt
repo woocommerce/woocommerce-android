@@ -9,6 +9,7 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -30,6 +31,7 @@ import javax.inject.Inject
 class WooShippingCustomsFormViewModel @Inject constructor(
     private val getAllCountries: GetAllCountries,
     private val shouldRequireITN: ShouldRequireITN,
+    private val validateHSTariffNumber: ValidateHSTariffNumber,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val itnRegex by lazy { ITN_REGEX_STRING.toRegex() }
@@ -39,7 +41,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = ViewState()
+        initialValue = initViewState()
     )
     val viewState = _viewState.asLiveData()
 
@@ -58,13 +60,16 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     init {
         launch { loadCountries() }
-        navArgs.customsData?.let { customData ->
+        observeShippableItemsChanges()
+    }
+
+    private fun initViewState(): ViewState {
+        return navArgs.customsData?.let { customData ->
             loadViewStateFromExistentCustomData(customData)
         } ?: run {
             val shippableProducts = navArgs.shippableItems.map { item -> item.toProductUIModel() }
-            _viewState.update { it.copy(shippingProducts = shippableProducts) }
+            ViewState().copy(shippingProducts = shippableProducts)
         }
-        observeShippableItemsChanges()
     }
 
     private fun observeShippableItemsChanges() {
@@ -76,31 +81,29 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-    private fun loadViewStateFromExistentCustomData(customData: CustomsData) {
-        _viewState.update {
-            it.copy(
-                contentType = customData.contentType,
-                otherContentInput = InputValue.Data(customData.contentDescription),
-                restrictionType = customData.restrictionType,
-                otherRestrictionInput = InputValue.Data(customData.restrictionDescription),
-                itnValue = InputValue.Data(customData.itn),
-                returnToSenderChecked = customData.isReturnToSender,
-                shippingProducts = customData.items.map { item ->
-                    WooShippingCustomsProductUIModel(
-                        productId = item.productID,
-                        name = item.description,
-                        description = InputValue.Data(item.description),
-                        tariffNumber = InputValue.Data(item.hsTariffNumber),
-                        valuePerUnit = InputValue.Data(item.value.toString()),
-                        weightPerUnit = InputValue.Data(item.weight.toString()),
-                        originCountry = item.originCountry,
-                        originCountryCode = item.originCountryCode,
-                        quantity = item.quantity,
-                        isExpanded = false
-                    )
-                }
-            )
-        }
+    private fun loadViewStateFromExistentCustomData(customData: CustomsData): ViewState {
+        return ViewState(
+            contentType = customData.contentType,
+            otherContentInput = InputValue.Data(customData.contentDescription),
+            restrictionType = customData.restrictionType,
+            otherRestrictionInput = InputValue.Data(customData.restrictionDescription),
+            itnValue = InputValue.Data(customData.itn),
+            returnToSenderChecked = customData.isReturnToSender,
+            shippingProducts = customData.items.map { item ->
+                WooShippingCustomsProductUIModel(
+                    productId = item.productID,
+                    name = item.description,
+                    description = InputValue.Data(item.description),
+                    tariffNumber = InputValue.Data(item.hsTariffNumber),
+                    valuePerUnit = InputValue.Data(item.value.toString()),
+                    weightPerUnit = InputValue.Data(item.weight.toString()),
+                    originCountry = item.originCountry,
+                    originCountryCode = item.originCountryCode,
+                    quantity = item.quantity,
+                    isExpanded = false
+                )
+            }
+        )
     }
 
     fun onContentTypeClick() {
@@ -204,13 +207,12 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     fun onShippableProductTariffNumberChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank()) {
-                false -> InputValue.Data(newValue)
-                true -> InputValue.Error(
-                    input = newValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_product_details_tariff_missing
+            item.copy(
+                tariffNumber = validateHSTariffNumber(
+                    tariffNumber = newValue,
+                    destinationCountryCode = destinationCountryCode
                 )
-            }.let { item.copy(tariffNumber = it) }
+            )
         }
     }
 
@@ -287,7 +289,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         productId = productId,
         name = title,
         description = "".asInputValueError,
-        tariffNumber = "".asInputValueError,
+        tariffNumber = validateHSTariffNumber("", destinationCountryCode),
         quantity = quantity,
         originCountry = "",
         originCountryCode = "",
@@ -297,6 +299,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 input = "",
                 errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
             )
+
             else -> InputValue.Data(shippingTotalValue.toString())
         },
         weightPerUnit = when {
@@ -304,6 +307,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 input = "",
                 errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
             )
+
             else -> InputValue.Data(weight.toString())
         }
     )
@@ -357,6 +361,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         ) : InputValue()
 
         data object Empty : InputValue()
+
+        val isValid: Boolean
+            get() = this is Data
 
         val currentInput
             get() = when (this) {

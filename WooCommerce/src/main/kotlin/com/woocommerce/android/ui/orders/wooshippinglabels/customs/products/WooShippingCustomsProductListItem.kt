@@ -147,13 +147,14 @@ fun WooShippingCustomsProductCollapsedListItem(
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_description_missing)
             )
-            Text(
-                style = MaterialTheme.typography.bodySmall,
-                color = colorResource(id = R.color.color_on_surface),
-                text = itemData.tariffNumber.currentInput
-                    .takeIf { it.isNotBlank() }
-                    ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_tariff_missing)
-            )
+            itemData.tariffNumber.currentInput
+                .takeIf { it.isNotBlank() }?.let {
+                    Text(
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colorResource(id = R.color.color_on_surface),
+                        text = it,
+                    )
+                }
         }
         Row {
             Text(
