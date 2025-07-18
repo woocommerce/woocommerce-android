@@ -43,12 +43,14 @@ class WooPosScanningSetupViewModel @Inject constructor(
     fun onUiEvent(event: WooPosScanningSetupUiEvent) {
         when (event) {
             WooPosScanningSetupUiEvent.OnDialogShown -> {
+                if (_state.value.wasDialogShown) return
                 viewModelScope.launch {
                     analyticsTracker.trackDialogShown()
                 }
                 scannerDetectionService.startPeriodicDetection(viewModelScope) {
                     _state.value.selectedDevice
                 }
+                _state.value = _state.value.copy(wasDialogShown = true)
             }
 
             is WooPosScanningSetupUiEvent.OnDeviceSelected -> {
@@ -84,6 +86,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             WooPosScanningSetupUiEvent.OnDismissed -> {
+                _state.value = _state.value.copy(wasDialogShown = false)
                 viewModelScope.launch {
                     analyticsTracker.trackDismissed(_state.value.selectedDevice, _state.value.currentStep)
                 }

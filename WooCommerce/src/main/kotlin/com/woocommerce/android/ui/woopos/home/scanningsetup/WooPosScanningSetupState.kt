@@ -11,7 +11,8 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class WooPosScanningSetupState(
     val currentStep: ScanningSetupStep,
-    val selectedDevice: BarcodeReaderDevice? = null
+    val selectedDevice: BarcodeReaderDevice? = null,
+    val wasDialogShown: Boolean = false,
 ) : Parcelable {
     enum class BarcodeReaderDevice(@StringRes val displayNameRes: Int) {
         TERA_1200(R.string.woopos_scanning_setup_device_tera_1200),
