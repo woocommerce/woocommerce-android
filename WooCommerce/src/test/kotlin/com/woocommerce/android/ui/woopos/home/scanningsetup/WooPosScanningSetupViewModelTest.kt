@@ -298,8 +298,8 @@ class WooPosScanningSetupViewModelTest {
         val step = viewModel.state.value.currentStep as ScanningSetupStep.ScannerHIDModeSetup
 
         // THEN
-        assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_introduction_title)
-        assertThat(step.messageRes).isEqualTo(R.string.woopos_scanning_setup_introduction_message)
+        assertThat(step.titleRes).isEqualTo(R.string.woopos_scanning_setup_hid_title)
+        assertThat(step.messageRes).isEqualTo(R.string.woopos_scanning_setup_hid_message)
         assertThat(step.primaryButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_next)
         assertThat(step.secondaryButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
     }
