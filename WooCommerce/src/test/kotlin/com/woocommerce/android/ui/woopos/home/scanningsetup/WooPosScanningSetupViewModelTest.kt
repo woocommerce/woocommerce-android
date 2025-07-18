@@ -120,7 +120,10 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given OnOpenBluetoothSettings event, when triggered, then should emit openBluetoothSettingsEvent`() = runTest {
         // GIVEN
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
         val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
 
         viewModel.openBluetoothSettingsEvent.test {
             // WHEN
@@ -720,6 +723,8 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `when OnDismissed event is sent, then should track dismissed event`() = runTest {
         // GIVEN
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
 
@@ -727,7 +732,7 @@ class WooPosScanningSetupViewModelTest {
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDismissed)
 
         // THEN
-        verify(analyticsTracker).trackDismissed(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection)
+        verify(analyticsTracker).trackDismissed(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
     }
 
     @Test

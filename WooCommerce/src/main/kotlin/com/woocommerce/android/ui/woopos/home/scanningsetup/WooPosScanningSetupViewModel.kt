@@ -77,6 +77,8 @@ class WooPosScanningSetupViewModel @Inject constructor(
             WooPosScanningSetupUiEvent.OnOpenBluetoothSettings -> {
                 viewModelScope.launch {
                     analyticsTracker.trackOpenSystemSettingsTapped(_state.value.selectedDevice!!)
+                }
+                viewModelScope.launch {
                     _openBluetoothSettingsEvent.emit(Unit)
                 }
             }
@@ -86,9 +88,11 @@ class WooPosScanningSetupViewModel @Inject constructor(
             }
 
             WooPosScanningSetupUiEvent.OnDismissed -> {
+                val currentSelectedDevice = _state.value.selectedDevice
+                val currentStep = _state.value.currentStep
                 _state.value = _state.value.copy(wasDialogShown = false)
                 viewModelScope.launch {
-                    analyticsTracker.trackDismissed(_state.value.selectedDevice, _state.value.currentStep)
+                    analyticsTracker.trackDismissed(currentSelectedDevice, currentStep)
                 }
             }
         }
