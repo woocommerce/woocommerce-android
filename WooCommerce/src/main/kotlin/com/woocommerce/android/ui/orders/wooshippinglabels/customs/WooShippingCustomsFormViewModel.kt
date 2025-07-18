@@ -42,7 +42,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = initViewState()
+        initialValue = loadViewStateCustomsData(navArgs.customsData)
     )
     val viewState = _viewState.asLiveData()
 
@@ -52,15 +52,6 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     init {
         launch { loadCountries() }
         monitorITNValidationStatus()
-    }
-
-    private fun initViewState(): ViewState {
-        return navArgs.customsData?.let { customData ->
-            loadViewStateFromExistentCustomData(customData)
-        } ?: run {
-            val shippableProducts = navArgs.shippableItems.map { item -> item.toProductUIModel() }
-            ViewState().copy(shippingProducts = shippableProducts)
-        }
     }
 
     private fun monitorITNValidationStatus() {
@@ -105,7 +96,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun loadViewStateFromExistentCustomData(customData: CustomsData): ViewState {
+    private fun loadViewStateCustomsData(customData: CustomsData): ViewState {
         return ViewState(
             contentType = customData.contentType,
             otherContentInput = InputValue.Data(customData.contentDescription),

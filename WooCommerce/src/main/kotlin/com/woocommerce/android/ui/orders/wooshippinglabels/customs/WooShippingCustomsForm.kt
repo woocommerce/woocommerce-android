@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.customs
 
 import android.os.Parcelable
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
@@ -46,3 +48,26 @@ enum class RestrictionType(val resourceId: Int) {
     SANITARY_INSPECTION(R.string.woo_shipping_labels_customs_restriction_sanitary),
     OTHER(R.string.woo_shipping_labels_customs_restriction_other)
 }
+
+fun ShipmentUIModel.createDefaultCustomsData(): CustomsData {
+    return CustomsData(
+        contentType = ContentType.MERCHANDISE,
+        contentDescription = "",
+        restrictionType = RestrictionType.NONE,
+        restrictionDescription = "",
+        isReturnToSender = false,
+        itn = "",
+        items = items.map { it.createDefaultCustomsItem() }
+    )
+}
+
+private fun ShippableItemModel.createDefaultCustomsItem() = CustomsItem(
+    productID = productId,
+    description = "",
+    quantity = quantity,
+    value = price,
+    weight = weight,
+    hsTariffNumber = "",
+    originCountry = "",
+    originCountryCode = ""
+)

@@ -45,8 +45,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBann
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.createDefaultCustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.domain.DownloadAndPrintInvoiceUseCase
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -101,7 +102,6 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.io.File
-import java.math.BigDecimal
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -124,7 +124,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val verifyDestinationAddress: VerifyDestinationAddress,
     private val observeShippingLabelNotice: ObserveShippingLabelNotice,
     private val shouldRequireCustoms: ShouldRequireCustomsForm,
-    private val shouldRequireITN: ShouldRequireITN,
+    private val validateITN: ValidateITN,
     private val fetchShippingLabelFile: FetchShippingLabelFile,
     private val observeShippingLabelStatus: ObserveShippingLabelStatus,
     private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase,
@@ -295,7 +295,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val orderShippingEmail = order.shippingAddress.email.ifBlank { order.billingAddress.email }
 
             if (labelDestination == null) {
-                if (destinationAddress.value == WooShippingAddresses.EMPTY) {
+                if (destinationAddress.value == DestinationShippingAddress.EMPTY) {
                     val defaultDestination = DestinationShippingAddress(
                         address = order.shippingAddress.copy(email = orderShippingEmail),
                         isVerified = false
@@ -480,16 +480,17 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private suspend fun observeCustomsDataChanges() {
         combine(
             shippingAddresses,
-            customsFormDataFlow.filter { it.isNotEmpty() },
-            shipmentItems.filter { it.isNotEmpty() },
-            uiState.map { it.selectedIndex }.distinctUntilChanged()
-        ) { addresses, customsData, shipmentItems, selectedIndex ->
-            val selectedAddress = addresses.getOrNull(selectedIndex)
-            val customsRequired = selectedAddress != null && shouldRequireCustoms(selectedAddress)
+            customsFormDataFlow.filter { it.isNotEmpty() }
+        ) { addresses, customsData ->
+            customsData.mapIndexed { index, currentItemCustomsData ->
+                val selectedAddress = addresses.getOrNull(index)
+                val customsRequired = selectedAddress != null && shouldRequireCustoms(selectedAddress)
 
-            shipmentItems.mapIndexed { index, shippableItemModelList ->
-                val currentItemCustomsData = customsData[index]
-                val itnMissing = currentItemCustomsData?.itn.isNullOrEmpty() && shippableItemModelList.isItnRequired()
+                val destinationCountryCode = selectedAddress?.shipTo?.address?.country?.code.orEmpty()
+                val itnMissing = validateITN(
+                    customsData = currentItemCustomsData ?: shipments.value[index].createDefaultCustomsData(),
+                    destinationCountry = destinationCountryCode
+                ) is ValidateITN.ITNValidationResult.Missing
 
                 when {
                     customsRequired && itnMissing -> ItnMissing
@@ -969,9 +970,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             ?.shipTo?.address?.country?.code.orEmpty()
 
         val event = NavigateToCustomsFormEdit(
-            shippableItems = shipmentItems.value[selectedShipmentIndex],
             destinationCountryCode = destinationCountryCode,
             customData = customsFormDataFlow.value[selectedShipmentIndex]
+                ?: shipments.value[selectedShipmentIndex].createDefaultCustomsData()
         )
         triggerEvent(event)
     }
@@ -1115,18 +1116,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         triggerEvent(NavigateToPaymentMethodEdit)
     }
 
-    private fun List<ShippableItemModel>.isItnRequired(): Boolean {
-        val totalShippingValue = map { it.shippingTotalValue }
-            .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, current -> acc + current }
-            ?: BigDecimal.ZERO
-
-        val destinationCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)
-            ?.shipTo?.address?.country?.code.orEmpty()
-
-        return shouldRequireITN(destinationCountryCode, totalShippingValue)
-    }
-
     data object NavigatePackageSelection : Event()
 
     data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
@@ -1145,9 +1134,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     ) : Parcelable
 
     data class NavigateToCustomsFormEdit(
-        val shippableItems: List<ShippableItemModel>,
         val destinationCountryCode: String,
-        val customData: CustomsData?
+        val customData: CustomsData
     ) : Event()
 
     data class NavigateToHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
