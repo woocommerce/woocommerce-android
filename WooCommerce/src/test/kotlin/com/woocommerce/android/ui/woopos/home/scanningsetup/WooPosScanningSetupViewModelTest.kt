@@ -65,48 +65,19 @@ class WooPosScanningSetupViewModelTest {
     }
 
     @Test
-    fun `given ScannerSetupBarcodesOnProducts step, when primary button clicked, then should emit dismiss dialog event`() = runTest {
-        // GIVEN
-        val hidModeStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
-        val pairModeStep = ScanningSetupStep.ScannerPairModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
-        val pairYourScannerStep = ScanningSetupStep.PairYourScanner(R.string.woopos_scanning_setup_device_tera_1200)
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
-            .thenReturn(hidModeStep)
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, hidModeStep))
-            .thenReturn(pairModeStep)
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairModeStep))
-            .thenReturn(pairYourScannerStep)
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, pairYourScannerStep))
-            .thenReturn(ScanningSetupStep.TestYourScanner)
-        whenever(
-            navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.TestYourScanner)
-        )
-            .thenReturn(ScanningSetupStep.ScannerSetupSuccess)
-        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerSetupSuccess))
-            .thenReturn(ScanningSetupStep.ScannerSetupBarcodesOnProducts)
-        val viewModel = createViewModel()
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
-        viewModel.onUiEvent(
-            WooPosScanningSetupUiEvent.OnBarcodeScanned(
-                BarcodeInputDetector.BarcodeResult.Success(
-                    barcode = "1234567890128",
-                    scanDurationMs = 100
-                )
-            )
-        )
-        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+    fun `given ScannerSetupBarcodesOnProducts step, when primary button clicked, then should emit dismiss dialog event`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModel(initialStep = ScanningSetupStep.ScannerSetupBarcodesOnProducts)
 
-        viewModel.dismissDialogEvent.test {
-            // WHEN
-            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
+            viewModel.dismissDialogEvent.test {
+                // WHEN
+                viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked)
 
-            // THEN
-            awaitItem()
+                // THEN
+                awaitItem()
+            }
         }
-    }
 
     @Test
     fun `given OnOpenBluetoothSettings event, when triggered, then should emit openBluetoothSettingsEvent`() = runTest {
@@ -251,10 +222,19 @@ class WooPosScanningSetupViewModelTest {
         runTest {
             // GIVEN
             val mockPreviousStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = android.R.drawable.ic_delete)
-            whenever(navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerPairModeSetup()))
+            whenever(
+                navigator.getPreviousStep(
+                    BarcodeReaderDevice.TERA_1200,
+                    ScanningSetupStep.ScannerPairModeSetup(
+                        qrCodeImageRes = R.drawable.ic_woopos_reader_setup_code_hid_tera_1200
+                    )
+                )
+            )
                 .thenReturn(mockPreviousStep)
             val viewModel = createViewModel(
-                initialStep = ScanningSetupStep.ScannerPairModeSetup(),
+                initialStep = ScanningSetupStep.ScannerPairModeSetup(
+                    qrCodeImageRes = R.drawable.ic_woopos_reader_setup_code_hid_tera_1200
+                ),
                 selectedDevice = BarcodeReaderDevice.TERA_1200
             )
 
