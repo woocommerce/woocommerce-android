@@ -1,13 +1,13 @@
 package com.woocommerce.android.util.crashlogging
 
 import android.app.Application
-import android.util.Base64
+import android.content.Context
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingProvider
 import com.automattic.android.tracks.crashlogging.performance.PerformanceMonitoringRepositoryProvider
 import com.automattic.android.tracks.crashlogging.performance.PerformanceTransactionRepository
-import com.goterl.lazysodium.utils.Key
+import com.automattic.encryptedlogging.EncryptedLogging
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.locale.ContextBasedLocaleProvider
@@ -16,10 +16,10 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger
-import org.wordpress.android.fluxc.model.encryptedlogging.EncryptedLoggingKey
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -37,9 +37,15 @@ abstract class CrashLoggingModule {
         }
 
         @Provides
-        fun provideEncryptedLoggingKey(): EncryptedLoggingKey {
-            return EncryptedLoggingKey(Key.fromBytes(Base64.decode(BuildConfig.ENCRYPTED_LOGGING_KEY, Base64.DEFAULT)))
-        }
+        @Singleton
+        fun provideEncryptedLogging(
+            @ApplicationContext context: Context,
+        ): EncryptedLogging =
+            EncryptedLogging.getInstance(
+                context,
+                encryptedLoggingKey = BuildConfig.ENCRYPTED_LOGGING_KEY,
+                clientSecret = BuildConfig.OAUTH_APP_SECRET,
+            )
 
         @Provides
         fun provideFluxCCrashLogger(crashLogging: CrashLogging): FluxCCrashLogger {

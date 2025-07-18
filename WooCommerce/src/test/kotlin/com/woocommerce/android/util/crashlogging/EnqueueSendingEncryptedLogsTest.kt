@@ -2,29 +2,27 @@ package com.woocommerce.android.util.crashlogging
 
 import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.EventLevel.INFO
+import com.automattic.encryptedlogging.EncryptedLogging
 import com.woocommerce.android.tools.NetworkStatus
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.argForWhich
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.EncryptedLogAction.UPLOAD_LOG
-import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogPayload
 import java.io.File
 
 @RunWith(MockitoJUnitRunner::class)
 class EnqueueSendingEncryptedLogsTest {
     private lateinit var sut: EnqueueSendingEncryptedLogs
 
-    private val eventBusDispatcher: Dispatcher = mock()
+    private val encryptedLogging: EncryptedLogging = mock()
     private val networkStatus: NetworkStatus = mock()
 
+    private val uuid = "uuid"
     private val tempFile = File("temp")
 
     private val wooLogFileProvider: WooLogFileProvider = mock {
@@ -34,7 +32,7 @@ class EnqueueSendingEncryptedLogsTest {
     @Before
     fun setUp() {
         sut = EnqueueSendingEncryptedLogs(
-            eventBusDispatcher = eventBusDispatcher,
+            encryptedLogging = encryptedLogging,
             wooLogFileProvider = wooLogFileProvider,
             networkStatus = networkStatus
         )
@@ -42,19 +40,14 @@ class EnqueueSendingEncryptedLogsTest {
 
     @Test
     fun `should enqueue logs upload when log file is available and there's network connection`() {
-        val uuid = "uuid"
         whenever(networkStatus.isConnected()).thenReturn(true)
 
-        sut.invoke("uuid", INFO)
+        sut.invoke(uuid, INFO)
 
-        verify(eventBusDispatcher, times(1)).dispatch(
-            argForWhich {
-                (payload as? UploadEncryptedLogPayload).let {
-                    it?.shouldStartUploadImmediately == true &&
-                        it.uuid == uuid &&
-                        it.file == tempFile
-                } && type == UPLOAD_LOG
-            }
+        verify(encryptedLogging, times(1)).enqueueSendingEncryptedLogs(
+            uuid = uuid,
+            file = tempFile,
+            shouldUploadImmediately = true
         )
     }
 
@@ -63,14 +56,12 @@ class EnqueueSendingEncryptedLogsTest {
     fun `should not start upload immediately when event is not fatal but there's no network connection`() {
         whenever(networkStatus.isConnected()).thenReturn(false)
 
-        sut.invoke("uuid", INFO)
+        sut.invoke(uuid, INFO)
 
-        verify(eventBusDispatcher, times(1)).dispatch(
-            argForWhich {
-                (payload as? UploadEncryptedLogPayload).let {
-                    it?.shouldStartUploadImmediately == false
-                }
-            }
+        verify(encryptedLogging, times(1)).enqueueSendingEncryptedLogs(
+            uuid = uuid,
+            file = tempFile,
+            shouldUploadImmediately = false
         )
     }
 
@@ -78,27 +69,23 @@ class EnqueueSendingEncryptedLogsTest {
     fun `should start upload immediately when event is not fatal and there's network connection`() {
         whenever(networkStatus.isConnected()).thenReturn(true)
 
-        sut.invoke("uuid", INFO)
+        sut.invoke(uuid, INFO)
 
-        verify(eventBusDispatcher, times(1)).dispatch(
-            argForWhich {
-                (payload as? UploadEncryptedLogPayload).let {
-                    it?.shouldStartUploadImmediately == true
-                }
-            }
+        verify(encryptedLogging, times(1)).enqueueSendingEncryptedLogs(
+            uuid = uuid,
+            file = tempFile,
+            shouldUploadImmediately = true
         )
     }
 
     @Test
     fun `should not enqueue for immediately send when event is fatal`() {
-        sut.invoke("uuid", FATAL)
+        sut.invoke(uuid, FATAL)
 
-        verify(eventBusDispatcher, times(1)).dispatch(
-            argForWhich {
-                (payload as? UploadEncryptedLogPayload).let {
-                    it?.shouldStartUploadImmediately == false
-                }
-            }
+        verify(encryptedLogging, times(1)).enqueueSendingEncryptedLogs(
+            uuid = uuid,
+            file = tempFile,
+            shouldUploadImmediately = false
         )
     }
 }
