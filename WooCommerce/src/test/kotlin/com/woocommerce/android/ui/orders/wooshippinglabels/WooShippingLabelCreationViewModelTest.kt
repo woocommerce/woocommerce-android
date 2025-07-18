@@ -1232,6 +1232,41 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when refunded, resets UI state`() = testBlocking {
+        val labelId = 123L
+        whenever(getShipments(any())) doReturn defaultShipments.toMutableList().apply {
+            set(0, defaultShipments.first().copy(label = shippingLabelModel.copy(labelId = labelId)))
+        }
+
+        createViewModel()
+
+        // Set up initial state with selected package and rates
+        sut.onPackageSelected(defaultPackageData)
+        advanceUntilIdle()
+
+        val initialViewState = sut.viewState.value as DataState
+        val initialShipment = initialViewState.shipmentUIList[0]
+
+        // Select shipping rate to have something to reset
+        val ratesState = initialShipment.shippingRatesState as ShippingRatesState.DataState
+        val selectedRate = defaultShippingRates.values.first().first()
+        ratesState.onSelectedShippingRateChanged(selectedRate)
+
+        sut.onShippingLabelRefunded(labelId)
+        advanceUntilIdle()
+
+        // Verify UI state is reset
+        val finalViewState = sut.viewState.value as DataState
+        val finalShipment = finalViewState.shipmentUIList[0]
+
+        // Verify package selection is reset
+        assertThat(finalShipment.packageSelectionState).isEqualTo(PackageSelectionState.NotSelected)
+
+        // Verify shipping rates are reset
+        assertThat(finalShipment.shippingRatesState).isEqualTo(ShippingRatesState.NoAvailable)
+    }
+
+    @Test
     fun `onLearnMoreClicked triggers OpenLearnMoreScreen event`() = testBlocking {
         createViewModel()
 
