@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
-import android.content.Context
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.util.WooPosScannerDetectionUtil
 import kotlinx.coroutines.test.runTest
@@ -13,10 +12,8 @@ import org.mockito.kotlin.whenever
 class WooPosBarcodeEventTrackerTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val scannerDetectionUtil: WooPosScannerDetectionUtil = mock()
-    private val context: Context = mock()
 
     private val tracker = WooPosBarcodeEventTracker(
-        context = context,
         analyticsTracker = analyticsTracker,
         scannerDetectionUtil = scannerDetectionUtil
     )

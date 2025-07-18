@@ -72,11 +72,11 @@ class WooPosScanningSetupAnalyticsTracker @Inject constructor(
         )
     }
 
-    suspend fun trackDismissed(device: BarcodeReaderDevice?, step: ScanningSetupStep?) {
+    suspend fun trackDismissed(device: BarcodeReaderDevice?, step: ScanningSetupStep) {
         analyticsTracker.track(
             WooPosAnalyticsEvent.Event.BarcodeScannerSetupDismissed(
                 scanner = device?.toAnalyticsString(),
-                step = step?.toAnalyticsString()
+                step = step.toAnalyticsString()
             )
         )
     }

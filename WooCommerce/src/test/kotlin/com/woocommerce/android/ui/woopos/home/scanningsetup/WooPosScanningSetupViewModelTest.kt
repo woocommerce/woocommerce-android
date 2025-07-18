@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -714,6 +715,43 @@ class WooPosScanningSetupViewModelTest {
 
         // THEN
         verify(analyticsTracker).trackScannerSelected(BarcodeReaderDevice.OTHER)
+    }
+
+    @Test
+    fun `when OnDismissed event is sent, then should track dismissed event`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDismissed)
+
+        // THEN
+        verify(analyticsTracker).trackDismissed(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection)
+    }
+
+    @Test
+    fun `when resetToInitialState is called, then should stop periodic detection`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.resetToInitialState()
+
+        // THEN
+        verify(scannerDetectionService).stopPeriodicDetection()
+    }
+
+    @Test
+    fun `when OnDialogShown event is sent, then should start periodic detection`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDialogShown)
+
+        // THEN
+        verify(scannerDetectionService).startPeriodicDetection(any(), any())
     }
 
     private fun createViewModel(): WooPosScanningSetupViewModel {
