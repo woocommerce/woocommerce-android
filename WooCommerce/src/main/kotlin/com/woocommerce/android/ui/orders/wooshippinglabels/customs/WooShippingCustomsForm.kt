@@ -63,7 +63,7 @@ fun ShipmentUIModel.createDefaultCustomsData(): CustomsData {
 
 private fun ShippableItemModel.createDefaultCustomsItem() = CustomsItem(
     productID = productId,
-    description = "",
+    description = title,
     quantity = quantity,
     value = price,
     weight = weight,
