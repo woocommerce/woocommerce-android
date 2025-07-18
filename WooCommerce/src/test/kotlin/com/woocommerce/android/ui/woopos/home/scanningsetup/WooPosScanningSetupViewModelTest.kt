@@ -732,7 +732,10 @@ class WooPosScanningSetupViewModelTest {
         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDismissed)
 
         // THEN
-        verify(analyticsTracker).trackDismissed(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
+        verify(analyticsTracker).trackDismissed(
+            BarcodeReaderDevice.TERA_1200,
+            ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        )
     }
 
     @Test
