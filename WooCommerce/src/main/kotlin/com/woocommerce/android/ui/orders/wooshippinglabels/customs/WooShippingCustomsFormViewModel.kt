@@ -261,9 +261,14 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             true -> value.asInputValueError
         }
 
-    private fun validateProductWeight(weight: String): InputValue = when (weight.isBlank()) {
-        false -> InputValue.Data(weight)
-        true -> weight.asInputValueError
+    private fun validateProductWeight(weight: String): InputValue = when {
+        weight.isBlank() -> weight.asInputValueError
+        weight.toFloatOrNull() == null || weight.toFloat() == 0f -> InputValue.Error(
+            input = weight,
+            errorMessageId = R.string.woo_shipping_labels_customs_product_details_weight_invalid
+        )
+
+        else -> InputValue.Data(weight)
     }
 
     private fun updateShippingProductsAt(
