@@ -40,7 +40,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = loadViewStateCustomsData(navArgs.customsData)
+        initialValue = loadViewStateFromCustomsData(navArgs.customsData)
     )
     val viewState = _viewState.asLiveData()
 
@@ -94,7 +94,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun loadViewStateCustomsData(customData: CustomsData): ViewState {
+    private fun loadViewStateFromCustomsData(customData: CustomsData): ViewState {
         return ViewState(
             contentType = customData.contentType,
             otherContentInput = InputValue.Data(customData.contentDescription),
