@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountri
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -26,7 +25,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -108,10 +106,10 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 WooShippingCustomsProductUIModel(
                     productId = item.productID,
                     name = item.description,
-                    description = InputValue.Data(item.description),
-                    tariffNumber = InputValue.Data(item.hsTariffNumber),
-                    valuePerUnit = InputValue.Data(item.value.toString()),
-                    weightPerUnit = InputValue.Data(item.weight.toString()),
+                    description = validateProductDescription(item.description),
+                    tariffNumber = validateHSTariffNumber(item.hsTariffNumber, destinationCountryCode),
+                    valuePerUnit = validateProductValue(item.value.toString()),
+                    weightPerUnit = validateProductWeight(item.weight.takeIf { it != 0f }?.toString() ?: ""),
                     originCountry = item.originCountry,
                     originCountryCode = item.originCountryCode,
                     quantity = item.quantity,
@@ -192,13 +190,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     fun onShippableProductDescriptionChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank()) {
-                false -> InputValue.Data(newValue)
-                true -> InputValue.Error(
-                    input = newValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_product_details_description_missing
-                )
-            }.let { item.copy(description = it) }
+            item.copy(description = validateProductDescription(newValue))
         }
     }
 
@@ -215,19 +207,13 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     fun onShippableProductValuePerUnitChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank()) {
-                false -> InputValue.Data(newValue)
-                true -> newValue.asInputValueError
-            }.let { item.copy(valuePerUnit = it) }
+            validateProductValue(newValue).let { item.copy(valuePerUnit = it) }
         }
     }
 
     fun onShippableProductWeightPerUnitChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank()) {
-                false -> InputValue.Data(newValue)
-                true -> newValue.asInputValueError
-            }.let { item.copy(weightPerUnit = it) }
+            item.copy(weightPerUnit = validateProductWeight(newValue))
         }
     }
 
@@ -261,6 +247,25 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         _viewState.value.asCustomData.let { triggerEvent(FinishCustomsForm(it)) }
     }
 
+    private fun validateProductDescription(description: String) = when (description.isBlank()) {
+        false -> InputValue.Data(description)
+        true -> InputValue.Error(
+            input = description,
+            errorMessageId = R.string.woo_shipping_labels_customs_product_details_description_missing
+        )
+    }
+
+    private fun validateProductValue(value: String): InputValue =
+        when (value.isBlank()) {
+            false -> InputValue.Data(value)
+            true -> value.asInputValueError
+        }
+
+    private fun validateProductWeight(weight: String): InputValue = when (weight.isBlank()) {
+        false -> InputValue.Data(weight)
+        true -> weight.asInputValueError
+    }
+
     private fun updateShippingProductsAt(
         itemIndex: Int,
         generateUpdatedItem: (WooShippingCustomsProductUIModel) -> WooShippingCustomsProductUIModel
@@ -281,33 +286,6 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             onFailure = { possibleLocations = null }
         )
     }
-
-    private fun ShippableItemModel.toProductUIModel() = WooShippingCustomsProductUIModel(
-        productId = productId,
-        name = title,
-        description = "".asInputValueError,
-        tariffNumber = validateHSTariffNumber("", destinationCountryCode),
-        quantity = quantity,
-        originCountry = "",
-        originCountryCode = "",
-        isExpanded = false,
-        valuePerUnit = when {
-            price == BigDecimal.ZERO -> InputValue.Error(
-                input = "",
-                errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
-            )
-
-            else -> InputValue.Data(shippingTotalValue.toString())
-        },
-        weightPerUnit = when {
-            weight == 0f -> InputValue.Error(
-                input = "",
-                errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
-            )
-
-            else -> InputValue.Data(weight.toString())
-        }
-    )
 
     private val String.asInputValueError
         get() = InputValue.Error(
