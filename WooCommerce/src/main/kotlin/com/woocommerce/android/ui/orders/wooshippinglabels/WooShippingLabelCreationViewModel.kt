@@ -726,7 +726,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
         }
 
-        shippingAddresses.updateSize(WooShippingAddresses.EMPTY)
+        val originAddresses = shippingAddresses.value.first().originAddresses
+        shippingAddresses.updateSize(
+            WooShippingAddresses.EMPTY.copy(originAddresses = originAddresses, shipFrom = originAddresses.first())
+        )
         selectedPackagesFlow.updateSize(null)
         customsFormDataFlow.updateSize(null)
         packageWeightsFlow.updateSize(null)
