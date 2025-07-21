@@ -141,6 +141,10 @@ fun WooPosEligibilityScreen(
 @Composable
 private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason): String {
     return when (reason) {
+        WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound ->
+            stringResource(
+                id = R.string.woopos_eligibility_reason_woocommerce_plugin_not_found
+            )
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion ->
             stringResource(
                 id = R.string.woopos_eligibility_reason_unsupported_woocommerce_version,

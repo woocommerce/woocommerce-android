@@ -155,11 +155,11 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given forceRefresh true and fetchWooCoreVersion returns null, when invoked, then return NotLaunchable with UnsupportedWooCommerceVersion`() = testBlocking {
+    fun `given forceRefresh true and fetchWooCoreVersion returns null, when invoked, then return NotLaunchable with WooCommercePluginNotFound`() = testBlocking {
         whenever(fetchWooCoreVersion()).thenReturn(null)
 
         val result = sut(forceRefresh = true)
-        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedWooCommerceVersion), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.WooCommercePluginNotFound), result)
     }
 
     @Test

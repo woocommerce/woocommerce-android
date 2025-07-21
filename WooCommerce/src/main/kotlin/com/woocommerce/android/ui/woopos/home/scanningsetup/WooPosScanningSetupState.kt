@@ -80,11 +80,11 @@ data class WooPosScanningSetupState(
         ) : ScanningSetupStep() {
             @get:StringRes
             @IgnoredOnParcel
-            val titleRes = R.string.woopos_scanning_setup_introduction_title
+            val titleRes = R.string.woopos_scanning_setup_hid_title
 
             @get:StringRes
             @IgnoredOnParcel
-            val messageRes = R.string.woopos_scanning_setup_introduction_message
+            val messageRes = R.string.woopos_scanning_setup_hid_message
 
             @get:StringRes
             @IgnoredOnParcel
