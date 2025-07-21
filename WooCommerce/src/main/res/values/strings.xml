@@ -4518,6 +4518,11 @@
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
     <string name="woopos_scanning_setup_device_other">Other</string>
 
+    <string name="woopos_keyboard_hint_title">Enable floating keyboard</string>
+    <string name="woopos_keyboard_hint_message">Your barcode scanner is connected but the keyboard isn\'t showing. To use both for searching:</string>
+    <string name="woopos_keyboard_hint_action">Go to Settings → Physical Keyboard → Show on-screen keyboard</string>
+    <string name="woopos_keyboard_hint_dismiss">Dismiss</string>
+
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
     <string name="customers_details_registration_section">Registration</string>

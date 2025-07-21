@@ -6,6 +6,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,6 +39,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +56,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.util.rememberKeyboardStatus
 import com.woocommerce.android.ui.woopos.home.items.WOO_POS_ITEMS_TOOLBAR_HEIGHT
 import kotlinx.coroutines.delay
 import kotlinx.parcelize.Parcelize
@@ -101,6 +104,9 @@ private fun SearchInput(
     val animationDuration = 200L
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
+    val keyboardStatus = rememberKeyboardStatus()
+    var showKeyboardHint by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val borderColor by animateFloatAsState(
         targetValue = if (isFocused) 1f else 0f,
@@ -119,16 +125,33 @@ private fun SearchInput(
         )
     }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        IconButton(
-            onClick = { onEvent(WooPosSearchUIEvent.Close) },
-            modifier = Modifier
-                .size(48.dp)
-                .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
+    Column(modifier = Modifier.fillMaxWidth()) {
+        if (showKeyboardHint) {
+            WooPosFloatingKeyboardHint(
+                isVisible = true,
+                onDismiss = {
+                    showKeyboardHint = false
+                },
+                onOpenSettings = {
+                    val intent = android.content.Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS)
+                    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
+                    showKeyboardHint = false
+                },
+                modifier = Modifier.padding(bottom = WooPosSpacing.Small.value)
+            )
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
+            IconButton(
+                onClick = { onEvent(WooPosSearchUIEvent.Close) },
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
+            ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(
@@ -172,6 +195,11 @@ private fun SearchInput(
                 .focusRequester(focusRequester)
                 .onFocusChanged { focusState ->
                     isFocused = focusState.isFocused
+                    if (focusState.isFocused && keyboardStatus.hasHardwareKeyboard &&
+                        !keyboardStatus.isKeyboardVisible
+                    ) {
+                        showKeyboardHint = true
+                    }
                 },
             placeholder = {
                 WooPosText(
@@ -259,6 +287,13 @@ private fun SearchInput(
                 delay(animationDuration)
                 focusRequester.requestFocus()
             }
+        }
+
+        LaunchedEffect(keyboardStatus.isKeyboardVisible) {
+            if (keyboardStatus.isKeyboardVisible && showKeyboardHint) {
+                showKeyboardHint = false
+            }
+        }
         }
     }
 }
