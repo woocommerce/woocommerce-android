@@ -581,12 +581,12 @@ class WooPosScanningSetupViewModelTest {
     }
 
     @Test
-    fun `when resetToInitialState is called, then should stop periodic detection`() = runTest {
+    fun `when stopScannerDetection is called, then should stop periodic detection`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.resetToInitialState()
+        viewModel.stopScannerDetection()
 
         // THEN
         verify(scannerDetectionService).stopPeriodicDetection()
