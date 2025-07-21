@@ -1,10 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -45,39 +40,33 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 @Composable
 fun WooPosFloatingKeyboardHint(
     modifier: Modifier = Modifier,
-    isVisible: Boolean,
     title: String,
     message: String,
     actionText: String,
     onDismiss: () -> Unit,
-    onOpenSettings: () -> Unit
+    onOpenSettings: () -> Unit,
 ) {
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = fadeIn() + slideInVertically(initialOffsetY = { -it / 2 }),
-        exit = fadeOut() + slideOutVertically(targetOffsetY = { -it / 2 }),
-        modifier = modifier
-    ) {
-        WooPosFloatingKeyboardHintContent(
-            title = title,
-            message = message,
-            actionText = actionText,
-            onDismiss = onDismiss,
-            onOpenSettings = onOpenSettings
-        )
-    }
+    WooPosFloatingKeyboardHintContent(
+        modifier = modifier,
+        title = title,
+        message = message,
+        actionText = actionText,
+        onDismiss = onDismiss,
+        onOpenSettings = onOpenSettings,
+    )
 }
 
 @Composable
 private fun WooPosFloatingKeyboardHintContent(
+    modifier: Modifier = Modifier,
     title: String,
     message: String,
     actionText: String,
     onDismiss: () -> Unit,
-    onOpenSettings: () -> Unit
+    onOpenSettings: () -> Unit,
 ) {
     WooPosCard(
-        modifier = Modifier
+        modifier = modifier
             .semantics { contentDescription = title },
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         elevation = WooPosElevation.Medium,
@@ -191,7 +180,6 @@ fun WooPosFloatingKeyboardHintPreview() {
                 .padding(WooPosSpacing.Large.value)
         ) {
             WooPosFloatingKeyboardHint(
-                isVisible = true,
                 title = stringResource(R.string.woopos_keyboard_hint_title),
                 message = stringResource(R.string.woopos_keyboard_hint_message),
                 actionText = stringResource(R.string.woopos_keyboard_hint_action),

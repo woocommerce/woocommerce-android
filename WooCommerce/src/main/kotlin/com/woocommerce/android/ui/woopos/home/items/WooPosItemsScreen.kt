@@ -5,12 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -25,9 +27,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -135,74 +140,102 @@ private fun MainItemsList(
         }
     }
 
-    Box(
+    ConstraintLayout(
         modifier = modifier
             .fillMaxSize()
+            .animateContentSize(animationSpec = spring())
     ) {
-        Column(
-            modifier.fillMaxHeight()
-        ) {
-            WooPosItemsToolbar(
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .padding(
-                        end = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                    ),
-                state = state.value,
-                onTabClicked = onTabClicked,
-                onSearchEvent = onSearchEvent,
-                onBackClicked = onBackClicked,
-                onAddCouponEvent = onAddCouponEvent,
-            )
+        val (toolbar, keyboardHint, mainContent) = createRefs()
+        WooPosItemsToolbar(
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(
+                    end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                )
+                .constrainAs(toolbar) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            state = state.value,
+            onTabClicked = onTabClicked,
+            onSearchEvent = onSearchEvent,
+            onBackClicked = onBackClicked,
+            onAddCouponEvent = onAddCouponEvent,
+        )
 
+        AnimatedVisibility(
+            visible = showKeyboardHint,
+            enter = expandVertically(
+                animationSpec = spring(),
+                expandFrom = Alignment.Top
+            ),
+            exit = shrinkVertically(
+                animationSpec = spring(),
+                shrinkTowards = Alignment.Top
+            ),
+            modifier = Modifier.constrainAs(keyboardHint) {
+                top.linkTo(toolbar.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+        ) {
             WooPosFloatingKeyboardHint(
-                isVisible = showKeyboardHint,
                 title = stringResource(R.string.woopos_keyboard_hint_title),
                 message = stringResource(R.string.woopos_keyboard_hint_message),
                 actionText = stringResource(R.string.woopos_keyboard_hint_action),
                 onDismiss = { showKeyboardHint = false },
                 onOpenSettings = { openKeyboardSettings(context) },
                 modifier = Modifier.padding(
-                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                    vertical = WooPosSpacing.Small.value
+                    start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    top = WooPosSpacing.Small.value
                 )
             )
+        }
 
-            Crossfade(
-                targetState = getScreenState(currentState),
-                animationSpec = tween(
-                    durationMillis = 300,
-                    easing = LinearEasing,
-                ),
-            ) { screenState ->
-                when (screenState) {
-                    ScreenState.Products -> WooPosProductsScreen(
+        Crossfade(
+            targetState = getScreenState(currentState),
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = LinearEasing,
+            ),
+            modifier = Modifier.constrainAs(mainContent) {
+                top.linkTo(if (showKeyboardHint) keyboardHint.bottom else toolbar.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.fillToConstraints
+                width = Dimension.fillToConstraints
+            }
+        ) { screenState ->
+            when (screenState) {
+                ScreenState.Products -> WooPosProductsScreen(
+                    modifier = Modifier.padding(
+                        horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    ),
+                    listState = productsViewState
+                )
+
+                ScreenState.ProductsSearch -> WooPosItemsSearchScreen()
+                ScreenState.Coupons -> WooPosCouponsScreen(
+                    modifier = Modifier.padding(
+                        horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    ),
+                    listState = couponsListState,
+                )
+
+                is ScreenState.Variations -> {
+                    WooPosVariationsScreen(
                         modifier = Modifier.padding(
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
                         ),
-                        listState = productsViewState
+                        variableProductData = screenState.variableProductData,
+                        onBackClicked = { onBackClicked() },
                     )
-
-                    ScreenState.ProductsSearch -> WooPosItemsSearchScreen()
-                    ScreenState.Coupons -> WooPosCouponsScreen(
-                        modifier = Modifier.padding(
-                            horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                        ),
-                        listState = couponsListState,
-                    )
-
-                    is ScreenState.Variations -> {
-                        WooPosVariationsScreen(
-                            modifier = Modifier.padding(
-                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                            ),
-                            variableProductData = screenState.variableProductData,
-                            onBackClicked = { onBackClicked() },
-                        )
-                    }
-
-                    is ScreenState.CouponsSearch -> WooPosCouponsSearchScreen()
                 }
+
+                is ScreenState.CouponsSearch -> WooPosCouponsSearchScreen()
             }
         }
     }
