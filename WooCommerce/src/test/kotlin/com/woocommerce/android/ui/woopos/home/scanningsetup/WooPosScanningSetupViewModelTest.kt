@@ -14,7 +14,9 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
@@ -24,6 +26,8 @@ class WooPosScanningSetupViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val navigator: WooPosScannerSetupNavigator = mock()
+    private val analyticsTracker: WooPosScanningSetupAnalyticsTracker = mock()
+    private val scannerDetectionService: WooPosScannerDetectionServiceForTracking = mock()
 
     @Test
     fun `given initialized, when no action taken, then should start with DeviceSelection step`() = runTest {
@@ -87,7 +91,10 @@ class WooPosScanningSetupViewModelTest {
     @Test
     fun `given OnOpenBluetoothSettings event, when triggered, then should emit openBluetoothSettingsEvent`() = runTest {
         // GIVEN
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
         val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
 
         viewModel.openBluetoothSettingsEvent.test {
             // WHEN
@@ -498,12 +505,111 @@ class WooPosScanningSetupViewModelTest {
             assertThat(step.backButtonTextRes).isEqualTo(R.string.woopos_scanning_setup_button_back)
         }
 
+    @Test
+    fun `when OnDialogShown event is sent, then should track barcode scanner setup flow shown event`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDialogShown)
+
+        // THEN
+        verify(analyticsTracker).trackDialogShown()
+    }
+
+    @Test
+    fun `when TERA_1200 device is selected, then should track scanner selected event with tera_1200 scanner`() = runTest {
+        // GIVEN
+        val mockNextStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(mockNextStep)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
+
+        // THEN
+        verify(analyticsTracker).trackScannerSelected(BarcodeReaderDevice.TERA_1200)
+    }
+
+    @Test
+    fun `when STAR_BSH_20B device is selected, then should track scanner selected event with star_bsh_20b scanner`() = runTest {
+        // GIVEN
+        val mockNextStep = ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        whenever(navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, ScanningSetupStep.DeviceSelection))
+            .thenReturn(mockNextStep)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.STAR_BSH_20B))
+
+        // THEN
+        verify(analyticsTracker).trackScannerSelected(BarcodeReaderDevice.STAR_BSH_20B)
+    }
+
+    @Test
+    fun `when OTHER device is selected, then should track scanner selected event with other scanner`() = runTest {
+        // GIVEN
+        val mockNextStep = ScanningSetupStep.ScannerSetupInfo
+        whenever(navigator.getNextStep(BarcodeReaderDevice.OTHER, ScanningSetupStep.DeviceSelection))
+            .thenReturn(mockNextStep)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.OTHER))
+
+        // THEN
+        verify(analyticsTracker).trackScannerSelected(BarcodeReaderDevice.OTHER)
+    }
+
+    @Test
+    fun `when OnDismissed event is sent, then should track dismissed event`() = runTest {
+        // GIVEN
+        whenever(navigator.getNextStep(BarcodeReaderDevice.TERA_1200, ScanningSetupStep.DeviceSelection))
+            .thenReturn(ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode))
+        val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDeviceSelected(BarcodeReaderDevice.TERA_1200))
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDismissed)
+
+        // THEN
+        verify(analyticsTracker).trackDismissed(
+            BarcodeReaderDevice.TERA_1200,
+            ScanningSetupStep.ScannerHIDModeSetup(qrCodeImageRes = R.drawable.ic_barcode)
+        )
+    }
+
+    @Test
+    fun `when stopScannerDetection is called, then should stop periodic detection`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.stopScannerDetection()
+
+        // THEN
+        verify(scannerDetectionService).stopPeriodicDetection()
+    }
+
+    @Test
+    fun `when OnDialogShown event is sent, then should start periodic detection`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnDialogShown)
+
+        // THEN
+        verify(scannerDetectionService).startPeriodicDetection(any(), any())
+    }
+
     private fun createViewModel(
         initialStep: ScanningSetupStep = ScanningSetupStep.DeviceSelection,
         selectedDevice: BarcodeReaderDevice? = null
     ): WooPosScanningSetupViewModel {
         whenever(navigator.getInitialStep()).thenReturn(initialStep)
-        val viewModel = WooPosScanningSetupViewModel(navigator)
+        val viewModel = WooPosScanningSetupViewModel(navigator, analyticsTracker, scannerDetectionService)
 
         selectedDevice?.let {
             whenever(navigator.getNextStep(it, initialStep)).thenReturn(initialStep)

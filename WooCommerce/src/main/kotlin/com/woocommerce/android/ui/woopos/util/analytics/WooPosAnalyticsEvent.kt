@@ -335,6 +335,139 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "simple_products_explanation_dialog_shown"
         }
 
+        data object BarcodeScannerSetupFlowShown : Event() {
+            override val name: String = "barcode_scanner_setup_flow_shown"
+        }
+
+        data class BarcodeScannerSetupScannerSelected(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_scanner_selected"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupNextTapped(val scanner: String, val step: String) : Event() {
+            override val name: String = "barcode_scanner_setup_next_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "step" to step
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupBackTapped(val scanner: String, val step: String) : Event() {
+            override val name: String = "barcode_scanner_setup_back_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "step" to step
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupOpenSystemSettingsTapped(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_open_system_settings_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupTestScanSuccess(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_test_scan_success"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupTestScanFailed(val scanner: String, val scanValue: String) : Event() {
+            override val name: String = "barcode_scanner_setup_test_scan_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "scan_value" to scanValue
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupTestScanTimedOut(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_test_scan_timed_out"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupDismissed(val scanner: String?, val step: String?) : Event() {
+            override val name: String = "barcode_scanner_setup_dismissed"
+
+            init {
+                addProperties(
+                    buildMap {
+                        if (scanner != null) {
+                            put("scanner", scanner)
+                        }
+                        if (step != null) {
+                            put("step", step)
+                        }
+                    }
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupRetryTapped(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_retry_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupScannerConnected(val scanner: String, val scannerInfo: String) : Event() {
+            override val name: String = "barcode_scanner_setup_scanner_connected"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "scanner_info" to scannerInfo
+                    )
+                )
+            }
+        }
+
         data class SearchButtonTapped(
             val source: ItemsListSource,
         ) : Event() {
