@@ -6,7 +6,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -120,147 +119,145 @@ private fun SearchInput(
         )
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        IconButton(
+            onClick = { onEvent(WooPosSearchUIEvent.Close) },
+            modifier = Modifier
+                .size(48.dp)
+                .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
         ) {
-            IconButton(
-                onClick = { onEvent(WooPosSearchUIEvent.Close) },
-                modifier = Modifier
-                    .size(48.dp)
-                    .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(
-                        R.string.woopos_search_back_content_description
-                    ),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(28.dp)
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(
+                    R.string.woopos_search_back_content_description
+                ),
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+
+        val (hint, query) = when (state.input) {
+            is Input.Query -> "" to state.input.text
+            is Input.Hint -> state.input.text to ""
+        }
+
+        var textFieldValue by remember {
+            mutableStateOf(
+                TextFieldValue(
+                    text = query,
+                    selection = TextRange(state.input.cursorPosition)
                 )
-            }
+            )
+        }
 
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
-
-            val (hint, query) = when (state.input) {
-                is Input.Query -> "" to state.input.text
-                is Input.Hint -> state.input.text to ""
-            }
-
-            var textFieldValue by remember {
-                mutableStateOf(
-                    TextFieldValue(
-                        text = query,
-                        selection = TextRange(state.input.cursorPosition)
+        OutlinedTextField(
+            value = textFieldValue,
+            onValueChange = { newValue: TextFieldValue ->
+                textFieldValue = newValue
+                onEvent(
+                    WooPosSearchUIEvent.Search(
+                        newValue.text,
+                        newValue.selection.start
                     )
                 )
-            }
-
-            OutlinedTextField(
-                value = textFieldValue,
-                onValueChange = { newValue: TextFieldValue ->
-                    textFieldValue = newValue
+            },
+            modifier = Modifier
+                .weight(1f)
+                .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT)
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                },
+            placeholder = {
+                WooPosText(
+                    text = hint,
+                    style = WooPosTypography.BodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                )
+            },
+            textStyle = WooPosTypography.BodyMedium.style
+                .copy(fontWeight = FontWeight.Bold),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Search,
+                capitalization = KeyboardCapitalization.None,
+                autoCorrectEnabled = false
+            ),
+            shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+            keyboardActions = KeyboardActions(
+                onSearch = {
                     onEvent(
                         WooPosSearchUIEvent.Search(
-                            newValue.text,
-                            newValue.selection.start
+                            textFieldValue.text,
+                            textFieldValue.selection.start
                         )
-                    )
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT)
-                    .focusRequester(focusRequester)
-                    .onFocusChanged { focusState ->
-                        isFocused = focusState.isFocused
-                    },
-                placeholder = {
-                    WooPosText(
-                        text = hint,
-                        style = WooPosTypography.BodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = WooPosTheme.colors.onSurfaceVariantLowest,
-                    )
-                },
-                textStyle = WooPosTypography.BodyMedium.style
-                    .copy(fontWeight = FontWeight.Bold),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search,
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrectEnabled = false
-                ),
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        onEvent(
-                            WooPosSearchUIEvent.Search(
-                                textFieldValue.text,
-                                textFieldValue.selection.start
-                            )
-                        )
-                    }
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                    focusedBorderColor = animatedFocusedBorderColor,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                    cursorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                ),
-                leadingIcon = {
-                    if (state.isLoading) {
-                        WooPosCircularLoadingIndicator(
-                            modifier = Modifier.size(24.dp)
-                        )
-                    } else {
-                        IconButton(
-                            onClick = {},
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-                trailingIcon = {
-                    if (textFieldValue.text.isNotEmpty()) {
-                        IconButton(
-                            onClick = { onEvent(WooPosSearchUIEvent.Clear) },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Cancel,
-                                contentDescription = stringResource(
-                                    R.string.woopos_search_clear_content_description
-                                ),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-                },
-            )
-
-            LaunchedEffect(query) {
-                if (query != textFieldValue.text) {
-                    textFieldValue = TextFieldValue(
-                        text = query,
-                        selection = TextRange(state.input.cursorPosition)
                     )
                 }
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                focusedBorderColor = animatedFocusedBorderColor,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            ),
+            leadingIcon = {
+                if (state.isLoading) {
+                    WooPosCircularLoadingIndicator(
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    IconButton(
+                        onClick = {},
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+            },
+            trailingIcon = {
+                if (textFieldValue.text.isNotEmpty()) {
+                    IconButton(
+                        onClick = { onEvent(WooPosSearchUIEvent.Clear) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Cancel,
+                            contentDescription = stringResource(
+                                R.string.woopos_search_clear_content_description
+                            ),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+            },
+        )
+
+        LaunchedEffect(query) {
+            if (query != textFieldValue.text) {
+                textFieldValue = TextFieldValue(
+                    text = query,
+                    selection = TextRange(state.input.cursorPosition)
+                )
             }
+        }
 
-            LaunchedEffect(state) {
-                if (state.requestFocus) {
-                    delay(animationDuration)
-                    focusRequester.requestFocus()
-                }
+        LaunchedEffect(state) {
+            if (state.requestFocus) {
+                delay(animationDuration)
+                focusRequester.requestFocus()
             }
         }
     }
