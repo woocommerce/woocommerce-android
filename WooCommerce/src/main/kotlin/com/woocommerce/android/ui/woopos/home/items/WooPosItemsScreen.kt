@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items
 
+import android.content.Context
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -13,13 +14,23 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosFloatingKeyboardHint
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.composeui.component.rememberKeyboardStatus
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
@@ -35,6 +46,12 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsN
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+
+private fun openKeyboardSettings(context: Context) {
+    val intent = android.content.Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS)
+    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+    context.startActivity(intent)
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -101,6 +118,22 @@ private fun MainItemsList(
     onAddCouponEvent: () -> Unit,
     onBackClicked: () -> Unit,
 ) {
+    val keyboardStatus = rememberKeyboardStatus()
+    var showKeyboardHint by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val currentState = state.value
+    val isSearchOpen = (currentState.search as? WooPosItemsToolbarViewState.SearchState.Visible)?.let {
+        it.state is WooPosSearchInputState.Open
+    } == true
+
+    LaunchedEffect(isSearchOpen, keyboardStatus) {
+        if (isSearchOpen && keyboardStatus.hasHardwareKeyboard && !keyboardStatus.isKeyboardVisible) {
+            showKeyboardHint = true
+        } else {
+            showKeyboardHint = false
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -121,7 +154,21 @@ private fun MainItemsList(
                 onAddCouponEvent = onAddCouponEvent,
             )
 
-            val currentState = state.value
+            WooPosFloatingKeyboardHint(
+                isVisible = showKeyboardHint,
+                title = stringResource(R.string.woopos_keyboard_hint_title),
+                message = stringResource(R.string.woopos_keyboard_hint_message),
+                actionText = stringResource(R.string.woopos_keyboard_hint_action),
+                onDismiss = { showKeyboardHint = false },
+                onOpenSettings = {
+                    openKeyboardSettings(context)
+                    showKeyboardHint = false
+                },
+                modifier = Modifier.padding(
+                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    vertical = WooPosSpacing.Small.value
+                )
+            )
 
             Crossfade(
                 targetState = getScreenState(currentState),
@@ -155,6 +202,7 @@ private fun MainItemsList(
                             onBackClicked = { onBackClicked() },
                         )
                     }
+
                     is ScreenState.CouponsSearch -> WooPosCouponsSearchScreen()
                 }
             }
@@ -187,6 +235,7 @@ private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {
         is WooPosItemsToolbarViewState.VariationList -> ScreenState.Variations(
             variableProductData = state.variableProductData
         )
+
         is WooPosItemsToolbarViewState.CouponList -> {
             when (val searchState = state.search) {
                 WooPosItemsToolbarViewState.SearchState.Hidden -> ScreenState.Coupons

@@ -1,8 +1,9 @@
-package com.woocommerce.android.ui.woopos.common.util
+package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Rect
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
@@ -41,7 +42,6 @@ fun rememberKeyboardStatus(): KeyboardStatus {
     return keyboardStatus
 }
 
-
 private fun getInitialKeyboardStatus(context: Context): KeyboardStatus {
     return KeyboardStatus(
         isKeyboardVisible = false,
@@ -79,6 +79,9 @@ private fun isFloatingKeyboardEnabled(context: Context): Boolean {
         val enabledInputMethods = imm.enabledInputMethodList
         enabledInputMethods.isNotEmpty()
     } catch (e: SecurityException) {
+        // If we can't access input methods due to security restrictions,
+        // assume floating keyboard is enabled to avoid blocking users
+        Log.w("WooPosKeyboardDetector", "Security exception accessing input methods", e)
         true
     }
 }

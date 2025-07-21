@@ -7,136 +7,175 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosFloatingKeyboardHint(
-    isVisible: Boolean,
-    onDismiss: () -> Unit,
-    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
-    autoDismissDelayMs: Long = 10000L
+    isVisible: Boolean,
+    title: String,
+    message: String,
+    actionText: String,
+    onDismiss: () -> Unit,
+    onOpenSettings: () -> Unit
 ) {
-    var shouldShow by remember { mutableStateOf(isVisible) }
-
-    LaunchedEffect(isVisible) {
-        shouldShow = isVisible
-        if (isVisible && autoDismissDelayMs > 0) {
-            delay(autoDismissDelayMs)
-            onDismiss()
-        }
-    }
-
     AnimatedVisibility(
-        visible = shouldShow,
-        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
-        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        visible = isVisible,
+        enter = fadeIn() + slideInVertically(initialOffsetY = { -it / 2 }),
+        exit = fadeOut() + slideOutVertically(targetOffsetY = { -it / 2 }),
         modifier = modifier
     ) {
-        Card(
-            shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.dp
-            ),
+        WooPosFloatingKeyboardHintContent(
+            title = title,
+            message = message,
+            actionText = actionText,
+            onDismiss = onDismiss,
+            onOpenSettings = onOpenSettings
+        )
+    }
+}
+
+@Composable
+private fun WooPosFloatingKeyboardHintContent(
+    title: String,
+    message: String,
+    actionText: String,
+    onDismiss: () -> Unit,
+    onOpenSettings: () -> Unit
+) {
+    WooPosCard(
+        modifier = Modifier
+            .semantics { contentDescription = title },
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+    ) {
+        ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.Medium.value)
         ) {
-            Column(
+            val icon = createRef()
+            val titleText = createRef()
+            val messageText = createRef()
+            val closeButton = createRef()
+
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(WooPosSpacing.Medium.value)
+                    .size(112.dp)
+                    .constrainAs(icon) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    },
+                contentAlignment = Alignment.Center,
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    modifier = Modifier
+                        .size(54.dp),
+                    contentDescription = title,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
+
+            WooPosText(
+                text = title,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.constrainAs(titleText) {
+                    start.linkTo(icon.end)
+                    end.linkTo(parent.end, margin = WooPosSpacing.Medium.value)
+                    bottom.linkTo(messageText.top)
+                    top.linkTo(parent.top, margin = WooPosSpacing.Medium.value)
+                    width = Dimension.fillToConstraints
+                }
+            )
+
+            val linkAnnotation = LinkAnnotation.Clickable(
+                tag = "settings"
+            ) {
+                onOpenSettings()
+            }
+
+            val annotatedMessage = buildAnnotatedString {
+                append(message)
+                append(" ")
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        textDecoration = TextDecoration.Underline
+                    )
                 ) {
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(end = WooPosSpacing.Small.value)
-                        )
-
-                        Column {
-                            WooPosText(
-                                text = stringResource(R.string.woopos_keyboard_hint_title),
-                                style = WooPosTypography.BodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-
-                            WooPosText(
-                                text = stringResource(R.string.woopos_keyboard_hint_message),
-                                style = WooPosTypography.BodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = WooPosSpacing.XSmall.value)
-                            )
-
-                            WooPosText(
-                                text = stringResource(R.string.woopos_keyboard_hint_action),
-                                style = WooPosTypography.BodySmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier
-                                    .padding(top = WooPosSpacing.Small.value)
-                                    .clickable { onOpenSettings() }
-                            )
-                        }
-                    }
-
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.padding(WooPosSpacing.None.value)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Close,
-                            contentDescription = stringResource(R.string.woopos_keyboard_hint_dismiss),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                    withLink(linkAnnotation) {
+                        append(actionText)
                     }
                 }
+            }
+
+            WooPosText(
+                text = annotatedMessage,
+                style = WooPosTypography.BodySmall,
+                modifier = Modifier
+                    .constrainAs(messageText) {
+                        start.linkTo(titleText.start)
+                        end.linkTo(closeButton.start, margin = WooPosSpacing.Medium.value)
+                        bottom.linkTo(parent.bottom, margin = WooPosSpacing.Medium.value)
+                        top.linkTo(titleText.bottom, margin = WooPosSpacing.Small.value)
+                        width = Dimension.fillToConstraints
+                    }
+                    .clickable { onOpenSettings() }
+            )
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .constrainAs(closeButton) {
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                    }
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(32.dp),
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(
+                        id = R.string.woopos_exit_dialog_confirmation_close_content_description
+                    ),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
             }
         }
     }
@@ -153,6 +192,9 @@ fun WooPosFloatingKeyboardHintPreview() {
         ) {
             WooPosFloatingKeyboardHint(
                 isVisible = true,
+                title = stringResource(R.string.woopos_keyboard_hint_title),
+                message = stringResource(R.string.woopos_keyboard_hint_message),
+                actionText = stringResource(R.string.woopos_keyboard_hint_action),
                 onDismiss = {},
                 onOpenSettings = {}
             )
