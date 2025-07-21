@@ -3,10 +3,8 @@ package com.woocommerce.android.ui.woopos.common.composeui.component
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Rect
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.inputmethod.InputMethodManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -16,14 +14,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 
-data class KeyboardStatus(
-    val isKeyboardVisible: Boolean,
-    val hasHardwareKeyboard: Boolean,
-    val isFloatingKeyboardEnabled: Boolean
-)
+enum class WooPosKeyboardStatus {
+    SoftwareKeyboardVisible,
+    HardwareKeyboardConnected,
+    BothKeyboardsVisible,
+    NoKeyboardVisible
+}
 
 @Composable
-fun rememberKeyboardStatus(): KeyboardStatus {
+fun rememberKeyboardStatus(): WooPosKeyboardStatus {
     val view = LocalView.current
     val context = LocalContext.current
     var keyboardStatus by remember { mutableStateOf(getInitialKeyboardStatus(context)) }
@@ -42,20 +41,24 @@ fun rememberKeyboardStatus(): KeyboardStatus {
     return keyboardStatus
 }
 
-private fun getInitialKeyboardStatus(context: Context): KeyboardStatus {
-    return KeyboardStatus(
-        isKeyboardVisible = false,
-        hasHardwareKeyboard = hasHardwareKeyboard(context),
-        isFloatingKeyboardEnabled = isFloatingKeyboardEnabled(context)
-    )
+private fun getInitialKeyboardStatus(context: Context): WooPosKeyboardStatus {
+    val hasHardware = hasHardwareKeyboard(context)
+    return if (hasHardware) {
+        WooPosKeyboardStatus.HardwareKeyboardConnected
+    } else {
+        WooPosKeyboardStatus.NoKeyboardVisible
+    }
 }
 
-private fun getCurrentKeyboardStatus(context: Context, view: View): KeyboardStatus {
-    return KeyboardStatus(
-        isKeyboardVisible = isKeyboardVisible(view),
-        hasHardwareKeyboard = hasHardwareKeyboard(context),
-        isFloatingKeyboardEnabled = isFloatingKeyboardEnabled(context)
-    )
+private fun getCurrentKeyboardStatus(context: Context, view: View): WooPosKeyboardStatus {
+    val isSoftwareVisible = isKeyboardVisible(view)
+    val hasHardware = hasHardwareKeyboard(context)
+    return when {
+        isSoftwareVisible && hasHardware -> WooPosKeyboardStatus.BothKeyboardsVisible
+        isSoftwareVisible && !hasHardware -> WooPosKeyboardStatus.SoftwareKeyboardVisible
+        !isSoftwareVisible && hasHardware -> WooPosKeyboardStatus.HardwareKeyboardConnected
+        else -> WooPosKeyboardStatus.NoKeyboardVisible
+    }
 }
 
 private fun isKeyboardVisible(view: View): Boolean {
@@ -71,19 +74,6 @@ private fun hasHardwareKeyboard(context: Context): Boolean {
     val configuration = context.resources.configuration
     return configuration.keyboard != Configuration.KEYBOARD_NOKEYS &&
         configuration.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO
-}
-
-private fun isFloatingKeyboardEnabled(context: Context): Boolean {
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    return try {
-        val enabledInputMethods = imm.enabledInputMethodList
-        enabledInputMethods.isNotEmpty()
-    } catch (e: SecurityException) {
-        // If we can't access input methods due to security restrictions,
-        // assume floating keyboard is enabled to avoid blocking users
-        Log.w("WooPosKeyboardDetector", "Security exception accessing input methods", e)
-        true
-    }
 }
 
 private const val KEYBOARD_DETECTION_THRESHOLD = 0.15

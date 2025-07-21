@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
@@ -30,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosKeyboardStatus
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosFloatingKeyboardHint
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -124,7 +126,7 @@ private fun MainItemsList(
     } == true
 
     LaunchedEffect(isSearchOpen, keyboardStatus) {
-        showKeyboardHint = isSearchOpen && keyboardStatus.hasHardwareKeyboard && !keyboardStatus.isKeyboardVisible
+        showKeyboardHint = isSearchOpen && keyboardStatus == WooPosKeyboardStatus.HardwareKeyboardConnected
     }
 
     Box(
@@ -307,11 +309,11 @@ private fun tabs(): List<WooPosItemsToolbarViewState.Tab> = listOf(
 private fun openKeyboardSettings(context: Context) {
     try {
         openGboardPhysicalKeyboardSettings(context)
-    } catch (e: Exception) {
+    } catch (e: ActivityNotFoundException) {
         Log.e("WooPosItemsScreen", "Failed to open Gboard physical keyboard settings", e)
         try {
             openHardKeyboardSettings(context)
-        } catch (e: Exception) {
+        } catch (e: ActivityNotFoundException) {
             Log.e("WooPosItemsScreen", "Failed to open hard keyboard settings", e)
             openInputMethodSettings(context)
         }
@@ -320,8 +322,10 @@ private fun openKeyboardSettings(context: Context) {
 
 private fun openGboardPhysicalKeyboardSettings(context: Context) {
     val intent = Intent().apply {
-        setClassName("com.google.android.inputmethod.latin",
-                   "com.android.inputmethod.latin.settings.SettingsActivity")
+        setClassName(
+            "com.google.android.inputmethod.latin",
+            "com.android.inputmethod.latin.settings.SettingsActivity"
+        )
         putExtra("category", "physical_keyboard_preferences")
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
