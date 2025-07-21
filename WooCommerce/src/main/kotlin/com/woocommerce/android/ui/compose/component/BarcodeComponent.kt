@@ -80,8 +80,8 @@ fun BarcodeEAN13Code(
     content: String,
     widthDp: Dp,
     heightDp: Dp,
-    codeColor: Color,
-    backgroundColor: Color,
+    codeColor: Color = colorResource(id = R.color.woo_black_90),
+    backgroundColor: Color = colorResource(id = R.color.woo_white),
     @DrawableRes overlayId: Int? = null,
 ) {
     Image(

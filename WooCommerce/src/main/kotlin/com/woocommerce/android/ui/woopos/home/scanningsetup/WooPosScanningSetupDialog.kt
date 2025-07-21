@@ -308,10 +308,10 @@ private fun ScannerModeSetupContent(
 
         Box(
             modifier = Modifier
-                .size(172.dp)
+                .size(184.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
-                .padding(WooPosSpacing.Small.value.toAdaptivePadding()),
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -366,13 +366,20 @@ private fun TestScannerContent(
             modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
-        BarcodeEAN13Code(
-            barcodeValue,
-            300.dp,
-            150.dp,
-            codeColor = MaterialTheme.colorScheme.onSurface,
-            backgroundColor = MaterialTheme.colorScheme.surfaceBright
-        )
+        Box(
+            modifier = Modifier
+                .size(300.dp, 150.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                .background(Color.White)
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+            contentAlignment = Alignment.Center
+        ) {
+            BarcodeEAN13Code(
+                barcodeValue,
+                300.dp,
+                150.dp
+            )
+        }
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
@@ -858,6 +865,47 @@ fun WooPosScanningSetupTestScannerFailedStep() {
                 step = ScanningSetupStep.TestYourScannerScanFailed,
                 onPrimaryClick = {},
                 onSecondaryClick = {},
+            )
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosScanningSetupTestQRContent() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            ScannerModeSetupContent(
+                onPrimaryClick = {},
+                onSecondaryClick = {},
+                primaryButtonText = "Next",
+                secondaryButtonText = "Back",
+                title = "Scanner Mode Setup",
+                message = "Follow the instructions to set up your scanner in HID mode.",
+                qrCodeImageRes = R.drawable.ic_woopos_reader_setup_code_star_bsh_20
+            )
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosScanningSetupTestBarcodeContent() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            TestScannerContent(
+                onSecondaryClick = {},
+                secondaryButtonText = "Back",
+                title = "Scanner Mode Setup",
+                message = "Follow the instructions to set up your scanner in HID mode.",
+                barcodeValue = "123456789012",
+                onBarcodeScanned = {},
             )
         }
     }
