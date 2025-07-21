@@ -4519,8 +4519,8 @@
     <string name="woopos_scanning_setup_device_other">Other</string>
 
     <string name="woopos_keyboard_hint_title">Enable software keyboard</string>
-    <string name="woopos_keyboard_hint_message">Your barcode scanner is connected but the keyboard isn\'t showing. Enable the floating keyboard to use both for searching.</string>
-    <string name="woopos_keyboard_hint_action">Open keyboard settings</string>
+    <string name="woopos_keyboard_hint_message">Your barcode scanner is connected but the keyboard isn\'t showing. Enable the software keyboard to use both for searching.</string>
+    <string name="woopos_keyboard_hint_action">Open settings</string>
     <string name="woopos_keyboard_hint_dismiss">Dismiss</string>
 
     <string name="customers_details_customer_section">Customer</string>

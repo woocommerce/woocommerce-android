@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -152,10 +153,7 @@ private fun MainItemsList(
                 message = stringResource(R.string.woopos_keyboard_hint_message),
                 actionText = stringResource(R.string.woopos_keyboard_hint_action),
                 onDismiss = { showKeyboardHint = false },
-                onOpenSettings = {
-                    openKeyboardSettings(context)
-                    showKeyboardHint = false
-                },
+                onOpenSettings = { openKeyboardSettings(context) },
                 modifier = Modifier.padding(
                     horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
                     vertical = WooPosSpacing.Small.value
@@ -307,6 +305,35 @@ private fun tabs(): List<WooPosItemsToolbarViewState.Tab> = listOf(
 )
 
 private fun openKeyboardSettings(context: Context) {
+    try {
+        openGboardPhysicalKeyboardSettings(context)
+    } catch (e: Exception) {
+        Log.e("WooPosItemsScreen", "Failed to open Gboard physical keyboard settings", e)
+        try {
+            openHardKeyboardSettings(context)
+        } catch (e: Exception) {
+            Log.e("WooPosItemsScreen", "Failed to open hard keyboard settings", e)
+            openInputMethodSettings(context)
+        }
+    }
+}
+
+private fun openGboardPhysicalKeyboardSettings(context: Context) {
+    val intent = Intent().apply {
+        setClassName("com.google.android.inputmethod.latin",
+                   "com.android.inputmethod.latin.settings.SettingsActivity")
+        putExtra("category", "physical_keyboard_preferences")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    context.startActivity(intent)
+}
+
+private fun openHardKeyboardSettings(context: Context) {
     val intent = Intent(Settings.ACTION_HARD_KEYBOARD_SETTINGS)
+    context.startActivity(intent)
+}
+
+private fun openInputMethodSettings(context: Context) {
+    val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
     context.startActivity(intent)
 }
