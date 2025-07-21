@@ -16,14 +16,22 @@ fun BrightnessControl(temporarilyIncreaseToMax: Boolean = true) {
     var originalBrightness by remember { mutableStateOf<Float?>(null) }
 
     LaunchedEffect(temporarilyIncreaseToMax) {
+        val activity = context as? Activity ?: return@LaunchedEffect
+        val window = activity.window
+
         if (temporarilyIncreaseToMax) {
-            val activity = context as? Activity ?: return@LaunchedEffect
-            val window = activity.window
-
-            originalBrightness = window.attributes.screenBrightness
-
+            if (originalBrightness == null) {
+                originalBrightness = window.attributes.screenBrightness
+            }
             window.attributes = window.attributes.apply {
                 screenBrightness = 1.0f
+            }
+        } else {
+            originalBrightness?.let {
+                window.attributes = window.attributes.apply {
+                    screenBrightness = it
+                }
+                originalBrightness = null
             }
         }
     }
