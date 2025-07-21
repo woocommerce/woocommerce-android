@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScree
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -126,7 +127,12 @@ private fun MainItemsList(
     } == true
 
     LaunchedEffect(isSearchOpen, keyboardStatus) {
-        showKeyboardHint = isSearchOpen && keyboardStatus == WooPosKeyboardStatus.HardwareKeyboardConnected
+        if (isSearchOpen && keyboardStatus == WooPosKeyboardStatus.HardwareKeyboardConnected) {
+            delay(1000)
+            showKeyboardHint = true
+        } else {
+            showKeyboardHint = false
+        }
     }
 
     Box(
