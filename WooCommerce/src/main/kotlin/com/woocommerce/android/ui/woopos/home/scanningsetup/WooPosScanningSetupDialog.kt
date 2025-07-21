@@ -106,6 +106,7 @@ fun WooPosScanningSetupDialog(
             // Delay to allow the dialog to close before resetting state
             delay(300)
             viewModel.resetToInitialState()
+            viewModel.stopScannerDetection()
             isClosing.value = false
         }
     }

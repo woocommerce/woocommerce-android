@@ -155,11 +155,14 @@ class WooPosScanningSetupViewModel @Inject constructor(
     }
 
     fun resetToInitialState() {
-        scannerDetectionService.stopPeriodicDetection()
         _state.value = _state.value.copy(
             currentStep = navigator.getInitialStep(),
             selectedDevice = null
         )
+    }
+
+    fun stopScannerDetection() {
+        scannerDetectionService.stopPeriodicDetection()
     }
 
     private fun navigateToNextStep() {
