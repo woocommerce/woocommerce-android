@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -46,12 +48,6 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsN
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-
-private fun openKeyboardSettings(context: Context) {
-    val intent = android.content.Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS)
-    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-    context.startActivity(intent)
-}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -127,11 +123,7 @@ private fun MainItemsList(
     } == true
 
     LaunchedEffect(isSearchOpen, keyboardStatus) {
-        if (isSearchOpen && keyboardStatus.hasHardwareKeyboard && !keyboardStatus.isKeyboardVisible) {
-            showKeyboardHint = true
-        } else {
-            showKeyboardHint = false
-        }
+        showKeyboardHint = isSearchOpen && keyboardStatus.hasHardwareKeyboard && !keyboardStatus.isKeyboardVisible
     }
 
     Box(
@@ -313,3 +305,8 @@ private fun tabs(): List<WooPosItemsToolbarViewState.Tab> = listOf(
         highlightLevel = HighlightLevel.Normal
     ),
 )
+
+private fun openKeyboardSettings(context: Context) {
+    val intent = Intent(Settings.ACTION_HARD_KEYBOARD_SETTINGS)
+    context.startActivity(intent)
+}
