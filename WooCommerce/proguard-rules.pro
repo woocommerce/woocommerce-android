@@ -68,12 +68,6 @@
 -keep class uk.co.senab.photoview.** { *; }
 ###### Zendesk - end
 
-###### Encrypted Logs - begin
--dontwarn java.awt.*
--keep class com.sun.jna.* { *; }
--keepclassmembers class * extends com.sun.jna.* { public *; }
-###### Encrypted Logs - end
-
 ###### Glide - begin
 -keep class com.bumptech.glide.GeneratedAppGlideModuleImpl { *; }
 ###### Glide - end
