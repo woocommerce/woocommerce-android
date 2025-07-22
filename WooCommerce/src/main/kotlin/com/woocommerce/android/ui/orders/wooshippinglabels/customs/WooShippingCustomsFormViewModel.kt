@@ -306,7 +306,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
             )
 
-            else -> InputValue.Data(shippingTotalValue.toString())
+            else -> InputValue.Data(price.toString())
         },
         weightPerUnit = when {
             weight == 0f -> InputValue.Error(
