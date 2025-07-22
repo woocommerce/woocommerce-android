@@ -26,7 +26,10 @@ data class CustomsItem(
     val hsTariffNumber: String,
     val originCountry: String,
     val originCountryCode: String
-) : Parcelable
+) : Parcelable {
+    val totalValue: BigDecimal
+        get() = value * quantity.toBigDecimal()
+}
 
 enum class ContentType(val resourceId: Int) {
     MERCHANDISE(R.string.woo_shipping_labels_customs_content_merchandise),
