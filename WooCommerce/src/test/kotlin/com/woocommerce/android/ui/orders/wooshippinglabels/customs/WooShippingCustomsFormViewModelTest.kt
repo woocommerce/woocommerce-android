@@ -418,9 +418,8 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
             validateHSTariffNumber = validateHSTariffNumber,
             dispatchers = coroutinesTestRule.testDispatchers,
             savedState = WooShippingCustomsFormFragmentArgs(
-                shippableItems = arrayOf(testProduct, expensiveProduct),
                 destinationCountryCode = "CA",
-                customsData = null
+                customsData = listOf(testProduct, expensiveProduct).createDefaultCustomsData()
             ).toSavedStateHandle()
         )
     }

@@ -235,7 +235,7 @@ fun WooShippingCustomsProductExpandedListItem(
                     label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_weight_per_unit),
                     singleLine = true,
                     isError = itemData.weightPerUnit is InputValue.Error,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                     modifier = modifier.weight(1f),
                     helperText = itemData.weightPerUnit.errorMessageOrNull?.getText()
                 )

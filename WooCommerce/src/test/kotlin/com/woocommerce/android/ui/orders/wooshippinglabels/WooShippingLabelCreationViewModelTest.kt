@@ -35,7 +35,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.Observ
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -324,8 +324,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val observeShippingLabelNotice: ObserveShippingLabelNotice = mock {
         on { invoke(any(), any(), any(), any()) } doReturn flowOf(null)
     }
-    private val shouldRequireITN: ShouldRequireITN = mock {
-        on { invoke(any(), any()) } doReturn false
+    private val validateITN: ValidateITN = mock {
+        on { invoke(any(), any()) } doReturn ValidateITN.ITNValidationResult.Valid
     }
     private val fetchShippingLabelFile: FetchShippingLabelFile = mock()
     private val observeShippingLabelStatus: ObserveShippingLabelStatus = mock()
@@ -350,7 +350,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             verifyDestinationAddress = verifyDestinationAddress,
             observeShippingLabelNotice = observeShippingLabelNotice,
             shouldRequireCustoms = shouldRequireCustomsForm,
-            shouldRequireITN = shouldRequireITN,
+            validateITN = validateITN,
             fetchShippingLabelFile = fetchShippingLabelFile,
             observeShippingLabelStatus = observeShippingLabelStatus,
             downloadAndPrintInvoiceUseCase = mock(),
@@ -690,7 +690,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             var currentViewState: WooShippingViewState? = null
 
             whenever(shouldRequireCustomsForm.invoke(any())) doReturn true
-            whenever(shouldRequireITN.invoke(any(), any())) doReturn true
+            whenever(validateITN.invoke(any(), any())) doReturn ValidateITN.ITNValidationResult.Missing(
+                cause = ValidateITN.ITNMissingCause.TotalValue
+            )
             whenever(getShipments(any())) doReturn defaultShipments.map {
                 it.copy(items = defaultShippableItems.map { it.copy(price = BigDecimal(10000)) })
             }

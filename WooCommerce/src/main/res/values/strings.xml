@@ -4588,6 +4588,7 @@
     <string name="woo_shipping_labels_customs_product_details_tariff_invalid">The tariff number must be between 6 and 12 digits long</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">Value per unit</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Weight per unit</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">Weight must be greater than zero</string>
     <string name="woo_shipping_labels_customs_product_details_value_required">Value required</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country">Origin country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Missing country</string>
