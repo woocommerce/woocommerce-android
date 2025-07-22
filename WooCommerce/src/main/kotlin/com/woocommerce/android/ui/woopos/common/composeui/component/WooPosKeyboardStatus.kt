@@ -8,6 +8,7 @@ import android.view.ViewTreeObserver
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,10 +27,15 @@ fun rememberKeyboardStatus(): WooPosKeyboardStatus {
     val view = LocalView.current
     val context = LocalContext.current
     var keyboardStatus by remember { mutableStateOf(getInitialKeyboardStatus(context)) }
+    var lastUpdateTime by remember { mutableLongStateOf(0L) }
 
     DisposableEffect(view) {
         val listener = ViewTreeObserver.OnGlobalLayoutListener {
-            keyboardStatus = getCurrentKeyboardStatus(context, view)
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastUpdateTime >= DEBOUNCE_DELAY_MS) {
+                keyboardStatus = getCurrentKeyboardStatus(context, view)
+                lastUpdateTime = currentTime
+            }
         }
         view.viewTreeObserver.addOnGlobalLayoutListener(listener)
 
@@ -77,3 +83,4 @@ private fun hasHardwareKeyboard(context: Context): Boolean {
 }
 
 private const val KEYBOARD_DETECTION_THRESHOLD = 0.15
+private const val DEBOUNCE_DELAY_MS = 1000L
