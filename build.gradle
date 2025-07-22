@@ -57,6 +57,27 @@ allprojects {
     }
 }
 
+subprojects {
+    plugins.withType(com.android.build.gradle.AppPlugin) {
+        android {
+            lintOptions {
+                sarifReport = gradle.ext.isCi
+                baseline file("lint-baseline.xml")
+            }
+        }
+        dependencies {
+            lintChecks(libs.wordpress.lint)
+            lintChecks(libs.android.security.lint)
+        }
+    }
+    plugins.withType(com.android.build.gradle.LibraryPlugin) {
+        dependencies {
+            lintChecks(libs.wordpress.lint)
+            lintChecks(libs.android.security.lint)
+        }
+    }
+}
+
 tasks.register("detektAll", Detekt) {
     description = "Custom DETEKT build for all modules"
     parallel = true

@@ -20,5 +20,6 @@ if [ $app_lint_exit_code -ne 0 ] || [ $wear_lint_exit_code -ne 0 ]; then
 fi
 
 upload_sarif_to_github 'WooCommerce/build/reports/lint-results-jalapenoDebug.sarif'
+upload_sarif_to_github 'WooCommerce-Wear/build/reports/lint-results-jalapenoDebug.sarif'
 
 exit $lint_exit_code

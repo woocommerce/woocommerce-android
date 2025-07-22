@@ -1761,6 +1761,7 @@ class WCProductStore @Inject internal constructor(
         pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
         includeTypes: List<IncludeType> = emptyList(),
+        searchFields: List<String>? = null,
     ): WooResult<ProductSearchResult> {
         return coroutineEngine.withDefaultContext(API, this, "searchProductsByNameAndSku") {
             val response = wcProductRestClient.fetchProductsWithSyncRequest(
@@ -1770,7 +1771,8 @@ class WCProductStore @Inject internal constructor(
                 searchQuery = searchNameOrSkuQuery,
                 searchNameOrSkuQuery = searchNameOrSkuQuery,
                 filterOptions = filterOptions,
-                includeTypes = includeTypes
+                includeTypes = includeTypes,
+                searchFields = searchFields
             )
             when {
                 response.isError -> WooResult(response.error)

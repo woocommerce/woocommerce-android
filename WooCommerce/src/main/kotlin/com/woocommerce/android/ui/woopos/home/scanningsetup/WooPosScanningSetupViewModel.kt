@@ -19,7 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosScanningSetupViewModel @Inject constructor(
-    private val navigator: WooPosScannerSetupNavigator
+    private val navigator: WooPosScannerSetupNavigator,
+    private val analyticsTracker: WooPosScanningSetupAnalyticsTracker,
+    private val scannerDetectionService: WooPosScannerDetectionServiceForTracking,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -40,10 +42,25 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     fun onUiEvent(event: WooPosScanningSetupUiEvent) {
         when (event) {
+            WooPosScanningSetupUiEvent.OnDialogShown -> {
+                if (_state.value.wasDialogShown) return
+                viewModelScope.launch {
+                    analyticsTracker.trackDialogShown()
+                }
+                scannerDetectionService.startPeriodicDetection(viewModelScope) {
+                    _state.value.selectedDevice
+                }
+                _state.value = _state.value.copy(wasDialogShown = true)
+            }
+
             is WooPosScanningSetupUiEvent.OnDeviceSelected -> {
                 _state.value = _state.value.copy(
                     selectedDevice = event.device
                 )
+
+                viewModelScope.launch {
+                    analyticsTracker.trackScannerSelected(event.device)
+                }
 
                 val nextStep = navigator.getNextStep(event.device, _state.value.currentStep)
                 _state.value = _state.value.copy(currentStep = nextStep)
@@ -59,6 +76,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
             WooPosScanningSetupUiEvent.OnOpenBluetoothSettings -> {
                 viewModelScope.launch {
+                    analyticsTracker.trackOpenSystemSettingsTapped(_state.value.selectedDevice!!)
+                }
+                viewModelScope.launch {
                     _openBluetoothSettingsEvent.emit(Unit)
                 }
             }
@@ -66,10 +86,26 @@ class WooPosScanningSetupViewModel @Inject constructor(
             is WooPosScanningSetupUiEvent.OnBarcodeScanned -> {
                 handleBarcodeScanned(event.barcodeResult)
             }
+
+            WooPosScanningSetupUiEvent.OnDismissed -> {
+                val currentSelectedDevice = _state.value.selectedDevice
+                val currentStep = _state.value.currentStep
+                _state.value = _state.value.copy(wasDialogShown = false)
+                viewModelScope.launch {
+                    analyticsTracker.trackDismissed(currentSelectedDevice, currentStep)
+                }
+            }
         }
     }
 
     private fun handlePrimaryButtonClick() {
+        val selectedDevice = _state.value.selectedDevice
+        if (selectedDevice != null) {
+            viewModelScope.launch {
+                analyticsTracker.trackNextTapped(selectedDevice, _state.value.currentStep)
+            }
+        }
+
         when (_state.value.currentStep) {
             is ScanningSetupStep.ScannerHIDModeSetup,
             is ScanningSetupStep.ScannerPairModeSetup,
@@ -85,7 +121,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 }
             }
 
-            is ScanningSetupStep.TestYourScannerScanFailed -> resetToInitialState()
+            is ScanningSetupStep.TestYourScannerScanFailed -> {
+                viewModelScope.launch {
+                    analyticsTracker.trackRetryTapped(_state.value.selectedDevice!!)
+                }
+                resetToInitialState()
+            }
 
             is ScanningSetupStep.DeviceSelection,
             is ScanningSetupStep.TestYourScanner,
@@ -98,6 +139,11 @@ class WooPosScanningSetupViewModel @Inject constructor(
 
     private fun handleSecondaryButtonClick() {
         val selectedDevice = _state.value.selectedDevice
+        if (selectedDevice != null) {
+            viewModelScope.launch {
+                analyticsTracker.trackBackTapped(selectedDevice, _state.value.currentStep)
+            }
+        }
         val previousStep = if (selectedDevice != null) {
             navigator.getPreviousStep(selectedDevice, _state.value.currentStep)
         } else {
@@ -115,6 +161,10 @@ class WooPosScanningSetupViewModel @Inject constructor(
         )
     }
 
+    fun stopScannerDetection() {
+        scannerDetectionService.stopPeriodicDetection()
+    }
+
     private fun navigateToNextStep() {
         val selectedDevice = requireNotNull(_state.value.selectedDevice) { "Selected device cannot be null" }
         val nextStep = navigator.getNextStep(selectedDevice, _state.value.currentStep)
@@ -128,8 +178,10 @@ class WooPosScanningSetupViewModel @Inject constructor(
     private fun handleBarcodeScanned(barcodeResult: BarcodeInputDetector.BarcodeResult) {
         val selectedDevice = requireNotNull(_state.value.selectedDevice) { "Selected device cannot be null" }
         val nextStep = if (barcodeResult.barcode == TEST_BARCODE_EAN13) {
+            viewModelScope.launch { analyticsTracker.trackTestScanSuccess(selectedDevice) }
             navigator.getNextStepForValidBarcode(selectedDevice, _state.value.currentStep)
         } else {
+            viewModelScope.launch { analyticsTracker.trackTestScanFailed(selectedDevice, barcodeResult.barcode) }
             navigator.getNextStepForInvalidBarcode(_state.value.currentStep)
         }
         _state.value = _state.value.copy(currentStep = nextStep)
@@ -140,10 +192,16 @@ class WooPosScanningSetupViewModel @Inject constructor(
         autoNavigationJob = viewModelScope.launch {
             delay(AUTO_NAVIGATION_DELAY_MS)
             if (navigator.isStillOnTestBarcodeStep(_state.value.currentStep)) {
+                analyticsTracker.trackTestScanTimedOut(_state.value.selectedDevice!!)
                 val timeoutStep = navigator.getTestBarcodeTimeoutStep(_state.value.currentStep)
                 _state.value = _state.value.copy(currentStep = timeoutStep)
             }
         }
+    }
+
+    override fun onCleared() {
+        scannerDetectionService.stopPeriodicDetection()
+        super.onCleared()
     }
 
     companion object {

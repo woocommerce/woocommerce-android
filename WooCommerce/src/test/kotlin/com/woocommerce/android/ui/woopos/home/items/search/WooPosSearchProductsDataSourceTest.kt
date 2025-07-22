@@ -102,6 +102,7 @@ class WooPosSearchProductsDataSourceTest {
                     pageSize = anyOrNull(),
                     filterOptions = anyOrNull(),
                     includeTypes = anyOrNull(),
+                    searchFields = anyOrNull(),
                 )
             ).thenReturn(WooResult(ProductSearchResult(emptyList(), true)))
 
@@ -131,6 +132,7 @@ class WooPosSearchProductsDataSourceTest {
                 pageSize = anyOrNull(),
                 filterOptions = anyOrNull(),
                 includeTypes = anyOrNull(),
+                searchFields = anyOrNull(),
             )
         ).thenReturn(WooResult(error))
 
