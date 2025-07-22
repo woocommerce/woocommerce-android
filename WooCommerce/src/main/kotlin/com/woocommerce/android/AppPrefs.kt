@@ -290,6 +290,10 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, value)
 
+    var orderSummaryMigrated: Boolean
+        get() = getBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, false)
+        set(value) = setBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, value)
+
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
     fun setProductSortingChoice(currentSiteId: Int, value: String) {
@@ -529,12 +533,6 @@ object AppPrefs {
 
     fun setDatabaseDowngraded(value: Boolean) {
         setBoolean(DATABASE_DOWNGRADED, value)
-    }
-
-    fun getOrderSummaryMigrated() = getBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, false)
-
-    fun setOrderSummaryMigrated(value: Boolean) {
-        setBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, value)
     }
 
     fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)

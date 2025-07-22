@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.background.LastUpdateDataStore
 import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.model.list.ListDescriptor
@@ -11,20 +11,19 @@ import javax.inject.Inject
 class ShouldUpdateOrdersList @Inject constructor(
     private val lastUpdateDataStore: LastUpdateDataStore,
     private val listStore: ListStore,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefsWrapper
 ) {
     suspend operator fun invoke(listDescriptor: ListDescriptor): Boolean {
+        if (!appPrefs.orderSummaryMigrated) {
+            appPrefs.orderSummaryMigrated = true
+            return true
+        }
+
         val listId = listDescriptor.uniqueIdentifier.value
         val shouldUpdateByState = listStore.getListState(listDescriptor) == ListState.NEEDS_REFRESH
         val shouldUpdateByCache = lastUpdateDataStore.getLastUpdateKeyByOrdersListId(listId).let { key ->
             lastUpdateDataStore.shouldUpdateData(key).first()
         }
-        return shouldUpdateByDbMigration() || shouldUpdateByState || shouldUpdateByCache
-    }
-
-    private fun shouldUpdateByDbMigration(): Boolean {
-        val shouldUpdateByDbMigration = appPrefs.getOrderSummaryMigrated()
-        appPrefs.setOrderSummaryMigrated(true)
-        return shouldUpdateByDbMigration
+        return shouldUpdateByState || shouldUpdateByCache
     }
 }
