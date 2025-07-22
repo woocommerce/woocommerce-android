@@ -66,12 +66,12 @@ class CurrencyFormatter @Inject constructor(
             ) { site, settingsMap ->
                 site to (settingsMap[LocalId(site.id)]?.currencyCode ?: "")
             }
-            .flowOn(dispatchers.io)
-            .collect { (site, currencyCode) ->
-                defaultCurrencyCode = currencyCode.ifEmpty {
-                    getOrFetchCurrencyCode(site)
+                .flowOn(dispatchers.io)
+                .collect { (site, currencyCode) ->
+                    defaultCurrencyCode = currencyCode.ifEmpty {
+                        getOrFetchCurrencyCode(site)
+                    }
                 }
-            }
         }
     }
 
