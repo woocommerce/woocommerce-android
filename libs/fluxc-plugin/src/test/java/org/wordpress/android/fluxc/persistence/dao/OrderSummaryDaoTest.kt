@@ -77,6 +77,19 @@ class OrderSummaryDaoTest {
         assertThat(result).isEmpty()
     }
 
+    @Test
+    fun testQueryingLargeNumberOfOrderSummaries() = runTest {
+        val orderSummaries = (1..SQLITE_MAX_VARIABLE_NUMBER).asOrderSummaries(site.localId())
+        sut.upsertOrderSummaries(orderSummaries)
+
+        val result = sut.getOrderSummaries(
+            site.localId(),
+            orderSummaries.map(WCOrderSummaryModel::orderId)
+        )
+
+        assertThat(result).containsExactlyInAnyOrderElementsOf(orderSummaries)
+    }
+
     private fun ListAssert<WCOrderSummaryModel?>?.containsOnlyIds(vararg ids: Number) {
         this?.extracting<Long> { it?.orderId?.value }
             ?.containsExactlyInAnyOrder(*ids.map { it.toLong() }.toTypedArray())
@@ -84,5 +97,9 @@ class OrderSummaryDaoTest {
 
     private fun List<Number>.asRemoteIds(): List<RemoteId> {
         return this.map { RemoteId(it.toLong()) }
+    }
+
+    private companion object {
+        private const val SQLITE_MAX_VARIABLE_NUMBER = 32766
     }
 }
