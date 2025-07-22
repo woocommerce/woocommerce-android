@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.persistence.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -31,6 +32,6 @@ internal abstract class TaxClassDao {
     )
     protected abstract suspend fun deleteAll(siteId: LocalId): Int
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     protected abstract suspend fun insertAll(classes: List<WCTaxClassModel>)
 }

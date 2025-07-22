@@ -4640,6 +4640,7 @@
     <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
     <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_labels_order_completion_error">Couldn\'t mark the order as complete</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
     <string name="woo_shipping_address_save_changes">Save changes</string>
