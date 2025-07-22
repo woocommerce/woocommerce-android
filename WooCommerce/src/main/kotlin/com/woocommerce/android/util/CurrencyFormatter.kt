@@ -4,11 +4,11 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -60,18 +60,22 @@ class CurrencyFormatter @Inject constructor(
 
     init {
         appCoroutineScope.launch {
-            selectedSite.observe()
-                .onEach { defaultCurrencyCode = "" }
-                .filterNotNull()
-                .map { site -> getCurrencyCode(site) }
-                .flowOn(dispatchers.io)
-                .collect { currencyCode ->
-                    defaultCurrencyCode = currencyCode
+            combine(
+                selectedSite.observe().filterNotNull(),
+                wcStore.observeAllSiteSettings()
+            ) { site, settingsMap ->
+                site to (settingsMap[LocalId(site.id)]?.currencyCode ?: "")
+            }
+            .flowOn(dispatchers.io)
+            .collect { (site, currencyCode) ->
+                defaultCurrencyCode = currencyCode.ifEmpty {
+                    getOrFetchCurrencyCode(site)
                 }
+            }
         }
     }
 
-    private suspend fun getCurrencyCode(site: SiteModel): String {
+    private suspend fun getOrFetchCurrencyCode(site: SiteModel): String {
         val localSettings = wcStore.getSiteSettings(site)
         if (localSettings != null) return localSettings.currencyCode
 
