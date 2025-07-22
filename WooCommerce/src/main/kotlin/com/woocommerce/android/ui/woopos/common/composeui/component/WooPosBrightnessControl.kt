@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.compose.component
+package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import android.app.Activity
 import androidx.compose.runtime.Composable
@@ -11,7 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun BrightnessControl(temporarilyIncreaseToMax: Boolean = true) {
+fun WooPosBrightnessControl(temporarilyIncreaseToMax: Boolean = true) {
     val context = LocalContext.current
     var originalBrightness by remember { mutableStateOf<Float?>(null) }
 

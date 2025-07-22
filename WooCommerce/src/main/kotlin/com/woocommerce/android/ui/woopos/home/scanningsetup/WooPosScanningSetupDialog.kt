@@ -63,10 +63,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.ui.compose.component.BarcodeEAN13Code
-import com.woocommerce.android.ui.compose.component.BrightnessControl
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBrightnessControl
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
@@ -142,7 +142,7 @@ fun WooPosScanningSetupDialog(
             id = R.string.woopos_scanning_setup_dialog_content_description
         )
     ) {
-        BrightnessControl(temporarilyIncreaseToMax = true)
+        WooPosBrightnessControl(temporarilyIncreaseToMax = true)
 
         val state by viewModel.state.collectAsState()
         Column(
