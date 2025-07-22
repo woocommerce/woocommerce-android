@@ -872,7 +872,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchOrderShippingLabelsAsync() = async {
         if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
-            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId, isRevampWooShippingEnabled)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
@@ -908,7 +908,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabelModel> {
         if (isRevampWooShippingEnabled) {
-            configDataStore.getShippingLabels(navArgs.orderId).first()
+            configDataStore.getPurchasedLabels(navArgs.orderId).first()
         } else {
             orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
                 .map { it.toShippingLabelModel() }
@@ -953,7 +953,7 @@ class OrderDetailViewModel @Inject constructor(
         ) {
             // we check against the viewstate to avoid sending the event multiple times
             // if the eligibility was cached, and we had the same value after re-fetching it
-            tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value)
+            tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value, isRevampWooShippingEnabled)
         }
 
         viewState = viewState.copy(
@@ -1058,7 +1058,8 @@ class OrderDetailViewModel @Inject constructor(
         viewState = viewState.copy(
             isOrderDetailEmpty = true,
             isRefreshing = false,
-            isOrderDetailSkeletonShown = false
+            isOrderDetailSkeletonShown = false,
+            toolbarTitle = ""
         )
     }
 
@@ -1066,6 +1067,13 @@ class OrderDetailViewModel @Inject constructor(
         viewState = viewState.copy(
             isOrderDetailEmpty = false,
             isOrderDetailSkeletonShown = true
+        )
+    }
+
+    fun onOrdersLoaded() {
+        viewState = viewState.copy(
+            isOrderDetailEmpty = false,
+            isOrderDetailSkeletonShown = false
         )
     }
 

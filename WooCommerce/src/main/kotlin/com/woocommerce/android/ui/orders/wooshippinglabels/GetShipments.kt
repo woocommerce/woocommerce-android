@@ -6,9 +6,11 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -68,9 +70,13 @@ class GetShipments @Inject constructor(
                 shipmentUIModelList = mergePurchaseData(shipmentUIModelList, labels)
             }
 
-            // If there are stored destination address, merge it into the result list
-            data.storedData?.selectedDestination?.let { selectedDestination ->
-                shipmentUIModelList = mergeDestinationAddresses(shipmentUIModelList, selectedDestination)
+            // If there are stored addresses, merge them into the result list
+            data.storedData?.let { storedData ->
+                shipmentUIModelList = mergeAddresses(
+                    shipmentUIModelList,
+                    storedData.selectedOrigin,
+                    storedData.selectedDestination
+                )
             }
         }
 
@@ -81,28 +87,31 @@ class GetShipments @Inject constructor(
         shipmentUIModelList: List<ShipmentUIModel>,
         currentOrderLabels: List<ShippingLabelDTO>
     ) = shipmentUIModelList.map { shipmentUIModel ->
-        val noRefundedLabelForShipment = currentOrderLabels.find {
-            it.shipmentId == shipmentUIModel.remoteId && it.refund == null
+        val purchasedNonRefundedLabel = currentOrderLabels.find {
+            it.shipmentId == shipmentUIModel.remoteId && it.status == ShippingLabelStatus.PURCHASED && it.refund == null
         }
-        if (noRefundedLabelForShipment == null) {
+        if (purchasedNonRefundedLabel == null) {
             shipmentUIModel
         } else {
-            shipmentUIModel.copy(purchased = true, label = mapper.invoke(noRefundedLabelForShipment))
+            shipmentUIModel.copy(purchased = true, label = mapper.invoke(purchasedNonRefundedLabel))
         }
     }
 
-    private fun mergeDestinationAddresses(
+    private fun mergeAddresses(
         shipmentUIModelList: List<ShipmentUIModel>,
-        destinationAddresses: Map<String, DestinationAddressDTO>
-    ) = shipmentUIModelList.map { shipmentUIModel ->
-        val id = shipmentUIModel.remoteId
-        if (id != null) {
-            destinationAddresses[getStoredDataKey(id)]?.let {
-                shipmentUIModel.copy(label = shipmentUIModel.label?.copy(destinationAddress = mapper.invoke(it)))
-            } ?: shipmentUIModel
-        } else {
-            shipmentUIModel
-        }
+        originAddresses: Map<String, OriginAddressDTO>?,
+        destinationAddresses: Map<String, DestinationAddressDTO>?
+    ): List<ShipmentUIModel> = shipmentUIModelList.map { shipmentUIModel ->
+        val remoteId = shipmentUIModel.remoteId ?: return@map shipmentUIModel
+        val key = getStoredDataKey(remoteId)
+
+        val updatedLabel = shipmentUIModel.label?.copy(
+            originAddress = originAddresses?.get(key)?.let { mapper(it) }
+                ?: shipmentUIModel.label.originAddress,
+            destinationAddress = destinationAddresses?.get(key)?.let { mapper(it) }
+                ?: shipmentUIModel.label.destinationAddress
+        )
+        shipmentUIModel.copy(label = updatedLabel)
     }
 
     private fun getStoredDataKey(shipmentId: String) = "shipment_$shipmentId"

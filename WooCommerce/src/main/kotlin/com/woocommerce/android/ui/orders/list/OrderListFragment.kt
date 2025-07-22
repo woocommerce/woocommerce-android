@@ -77,7 +77,6 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -309,7 +308,6 @@ class OrderListFragment :
     private fun handleSearchViewExpand(): Boolean {
         viewModel.isSearching = true
         refreshOptionsMenu()
-        checkOrientation()
         onSearchViewActiveChanged(isActive = true)
         binding.orderFiltersCard.isVisible = false
         handler.postDelayed({
@@ -708,6 +706,7 @@ class OrderListFragment :
                     }
 
                     EmptyViewType.ORDER_LIST_FILTERED -> {
+                        communicationViewModel.notifyOrdersEmpty()
                         emptyView.show(emptyViewType)
                     }
 
@@ -954,6 +953,7 @@ class OrderListFragment :
     }
 
     private fun hideEmptyView() {
+        communicationViewModel.notifyOrdersLoaded()
         emptyView.hide()
     }
 
@@ -1042,7 +1042,6 @@ class OrderListFragment :
 
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         viewModel.isSearching = true
-        checkOrientation()
         onSearchViewActiveChanged(isActive = true)
         binding.orderFiltersCard.isVisible = false
         binding.orderListView.clearAdapterData()
@@ -1137,13 +1136,6 @@ class OrderListFragment :
             handler.postDelayed({
                 (activity as? MainActivity)?.hideBottomNav()
             }, HANDLER_DELAY)
-        }
-    }
-
-    private fun checkOrientation() {
-        val isLandscape = DisplayUtils.isLandscape(context)
-        if (isLandscape && viewModel.isSearching) {
-            searchView?.post { searchView?.clearFocus() }
         }
     }
     // endregion

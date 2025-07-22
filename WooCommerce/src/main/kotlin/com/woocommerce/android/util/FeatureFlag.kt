@@ -12,7 +12,6 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     WOO_POS_SCANNER_SETUP,
     NEW_SHIPPING_SUPPORT,
-    WOO_POS_AS_A_TAB_I2,
     REVAMP_WOO_SHIPPING,
     BULK_UPDATE_ORDERS_STATUS,
     HIDE_SITES_FROM_SITE_PICKER;
@@ -25,14 +24,13 @@ enum class FeatureFlag {
 
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            WOO_POS_AS_A_TAB_I2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            WOO_POS_SCANNER_SETUP,
-            REVAMP_WOO_SHIPPING -> PackageUtils.isDebugBuild()
+            WOO_POS_SCANNER_SETUP -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             BULK_UPDATE_ORDERS_STATUS,
-            HIDE_SITES_FROM_SITE_PICKER -> true
+            HIDE_SITES_FROM_SITE_PICKER,
+            REVAMP_WOO_SHIPPING -> true
         }
     }
 }

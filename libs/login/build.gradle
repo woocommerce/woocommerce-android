@@ -61,8 +61,6 @@ dependencies {
     implementation libs.google.dagger.android.support
     ksp libs.google.dagger.android.processor
 
-    lintChecks libs.wordpress.lint
-
     testImplementation libs.junit
     testImplementation libs.androidx.arch.core.testing
     testImplementation libs.robolectric

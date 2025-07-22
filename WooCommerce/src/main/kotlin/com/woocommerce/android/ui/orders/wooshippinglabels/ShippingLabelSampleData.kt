@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOptionUI
@@ -193,4 +194,10 @@ object ShippingLabelSampleData {
             )
         )
     }
+
+    fun getShipmentPrintLabelUI() = ShipmentPrintLabelUI(
+        availablePrintSizes = listOf(WooShippingLabelPaperSize.LABEL, WooShippingLabelPaperSize.LETTER),
+        isRefundAvailable = true,
+        isCustomsFormAvailable = true
+    )
 }

@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooS
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
 import com.woocommerce.android.util.StringUtils.combineStrings
 import java.math.BigDecimal
@@ -56,7 +57,8 @@ class WooShippingNetworkingMapper @Inject constructor(
                 canManagePayments = formMeta.canManagePayments,
                 canEditSettings = formMeta.canEditSettings,
                 storeOwnerName = formMeta.masterUserName,
-                storeOwnerUsername = formMeta.masterUserWpcomLogin
+                storeOwnerUsername = formMeta.masterUserWpcomLogin,
+                paperSize = formData.paperSize
             )
         }
     }
@@ -91,8 +93,28 @@ class WooShippingNetworkingMapper @Inject constructor(
         )
     }
 
+    operator fun invoke(originAddressDTO: OriginAddressDTO): Address {
+        val (firstName, lastName) = parseFullName(originAddressDTO.name)
+        return Address(
+            company = originAddressDTO.company.orEmpty(),
+            firstName = firstName,
+            lastName = lastName,
+            phone = originAddressDTO.phone.orEmpty(),
+            country = Location(
+                name = originAddressDTO.country.orEmpty(),
+                code = originAddressDTO.country.orEmpty()
+            ),
+            state = AmbiguousLocation.Raw(originAddressDTO.state.orEmpty()),
+            address1 = originAddressDTO.address.orEmpty(),
+            address2 = originAddressDTO.address2.orEmpty(),
+            city = originAddressDTO.city.orEmpty(),
+            postcode = originAddressDTO.postcode.orEmpty(),
+            email = ""
+        )
+    }
+
     operator fun invoke(destinationAddressDTO: DestinationAddressDTO): Address {
-        val name = destinationAddressDTO.name?.split(" ") ?: listOf("", "")
+        val (firstName, lastName) = parseFullName(destinationAddressDTO.name)
         return Address(
             company = destinationAddressDTO.company.orEmpty(),
             address1 = destinationAddressDTO.address.orEmpty(),
@@ -103,16 +125,16 @@ class WooShippingNetworkingMapper @Inject constructor(
                 name = destinationAddressDTO.country.orEmpty(),
                 code = destinationAddressDTO.country.orEmpty()
             ),
-            firstName = name.getOrElse(0) { "" },
+            firstName = firstName,
             phone = destinationAddressDTO.phone.orEmpty(),
             address2 = destinationAddressDTO.address2.orEmpty(),
-            email = destinationAddressDTO.email.orEmpty(),
-            lastName = name.getOrElse(1) { "" }
+            email = "", // We set the email later from the order details
+            lastName = lastName
         )
     }
 
     operator fun invoke(originAddressPurchaseDTO: OriginAddressPurchaseDTO): OriginShippingAddress {
-        val name = originAddressPurchaseDTO.name?.split(" ") ?: listOf("", "")
+        val (firstName, lastName) = parseFullName(originAddressPurchaseDTO.name)
         return OriginShippingAddress(
             id = originAddressPurchaseDTO.id.orEmpty(),
             address1 = originAddressPurchaseDTO.address,
@@ -121,13 +143,13 @@ class WooShippingNetworkingMapper @Inject constructor(
             state = originAddressPurchaseDTO.state,
             postcode = originAddressPurchaseDTO.postcode.orEmpty(),
             country = originAddressPurchaseDTO.country.orEmpty(),
-            firstName = name.getOrElse(0) { "" },
+            firstName = firstName,
             company = originAddressPurchaseDTO.company,
             phone = originAddressPurchaseDTO.phone.orEmpty(),
             email = originAddressPurchaseDTO.email.orEmpty(),
             isDefault = false,
             isVerified = originAddressPurchaseDTO.isVerified,
-            lastName = name.getOrElse(1) { "" }
+            lastName = lastName
         )
     }
 
@@ -221,12 +243,15 @@ class WooShippingNetworkingMapper @Inject constructor(
 
     fun toDestinationAddressDTO(address: Address): DestinationAddressDTO {
         return DestinationAddressDTO(
+            company = address.company,
+            name = "${address.firstName} ${address.lastName}",
+            phone = address.phone,
             address = address.address1,
+            address2 = address.address2,
             city = address.city,
             state = address.state.codeOrRaw,
             postcode = address.postcode,
             country = address.country.code,
-            name = "${address.firstName} ${address.lastName}"
         )
     }
 
@@ -368,4 +393,14 @@ class WooShippingNetworkingMapper @Inject constructor(
                 category = hazmatSelection.requestFieldValue
             )
         } ?: HazmatDTO()
+
+    private fun parseFullName(name: String?): Pair<String, String> {
+        val safeName = name.orEmpty()
+        val lastSpaceIndex = safeName.indexOfLast { it == ' ' }
+        return if (lastSpaceIndex == -1) {
+            "" to ""
+        } else {
+            safeName.substring(0, lastSpaceIndex) to safeName.substring(lastSpaceIndex + 1)
+        }
+    }
 }

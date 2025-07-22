@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.WooShippingRatesRestClient
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -29,10 +30,18 @@ class WooShippingRatesRepositoryTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on { get() } doReturn currentSite
     }
-    private val shippingRatesMapper: WooShippingRatesDatasourceMapper = mock()
+    private val shippingRatesMapper = WooShippingRatesDatasourceMapper()
+    private val shippingNetworkingMapper = WooShippingNetworkingMapper(
+        ratesMapper = WooShippingRatesDatasourceMapper()
+    )
     private val restClient: WooShippingRatesRestClient = mock()
 
-    private val sut = WooShippingRatesRepository(selectedSite, shippingRatesMapper, restClient)
+    private val sut = WooShippingRatesRepository(
+        selectedSite = selectedSite,
+        shippingRatesMapper = shippingRatesMapper,
+        shippingNetworkingMapper = shippingNetworkingMapper,
+        restClient = restClient
+    )
 
     private val defaultPackageData = PackageData(
         id = "1",
@@ -41,7 +50,7 @@ class WooShippingRatesRepositoryTest : BaseUnitTest() {
         weight = "10",
         isSelected = true,
         isLetter = false,
-        isPredefined = true,
+        isUserDefined = true,
         dimensionUnit = "cm",
         weightUnit = "kg"
     )

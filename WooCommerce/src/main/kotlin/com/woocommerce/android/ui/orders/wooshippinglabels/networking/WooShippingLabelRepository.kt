@@ -169,9 +169,9 @@ class WooShippingLabelRepository @Inject constructor(
         } else {
             WooResult(
                 WooError(
-                    type = WooErrorType.INVALID_RESPONSE,
+                    type = WooErrorType.API_ERROR,
                     original = GenericErrorType.INVALID_RESPONSE,
-                    message = "Address normalization failed"
+                    message = normalizedAddress.result?.errors?.keys?.first()
                 )
             )
         }

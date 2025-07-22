@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 @Parcelize
 data class OrderDetailViewState(
     val orderInfo: OrderInfo? = null,
-    val toolbarTitle: String? = null,
+    val toolbarTitle: String = "",
     val orderStatus: Order.OrderStatus? = null,
     val isOrderDetailSkeletonShown: Boolean? = null,
     val isRefreshing: Boolean? = null,

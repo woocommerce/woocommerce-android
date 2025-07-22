@@ -25,6 +25,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
 ) {
     companion object {
         private const val PAGE_SIZE = 15
+        private val SEARCH_FIELDS = listOf("name", "sku", "global_unique_id")
     }
 
     private val canLoadMore = AtomicBoolean(false)
@@ -76,6 +77,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
             pageSize = PAGE_SIZE,
             filterOptions = productsTypesFilterConfig.filters,
             includeTypes = productsTypesFilterConfig.includeTypes,
+            searchFields = SEARCH_FIELDS,
         ).let { result ->
             if (result.isError) {
                 WooLog.w(

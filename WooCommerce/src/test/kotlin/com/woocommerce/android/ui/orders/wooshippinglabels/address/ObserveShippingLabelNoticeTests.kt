@@ -48,7 +48,7 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
         ),
         originAddresses = emptyList()
     )
-    private val defaultAddressesFlow = flowOf(defaultAddresses)
+    private val defaultAddressesFlow = flowOf(listOf(defaultAddresses))
     private val customsFlow = flowOf(listOf(CustomsState.NotRequired))
     private val selectedIndexFlow = flowOf(0)
 
@@ -62,7 +62,7 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
     fun `when missing origin address was displayed but it is now verified, then display verified notice`() = runTest {
         val missingOriginAddress = defaultAddresses.copy(shipFrom = OriginShippingAddress.EMPTY)
         val result = sut.invoke(
-            flowOf(missingOriginAddress, defaultAddresses),
+            flowOf(listOf(missingOriginAddress), listOf(defaultAddresses)),
             customsFlow,
             selectedIndexFlow,
             coroutineScope
@@ -77,7 +77,7 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
         runTest {
             val missingDestinationAddress = defaultAddresses.copy(shipTo = DestinationShippingAddress.EMPTY)
             val result = sut.invoke(
-                flowOf(missingDestinationAddress, defaultAddresses),
+                flowOf(listOf(missingDestinationAddress), listOf(defaultAddresses)),
                 customsFlow,
                 selectedIndexFlow,
                 coroutineScope
@@ -91,7 +91,7 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
     fun `when shipFrom is not verified, then display origin not verified`() = runTest {
         val addresses = defaultAddresses.copy(shipFrom = defaultAddresses.shipFrom.copy(isVerified = false))
 
-        val result = sut.invoke(flowOf(addresses), customsFlow, selectedIndexFlow, coroutineScope).first()
+        val result = sut.invoke(flowOf(listOf(addresses)), customsFlow, selectedIndexFlow, coroutineScope).first()
 
         assertThat(result?.type).isEqualTo(NoticeType.UNVERIFIED_ORIGIN_ADDRESS)
     }
@@ -100,7 +100,7 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
     fun `when shipTo is not verified, then display destination not verified`() = runTest {
         val addresses = defaultAddresses.copy(shipTo = defaultAddresses.shipTo.copy(isVerified = false))
 
-        val result = sut.invoke(flowOf(addresses), customsFlow, selectedIndexFlow, coroutineScope).first()
+        val result = sut.invoke(flowOf(listOf(addresses)), customsFlow, selectedIndexFlow, coroutineScope).first()
 
         assertThat(result?.type).isEqualTo(NoticeType.UNVERIFIED_DESTINATION_ADDRESS)
     }
@@ -114,16 +114,19 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
         ) doReturn true
 
         val result =
-            sut.invoke(flowOf(missingDestinationAddress), customsFlow, selectedIndexFlow, coroutineScope).first()
+            sut.invoke(flowOf(listOf(missingDestinationAddress)), customsFlow, selectedIndexFlow, coroutineScope)
+                .first()
 
         assertThat(result?.type).isEqualTo(NoticeType.MISSING_DESTINATION_ADDRESS)
     }
 
     @Test
     fun `testing both addresses and customs with issues flow`() = runTest {
-        var addresses = defaultAddresses.copy(
-            shipTo = defaultAddresses.shipTo.copy(isVerified = false),
-            shipFrom = defaultAddresses.shipFrom.copy(isVerified = false)
+        var addresses = mutableListOf(
+            defaultAddresses.copy(
+                shipTo = defaultAddresses.shipTo.copy(isVerified = false),
+                shipFrom = defaultAddresses.shipFrom.copy(isVerified = false)
+            )
         )
         val addressesFlow = MutableStateFlow(addresses)
         val missingCustoms = MutableStateFlow<List<CustomsState>>(listOf(CustomsState.ItnMissing))
@@ -134,13 +137,13 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
         assertThat(result.first()?.type).isEqualTo(NoticeType.UNVERIFIED_ORIGIN_ADDRESS)
 
         // Fix origin issue
-        addresses = addresses.copy(shipFrom = defaultAddresses.shipFrom.copy(isVerified = true))
+        addresses = mutableListOf(addresses.first().copy(shipFrom = defaultAddresses.shipFrom.copy(isVerified = true)))
         addressesFlow.value = addresses
 
         assertThat(result.first()?.type).isEqualTo(NoticeType.UNVERIFIED_DESTINATION_ADDRESS)
 
         // Fix destination issue
-        addresses = defaultAddresses
+        addresses = mutableListOf(defaultAddresses)
         addressesFlow.value = addresses
 
         assertThat(result.first()?.type).isEqualTo(NoticeType.VERIFIED_DESTINATION_ADDRESS)

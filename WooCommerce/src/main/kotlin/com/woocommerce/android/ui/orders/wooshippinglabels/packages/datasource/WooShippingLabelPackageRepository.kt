@@ -51,8 +51,9 @@ class WooShippingLabelPackageRepository @Inject constructor(
 
     suspend fun deleteSavedCarrierPackage(
         packageId: String,
+        isUserDefined: Boolean,
         site: SiteModel,
-    ) = with(packageRestClient.deleteSavedCarrierPackage(site, packageId)) {
+    ) = with(packageRestClient.deleteSavedCarrierPackage(site, isUserDefined, packageId)) {
         result.takeIf { isError.not() }
             ?.let { packageMapper(it) }
             ?.let { WooResult(it) }

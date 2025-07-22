@@ -474,7 +474,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
 
             viewModel.start()
             assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
@@ -516,7 +516,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             viewModel.start()
@@ -559,7 +559,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             viewModel.start()
@@ -583,7 +583,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
 
             val refunds = ArrayList<Refund>()
             viewModel.orderRefunds.observeForever {
@@ -643,7 +643,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(flowOf(true))
                 .whenever(shippingEligibilityDataStore).observeEligibility(any())
             doReturn(flowOf(OrderTestUtils.generateShippingLabelModels(2)))
-                .whenever(configDataStore).getShippingLabels(any())
+                .whenever(configDataStore).getPurchasedLabels(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -832,7 +832,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var snackbar: ShowUndoSnackbar? = null
@@ -886,7 +886,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var newOrder: Order? = null
@@ -925,7 +925,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             .whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var orderShipmentTrackings = emptyList<OrderShipmentTracking>()
@@ -946,7 +946,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
             .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(flowOf(OrderTestUtils.generateShippingLabelModels(2)))
-            .whenever(configDataStore).getShippingLabels(any())
+            .whenever(configDataStore).getPurchasedLabels(any())
         doReturn(flowOf(true))
             .whenever(shippingEligibilityDataStore).observeEligibility(any())
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
@@ -954,7 +954,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
         doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1003,7 +1003,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
 
@@ -1663,7 +1663,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository).fetchOrderShippingLabels(any(), any())
         verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
@@ -1677,7 +1677,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any(), any())
         verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
@@ -1691,7 +1691,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any(), any())
         verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
@@ -1762,7 +1762,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any(), any())
         verify(orderDetailRepository, times(1)).fetchOrderShipmentTrackingList(any())
     }
 

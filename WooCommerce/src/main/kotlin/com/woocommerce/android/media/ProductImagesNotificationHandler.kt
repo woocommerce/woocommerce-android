@@ -150,15 +150,19 @@ class ProductImagesNotificationHandler @Inject constructor(
     fun postUploadFailureNotification(product: Product?, errors: List<ProductImageUploadData>) {
         val productId = product?.remoteId ?: errors.first().remoteProductId
 
+        val productDetailFragmentArgs = ProductDetailFragmentArgs(
+            mode = ProductDetailFragment.Mode.ShowProduct(productId)
+        ).toBundle()
+
+        val mediaUploadErrorsFragmentArgs = MediaUploadErrorListFragmentArgs(
+            remoteProductId = productId,
+            errorList = errors.toTypedArray()
+        ).toBundle()
+
         val pendingIntent = NavDeepLinkBuilder(context)
             .setGraph(R.navigation.nav_graph_main)
-            .setDestination(R.id.mediaUploadErrorsFragment)
-            .setArguments(
-                MediaUploadErrorListFragmentArgs(
-                    remoteProductId = productId,
-                    errorList = errors.toTypedArray()
-                ).toBundle()
-            )
+            .addDestination(R.id.productDetailFragment, productDetailFragmentArgs)
+            .addDestination(R.id.mediaUploadErrorsFragment, mediaUploadErrorsFragmentArgs)
             .createPendingIntent()
 
         val message = StringUtils.getQuantityString(
