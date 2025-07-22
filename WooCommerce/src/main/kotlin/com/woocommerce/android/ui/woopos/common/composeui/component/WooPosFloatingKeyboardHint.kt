@@ -102,7 +102,7 @@ private fun WooPosFloatingKeyboardHintContent(
 
             WooPosText(
                 text = title,
-                style = WooPosTypography.BodyLarge,
+                style = WooPosTypography.BodyMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.constrainAs(titleText) {
                     start.linkTo(icon.end)
