@@ -77,6 +77,7 @@ object AppPrefs {
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
         DATABASE_DOWNGRADED,
+        ORDER_SUMMARY_MIGRATED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
@@ -528,6 +529,12 @@ object AppPrefs {
 
     fun setDatabaseDowngraded(value: Boolean) {
         setBoolean(DATABASE_DOWNGRADED, value)
+    }
+
+    fun getOrderSummaryMigrated() = getBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, false)
+
+    fun setOrderSummaryMigrated(value: Boolean) {
+        setBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, value)
     }
 
     fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)
