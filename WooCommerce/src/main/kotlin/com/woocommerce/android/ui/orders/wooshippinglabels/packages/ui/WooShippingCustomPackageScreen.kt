@@ -101,62 +101,83 @@ fun WooShippingCustomPackageCreationScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = modifier.fillMaxWidth()
             ) {
-                WCOutlinedTextField(
-                    value = packageLength,
-                    onValueChange = onLengthChange,
-                    label = stringResource(id = R.string.woo_shipping_labels_package_creation_length),
-                    trailingIcon = {
-                        Text(
-                            text = dimensionUnit,
-                            style = MaterialTheme.typography.body2,
-                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                        )
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = modifier.weight(1f)
-                )
+                Column(modifier = modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(id = R.string.woo_shipping_labels_package_creation_length),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    )
+                    WCOutlinedTextField(
+                        value = packageLength,
+                        onValueChange = onLengthChange,
+                        label = "",
+                        trailingIcon = {
+                            Text(
+                                text = dimensionUnit,
+                                style = MaterialTheme.typography.body2,
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-                WCOutlinedTextField(
-                    value = packageWidth,
-                    onValueChange = onWidthChange,
-                    label = stringResource(id = R.string.woo_shipping_labels_package_creation_width),
-                    trailingIcon = {
-                        Text(
-                            text = dimensionUnit,
-                            style = MaterialTheme.typography.body2,
-                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                        )
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = modifier.weight(1f)
-                )
+                Column(modifier = modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(id = R.string.woo_shipping_labels_package_creation_width),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    )
+                    WCOutlinedTextField(
+                        value = packageWidth,
+                        onValueChange = onWidthChange,
+                        label = "",
+                        trailingIcon = {
+                            Text(
+                                text = dimensionUnit,
+                                style = MaterialTheme.typography.body2,
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-                WCOutlinedTextField(
-                    value = packageHeight,
-                    onValueChange = onHeightChange,
-                    label = stringResource(id = R.string.woo_shipping_labels_package_creation_height),
-                    trailingIcon = {
-                        Text(
-                            text = dimensionUnit,
-                            style = MaterialTheme.typography.body2,
-                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                        )
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = modifier.weight(1f)
-                )
+                Column(modifier = modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(id = R.string.woo_shipping_labels_package_creation_height),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    )
+                    WCOutlinedTextField(
+                        value = packageHeight,
+                        onValueChange = onHeightChange,
+                        label = "",
+                        trailingIcon = {
+                            Text(
+                                text = dimensionUnit,
+                                style = MaterialTheme.typography.body2,
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
             Row(
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween,
