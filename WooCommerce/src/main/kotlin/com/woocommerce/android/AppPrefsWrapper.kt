@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.promobanner.PromoBannerType
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class AppPrefsWrapper @Inject constructor() {
+open class AppPrefsWrapper @Inject constructor() {
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
     var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
@@ -38,6 +38,8 @@ class AppPrefsWrapper @Inject constructor() {
     var blazeCampaignObjectiveSwitchChecked by AppPrefs::blazeCampaignObjectiveSwitchChecked
 
     var isSiteWPComSuspended by AppPrefs::isSiteWPComSuspended
+
+    open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 

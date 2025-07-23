@@ -8,6 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
+import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
@@ -36,6 +37,7 @@ import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
+import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
 import org.wordpress.android.fluxc.persistence.dao.ProductCategoriesDao
 import org.wordpress.android.fluxc.persistence.dao.ProductReviewsDao
@@ -101,7 +103,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 53
+const val WC_DATABASE_VERSION = 54
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -140,6 +142,7 @@ const val WC_DATABASE_VERSION = 53
         WCUserModel::class,
         WCTaxClassModel::class,
         WCSettingsModel::class,
+        WCOrderSummaryModel::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -176,6 +179,7 @@ const val WC_DATABASE_VERSION = 53
         AutoMigration(from = 50, to = 51),
         AutoMigration(from = 51, to = 52),
         AutoMigration(from = 52, to = 53),
+        AutoMigration(from = 53, to = 54),
     ]
 )
 @TypeConverters(
@@ -216,6 +220,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val userDao: UserDao
     internal abstract val settingsDao: SettingsDao
     internal abstract val refundDao: RefundDao
+    internal abstract val orderSummaryDao: OrderSummaryDao
 
     companion object {
         fun buildDb(

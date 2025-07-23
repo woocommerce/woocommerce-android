@@ -9,12 +9,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
-import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import kotlin.test.assertEquals
@@ -33,7 +31,6 @@ class OrderSqlUtilsTest {
                 listOf(
                         WCOrderStatusModel::class.java,
                         WCOrderShipmentTrackingModel::class.java,
-                        WCOrderSummaryModel::class.java,
                         SiteModel::class.java),
                 WellSqlConfig.ADDON_WOOCOMMERCE)
         WellSql.init(config)
@@ -215,129 +212,5 @@ class OrderSqlUtilsTest {
         // Verify only a single shipment tracking row in db
         trackingsInDb = OrderSqlUtils.getShipmentTrackingsForOrder(siteModel, orderId)
         assertEquals(1, trackingsInDb.size)
-    }
-
-    @Test
-    fun testInsertOrderSummaries() {
-        // Arrange:
-        // - Create the test site so any foreign key dependency works
-        // - Create a list of WCOrderSummaryModels for testing
-        val site = OrderTestUtils.getAndSaveTestSite()
-        val summaryList = OrderTestUtils.getTestOrderSummaryList(site)
-
-        // Act:
-        // - Insert all records and verify
-        OrderSqlUtils.insertOrUpdateOrderSummaries(summaryList)
-
-        // Assert:
-        // - Verify all records were inserted
-        val summariesDb = OrderSqlUtils
-                .getOrderSummariesForRemoteIds(site, summaryList.map { it.orderId })
-        assertEquals(10, summariesDb.size)
-    }
-
-    @Test
-    fun testUpdateOrderSummaries() {
-        // Arrange:
-        // - Create the test site so any foreign key dependency works
-        // - Create a list of WCOrderSummaryModels for testing
-        // - Save first option to the database
-        // - Verify first option inserted
-        val site = OrderTestUtils.getAndSaveTestSite()
-        val summaryList = OrderTestUtils.getTestOrderSummaryList(site)
-        val firstOption = summaryList[0]
-        OrderSqlUtils.insertOrUpdateOrderSummaries(listOf(firstOption))
-        var summariesDb = OrderSqlUtils
-                .getOrderSummariesForRemoteIds(site, listOf(firstOption.orderId))
-        assertEquals(1, summariesDb.size)
-        assertEquals(firstOption.dateCreated, summariesDb[0].dateCreated)
-        assertEquals(firstOption.orderId, summariesDb[0].orderId)
-        assertEquals(firstOption.localSiteId, summariesDb[0].localSiteId)
-
-        // Act:
-        // - Update first option and re-save. This should just update the record in the db
-        firstOption.dateCreated = "2019-01-01"
-        OrderSqlUtils.insertOrUpdateOrderSummaries(listOf(firstOption))
-
-        // Assert:
-        // - Verify the modified property was updated
-        summariesDb = OrderSqlUtils
-                .getOrderSummariesForRemoteIds(site, listOf(firstOption.orderId))
-        assertEquals(1, summariesDb.size)
-        assertEquals(firstOption.dateCreated, summariesDb[0].dateCreated)
-    }
-
-    @Test
-    fun testDeleteOrderSummariesForSite() {
-        // Arrange:
-        // - Create the test site so any foreign key dependency works
-        // - Create a list of WCOrderSummaryModels for testing
-        // - Save all order summaries to the db
-        // - Verify all orders saved successfully
-        val site = OrderTestUtils.getAndSaveTestSite()
-        val summaryList = OrderTestUtils.getTestOrderSummaryList(site)
-        OrderSqlUtils.insertOrUpdateOrderSummaries(summaryList)
-        var summariesDb = OrderSqlUtils
-                .getOrderSummariesForRemoteIds(site, summaryList.map { it.orderId })
-        assertEquals(10, summariesDb.size)
-
-        // Act:
-        // - Delete all summaries
-        OrderSqlUtils.deleteOrderSummariesForSite(site)
-
-        // Assert:
-        // - Verify all order summaries deleted for the active site
-        summariesDb = OrderSqlUtils
-                .getOrderSummariesForRemoteIds(site, summaryList.map { it.orderId })
-        assertEquals(0, summariesDb.size)
-    }
-
-    /**
-     * Tests the foreign key relationship between SiteModel and WCOrderSummaryModel.
-     */
-    @Test
-    fun testOrderSummarySiteModelForeignKeyOnDeleteCascade() {
-        // Arrange:
-        // - Create the test site so any foreign key dependency works
-        // - Create a list of WCOrderSummaryModels for testing
-        // - Save all order summaries to the db
-        // - Verify all orders saved successfully
-        val site = OrderTestUtils.getAndSaveTestSite()
-        val summaryList = OrderTestUtils.getTestOrderSummaryList(site)
-        OrderSqlUtils.insertOrUpdateOrderSummaries(summaryList)
-        var summariesDb = OrderSqlUtils
-                .getOrderSummariesForRemoteIds(site, summaryList.map { it.orderId })
-        assertEquals(10, summariesDb.size)
-
-        // Act:
-        // - Delete the site, this should delete all the WCOrderSummaryModel records as well
-        TestSiteSqlUtils.siteSqlUtils.deleteSite(site)
-
-        // Assert:
-        // - Verify all order summaries for the deleted site have also been deleted
-        summariesDb = OrderSqlUtils
-                .getOrderSummariesForRemoteIds(site, summaryList.map { it.orderId })
-        assertEquals(0, summariesDb.size)
-    }
-
-    @Test
-    fun testGetOrderSummariesByRemoteIds() {
-        // Arrange:
-        // - Create a list of 300 WCOrderSummaryModel's
-        val site = OrderTestUtils.getAndSaveTestSite()
-        val summaryList = OrderTestUtils.getTestOrderSummaryExtendedList(site).sortedByDescending { it.id }
-
-        // Act:
-        // - Save 300 order summaries to the db
-        OrderSqlUtils.insertOrUpdateOrderSummaries(summaryList)
-
-        // Assert:
-        // - Query for the 300 order summary records from the database
-        // - Verify all records fetched successfully
-        // - Verify list saved to db matches list fetched from db
-        val summariesDb = OrderSqlUtils
-                .getOrderSummariesForRemoteIds(site, summaryList.map { it.orderId }).sortedBy { it.id }
-        assertEquals(300, summariesDb.size)
-        assertEquals(summaryList, summariesDb)
     }
 }

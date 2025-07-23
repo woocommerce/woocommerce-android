@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionStat
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -73,12 +72,6 @@ class WooPosHomeViewModel @Inject constructor(
             }
 
             WooPosHomeUIEvent.DismissProductsInfoDialog -> {
-                _state.value = _state.value.copy(
-                    dialogState = DialogState.Hidden
-                )
-            }
-
-            WooPosHomeUIEvent.DismissBarcodeInfoDialog -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
                 )
@@ -215,15 +208,9 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     ChildToParentEvent.BarcodeInfoMenuItemClicked -> {
-                        if (FeatureFlag.WOO_POS_SCANNER_SETUP.isEnabled()) {
-                            _state.value = _state.value.copy(
-                                dialogState = DialogState.ScanningSetupDialog
-                            )
-                        } else {
-                            _state.value = _state.value.copy(
-                                dialogState = DialogState.BarcodeInfoDialog
-                            )
-                        }
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.ScanningSetupDialog
+                        )
                     }
 
                     is ChildToParentEvent.ToastMessageDisplayed -> {
