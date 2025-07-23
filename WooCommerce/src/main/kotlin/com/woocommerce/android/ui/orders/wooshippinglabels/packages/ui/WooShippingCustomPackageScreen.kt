@@ -43,6 +43,7 @@ fun WooShippingCustomPackageCreationScreen(viewModel: WooShippingLabelPackageCre
         packageLength = viewState?.customPackageCreationData?.length.orEmpty(),
         packageWidth = viewState?.customPackageCreationData?.width.orEmpty(),
         packageWeight = viewState?.customPackageCreationData?.weight.orEmpty(),
+        dimensionUnit = "cm", // TODO: Get actual unit from ViewModel
         isAddPackageEnabled = viewState?.customPackageCreationData?.isValid ?: false,
         isSaveAsTemplateChecked = viewState?.customPackageCreationData?.saveAsTemplate ?: false,
         onAddPackageClick = viewModel::onAddCustomPackageClick,
@@ -65,6 +66,7 @@ fun WooShippingCustomPackageCreationScreen(
     packageWidth: String,
     packageHeight: String,
     packageWeight: String,
+    dimensionUnit: String,
     isAddPackageEnabled: Boolean,
     isSaveAsTemplateChecked: Boolean,
     onAddPackageClick: (saveAsTemplate: Boolean) -> Unit,
@@ -103,6 +105,13 @@ fun WooShippingCustomPackageCreationScreen(
                     value = packageLength,
                     onValueChange = onLengthChange,
                     label = stringResource(id = R.string.woo_shipping_labels_package_creation_length),
+                    trailingIcon = {
+                        Text(
+                            text = dimensionUnit,
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                        )
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -115,6 +124,13 @@ fun WooShippingCustomPackageCreationScreen(
                     value = packageWidth,
                     onValueChange = onWidthChange,
                     label = stringResource(id = R.string.woo_shipping_labels_package_creation_width),
+                    trailingIcon = {
+                        Text(
+                            text = dimensionUnit,
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                        )
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -127,6 +143,13 @@ fun WooShippingCustomPackageCreationScreen(
                     value = packageHeight,
                     onValueChange = onHeightChange,
                     label = stringResource(id = R.string.woo_shipping_labels_package_creation_height),
+                    trailingIcon = {
+                        Text(
+                            text = dimensionUnit,
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                        )
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
@@ -199,6 +222,7 @@ fun PreviewWooShippingCustomPackageCreationScreen() {
             packageWidth = "10",
             packageHeight = "10",
             packageWeight = "10",
+            dimensionUnit = "cm",
             isAddPackageEnabled = true,
             isSaveAsTemplateChecked = true,
             onAddPackageClick = {},
