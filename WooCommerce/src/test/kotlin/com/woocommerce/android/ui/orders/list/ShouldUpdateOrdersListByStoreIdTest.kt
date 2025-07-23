@@ -102,5 +102,6 @@ class ShouldUpdateOrdersListByStoreIdTest : BaseUnitTest() {
         val result = sut.invoke(listDescriptor = listDescriptor)
 
         assertTrue(result)
+        assertTrue(appPrefs.orderSummaryMigrated)
     }
 }
