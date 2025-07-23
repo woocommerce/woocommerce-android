@@ -99,8 +99,9 @@ internal class WCOrderStoreTest {
                 ordersDaoDecorator = ordersDaoDecorator,
                 orderNotesDao = orderNotesDao,
                 metaDataDao = metaDataDao,
-                insertOrder = insertOrder,
-                orderShipmentProvidersDao = databaseRule.db.orderShipmentProvidersDao
+                orderShipmentProvidersDao = databaseRule.db.orderShipmentProvidersDao,
+                orderSummaryDao = databaseRule.db.orderSummaryDao,
+                insertOrder = insertOrder
         )
 
         val config = SingleStoreWellSqlConfigForTests(
@@ -370,7 +371,7 @@ internal class WCOrderStoreTest {
 
             verify(orderFetcher).fetchOrders(eq(site), check { remoteIdsToFetch ->
                 assertThat(remoteIdsToFetch).containsExactlyInAnyOrderElementsOf(
-                    (outdated.summaries + missing.summaries).map { it.orderId }
+                    (outdated.summaries + missing.summaries).map { it.orderId.value }
                 )
             })
         }
