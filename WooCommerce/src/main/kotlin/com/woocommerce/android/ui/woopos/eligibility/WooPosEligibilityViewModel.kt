@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryName
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -26,7 +27,8 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val canBeLaunchedInTab: WooPosCanBeLaunchedInTab,
     private val tracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
-    private val getCountryName: WooPosGetStoreCountryName
+    private val getCountryName: WooPosGetStoreCountryName,
+    private val getCountryCode: WooPosGetStoreCountryCode
 ) : ViewModel() {
 
     private val _retryState = MutableStateFlow<WooPosEligibilityRetryState>(WooPosEligibilityRetryState.Loading(null))
@@ -77,17 +79,21 @@ class WooPosEligibilityViewModel @Inject constructor(
             WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_feature_switch_disabled)
             WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> {
-                val supportedCurrencies =
-                    WooPosCanBeLaunchedInTab.SUPPORTED_COUNTRY_CURRENCY_PAIRS
-                        .joinToString(", ") { (_, currency) -> currency.uppercase() }
+                val countryCode = getCountryCode()
+                val supportedCurrency = WooPosCanBeLaunchedInTab.SUPPORTED_COUNTRY_CURRENCY_PAIRS
+                    .find { (country, _) -> country.equals(countryCode, ignoreCase = true) }
+                    ?.second?.uppercase()
+
                 val countryName = getCountryName()
-                if (countryName != null) {
+                if (countryName != null && supportedCurrency != null) {
                     resourceProvider.getString(
                         R.string.woopos_eligibility_reason_unsupported_currency,
                         countryName,
-                        supportedCurrencies
+                        supportedCurrency
                     )
-                } else ""
+                } else {
+                    ""
+                }
             }
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.eligibility
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryName
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.IneligibleUIRetryTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.IneligibleUIShown
@@ -29,6 +30,7 @@ class WooPosEligibilityViewModelTest {
     private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
     private val mockResourceProvider: ResourceProvider = mock()
     private val mockStoreCountryProvider: WooPosGetStoreCountryName = mock()
+    private val mockStoreCountryCodeProvider: WooPosGetStoreCountryCode = mock()
 
     @Rule
     @JvmField
@@ -39,6 +41,7 @@ class WooPosEligibilityViewModelTest {
         whenever(mockResourceProvider.getString(any(), any())).thenReturn("Test suggestion text with params")
         runBlocking {
             whenever(mockStoreCountryProvider()).doReturn("United States")
+            whenever(mockStoreCountryCodeProvider()).doReturn("us")
         }
     }
 
@@ -95,11 +98,13 @@ class WooPosEligibilityViewModelTest {
         val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
         val tracker: WooPosAnalyticsTracker = mock()
         whenever(mockStoreCountryProvider()).thenReturn("United States")
+        whenever(mockStoreCountryCodeProvider()).thenReturn("us")
         val sut = WooPosEligibilityViewModel(
             canBeLaunchedInTab,
             tracker,
             mockResourceProvider,
-            mockStoreCountryProvider
+            mockStoreCountryProvider,
+            mockStoreCountryCodeProvider
         )
 
         // WHEN
@@ -119,7 +124,8 @@ class WooPosEligibilityViewModelTest {
             canBeLaunchedInTab,
             tracker,
             mockResourceProvider,
-            mockStoreCountryProvider
+            mockStoreCountryProvider,
+            mockStoreCountryCodeProvider
         )
 
         sut.initialize(reason)
@@ -135,11 +141,13 @@ class WooPosEligibilityViewModelTest {
 
     private suspend fun createSut(): WooPosEligibilityViewModel {
         whenever(mockStoreCountryProvider()).thenReturn("United States")
+        whenever(mockStoreCountryCodeProvider()).thenReturn("us")
         return WooPosEligibilityViewModel(
             canBeLaunchedInTab,
             mockAnalyticsTracker,
             mockResourceProvider,
-            mockStoreCountryProvider
+            mockStoreCountryProvider,
+            mockStoreCountryCodeProvider
         )
     }
 }
