@@ -14,6 +14,8 @@ class ShouldUpdateOrdersList @Inject constructor(
     private val appPrefs: AppPrefsWrapper
 ) {
     suspend operator fun invoke(listDescriptor: ListDescriptor): Boolean {
+        // 23-07-2025: Consider removing this in the future
+        // AINFRA-986
         if (!appPrefs.orderSummaryMigrated) {
             appPrefs.orderSummaryMigrated = true
             return true
