@@ -43,7 +43,7 @@ fun WooShippingCustomPackageCreationScreen(viewModel: WooShippingLabelPackageCre
         packageLength = viewState?.customPackageCreationData?.length.orEmpty(),
         packageWidth = viewState?.customPackageCreationData?.width.orEmpty(),
         packageWeight = viewState?.customPackageCreationData?.weight.orEmpty(),
-        dimensionUnit = "cm", // TODO: Get actual unit from ViewModel
+        dimensionUnit = viewState?.packagesData?.storeOptions?.dimensionUnit.orEmpty(),
         isAddPackageEnabled = viewState?.customPackageCreationData?.isValid ?: false,
         isSaveAsTemplateChecked = viewState?.customPackageCreationData?.saveAsTemplate ?: false,
         onAddPackageClick = viewModel::onAddCustomPackageClick,
