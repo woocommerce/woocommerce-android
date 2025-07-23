@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.model.list.datasource.ListItemDataSourceInter
  * [org.wordpress.android.fluxc.store.ListStore], but since we need the `dateCreated` field to group the
  * orders into time-based groups, this extra table is necessary.
  */
+// todo: as soon as SiteModel is migrated to Room, add foreign key constraint
 @Entity(
     tableName = "OrderSummaryEntity",
     primaryKeys = ["siteId", "orderId"]
