@@ -58,8 +58,11 @@ class WooPosScannerDetectionUtil @Inject constructor(
             // Fall back to checking bonded devices directly
             null
         }
+
         val gattScanner = hidScanner ?: findScannerInProfile(bluetoothManager, BluetoothProfile.GATT)
-        return gattScanner ?: findConnectedBondedScanner(bluetoothManager)
+        val gattServerScanner = gattScanner ?: findScannerInProfile(bluetoothManager, BluetoothProfile.GATT_SERVER)
+
+        return gattServerScanner ?: findConnectedBondedScanner(bluetoothManager)
     }
 
     @SuppressLint("MissingPermission")
@@ -124,20 +127,36 @@ class WooPosScannerDetectionUtil @Inject constructor(
     @Suppress("TooGenericExceptionCaught")
     private fun BluetoothDevice.isConnected(bluetoothManager: BluetoothManager): Boolean {
         return try {
-            val isConnectedViaHid = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                val hidConnectedDevices = bluetoothManager.getConnectedDevices(BluetoothProfile.HID_DEVICE)
-                hidConnectedDevices.contains(this)
+            val method = this.javaClass.getMethod("isConnected")
+            method.invoke(this) as Boolean
+        } catch (e: Exception) {
+            wooPosLogWrapper.d("Failed to check connection via reflection: ${e.message}")
+            isConnectedViaProfiles(bluetoothManager)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    @Suppress("TooGenericExceptionCaught")
+    private fun BluetoothDevice.isConnectedViaProfiles(bluetoothManager: BluetoothManager): Boolean {
+        val profiles = listOf(
+            BluetoothProfile.GATT,
+            BluetoothProfile.GATT_SERVER
+        ).plus(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                listOf(BluetoothProfile.HID_DEVICE)
             } else {
+                emptyList()
+            }
+        )
+
+        return profiles.any { profile ->
+            try {
+                val connectedDevices = bluetoothManager.getConnectedDevices(profile)
+                connectedDevices.contains(this)
+            } catch (e: Exception) {
+                wooPosLogWrapper.d("Profile $profile not supported: ${e.message}")
                 false
             }
-
-            val gattConnectedDevices = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)
-            val isConnectedViaGatt = gattConnectedDevices.contains(this)
-
-            isConnectedViaHid || isConnectedViaGatt
-        } catch (e: Exception) {
-            wooPosLogWrapper.d("Error checking device connection status: ${e.message}")
-            false
         }
     }
 
@@ -165,7 +184,9 @@ class WooPosScannerDetectionUtil @Inject constructor(
             "alps"
         )
 
-        return deviceName !in internalDeviceKeywords && vendorId > MIN_EXTERNAL_USB_VENDOR_ID
+        val isNotInternal = internalDeviceKeywords.none { deviceName.contains(it) }
+
+        return isNotInternal && vendorId > MIN_EXTERNAL_USB_VENDOR_ID
     }
 
     private fun isScannerByDeviceClass(deviceClass: Int): Boolean {
@@ -186,7 +207,7 @@ class WooPosScannerDetectionUtil @Inject constructor(
         private const val PERIPHERAL_CLASS = 0x500
         private const val KEYBOARD_CLASS = 0x540
         private const val HID_CLASS = 0x580
-        private const val MIN_EXTERNAL_USB_VENDOR_ID = 0x1000
+        private const val MIN_EXTERNAL_USB_VENDOR_ID = 0x100
     }
 }
 
@@ -194,7 +215,6 @@ sealed class ScannerInfo {
     data class Connected(
         val name: String,
         val type: ScannerType,
-        val deviceClass: Int? = null,
     ) : ScannerInfo()
 
     data object NoScannerDetected : ScannerInfo()
