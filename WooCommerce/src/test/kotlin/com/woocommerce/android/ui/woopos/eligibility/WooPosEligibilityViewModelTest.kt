@@ -3,16 +3,21 @@ package com.woocommerce.android.ui.woopos.eligibility
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryName
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.IneligibleUIRetryTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.IneligibleUIShown
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.reset
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -22,10 +27,20 @@ class WooPosEligibilityViewModelTest {
 
     private val canBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
     private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
+    private val mockResourceProvider: ResourceProvider = mock()
+    private val mockStoreCountryProvider: WooPosGetStoreCountryName = mock()
 
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
+
+    init {
+        whenever(mockResourceProvider.getString(any())).thenReturn("Test suggestion text")
+        whenever(mockResourceProvider.getString(any(), any())).thenReturn("Test suggestion text with params")
+        runBlocking {
+            whenever(mockStoreCountryProvider()).doReturn("United States")
+        }
+    }
 
     @Test
     fun `given POS is eligible on retry, should update state to Eligible`() = runTest {
@@ -42,24 +57,26 @@ class WooPosEligibilityViewModelTest {
     }
 
     @Test
-    fun `given POS is ineligible on retry, should update state to Ineligible with reason`() = runTest {
+    fun `given POS is ineligible on retry, should update state to Ineligible with suggestion text`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
+        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(
             WooPosLaunchability.NotLaunchable(reason)
         )
         val sut = createSut()
+        sut.initialize(reason)
 
         // WHEN
         sut.retryEligibilityCheckTapped()
+        advanceUntilIdle()
 
         // THEN
-        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
-        assertThat(sut.retryState.value).isEqualTo(WooPosEligibilityRetryState.Ineligible(reason))
+        val currentState = sut.retryState.value as WooPosEligibilityRetryState.Ineligible
+        assertThat(currentState.suggestionText).isNotEmpty()
     }
 
     @Test
-    fun `initialize should set state to Ineligible with provided reason`() = runTest {
+    fun `initialize should set state to Ineligible with suggestion text`() = runTest {
         // GIVEN
         val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
         val sut = createSut()
@@ -68,7 +85,8 @@ class WooPosEligibilityViewModelTest {
         sut.initialize(reason)
 
         // THEN
-        assertThat(sut.retryState.value).isEqualTo(WooPosEligibilityRetryState.Ineligible(reason))
+        val currentState = sut.retryState.value as WooPosEligibilityRetryState.Ineligible
+        assertThat(currentState.suggestionText).isNotEmpty()
     }
 
     @Test
@@ -76,7 +94,13 @@ class WooPosEligibilityViewModelTest {
         // GIVEN
         val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
         val tracker: WooPosAnalyticsTracker = mock()
-        val sut = WooPosEligibilityViewModel(canBeLaunchedInTab, tracker)
+        whenever(mockStoreCountryProvider()).thenReturn("United States")
+        val sut = WooPosEligibilityViewModel(
+            canBeLaunchedInTab,
+            tracker,
+            mockResourceProvider,
+            mockStoreCountryProvider
+        )
 
         // WHEN
         sut.initialize(reason)
@@ -88,13 +112,17 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given ineligible state, when retryEligibilityCheckTapped is called, then IneligibleUIRetryTapped event is tracked`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
+        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
         val tracker: WooPosAnalyticsTracker = mock()
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(reason))
-        val sut = WooPosEligibilityViewModel(canBeLaunchedInTab, tracker)
+        val sut = WooPosEligibilityViewModel(
+            canBeLaunchedInTab,
+            tracker,
+            mockResourceProvider,
+            mockStoreCountryProvider
+        )
 
         sut.initialize(reason)
-
         reset(tracker)
 
         // WHEN
@@ -105,5 +133,13 @@ class WooPosEligibilityViewModelTest {
         verify(tracker).track(IneligibleUIRetryTapped(reason))
     }
 
-    private fun createSut() = WooPosEligibilityViewModel(canBeLaunchedInTab, mockAnalyticsTracker)
+    private suspend fun createSut(): WooPosEligibilityViewModel {
+        whenever(mockStoreCountryProvider()).thenReturn("United States")
+        return WooPosEligibilityViewModel(
+            canBeLaunchedInTab,
+            mockAnalyticsTracker,
+            mockResourceProvider,
+            mockStoreCountryProvider
+        )
+    }
 }
