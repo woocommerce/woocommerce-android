@@ -219,7 +219,7 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given multiple WooCommerce plugins all inactive, when invoke is called, then return first plugin version`() = runTest {
+    fun `given multiple WooCommerce plugins all inactive, when invoke is called, then return null`() = runTest {
         // GIVEN
         val siteModel = mock<SiteModel>()
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
@@ -247,6 +247,6 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         val result = sut()
 
         // THEN
-        assertThat(result).isEqualTo(firstVersion)
+        assertThat(result).isEqualTo(null)
     }
 }
