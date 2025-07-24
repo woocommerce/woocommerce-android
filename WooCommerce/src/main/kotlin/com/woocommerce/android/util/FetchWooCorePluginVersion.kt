@@ -24,7 +24,15 @@ class FetchWooCorePluginVersion @Inject constructor(
         }
     }
 
-    private fun List<SitePluginModel>?.getWooPlugin() = this?.firstOrNull {
-        it.name.endsWith(WooCommerceStore.WooPlugin.WOO_CORE.pluginName)
+    private fun List<SitePluginModel>?.getWooPlugin(): SitePluginModel? {
+        if (this.isNullOrEmpty()) return null
+
+        val pluginName = WooCommerceStore.WooPlugin.WOO_CORE.pluginName
+
+        val activePlugin = this.firstOrNull { plugin ->
+            plugin.name.endsWith(pluginName) && plugin.isActive
+        }
+
+        return activePlugin
     }
 }
