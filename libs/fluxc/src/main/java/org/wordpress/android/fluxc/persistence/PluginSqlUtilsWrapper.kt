@@ -26,7 +26,7 @@ class PluginSqlUtilsWrapper
         return PluginSqlUtils.getSitePluginByName(site, pluginName)
     }
 
-    fun getActiveSitePluginByName(site: SiteModel, pluginName: String?): SitePluginModel? {
+    fun getActiveSitePluginByName(site: SiteModel, pluginName: String): SitePluginModel? {
         return PluginSqlUtils.getActiveSitePluginByName(site, pluginName)
     }
 
