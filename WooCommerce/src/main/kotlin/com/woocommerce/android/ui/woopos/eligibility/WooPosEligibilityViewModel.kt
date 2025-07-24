@@ -59,6 +59,7 @@ class WooPosEligibilityViewModel @Inject constructor(
                 is WooPosLaunchability.NotLaunchable -> {
                     currentReason = result.reason
                     val suggestionText = getSuggestionText(result.reason)
+                    tracker.track(WooPosAnalyticsEvent.Event.IneligibleUIShown(result.reason))
                     WooPosEligibilityRetryState.Ineligible(suggestionText)
                 }
             }
