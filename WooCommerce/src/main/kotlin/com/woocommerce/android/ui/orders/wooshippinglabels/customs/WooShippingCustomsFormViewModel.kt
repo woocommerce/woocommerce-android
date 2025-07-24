@@ -36,10 +36,14 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     private val navArgs: WooShippingCustomsFormFragmentArgs by savedState.navArgs()
     private val destinationCountryCode = navArgs.destinationCountryCode
+    private val storeOptions = navArgs.storeOptions
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = ViewState()
+        initialValue = ViewState(
+            currencySymbol = storeOptions.currencySymbol,
+            weightUnit = storeOptions.weightUnit
+        )
     )
     val viewState = _viewState.asLiveData()
 
@@ -98,7 +102,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                         quantity = item.quantity,
                         isExpanded = false
                     )
-                }
+                },
             )
         }
     }
@@ -322,7 +326,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         val otherRestrictionInput: InputValue = InputValue.Empty,
         val itnValue: InputValue = InputValue.Empty,
         val returnToSenderChecked: Boolean = false,
-        val shippingProducts: List<WooShippingCustomsProductUIModel> = emptyList()
+        val shippingProducts: List<WooShippingCustomsProductUIModel> = emptyList(),
+        val currencySymbol: String,
+        val weightUnit: String,
     ) : Parcelable {
         val shouldDisplayContentTypeInput: Boolean
             get() = contentType == ContentType.OTHER

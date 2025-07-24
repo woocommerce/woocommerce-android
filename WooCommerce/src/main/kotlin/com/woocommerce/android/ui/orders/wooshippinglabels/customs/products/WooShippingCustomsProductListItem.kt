@@ -44,6 +44,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 @Composable
 fun WooShippingCustomsProductListItem(
     itemData: WooShippingCustomsProductUIModel,
+    currencySymbol: String,
+    weightUnit: String,
     onExpand: (isExtended: Boolean) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onTariffChanged: (String) -> Unit,
@@ -112,6 +114,8 @@ fun WooShippingCustomsProductListItem(
         if (itemData.isExpanded) {
             WooShippingCustomsProductExpandedListItem(
                 itemData = itemData,
+                currencySymbol = currencySymbol,
+                weightUnit = weightUnit,
                 onDescriptionChanged = onDescriptionChanged,
                 onTariffChanged = onTariffChanged,
                 onValuePerUnitChanged = onValuePerUnitChanged,
@@ -177,6 +181,8 @@ fun WooShippingCustomsProductCollapsedListItem(
 fun WooShippingCustomsProductExpandedListItem(
     modifier: Modifier,
     itemData: WooShippingCustomsProductUIModel,
+    currencySymbol: String,
+    weightUnit: String,
     onDescriptionChanged: (String) -> Unit,
     onTariffChanged: (String) -> Unit,
     onValuePerUnitChanged: (String) -> Unit,
@@ -219,6 +225,13 @@ fun WooShippingCustomsProductExpandedListItem(
                     value = itemData.valuePerUnit.currentInput,
                     onValueChange = onValuePerUnitChanged,
                     label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_value_per_unit),
+                    trailingIcon = {
+                        Text(
+                            text = currencySymbol,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    },
                     singleLine = true,
                     isError = itemData.valuePerUnit is InputValue.Error,
                     keyboardOptions = KeyboardOptions(
@@ -234,6 +247,13 @@ fun WooShippingCustomsProductExpandedListItem(
                     value = itemData.weightPerUnit.currentInput,
                     onValueChange = onWeightPerUnitChanged,
                     label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_weight_per_unit),
+                    trailingIcon = {
+                        Text(
+                            text = weightUnit,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    },
                     singleLine = true,
                     isError = itemData.weightPerUnit is InputValue.Error,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -274,6 +294,8 @@ fun WooShippingCustomsProductListCollapsedItemPreview() {
                     quantity = 1F,
                     isExpanded = false
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
@@ -304,6 +326,8 @@ fun WooShippingCustomsProductListCollapsedItemErrorPreview() {
                     quantity = 1F,
                     isExpanded = false
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
@@ -327,13 +351,15 @@ fun WooShippingCustomsProductListExpandedItemPreview() {
                     name = "Little Nap Brazil 250g",
                     description = InputValue.Data("Coffee Beans"),
                     tariffNumber = InputValue.Data("HS 14-1"),
-                    valuePerUnit = InputValue.Data("$20.00"),
-                    weightPerUnit = InputValue.Data("0.3kg"),
+                    valuePerUnit = InputValue.Data("20.00"),
+                    weightPerUnit = InputValue.Data("0.3"),
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
                     isExpanded = true
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
@@ -357,13 +383,15 @@ fun WooShippingCustomsProductListExpandedItemErrorPreview() {
                     name = "Little Nap Brazil 250g",
                     description = InputValue.Error("Coffee Beans", 0),
                     tariffNumber = InputValue.Error("HS 14-1", 0),
-                    valuePerUnit = InputValue.Data("$20.00"),
-                    weightPerUnit = InputValue.Data("0.3kg"),
+                    valuePerUnit = InputValue.Data("20.00"),
+                    weightPerUnit = InputValue.Data("0.3"),
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
                     isExpanded = true
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },

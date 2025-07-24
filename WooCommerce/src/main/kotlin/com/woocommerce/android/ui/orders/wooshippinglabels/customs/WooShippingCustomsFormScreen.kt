@@ -49,6 +49,8 @@ fun WooShippingCustomsFormScreen(viewModel: WooShippingCustomsFormViewModel) {
         shouldDisplayContentTypeInput = viewState?.shouldDisplayContentTypeInput ?: false,
         shouldDisplayRestrictionTypeInput = viewState?.shouldDisplayRestrictionTypeInput ?: false,
         shippingProducts = viewState?.shippingProducts ?: emptyList(),
+        currencySymbol = viewState?.currencySymbol ?: "",
+        weightUnit = viewState?.weightUnit ?: "",
         onContentTypeClick = viewModel::onContentTypeClick,
         onRestrictionTypeClick = viewModel::onRestrictionTypeClick,
         onItnChanged = viewModel::onITNChanged,
@@ -78,6 +80,8 @@ fun WooShippingCustomsFormScreen(
     shouldDisplayContentTypeInput: Boolean,
     shouldDisplayRestrictionTypeInput: Boolean,
     shippingProducts: List<WooShippingCustomsProductUIModel>,
+    currencySymbol: String,
+    weightUnit: String,
     onContentTypeClick: () -> Unit,
     onRestrictionTypeClick: () -> Unit,
     onItnChanged: (String) -> Unit,
@@ -191,6 +195,8 @@ fun WooShippingCustomsFormScreen(
                 WooShippingCustomsProductListItem(
                     modifier = modifier.fillMaxWidth(),
                     itemData = product,
+                    currencySymbol = currencySymbol,
+                    weightUnit = weightUnit,
                     onExpand = { onProductExpanded(index, it) },
                     onDescriptionChanged = { onDescriptionChanged(index, it) },
                     onTariffChanged = { onTariffChanged(index, it) },
@@ -251,6 +257,8 @@ fun PreviewWooShippingCustomsFormScreen() {
                         isExpanded = true
                     )
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onContentTypeClick = {},
                 onRestrictionTypeClick = {},
                 onItnChanged = {},

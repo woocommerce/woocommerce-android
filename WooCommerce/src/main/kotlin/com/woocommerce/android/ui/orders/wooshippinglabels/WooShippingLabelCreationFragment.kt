@@ -99,7 +99,8 @@ class WooShippingLabelCreationFragment : BaseFragment() {
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelCustomsFormFragment(
                             shippableItems = event.shippableItems.toTypedArray(),
                             destinationCountryCode = event.destinationCountryCode,
-                            customsData = event.customData
+                            customsData = event.customData,
+                            storeOptions = event.storeOptions
                         ).let { findNavController().navigateSafely(it) }
                 }
 

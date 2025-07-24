@@ -772,6 +772,10 @@
             app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData"
             app:nullable="true" />
 
+        <argument
+            android:name="storeOptions"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel" />
+
         <action
             android:id="@+id/action_wooShippingLabelCustomsFormFragment_to_itemSelectorDialog"
             app:destination="@id/itemSelectorDialog" />

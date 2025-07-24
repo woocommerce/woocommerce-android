@@ -968,12 +968,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val destinationCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)
             ?.shipTo?.address?.country?.code.orEmpty()
 
-        val event = NavigateToCustomsFormEdit(
-            shippableItems = shipmentItems.value[selectedShipmentIndex],
-            destinationCountryCode = destinationCountryCode,
-            customData = customsFormDataFlow.value[selectedShipmentIndex]
-        )
-        triggerEvent(event)
+        viewModelScope.launch {
+            val event = NavigateToCustomsFormEdit(
+                shippableItems = shipmentItems.value[selectedShipmentIndex],
+                destinationCountryCode = destinationCountryCode,
+                customData = customsFormDataFlow.value[selectedShipmentIndex],
+                storeOptions = accountSettings.first()?.storeOptions ?: StoreOptionsModel.EMPTY
+            )
+            triggerEvent(event)
+        }
     }
 
     fun onHazmatNoticeClick() {
@@ -1147,7 +1150,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class NavigateToCustomsFormEdit(
         val shippableItems: List<ShippableItemModel>,
         val destinationCountryCode: String,
-        val customData: CustomsData?
+        val customData: CustomsData?,
+        val storeOptions: StoreOptionsModel
     ) : Event()
 
     data class NavigateToHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
