@@ -76,12 +76,13 @@ object PluginSqlUtils {
     }
 
     /**
-     * Get an active site plugin by name.
-     * @param pluginName Name of the plugin excluding directory path.
+     * Returns plugin for given name if it is activated.
+     *
+     * @param pluginName Plugin name that includes directory path or not.
      * @return The active plugin with the specified name, or null if no active plugin is found.
      */
     @JvmStatic
-    fun getActiveSitePluginByName(site: SiteModel, pluginName: String?): SitePluginModel? {
+    fun getActiveSitePluginByName(site: SiteModel, pluginName: String): SitePluginModel? {
         val allPlugins = WellSql.select(SitePluginModel::class.java)
             .where()
             .equals(SitePluginModelTable.LOCAL_SITE_ID, site.id)
@@ -89,9 +90,10 @@ object PluginSqlUtils {
             .endWhere()
             .asModel
 
+        val extractedRequestedPluginName = pluginName.substringAfterLast('/')
         return allPlugins.firstOrNull { plugin ->
             val extractedPluginName = plugin.name.substringAfterLast('/')
-            extractedPluginName == pluginName
+            extractedPluginName == extractedRequestedPluginName
         }
     }
 
