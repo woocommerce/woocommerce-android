@@ -15,8 +15,9 @@ data class WooPosScanningSetupState(
     val wasDialogShown: Boolean = false,
 ) : Parcelable {
     enum class BarcodeReaderDevice(@StringRes val displayNameRes: Int) {
-        TERA_1200(R.string.woopos_scanning_setup_device_tera_1200),
         STAR_BSH_20B(R.string.woopos_scanning_setup_device_star_bsh_20b),
+        TERA_1200(R.string.woopos_scanning_setup_device_tera_1200),
+        NETUM_1228BC(R.string.woopos_scanning_setup_device_netum_1228bc),
         OTHER(R.string.woopos_scanning_setup_device_other)
     }
 
@@ -48,6 +49,20 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
 
+                BarcodeReaderDevice.NETUM_1228BC -> listOf(
+                    ScanningSetupStep.DeviceSelection,
+                    ScanningSetupStep.ScannerHIDModeSetup(
+                        qrCodeImageRes = R.drawable.ic_woopos_reader_setup_code_hid_netum_1228
+                    ),
+                    ScanningSetupStep.ScannerPairModeSetup(
+                        qrCodeImageRes = R.drawable.ic_woopos_reader_setup_code_pairing_netum_1228
+                    ),
+                    ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
+                    ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.ScannerSetupSuccess,
+                    ScanningSetupStep.ScannerSetupBarcodesOnProducts,
+                )
+
                 BarcodeReaderDevice.OTHER -> listOf(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerSetupInfo,
@@ -64,8 +79,9 @@ data class WooPosScanningSetupState(
         data object DeviceSelection : ScanningSetupStep() {
             @IgnoredOnParcel
             val devices: List<BarcodeReaderDevice> = listOf(
-                BarcodeReaderDevice.TERA_1200,
                 BarcodeReaderDevice.STAR_BSH_20B,
+                BarcodeReaderDevice.TERA_1200,
+                BarcodeReaderDevice.NETUM_1228BC,
                 BarcodeReaderDevice.OTHER
             )
 

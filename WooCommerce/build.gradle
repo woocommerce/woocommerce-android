@@ -433,6 +433,7 @@ dependencies {
 
     testImplementation(testFixtures(project(":libs:fluxc-plugin")))
 
+    androidTestImplementation libs.androidx.test.main.runner
     androidTestUtil libs.androidx.test.orchestrator
 }
 
