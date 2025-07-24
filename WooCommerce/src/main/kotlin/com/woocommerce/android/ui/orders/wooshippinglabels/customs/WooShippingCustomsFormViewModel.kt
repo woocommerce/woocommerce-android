@@ -229,7 +229,15 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             when (newValue.isBlank()) {
                 false -> InputValue.Data(newValue)
                 true -> newValue.asInputValueError
-            }.let { item.copy(valuePerUnit = it) }
+            }.let {
+                item.copy(
+                    valuePerUnit = it,
+                    formattedPriceAndWeight = formatPriceAndWeightPerItem(
+                        it.currentInput,
+                        item.weightPerUnit.currentInput
+                    )
+                )
+            }
         }
     }
 
@@ -238,7 +246,15 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             when (newValue.isBlank()) {
                 false -> InputValue.Data(newValue)
                 true -> newValue.asInputValueError
-            }.let { item.copy(weightPerUnit = it) }
+            }.let {
+                item.copy(
+                    weightPerUnit = it,
+                    formattedPriceAndWeight = formatPriceAndWeightPerItem(
+                        item.valuePerUnit.currentInput,
+                        it.currentInput
+                    )
+                )
+            }
         }
     }
 
