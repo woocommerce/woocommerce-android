@@ -249,14 +249,6 @@ open class WooCommerceStore @Inject internal constructor(
         return pluginSqlUtils.getSitePluginByName(site, plugin.pluginName)
     }
 
-    /**
-     * Get an active site plugin by WooPlugin type.
-     * This method prioritizes active plugins when multiple plugin instances exist in different directories.
-     *
-     * @param site The site model
-     * @param plugin The WooPlugin type to search for
-     * @return The active plugin if found, null otherwise
-     */
     fun getActiveSitePlugin(site: SiteModel, plugin: WooPlugin): SitePluginModel? {
         return pluginSqlUtils.getActiveSitePluginByName(site, plugin.pluginName)
     }
