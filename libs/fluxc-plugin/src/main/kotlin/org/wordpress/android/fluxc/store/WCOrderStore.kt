@@ -35,6 +35,7 @@ import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
+import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
@@ -66,6 +67,7 @@ class WCOrderStore @Inject internal constructor(
     private val orderNotesDao: OrderNotesDao,
     private val metaDataDao: MetaDataDao,
     private val orderShipmentProvidersDao: OrderShipmentProvidersDao,
+    private val orderSummaryDao: OrderSummaryDao,
     private val insertOrder: InsertOrder
 ) : Store(dispatcher) {
     companion object {
@@ -447,12 +449,15 @@ class WCOrderStore @Inject internal constructor(
         return orders.associateBy { it.orderId }
     }
 
-    fun getOrderSummariesByRemoteOrderIds(
+    suspend fun getOrderSummariesByRemoteOrderIds(
         site: SiteModel,
         orderIds: List<Long>
     ): Map<RemoteId, WCOrderSummaryModel> {
-        val orderSummaries = OrderSqlUtils.getOrderSummariesForRemoteIds(site, orderIds)
-        return orderSummaries.associateBy { RemoteId(it.orderId) }
+        val orderSummaries = orderSummaryDao.getOrderSummaries(
+            site.localId(),
+            orderIds.map { RemoteId(it) }
+        )
+        return orderSummaries.associateBy { it.orderId }
     }
 
     /**
@@ -950,7 +955,9 @@ class WCOrderStore @Inject internal constructor(
         // - WCOrderShipmentTrackingModel
         if (!payload.isError) {
             // Save order summaries to the db
-            OrderSqlUtils.insertOrUpdateOrderSummaries(payload.orderSummaries)
+            coroutineEngine.launch(API, this, "handleFetchOrderListCompleted") {
+                orderSummaryDao.upsertOrderSummaries(payload.orderSummaries)
+            }
 
             // Fetch outdated or missing orders
             fetchOutdatedOrMissingOrders(payload.listDescriptor.site, payload.orderSummaries)
@@ -967,7 +974,7 @@ class WCOrderStore @Inject internal constructor(
 
         mDispatcher.dispatch(ListActionBuilder.newFetchedListItemsAction(FetchedListItemsPayload(
             listDescriptor = payload.listDescriptor,
-            remoteItemIds = payload.orderSummaries.map { it.orderId },
+            remoteItemIds = payload.orderSummaries.map { it.orderId.value },
             loadedMore = payload.loadedMore,
             canLoadMore = payload.canLoadMore,
             error = payload.error?.let { fetchError ->
@@ -984,7 +991,7 @@ class WCOrderStore @Inject internal constructor(
     }
 
     private fun fetchOutdatedOrMissingOrders(site: SiteModel, fetchedSummaries: List<WCOrderSummaryModel>) {
-        val fetchedSummariesIds = fetchedSummaries.map { it.orderId }
+        val fetchedSummariesIds = fetchedSummaries.map { it.orderId.value }
         val localOrdersForFetchedSummaries =
             ordersDaoDecorator.getOrdersForSiteByRemoteIds(site.localId(), fetchedSummariesIds)
 
@@ -998,7 +1005,7 @@ class WCOrderStore @Inject internal constructor(
         fetchedSummaries: List<WCOrderSummaryModel>,
         localOrdersForSiteByRemoteIds: List<OrderEntity>
     ): List<Long> {
-        val summaryModifiedDates = fetchedSummaries.associate { it.orderId to it.dateModified }
+        val summaryModifiedDates = fetchedSummaries.associate { it.orderId.value to it.dateModified }
 
         return localOrdersForSiteByRemoteIds.filter { order ->
             order.dateModified != summaryModifiedDates[order.orderId]
@@ -1173,14 +1180,17 @@ class WCOrderStore @Inject internal constructor(
             val orders = result.map { it.first }
 
             orders.map { order ->
-                WCOrderSummaryModel().apply {
-                    localSiteId = listDescriptor.site.localId().value
-                    orderId = order.orderId
-                    dateCreated = order.dateCreated
+                WCOrderSummaryModel(
+                    siteId = listDescriptor.site.localId(),
+                    orderId = RemoteId(order.orderId),
+                    dateCreated = order.dateCreated,
+                ).apply {
                     dateModified = order.dateModified
                 }
-            }.let { orderSummaries ->
-                OrderSqlUtils.insertOrUpdateOrderSummaries(orderSummaries)
+            }.let { orderSummaries: List<WCOrderSummaryModel> ->
+                coroutineEngine.launch(API, this, "fetchOrdersListFirstPage") {
+                    orderSummaryDao.upsertOrderSummaries(orderSummaries)
+                }
             }
 
             if (deleteOldData) {

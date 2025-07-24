@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
@@ -26,6 +27,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Billing
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Shipping
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDtoMapper.Companion.toDto
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.Companion.BATCH_UPDATE_LIMIT
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
@@ -270,9 +272,7 @@ class OrderRestClient @Inject constructor(
             when (response) {
                 is WPAPIResponse.Success -> {
                     val orderSummaries = response.data?.map {
-                        orderResponseToOrderSummaryModel(it).apply {
-                            localSiteId = listDescriptor.site.id
-                        }
+                        orderResponseToOrderSummaryModel(it, listDescriptor.site.localId())
                     }.orEmpty()
 
                     val canLoadMore = orderSummaries.size == networkPageSize
@@ -1193,10 +1193,12 @@ class OrderRestClient @Inject constructor(
         }
     }
 
-    private fun orderResponseToOrderSummaryModel(response: OrderSummaryApiResponse): WCOrderSummaryModel {
-        return WCOrderSummaryModel().apply {
-            orderId = response.id ?: 0
-            dateCreated = convertDateToUTCString(response.dateCreatedGmt)
+    private fun orderResponseToOrderSummaryModel(response: OrderSummaryApiResponse, siteId: LocalId): WCOrderSummaryModel {
+        return WCOrderSummaryModel(
+            siteId = siteId,
+            orderId = RemoteId(response.id ?: 0),
+            dateCreated = convertDateToUTCString(response.dateCreatedGmt),
+        ).apply {
             dateModified = convertDateToUTCString(response.dateModifiedGmt)
         }
     }

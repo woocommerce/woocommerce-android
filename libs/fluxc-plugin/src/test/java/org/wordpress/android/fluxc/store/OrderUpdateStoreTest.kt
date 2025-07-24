@@ -14,6 +14,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
@@ -23,9 +24,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Billing
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Shipping
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
-import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
+import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -47,7 +48,7 @@ class OrderUpdateStoreTest {
     private val siteSqlUtils: SiteSqlUtils = mock {
         on { getSiteWithLocalId(any()) } doReturn site
     }
-    private val orderSqlUtils: OrderSqlUtils = mock()
+    private val orderSummaryDao: OrderSummaryDao = mock()
     private val ordersDaoDecorator: OrdersDaoDecorator = mock {
         onBlocking { getOrder(TEST_REMOTE_ORDER_ID, TEST_LOCAL_SITE_ID) } doReturn initialOrder
     }
@@ -63,7 +64,7 @@ class OrderUpdateStoreTest {
                 wcOrderRestClient = orderRestClient,
                 ordersDaoDecorator = ordersDaoDecorator,
                 siteSqlUtils = siteSqlUtils,
-                orderSqlUtils = orderSqlUtils,
+                orderSummaryDao = orderSummaryDao,
                 metaDataDao = metaDataDao
         )
     }
@@ -524,7 +525,7 @@ class OrderUpdateStoreTest {
         )
 
         verify(ordersDaoDecorator).deleteOrder(site.localId(), TEST_REMOTE_ORDER_ID)
-        verify(orderSqlUtils).deleteOrderSummaryById(site, TEST_REMOTE_ORDER_ID)
+        verify(orderSummaryDao).deleteOrderSummaryById(site.localId(), RemoteId(TEST_REMOTE_ORDER_ID))
         verify(metaDataDao).deleteMetaData(site.localId(), TEST_REMOTE_ORDER_ID)
     }
 
