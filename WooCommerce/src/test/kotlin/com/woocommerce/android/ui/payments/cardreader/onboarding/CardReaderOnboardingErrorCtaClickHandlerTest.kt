@@ -39,7 +39,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -66,7 +66,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -93,7 +93,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -123,7 +123,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -155,7 +155,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -188,7 +188,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -221,7 +221,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -254,7 +254,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -285,7 +285,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -312,7 +312,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(
@@ -339,7 +339,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 pluginRepository.installPlugin(
                     site = siteModel,
                     slug = "woocommerce-payments",
-                    name = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
                 )
             ).thenReturn(
                 flowOf(

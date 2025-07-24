@@ -198,6 +198,7 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         // Inactive plugin (first in list)
         val inactivePlugin = mock<SitePluginModel>()
         whenever(inactivePlugin.name).thenReturn("woocommerce-dev/woocommerce")
+        whenever(inactivePlugin.version).thenReturn(inactiveVersion)
         whenever(inactivePlugin.isActive).thenReturn(false)
 
         // Active plugin (second in list)
@@ -218,7 +219,7 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given multiple WooCommerce plugins all inactive, when invoke is called, then return null`() = runTest {
+    fun `given multiple WooCommerce plugins all inactive, when invoke is called, then return first plugin version`() = runTest {
         // GIVEN
         val siteModel = mock<SiteModel>()
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
@@ -229,11 +230,13 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         // First inactive plugin
         val firstPlugin = mock<SitePluginModel>()
         whenever(firstPlugin.name).thenReturn("woocommerce-dev/woocommerce")
+        whenever(firstPlugin.version).thenReturn(firstVersion)
         whenever(firstPlugin.isActive).thenReturn(false)
 
         // Second inactive plugin
         val secondPlugin = mock<SitePluginModel>()
         whenever(secondPlugin.name).thenReturn("woocommerce/woocommerce")
+        whenever(secondPlugin.version).thenReturn(secondVersion)
         whenever(secondPlugin.isActive).thenReturn(false)
 
         val plugins: List<SitePluginModel> = listOf(firstPlugin, secondPlugin)
@@ -244,6 +247,6 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         val result = sut()
 
         // THEN
-        assertThat(result).isEqualTo(null)
+        assertThat(result).isEqualTo(firstVersion)
     }
 }
