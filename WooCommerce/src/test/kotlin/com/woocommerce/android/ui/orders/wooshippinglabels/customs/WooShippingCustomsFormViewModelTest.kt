@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,21 +31,13 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         // Create mock locations for the tests
-        val mockLocations = listOf(
-            mock<Location> {
-                on { code } doReturn "US"
-                on { name } doReturn "United States"
-            },
-            mock<Location> {
-                on { code } doReturn "CA"
-                on { name } doReturn "Canada"
-            }
+        val locations = listOf(
+            Location(code = "US", name = "United States"),
+            Location(code = "CA", name = "Canada")
         )
 
         // Configure the mock to return our test locations
-        getAllCountries = mock {
-            onBlocking { invoke() } doReturn Result.success(mockLocations)
-        }
+        getAllCountries = mock { onBlocking { invoke() } doReturn Result.success(locations) }
 
         shouldRequireITN = mock {
             on { invoke(any(), any()) } doReturn false
