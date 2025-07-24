@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class FetchWooCorePluginVersion @Inject constructor(
+class FetchActiveWCPluginVersion @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
 ) {

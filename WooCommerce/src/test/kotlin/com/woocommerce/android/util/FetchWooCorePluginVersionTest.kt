@@ -22,11 +22,11 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
 
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private lateinit var sut: FetchWooCorePluginVersion
+    private lateinit var sut: FetchActiveWCPluginVersion
 
     @Before
     fun setup() {
-        sut = FetchWooCorePluginVersion(
+        sut = FetchActiveWCPluginVersion(
             wooCommerceStore = wooCommerceStore,
             selectedSite = selectedSite
         )

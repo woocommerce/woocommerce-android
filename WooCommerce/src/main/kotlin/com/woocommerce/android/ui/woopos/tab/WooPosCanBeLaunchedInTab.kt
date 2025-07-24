@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.tab
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPOSIsRemotelyEnabled
-import com.woocommerce.android.util.FetchWooCorePluginVersion
+import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,7 +20,7 @@ import javax.inject.Singleton
 class WooPosCanBeLaunchedInTab @Inject constructor(
     private val selectedSite: SelectedSite,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
-    private val fetchWooCoreVersion: FetchWooCorePluginVersion,
+    private val fetchWooCoreVersion: FetchActiveWCPluginVersion,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemotelyEnabled: WooPOSIsRemotelyEnabled
 ) {
