@@ -4474,9 +4474,9 @@
     <string name="woopos_scanning_setup_device_selection_title">Set up a barcode scanner</string>
     <string name="woopos_scanning_setup_device_selection_message">Select a model from the list:</string>
     <string name="woopos_scanning_setup_hid_title">Scanner set up</string>
-    <string name="woopos_scanning_setup_hid_message">Use your barcode scanner to scan the QR code below to enable Bluetooth HID mode.</string>
+    <string name="woopos_scanning_setup_hid_message">Use your barcode scanner to scan the code below to enable Bluetooth HID mode.</string>
     <string name="woopos_scanning_setup_scanner_pair_mode_title">Scanner set up</string>
-    <string name="woopos_scanning_setup_scanner_pair_mode_message">Use your barcode scanner to scan the QR code below to enter pairing mode.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">Use your barcode scanner to scan the code below to enter pairing mode.</string>
     <string name="woopos_scanning_setup_pair_your_scanner_title">Pair your scanner</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
     <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
