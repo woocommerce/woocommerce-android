@@ -193,7 +193,6 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
 
         val activeVersion = "2.0.0"
-        val inactiveVersion = "1.0.0"
 
         // Inactive plugin (first in list)
         val inactivePlugin = mock<SitePluginModel>()
@@ -222,9 +221,6 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         // GIVEN
         val siteModel = mock<SiteModel>()
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
-
-        val firstVersion = "1.0.0"
-        val secondVersion = "2.0.0"
 
         // First inactive plugin
         val firstPlugin = mock<SitePluginModel>()
