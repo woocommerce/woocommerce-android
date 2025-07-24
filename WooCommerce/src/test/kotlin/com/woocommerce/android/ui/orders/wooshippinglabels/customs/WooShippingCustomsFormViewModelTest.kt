@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -27,6 +28,7 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: WooShippingCustomsFormViewModel
     private lateinit var getAllCountries: GetAllCountries
     private lateinit var shouldRequireITN: ShouldRequireITN
+    private lateinit var currencyFormatter: CurrencyFormatter
 
     @Before
     fun setup() {
@@ -42,6 +44,7 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         shouldRequireITN = mock {
             on { invoke(any(), any()) } doReturn false
         }
+        currencyFormatter = mock()
 
         createSut()
     }
@@ -441,10 +444,17 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
             savedState = WooShippingCustomsFormFragmentArgs(
                 shippableItems = arrayOf(testProduct, expensiveProduct),
                 destinationCountryCode = "CA",
-                customsData = null
+                customsData = null,
+                storeOptions = StoreOptionsModel(
+                    currencySymbol = "$",
+                    weightUnit = "kg",
+                    dimensionUnit = "cm",
+                    originCountry = "US"
+                )
             ).toSavedStateHandle(),
             getAllCountries = getAllCountries,
-            shouldRequireITN = shouldRequireITN
+            shouldRequireITN = shouldRequireITN,
+            currencyFormatter = currencyFormatter
         )
     }
 }
