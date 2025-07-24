@@ -242,7 +242,8 @@ fun PreviewWooShippingCustomsFormScreen() {
                         originCountry = "United Stats of America",
                         originCountryCode = "US",
                         quantity = 1F,
-                        isExpanded = false
+                        isExpanded = false,
+                        formattedPriceAndWeight = "$15 • 5kg"
                     ),
                     WooShippingCustomsProductUIModel(
                         productId = 0,
@@ -254,7 +255,8 @@ fun PreviewWooShippingCustomsFormScreen() {
                         originCountry = "United Stats of America",
                         originCountryCode = "US",
                         quantity = 1F,
-                        isExpanded = true
+                        isExpanded = true,
+                        formattedPriceAndWeight = "$15 • 5kg"
                     )
                 ),
                 currencySymbol = "$",

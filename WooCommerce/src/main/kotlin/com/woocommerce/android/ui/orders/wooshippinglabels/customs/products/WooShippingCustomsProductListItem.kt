@@ -169,7 +169,7 @@ fun WooShippingCustomsProductCollapsedListItem(
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_origin_country_missing)
             )
             Text(
-                text = itemData.valueAndWeightForDisplay,
+                text = itemData.formattedPriceAndWeight,
                 color = colorResource(id = R.color.color_on_surface),
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -292,7 +292,8 @@ fun WooShippingCustomsProductListCollapsedItemPreview() {
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
-                    isExpanded = false
+                    isExpanded = false,
+                    formattedPriceAndWeight = "$15 • 5kg"
                 ),
                 currencySymbol = "$",
                 weightUnit = "kg",
@@ -324,7 +325,8 @@ fun WooShippingCustomsProductListCollapsedItemErrorPreview() {
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
-                    isExpanded = false
+                    isExpanded = false,
+                    formattedPriceAndWeight = "$15 • 5kg"
                 ),
                 currencySymbol = "$",
                 weightUnit = "kg",
@@ -356,7 +358,8 @@ fun WooShippingCustomsProductListExpandedItemPreview() {
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
-                    isExpanded = true
+                    isExpanded = true,
+                    formattedPriceAndWeight = "$15 • 5kg"
                 ),
                 currencySymbol = "$",
                 weightUnit = "kg",
@@ -388,7 +391,8 @@ fun WooShippingCustomsProductListExpandedItemErrorPreview() {
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
-                    isExpanded = true
+                    isExpanded = true,
+                    formattedPriceAndWeight = "$15 • 5kg"
                 ),
                 currencySymbol = "$",
                 weightUnit = "kg",

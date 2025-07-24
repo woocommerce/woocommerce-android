@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountri
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -30,6 +31,7 @@ import javax.inject.Inject
 class WooShippingCustomsFormViewModel @Inject constructor(
     private val getAllCountries: GetAllCountries,
     private val shouldRequireITN: ShouldRequireITN,
+    private val currencyFormatter: CurrencyFormatter,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val itnRegex by lazy { ITN_REGEX_STRING.toRegex() }
@@ -100,7 +102,11 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                         originCountry = item.originCountry,
                         originCountryCode = item.originCountryCode,
                         quantity = item.quantity,
-                        isExpanded = false
+                        isExpanded = false,
+                        formattedPriceAndWeight = formatPriceAndWeightPerItem(
+                            item.value.toString(),
+                            item.weight.toString()
+                        )
                     )
                 },
             )
@@ -301,16 +307,25 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 input = "",
                 errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
             )
-            else -> InputValue.Data(shippingTotalValue.toString())
+
+            else -> InputValue.Data(
+                shippingTotalValue.toString()
+            )
         },
         weightPerUnit = when {
             weight == 0f -> InputValue.Error(
                 input = "",
                 errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
             )
+
             else -> InputValue.Data(weight.toString())
-        }
+        },
+        formattedPriceAndWeight = formatPriceAndWeightPerItem(price.toString(), weight.toString())
     )
+
+    private fun formatPriceAndWeightPerItem(price: String, weight: String): String =
+        "${currencyFormatter.formatCurrency(price, storeOptions.currencySymbol)} " +
+            "• $weight${storeOptions.weightUnit}"
 
     private val String.asInputValueError
         get() = InputValue.Error(
