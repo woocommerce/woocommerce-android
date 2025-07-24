@@ -63,24 +63,16 @@ object PluginSqlUtils {
         return if (result.isEmpty()) null else result.first()
     }
 
-    /**
-     * @param pluginName Name of the plugin excluding directory path.
-     */
     @JvmStatic
     fun getSitePluginByName(site: SiteModel, pluginName: String?): SitePluginModel? {
-        // Get all plugins for the site and filter by plugin name using last '/' segment.
-        // 💡 We are purposefully not using the [ConditionClauseBuilder::endsWith] in the SQL query builder below because
-        // it's has bug in its implementation 🐛.
-        val allPlugins = WellSql.select(SitePluginModel::class.java)
+        val result = WellSql.select(SitePluginModel::class.java)
             .where()
+            .equals(SitePluginModelTable.NAME, pluginName)
             .equals(SitePluginModelTable.LOCAL_SITE_ID, site.id)
             .endWhere()
             .asModel
 
-        return allPlugins.firstOrNull { plugin ->
-            val extractedPluginName = plugin.name.substringAfterLast('/')
-            extractedPluginName == pluginName
-        }
+        return if (result.isEmpty()) null else result.first()
     }
 
     /**
@@ -103,21 +95,12 @@ object PluginSqlUtils {
         }
     }
 
-    /**
-     * @param pluginNames Names of the plugin excluding directory path.
-     */
     @JvmStatic
-    fun getSitePluginByNames(site: SiteModel, pluginNames: List<String?>?): List<SitePluginModel> {
-        // Get all plugins for the site and filter by plugin names using last '/' segment
-        val allPlugins = WellSql.select(SitePluginModel::class.java)
+    fun getSitePluginByNames(site: SiteModel, pluginNames: List<String?>?): List<SitePluginModel> =
+        WellSql.select(SitePluginModel::class.java)
             .where()
+            .isIn(SitePluginModelTable.NAME, pluginNames)
             .equals(SitePluginModelTable.LOCAL_SITE_ID, site.id)
             .endWhere()
             .asModel
-
-        return allPlugins.filter { plugin ->
-            val extractedPluginName = plugin.name.substringAfterLast('/')
-            pluginNames?.contains(extractedPluginName) == true
-        }
-    }
 }
