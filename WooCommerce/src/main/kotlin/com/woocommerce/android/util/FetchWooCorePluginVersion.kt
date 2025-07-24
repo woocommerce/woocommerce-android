@@ -27,10 +27,10 @@ class FetchWooCorePluginVersion @Inject constructor(
     private fun List<SitePluginModel>?.getWooPlugin(): SitePluginModel? {
         if (this.isNullOrEmpty()) return null
 
-        val pluginName = WooCommerceStore.WooPlugin.WOO_CORE.pluginName
+        val pluginName = WooCommerceStore.WooPlugin.WOO_CORE.pluginName.substringAfterLast('/')
 
         val activePlugin = this.firstOrNull { plugin ->
-            plugin.name.endsWith(pluginName) && plugin.isActive
+            plugin.name.substringAfterLast('/').endsWith(pluginName) && plugin.isActive
         }
 
         return activePlugin
