@@ -90,7 +90,6 @@ object PluginSqlUtils {
      */
     @JvmStatic
     fun getActiveSitePluginByName(site: SiteModel, pluginName: String?): SitePluginModel? {
-        // Get all plugins for the site and filter by plugin name using last '/' segment and active status.
         val allPlugins = WellSql.select(SitePluginModel::class.java)
             .where()
             .equals(SitePluginModelTable.LOCAL_SITE_ID, site.id)
