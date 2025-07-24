@@ -183,7 +183,9 @@ class OrderCreateEditRepository @Inject constructor(
         return when {
             key == AUTO_DRAFT && isAutoDraftSupported() -> WCOrderStatusModel(statusKey = AUTO_DRAFT)
             // If AUTO_DRAFT is not supported, use PENDING state
-            key == AUTO_DRAFT && isAutoDraftSupported().not() -> WCOrderStatusModel(statusKey = CoreOrderStatus.PENDING.value)
+            key == AUTO_DRAFT && isAutoDraftSupported().not() -> WCOrderStatusModel(
+                statusKey = CoreOrderStatus.PENDING.value
+            )
             else -> withContext(dispatchers.io) {
                 // Currently this query will run on the current thread, so forcing the usage of IO dispatcher
                 orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key)

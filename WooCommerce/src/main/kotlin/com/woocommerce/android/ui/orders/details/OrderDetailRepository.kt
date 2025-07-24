@@ -187,11 +187,13 @@ class OrderDetailRepository @Inject constructor(
     }
 
     fun getOrderStatus(key: String): OrderStatus {
-        return (runBlocking {
-            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel(
-                statusKey = key, label = key
-            )
-        }).toOrderStatus()
+        return (
+            runBlocking {
+                orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel(
+                    statusKey = key, label = key
+                )
+            }
+            ).toOrderStatus()
     }
 
     fun getOrderStatusOptions() =

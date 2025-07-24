@@ -56,7 +56,6 @@ import org.wordpress.android.util.AppLog.T.API
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.runBlocking
 
 @Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
 @Singleton
@@ -396,7 +395,7 @@ class WCOrderStore @Inject internal constructor(
         var searchResults: List<OrderEntity> = emptyList()
     ) : OnChanged<OrderError>()
 
-    class OnOrderStatusOptionsChanged() : OnChanged<OrderError>()
+    class OnOrderStatusOptionsChanged : OnChanged<OrderError>()
 
     data class OnOrderShipmentProvidersChanged(
         val shipmentProvidersFetchedCount: Int

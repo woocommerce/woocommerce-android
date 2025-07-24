@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.model
 
 import androidx.room.Entity
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.*
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 
 @Entity(
     tableName = "OrderStatusEntity",
