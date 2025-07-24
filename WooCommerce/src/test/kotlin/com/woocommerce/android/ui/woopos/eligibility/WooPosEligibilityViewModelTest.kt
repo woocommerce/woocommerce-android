@@ -155,7 +155,7 @@ class WooPosEligibilityViewModelTest {
         )
 
         sut.initialize(initialReason)
-        reset(tracker) // Clear the initial IneligibleUIShown event
+        reset(tracker)
 
         // WHEN
         sut.retryEligibilityCheckTapped()
