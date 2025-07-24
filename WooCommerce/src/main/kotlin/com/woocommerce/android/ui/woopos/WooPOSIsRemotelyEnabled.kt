@@ -12,7 +12,11 @@ class WooPOSIsRemotelyEnabled @Inject constructor(
     private val gson: Gson
 ) {
 
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(forceRefresh: Boolean = false): Boolean {
+        if (forceRefresh) {
+            ssrFetcher.invalidate()
+        }
+
         val result = ssrFetcher.load(selectedSite.get())
 
         if (!result.isError) {

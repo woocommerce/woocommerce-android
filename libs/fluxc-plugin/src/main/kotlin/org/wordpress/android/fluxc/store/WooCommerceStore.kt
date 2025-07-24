@@ -6,12 +6,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
@@ -212,6 +215,16 @@ open class WooCommerceStore @Inject internal constructor(
     suspend fun getSiteSettingsAsync(site: SiteModel): Settings? =
         coroutineEngine.withDefaultContext(T.DB, this, "getSiteSettingsAsync") {
             settingsDao.getSettings(site.localId())?.let { WCSettingsMapper.mapToDomain(it) }
+        }
+
+    /**
+     * Returns a Flow that emits all WooCommerce site settings whenever any of them change.
+     */
+    fun observeAllSiteSettings(): Flow<Map<LocalId, Settings>> =
+        settingsDao.observeAllSettings().map { settingsList ->
+            settingsList.associate { settingsModel ->
+                settingsModel.localSiteId to WCSettingsMapper.mapToDomain(settingsModel)
+            }
         }
 
     /**

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.compose.component
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import androidx.annotation.DrawableRes
@@ -19,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toArgb
@@ -26,11 +26,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.set
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
@@ -44,12 +47,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun QRCode(
+    modifier: Modifier = Modifier,
     content: String,
     size: Dp,
     @DrawableRes overlayId: Int? = null,
 ) {
     Image(
-        modifier = Modifier
+        modifier = modifier
             .size(size)
             .border(
                 width = 5.dp,
@@ -59,9 +63,11 @@ fun QRCode(
             .background(
                 color = colorResource(id = R.color.woo_white)
             ),
-        painter = rememberQrBitmapPainter(
+        painter = rememberBarcodeBitmapPainter(
             content,
-            size = size,
+            barcodeFormat = BarcodeFormat.QR_CODE,
+            widthDp = size,
+            heightDp = size,
             overlayId = overlayId,
         ),
         contentDescription = "QR Code",
@@ -70,23 +76,60 @@ fun QRCode(
 }
 
 @Composable
-private fun rememberQrBitmapPainter(
+fun BarcodeEAN13Code(
     content: String,
-    size: Dp,
+    widthDp: Dp,
+    heightDp: Dp,
+    codeColor: Color = colorResource(id = R.color.woo_black_90),
+    backgroundColor: Color = colorResource(id = R.color.woo_white),
+    @DrawableRes overlayId: Int? = null,
+) {
+    Image(
+        modifier = Modifier
+            .size(widthDp, heightDp)
+            .border(
+                width = 5.dp,
+                color = backgroundColor,
+            )
+            .padding(4.dp)
+            .background(
+                color = backgroundColor
+            ),
+        painter = rememberBarcodeBitmapPainter(
+            content,
+            barcodeFormat = BarcodeFormat.EAN_13,
+            widthDp = widthDp,
+            heightDp = heightDp,
+            codeColor = codeColor,
+            overlayId = overlayId,
+        ),
+        contentDescription = stringResource(id = R.string.barcode_ean13_content_description),
+        contentScale = ContentScale.FillBounds,
+    )
+}
+
+@Composable
+private fun rememberBarcodeBitmapPainter(
+    content: String,
+    barcodeFormat: BarcodeFormat,
+    widthDp: Dp,
+    heightDp: Dp,
+    codeColor: Color = colorResource(id = R.color.woo_black_90),
     @DrawableRes overlayId: Int?,
 ): BitmapPainter {
     val density = LocalDensity.current
-    val sizePx = with(density) { size.roundToPx() }
+    val widthPx = with(density) { widthDp.roundToPx() }
+    val heightPx = with(density) { heightDp.roundToPx() }
 
     var bitmap by remember(content) { mutableStateOf<Bitmap?>(null) }
 
-    val pixelColor = colorResource(id = R.color.woo_black_90).toArgb()
+    val pixelColor = codeColor.toArgb()
 
     LaunchedEffect(bitmap) {
         if (bitmap != null) return@LaunchedEffect
 
         launch(Dispatchers.IO) {
-            val newBitmap = generateQr(content, sizePx, pixelColor)
+            val newBitmap = generateCode(content, barcodeFormat, widthPx, heightPx, pixelColor)
 
             bitmap = newBitmap
         }
@@ -99,9 +142,9 @@ private fun rememberQrBitmapPainter(
                 toBitmap(intrinsicWidth, intrinsicHeight)
             }
         }
-        val currentBitmap = bitmap ?: Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
+        val currentBitmap = bitmap ?: createBitmap(widthPx, heightPx)
             .apply {
-                eraseColor(Color.TRANSPARENT)
+                eraseColor(android.graphics.Color.TRANSPARENT)
             }
         BitmapPainter(
             if (overlay != null) {
@@ -113,13 +156,19 @@ private fun rememberQrBitmapPainter(
     }
 }
 
-private fun generateQr(content: String, sizePx: Int, pixelColor: Int): Bitmap? {
+private fun generateCode(
+    content: String,
+    barcodeFormat: BarcodeFormat,
+    widthPx: Int,
+    heightPx: Int,
+    pixelColor: Int
+): Bitmap {
     val bitmapMatrix = try {
         MultiFormatWriter().encode(
             content,
-            BarcodeFormat.QR_CODE,
-            sizePx,
-            sizePx,
+            barcodeFormat,
+            widthPx,
+            heightPx,
             mapOf(
                 EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H,
                 EncodeHintType.MARGIN to 0,
@@ -130,20 +179,16 @@ private fun generateQr(content: String, sizePx: Int, pixelColor: Int): Bitmap? {
         null
     }
 
-    val matrixWidth = bitmapMatrix?.width ?: sizePx
-    val matrixHeight = bitmapMatrix?.height ?: sizePx
+    val matrixWidth = bitmapMatrix?.width ?: widthPx
+    val matrixHeight = bitmapMatrix?.height ?: heightPx
 
-    val newBitmap = Bitmap.createBitmap(
-        bitmapMatrix?.width ?: sizePx,
-        bitmapMatrix?.height ?: sizePx,
-        Bitmap.Config.ARGB_8888,
-    )
+    val newBitmap = createBitmap(bitmapMatrix?.width ?: widthPx, bitmapMatrix?.height ?: heightPx)
 
     for (x in 0 until matrixWidth) {
         for (y in 0 until matrixHeight) {
             val shouldColorPixel = bitmapMatrix?.get(x, y) ?: false
             if (!shouldColorPixel) continue
-            newBitmap.setPixel(x, y, pixelColor)
+            newBitmap[x, y] = pixelColor
         }
     }
     return newBitmap
@@ -172,6 +217,22 @@ fun QRCodePreview() {
             content = "https://woocommerce.com",
             size = 150.dp,
             overlayId = R.drawable.img_woo_white
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun EAN13CodePreview() {
+    WooThemeWithBackground {
+        BarcodeEAN13Code(
+            content = "https://woocommerce.com",
+            widthDp = 150.dp,
+            heightDp = 80.dp,
+            overlayId = R.drawable.img_woo_white,
+            codeColor = Color.Black,
+            backgroundColor = Color.White
         )
     }
 }

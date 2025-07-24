@@ -12,8 +12,8 @@ androidx-constraintlayout-compose = '1.0.1'
 androidx-constraintlayout-main = '2.1.4'
 androidx-core-main = '1.13.1'
 androidx-core-splashscreen = '1.0.1'
-androidx-credentials = '1.2.0'
-androidx-datastore = '1.0.0' # Higher versions of the DataStore library are presenting crashes, refer to peaMlT-XN before upgrading it.
+androidx-credentials = '1.5.0'
+androidx-datastore = '1.1.7'
 androidx-exifinterface = "1.0.0"
 androidx-fragment = '1.8.5'
 androidx-hilt = '1.2.0'
@@ -25,37 +25,41 @@ androidx-recyclerview-main = '1.3.2'
 androidx-recyclerview-selection = '1.1.0'
 androidx-room = "2.6.1"
 androidx-security-crypto = "1.0.0"
-androidx-test-espresso = '3.4.0'
-androidx-test-ext = '1.1.5'
-androidx-test-main = '1.4.0'
-androidx-test-uiautomator = '2.2.0'
+androidx-test-core = '1.6.1'
+androidx-test-espresso = '3.6.1'
+androidx-test-ext = '1.2.1'
+androidx-test-rules = '1.6.1'
+androidx-test-runner = '1.6.2'
+androidx-test-orchestrator = '1.5.1'
+androidx-test-uiautomator = '2.3.0'
 androidx-transition = '1.5.1'
 androidx-wear-compose = '1.4.0'
 androidx-wear-tiles = '1.3.0'
 androidx-wear-tooling = '1.0.0'
 androidx-wear-watchface = '1.2.1'
-androidx-work = '2.7.1'
+androidx-work = '2.10.2'
 apache-commons-text = '1.10.0'
 apache-http-client-android = '4.3.5.1'
 automattic-about = '1.7.0'
+automattic-encryptedlogging = '1.0.0'
 automattic-measure-builds = '3.2.1'
-automattic-tracks = '6.0.3'
+automattic-tracks = '6.0.4'
 assertj = '3.27.3'
 bumptech-glide = '4.16.0'
 cashapp-turbine = '1.0.0'
-coil = '2.1.0'
+coil = '2.7.0'
 commons-fileupload = '1.5'
 dependency-analysis = '2.8.0'
 detekt = '1.23.7'
 eventbus = "3.3.1"
 facebook-flipper = '0.176.1'
 facebook-shimmer = '0.5.0'
-facebook-soloader = '0.10.4'
+facebook-soloader = '0.12.1'
 fastlane-screengrab = '2.1.1'
-fladle = '0.17.5'
+fladle = '0.18.0'
 glassfish-javax-annotation = "10.0-b28"
 google-autoService = "1.0-rc4"
-google-dagger = "2.55"
+google-dagger = "2.56.2"
 google-firebase-bom = '33.9.0'
 google-gson = '2.13.1'
 google-guava = '33.3.1-android'
@@ -65,10 +69,10 @@ google-compose-material3 = '1.3.1'
 google-mlkit-barcode-scanning = '17.3.0'
 google-mlkit-text-recognition = '16.0.0'
 google-play-app-update = '2.1.0'
-google-play-review = '2.0.1'
+google-play-review = '2.0.2'
 google-play-services-auth = '21.3.0'
 google-play-services-code-scanner = '16.1.0'
-google-play-services-wearable = '18.1.0'
+google-play-services-wearable = '19.0.0'
 google-protobuf-plugin = '0.9.4'
 google-protobuf-library = '3.25.3'
 google-services = '4.4.0'
@@ -77,7 +81,6 @@ gravatar = '0.2.0'
 jackson-databind = '2.12.7.1'
 java = '11'
 jetty-webapp = '9.4.51.v20230217'
-jna = '5.5.0@aar'
 json-path = '2.9.0'
 junit = '4.13.2'
 lottie = '5.2.0'
@@ -88,19 +91,18 @@ mockito-kotlin = '5.4.0'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
 robolectric = "4.14"
-sentry = '4.10.0'
+sentry = '5.8.0'
 squareup-javapoet = "1.7.0"
 squareup-leakcanary = '2.14'
 squareup-okhttp3 = "4.9.0"
 stripe-terminal = '4.3.1'
-terl-lazysodium-android = '5.0.2@aar'
 tinder-statemachine = '0.2.0'
 volley = "1.1.1"
 wellsql = "2.0.0"
 wiremock = '2.26.3'
 wordpress-aztec = 'v2.1.4'
 wordpress-libaddressinput = '0.0.2'
-wordpress-lint = "2.1.0"
+wordpress-lint = "2.2.0"
 wordpress-mediapicker = '0.3.4'
 wordpress-utils = '3.15.0'
 zendesk = '5.0.8'
@@ -166,9 +168,10 @@ androidx-security-crypto = { module = "androidx.security:security-crypto", versi
 androidx-test-espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "androidx-test-espresso" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext" }
-androidx-test-main-core = { group = "androidx.test", name = "core", version.ref = "androidx-test-main" }
-androidx-test-main-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test-main" }
-androidx-test-main-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-main" }
+androidx-test-main-core = { group = "androidx.test", name = "core", version.ref = "androidx-test-core" }
+androidx-test-main-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test-rules" }
+androidx-test-main-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
+androidx-test-orchestrator = { group = "androidx.test", name = "orchestrator", version.ref = "androidx-test-orchestrator" }
 androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidx-test-uiautomator" }
 androidx-transition = { group = "androidx.transition", name = "transition", version.ref = "androidx-transition" }
 androidx-wear-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "androidx-wear-compose" }
@@ -182,6 +185,7 @@ apache-commons-text = { group = "org.apache.commons", name = "commons-text", ver
 apache-http-client-android = { group = "org.apache.httpcomponents", name = "httpclient-android", version.ref = "apache-http-client-android" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 automattic-about = { group = "com.automattic", name = "about", version.ref = "automattic-about" }
+automattic-encryptedlogging = { group = "com.automattic", name = "encryptedlogging", version.ref = "automattic-encryptedlogging" }
 automattic-tracks-android = { group = "com.automattic", name = "Automattic-Tracks-Android", version.ref = "automattic-tracks" }
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }
 automattic-tracks-crashlogging = { group = "com.automattic.tracks", name = "crashlogging", version.ref = "automattic-tracks" }
@@ -238,7 +242,6 @@ google-zxing-core = { group = "com.google.zxing", name = "core", version.ref = "
 gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-databind" }
 jetty-webapp = { group = "org.eclipse.jetty", name = "jetty-webapp", version.ref = "jetty-webapp" }
-jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "json-path" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
@@ -257,7 +260,6 @@ squareup-okhttp3 = { module = "com.squareup.okhttp3:okhttp", version.ref = "squa
 squareup-okhttp3-urlconnection = { module = "com.squareup.okhttp3:okhttp-urlconnection", version.ref = "squareup-okhttp3" }
 stripe-terminal-taptopay = { group = "com.stripe", name = "stripeterminal-taptopay", version.ref = "stripe-terminal" }
 stripe-terminal-core = { group = "com.stripe", name = "stripeterminal-core", version.ref = "stripe-terminal" }
-terl-lazysodium-android = { module = "com.goterl:lazysodium-android", version.ref = "terl-lazysodium-android" }
 tinder-statemachine = { group = "com.tinder.statemachine", name = "statemachine", version.ref = "tinder-statemachine" }
 volley = { module = "com.android.volley:volley", version.ref = "volley" }
 wellsql = { module = "org.wordpress:wellsql", version.ref = "wellsql" }

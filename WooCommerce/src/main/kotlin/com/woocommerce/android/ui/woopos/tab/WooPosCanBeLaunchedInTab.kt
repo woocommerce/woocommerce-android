@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.tab
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPOSIsRemotelyEnabled
+import com.woocommerce.android.util.FetchWooCorePluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,71 +20,87 @@ import javax.inject.Singleton
 class WooPosCanBeLaunchedInTab @Inject constructor(
     private val selectedSite: SelectedSite,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
+    private val fetchWooCoreVersion: FetchWooCorePluginVersion,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemotelyEnabled: WooPOSIsRemotelyEnabled
 ) {
     @Suppress("ReturnCount")
-    suspend operator fun invoke(): WooPosLaunchability = withContext(Dispatchers.IO) {
-        val selectedSite = selectedSite.getOrNull()
+    suspend operator fun invoke(forceRefresh: Boolean = false): WooPosLaunchability = withContext(Dispatchers.IO) {
+        val site = selectedSite.getOrNull()
             ?: return@withContext WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.NoSiteSelected
+                WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected
             )
 
-        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) {
+        val wooCoreVersion = if (forceRefresh) {
+            fetchWooCoreVersion()
+        } else {
+            getWooCoreVersion()
+        } ?: return@withContext WooPosLaunchability.NotLaunchable(
+            WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound
+        )
+
+        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion)) {
             return@withContext WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.UnsupportedWooCommerceVersion
+                WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
             )
         }
 
-        if (isFeatureSwitchSupported() && isRemotelyEnabled() != true) {
+        if (isFeatureSwitchSupported(wooCoreVersion) && !isRemotelyEnabled(forceRefresh)) {
             return@withContext WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.FeatureSwitchDisabled
+                WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
             )
         }
 
-        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite)
-            ?: wooCommerceStore.fetchSiteGeneralSettings(selectedSite).model
+        val siteSettings = if (forceRefresh) {
+            wooCommerceStore.fetchSiteGeneralSettings(site).model
+        } else {
+            wooCommerceStore.getSiteSettings(site)
+                ?: wooCommerceStore.fetchSiteGeneralSettings(site).model
+        }
 
         if (siteSettings == null) {
             return@withContext WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.SiteSettingsUnavailable
+                WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
             )
         }
 
-        return@withContext if (isCurrencySupported(siteSettings.currencyCode)) {
+        return@withContext if (isCountryAndCurrencySupported(siteSettings.countryCode, siteSettings.currencyCode)) {
             WooPosLaunchability.Launchable
         } else {
             WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.UnsupportedCurrency
+                WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
             )
         }
     }
 
-    private fun isCurrencySupported(currency: String) = SUPPORTED_CURRENCIES.contains(currency.lowercase())
+    private fun isCountryAndCurrencySupported(countryCode: String, currency: String) =
+        SUPPORTED_COUNTRY_CURRENCY_PAIRS.any {
+            it.first.equals(countryCode, true) && it.second.equals(currency, true)
+        }
 
-    private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(): Boolean {
-        val wooCoreVersion = getWooCoreVersion() ?: return false
+    private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion: String): Boolean {
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING) >= 0
     }
 
-    private fun isFeatureSwitchSupported(): Boolean {
-        val wooCoreVersion = getWooCoreVersion() ?: return false
+    private fun isFeatureSwitchSupported(wooCoreVersion: String): Boolean {
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0
     }
 
-    private companion object {
-        const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
-        const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
+    companion object {
+        const val MINIMUM_SUPPORTED_WC_VERSION = "9.6.0"
+        val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
 
-        val SUPPORTED_CURRENCIES = listOf("usd", "gbp")
+        private const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = MINIMUM_SUPPORTED_WC_VERSION
+        private const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
     }
 }
 
 sealed class WooPosLaunchability {
     object Launchable : WooPosLaunchability()
-    data class NotLaunchable(val reason: Reason) : WooPosLaunchability()
+    data class NotLaunchable(val reason: NonLaunchabilityReason) : WooPosLaunchability()
 
-    enum class Reason {
+    enum class NonLaunchabilityReason {
+        WooCommercePluginNotFound,
         UnsupportedWooCommerceVersion,
         SiteSettingsUnavailable,
         FeatureSwitchDisabled,

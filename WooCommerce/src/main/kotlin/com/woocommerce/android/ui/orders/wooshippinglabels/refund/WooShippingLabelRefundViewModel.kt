@@ -5,6 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -34,6 +37,7 @@ class WooShippingLabelRefundViewModel @Inject constructor(
     configDataStore: WooShippingConfigDataStore,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val arguments: WooShippingLabelRefundFragmentArgs by savedState.navArgs()
 
@@ -63,13 +67,15 @@ class WooShippingLabelRefundViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             isLoadingFlow.value = true
             launch {
-                repository.refundLabel(selectedSite.get(), arguments.orderId, arguments.labelId)
-                    .takeIf { it.isError.not() }?.let {
-                        triggerEvent(ShowSnackbar(R.string.shipping_label_refund_success))
-                        triggerEvent(ExitWithResult(arguments.labelId))
-                    } ?: run {
+                val result = repository.refundLabel(selectedSite.get(), arguments.orderId, arguments.labelId)
+                if (result.isError) {
+                    tracker.track(AnalyticsEvent.WCS_REFUND_REQUESTED, mapOf(KEY_ERROR to result.error.type.name))
                     triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
                     isLoadingFlow.value = false
+                } else {
+                    tracker.track(AnalyticsEvent.WCS_REFUND_REQUESTED)
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_refund_success))
+                    triggerEvent(ExitWithResult(arguments.labelId))
                 }
             }
         } else {

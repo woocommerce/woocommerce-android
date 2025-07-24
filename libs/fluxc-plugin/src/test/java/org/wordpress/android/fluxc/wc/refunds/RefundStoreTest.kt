@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.wc.refunds
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -23,7 +22,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCRefundStore.Companion.DEFAULT_PAGE
@@ -41,9 +39,8 @@ class RefundStoreTest {
 
     private val restClient = mock<RefundRestClient>()
     private val site = SiteModel()
-    private val mapper = RefundMapper()
+    private val mapper = RefundMapper(Gson())
     private lateinit var store: WCRefundStore
-    private lateinit var db: WCAndroidDatabase
     private lateinit var refundDao: RefundDao
 
     private val orderId = 1L
@@ -56,7 +53,6 @@ class RefundStoreTest {
 
     @Before
     fun setUp() {
-        val context = InstrumentationRegistry.getInstrumentation().context
         refundDao = databaseRule.db.refundDao
 
         store = WCRefundStore(
@@ -64,7 +60,6 @@ class RefundStoreTest {
             initCoroutineEngine(),
             mapper,
             refundDao,
-            Gson()
         )
     }
 
@@ -74,7 +69,7 @@ class RefundStoreTest {
         val result = fetchAllTestRefunds()
 
         assertThat(result.model?.size).isEqualTo(data.size)
-        assertThat(result.model?.first()).isEqualTo(mapper.map(data.first()))
+        assertThat(result.model?.first()).isEqualTo(mapper.toModel(data.first()))
 
         val invalidRequestResult = store.fetchAllRefunds(site, 2)
         assertThat(invalidRequestResult.model).isNull()
@@ -88,7 +83,7 @@ class RefundStoreTest {
         val refunds = store.getAllRefunds(site, orderId)
 
         assertThat(refunds.size).isEqualTo(1)
-        assertThat(refunds.first()).isEqualTo(mapper.map(REFUND_RESPONSE))
+        assertThat(refunds.first()).isEqualTo(mapper.toModel(REFUND_RESPONSE))
 
         val invalidRequestResult = store.getAllRefunds(site, 2)
         assertThat(invalidRequestResult.size).isEqualTo(0)
@@ -98,7 +93,7 @@ class RefundStoreTest {
     fun `fetch specific refund`() = test {
         val refund = fetchSpecificTestRefund()
 
-        assertThat(refund.model).isEqualTo(mapper.map(REFUND_RESPONSE))
+        assertThat(refund.model).isEqualTo(mapper.toModel(REFUND_RESPONSE))
     }
 
     @Test
@@ -106,7 +101,7 @@ class RefundStoreTest {
         fetchSpecificTestRefund()
         val refund = store.getRefund(site, orderId, refundId)
 
-        assertThat(refund).isEqualTo(mapper.map(REFUND_RESPONSE))
+        assertThat(refund).isEqualTo(mapper.toModel(REFUND_RESPONSE))
     }
 
     private suspend fun fetchSpecificTestRefund(): WooResult<WCRefundModel> {

@@ -37,6 +37,7 @@ class WooShippingLabelPackageMapper @Inject constructor() {
                 dimensions = it.dimensions.orEmpty(),
                 weight = it.boxWeight?.toString().orEmpty(),
                 isLetter = it.isLetter ?: false,
+                isUserDefined = it.isUserDefined == true,
                 dimensionUnit = "",
                 weightUnit = "",
                 saved = true
@@ -65,6 +66,7 @@ class WooShippingLabelPackageMapper @Inject constructor() {
                 dimensions = it.dimensions.orEmpty(),
                 weight = it.boxWeight?.toString().orEmpty(),
                 isLetter = it.isLetter ?: false,
+                isUserDefined = it.isUserDefined == true,
                 dimensionUnit = storeOptions?.dimensionUnit.orEmpty(),
                 weightUnit = storeOptions?.weightUnit.orEmpty(),
                 saved = true

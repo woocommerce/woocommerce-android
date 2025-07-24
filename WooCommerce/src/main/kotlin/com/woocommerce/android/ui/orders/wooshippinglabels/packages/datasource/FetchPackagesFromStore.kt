@@ -13,18 +13,18 @@ class FetchPackagesFromStore @Inject constructor(
     private val packageRepository: WooShippingLabelPackageRepository
 ) {
     suspend operator fun invoke(): PackagesState {
-        val storePackages = selectedSite.getOrNull()
-            ?.let { packageRepository.fetchAllStorePackages(it) }
-            ?.takeIf { it.isError.not() }
-            ?.model
-            ?: return PackagesState.Error
-
-        return PackagesState.Data(
-            storeOptions = storePackages.storeOptions.toStoreOptionsForPackages(),
-            savedPackages = storePackages.savedPackages
-                .map { PackageData.fromPackageDAO(it) },
-            carrierPackages = storePackages.filterCarrierData()
-        )
+        val result = packageRepository.fetchAllStorePackages(selectedSite.get())
+        val model = result.model
+        return if (!result.isError && model != null) {
+            val storePackages = model
+            PackagesState.Data(
+                storeOptions = storePackages.storeOptions.toStoreOptionsForPackages(),
+                savedPackages = storePackages.savedPackages.map { PackageData.fromPackageDAO(it) },
+                carrierPackages = storePackages.filterCarrierData()
+            )
+        } else {
+            PackagesState.Error(result.error.type.name)
+        }
     }
 
     private fun StorePackagesDAO.filterCarrierData(): Map<Carrier, List<CarrierPackageGroup>> {

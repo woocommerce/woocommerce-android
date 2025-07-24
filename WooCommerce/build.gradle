@@ -22,9 +22,13 @@ fladle {
             "notPackage com.woocommerce.android.e2e.tests.screenshot"
     ]
     devices = [
-            ["model": "Pixel2.arm", "version": "30"]
+            ["model": "MediumPhone.arm", "version": "35"]
     ]
     localResultsDir = "$rootDir/build/instrumented-tests"
+
+    useOrchestrator = true
+    testTimeout = "5m"
+    flakyTestAttempts = 1
 
     maxTestShards = 50
     shardTime = 120
@@ -79,6 +83,7 @@ android {
         targetSdkVersion gradle.ext.targetSdkVersion
 
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
+        testInstrumentationRunnerArguments clearPackageData: 'true'
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
@@ -164,13 +169,12 @@ android {
     }
 
     lintOptions {
-        sarifReport = gradle.ext.isCi
         checkDependencies = true
-        disable 'InvalidPackage'
     }
 
     testOptions {
         animationsDisabled = true
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 
     signingConfigs {
@@ -241,6 +245,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
+    implementation(libs.automattic.encryptedlogging)
     implementation(libs.automattic.tracks.experimentation)
     implementation(libs.automattic.tracks.android)
     implementation(libs.automattic.tracks.crashlogging)
@@ -426,9 +431,10 @@ dependencies {
 
     implementation(libs.google.protobuf.javalite)
 
-    lintChecks(libs.android.security.lint)
-
     testImplementation(testFixtures(project(":libs:fluxc-plugin")))
+
+    androidTestImplementation libs.androidx.test.main.runner
+    androidTestUtil libs.androidx.test.orchestrator
 }
 
 protobuf {

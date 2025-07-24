@@ -99,6 +99,4 @@ dependencies {
     androidTestImplementation libs.androidx.test.main.runner
     androidTestImplementation libs.androidx.test.ext.junit
     androidTestImplementation libs.assertj.core
-
-    lintChecks libs.wordpress.lint
 }
