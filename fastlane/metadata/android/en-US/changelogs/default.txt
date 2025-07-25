@@ -1,9 +1,1 @@
-- [*] Fixed infinite loading animation in Order details pane when order list is empty [https://github.com/woocommerce/woocommerce-android/pull/14316]
-- [*] Fixed rare crash on the Payment Selection screen. [https://github.com/woocommerce/woocommerce-android/pull/14318]
-- [**] Added option to filter orders by Point of Sale sales channel in Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14286]
-- [*] Fixed keyboard not being shown when searching in Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14344]
-- [*] Added POS badge to Most recent orders section in the My store dashboard [https://github.com/woocommerce/woocommerce-android/pull/14328]
-- [*] Update cache with currency code after restarting the app [https://github.com/woocommerce/woocommerce-android/pull/14363]
-- [**] POS: Barcode readers setup flow added [https://github.com/woocommerce/woocommerce-android/pull/14362]
-- [**] Improved logic responsible for identifying active WC plugins [https://github.com/woocommerce/woocommerce-android/pull/14368]
-- [*] Shipping Labels: Allow confirming destination addresses when validation fails. [https://github.com/woocommerce/woocommerce-android/pull/14376]
+We’ve enhanced your WooCommerce experience with exciting Point of Sale improvements! Now filter orders by POS sales channel, set up barcode readers seamlessly, and spot POS orders with new badges on your dashboard. We’ve also fixed loading issues in order details, resolved payment screen crashes, restored search functionality, and improved shipping label address validation. Plus better plugin detection and currency handling after app restarts.
