@@ -136,9 +136,10 @@ private fun WooPosHomeScreen(
                 onBarcodeEvent = { result ->
                     onHomeUIEvent(WooPosHomeUIEvent.OnBarcodeEvent(result))
                 },
-                enabled = (state.screenPositionState is WooPosHomeState.ScreenPositionState.Cart ||
-                        state.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals) &&
-                    state.dialogState !is WooPosHomeState.DialogState.ScanningSetupDialog
+                enabled = (
+                    state.screenPositionState is WooPosHomeState.ScreenPositionState.Cart ||
+                        state.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals
+                    ) && state.dialogState !is WooPosHomeState.DialogState.ScanningSetupDialog
             )
     ) {
         Row(
