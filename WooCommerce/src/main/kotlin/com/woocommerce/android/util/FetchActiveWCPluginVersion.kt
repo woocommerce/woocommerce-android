@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class FetchWooCorePluginVersion @Inject constructor(
+class FetchActiveWCPluginVersion @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
 ) {
@@ -24,7 +24,15 @@ class FetchWooCorePluginVersion @Inject constructor(
         }
     }
 
-    private fun List<SitePluginModel>?.getWooPlugin() = this?.firstOrNull {
-        it.name.endsWith(WooCommerceStore.WooPlugin.WOO_CORE.pluginName)
+    private fun List<SitePluginModel>?.getWooPlugin(): SitePluginModel? {
+        if (this.isNullOrEmpty()) return null
+
+        val pluginName = WooCommerceStore.WooPlugin.WOO_CORE.pluginName.substringAfterLast('/')
+
+        val activePlugin = this.firstOrNull { plugin ->
+            plugin.name.substringAfterLast('/') == (pluginName) && plugin.isActive
+        }
+
+        return activePlugin
     }
 }

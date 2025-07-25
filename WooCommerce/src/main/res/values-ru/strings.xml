@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-01 09:54:04+0000
+Translation-Revision-Date: 2025-07-16 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">Дополнительная обработка</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Доставка в субботу</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Углеродно-нейтральный</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Требуется подпись совершеннолетнего лица</string>
+    <string name="woo_shipping_rate_option_signature_required">Требуется подпись</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
+    <string name="woo_shipping_labels_package_saving_error">Не удалось сохранить упаковку</string>
+    <string name="woo_shipping_labels_package_removing_error">Не удалось удалить упаковку</string>
+    <string name="woopos_eligibility_retry_check_label">Повторить</string>
+    <string name="woopos_eligibility_exit_pos_label">Выйти из режима POS</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Чтобы установить режим HID, обратитесь к инструкциям по эксплуатации сканера штрихкодов Bluetooth. Обычно для этого требуется отсканировать специальный штрихкод в руководстве.</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">Сканер не отправил символ конца строки</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">Отсканированный штрихкод слишком короткий</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (основной сбор)</string>
+    <string name="shipping_label_paper_size_a4">А4 (210 x 297 мм)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">Просмотреть приобретённую транспортную этикетку</string>
     <string name="wpp_shipping_ups_tos_accept">Подтвердить и продолжить</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">Я также принимаю условия &lt;a href=\"ups-technology-agreement\"&gt;Соглашения о технологиях UPS®&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">Я обязуюсь не отправлять никакие &lt;a href=\"ups-prohibited-items\"&gt;предметы, запрещённые к пересылке&lt;/a&gt; правилами UPS®, а также никакие предметы, подлежащие регулированию, без необходимых разрешений.</string>
@@ -49,7 +66,6 @@ Language: ru
     <string name="woopos_dialog_barcode_info_quinary_message">Сканер эмулирует клавиатуру, поэтому время от времени он препятствует отображению программной клавиатуры, например при поиске. Чтобы отобразить программную клавиатуру, коснитесь значка клавиатуры.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• Сканируйте штрихкоды в списке товаров, чтобы добавлять товары в корзину.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• Подключите сканер штрихкодов в настройках System Bluetooth.</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Чтобы установить режим HID, следуйте инструкциям сканера штрихкодов Bluetooth.</string>
     <string name="woopos_dialog_barcode_info_more_details_link">Подробнее</string>
     <string name="woopos_dialog_barcode_info_primary_message">• Настройте штрихкоды в поле «GTIN, UPC, EAN, ISBN» в разделе «Товары &gt; Сведения о товаре &gt; Запасы». </string>
     <string name="woopos_dialog_barcode_info_intro_message">Чтобы быстро сформировать корзину, можно сканировать штрихкоды с помощью внешнего сканера.</string>

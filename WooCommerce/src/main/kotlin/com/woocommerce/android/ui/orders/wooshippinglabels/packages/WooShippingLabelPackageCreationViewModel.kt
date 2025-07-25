@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
@@ -131,7 +132,10 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                     updateSavedPackageUI(packageData = removedPackage, saved = true)
                     tracker.track(
                         AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
-                        mapOf(KEY_STATE to "removing_failed", KEY_ERROR to it.exceptionOrNull()?.message.orEmpty())
+                        mapOf(
+                            KEY_STATE to "removing_failed",
+                            KEY_ERROR to (it.exceptionOrNull() as? WooException)?.error?.type?.name.orEmpty()
+                        )
                     )
                 }
             }
@@ -264,10 +268,15 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                         triggerEvent(
                             PackageSelected(customPackage.toPackageData(dimensionUnit = storeOptions.dimensionUnit))
                         )
+                        tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "saving_success"))
                     },
                     onFailure = {
                         triggerEvent(ShowLoadingDialog(false))
                         triggerEvent(ShowTemplateCreationErrorDialog)
+                        tracker.track(
+                            AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
+                            mapOf(KEY_STATE to "saving_failed", KEY_ERROR to it.message.orEmpty())
+                        )
                     }
                 ) ?: triggerEvent(
                 PackageSelected(
@@ -297,7 +306,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             ?.model?.firstOrNull()
             ?.let { PackageData.fromPackageDAO(it) }
             ?.let { Result.success(it) }
-            ?: Result.failure(Throwable("Failed to save package"))
+            ?: Result.failure(Throwable(response.error.type.toString()))
     }
 
     fun onCarrierPackageStarred(packageData: PackageData, isStarred: Boolean) {
@@ -329,7 +338,10 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                     updateSavedPackageUI(packageData = packageData, saved = !isStarred)
                     tracker.track(
                         AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
-                        mapOf(KEY_STATE to "saving_failed", KEY_ERROR to it.exceptionOrNull()?.message.orEmpty())
+                        mapOf(
+                            KEY_STATE to if (isStarred) "saving_failed" else "removing_failed",
+                            KEY_ERROR to (it.exceptionOrNull() as? WooException)?.error?.type?.name.orEmpty()
+                        )
                     )
                 }
             }

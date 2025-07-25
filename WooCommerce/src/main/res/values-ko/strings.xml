@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-01 09:54:04+0000
+Translation-Revision-Date: 2025-07-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">추가 처리</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">토요일 배송</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">탄소 중립</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">성인 서명 필수</string>
+    <string name="woo_shipping_rate_option_signature_required">서명 필수</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s(%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
+    <string name="woo_shipping_labels_package_saving_error">패키지를 저장할 수 없음</string>
+    <string name="woo_shipping_labels_package_removing_error">패키지를 제거할 수 없음</string>
+    <string name="woopos_eligibility_retry_check_label">다시 시도</string>
+    <string name="woopos_eligibility_exit_pos_label">POS 종료</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• 블루투스 바코드 스캐너의 지침을 참조하여 HID 모드를 설정합니다. 일반적으로 매뉴얼에 있는 특수 바코드를 스캔해야 합니다.</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">스캐너가 줄 끝 문자를 보내지 않았음</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">스캔한 바코드가 너무 짧음</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s(기본 수수료)</string>
+    <string name="shipping_label_paper_size_a4">A4(210 x 297mm)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">구매한 배송 레이블 보기</string>
     <string name="wpp_shipping_ups_tos_accept">확인하고 계속하기</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">본인은 &lt;a href=\"ups-technology-agreement\"&gt;UPS® 기술 계약&lt;/a&gt;에도 동의합니다.</string>
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">본인은 UPS®에서 불허하는 &lt;a href=\"ups-prohibited-items\"&gt;금지 품목&lt;/a&gt;이나 필요한 허가를 받지 않은 규제 품목을 발송하지 않겠습니다.</string>
@@ -49,7 +66,6 @@ Language: ko_KR
     <string name="woo_shipping_refund_duration_description">미사용 배송 레이블에 대한 환불을 요청합니다. 배송 레이블 환불 절차는 즉시 시작되며 일반적으로 %d 영업일 이내에 완료됩니다.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• 아이템 목록에 있는 동안 바코드를 스캔하여 장바구니에 상품을 추가합니다.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• 시스템 블루투스 설정에서 바코드 스캐너를 연결합니다.</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• 블루투스 바코드 스캐너의 지침을 참조하여 HID 모드를 설정합니다.</string>
     <string name="woopos_dialog_barcode_info_more_details_link">추가 상세 정보</string>
     <string name="woopos_dialog_barcode_info_primary_message">• 상품 &gt; 상품 상세 정보 &gt; 재고의 \"GTIN, UPC, EAN, ISBN\" 필드에서 바코드를 설정합니다. </string>
     <string name="woopos_dialog_barcode_info_intro_message">외부 스캐너로 바코드를 스캔하여 빠르게 장바구니를 만들 수 있습니다.</string>

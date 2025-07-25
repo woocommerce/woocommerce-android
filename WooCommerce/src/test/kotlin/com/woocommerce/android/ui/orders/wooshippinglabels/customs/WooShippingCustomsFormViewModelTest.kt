@@ -7,8 +7,10 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowCountrySelector
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowRestrictionTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ViewState
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,19 +19,16 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
-    private lateinit var viewModel: WooShippingCustomsFormViewModel
-    private lateinit var getAllCountries: GetAllCountries
-    private lateinit var shouldRequireITN: ShouldRequireITN
-
-    @Before
-    fun setup() {
-        // Create mock locations for the tests
+    private val getAllCountries: GetAllCountries = mock {
         val mockLocations = listOf(
             mock<Location> {
                 on { code } doReturn "US"
@@ -40,16 +39,22 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
                 on { name } doReturn "Canada"
             }
         )
-
-        // Configure the mock to return our test locations
-        getAllCountries = mock {
-            onBlocking { invoke() } doReturn Result.success(mockLocations)
+        onBlocking { invoke() } doReturn Result.success(mockLocations)
+    }
+    private val validateHSTariffNumber: ValidateHSTariffNumber = mock {
+        on { invoke(any(), anyOrNull()) } doAnswer {
+            InputValue.Data(it.arguments[0] as String)
         }
+    }
 
-        shouldRequireITN = mock {
-            on { invoke(any(), any()) } doReturn false
-        }
+    private val validateITN: ValidateITN = mock {
+        on { invoke(any(), any()) } doReturn ValidateITN.ITNValidationResult.Valid
+    }
 
+    private lateinit var viewModel: WooShippingCustomsFormViewModel
+
+    @Before
+    fun setup() {
         createSut()
     }
 
@@ -82,17 +87,6 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         }
         viewModel.onITNChanged(newItnValue)
         assertThat(capturedViewState?.itnValue).isEqualTo(InputValue.Data(newItnValue))
-    }
-
-    @Test
-    fun `onITNChanged should update itnValue with invalid input`() = testBlocking {
-        val newItnValue = "INVALID_ITN"
-        var capturedViewState: ViewState? = null
-        viewModel.viewState.observeForever {
-            capturedViewState = it
-        }
-        viewModel.onITNChanged(newItnValue)
-        assertThat(capturedViewState?.itnValue).isInstanceOf(InputValue.Error::class.java)
     }
 
     @Test
@@ -234,7 +228,7 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     fun `onShippableProductTariffNumberChanged should update tariffNumber with valid input`() = testBlocking {
         // Given
         val itemIndex = 0
-        val newTariff = "HS 12345"
+        val newTariff = "123456"
         var capturedViewState: ViewState? = null
         viewModel.viewState.observeForever {
             capturedViewState = it
@@ -247,25 +241,6 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         assertThat(capturedViewState?.shippingProducts?.get(itemIndex)?.tariffNumber)
             .isEqualTo(InputValue.Data(newTariff))
     }
-
-    @Test
-    fun `onShippableProductTariffNumberChanged should update tariffNumber with error for blank input`() =
-        testBlocking {
-            // Given
-            val itemIndex = 0
-            val blankTariff = ""
-            var capturedViewState: ViewState? = null
-            viewModel.viewState.observeForever {
-                capturedViewState = it
-            }
-
-            // When
-            viewModel.onShippableProductTariffNumberChanged(itemIndex, blankTariff)
-
-            // Then
-            assertThat(capturedViewState?.shippingProducts?.get(itemIndex)?.tariffNumber)
-                .isInstanceOf(InputValue.Error::class.java)
-        }
 
     @Test
     fun `onShippableProductValuePerUnitChanged should update valuePerUnit with valid input`() = testBlocking {
@@ -392,27 +367,20 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `onITNChanged with blank value should set error when ITN is required`() = testBlocking {
+    fun `when ITN is required, then setting an empty should trigger an error`() = testBlocking {
         // Given
-        val blankItn = ""
-        shouldRequireITN = mock {
-            on { invoke(any(), any()) } doReturn true
-        }
+        whenever(validateITN(any(), any())).thenReturn(
+            ValidateITN.ITNValidationResult.Missing(ValidateITN.ITNMissingCause.DestinationCountry)
+        )
         createSut()
 
-        // The second product in our setup is the expensive one,
-        // so expanding the second product will make the ITN required
-        var capturedViewState: ViewState? = null
-        viewModel.viewState.observeForever {
-            capturedViewState = it
-        }
-
         // When
-        viewModel.onShippableProductValuePerUnitChanged(1, "2600")
-        viewModel.onITNChanged(blankItn)
+        val capturedViewState = viewModel.viewState.runAndCaptureValues {
+            viewModel.onITNChanged("")
+        }.last()
 
         // Then
-        assertThat(capturedViewState?.itnValue).isInstanceOf(InputValue.Error::class.java)
+        assertThat(capturedViewState.itnValue).isInstanceOf(InputValue.Error::class.java)
     }
 
     private fun createSut() {
@@ -445,13 +413,14 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         )
 
         viewModel = WooShippingCustomsFormViewModel(
-            savedState = WooShippingCustomsFormFragmentArgs(
-                shippableItems = arrayOf(testProduct, expensiveProduct),
-                destinationCountryCode = "CA",
-                customsData = null
-            ).toSavedStateHandle(),
             getAllCountries = getAllCountries,
-            shouldRequireITN = shouldRequireITN
+            validateITN = validateITN,
+            validateHSTariffNumber = validateHSTariffNumber,
+            dispatchers = coroutinesTestRule.testDispatchers,
+            savedState = WooShippingCustomsFormFragmentArgs(
+                destinationCountryCode = "CA",
+                customsData = listOf(testProduct, expensiveProduct).createDefaultCustomsData()
+            ).toSavedStateHandle()
         )
     }
 }
