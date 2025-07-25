@@ -239,10 +239,7 @@ class WooShippingLabelRestClient @Inject constructor(
         val result = wooNetwork.executePostGsonRequest(
             site = site,
             path = url,
-            body = mapOf(
-                "address" to address.copy(isVerified = true),
-                "isVerified" to true // We always verify the address before saving it
-            ),
+            body = mapOf("address" to address, "isVerified" to address.isVerified),
             clazz = UpdateAddressResponseDTO::class.java,
         )
 

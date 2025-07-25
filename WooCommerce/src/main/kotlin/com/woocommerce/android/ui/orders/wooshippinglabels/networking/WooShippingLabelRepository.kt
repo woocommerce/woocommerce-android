@@ -211,11 +211,12 @@ class WooShippingLabelRepository @Inject constructor(
         site: SiteModel,
         orderId: Long,
         address: Address,
+        isVerified: Boolean
     ): WooResult<DestinationShippingAddress> {
         val updatedAddress = restClient.updateDestinationAddress(
             site = site,
             orderId = orderId,
-            address = mapper.toAddressDTO(address)
+            address = mapper.toAddressDTO(address = address, isVerified = isVerified)
         )
 
         return if (updatedAddress.result?.success == true) {
