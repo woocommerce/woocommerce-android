@@ -30,17 +30,17 @@ class UpdateDestinationAddressTest : BaseUnitTest() {
 
     @Test
     fun `when selected site is null then return failure`() = testBlocking {
-        val result = sut.invoke(defaultAddress, defaultOrderId)
+        val result = sut.invoke(defaultAddress, defaultOrderId, true)
         assert(result.isFailure)
     }
 
     @Test
     fun `when normalize address fails then return failure`() = testBlocking {
         whenever(site.getOrNull()).thenReturn(SiteModel())
-        whenever(repository.updateDestinationAddress(any(), any(), any()))
+        whenever(repository.updateDestinationAddress(any(), any(), any(), any()))
             .thenReturn(WooResult(WooError(GENERIC_ERROR, UNKNOWN)))
 
-        val result = sut.invoke(defaultAddress, defaultOrderId)
+        val result = sut.invoke(defaultAddress, defaultOrderId, true)
 
         assert(result.isFailure)
     }
@@ -48,10 +48,10 @@ class UpdateDestinationAddressTest : BaseUnitTest() {
     @Test
     fun `when normalize address succeed then return expected data`() = testBlocking {
         whenever(site.getOrNull()).thenReturn(SiteModel())
-        whenever(repository.updateDestinationAddress(any(), any(), any()))
+        whenever(repository.updateDestinationAddress(any(), any(), any(), any()))
             .thenReturn(WooResult(defaultAddressResponse))
 
-        val result = sut.invoke(defaultAddress, defaultOrderId)
+        val result = sut.invoke(defaultAddress, defaultOrderId, true)
 
         assert(result.isSuccess)
         assertThat(result.getOrNull()).isEqualTo(defaultAddressResponse)
