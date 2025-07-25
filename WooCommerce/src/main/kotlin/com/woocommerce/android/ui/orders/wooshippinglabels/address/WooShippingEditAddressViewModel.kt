@@ -328,15 +328,18 @@ class WooShippingEditAddressViewModel @Inject constructor(
             statesState,
             addressValidationState,
             currentAddress
-        ) { address, isExpanded, countriesState, statesState, addressSelection, currentAddress ->
+        ) { address, isExpanded, countriesState, statesState, addressValidation, currentAddress ->
 
-            val loading = getLoadingState(countriesState, statesState, addressSelection)
-            val error = getErrorState(countriesState, addressSelection, address)
+            val loading = getLoadingState(countriesState, statesState, addressValidation)
+            val error = getErrorState(countriesState, addressValidation, address)
 
             val addressStatus = when {
                 hasIncorrectOrMissingData(address) -> AddressStatus.MISSING_INFO
                 hasOnlyNoAddressChanges(address, currentAddress) -> AddressStatus.SAVE_CHANGES
                 isSameAddress(address, currentAddress) && isVerified.value -> AddressStatus.VERIFIED
+                navArgs.flow is EditAddressFlow.EditDestinationAddress &&
+                    addressValidation is AddressValidationState.VerificationFailed -> AddressStatus.VERIFY_FAILED
+
                 else -> AddressStatus.UNVERIFIED
             }
 
@@ -347,7 +350,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
                 error = error,
                 shouldUseStatesInput = statesState is LocationState.Loaded && statesState.locations.isEmpty(),
                 addressStatus = addressStatus,
-                addressValidationState = addressSelection
+                addressValidationState = addressValidation
             )
         }.collectLatest { viewState.value = it }
     }
