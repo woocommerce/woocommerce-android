@@ -1,0 +1,2 @@
+22.8:
+Mit dieser Version wird eine vollständig überarbeitete Funktion für Versandetiketten eingeführt. So wird die Handhabung von Sendungen zum Kinderspiel. Außerdem haben wir das Scannen von Barcodes in POS verbessert: Du erhältst nun klarere Fehlermeldungen, persönliche Zahlungen haben neue Woo-Farben erhalten und Abstürze und Speicherprobleme wurden behoben, damit du von einem reibungslosen, zuverlässigen Erlebnis profitierst.

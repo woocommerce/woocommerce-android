@@ -30,6 +30,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductListItem
@@ -120,8 +121,7 @@ fun WooShippingCustomsFormScreen(
                     isError = otherContentDetailsInput is InputValue.Error,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = modifier.fillMaxWidth(),
-                    helperText = otherContentDetailsInput.errorMessageOrNull
-                        ?.let { stringResource(it) }
+                    helperText = otherContentDetailsInput.errorMessageOrNull?.getText()
                         ?: stringResource(R.string.woo_shipping_labels_customs_content_details_description)
                 )
             }
@@ -142,8 +142,7 @@ fun WooShippingCustomsFormScreen(
                     isError = otherRestrictionDetailsInput is InputValue.Error,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = modifier.fillMaxWidth(),
-                    helperText = otherRestrictionDetailsInput.errorMessageOrNull
-                        ?.let { stringResource(it) }
+                    helperText = otherRestrictionDetailsInput.errorMessageOrNull?.getText()
                         ?: stringResource(R.string.woo_shipping_labels_customs_restriction_details_description)
                 )
             }
@@ -156,8 +155,7 @@ fun WooShippingCustomsFormScreen(
                 isError = itnValue is InputValue.Error,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 modifier = modifier.fillMaxWidth(),
-                helperText = itnValue.errorMessageOrNull
-                    ?.let { stringResource(it) }
+                helperText = itnValue.errorMessageOrNull?.getText()
             )
 
             Row(

@@ -1,0 +1,2 @@
+22.8 :
+Cette version repense entièrement la fonctionnalité d’étiquettes d’expédition, ce qui simplifiera énormément la gestion des expéditions. Nous avons amélioré la lecture de codes-barres dans le PDV avec des messages d’erreur plus clairs, rafraîchi les paiements en personne avec les nouvelles couleurs Woo et résolu les incidents et les problèmes de mémoire pour une expérience plus fluide et plus fiable.
