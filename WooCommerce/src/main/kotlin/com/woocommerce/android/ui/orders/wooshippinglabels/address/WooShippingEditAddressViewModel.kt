@@ -653,6 +653,11 @@ class WooShippingEditAddressViewModel @Inject constructor(
                 onSuccess = { result ->
                     onUpdateAddress(result.address, result.isVerified)
                     if (latestAddressValidationState is AddressValidationState.VerificationFailed) {
+                        // Use address as entered button was tapped
+                        analyticsTracker.track(
+                            AnalyticsEvent.WCS_EDITING_ADDRESS_STEP,
+                            mapOf(KEY_TYPE to getAnalyticsType(), KEY_STATE to "confirmed_without_verification")
+                        )
                         onNavigateBack()
                     }
                 },
