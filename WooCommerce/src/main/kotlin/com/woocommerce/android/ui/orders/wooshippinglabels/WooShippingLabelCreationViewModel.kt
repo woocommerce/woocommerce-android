@@ -708,6 +708,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 purchaseSectionUI = PurchaseSectionUI(
                     isVisible = !shipmentUIList[uiState.selectedIndex].purchased &&
                         shippingRatesStatesFlow.value[uiState.selectedIndex] is ShippingRatesState.DataState,
+                    isOrderAlreadyCompleted = order.status == Order.Status.Completed,
                     markOrderComplete = uiState.markOrderComplete,
                     formattedPrice = shipmentUIList[uiState.selectedIndex].shipmentCostUI?.formattedTotalPrice,
                     onMarkOrderCompleteChange = ::onMarkOrderCompleteChange,
@@ -1388,6 +1389,7 @@ data class ShipmentPrintLabelUI(
 
 data class PurchaseSectionUI(
     val isVisible: Boolean,
+    val isOrderAlreadyCompleted: Boolean,
     val markOrderComplete: Boolean,
     val formattedPrice: String?,
     val onMarkOrderCompleteChange: (Boolean) -> Unit,
