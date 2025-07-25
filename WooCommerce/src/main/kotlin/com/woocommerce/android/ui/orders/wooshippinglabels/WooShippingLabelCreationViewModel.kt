@@ -832,7 +832,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onSelectPackageClicked() {
-        triggerEvent(NavigatePackageSelection)
+        launch {
+            triggerEvent(
+                NavigatePackageSelection(
+                    storeOptions = accountSettings.first()?.storeOptions ?: StoreOptionsModel.EMPTY
+                )
+            )
+        }
     }
 
     fun onUPSTermsAccepted() {
@@ -1016,12 +1022,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val destinationCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)
             ?.shipTo?.address?.country?.code.orEmpty()
 
-        val event = NavigateToCustomsFormEdit(
-            destinationCountryCode = destinationCountryCode,
-            customData = customsFormDataFlow.value[selectedShipmentIndex]
-                ?: shipments.value[selectedShipmentIndex].items.createDefaultCustomsData()
-        )
-        triggerEvent(event)
+        launch {
+            val event = NavigateToCustomsFormEdit(
+                destinationCountryCode = destinationCountryCode,
+                customData = customsFormDataFlow.value[selectedShipmentIndex]
+                    ?: shipments.value[selectedShipmentIndex].items.createDefaultCustomsData(),
+                storeOptions = accountSettings.first()?.storeOptions ?: StoreOptionsModel.EMPTY
+            )
+            triggerEvent(event)
+        }
     }
 
     fun onHazmatNoticeClick() {
@@ -1163,7 +1172,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         triggerEvent(NavigateToPaymentMethodEdit)
     }
 
-    data object NavigatePackageSelection : Event()
+    data class NavigatePackageSelection(val storeOptions: StoreOptionsModel) : Event()
 
     data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
     data class NavigateToDestinationAddressEdit(
@@ -1182,7 +1191,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     data class NavigateToCustomsFormEdit(
         val destinationCountryCode: String,
-        val customData: CustomsData
+        val customData: CustomsData,
+        val storeOptions: StoreOptionsModel
     ) : Event()
 
     data class NavigateToHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()

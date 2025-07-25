@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -9,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageSelected
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType.ENVELOPE
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackagesState.Data
@@ -59,6 +59,11 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
 
+    val storeDimensionUnit = "cm"
+    private val savedState = WooShippingLabelPackageCreationFragmentArgs(
+        StoreOptionsModel.EMPTY.copy(dimensionUnit = storeDimensionUnit)
+    ).toSavedStateHandle()
+
     @Before
     fun setUp() {
         whenever(
@@ -72,7 +77,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         ).thenReturn("Saved")
 
         sut = WooShippingLabelPackageCreationViewModel(
-            SavedStateHandle(),
+            savedState,
             selectedSite,
             resourceProvider,
             fetchPackages,
@@ -113,7 +118,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         sut.onAddCustomPackageClick(savePackageAsTemplate = false)
 
         verify(packageRepository, times(0)).createCustomPackage(any(), any())
-        assertThat(lastEvent).isEqualTo(PackageSelected(customPackageData.toPackageData("cm")))
+        assertThat(lastEvent).isEqualTo(PackageSelected(customPackageData.toPackageData(storeDimensionUnit)))
     }
 
     @Test
@@ -297,7 +302,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
 
         sut = WooShippingLabelPackageCreationViewModel(
-            SavedStateHandle(),
+            savedState,
             selectedSite,
             resourceProvider,
             fetchPackages,
@@ -351,7 +356,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
 
         sut = WooShippingLabelPackageCreationViewModel(
-            SavedStateHandle(),
+            savedState,
             selectedSite,
             resourceProvider,
             fetchPackages,
@@ -436,7 +441,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
 
         sut = WooShippingLabelPackageCreationViewModel(
-            SavedStateHandle(),
+            savedState,
             selectedSite,
             resourceProvider,
             fetchPackages,
@@ -493,7 +498,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             )
 
             sut = WooShippingLabelPackageCreationViewModel(
-                SavedStateHandle(),
+                savedState,
                 selectedSite,
                 resourceProvider,
                 fetchPackages,
@@ -555,7 +560,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
 
         sut = WooShippingLabelPackageCreationViewModel(
-            SavedStateHandle(),
+            savedState,
             selectedSite,
             resourceProvider,
             fetchPackages,
@@ -604,7 +609,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
 
         sut = WooShippingLabelPackageCreationViewModel(
-            SavedStateHandle(),
+            savedState,
             selectedSite,
             resourceProvider,
             fetchPackages,
@@ -655,7 +660,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         whenever(updateSavedCarrierPackages(any(), any(), any(), any())).thenReturn(Result.failure(wooException))
 
         sut = WooShippingLabelPackageCreationViewModel(
-            SavedStateHandle(),
+            savedState,
             selectedSite,
             resourceProvider,
             fetchPackages,
@@ -700,7 +705,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
 
         sut = WooShippingLabelPackageCreationViewModel(
-            SavedStateHandle(),
+            savedState,
             selectedSite,
             resourceProvider,
             fetchPackages,

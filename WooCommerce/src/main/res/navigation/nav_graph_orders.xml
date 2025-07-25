@@ -738,7 +738,9 @@
         android:id="@+id/wooShippingLabelPackageCreationFragment"
         android:name="com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment"
         android:label="WooShippingLabelPackageCreationFragment">
-
+        <argument
+            android:name="storeOptions"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel" />
         <action
             android:id="@+id/action_wooShippingLabelPackageCreationFragment_to_itemSelectorDialog"
             app:destination="@id/itemSelectorDialog" />
@@ -766,6 +768,10 @@
         <argument
             android:name="customsData"
             app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData" />
+
+        <argument
+            android:name="storeOptions"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel" />
 
         <action
             android:id="@+id/action_wooShippingLabelCustomsFormFragment_to_itemSelectorDialog"

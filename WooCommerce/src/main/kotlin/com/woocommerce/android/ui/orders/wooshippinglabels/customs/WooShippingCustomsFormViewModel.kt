@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.Valida
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -33,14 +34,20 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     private val validateITN: ValidateITN,
     private val validateHSTariffNumber: ValidateHSTariffNumber,
     private val dispatchers: CoroutineDispatchers,
+    private val currencyFormatter: CurrencyFormatter,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingCustomsFormFragmentArgs by savedState.navArgs()
     private val destinationCountryCode = navArgs.destinationCountryCode
+    private val storeOptions = navArgs.storeOptions
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = loadViewStateFromCustomsData(navArgs.customsData)
+        initialValue = loadViewStateFromCustomsData(
+            customData = navArgs.customsData,
+            currencySymbol = storeOptions.currencySymbol,
+            weightUnit = storeOptions.weightUnit
+        )
     )
     val viewState = _viewState.asLiveData()
 
@@ -94,7 +101,11 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun loadViewStateFromCustomsData(customData: CustomsData): ViewState {
+    private fun loadViewStateFromCustomsData(
+        customData: CustomsData,
+        currencySymbol: String,
+        weightUnit: String
+    ): ViewState {
         return ViewState(
             contentType = customData.contentType,
             otherContentInput = InputValue.Data(customData.contentDescription),
@@ -113,9 +124,15 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                     originCountry = item.originCountry,
                     originCountryCode = item.originCountryCode,
                     quantity = item.quantity,
-                    isExpanded = false
+                    isExpanded = false,
+                    formattedPriceAndWeight = formatPriceAndWeightPerItem(
+                        item.value.toString(),
+                        item.weight.toString()
+                    )
                 )
-            }
+            },
+            currencySymbol = currencySymbol,
+            weightUnit = weightUnit
         )
     }
 
@@ -207,13 +224,29 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     fun onShippableProductValuePerUnitChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            validateProductValue(newValue).let { item.copy(valuePerUnit = it) }
+            validateProductValue(newValue).let {
+                item.copy(
+                    valuePerUnit = it,
+                    formattedPriceAndWeight = formatPriceAndWeightPerItem(
+                        it.currentInput,
+                        item.weightPerUnit.currentInput
+                    )
+                )
+            }
         }
     }
 
     fun onShippableProductWeightPerUnitChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            item.copy(weightPerUnit = validateProductWeight(newValue))
+            validateProductWeight(newValue).let {
+                item.copy(
+                    weightPerUnit = it,
+                    formattedPriceAndWeight = formatPriceAndWeightPerItem(
+                        item.valuePerUnit.currentInput,
+                        it.currentInput
+                    )
+                )
+            }
         }
     }
 
@@ -298,6 +331,10 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
         )
 
+    private fun formatPriceAndWeightPerItem(price: String, weight: String): String =
+        "${currencyFormatter.formatCurrency(price, storeOptions.currencySymbol)} " +
+            "• $weight${storeOptions.weightUnit}"
+
     @Parcelize
     data class ViewState(
         val contentType: ContentType = ContentType.MERCHANDISE,
@@ -306,7 +343,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         val otherRestrictionInput: InputValue = InputValue.Empty,
         val itnValue: InputValue = InputValue.Empty,
         val returnToSenderChecked: Boolean = false,
-        val shippingProducts: List<WooShippingCustomsProductUIModel> = emptyList()
+        val shippingProducts: List<WooShippingCustomsProductUIModel> = emptyList(),
+        val currencySymbol: String,
+        val weightUnit: String,
     ) : Parcelable {
         val shouldDisplayContentTypeInput: Boolean
             get() = contentType == ContentType.OTHER

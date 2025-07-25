@@ -10,6 +10,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -28,18 +30,12 @@ import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
+    val locations = listOf(
+        Location(code = "US", name = "United States"),
+        Location(code = "CA", name = "Canada")
+    )
     private val getAllCountries: GetAllCountries = mock {
-        val mockLocations = listOf(
-            mock<Location> {
-                on { code } doReturn "US"
-                on { name } doReturn "United States"
-            },
-            mock<Location> {
-                on { code } doReturn "CA"
-                on { name } doReturn "Canada"
-            }
-        )
-        onBlocking { invoke() } doReturn Result.success(mockLocations)
+        onBlocking { invoke() } doReturn Result.success(locations)
     }
     private val validateHSTariffNumber: ValidateHSTariffNumber = mock {
         on { invoke(any(), anyOrNull()) } doAnswer {
@@ -50,6 +46,8 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     private val validateITN: ValidateITN = mock {
         on { invoke(any(), any()) } doReturn ValidateITN.ITNValidationResult.Valid
     }
+
+    private val currencyFormatter: CurrencyFormatter = mock()
 
     private lateinit var viewModel: WooShippingCustomsFormViewModel
 
@@ -417,9 +415,16 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
             validateITN = validateITN,
             validateHSTariffNumber = validateHSTariffNumber,
             dispatchers = coroutinesTestRule.testDispatchers,
+            currencyFormatter = currencyFormatter,
             savedState = WooShippingCustomsFormFragmentArgs(
                 destinationCountryCode = "CA",
-                customsData = listOf(testProduct, expensiveProduct).createDefaultCustomsData()
+                customsData = listOf(testProduct, expensiveProduct).createDefaultCustomsData(),
+                storeOptions = StoreOptionsModel(
+                    currencySymbol = "$",
+                    weightUnit = "kg",
+                    dimensionUnit = "cm",
+                    originCountry = "US"
+                )
             ).toSavedStateHandle()
         )
     }

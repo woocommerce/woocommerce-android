@@ -17,10 +17,9 @@ data class WooShippingCustomsProductUIModel(
     val originCountry: String,
     val originCountryCode: String,
     val quantity: Float,
-    val isExpanded: Boolean
+    val isExpanded: Boolean,
+    val formattedPriceAndWeight: String
 ) : Parcelable {
-    val valueAndWeightForDisplay: String
-        get() = "${valuePerUnit.currentInput} • ${weightPerUnit.currentInput}"
 
     val isValid: Boolean
         get() = description is InputValue.Data &&

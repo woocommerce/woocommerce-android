@@ -76,7 +76,9 @@ class WooShippingLabelCreationFragment : BaseFragment() {
             when (event) {
                 is NavigatePackageSelection ->
                     WooShippingLabelCreationFragmentDirections
-                        .actionWooShippingLabelCreationFragmentToWooShippingLabelPackageCreationFragment()
+                        .actionWooShippingLabelCreationFragmentToWooShippingLabelPackageCreationFragment(
+                            storeOptions = event.storeOptions
+                        )
                         .let { findNavController().navigateSafely(it) }
 
                 is WooShippingLabelCreationViewModel.NavigateToOriginAddressEdit ->
@@ -98,7 +100,8 @@ class WooShippingLabelCreationFragment : BaseFragment() {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelCustomsFormFragment(
                             destinationCountryCode = event.destinationCountryCode,
-                            customsData = event.customData
+                            customsData = event.customData,
+                            storeOptions = event.storeOptions
                         ).let { findNavController().navigateSafely(it) }
                 }
 

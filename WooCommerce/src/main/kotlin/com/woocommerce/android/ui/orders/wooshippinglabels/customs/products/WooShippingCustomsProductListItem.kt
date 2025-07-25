@@ -16,11 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,6 +45,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 @Composable
 fun WooShippingCustomsProductListItem(
     itemData: WooShippingCustomsProductUIModel,
+    currencySymbol: String,
+    weightUnit: String,
     onExpand: (isExtended: Boolean) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onTariffChanged: (String) -> Unit,
@@ -82,7 +84,7 @@ fun WooShippingCustomsProductListItem(
         Row {
             Text(
                 text = itemData.name,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.color_on_surface),
                 modifier = modifier.weight(1f)
@@ -91,7 +93,7 @@ fun WooShippingCustomsProductListItem(
             if (itemData.isValid.not()) {
                 Icon(
                     imageVector = Icons.Outlined.Error,
-                    tint = MaterialTheme.colorScheme.error,
+                    tint = MaterialTheme.colors.error,
                     contentDescription = stringResource(
                         id = R.string.shipping_label_package_details_items_expand_content_description
                     )
@@ -99,7 +101,7 @@ fun WooShippingCustomsProductListItem(
             }
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_down),
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colors.primary,
                 contentDescription = stringResource(
                     id = R.string.shipping_label_package_details_items_expand_content_description
                 ),
@@ -113,6 +115,8 @@ fun WooShippingCustomsProductListItem(
         if (itemData.isExpanded) {
             WooShippingCustomsProductExpandedListItem(
                 itemData = itemData,
+                currencySymbol = currencySymbol,
+                weightUnit = weightUnit,
                 onDescriptionChanged = onDescriptionChanged,
                 onTariffChanged = onTariffChanged,
                 onValuePerUnitChanged = onValuePerUnitChanged,
@@ -141,9 +145,9 @@ fun WooShippingCustomsProductCollapsedListItem(
 
         Row {
             Text(
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.body1,
                 modifier = modifier.weight(1f),
-                color = colorResource(id = R.color.color_on_surface),
+                color = colorResource(id = R.color.color_on_surface_medium),
                 text = itemData.description.currentInput
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_description_missing)
@@ -151,25 +155,25 @@ fun WooShippingCustomsProductCollapsedListItem(
             itemData.tariffNumber.currentInput
                 .takeIf { it.isNotBlank() }?.let {
                     Text(
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colorResource(id = R.color.color_on_surface),
+                        style = MaterialTheme.typography.body1,
+                        color = colorResource(id = R.color.color_on_surface_medium),
                         text = it,
                     )
                 }
         }
         Row {
             Text(
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.body1,
                 modifier = modifier.weight(1f),
-                color = colorResource(id = R.color.color_on_surface),
+                color = colorResource(id = R.color.color_on_surface_medium),
                 text = itemData.originCountry
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_origin_country_missing)
             )
             Text(
-                text = itemData.valueAndWeightForDisplay,
-                color = colorResource(id = R.color.color_on_surface),
-                style = MaterialTheme.typography.bodySmall,
+                text = itemData.formattedPriceAndWeight,
+                color = colorResource(id = R.color.color_on_surface_medium),
+                style = MaterialTheme.typography.body1,
             )
         }
     }
@@ -179,6 +183,8 @@ fun WooShippingCustomsProductCollapsedListItem(
 fun WooShippingCustomsProductExpandedListItem(
     modifier: Modifier,
     itemData: WooShippingCustomsProductUIModel,
+    currencySymbol: String,
+    weightUnit: String,
     onDescriptionChanged: (String) -> Unit,
     onTariffChanged: (String) -> Unit,
     onValuePerUnitChanged: (String) -> Unit,
@@ -219,6 +225,13 @@ fun WooShippingCustomsProductExpandedListItem(
                     value = itemData.valuePerUnit.currentInput,
                     onValueChange = onValuePerUnitChanged,
                     label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_value_per_unit),
+                    trailingIcon = {
+                        Text(
+                            text = currencySymbol,
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                        )
+                    },
                     singleLine = true,
                     isError = itemData.valuePerUnit is InputValue.Error,
                     keyboardOptions = KeyboardOptions(
@@ -233,6 +246,13 @@ fun WooShippingCustomsProductExpandedListItem(
                     value = itemData.weightPerUnit.currentInput,
                     onValueChange = onWeightPerUnitChanged,
                     label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_weight_per_unit),
+                    trailingIcon = {
+                        Text(
+                            text = weightUnit,
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                        )
+                    },
                     singleLine = true,
                     isError = itemData.weightPerUnit is InputValue.Error,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
@@ -270,8 +290,11 @@ fun WooShippingCustomsProductListCollapsedItemPreview() {
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
-                    isExpanded = false
+                    isExpanded = false,
+                    formattedPriceAndWeight = "$15 • 5kg"
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
@@ -300,8 +323,11 @@ fun WooShippingCustomsProductListCollapsedItemErrorPreview() {
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
-                    isExpanded = false
+                    isExpanded = false,
+                    formattedPriceAndWeight = "$15 • 5kg"
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
@@ -325,13 +351,16 @@ fun WooShippingCustomsProductListExpandedItemPreview() {
                     name = "Little Nap Brazil 250g",
                     description = InputValue.Data("Coffee Beans"),
                     tariffNumber = InputValue.Data("HS 14-1"),
-                    valuePerUnit = InputValue.Data("$20.00"),
-                    weightPerUnit = InputValue.Data("0.3kg"),
+                    valuePerUnit = InputValue.Data("20.00"),
+                    weightPerUnit = InputValue.Data("0.3"),
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
-                    isExpanded = true
+                    isExpanded = true,
+                    formattedPriceAndWeight = "$15 • 5kg"
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
@@ -355,13 +384,16 @@ fun WooShippingCustomsProductListExpandedItemErrorPreview() {
                     name = "Little Nap Brazil 250g",
                     description = InputValue.Error("Coffee Beans", 0),
                     tariffNumber = InputValue.Error("HS 14-1", 0),
-                    valuePerUnit = InputValue.Data("$20.00"),
-                    weightPerUnit = InputValue.Data("0.3kg"),
+                    valuePerUnit = InputValue.Data("20.00"),
+                    weightPerUnit = InputValue.Data("0.3"),
                     originCountry = "Japan",
                     originCountryCode = "JP",
                     quantity = 1F,
-                    isExpanded = true
+                    isExpanded = true,
+                    formattedPriceAndWeight = "$15 • 5kg"
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onExpand = { },
                 onDescriptionChanged = { },
                 onTariffChanged = { },
