@@ -347,7 +347,7 @@ class WooShippingNetworkingMapper @Inject constructor(
         return additionalRates + (signatureSurcharge?.let { mapOf(it) } ?: emptyMap())
     }
 
-    fun toAddressDTO(address: Address, id: String? = null): AddressDTO {
+    fun toAddressDTO(address: Address, id: String? = null, isVerified: Boolean = false): AddressDTO {
         return AddressDTO(
             id = id,
             address = address.address1,
@@ -359,7 +359,8 @@ class WooShippingNetworkingMapper @Inject constructor(
             company = address.company,
             name = combineStrings(address.firstName, address.lastName),
             phone = address.phone,
-            email = address.email
+            email = address.email,
+            isVerified = isVerified
         )
     }
 

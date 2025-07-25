@@ -75,7 +75,7 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
 
         val result = sut.viewState.value
         assertThat(result.addressValidationState).isEqualTo(AddressValidationState.NotStarted)
-        verify(updateDestinationAddress, never()).invoke(any(), any())
+        verify(updateDestinationAddress, never()).invoke(any(), any(), any())
     }
 
     @Test
@@ -116,7 +116,7 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
 
         val shouldNavigateBack = sut.allowBackNavigation()
         assertThat(shouldNavigateBack).isFalse()
-        verify(updateDestinationAddress, never()).invoke(any(), any())
+        verify(updateDestinationAddress, never()).invoke(any(), any(), any())
     }
 
     @Test
@@ -152,7 +152,7 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
         val result = sut.viewState.value
         assertThat(result.addressValidationState).isInstanceOf(AddressValidationState.AddressUpdateFailed::class.java)
         assertThat(result.error).isNotNull()
-        verify(updateDestinationAddress, never()).invoke(any(), any())
+        verify(updateDestinationAddress, never()).invoke(any(), any(), any())
     }
 
     @Test
@@ -186,7 +186,7 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
 
         val result = sut.viewState.value
         assertThat(result.addressValidationState).isEqualTo(AddressValidationState.NotStarted)
-        verify(updateDestinationAddress, never()).invoke(any(), any())
+        verify(updateDestinationAddress, never()).invoke(any(), any(), any())
     }
 
     @Test
@@ -224,7 +224,7 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
             .isInstanceOf(AddressValidationState.NormalizedAddressUpdateFailed::class.java)
 
         assertThat(result.error).isNotNull()
-        verify(updateDestinationAddress, never()).invoke(any(), any())
+        verify(updateDestinationAddress, never()).invoke(any(), any(), any())
     }
 
     @Test

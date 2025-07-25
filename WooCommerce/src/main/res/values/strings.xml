@@ -4676,6 +4676,7 @@
 
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
+    <string name="woo_shipping_address_use_as_entered">Use address as entered</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
     <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
     <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>

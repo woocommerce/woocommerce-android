@@ -50,7 +50,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
         whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
-        whenever(updateDestinationAddress.invoke(any(), any()))
+        whenever(updateDestinationAddress.invoke(any(), any(), any()))
             .doReturn(Result.success(DestinationShippingAddress.EMPTY))
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(initialAddress)
@@ -80,7 +80,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
         whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
-        whenever(updateDestinationAddress.invoke(any(), any())).doReturn(Result.failure(Exception("error")))
+        whenever(updateDestinationAddress.invoke(any(), any(), any())).doReturn(Result.failure(Exception("error")))
         whenever(resourceProvider.getString(any())).doReturn("error")
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(initialAddress)
@@ -127,7 +127,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
         whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
-        whenever(updateDestinationAddress.invoke(any(), any())).doReturn(Result.failure(Exception("error")))
+        whenever(updateDestinationAddress.invoke(any(), any(), any())).doReturn(Result.failure(Exception("error")))
         whenever(resourceProvider.getString(any())).doReturn("error")
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
@@ -158,7 +158,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
         whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
-        whenever(updateDestinationAddress.invoke(any(), any()))
+        whenever(updateDestinationAddress.invoke(any(), any(), any()))
             .doReturn(Result.success(DestinationShippingAddress.EMPTY))
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(initialAddress)
@@ -193,7 +193,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
         whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
-        whenever(updateDestinationAddress.invoke(any(), any())).doReturn(Result.failure(Exception("error")))
+        whenever(updateDestinationAddress.invoke(any(), any(), any())).doReturn(Result.failure(Exception("error")))
         whenever(resourceProvider.getString(any())).doReturn("error")
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(initialAddress)

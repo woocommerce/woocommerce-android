@@ -437,7 +437,9 @@ fun AddressStatusIndicator(
 ) {
     val text = when (addressStatus) {
         AddressStatus.VERIFIED -> stringResource(id = R.string.woo_shipping_address_verified)
-        AddressStatus.UNVERIFIED -> stringResource(id = R.string.woo_shipping_address_unverified)
+        AddressStatus.UNVERIFIED,
+        AddressStatus.VERIFY_FAILED -> stringResource(id = R.string.woo_shipping_address_unverified)
+
         AddressStatus.MISSING_INFO -> stringResource(id = R.string.woo_shipping_address_missing_info)
         AddressStatus.SAVE_CHANGES -> stringResource(id = R.string.woo_shipping_address_unsaved_changes)
         AddressStatus.MISSING_ADDRESS -> stringResource(id = R.string.woo_shipping_address_missing)
