@@ -699,7 +699,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
         data class DisplayLoading(val title: String, val message: String) : LoadingState()
     }
 
-    data class EditAddressError(val message: String, val onRetry: () -> Unit)
+    data class EditAddressError(val message: String, val isIndefinite: Boolean = true, val onRetry: () -> Unit)
 
     sealed class LocationState {
         data object Loading : LocationState()
