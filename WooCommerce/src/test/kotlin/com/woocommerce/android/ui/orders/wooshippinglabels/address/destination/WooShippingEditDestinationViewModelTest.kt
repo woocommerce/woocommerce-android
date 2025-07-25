@@ -218,8 +218,9 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
     }
 
     @Test
-    fun `when phone is empty phone then error is null`() = testBlocking {
-        val address = Address.EMPTY.copy(phone = "")
+    fun `when phone is empty phone then error is null for US`() = testBlocking {
+        val address = Address.EMPTY.copy(phone = "", country = AmbiguousLocation.Raw("US").asLocation())
+        whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(addressValidator.validateAtLeastOneOf(eq(""), eq(""))).doReturn("error")
         whenever(addressValidator.validateFieldRequired("")).doReturn("error")
         Snapshot.withMutableSnapshot {
@@ -234,6 +235,26 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
 
         assertThat(result.editableAddress.phone.error).isNull()
+    }
+
+    @Test
+    fun `when phone is empty phone then error is not null`() = testBlocking {
+        val address = Address.EMPTY.copy(phone = "", country = AmbiguousLocation.Raw("CA").asLocation())
+        whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
+        whenever(addressValidator.validateAtLeastOneOf(eq(""), eq(""))).doReturn("error")
+        whenever(addressValidator.validateFieldRequired("")).doReturn("error")
+        Snapshot.withMutableSnapshot {
+            val savedState = createSavedStateHandle(address)
+            createViewModel(savedState)
+        }
+
+        advanceUntilIdle()
+
+        val result = sut.viewState.value
+
+        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+
+        assertThat(result.editableAddress.phone.error).isNotNull()
     }
 
     @Test
