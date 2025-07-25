@@ -1,2 +1,0 @@
-22.8:
-Con questa versione viene introdotta una funzionalità delle etichette di spedizione completamente riprogettata che renderà la gestione delle spedizioni un gioco da ragazzi. Abbiamo migliorato la scansione dei codici a barre nel POS con messaggi di errore più chiari, aggiornato il design dei pagamenti di persona con i nuovi colori Woo e risolto arresti anomali e problemi di memoria per un'esperienza più fluida e affidabile.

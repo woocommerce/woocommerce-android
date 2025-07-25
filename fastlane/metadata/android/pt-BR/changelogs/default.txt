@@ -1,2 +1,0 @@
-22.8:
-Esta versão traz uma repaginação completa do recurso de etiquetas, o que facilita o manuseio de envios. Aprimoramos a leitura de código de barras em pontos de venda com mensagens de erro mais claras, atualizamos os pagamentos presenciais com novas cores do Woo e corrigimos falhas e problemas de memória para tornar sua experiência mais tranquila e confiável.
