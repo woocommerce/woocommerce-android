@@ -1,0 +1,2 @@
+22.8:
+Den här versionen introducerar en helt omdesignad funktion för fraktetiketter som kommer att göra hanteringen av försändelser lätt som en plätt. Vi har förbättrat streckkodsskanningen i POS med tydligare felmeddelanden, uppdaterat personliga betalningar med nya Woo-färger samt åtgärdat krascher och minnesproblem för en smidigare, mer tillförlitlig upplevelse.

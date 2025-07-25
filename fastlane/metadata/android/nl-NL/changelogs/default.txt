@@ -1,0 +1,2 @@
+22.8:
+Deze release introduceert een volledig opnieuw ontworpen functie voor verzendlabels, waarmee het verwerken van verzendingen een makkie wordt. We hebben het scannen van streepjescodes in POS verbeterd met duidelijkere foutmeldingen, fysieke betalingen opgefrist met nieuwe Woo-kleuren en crashes en geheugenproblemen opgelost voor een soepelere, betrouwbaardere ervaring.
