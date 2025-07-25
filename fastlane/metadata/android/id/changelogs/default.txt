@@ -1,2 +1,0 @@
-22.8:
-Rilis ini memperkenalkan fitur label pengiriman yang didesain ulang sepenuhnya sehingga memudahkan penanganan pengiriman. Kami telah meningkatkan pemindaian barcode di POS dengan pesan error yang lebih jelas, menyegarkan pembayaran langsung dengan warna Woo baru, serta mengatasi crash dan masalah memori untuk pengalaman yang lebih lancar dan andal.

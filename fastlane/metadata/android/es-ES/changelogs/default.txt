@@ -1,2 +1,0 @@
-22.8:
-Esta versión presenta una función de etiquetas de envío completamente rediseñada que hará que la gestión de envíos sea muy sencilla. Hemos mejorado el escaneo de códigos de barras en el TPV con mensajes de error más claros y pagos en persona actualizados con los nuevos colores de Woo. Además, hemos reparado fallos y problemas de memoria para que la experiencia sea más fluida y fiable.
