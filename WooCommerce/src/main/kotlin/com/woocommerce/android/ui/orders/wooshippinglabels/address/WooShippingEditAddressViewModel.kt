@@ -605,7 +605,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
     ) {
         addressValidationState.value = AddressValidationState.UpdatingAddress
         launch {
-            updateDestinationAddress(selection.selectedAddress, orderId).fold(
+            updateDestinationAddress(selection.selectedAddress, orderId, isVerified = true).fold(
                 onSuccess = {
                     onUpdateAddress(it.address, it.isVerified)
                 },
