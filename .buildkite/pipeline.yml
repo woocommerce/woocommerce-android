@@ -20,6 +20,28 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+  - label: Print some debug values (staging AMI)
+    command: &debug_cmds |
+      echo "--- jenv info"
+      jenv versions
+      jenv version
+      echo "--- java version"
+      java -version
+      echo "--- env"
+      env
+      echo "--- SDK dir listing"
+      echo "~~~ ANDROID_SDK_ROOT: $${ANDROID_SDK_ROOT}"
+      ls -laF $${ANDROID_SDK_ROOT}
+      echo "~~~ cmdline-tools"
+      ls -laF $${ANDROID_SDK_ROOT}/cmdline-tools
+      echo "--- sdkmanager installed packages"
+      sdkmanager --list_installed
+
+  - label: Print some debug values (official AMI)
+    agents:
+      queue: "android"
+    command: *debug_cmds
+
   ########################################
   - group: "🕵️ Linters"
     steps:
