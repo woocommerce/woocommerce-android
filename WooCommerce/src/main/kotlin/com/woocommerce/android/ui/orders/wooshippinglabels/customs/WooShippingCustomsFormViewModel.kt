@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.Valida
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,7 +44,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = loadViewStateFromCustomsData(
-            customsDATA = navArgs.customsData,
+            customData = navArgs.customsData,
             currencySymbol = storeOptions.currencySymbol,
             weightUnit = storeOptions.weightUnit
         )
