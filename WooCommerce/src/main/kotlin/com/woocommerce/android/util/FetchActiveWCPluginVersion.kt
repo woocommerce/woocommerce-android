@@ -30,7 +30,7 @@ class FetchActiveWCPluginVersion @Inject constructor(
         val pluginName = WooCommerceStore.WooPlugin.WOO_CORE.pluginName.substringAfterLast('/')
 
         val activePlugin = this.firstOrNull { plugin ->
-            plugin.name.substringAfterLast('/').endsWith(pluginName) && plugin.isActive
+            plugin.name.substringAfterLast('/') == (pluginName) && plugin.isActive
         }
 
         return activePlugin
