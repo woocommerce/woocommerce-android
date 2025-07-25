@@ -65,14 +65,8 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private var city by mutableStateOf(InputValue(value = "", isRequired = true))
     private var postalCode by mutableStateOf(InputValue(value = "", isRequired = true))
     private var email by mutableStateOf(InputValue(value = "", isRequired = true))
-    private var phone by mutableStateOf(
-        InputValue(
-            value = "",
-            isRequired = navArgs.flow is EditAddressFlow.EditOriginAddress
-        )
-    )
-
     private var country = MutableStateFlow(Location.EMPTY)
+    private var phone by mutableStateOf(InputValue(value = "", isRequired = shouldRequirePhone()))
 
     private var rawState by mutableStateOf("")
     private val selectedState = MutableStateFlow(Location.EMPTY)
@@ -260,32 +254,36 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun loadStates() {
-        country.mapLatest { country -> getStatesByCountryCode(country.code) }
-            .collectLatest { states ->
-                statesState.value = LocationState.Loaded(states)
-                val stateCode = if (country.value.code == currentAddress.value.country.code) {
-                    currentAddress.value.state.codeOrRaw
-                } else {
-                    ""
+        country.mapLatest { country ->
+            phone = phone.copy(isRequired = shouldRequirePhone())
+            getStatesByCountryCode(country.code)
+        }.collectLatest { states ->
+            statesState.value = LocationState.Loaded(states)
+            val stateCode = if (country.value.code == currentAddress.value.country.code) {
+                currentAddress.value.state.codeOrRaw
+            } else {
+                ""
+            }
+            when {
+                states.isNotEmpty() && stateCode.isNotEmpty() -> {
+                    selectedState.value = findLocationByCode(stateCode, statesState.value)
+                        .takeIf { it != Location.EMPTY } ?: states.first()
+                    rawState = ""
                 }
-                when {
-                    states.isNotEmpty() && stateCode.isNotEmpty() -> {
-                        selectedState.value = findLocationByCode(stateCode, statesState.value)
-                            .takeIf { it != Location.EMPTY } ?: states.first()
-                        rawState = ""
-                    }
 
-                    states.isNotEmpty() -> {
-                        selectedState.value = states.first()
-                    }
+                states.isNotEmpty() -> {
+                    selectedState.value = states.first()
+                }
 
-                    else -> {
-                        rawState = stateCode
-                        selectedState.value = Location.EMPTY
-                    }
+                else -> {
+                    rawState = stateCode
+                    selectedState.value = Location.EMPTY
                 }
             }
+        }
     }
+
+    private fun shouldRequirePhone() = navArgs.flow is EditAddressFlow.EditOriginAddress || country.value.code != "US"
 
     fun handleBackPress(): Boolean {
         if (allowBackNavigation()) {
