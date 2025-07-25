@@ -12,6 +12,7 @@
 - [*] Update cache with currency code after restarting the app [https://github.com/woocommerce/woocommerce-android/pull/14363]
 - [**] POS: Barcode readers setup flow added [https://github.com/woocommerce/woocommerce-android/pull/14362]
 - [**] Improved logic responsible for identifying active WC plugins [https://github.com/woocommerce/woocommerce-android/pull/14368]
+- [*] Shipping Labels: Allow confirming destination addresses when validation fails. [https://github.com/woocommerce/woocommerce-android/pull/14376]
 
 22.8
 -----

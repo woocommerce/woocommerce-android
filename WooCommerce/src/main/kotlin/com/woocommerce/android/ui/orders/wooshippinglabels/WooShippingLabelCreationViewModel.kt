@@ -335,7 +335,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                                 address = it.address.copy(email = orderShippingEmail)
                             )
                         },
-                        onFailure = { }
+                        onFailure = {
+                            if (destinationAddress.value == DestinationShippingAddress.EMPTY) {
+                                destinationAddress.value = DestinationShippingAddress(
+                                    address = order.shippingAddress.copy(email = orderShippingEmail),
+                                    isVerified = false
+                                )
+                            }
+                        }
                     )
                 }
             } else {
