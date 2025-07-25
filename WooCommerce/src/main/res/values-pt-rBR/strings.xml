@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-30 21:54:04+0000
+Translation-Revision-Date: 2025-07-14 17:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">Manuseio extra</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Entrega no sábado</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Neutralidade de carbono</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Assinatura de um adulto obrigatória</string>
+    <string name="woo_shipping_rate_option_signature_required">Assinatura obrigatória</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">Mais %1$s</string>
+    <string name="woo_shipping_labels_package_saving_error">Não foi possível salvar o pacote</string>
+    <string name="woo_shipping_labels_package_removing_error">Não foi possível remover o pacote</string>
+    <string name="woopos_eligibility_retry_check_label">Tentar novamente</string>
+    <string name="woopos_eligibility_exit_pos_label">Sair do PDV</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Consulte as instruções do scanner de código de barras Bluetooth para definir o modo HID. Isso geralmente requer a leitura de um código de barras especial no manual.</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">O scanner não enviou caractere de fim de linha</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">O código de barras lido é muito curto</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (taxa básica)</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297 mm)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">Visualizar etiqueta de envio comprada</string>
     <string name="wpp_shipping_ups_tos_accept">Confirmar e continuar</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">Também aceito o &lt;a href=\"ups-technology-agreement\"&gt;Acordo de tecnologia da UPS®&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">Não enviarei quaisquer &lt;a href=\"ups-prohibited-items\"&gt;Itens proibidos&lt;/a&gt; que a UPS® desaprova nem itens regulamentados sem as permissões necessárias.</string>
@@ -49,7 +66,6 @@ Language: pt_BR
     <string name="woopos_dialog_barcode_info_quinary_message">O scanner simula um teclado, então algumas vezes ele impedirá que o software do teclado seja exibido, como na pesquisa. Para reabrir o teclado, toque no respectivo ícone.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• Escaneie códigos de barras enquanto estiver na lista de itens para adicionar produtos ao carrinho.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• Conecte seu scanner de código de barras nas configurações Bluetooth do sistema.</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Consulte as instruções do scanner de código de barras Bluetooth para definir o modo HID.</string>
     <string name="woopos_dialog_barcode_info_more_details_link">Mais detalhes</string>
     <string name="woopos_dialog_barcode_info_primary_message">• Configure códigos de barras no campo \"GTIN, UPC, EAN, ISBN\" em Produtos &gt; Detalhes do produto &gt; Inventário. </string>
     <string name="woopos_dialog_barcode_info_intro_message">Escaneie códigos de barra usando um scanner externo para criar rapidamente um carrinho.</string>
