@@ -790,7 +790,7 @@ sealed class EditAddressFlow : Parcelable {
     data class EditDestinationAddress(val address: DestinationShippingAddress, val orderId: Long) : EditAddressFlow()
 }
 
-enum class AddressStatus { VERIFIED, UNVERIFIED, MISSING_ADDRESS, MISSING_INFO, SAVE_CHANGES }
+enum class AddressStatus { VERIFIED, UNVERIFIED, MISSING_ADDRESS, MISSING_INFO, SAVE_CHANGES, VERIFY_FAILED }
 
 data class InputValue(val value: String, val error: String? = null, val isRequired: Boolean = false) {
     companion object {
