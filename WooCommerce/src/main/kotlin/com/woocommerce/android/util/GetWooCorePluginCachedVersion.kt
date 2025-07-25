@@ -10,7 +10,7 @@ class GetWooCorePluginCachedVersion @Inject constructor(
 ) {
     operator fun invoke(): String? =
         selectedSite.getOrNull()?.let { selectedSite ->
-            wooCommerceStore.getSitePlugin(
+            wooCommerceStore.getActiveSitePlugin(
                 selectedSite,
                 WooCommerceStore.WooPlugin.WOO_CORE
             )?.version
