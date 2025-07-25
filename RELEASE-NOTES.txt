@@ -11,6 +11,7 @@
 - [*] Added POS badge to Most recent orders section in the My store dashboard [https://github.com/woocommerce/woocommerce-android/pull/14328]
 - [*] Update cache with currency code after restarting the app [https://github.com/woocommerce/woocommerce-android/pull/14363]
 - [**] POS: Barcode readers setup flow added [https://github.com/woocommerce/woocommerce-android/pull/14362]
+- [*] Shipping Labels: Allow confirming destination addresses when validation fails. [https://github.com/woocommerce/woocommerce-android/pull/14376]
 
 22.8
 -----
