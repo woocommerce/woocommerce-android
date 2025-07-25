@@ -255,9 +255,9 @@ class WooShippingEditAddressViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun loadStates() {
         country.mapLatest { country ->
-            phone = phone.copy(isRequired = shouldRequirePhone())
             getStatesByCountryCode(country.code)
         }.collectLatest { states ->
+            phone = phone.copy(isRequired = shouldRequirePhone())
             statesState.value = LocationState.Loaded(states)
             val stateCode = if (country.value.code == currentAddress.value.country.code) {
                 currentAddress.value.state.codeOrRaw
