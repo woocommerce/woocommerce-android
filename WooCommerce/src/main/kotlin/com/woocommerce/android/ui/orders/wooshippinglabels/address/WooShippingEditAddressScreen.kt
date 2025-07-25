@@ -402,7 +402,6 @@ fun WooShippingEditAddressScreen(
             }
         }
 
-        val retry = stringResource(id = R.string.retry)
         if (addressSelection != null) {
             WCModalBottomSheet(
                 sheetState = modalSheetState,
@@ -420,21 +419,7 @@ fun WooShippingEditAddressScreen(
                 )
             }
         } else {
-            LaunchedEffect(error) {
-                if (error != null) {
-                    val result = snackbarHostState.showSnackbar(
-                        message = error.message,
-                        duration = if (error.isIndefinite) SnackbarDuration.Indefinite else SnackbarDuration.Short,
-                        actionLabel = retry
-                    )
-                    when (result) {
-                        SnackbarResult.Dismissed -> {}
-                        SnackbarResult.ActionPerformed -> {
-                            error.onRetry()
-                        }
-                    }
-                }
-            }
+            ErrorSnackbar(snackbarHostState, error)
         }
     }
     if (loading is WooShippingEditAddressViewModel.LoadingState.DisplayLoading) {
@@ -442,6 +427,29 @@ fun WooShippingEditAddressScreen(
             title = loading.title,
             description = loading.message
         )
+    }
+}
+
+@Composable
+private fun ErrorSnackbar(
+    snackbarHostState: SnackbarHostState,
+    error: WooShippingEditAddressViewModel.EditAddressError?,
+) {
+    val retry = stringResource(id = R.string.retry)
+    LaunchedEffect(error) {
+        if (error != null) {
+            val result = snackbarHostState.showSnackbar(
+                message = error.message,
+                duration = if (error.isIndefinite) SnackbarDuration.Indefinite else SnackbarDuration.Short,
+                actionLabel = retry
+            )
+            when (result) {
+                SnackbarResult.Dismissed -> {}
+                SnackbarResult.ActionPerformed -> {
+                    error.onRetry()
+                }
+            }
+        }
     }
 }
 
