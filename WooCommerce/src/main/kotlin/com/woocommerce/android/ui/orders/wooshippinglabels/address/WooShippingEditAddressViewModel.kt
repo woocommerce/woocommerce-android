@@ -652,6 +652,9 @@ class WooShippingEditAddressViewModel @Inject constructor(
             updateDestinationAddress(address, orderId, verified).fold(
                 onSuccess = { result ->
                     onUpdateAddress(result.address, result.isVerified)
+                    if (latestAddressValidationState is AddressValidationState.VerificationFailed) {
+                        onNavigateBack()
+                    }
                 },
                 onFailure = {
                     addressValidationState.value = AddressValidationState.AddressUpdateFailed(editableAddress)
