@@ -92,7 +92,7 @@ class WooPosEligibilityViewModel @Inject constructor(
                         supportedCurrency
                     )
                 } else {
-                    ""
+                    resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_currency_generic)
                 }
             }
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected ->
