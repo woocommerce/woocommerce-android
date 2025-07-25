@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.9
+We’ve enhanced your WooCommerce experience with exciting Point of Sale improvements! Now filter orders by POS sales channel, set up barcode readers seamlessly, and spot POS orders with new badges on your dashboard. We’ve also fixed loading issues in order details, resolved payment screen crashes, restored search functionality, and improved shipping label address validation. Plus better plugin detection and currency handling after app restarts.
+
 ## 22.8
 This release introduces a completely redesigned shipping labels feature that will make handling shipments a breeze. We've improved barcode scanning in POS with clearer error messages, refreshed in-person payments with new Woo colors, and fixed crashes and memory issues for a smoother, more reliable experience.
 
