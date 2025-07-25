@@ -41,21 +41,16 @@ class WooPosTabController @Inject constructor(
     }
 
     override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
         refreshPOSTabVisibility()
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        super.onDestroy(owner)
         owner.lifecycle.removeObserver(this)
     }
 
     fun refreshPOSTabVisibility() {
         setPOSTabVisibility(false)
-        // Load visibility from prefs for fast UI feedback
         updatePOSTabVisibilityFromPrefs()
-
-        // Then update with the remote value
         updateTabVisibilityFromRemoteAndPersist()
     }
 
