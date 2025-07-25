@@ -369,7 +369,8 @@ class WooShippingEditAddressViewModel @Inject constructor(
         addressSelection is AddressValidationState.VerificationFailed -> {
             if (editableAddress == addressSelection.editableAddress) {
                 EditAddressError(
-                    resourceProvider.getString(R.string.woo_shipping_verifying_address_failed)
+                    message = resourceProvider.getString(R.string.woo_shipping_verifying_address_failed),
+                    isIndefinite = navArgs.flow is EditAddressFlow.EditOriginAddress,
                 ) {
                     onNormalizeAddress(addressSelection.editableAddress)
                 }
