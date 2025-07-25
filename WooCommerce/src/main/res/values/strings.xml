@@ -4475,17 +4475,17 @@
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
     <string name="woopos_scanning_setup_device_selection_title">Set up a barcode scanner</string>
     <string name="woopos_scanning_setup_device_selection_message">Select a model from the list:</string>
-    <string name="woopos_scanning_setup_hid_title">Scanner set up</string>
-    <string name="woopos_scanning_setup_hid_message">Use your barcode scanner to scan the QR code below to enable Bluetooth HID mode.</string>
-    <string name="woopos_scanning_setup_scanner_pair_mode_title">Scanner set up</string>
-    <string name="woopos_scanning_setup_scanner_pair_mode_message">Use your barcode scanner to scan the QR code below to enter pairing mode.</string>
+    <string name="woopos_scanning_setup_hid_title">Scanner setup</string>
+    <string name="woopos_scanning_setup_hid_message">Use your barcode scanner to scan the code below to enable Bluetooth HID mode.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">Scanner setup</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">Use your barcode scanner to scan the code below to enter pairing mode.</string>
     <string name="woopos_scanning_setup_pair_your_scanner_title">Pair your scanner</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
     <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
     <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
     <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
     <string name="woopos_scanning_setup_more_information">How to set up barcodes on products</string>
-    <string name="woopos_scanning_setup_info_title">Scanner set up</string>
+    <string name="woopos_scanning_setup_info_title">Scanner setup</string>
     <string name="woopos_scanning_setup_info_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
     <string name="woopos_scanning_setup_info_bullet_1">Refer to your bluetooth barcode scanner in System Bluetooth settings.</string>
     <string name="woopos_scanning_setup_info_bullet_2">Scan barcodes while on the item list to add products to the cart.</string>
@@ -4507,6 +4507,7 @@
     <string name="woopos_scanning_setup_button_done">Done</string>
     <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
     <string name="woopos_scanning_setup_device_other">Other</string>
 
     <string name="customers_details_customer_section">Customer</string>
