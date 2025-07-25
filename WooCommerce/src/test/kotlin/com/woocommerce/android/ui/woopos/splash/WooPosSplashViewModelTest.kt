@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.splash
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
-import com.woocommerce.android.ui.woopos.tab.WooPosIsPosAsTabM2Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -26,7 +25,6 @@ class WooPosSplashViewModelTest {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val popularProductsProvider: WooPosPopularProductsProvider = mock()
-    private val posAsTabM2Enabled: WooPosIsPosAsTabM2Enabled = mock()
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
 
     @Rule
@@ -47,9 +45,8 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
-    fun `given posAsTabM2Enabled true and site not eligible, should update state to NotEligible`() = runTest {
+    fun `given site not eligible, should update state to NotEligible`() = runTest {
         // GIVEN
-        whenever(posAsTabM2Enabled()).thenReturn(true)
         whenever(posCanBeLaunchedInTab()).thenReturn(
             WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
         )
@@ -64,9 +61,8 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
-    fun `given posAsTabM2Enabled true and site eligible, should update state to Loaded`() = runTest {
+    fun `given site eligible, should update state to Loaded`() = runTest {
         // GIVEN
-        whenever(posAsTabM2Enabled()).thenReturn(true)
         whenever(posCanBeLaunchedInTab()).thenReturn(WooPosLaunchability.Launchable)
 
         // WHEN
@@ -149,7 +145,6 @@ class WooPosSplashViewModelTest {
         productsDataSource,
         popularProductsProvider,
         analyticsTracker,
-        posAsTabM2Enabled,
         posCanBeLaunchedInTab
     )
 }

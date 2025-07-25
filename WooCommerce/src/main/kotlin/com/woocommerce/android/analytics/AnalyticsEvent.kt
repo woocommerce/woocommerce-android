@@ -820,10 +820,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     APP_PERMISSION_RATIONALE_ACCEPTED,
     APP_PERMISSION_RATIONALE_DISMISSED,
 
-    // -- Encrypted logging
-    ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL,
-    ENCRYPTED_LOGGING_UPLOAD_FAILED,
-
     // -- What's new / feature announcements
     FEATURE_ANNOUNCEMENT_SHOWN,
 

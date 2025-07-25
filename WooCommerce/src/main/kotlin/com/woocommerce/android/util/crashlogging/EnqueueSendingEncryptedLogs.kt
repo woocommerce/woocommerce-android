@@ -2,14 +2,12 @@ package com.woocommerce.android.util.crashlogging
 
 import com.automattic.android.tracks.crashlogging.EventLevel
 import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
+import com.automattic.encryptedlogging.EncryptedLogging
 import com.woocommerce.android.tools.NetworkStatus
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.generated.EncryptedLogActionBuilder
-import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogPayload
 import javax.inject.Inject
 
 class EnqueueSendingEncryptedLogs @Inject constructor(
-    private val eventBusDispatcher: Dispatcher,
+    private val encryptedLogging: EncryptedLogging,
     private val wooLogFileProvider: WooLogFileProvider,
     private val networkStatus: NetworkStatus
 ) {
@@ -17,11 +15,10 @@ class EnqueueSendingEncryptedLogs @Inject constructor(
         uuid: String,
         eventLevel: EventLevel
     ) {
-        val payload = UploadEncryptedLogPayload(
+        encryptedLogging.enqueueSendingEncryptedLogs(
             uuid = uuid,
             file = wooLogFileProvider.provide(),
-            shouldStartUploadImmediately = eventLevel != FATAL && networkStatus.isConnected()
+            shouldUploadImmediately = eventLevel != FATAL && networkStatus.isConnected()
         )
-        eventBusDispatcher.dispatch(EncryptedLogActionBuilder.newUploadLogAction(payload))
     }
 }

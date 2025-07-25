@@ -1,0 +1,2 @@
+22.8:
+Bu sürüm gönderimlerin ele alınmasını çok kolaylaştıracak, tamamen yeniden tasarlanmış bir gönderim etiketi özelliğini sunar. Daha net hata mesajları ile POS'ta barkod taraması iyileştirildi, yeni Woo renkleriyle şahsen ödemeler yenilendi, daha sorunsuz ve daha güvenilir bir deneyim için çökmeler ve bellek sorunları düzeltildi.

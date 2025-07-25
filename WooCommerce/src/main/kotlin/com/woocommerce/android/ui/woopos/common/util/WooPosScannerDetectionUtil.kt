@@ -4,8 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.hardware.input.InputManager
+import android.os.Build
 import android.view.InputDevice
 import androidx.annotation.RequiresPermission
 import javax.inject.Inject
@@ -14,7 +16,7 @@ class WooPosScannerDetectionUtil @Inject constructor(
     private val context: Context,
     private val wooPosLogWrapper: WooPosLogWrapper,
 ) {
-    fun detectConnectedScanner(context: Context): ScannerInfo {
+    fun detectConnectedScanner(): ScannerInfo {
         val bluetoothScanner = detectBluetoothScanner()
         if (bluetoothScanner !is ScannerInfo.NoScannerDetected) {
             return bluetoothScanner
@@ -28,13 +30,15 @@ class WooPosScannerDetectionUtil @Inject constructor(
     @Suppress("TooGenericExceptionCaught")
     private fun detectBluetoothScanner(): ScannerInfo {
         return try {
-            val bluetoothAdapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
-            bluetoothAdapter?.takeIf { it.isEnabled }?.bondedDevices?.forEach { device ->
-                if (device.isPotentialBarcodeScanner()) {
-                    return createBluetoothScannerInfo(device)
-                }
+            val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+            val bluetoothAdapter = bluetoothManager?.adapter
+
+            if (bluetoothAdapter?.isEnabled != true) {
+                return ScannerInfo.NoScannerDetected
             }
-            ScannerInfo.NoScannerDetected
+
+            val connectedScanner = findConnectedScanner(bluetoothManager)
+            connectedScanner ?: ScannerInfo.NoScannerDetected
         } catch (e: SecurityException) {
             wooPosLogWrapper.e("Bluetooth permission not granted. Cannot detect Bluetooth scanners.", e)
             ScannerInfo.BluetoothPermissionNotGranted
@@ -42,6 +46,44 @@ class WooPosScannerDetectionUtil @Inject constructor(
             wooPosLogWrapper.e("Error detecting Bluetooth scanners: ${e.message}", e)
             ScannerInfo.NoScannerDetected
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    @Suppress("TooGenericExceptionCaught")
+    private fun findConnectedScanner(bluetoothManager: BluetoothManager): ScannerInfo? {
+        val hidScanner = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            findScannerInProfile(bluetoothManager, BluetoothProfile.HID_DEVICE)
+        } else {
+            // For SDK < P, HID_DEVICE profile is not available
+            // Fall back to checking bonded devices directly
+            null
+        }
+
+        val gattScanner = hidScanner ?: findScannerInProfile(bluetoothManager, BluetoothProfile.GATT)
+        val gattServerScanner = gattScanner ?: findScannerInProfile(bluetoothManager, BluetoothProfile.GATT_SERVER)
+
+        return gattServerScanner ?: findConnectedBondedScanner(bluetoothManager)
+    }
+
+    @SuppressLint("MissingPermission")
+    @Suppress("TooGenericExceptionCaught")
+    private fun findScannerInProfile(bluetoothManager: BluetoothManager, profile: Int): ScannerInfo? {
+        return try {
+            val connectedDevices = bluetoothManager.getConnectedDevices(profile)
+            connectedDevices.firstOrNull { it.isPotentialBarcodeScanner() }
+                ?.let { createBluetoothScannerInfo(it) }
+        } catch (e: Exception) {
+            wooPosLogWrapper.d("Profile $profile not available or no devices connected: ${e.message}")
+            null
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun findConnectedBondedScanner(bluetoothManager: BluetoothManager): ScannerInfo? {
+        return bluetoothManager.adapter?.bondedDevices
+            ?.firstOrNull { device ->
+                device.isPotentialBarcodeScanner() && device.isConnected(bluetoothManager)
+            }?.let { createBluetoothScannerInfo(it) }
     }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
@@ -81,6 +123,43 @@ class WooPosScannerDetectionUtil @Inject constructor(
         return deviceClass != null && isScannerByDeviceClass(deviceClass)
     }
 
+    @SuppressLint("MissingPermission")
+    @Suppress("TooGenericExceptionCaught")
+    private fun BluetoothDevice.isConnected(bluetoothManager: BluetoothManager): Boolean {
+        return try {
+            val method = this.javaClass.getMethod("isConnected")
+            method.invoke(this) as Boolean
+        } catch (e: Exception) {
+            wooPosLogWrapper.d("Failed to check connection via reflection: ${e.message}")
+            isConnectedViaProfiles(bluetoothManager)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    @Suppress("TooGenericExceptionCaught")
+    private fun BluetoothDevice.isConnectedViaProfiles(bluetoothManager: BluetoothManager): Boolean {
+        val profiles = listOf(
+            BluetoothProfile.GATT,
+            BluetoothProfile.GATT_SERVER
+        ).plus(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                listOf(BluetoothProfile.HID_DEVICE)
+            } else {
+                emptyList()
+            }
+        )
+
+        return profiles.any { profile ->
+            try {
+                val connectedDevices = bluetoothManager.getConnectedDevices(profile)
+                connectedDevices.contains(this)
+            } catch (e: Exception) {
+                wooPosLogWrapper.d("Profile $profile not supported: ${e.message}")
+                false
+            }
+        }
+    }
+
     private fun InputDevice.isPotentialBarcodeScanner(): Boolean {
         if (!isExternalUsbDevice()) return false
 
@@ -105,7 +184,9 @@ class WooPosScannerDetectionUtil @Inject constructor(
             "alps"
         )
 
-        return deviceName !in internalDeviceKeywords && vendorId > MIN_EXTERNAL_USB_VENDOR_ID
+        val isNotInternal = internalDeviceKeywords.none { deviceName.contains(it) }
+
+        return isNotInternal && vendorId > MIN_EXTERNAL_USB_VENDOR_ID
     }
 
     private fun isScannerByDeviceClass(deviceClass: Int): Boolean {
@@ -126,7 +207,7 @@ class WooPosScannerDetectionUtil @Inject constructor(
         private const val PERIPHERAL_CLASS = 0x500
         private const val KEYBOARD_CLASS = 0x540
         private const val HID_CLASS = 0x580
-        private const val MIN_EXTERNAL_USB_VENDOR_ID = 0x1000
+        private const val MIN_EXTERNAL_USB_VENDOR_ID = 0x100
     }
 }
 
@@ -134,7 +215,6 @@ sealed class ScannerInfo {
     data class Connected(
         val name: String,
         val type: ScannerType,
-        val deviceClass: Int? = null,
     ) : ScannerInfo()
 
     data object NoScannerDetected : ScannerInfo()

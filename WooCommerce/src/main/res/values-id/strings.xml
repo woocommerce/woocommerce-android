@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-01 09:54:04+0000
+Translation-Revision-Date: 2025-07-16 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">Penanganan tambahan</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Pengiriman Sabtu</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Karbon netral</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Tanda tangan orang dewasa wajib diisi</string>
+    <string name="woo_shipping_rate_option_signature_required">Tanda tangan wajib diisi</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
+    <string name="woo_shipping_labels_package_saving_error">Tidak dapat menyimpan paket</string>
+    <string name="woo_shipping_labels_package_removing_error">Tidak dapat menghapus paket</string>
+    <string name="woopos_eligibility_retry_check_label">Coba lagi</string>
+    <string name="woopos_eligibility_exit_pos_label">Keluar dari POS</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Lihat petunjuk pemindai barcode Bluetooth untuk mengatur mode HID. Biasanya, Anda perlu memindai barcode khusus pada buku manual.</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">Pemindai tidak mengirimkan karakter akhir baris</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (biaya dasar)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">Lihat label pengiriman yang telah dibeli</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">Barcode yang dipindai terlalu pendek</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297 mm)</string>
     <string name="wpp_shipping_ups_tos_accept">Konfirmasi dan lanjutkan</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">Saya juga menyetujui &lt;a href=\"ups-technology-agreement\"&gt;Perjanjian Teknologi UPS®&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">Saya tidak akan mengirim &lt;a href=\"ups-prohibited-items\"&gt;Item Terlarang&lt;/a&gt; yang tidak diperbolehkan oleh UPS®, tidak juga item yang diatur dalam regulasi tanpa izin yang diperlukan.</string>
@@ -49,7 +66,6 @@ Language: id
     <string name="woo_shipping_refund_duration_description">Minta pengembalian dana untuk label pengiriman yang tidak terpakai. Proses pengembalian dana untuk label pengiriman akan segera diajukan dan biasanya selesai dalam waktu %d hari kerja.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• Pindai barcode saat berada di daftar item untuk menambahkan produk ke keranjang.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• Hubungkan pemindai barcode Anda di pengaturan Bluetooth Sistem.</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Lihat petunjuk pemindai barcode Bluetooth untuk mengatur mode HID.</string>
     <string name="woopos_dialog_barcode_info_more_details_link">Detail selengkapnya</string>
     <string name="woopos_dialog_barcode_info_primary_message">• Atur barcode di kolom \"GTIN, UPC, EAN, ISBN\" di Produk &gt; Detail Produk &gt; Inventaris. </string>
     <string name="woopos_dialog_barcode_info_intro_message">Anda dapat memindai barcode menggunakan pemindai eksternal untuk menyusun isi keranjang dengan cepat.</string>

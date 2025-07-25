@@ -56,39 +56,6 @@ data class WooPosHomeState(
         }
 
         @Parcelize
-        data object BarcodeInfoDialog : DialogState() {
-            @IgnoredOnParcel
-            val header: Int = R.string.woopos_dialog_barcode_info_heading
-
-            @IgnoredOnParcel
-            val introMessage: Int = R.string.woopos_dialog_barcode_info_intro_message
-
-            @IgnoredOnParcel
-            val primaryMessage: Int = R.string.woopos_dialog_barcode_info_primary_message
-
-            @IgnoredOnParcel
-            val secondaryMessage: Int = R.string.woopos_dialog_barcode_info_secondary_message
-
-            @IgnoredOnParcel
-            val tertiaryMessage: Int = R.string.woopos_dialog_barcode_info_tertiary_message
-
-            @IgnoredOnParcel
-            val quaternaryMessage: Int = R.string.woopos_dialog_barcode_info_quaternary_message
-
-            @IgnoredOnParcel
-            val quinaryMessage: Int = R.string.woopos_dialog_barcode_info_quinary_message
-
-            @IgnoredOnParcel
-            val primaryButton: PrimaryButton = PrimaryButton(
-                label = R.string.woopos_dialog_barcode_info_button_label,
-            )
-
-            data class PrimaryButton(
-                @StringRes val label: Int,
-            )
-        }
-
-        @Parcelize
         data object ScanningSetupDialog : DialogState()
 
         @Parcelize

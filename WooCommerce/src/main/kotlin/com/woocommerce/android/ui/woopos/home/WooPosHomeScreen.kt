@@ -136,7 +136,8 @@ private fun WooPosHomeScreen(
                 onBarcodeEvent = { result ->
                     onHomeUIEvent(WooPosHomeUIEvent.OnBarcodeEvent(result))
                 },
-                enabled = state.screenPositionState is WooPosHomeState.ScreenPositionState.Cart
+                enabled = state.screenPositionState is WooPosHomeState.ScreenPositionState.Cart &&
+                    state.dialogState !is WooPosHomeState.DialogState.ScanningSetupDialog
             )
     ) {
         Row(
@@ -179,14 +180,6 @@ private fun Dialogs(
         isVisible = dialogState is WooPosHomeState.DialogState.ProductsInfoDialog,
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
-        }
-    )
-
-    WooPosBarcodeInfoDialog(
-        state = WooPosHomeState.DialogState.BarcodeInfoDialog,
-        isVisible = dialogState is WooPosHomeState.DialogState.BarcodeInfoDialog,
-        onDismissRequest = {
-            onHomeUIEvent(WooPosHomeUIEvent.DismissBarcodeInfoDialog)
         }
     )
 

@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.RoundedBorderDropDownWithLabel
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
@@ -147,13 +148,14 @@ fun WooShippingCustomsProductCollapsedListItem(
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_description_missing)
             )
-            Text(
-                style = MaterialTheme.typography.bodySmall,
-                color = colorResource(id = R.color.color_on_surface),
-                text = itemData.tariffNumber.currentInput
-                    .takeIf { it.isNotBlank() }
-                    ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_tariff_missing)
-            )
+            itemData.tariffNumber.currentInput
+                .takeIf { it.isNotBlank() }?.let {
+                    Text(
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colorResource(id = R.color.color_on_surface),
+                        text = it,
+                    )
+                }
         }
         Row {
             Text(
@@ -195,8 +197,7 @@ fun WooShippingCustomsProductExpandedListItem(
                 isError = itemData.description is InputValue.Error,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 modifier = modifier.fillMaxWidth(),
-                helperText = itemData.description.errorMessageOrNull
-                    ?.let { stringResource(it) }
+                helperText = itemData.description.errorMessageOrNull?.getText()
             )
 
             WCOutlinedTextField(
@@ -210,8 +211,7 @@ fun WooShippingCustomsProductExpandedListItem(
                     keyboardType = KeyboardType.Number
                 ),
                 modifier = modifier.fillMaxWidth(),
-                helperText = itemData.tariffNumber.errorMessageOrNull
-                    ?.let { stringResource(it) }
+                helperText = itemData.tariffNumber.errorMessageOrNull?.getText()
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -226,8 +226,7 @@ fun WooShippingCustomsProductExpandedListItem(
                         keyboardType = KeyboardType.Number
                     ),
                     modifier = modifier.weight(1f),
-                    helperText = itemData.valuePerUnit.errorMessageOrNull
-                        ?.let { stringResource(it) }
+                    helperText = itemData.valuePerUnit.errorMessageOrNull?.getText()
                 )
 
                 WCOutlinedTextField(
@@ -236,10 +235,9 @@ fun WooShippingCustomsProductExpandedListItem(
                     label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_weight_per_unit),
                     singleLine = true,
                     isError = itemData.weightPerUnit is InputValue.Error,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                     modifier = modifier.weight(1f),
-                    helperText = itemData.weightPerUnit.errorMessageOrNull
-                        ?.let { stringResource(it) }
+                    helperText = itemData.weightPerUnit.errorMessageOrNull?.getText()
                 )
             }
 

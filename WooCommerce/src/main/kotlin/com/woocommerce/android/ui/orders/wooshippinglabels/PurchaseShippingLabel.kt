@@ -28,7 +28,7 @@ class PurchaseShippingLabel @Inject constructor(
         shipFrom: OriginShippingAddress,
         shippingRate: ShippingRateUI,
         weight: Float,
-        lastOrderComplete: Boolean,
+        lastOrderCompleted: Boolean,
         customsData: CustomsData? = null,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): Result<PurchasedLabelData> {
@@ -41,7 +41,7 @@ class PurchaseShippingLabel @Inject constructor(
             shipFrom = shipFrom,
             selectedRate = ratesMapper(shippingRate),
             weight = weight,
-            lastOrderComplete = lastOrderComplete,
+            lastOrderCompleted = lastOrderCompleted,
             customsData = customsData,
             hazmatSelection = hazmatSelection,
             site = selectedSite.get()

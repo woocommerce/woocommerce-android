@@ -77,6 +77,7 @@ object AppPrefs {
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
         DATABASE_DOWNGRADED,
+        ORDER_SUMMARY_MIGRATED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
@@ -288,6 +289,10 @@ object AppPrefs {
     var isSiteWPComSuspended: Boolean
         get() = getBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, value)
+
+    var orderSummaryMigrated: Boolean
+        get() = getBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, false)
+        set(value) = setBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
