@@ -16,11 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -83,7 +83,7 @@ fun WooShippingCustomsProductListItem(
         Row {
             Text(
                 text = itemData.name,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.color_on_surface),
                 modifier = modifier.weight(1f)
@@ -92,7 +92,7 @@ fun WooShippingCustomsProductListItem(
             if (itemData.isValid.not()) {
                 Icon(
                     imageVector = Icons.Outlined.Error,
-                    tint = MaterialTheme.colorScheme.error,
+                    tint = MaterialTheme.colors.error,
                     contentDescription = stringResource(
                         id = R.string.shipping_label_package_details_items_expand_content_description
                     )
@@ -100,7 +100,7 @@ fun WooShippingCustomsProductListItem(
             }
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_down),
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colors.primary,
                 contentDescription = stringResource(
                     id = R.string.shipping_label_package_details_items_expand_content_description
                 ),
@@ -144,16 +144,16 @@ fun WooShippingCustomsProductCollapsedListItem(
 
         Row {
             Text(
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.body1,
                 modifier = modifier.weight(1f),
-                color = colorResource(id = R.color.color_on_surface),
+                color = colorResource(id = R.color.color_on_surface_medium),
                 text = itemData.description.currentInput
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_description_missing)
             )
             Text(
-                style = MaterialTheme.typography.bodySmall,
-                color = colorResource(id = R.color.color_on_surface),
+                style = MaterialTheme.typography.body1,
+                color = colorResource(id = R.color.color_on_surface_medium),
                 text = itemData.tariffNumber.currentInput
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_tariff_missing)
@@ -161,17 +161,17 @@ fun WooShippingCustomsProductCollapsedListItem(
         }
         Row {
             Text(
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.body1,
                 modifier = modifier.weight(1f),
-                color = colorResource(id = R.color.color_on_surface),
+                color = colorResource(id = R.color.color_on_surface_medium),
                 text = itemData.originCountry
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_origin_country_missing)
             )
             Text(
                 text = itemData.formattedPriceAndWeight,
-                color = colorResource(id = R.color.color_on_surface),
-                style = MaterialTheme.typography.bodySmall,
+                color = colorResource(id = R.color.color_on_surface_medium),
+                style = MaterialTheme.typography.body1,
             )
         }
     }
@@ -228,8 +228,8 @@ fun WooShippingCustomsProductExpandedListItem(
                     trailingIcon = {
                         Text(
                             text = currencySymbol,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
                         )
                     },
                     singleLine = true,
@@ -250,8 +250,8 @@ fun WooShippingCustomsProductExpandedListItem(
                     trailingIcon = {
                         Text(
                             text = weightUnit,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
                         )
                     },
                     singleLine = true,
