@@ -97,7 +97,7 @@ class WooShippingRatesRepository @Inject constructor(
                         quantity = it.quantity,
                         value = it.value.toDouble(),
                         weight = it.weight.toDouble(),
-                        hsTariffNumber = it.hsTariffNumber,
+                        hsTariffNumber = it.hsTariffNumber.replace(Regex("""\D"""), ""),
                         originCountry = it.originCountryCode
                     )
                 }

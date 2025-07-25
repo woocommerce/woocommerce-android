@@ -5,7 +5,7 @@ import com.woocommerce.android.ui.woopos.WooPOSIsRemotelyEnabled
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.Launchable
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NonLaunchabilityReason
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NotLaunchable
-import com.woocommerce.android.util.FetchWooCorePluginVersion
+import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +28,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val isRemotelyEnabled: WooPOSIsRemotelyEnabled = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
-    private val fetchWooCoreVersion: FetchWooCorePluginVersion = mock()
+    private val fetchWooCoreVersion: FetchActiveWCPluginVersion = mock()
 
     private lateinit var sut: WooPosCanBeLaunchedInTab
 

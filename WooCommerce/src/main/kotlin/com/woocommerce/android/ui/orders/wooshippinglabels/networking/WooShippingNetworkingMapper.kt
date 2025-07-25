@@ -58,7 +58,8 @@ class WooShippingNetworkingMapper @Inject constructor(
                 canEditSettings = formMeta.canEditSettings,
                 storeOwnerName = formMeta.masterUserName,
                 storeOwnerUsername = formMeta.masterUserWpcomLogin,
-                paperSize = formData.paperSize
+                paperSize = formData.paperSize,
+                lastOrderCompleted = userMeta.lastOrderCompleted
             )
         }
     }
@@ -379,7 +380,7 @@ class WooShippingNetworkingMapper @Inject constructor(
                     quantity = it.quantity,
                     value = it.value.toDouble(),
                     weight = it.weight.toDouble(),
-                    hsTariffNumber = it.hsTariffNumber,
+                    hsTariffNumber = it.hsTariffNumber.replace(Regex("""\D"""), ""),
                     originCountry = it.originCountryCode
                 )
             }

@@ -14,16 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -37,7 +32,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
 @Composable
@@ -46,9 +40,11 @@ fun WooPosEligibilityScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
     val viewModel: WooPosEligibilityViewModel = hiltViewModel()
+
     LaunchedEffect(Unit) {
         viewModel.initialize(initialReason)
     }
+
     val retryState = viewModel.retryState.collectAsState().value
     WooPosEligibilityScreen(
         onNavigationEvent = onNavigationEvent,
@@ -73,16 +69,6 @@ fun WooPosEligibilityScreen(
         onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
     }
 
-    val lastIneligibleReason = remember {
-        mutableStateOf<WooPosLaunchability.NonLaunchabilityReason?>(null)
-    }
-
-    LaunchedEffect(retryState) {
-        if (retryState is WooPosEligibilityRetryState.Ineligible) {
-            lastIneligibleReason.value = retryState.reason
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -105,9 +91,15 @@ fun WooPosEligibilityScreen(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
 
-        lastIneligibleReason.value?.let { reason ->
+        val suggestionText = when (retryState) {
+            is WooPosEligibilityRetryState.Ineligible -> retryState.suggestionText
+            is WooPosEligibilityRetryState.Loading -> retryState.suggestionText
+            is WooPosEligibilityRetryState.Eligible -> null
+        }
+
+        suggestionText?.let { text ->
             WooPosText(
-                text = getSuggestionText(reason),
+                text = text,
                 style = WooPosTypography.BodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.width(547.dp)
@@ -138,50 +130,17 @@ fun WooPosEligibilityScreen(
     }
 }
 
-@Composable
-private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason): String {
-    return when (reason) {
-        WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound ->
-            stringResource(
-                id = R.string.woopos_eligibility_reason_woocommerce_plugin_not_found
-            )
-        WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion ->
-            stringResource(
-                id = R.string.woopos_eligibility_reason_unsupported_woocommerce_version,
-                WooPosCanBeLaunchedInTab.MINIMUM_SUPPORTED_WC_VERSION
-            )
-        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable ->
-            stringResource(R.string.woopos_eligibility_reason_check_connection)
-        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled ->
-            stringResource(R.string.woopos_eligibility_reason_feature_switch_disabled)
-        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> {
-            val supportedCurrencies = WooPosCanBeLaunchedInTab.SUPPORTED_COUNTRY_CURRENCY_PAIRS
-                .map { (_, currency) -> currency.uppercase() }
-                .joinToString(", ")
-            stringResource(
-                id = R.string.woopos_eligibility_reason_unsupported_currency,
-                supportedCurrencies
-            )
-        }
-        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected ->
-            stringResource(R.string.woopos_eligibility_reason_check_connection)
-    }
-}
-
-private class NonLaunchabilityReasonProvider : PreviewParameterProvider<WooPosLaunchability.NonLaunchabilityReason> {
-    override val values = WooPosLaunchability.NonLaunchabilityReason.entries.asSequence()
-}
-
 @WooPosPreview
 @Composable
-fun WooPosEligibilityScreenPreview(
-    @PreviewParameter(NonLaunchabilityReasonProvider::class)
-    reason: WooPosLaunchability.NonLaunchabilityReason
-) {
+fun WooPosEligibilityScreenPreview() {
     WooPosTheme {
         WooPosEligibilityScreen(
             onNavigationEvent = {},
-            retryState = WooPosEligibilityRetryState.Ineligible(reason),
+            retryState = WooPosEligibilityRetryState.Ineligible(
+                "The POS system is not available for your store's currency. " +
+                    "In United States, it currently supports only USD. " +
+                    "Please check your store currency settings or contact support for assistance."
+            ),
             onRetry = {}
         )
     }

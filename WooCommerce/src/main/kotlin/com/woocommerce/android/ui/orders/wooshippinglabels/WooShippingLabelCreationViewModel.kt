@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
@@ -45,8 +46,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBann
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.createDefaultCustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.domain.DownloadAndPrintInvoiceUseCase
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -101,7 +103,6 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.io.File
-import java.math.BigDecimal
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -118,13 +119,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val fetchOriginAddresses: FetchOriginAddresses,
     private val getShippingRates: GetShippingRates,
     private val purchaseShippingLabel: PurchaseShippingLabel,
+    private val markOrderAsComplete: MarkOrderAsComplete,
     observeAccountSettings: ObserveAccountSettings,
     private val fetchAccountSettings: FetchAccountSettings,
     private val addressValidationHelper: AddressValidationHelper,
     private val verifyDestinationAddress: VerifyDestinationAddress,
     private val observeShippingLabelNotice: ObserveShippingLabelNotice,
     private val shouldRequireCustoms: ShouldRequireCustomsForm,
-    private val shouldRequireITN: ShouldRequireITN,
+    private val validateITN: ValidateITN,
     private val fetchShippingLabelFile: FetchShippingLabelFile,
     private val observeShippingLabelStatus: ObserveShippingLabelStatus,
     private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase,
@@ -191,7 +193,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { getDestinationAddress() }
         launch { trackScreenShownEvent() }
         launch { getSavedShipments() }
-        launch { setDefaultPaperSize() }
+        launch { setAccountDefaults() }
         launch { getShippingAddresses() }
         launch { getOrderInformation() }
         launch { observePackageWeight() }
@@ -280,6 +282,27 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 // If result has a label model update the label with it. Otherwise, just update the status.
                 val newLabel = result.shippingLabelModel ?: shipment.label.copy(status = result.status)
                 updateShipment(shipmentId, shipment.copy(label = newLabel.copy(originAddress = originAddress)))
+
+                if (result.status == ShippingLabelStatus.PURCHASED && uiState.value.markOrderComplete) {
+                    markOrderAsComplete(navArgs.orderId).fold(
+                        onSuccess = {
+                            analyticsTracker.track(
+                                stat = AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED,
+                                properties = mapOf(AnalyticsTracker.KEY_IS_REVAMPED_FLOW to true)
+                            )
+                        },
+                        onFailure = {
+                            triggerEvent(Event.ShowSnackbar(R.string.woo_shipping_labels_order_completion_error))
+                            analyticsTracker.track(
+                                stat = AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED,
+                                properties = mapOf(AnalyticsTracker.KEY_IS_REVAMPED_FLOW to true),
+                                errorType = (it as? WooException)?.error?.type?.name,
+                                errorContext = this@WooShippingLabelCreationViewModel.javaClass.simpleName,
+                                errorDescription = (it as? WooException)?.error?.message
+                            )
+                        }
+                    )
+                }
             }.launchIn(this)
         }
     }
@@ -295,7 +318,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val orderShippingEmail = order.shippingAddress.email.ifBlank { order.billingAddress.email }
 
             if (labelDestination == null) {
-                if (destinationAddress.value == WooShippingAddresses.EMPTY) {
+                if (destinationAddress.value == DestinationShippingAddress.EMPTY) {
                     val defaultDestination = DestinationShippingAddress(
                         address = order.shippingAddress.copy(email = orderShippingEmail),
                         isVerified = false
@@ -329,9 +352,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         order.drop(1).collectLatest { order -> shipments.value = getShipments(order) }
     }
 
-    private suspend fun setDefaultPaperSize() {
-        val paperSize = accountSettings.first()?.paperSize ?: WooShippingLabelPaperSize.LABEL
-        uiState.update { it.copy(paperSizeOption = paperSize) }
+    private suspend fun setAccountDefaults() {
+        accountSettings.first()?.let { accountSettings ->
+            uiState.update {
+                it.copy(
+                    paperSizeOption = accountSettings.paperSize,
+                    markOrderComplete = accountSettings.lastOrderCompleted
+                )
+            }
+        }
     }
 
     @Suppress("ComplexCondition")
@@ -480,16 +509,20 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private suspend fun observeCustomsDataChanges() {
         combine(
             shippingAddresses,
-            customsFormDataFlow.filter { it.isNotEmpty() },
-            shipmentItems.filter { it.isNotEmpty() },
-            uiState.map { it.selectedIndex }.distinctUntilChanged()
-        ) { addresses, customsData, shipmentItems, selectedIndex ->
-            val selectedAddress = addresses.getOrNull(selectedIndex)
-            val customsRequired = selectedAddress != null && shouldRequireCustoms(selectedAddress)
+            customsFormDataFlow.filter { it.isNotEmpty() }
+        ) { addresses, customsData ->
+            customsData.mapIndexed { index, currentItemCustomsData ->
+                val shipment = shipments.value.getOrNull(index)
+                val selectedAddress = addresses.getOrNull(index)
+                val customsRequired = selectedAddress != null && shouldRequireCustoms(selectedAddress)
 
-            shipmentItems.mapIndexed { index, shippableItemModelList ->
-                val currentItemCustomsData = customsData[index]
-                val itnMissing = currentItemCustomsData?.itn.isNullOrEmpty() && shippableItemModelList.isItnRequired()
+                val destinationCountryCode = selectedAddress?.shipTo?.address?.country?.code.orEmpty()
+                val itnMissing = (currentItemCustomsData ?: shipment?.items?.createDefaultCustomsData())?.let {
+                    validateITN(
+                        customsData = it,
+                        destinationCountry = destinationCountryCode
+                    )
+                } is ValidateITN.ITNValidationResult.Missing
 
                 when {
                     customsRequired && itnMissing -> ItnMissing
@@ -579,7 +612,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             else -> {
                 val sortOrder = selectedRatesSortOrdersFlow.value[index]
                 updateState(ShippingRatesState.Loading(sortOrder))
-                val shippingRatesResult = getShippingRates(
+                getShippingRates(
                     shippingRatesInfo.orderId,
                     shippingRatesInfo.packageSelected,
                     shippingRatesInfo.shipTo,
@@ -588,16 +621,18 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     shippingRatesInfo.currencyCode,
                     shippingRatesInfo.customsData,
                     shippingRatesInfo.hazmatSelection
-                )
-                if (shippingRatesResult.isSuccess && shippingRatesResult.getOrThrow().isNotEmpty()) {
-                    shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
-                        set(index, shippingRatesResult.getOrThrow())
+                ).fold(
+                    onSuccess = { result ->
+                        shippingRatesListFlow.value = shippingRatesListFlow.value.toMutableList().apply {
+                            set(index, result)
+                        }
+                        trackShippingRatesLoading(isSuccess = true)
+                    },
+                    onFailure = { exception ->
+                        updateState(ShippingRatesState.Error)
+                        trackShippingRatesLoading(isSuccess = false, error = exception.message)
                     }
-                    trackShippingRatesLoading(isSuccess = true)
-                } else {
-                    updateState(ShippingRatesState.Error)
-                    trackShippingRatesLoading(isSuccess = false, error = shippingRatesResult.exceptionOrNull()?.message)
-                }
+                )
                 selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }
             }
         }
@@ -673,6 +708,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 purchaseSectionUI = PurchaseSectionUI(
                     isVisible = !shipmentUIList[uiState.selectedIndex].purchased &&
                         shippingRatesStatesFlow.value[uiState.selectedIndex] is ShippingRatesState.DataState,
+                    isOrderAlreadyCompleted = order.status == Order.Status.Completed,
                     markOrderComplete = uiState.markOrderComplete,
                     formattedPrice = shipmentUIList[uiState.selectedIndex].shipmentCostUI?.formattedTotalPrice,
                     onMarkOrderCompleteChange = ::onMarkOrderCompleteChange,
@@ -695,7 +731,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
         }
 
-        shippingAddresses.updateSize(WooShippingAddresses.EMPTY)
+        val originAddresses = shippingAddresses.value.first().originAddresses
+        shippingAddresses.updateSize(
+            WooShippingAddresses.EMPTY.copy(originAddresses = originAddresses, shipFrom = originAddresses.first())
+        )
         selectedPackagesFlow.updateSize(null)
         customsFormDataFlow.updateSize(null)
         packageWeightsFlow.updateSize(null)
@@ -731,9 +770,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         // Find the shipment with the given labelId
         val shipmentIndex = shipments.value.indexOfFirst { it.label?.labelId == labelId }
 
-        // If the shipment is found, reset its purchased state
+        // If the shipment is found, reset its state
         if (shipmentIndex != -1) {
             updateShipment(shipmentIndex, shipments.value[shipmentIndex].copy(purchased = false, label = null))
+            selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(shipmentIndex, null) }
+            selectedPackagesFlow.value = selectedPackagesFlow.value.toMutableList().apply { set(shipmentIndex, null) }
         }
     }
 
@@ -976,9 +1017,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         launch {
             val event = NavigateToCustomsFormEdit(
-                shippableItems = shipmentItems.value[selectedShipmentIndex],
                 destinationCountryCode = destinationCountryCode,
-                customData = customsFormDataFlow.value[selectedShipmentIndex],
+                customData = customsFormDataFlow.value[selectedShipmentIndex]
+                    ?: shipments.value[selectedShipmentIndex].items.createDefaultCustomsData(),
                 storeOptions = accountSettings.first()?.storeOptions ?: StoreOptionsModel.EMPTY
             )
             triggerEvent(event)
@@ -1124,18 +1165,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         triggerEvent(NavigateToPaymentMethodEdit)
     }
 
-    private fun List<ShippableItemModel>.isItnRequired(): Boolean {
-        val totalShippingValue = map { it.shippingTotalValue }
-            .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, current -> acc + current }
-            ?: BigDecimal.ZERO
-
-        val destinationCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)
-            ?.shipTo?.address?.country?.code.orEmpty()
-
-        return shouldRequireITN(destinationCountryCode, totalShippingValue)
-    }
-
     data class NavigatePackageSelection(val storeOptions: StoreOptionsModel) : Event()
 
     data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
@@ -1154,9 +1183,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     ) : Parcelable
 
     data class NavigateToCustomsFormEdit(
-        val shippableItems: List<ShippableItemModel>,
         val destinationCountryCode: String,
-        val customData: CustomsData?,
+        val customData: CustomsData,
         val storeOptions: StoreOptionsModel
     ) : Event()
 
@@ -1371,6 +1399,7 @@ data class ShipmentPrintLabelUI(
 
 data class PurchaseSectionUI(
     val isVisible: Boolean,
+    val isOrderAlreadyCompleted: Boolean,
     val markOrderComplete: Boolean,
     val formattedPrice: String?,
     val onMarkOrderCompleteChange: (Boolean) -> Unit,

@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-02 16:54:04+0000
+Translation-Revision-Date: 2025-07-16 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">טיפול נוסף</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">משלוח ביום שבת</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">ניטרליות פליטת פחמן</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">נדרשת חתימה של אדם מבוגר</string>
+    <string name="woo_shipping_rate_option_signature_required">נדרשת חתימה</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">%1$s+</string>
+    <string name="woo_shipping_labels_package_saving_error">אין אפשרות לשמור את החבילה</string>
+    <string name="woo_shipping_labels_package_removing_error">אין אפשרות להסיר את החבילה</string>
+    <string name="woopos_eligibility_retry_check_label">לנסות שוב</string>
+    <string name="woopos_eligibility_exit_pos_label">לצאת מ-POS</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• יש לעיין בהוראות של סורק הברקודים של Bluetooth כדי להגדיר את מצב HID. בדרך כלל, יש לסרוק ברקוד מיוחד במדריך למשתמש.</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">הסורק לא שלח תו של סוף שורה</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">הקוד הסרוק קצר מדי</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">⁦%1$s⁩ (עמלה בסיסית)</string>
+    <string name="shipping_label_paper_size_a4">A4‏ (210 x‏ 297 מ\"מ)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">להציג תווית משלוח שנרכשה</string>
     <string name="wpp_shipping_ups_tos_accept">לאשר ולהמשיך</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">בנוסף, הסכמתי ניתנת &lt;a href=\"ups-technology-agreement\"&gt;להסכם הטכנולוגיה של UPS®‎&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">לא אשלח &lt;a href=\"ups-prohibited-items\"&gt;פריטים אסורים&lt;/a&gt; ששליחתם אסורה לפי UPS®‎, ולא פריטים שנתונים לרגולוציה ללא ההרשאות הנדרשות.</string>
@@ -49,7 +66,6 @@ Language: he_IL
     <string name="woopos_dialog_barcode_info_quinary_message">הסורק מדמה מקלדת, לכן לעיתים הוא מונע הצגה של מקלדת התוכנה, למשל בחיפוש. יש להקיש על סמל המקלדת כדי להציג שוב את מקלדת התוכנה.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• יש לסרוק את הברקוד כאשר נמצאים ברשימת הפריטים כדי להוסיף מוצרים לעגלת הקניות.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• יש לחבר את סורק הברקוד בהגדרות של Bluetooth במערכת.</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• יש לעיין בהוראות של סורק הברקודים של Bluetooth כדי להגדיר את מצב HID.</string>
     <string name="woopos_dialog_barcode_info_more_details_link">פרטים נוספים</string>
     <string name="woopos_dialog_barcode_info_primary_message">• יש להגדיר ברקודים בשדה \"GTIN, UPC, EAN, ISBN\" שבמקטע \'מוצרים\' &gt; \'פרטי המוצר\' &gt; \'מלאי\'. </string>
     <string name="woopos_dialog_barcode_info_intro_message">אפשר לסרוק ברקוד באמצעות סורק חיצוני כדי לבנות עגלת קניות במהירות.</string>

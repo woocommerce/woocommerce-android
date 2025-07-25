@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -13,6 +15,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingL
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowPackageTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPackagesFromStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.PackageDAO
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier.DHL
@@ -36,6 +39,11 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
@@ -158,6 +166,45 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when saveAsTemplate is true and saving succeed, track WCS_PACKAGE_SELECTION_STEP event with saving_success`() =
+        testBlocking {
+            whenever(packageRepository.createCustomPackage(any(), any())).thenReturn(
+                WooResult(
+                    listOf(
+                        PackageDAO(
+                            id = "1",
+                            name = "Saved Package 1",
+                            dimensions = "dimensions",
+                            weight = "weight",
+                            isLetter = false,
+                            dimensionUnit = "cm",
+                            weightUnit = "kg",
+                            saved = true
+                        )
+                    )
+                )
+            )
+
+            sut.onAddCustomPackageClick(savePackageAsTemplate = true)
+
+            verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "saving_success"))
+        }
+
+    @Test
+    fun `when saveAsTemplate is true and saving fails, track WCS_PACKAGE_SELECTION_STEP event with saving_failed`() =
+        testBlocking {
+            val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR)
+            whenever(packageRepository.createCustomPackage(any(), any())).thenReturn(WooResult(error))
+
+            sut.onAddCustomPackageClick(savePackageAsTemplate = true)
+
+            verify(tracker).track(
+                AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
+                mapOf(KEY_STATE to "saving_failed", KEY_ERROR to error.type.toString())
+            )
+        }
+
+    @Test
     fun `onAddPackageClick skips createCustomPackage when saveAsTemplate is false`() = testBlocking {
         sut.onAddCustomPackageClick(savePackageAsTemplate = false)
 
@@ -261,7 +308,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onSavedPackageSelected(package1, true)
@@ -315,7 +362,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         sut.viewState.observeForever { lastViewState = it }
         sut.onCarrierPackageSelected(package1, true)
@@ -400,7 +447,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
 
         sut.viewState.observeForever { lastViewState = it }
@@ -457,7 +504,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 fetchPackages,
                 updateSavedCarrierPackages,
                 packageRepository,
-                mock()
+                tracker
             )
             advanceUntilIdle()
 
@@ -519,7 +566,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         advanceUntilIdle()
 
@@ -568,7 +615,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         advanceUntilIdle()
 
@@ -582,6 +629,54 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         // Verify it's removed from saved packages
         val savedPackages = lastViewState?.packagesData?.savedPackages
         assertThat(savedPackages).isEmpty()
+    }
+
+    @Test
+    fun `when unstarring a package fails, then track event with removing_failed property`() = testBlocking {
+        val carrier: Carrier = USPS
+        val packageToUnstar = PackageData(
+            id = "1",
+            name = "Package 1 - Carrier 1",
+            dimensions = "10 x 10 x 10",
+            weight = "10",
+            isSelected = false,
+            isLetter = false,
+            isStarred = true // Initially starred
+        )
+        val initialCarrierPackages = mapOf(
+            carrier to listOf(CarrierPackageGroup(groupName = "Group A", packages = listOf(packageToUnstar)))
+        )
+        val initialSavedPackages = listOf(packageToUnstar)
+
+        whenever(fetchPackages()).thenReturn(
+            Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
+                carrierPackages = initialCarrierPackages,
+                savedPackages = initialSavedPackages
+            )
+        )
+        val wooError = WooError(type = WooErrorType.API_ERROR, original = GenericErrorType.UNKNOWN)
+        val wooException = WooException(wooError)
+        whenever(updateSavedCarrierPackages(any(), any(), any(), any())).thenReturn(Result.failure(wooException))
+
+        sut = WooShippingLabelPackageCreationViewModel(
+            SavedStateHandle(),
+            selectedSite,
+            resourceProvider,
+            fetchPackages,
+            updateSavedCarrierPackages,
+            packageRepository,
+            tracker
+        )
+        advanceUntilIdle()
+
+        // Unstar a package
+        sut.onCarrierPackageStarred(packageToUnstar, false)
+        advanceUntilIdle()
+
+        // Verify WCS_PACKAGE_SELECTION_STEP event is tracked with "removing_failed" property
+        val expectedProperty = mapOf(KEY_STATE to "removing_failed", KEY_ERROR to WooErrorType.API_ERROR.name)
+        verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, expectedProperty)
     }
 
     @Test
@@ -616,7 +711,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             fetchPackages,
             updateSavedCarrierPackages,
             packageRepository,
-            mock()
+            tracker
         )
         advanceUntilIdle()
 

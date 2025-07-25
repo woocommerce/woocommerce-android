@@ -762,17 +762,12 @@
         android:name="com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormFragment"
         android:label="WooShippingLabelCustomsFormFragment">
         <argument
-            android:name="shippableItems"
-            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel[]" />
-
-        <argument
             android:name="destinationCountryCode"
             app:argType="string" />
 
         <argument
             android:name="customsData"
-            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData"
-            app:nullable="true" />
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData" />
 
         <argument
             android:name="storeOptions"

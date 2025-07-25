@@ -38,7 +38,7 @@ class GetWooCorePluginCachedVersionTest : BaseUnitTest() {
         val siteModel = mock<SiteModel>()
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
         whenever(
-            wooCommerceStore.getSitePlugin(
+            wooCommerceStore.getActiveSitePlugin(
                 siteModel,
                 WooCommerceStore.WooPlugin.WOO_CORE
             )
@@ -61,7 +61,7 @@ class GetWooCorePluginCachedVersionTest : BaseUnitTest() {
             on { this.version }.thenReturn(version)
         }
         whenever(
-            wooCommerceStore.getSitePlugin(
+            wooCommerceStore.getActiveSitePlugin(
                 siteModel,
                 WooCommerceStore.WooPlugin.WOO_CORE
             )

@@ -4465,25 +4465,27 @@
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Your WooCommerce version is not supported. The POS system requires WooCommerce version %1$s or above. Please update WooCommerce to the latest version.</string>
     <string name="woopos_eligibility_reason_check_connection">Check your internet connection and try relaunching the app. If the issue persists, please contact support.</string>
     <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale must be enabled to proceed. Please enable the POS feature from your WordPress admin under WooCommerce settings &gt; Advanced &gt; Features.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency">The POS system is not available for your store’s currency. It currently supports only %1$s. Please check your store currency settings or contact support for assistance.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">The POS system is not available for your store\'s currency. In %1$s, it currently supports only %2$s. Please check your store currency settings or contact support for assistance.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">The POS system is not available for your store’s currency. Please check your store currency settings or contact support for assistance.</string>
     <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
-
+    <string name="woopos_eligibility_screen_US_country_name">the United States</string>
+    <string name="woopos_eligibility_screen_UK_country_name">the United Kingdom</string>
 
     <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
     <string name="woopos_scanning_setup_device_selection_title">Set up a barcode scanner</string>
     <string name="woopos_scanning_setup_device_selection_message">Select a model from the list:</string>
-    <string name="woopos_scanning_setup_hid_title">Scanner set up</string>
-    <string name="woopos_scanning_setup_hid_message">Use your barcode scanner to scan the QR code below to enable Bluetooth HID mode.</string>
-    <string name="woopos_scanning_setup_scanner_pair_mode_title">Scanner set up</string>
-    <string name="woopos_scanning_setup_scanner_pair_mode_message">Use your barcode scanner to scan the QR code below to enter pairing mode.</string>
+    <string name="woopos_scanning_setup_hid_title">Scanner setup</string>
+    <string name="woopos_scanning_setup_hid_message">Use your barcode scanner to scan the code below to enable Bluetooth HID mode.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">Scanner setup</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">Use your barcode scanner to scan the code below to enter pairing mode.</string>
     <string name="woopos_scanning_setup_pair_your_scanner_title">Pair your scanner</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
     <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
     <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
     <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
     <string name="woopos_scanning_setup_more_information">How to set up barcodes on products</string>
-    <string name="woopos_scanning_setup_info_title">Scanner set up</string>
+    <string name="woopos_scanning_setup_info_title">Scanner setup</string>
     <string name="woopos_scanning_setup_info_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
     <string name="woopos_scanning_setup_info_bullet_1">Refer to your bluetooth barcode scanner in System Bluetooth settings.</string>
     <string name="woopos_scanning_setup_info_bullet_2">Scan barcodes while on the item list to add products to the cart.</string>
@@ -4505,6 +4507,7 @@
     <string name="woopos_scanning_setup_button_done">Done</string>
     <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
     <string name="woopos_scanning_setup_device_other">Other</string>
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4615,14 +4618,17 @@
     <string name="woo_shipping_labels_customs_other_error_message">Type must not be empty</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Invalid ITN format</string>
     <string name="woo_shipping_labels_customs_itn_required_error">ITN is required</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">For shipments over $2,500, you need to obtain a 14-digit AES ITN for U.S. export reporting verification.</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">For shipments over $2,500, you need to obtain a 14-digit AES ITN for U.S. export reporting verification.</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">International Transaction Number is required for shipping items valued over $2,500 per tariff number.\nProducts with tariff number %1$s add up to more than $2,500.</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">International Transaction Number is required for shipments to the destination country.</string>
     <string name="woo_shipping_labels_customs_product_details_title">Product Details</string>
     <string name="woo_shipping_labels_customs_product_details_description">Description</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Missing Description</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS tariff number</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Missing tariff number</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">The tariff number must be between 6 and 12 digits long</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">Value per unit</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Weight per unit</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">Weight must be greater than zero</string>
     <string name="woo_shipping_labels_customs_product_details_value_required">Value required</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country">Origin country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Missing country</string>
@@ -4674,6 +4680,7 @@
     <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
     <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_labels_order_completion_error">Couldn\'t mark the order as complete</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
     <string name="woo_shipping_address_save_changes">Save changes</string>

@@ -25,10 +25,13 @@ androidx-recyclerview-main = '1.3.2'
 androidx-recyclerview-selection = '1.1.0'
 androidx-room = "2.6.1"
 androidx-security-crypto = "1.0.0"
-androidx-test-espresso = '3.4.0'
-androidx-test-ext = '1.1.5'
-androidx-test-main = '1.4.0'
-androidx-test-uiautomator = '2.2.0'
+androidx-test-core = '1.6.1'
+androidx-test-espresso = '3.6.1'
+androidx-test-ext = '1.2.1'
+androidx-test-rules = '1.6.1'
+androidx-test-runner = '1.6.2'
+androidx-test-orchestrator = '1.5.1'
+androidx-test-uiautomator = '2.3.0'
 androidx-transition = '1.5.1'
 androidx-wear-compose = '1.4.0'
 androidx-wear-tiles = '1.3.0'
@@ -165,10 +168,10 @@ androidx-security-crypto = { module = "androidx.security:security-crypto", versi
 androidx-test-espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "androidx-test-espresso" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext" }
-androidx-test-main-core = { group = "androidx.test", name = "core", version.ref = "androidx-test-main" }
-androidx-test-main-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test-main" }
-androidx-test-main-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-main" }
-androidx-test-orchestrator = { group = "androidx.test", name = "orchestrator", version.ref = "androidx-test-main" }
+androidx-test-main-core = { group = "androidx.test", name = "core", version.ref = "androidx-test-core" }
+androidx-test-main-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test-rules" }
+androidx-test-main-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
+androidx-test-orchestrator = { group = "androidx.test", name = "orchestrator", version.ref = "androidx-test-orchestrator" }
 androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidx-test-uiautomator" }
 androidx-transition = { group = "androidx.transition", name = "transition", version.ref = "androidx-transition" }
 androidx-wear-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "androidx-wear-compose" }
