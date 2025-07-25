@@ -784,7 +784,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onSelectPackageClicked() {
-        triggerEvent(NavigatePackageSelection)
+        launch {
+            triggerEvent(
+                NavigatePackageSelection(
+                    storeOptions = accountSettings.first()?.storeOptions ?: StoreOptionsModel.EMPTY
+                )
+            )
+        }
     }
 
     fun onUPSTermsAccepted() {
@@ -968,7 +974,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val destinationCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)
             ?.shipTo?.address?.country?.code.orEmpty()
 
-        viewModelScope.launch {
+        launch {
             val event = NavigateToCustomsFormEdit(
                 shippableItems = shipmentItems.value[selectedShipmentIndex],
                 destinationCountryCode = destinationCountryCode,
@@ -1130,7 +1136,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         return shouldRequireITN(destinationCountryCode, totalShippingValue)
     }
 
-    data object NavigatePackageSelection : Event()
+    data class NavigatePackageSelection(val storeOptions: StoreOptionsModel) : Event()
 
     data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
     data class NavigateToDestinationAddressEdit(

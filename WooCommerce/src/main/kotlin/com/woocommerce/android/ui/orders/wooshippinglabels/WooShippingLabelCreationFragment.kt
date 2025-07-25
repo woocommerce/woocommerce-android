@@ -76,7 +76,9 @@ class WooShippingLabelCreationFragment : BaseFragment() {
             when (event) {
                 is NavigatePackageSelection ->
                     WooShippingLabelCreationFragmentDirections
-                        .actionWooShippingLabelCreationFragmentToWooShippingLabelPackageCreationFragment()
+                        .actionWooShippingLabelCreationFragmentToWooShippingLabelPackageCreationFragment(
+                            storeOptions = event.storeOptions
+                        )
                         .let { findNavController().navigateSafely(it) }
 
                 is WooShippingLabelCreationViewModel.NavigateToOriginAddressEdit ->
