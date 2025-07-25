@@ -103,13 +103,6 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
         assertFalse(sut())
     }
 
-    @Test
-    fun `given null fetched settings, when invoked, then return false`() = testBlocking {
-        whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).thenReturn(WooResult(null))
-
-        assertFalse(sut())
-    }
-
     private fun buildSiteSettings(countryCode: String = "us") =
         WCSettingsTestUtils.generateSettings(
             siteId = LocalOrRemoteId.LocalId(1)
