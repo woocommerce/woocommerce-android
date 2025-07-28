@@ -45,7 +45,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
 
         sut = WooPosCanBeLaunchedInTab(
             selectedSite = selectedSite,
-            getWooCoreVersion = getWooCoreVersion,
+            getWooCoreCachedVersion = getWooCoreVersion,
             fetchWooCoreVersion = fetchWooCoreVersion,
             wooCommerceStore = wooCommerceStore,
             isRemotelyEnabled = isRemotelyEnabled

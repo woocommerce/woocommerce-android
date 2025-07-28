@@ -22,8 +22,7 @@ class WooPosTabShouldBeVisible @Inject constructor(
 
         if (!isScreenSizeAllowed()) return@withContext false
 
-        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite)
-            ?: wooCommerceStore.fetchSiteGeneralSettings(selectedSite).model
+        val siteSettings = wooCommerceStore.fetchSiteGeneralSettings(selectedSite).model
 
         if (siteSettings == null) return@withContext false
 
