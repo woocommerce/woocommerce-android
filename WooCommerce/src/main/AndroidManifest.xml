@@ -243,7 +243,7 @@
 
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="barcode_ui,ocr" />
+            android:value="barcode_ui,ocr,subject_segment" />
 
         <meta-data
             android:name="io.sentry.traces.activity.enable"
