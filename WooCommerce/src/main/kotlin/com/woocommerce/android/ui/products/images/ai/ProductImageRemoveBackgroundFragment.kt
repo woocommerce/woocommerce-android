@@ -120,7 +120,7 @@ fun ProductImageRemoveBackgroundScreenPreview() {
     WooThemeWithBackground {
         val image = Product.Image(
             id = 1L,
-            source = "https://example.com/sample-image.jpg",
+            source = "https://ma.tt/",
             name = "Sample Image",
             isCoverImage = true,
             dateCreated = Date.from(Instant.now()),
