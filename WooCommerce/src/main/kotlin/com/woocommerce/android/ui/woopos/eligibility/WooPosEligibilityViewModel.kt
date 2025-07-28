@@ -88,12 +88,12 @@ class WooPosEligibilityViewModel @Inject constructor(
                 val countryName = getCountryName()
                 if (countryName != null && supportedCurrency != null) {
                     resourceProvider.getString(
-                        R.string.woopos_eligibility_reason_unsupported_currency,
+                        R.string.woopos_eligibility_reason_unsupported_currency_country_pair,
                         countryName,
                         supportedCurrency
                     )
                 } else {
-                    ""
+                    resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_currency_generic)
                 }
             }
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected ->

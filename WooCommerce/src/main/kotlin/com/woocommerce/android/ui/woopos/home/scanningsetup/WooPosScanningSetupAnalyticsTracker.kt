@@ -102,6 +102,7 @@ class WooPosScanningSetupAnalyticsTracker @Inject constructor(
         return when (this) {
             BarcodeReaderDevice.TERA_1200 -> "tera_1200"
             BarcodeReaderDevice.STAR_BSH_20B -> "star_bsh_20b"
+            BarcodeReaderDevice.NETUM_1228BC -> "netum_1228bc"
             BarcodeReaderDevice.OTHER -> "other"
         }
     }
