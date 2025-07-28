@@ -86,7 +86,7 @@ class ProductImageViewerFragment :
         toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
-        toolbar.inflateMenu(R.menu.menu_product_delete_image)
+        toolbar.inflateMenu(R.menu.menu_product_image)
         toolbar.menu.findItem(R.id.menu_delete_image).isVisible = navArgs.isDeletingAllowed
     }
 
