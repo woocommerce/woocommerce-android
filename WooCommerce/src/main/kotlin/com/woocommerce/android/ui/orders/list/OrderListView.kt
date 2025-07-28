@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import androidx.core.view.isVisible
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.databinding.OrderListViewBinding
@@ -106,6 +105,8 @@ class OrderListView @JvmOverloads constructor(
     fun onFragmentSavedInstanceState() = binding.ordersList.layoutManager?.onSaveInstanceState()
 
     fun setLoadingMoreIndicator(active: Boolean) {
-        binding.loadMoreProgressbar.isVisible = active
+        if (::ordersAdapter.isInitialized) {
+            ordersAdapter.setLoadingMoreIndicator(active)
+        }
     }
 }

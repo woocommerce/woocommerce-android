@@ -35,20 +35,38 @@ class OrderListAdapter(
         private const val VIEW_TYPE_ORDER_ITEM = 0
         private const val VIEW_TYPE_SECTION_HEADER = 2
         private const val VIEW_TYPE_LOADING = 1
+        private const val VIEW_TYPE_LOADING_MORE = 3
     }
 
     var activeOrderStatusMap: Map<String, WCOrderStatusModel> = emptyMap()
     var allOrderIds: List<Long> = listOf()
     var tracker: SelectionTracker<Long>? = null
     var orderIdAndPosition = mutableMapOf<Long, Int>()
+    private var isLoadingMore = false
 
     override fun getItemViewType(position: Int): Int {
+        if (isLoadingMore && position == super.getItemCount()) {
+            return VIEW_TYPE_LOADING_MORE
+        }
+
         return when (getItem(position)) {
             is OrderListItemUI -> VIEW_TYPE_ORDER_ITEM
             is LoadingItem -> VIEW_TYPE_LOADING
             is SectionHeader -> VIEW_TYPE_SECTION_HEADER
             null -> VIEW_TYPE_LOADING // Placeholder by paged list
         }
+    }
+
+    override fun getItemCount(): Int {
+        val baseCount = super.getItemCount()
+        return if (isLoadingMore) baseCount + 1 else baseCount
+    }
+
+    override fun getItem(position: Int): OrderListItemUIType? {
+        if (isLoadingMore && position == super.getItemCount()) {
+            return null
+        }
+        return super.getItem(position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -67,6 +85,11 @@ class OrderListAdapter(
 
             VIEW_TYPE_LOADING -> {
                 val view = inflater.inflate(R.layout.skeleton_order_list_item_auto, parent, false)
+                LoadingViewHolder(view)
+            }
+
+            VIEW_TYPE_LOADING_MORE -> {
+                val view = inflater.inflate(R.layout.order_list_loading_more_item, parent, false)
                 LoadingViewHolder(view)
             }
 
@@ -121,15 +144,22 @@ class OrderListAdapter(
     }
 
     override fun submitList(pagedList: PagedList<OrderListItemUIType>?) {
+        val oldItemCount = super.getItemCount()
+        val hadLoadingIndicator = isLoadingMore
+
         super.submitList(pagedList)
 
-        allOrderIds = getCurrentList()?.toList()?.mapNotNull {
+        allOrderIds = currentList?.toList()?.mapNotNull {
             if (it is OrderListItemUI) {
                 it.orderId
             } else {
                 null
             }
         } ?: listOf()
+
+        if (hadLoadingIndicator && !isLoadingMore && super.getItemCount() > oldItemCount) {
+            notifyItemRemoved(oldItemCount)
+        }
     }
 
     fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
@@ -164,6 +194,20 @@ class OrderListAdapter(
             sharedView = null,
             startPaymentsFlow = startPaymentsFlow
         )
+    }
+
+    fun setLoadingMoreIndicator(active: Boolean) {
+        if (isLoadingMore != active) {
+            val wasLoadingMore = isLoadingMore
+            isLoadingMore = active
+
+            if (wasLoadingMore) {
+                // Don't immediately remove - let submitList handle it for smoother animation
+                // This will be handled in submitList() when new data arrives
+            } else {
+                notifyItemInserted(super.getItemCount())
+            }
+        }
     }
 
     private inner class OrderItemUIViewHolder(val viewBinding: OrderListItemBinding) :

@@ -28,16 +28,6 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <ProgressBar
-            android:id="@+id/load_more_progressbar"
-            style="@style/Woo.ProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/major_75"
-            android:visibility="gone"
-            tools:visibility="visible" />
     </RelativeLayout>
 
 </merge>
