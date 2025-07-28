@@ -5,6 +5,9 @@
 23.0
 -----
 
+22.9.1
+-----
+- [*] POS: Barcode scanning on the order success screen now opens the cart and adds an item to the cart [https://github.com/woocommerce/woocommerce-android/pull/14382]
 
 22.9
 -----
