@@ -139,6 +139,33 @@ class WooPosEligibilityViewModelTest {
         verify(tracker).track(IneligibleUIRetryTapped(reason))
     }
 
+    @Test
+    fun `given retry results in different ineligible reason, then IneligibleUIShown event is tracked for new reason`() = runTest {
+        // GIVEN
+        val initialReason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val retryReason = WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound
+        val tracker: WooPosAnalyticsTracker = mock()
+        whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(retryReason))
+        val sut = WooPosEligibilityViewModel(
+            canBeLaunchedInTab,
+            tracker,
+            mockResourceProvider,
+            mockStoreCountryProvider,
+            mockStoreCountryCodeProvider
+        )
+
+        sut.initialize(initialReason)
+        reset(tracker)
+
+        // WHEN
+        sut.retryEligibilityCheckTapped()
+        advanceUntilIdle()
+
+        // THEN
+        verify(tracker).track(IneligibleUIRetryTapped(initialReason))
+        verify(tracker).track(IneligibleUIShown(retryReason))
+    }
+
     private suspend fun createSut(): WooPosEligibilityViewModel {
         whenever(mockStoreCountryProvider()).thenReturn("United States")
         whenever(mockStoreCountryCodeProvider()).thenReturn("us")
