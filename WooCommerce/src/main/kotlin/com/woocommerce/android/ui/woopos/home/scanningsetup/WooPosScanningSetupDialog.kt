@@ -34,6 +34,9 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -118,22 +122,11 @@ fun WooPosScanningSetupDialog(
         isClosing.value = true
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.openBluetoothSettingsEvent.collect {
-            try {
-                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-                context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                (context.applicationContext as WooCommerce).appInitializer.get().crashLogging.sendReport(e)
-                WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
-            }
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.dismissDialogEvent.collect {
-            onDismissRequestWrapper()
-        }
-    }
+    EventListeners(
+        viewModel = viewModel,
+        context = context,
+        onDismissRequestWrapper = onDismissRequestWrapper
+    )
 
     WooPosDialogWrapper(
         isVisible = isVisible,
@@ -263,6 +256,13 @@ fun WooPosScanningSetupDialog(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    )
+
+                    is ScanningSetupStep.SoftwareKeyboardSetup -> SoftwareKeyboardSetupContent(
+                        step = step,
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
+                        onOpenSettings = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnOpenSettings) }
                     )
 
                     is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> ScannerSetupBarcodesOnProductsContent(
@@ -809,12 +809,127 @@ private fun ScannerSetupInfoContent(
 }
 
 @Composable
+private fun EventListeners(
+    viewModel: WooPosScanningSetupViewModel,
+    context: android.content.Context,
+    onDismissRequestWrapper: () -> Unit
+) {
+    LaunchedEffect(Unit) {
+        viewModel.openBluetoothSettingsEvent.collect {
+            try {
+                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                (context.applicationContext as WooCommerce).appInitializer.get().crashLogging.sendReport(e)
+                WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.dismissDialogEvent.collect {
+            onDismissRequestWrapper()
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.openSettingsEvent.collect {
+            try {
+                val intent = Intent(Settings.ACTION_SETTINGS)
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                (context.applicationContext as WooCommerce).appInitializer.get().crashLogging.sendReport(e)
+                WooLog.e(WooLog.T.POS, "Settings activity not found.", e)
+            }
+        }
+    }
+}
+
+@Composable
 private fun BulletPointItem(text: String) {
     WooPosText(
         text = "• $text",
         style = WooPosTypography.BodyLarge,
         modifier = Modifier.fillMaxWidth()
     )
+}
+
+@Composable
+private fun SoftwareKeyboardSetupContent(
+    step: ScanningSetupStep.SoftwareKeyboardSetup,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+    onOpenSettings: () -> Unit
+) {
+    var testText by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        WooPosText(
+            text = stringResource(step.titleRes),
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = stringResource(step.messageRes),
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+        )
+
+        WooPosText(
+            text = stringResource(step.settingsButtonTextRes),
+            style = WooPosTypography.BodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(bounded = true, radius = 150.dp),
+                    onClick = { onOpenSettings() }
+                )
+                .padding(
+                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    vertical = WooPosSpacing.Small.value.toAdaptivePadding()
+                )
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
+        TextField(
+            value = testText,
+            onValueChange = { testText = it },
+            placeholder = { 
+                WooPosText(
+                    text = "Type here to test your keyboard...",
+                    style = WooPosTypography.BodyLarge
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding()),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        SetupButtonsRow(
+            primaryButtonText = stringResource(step.primaryButtonTextRes),
+            secondaryButtonText = stringResource(step.secondaryButtonTextRes),
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onSecondaryClick
+        )
+    }
 }
 
 @FontScalePreviews
