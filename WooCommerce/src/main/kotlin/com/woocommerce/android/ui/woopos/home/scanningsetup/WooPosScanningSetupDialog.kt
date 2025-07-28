@@ -34,7 +34,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ripple
@@ -906,7 +905,7 @@ private fun SoftwareKeyboardSetupContent(
         TextField(
             value = testText,
             onValueChange = { testText = it },
-            placeholder = { 
+            placeholder = {
                 WooPosText(
                     text = "Type here to test your keyboard...",
                     style = WooPosTypography.BodyLarge
