@@ -2649,7 +2649,6 @@
     <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
     <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="logviewer_share_error">Unable to share log</string>
-    <string name="logviewer_search_placeholder">Search logs</string>
     <string name="about_appname">WooCommerce for Android</string>
     <string name="about_tos">Terms of Service</string>
     <string name="about_version">Version %s</string>

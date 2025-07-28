@@ -16,19 +16,14 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,15 +31,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
+import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
@@ -97,12 +92,18 @@ fun WooLogViewerScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            SearchField(
-                searchQuery = searchQuery,
+            SearchLayoutWithParams(
+                modifier = Modifier.background(color = colorResource(id = R.color.color_toolbar)),
+                state = SearchLayoutWithParamsState(
+                    hint = R.string.search,
+                    searchQuery = searchQuery,
+                    isSearchFocused = false,
+                    areSearchTypesAlwaysVisible = false,
+                    supportedSearchTypes = emptyList()
+                ),
+                paramsFillWidth = false,
                 onSearchQueryChanged = { searchQuery = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(R.dimen.major_100))
+                onSearchTypeSelected = { }
             )
             LogViewerEntries(
                 entries = filteredEntries,
@@ -110,44 +111,6 @@ fun WooLogViewerScreen(
             )
         }
     }
-}
-
-@Composable
-private fun SearchField(
-    searchQuery: String,
-    onSearchQueryChanged: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    OutlinedTextField(
-        value = searchQuery,
-        onValueChange = onSearchQueryChanged,
-        placeholder = { Text(stringResource(R.string.logviewer_search_placeholder)) },
-        leadingIcon = {
-            Icon(
-                Icons.Filled.Search,
-                contentDescription = stringResource(R.string.search),
-                tint = colorResource(id = R.color.woo_gray_40)
-            )
-        },
-        trailingIcon = {
-            if (searchQuery.isNotEmpty()) {
-                IconButton(onClick = { onSearchQueryChanged("") }) {
-                    Icon(
-                        Icons.Filled.Clear,
-                        contentDescription = stringResource(R.string.clear),
-                        tint = colorResource(id = R.color.woo_gray_40)
-                    )
-                }
-            }
-        },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(
-            onSearch = { keyboardController?.hide() }
-        ),
-        modifier = modifier.padding(vertical = dimensionResource(R.dimen.minor_100))
-    )
 }
 
 @Composable
