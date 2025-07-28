@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,7 +62,7 @@ fun WooLogViewerScreen(
     onShareButtonClick: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    var currentMatchIndex by remember { mutableStateOf(0) }
+    var currentMatchIndex by remember { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
