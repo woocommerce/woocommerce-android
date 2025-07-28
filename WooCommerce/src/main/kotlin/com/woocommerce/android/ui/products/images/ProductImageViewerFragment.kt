@@ -92,6 +92,11 @@ class ProductImageViewerFragment :
 
     private fun onMenuItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
+            R.id.menu_remove_background -> {
+                // TODO: Implement background removal functionality
+                true
+            }
+
             R.id.menu_delete_image -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
                 confirmRemoveProductImage()

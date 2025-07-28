@@ -2423,6 +2423,7 @@
     <string name="product_image_service_busy">Please wait for the current operation to complete</string>
     <string name="product_image_capture_failed">Failed to capture image</string>
     <string name="product_image_remove_confirmation">Are you sure you want to remove this image?</string>
+    <string name="remove_background">Remove background 🪄</string>
     <string name="product_images_camera_error">Unable to access camera</string>
     <string name="product_images_uploading_single_notif_message">Uploading image…</string>
     <string name="product_images_uploading_multi_notif_message">Uploading images…%1$d of %2$d</string>
