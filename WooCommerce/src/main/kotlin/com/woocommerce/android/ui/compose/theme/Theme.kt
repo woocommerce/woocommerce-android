@@ -41,15 +41,12 @@ fun WooTheme(
 
     MaterialTheme(
         colorScheme = material3Colors,
-        shapes = MaterialTheme.shapes.copy(
-            small = Material2Theme.shapes.small,
-            medium = Material2Theme.shapes.medium,
-            large = Material2Theme.shapes.large
-        ),
+        shapes = Material3Shapes,
         typography = Material3Typography
     ) {
         Material2Theme(
             colors = material2Colors,
+            shapes = Material2Shapes,
             typography = Material2Typography,
             content = content
         )
