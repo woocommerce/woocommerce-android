@@ -93,7 +93,7 @@ class ProductImageViewerFragment :
     private fun onMenuItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             R.id.menu_remove_background -> {
-                // TODO: Implement background removal functionality
+                navigateToRemoveBackground()
                 true
             }
 
@@ -198,6 +198,15 @@ class ProductImageViewerFragment :
             })
             start()
         }
+    }
+
+    private fun navigateToRemoveBackground() {
+        val currentPosition = binding.viewPager.currentItem
+        val currentImage = pagerAdapter.images[currentPosition]
+        
+        val action = ProductImageViewerFragmentDirections
+            .actionProductImageViewerFragmentToProductImageRemoveBackgroundFragment(currentImage)
+        findNavController().navigate(action)
     }
 
     override fun onImageTapped() {

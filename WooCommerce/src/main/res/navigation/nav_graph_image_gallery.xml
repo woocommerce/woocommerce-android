@@ -58,6 +58,18 @@
         <argument
             android:name="requestCode"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_productImageViewerFragment_to_productImageRemoveBackgroundFragment"
+            app:destination="@id/productImageRemoveBackgroundFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productImageRemoveBackgroundFragment"
+        android:name="com.woocommerce.android.ui.products.images.ai.ProductImageRemoveBackgroundFragment"
+        android:label="ProductImageRemoveBackgroundFragment">
+        <argument
+            android:name="image"
+            app:argType="com.woocommerce.android.model.Product$Image" />
     </fragment>
 
     <action
