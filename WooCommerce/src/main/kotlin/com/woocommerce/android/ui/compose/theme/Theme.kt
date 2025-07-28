@@ -26,14 +26,14 @@ fun WooTheme(
     content: @Composable () -> Unit
 ) {
     val colors = if (!useDarkTheme) {
-        LightColors
+        Material2LightColors
     } else {
-        DarkColors
+        Material2DarkColors
     }
 
     MaterialTheme(
         colors = colors,
-        typography = WooTypography,
+        typography = Material2Typography,
         content = content
     )
 }
