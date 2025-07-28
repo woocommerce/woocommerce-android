@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.graphics.Color
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +45,7 @@ class OrderListAdapter(
     var tracker: SelectionTracker<Long>? = null
     var orderIdAndPosition = mutableMapOf<Long, Int>()
     private var isLoadingMore = false
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun getItemViewType(position: Int): Int {
         if (isLoadingMore && position == super.getItemCount()) {
@@ -89,7 +92,7 @@ class OrderListAdapter(
             }
 
             VIEW_TYPE_LOADING_MORE -> {
-                val view = inflater.inflate(R.layout.order_list_loading_more_item, parent, false)
+                val view = inflater.inflate(R.layout.list_loading_more_item, parent, false)
                 LoadingViewHolder(view)
             }
 
@@ -147,18 +150,18 @@ class OrderListAdapter(
         val oldItemCount = super.getItemCount()
         val hadLoadingIndicator = isLoadingMore
 
-        super.submitList(pagedList)
+        super.submitList(pagedList) {
+            allOrderIds = currentList?.toList()?.mapNotNull {
+                if (it is OrderListItemUI) {
+                    it.orderId
+                } else {
+                    null
+                }
+            } ?: listOf()
 
-        allOrderIds = currentList?.toList()?.mapNotNull {
-            if (it is OrderListItemUI) {
-                it.orderId
-            } else {
-                null
+            if (hadLoadingIndicator && !isLoadingMore && super.getItemCount() > oldItemCount) {
+                notifyItemRemoved(oldItemCount)
             }
-        } ?: listOf()
-
-        if (hadLoadingIndicator && !isLoadingMore && super.getItemCount() > oldItemCount) {
-            notifyItemRemoved(oldItemCount)
         }
     }
 
@@ -198,14 +201,18 @@ class OrderListAdapter(
 
     fun setLoadingMoreIndicator(active: Boolean) {
         if (isLoadingMore != active) {
-            val wasLoadingMore = isLoadingMore
             isLoadingMore = active
 
-            if (wasLoadingMore) {
-                // Don't immediately remove - let submitList handle it for smoother animation
-                // This will be handled in submitList() when new data arrives
+            if (active) {
+                val insertPosition = super.getItemCount()
+                handler.post {
+                    notifyItemInserted(insertPosition)
+                }
             } else {
-                notifyItemInserted(super.getItemCount())
+                val removePosition = super.getItemCount()
+                handler.post {
+                    notifyItemRemoved(removePosition)
+                }
             }
         }
     }

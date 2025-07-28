@@ -21,7 +21,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -187,7 +186,9 @@ class ProductSelectionListFragment :
     private fun setupObservers(viewModel: ProductSelectionListViewModel) {
         viewModel.productSelectionListViewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.loadMoreProgress.isVisible = it }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) {
+                productSelectionListAdapter.setLoadingMoreIndicator(it)
+            }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { binding.productsRefreshLayout.isRefreshing = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isVisible ->
                 if (isVisible) {
@@ -207,7 +208,7 @@ class ProductSelectionListFragment :
         }
 
         viewModel.productList.observe(viewLifecycleOwner) {
-            showProductList(it)
+            productSelectionListAdapter.submitList(it)
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -229,10 +230,6 @@ class ProductSelectionListFragment :
         } else {
             skeletonView.hide()
         }
-    }
-
-    private fun showProductList(productSelectionList: List<Product>) {
-        productSelectionListAdapter.submitList(productSelectionList)
     }
 
     private fun enableProductsRefresh(enable: Boolean) {

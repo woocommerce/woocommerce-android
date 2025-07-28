@@ -609,7 +609,7 @@ class ProductListFragment :
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        binding.loadMoreProgress.isVisible = show
+        productAdapter.setLoadingMoreIndicator(show)
     }
 
     private fun showProductSortAndFiltersCard(show: Boolean) {
