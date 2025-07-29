@@ -48,10 +48,12 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
             result.fold(
                 onSuccess = { removeBackground(it) },
                 onFailure = { error ->
-                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(
-                        R.string.remove_background_image_load_error_with_reason,
-                        arrayOf(error.message ?: "Unknown error")
-                    ))
+                    triggerEvent(
+                        MultiLiveEvent.Event.ShowSnackbar(
+                            R.string.remove_background_image_load_error_with_reason,
+                            arrayOf(error.message ?: "Unknown error")
+                        )
+                    )
                 }
             )
         }
@@ -59,6 +61,8 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
 
     private fun removeBackground(image: InputImage) {
         val options = SubjectSegmenterOptions.Builder()
+            .enableForegroundBitmap()
+            .enableForegroundConfidenceMask()
             .build()
         val segmenter = SubjectSegmentation.getClient(options)
         segmenter.process(image).addOnSuccessListener { result ->
@@ -66,12 +70,23 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
             if (foregroundBitmap != null) {
                 _state.value = ViewState.Success(foregroundBitmap)
             } else {
+                triggerEvent(
+                    MultiLiveEvent.Event.ShowSnackbar(
+                        R.string.remove_background_no_subject_detected
+                    )
+                )
                 _state.value = ViewState.Failure
             }
         }
-        .addOnFailureListener {
-            _state.value = ViewState.Failure
-        }
+            .addOnFailureListener { exception ->
+                triggerEvent(
+                    MultiLiveEvent.Event.ShowSnackbar(
+                        R.string.remove_background_processing_error,
+                        arrayOf(exception.message ?: "Unknown error")
+                    )
+                )
+                _state.value = ViewState.Failure
+            }
     }
 
     private suspend fun createInputImageFromUrl(imageUrl: String): Result<InputImage> {
