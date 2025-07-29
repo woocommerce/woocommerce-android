@@ -8,7 +8,7 @@
 22.9.1
 -----
 - [*] POS: Barcode scanning on the order success screen now opens the cart and adds an item to the cart [https://github.com/woocommerce/woocommerce-android/pull/14382]
-
+- [*] POS: Fixes an issue with the Barcode Scanner Setup flow that could result in an inconsistent UI state on the Checkout and Payment Success Screens [https://github.com/woocommerce/woocommerce-android/pull/14396]
 22.9
 -----
 - [*] Fixed infinite loading animation in Order details pane when order list is empty [https://github.com/woocommerce/woocommerce-android/pull/14316]
