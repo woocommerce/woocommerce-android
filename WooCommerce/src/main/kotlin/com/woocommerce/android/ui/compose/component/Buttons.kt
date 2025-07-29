@@ -17,27 +17,26 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ButtonElevation
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.LocalRippleConfiguration
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.RippleConfiguration
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Recycling
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RippleConfiguration
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -56,7 +55,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WCColoredButton(
     onClick: () -> Unit,
@@ -64,13 +63,8 @@ fun WCColoredButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        contentColor = colorResource(id = R.color.woo_white),
-        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
-        disabledBackgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.06f),
-        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
-    ),
-    rippleColor: Color = MaterialTheme.colors.primaryVariant,
+    colors: ButtonColors = ButtonDefaults.wcColoredButtonColors(),
+    rippleColor: Color = colorResource(R.color.color_primary_variant),
     elevation: ButtonElevation? = null,
     shape: Shape = MaterialTheme.shapes.small,
     content: @Composable RowScope.() -> Unit,
@@ -86,14 +80,9 @@ fun WCColoredButton(
             interactionSource = interactionSource,
             contentPadding = contentPadding,
             modifier = modifier,
-            shape = shape
-        ) {
-            ProvideTextStyle(
-                value = MaterialTheme.typography.subtitle2
-            ) {
-                content()
-            }
-        }
+            shape = shape,
+            content = content
+        )
     }
 }
 
@@ -108,12 +97,7 @@ fun WCColoredButton(
     enabled: Boolean = true,
     loading: Boolean = false,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        contentColor = colorResource(id = R.color.woo_white),
-        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
-        disabledBackgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.06f),
-        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
-    ),
+    colors: ButtonColors = ButtonDefaults.wcColoredButtonColors()
 ) {
     WCColoredButton(
         onClick = { if (!loading) onClick() },
@@ -157,10 +141,8 @@ fun WCOutlinedButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
-        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
-    ),
-    border: BorderStroke? = ButtonDefaults.outlinedBorder,
+    colors: ButtonColors = ButtonDefaults.wcOutlinedButtonColors(),
+    border: BorderStroke? = ButtonDefaults.outlinedButtonBorder(enabled),
     content: @Composable RowScope.() -> Unit
 ) {
     OutlinedButton(
@@ -171,13 +153,8 @@ fun WCOutlinedButton(
         interactionSource = interactionSource,
         border = border,
         modifier = modifier,
-    ) {
-        ProvideTextStyle(
-            value = MaterialTheme.typography.subtitle2
-        ) {
-            content()
-        }
-    }
+        content = content
+    )
 }
 
 @Composable
@@ -190,7 +167,8 @@ fun WCOutlinedButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
+    colors: ButtonColors = ButtonDefaults.wcOutlinedButtonColors(),
+    border: BorderStroke? = ButtonDefaults.outlinedButtonBorder(enabled)
 ) {
     WCOutlinedButton(
         onClick = onClick,
@@ -198,7 +176,8 @@ fun WCOutlinedButton(
         enabled = enabled,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
-        colors = colors
+        colors = colors,
+        border = border
     ) {
         if (leadingIcon != null) {
             leadingIcon()
@@ -258,11 +237,11 @@ fun WCSelectableChip(
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     selectedButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
-        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
+        containerColor = colorResource(id = R.color.primary_colored_button_background),
         contentColor = colorResource(id = R.color.woo_white)
     ),
     defaultButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
-        backgroundColor = Color.Transparent,
+        containerColor = Color.Transparent,
     ),
     isSelected: Boolean,
     shape: RoundedCornerShape = RoundedCornerShape(50),
@@ -373,6 +352,24 @@ fun WCTextButton(
             Text(text = text.let { if (allCaps) it.toUpperCase(Locale.current) else it })
         }
     }
+}
+
+@Composable
+private fun ButtonDefaults.wcColoredButtonColors(): ButtonColors {
+    return buttonColors(
+        containerColor = colorResource(id = R.color.primary_colored_button_background),
+        // For now, our onPrimary color is black for dark theme, which seems to be a mistake.
+        // We are using white here to match the design, until confirming if we need to change the onPrimary color.
+        contentColor = colorResource(id = R.color.woo_white)
+    )
+}
+
+@Composable
+private fun ButtonDefaults.wcOutlinedButtonColors(): ButtonColors {
+    return outlinedButtonColors(
+        containerColor = MaterialTheme.colorScheme.surface,
+        disabledContainerColor = MaterialTheme.colorScheme.surface
+    )
 }
 
 @LightDarkThemePreviews
