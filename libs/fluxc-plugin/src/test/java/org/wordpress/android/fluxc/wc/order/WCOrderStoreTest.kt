@@ -265,34 +265,6 @@ internal class WCOrderStoreTest {
         }
     }
 
-//    @Test
-//    fun testGetOrderStatusOptions() {
-//        val site = SiteModel().apply { id = 8 }
-//        val optionsJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order_status_options.json")
-//        val orderStatusOptions = OrderTestUtils.getOrderStatusOptionsFromJson(optionsJson, site.id)
-//        orderStatusOptions.sumBy { OrderSqlUtils.insertOrUpdateOrderStatusOption(it) }
-//
-//        // verify that the order status options are stored correctly
-//        val storedOrderStatusOptions = OrderSqlUtils.getOrderStatusOptionsForSite(site)
-//        assertEquals(orderStatusOptions.size, storedOrderStatusOptions.size)
-//
-//        val firstOrderStatusOption = storedOrderStatusOptions[0]
-//        assertEquals(firstOrderStatusOption.label, orderStatusOptions[0].label)
-//        assertEquals(firstOrderStatusOption.statusCount, orderStatusOptions[0].statusCount)
-//        firstOrderStatusOption.apply { statusCount = 100 }
-//
-//        // Simulate incoming action with updated order status model list
-//        val payload = FetchOrderStatusOptionsResponsePayload(site, storedOrderStatusOptions)
-//        orderStore.onAction(WCOrderActionBuilder.newFetchedOrderStatusOptionsAction(payload))
-//
-//        with(OrderSqlUtils.getOrderStatusOptionsForSite(site)[0]) {
-//            // The status count of the first order status model in the database should have updated
-//            assertEquals(firstOrderStatusOption.statusCount, statusCount)
-//            // Other fields should not be altered by the update
-//            assertEquals(firstOrderStatusOption.label, label)
-//        }
-//    }
-
     @Test
     fun testOrderErrorType() {
         assertEquals(OrderErrorType.INVALID_PARAM, OrderErrorType.fromString("invalid_param"))
