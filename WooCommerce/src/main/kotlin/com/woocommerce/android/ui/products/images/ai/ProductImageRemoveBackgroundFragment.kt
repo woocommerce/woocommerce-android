@@ -287,32 +287,30 @@ private fun DrawScope.drawStar(center: Offset, size: Float, color: Color, rays: 
 }
 
 private fun DrawScope.drawHeart(center: Offset, size: Float, color: Color) {
-    val path = Path().apply {
-        val heartSize = size * 0.8f
-        moveTo(center.x, center.y + heartSize * 0.3f)
+    val path = Path()
+    val scale = size / 30f
+    val numPoints = 100
 
-        // Left curve
-        cubicTo(
-            center.x - heartSize * 0.5f,
-            center.y - heartSize * 0.5f,
-            center.x - heartSize,
-            center.y + heartSize * 0.1f,
-            center.x,
-            center.y + heartSize * 0.7f
-        )
+    var isFirst = true
+    for (i in 0..numPoints) {
+        val t = (i * 2 * Math.PI / numPoints).toFloat()
 
-        // Right curve
-        cubicTo(
-            center.x + heartSize,
-            center.y + heartSize * 0.1f,
-            center.x + heartSize * 0.5f,
-            center.y - heartSize * 0.5f,
-            center.x,
-            center.y + heartSize * 0.3f
-        )
+        // Parametric heart equations:
+        val heartX = 16 * sin(t) * sin(t) * sin(t)
+        val heartY = 13 * cos(t) - 5 * cos(2 * t) - 2 * cos(3 * t) - cos(4 * t)
 
-        close()
+        val x = center.x + heartX * scale
+        val y = center.y - heartY * scale
+
+        if (isFirst) {
+            path.moveTo(x, y)
+            isFirst = false
+        } else {
+            path.lineTo(x, y)
+        }
     }
+
+    path.close()
     drawPath(path, color)
 }
 
