@@ -45,7 +45,7 @@ class OrderStatusDaoTest {
     fun `get order status options returns only statuses for specific site`() = runTest {
         // given
         val statusesSite1 = listOf(pendingStatus)
-        val statusesSite2 = listOf(pendingStatus.copy(localSiteId = siteId2))
+        val statusesSite2 = listOf(pendingStatus.copy(siteId = siteId2))
 
         // when
         orderStatusDao.upsertOrderStatuses(statusesSite1)
@@ -114,21 +114,21 @@ class OrderStatusDaoTest {
         private val siteId2 = LocalId(2)
 
         val pendingStatus = WCOrderStatusModel(
-            localSiteId = siteId1,
+            siteId = siteId1,
             statusKey = "pending",
             label = "Pending payment",
             statusCount = 5
         )
 
         val processingStatus = WCOrderStatusModel(
-            localSiteId = siteId1,
+            siteId = siteId1,
             statusKey = "processing",
             label = "Processing",
             statusCount = 10
         )
 
         val completedStatus = WCOrderStatusModel(
-            localSiteId = siteId1,
+            siteId = siteId1,
             statusKey = "completed",
             label = "Completed",
             statusCount = 25

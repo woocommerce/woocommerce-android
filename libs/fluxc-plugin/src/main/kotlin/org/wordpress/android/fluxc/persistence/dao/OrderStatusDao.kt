@@ -15,7 +15,7 @@ internal abstract class OrderStatusDao {
     @Query(
         """
         SELECT * FROM OrderStatusEntity
-        WHERE localSiteId = :siteId
+        WHERE siteId = :siteId
         """
     )
     abstract suspend fun getOrderStatusOptions(siteId: LocalId): List<WCOrderStatusModel>
@@ -23,7 +23,7 @@ internal abstract class OrderStatusDao {
     @Query(
         """
         SELECT * FROM OrderStatusEntity
-        WHERE localSiteId = :siteId
+        WHERE siteId = :siteId
         AND statusKey = :statusKey
         """
     )

@@ -76,7 +76,7 @@ object OrderTestUtils {
         val converted = Gson().fromJson(json, responseType) as? List<OrderStatusApiResponse> ?: emptyList()
         return converted.map {
             WCOrderStatusModel(
-                localSiteId = LocalId(siteId),
+                siteId = LocalId(siteId),
                 statusKey = it.slug ?: "",
                 label = it.name ?: "",
                 statusCount = it.total,

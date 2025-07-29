@@ -1220,7 +1220,7 @@ class OrderRestClient @Inject constructor(
         site: SiteModel
     ): WCOrderStatusModel {
         return WCOrderStatusModel(
-            localSiteId = site.localId(),
+            siteId = site.localId(),
             statusKey = response.slug ?: "",
             label = response.name ?: "",
             statusCount = response.total

@@ -5,10 +5,10 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 
 @Entity(
     tableName = "OrderStatusEntity",
-    primaryKeys = ["localSiteId", "statusKey"]
+    primaryKeys = ["siteId", "statusKey"]
 )
 data class WCOrderStatusModel(
-    val localSiteId: LocalId = LocalId(0),
+    val siteId: LocalId = LocalId(0),
     val statusKey: String = "",
     val label: String = "",
     val statusCount: Int = 0

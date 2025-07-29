@@ -66,7 +66,7 @@ object OrderTestUtils {
     fun generateOrderStatusOptions(): List<WCOrderStatusModel> {
         return CoreOrderStatus.values().map {
             WCOrderStatusModel(
-                localSiteId = LocalId(1),
+                siteId = LocalId(1),
                 statusKey = it.value,
                 label = it.value,
                 statusCount = TEST_ORDER_STATUS_COUNT,
