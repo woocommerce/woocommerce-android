@@ -64,6 +64,7 @@ fun WooLogViewerScreen(
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var currentMatchIndex by rememberSaveable { mutableIntStateOf(0) }
+    var previousSearchQuery by rememberSaveable { mutableStateOf("") }
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -86,14 +87,17 @@ fun WooLogViewerScreen(
     val hasMatches = searchMatches.isNotEmpty()
     val totalMatches = searchMatches.size
 
-    LaunchedEffect(searchMatches) {
-        if (searchMatches.isNotEmpty()) {
-            currentMatchIndex = 0
+    LaunchedEffect(searchQuery) {
+        if (searchQuery != previousSearchQuery) {
+            previousSearchQuery = searchQuery
+            if (searchQuery.isNotBlank()) {
+                currentMatchIndex = 0
+            }
         }
     }
 
-    val scrollToCurrentMatch = {
-        if (hasMatches) {
+    LaunchedEffect(searchMatches, currentMatchIndex) {
+        if (hasMatches && currentMatchIndex < totalMatches) {
             val itemIndex = searchMatches[currentMatchIndex]
             coroutineScope.launch {
                 lazyListState.animateScrollToItem(itemIndex)
@@ -104,19 +108,13 @@ fun WooLogViewerScreen(
     val goToNextMatch = {
         if (hasMatches && currentMatchIndex < totalMatches - 1) {
             currentMatchIndex++
-            scrollToCurrentMatch()
         }
     }
 
     val goToPreviousMatch = {
         if (hasMatches && currentMatchIndex > 0) {
             currentMatchIndex--
-            scrollToCurrentMatch()
         }
-    }
-
-    LaunchedEffect(searchMatches, currentMatchIndex) {
-        scrollToCurrentMatch()
     }
     Scaffold(
         topBar = {
@@ -124,42 +122,13 @@ fun WooLogViewerScreen(
                 title = stringResource(id = R.string.logviewer_activity_title),
                 onNavigationButtonClick = onBackPress,
                 actions = {
-                    if (hasMatches) {
-                        Text(
-                            text = "${currentMatchIndex + 1}/$totalMatches",
-                            color = colorResource(id = R.color.color_icon_menu),
-                            style = MaterialTheme.typography.body2,
-                            modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.minor_100))
-                        )
-                        IconButton(
-                            onClick = goToPreviousMatch,
-                            enabled = currentMatchIndex > 0
-                        ) {
-                            Icon(
-                                Icons.Filled.KeyboardArrowUp,
-                                contentDescription = "",
-                                tint = if (currentMatchIndex > 0) {
-                                    colorResource(id = R.color.color_icon_menu)
-                                } else {
-                                    colorResource(id = R.color.woo_gray_40)
-                                }
-                            )
-                        }
-                        IconButton(
-                            onClick = goToNextMatch,
-                            enabled = currentMatchIndex < totalMatches - 1
-                        ) {
-                            Icon(
-                                Icons.Filled.KeyboardArrowDown,
-                                contentDescription = "",
-                                tint = if (currentMatchIndex < totalMatches - 1) {
-                                    colorResource(id = R.color.color_icon_menu)
-                                } else {
-                                    colorResource(id = R.color.woo_gray_40)
-                                }
-                            )
-                        }
-                    }
+                    SearchNavigationActions(
+                        hasMatches = hasMatches,
+                        currentMatchIndex = currentMatchIndex,
+                        totalMatches = totalMatches,
+                        onPreviousClick = goToPreviousMatch,
+                        onNextClick = goToNextMatch
+                    )
                     IconButton(onClick = { onCopyButtonClick() }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_copy_white_24dp),
@@ -201,6 +170,52 @@ fun WooLogViewerScreen(
                 lazyListState = lazyListState,
                 currentMatchIndex = if (hasMatches) searchMatches[currentMatchIndex] else -1,
                 modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchNavigationActions(
+    hasMatches: Boolean,
+    currentMatchIndex: Int,
+    totalMatches: Int,
+    onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit
+) {
+    if (hasMatches) {
+        Text(
+            text = "${currentMatchIndex + 1}/$totalMatches",
+            color = colorResource(id = R.color.color_icon_menu),
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.minor_100))
+        )
+        IconButton(
+            onClick = onPreviousClick,
+            enabled = currentMatchIndex > 0
+        ) {
+            Icon(
+                Icons.Filled.KeyboardArrowUp,
+                contentDescription = "",
+                tint = if (currentMatchIndex > 0) {
+                    colorResource(id = R.color.color_icon_menu)
+                } else {
+                    colorResource(id = R.color.woo_gray_40)
+                }
+            )
+        }
+        IconButton(
+            onClick = onNextClick,
+            enabled = currentMatchIndex < totalMatches - 1
+        ) {
+            Icon(
+                Icons.Filled.KeyboardArrowDown,
+                contentDescription = "",
+                tint = if (currentMatchIndex < totalMatches - 1) {
+                    colorResource(id = R.color.color_icon_menu)
+                } else {
+                    colorResource(id = R.color.woo_gray_40)
+                }
             )
         }
     }
