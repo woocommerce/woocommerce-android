@@ -2,8 +2,6 @@
 package org.wordpress.android.fluxc.wc.order
 
 import com.yarolegovich.wellsql.WellSql
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,6 +14,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
