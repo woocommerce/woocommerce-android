@@ -150,11 +150,7 @@ fun WooPosScanningSetupDialog(
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
                 .listenForBarcodes(
                     { barcodeResult ->
-                        if (state.currentStep is ScanningSetupStep.TestYourScanner
-                            || state.currentStep is ScanningSetupStep.TestYourScannerTimeout
-                        ) {
-                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
-                        }
+                        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
                     }
                 )
         ) {
