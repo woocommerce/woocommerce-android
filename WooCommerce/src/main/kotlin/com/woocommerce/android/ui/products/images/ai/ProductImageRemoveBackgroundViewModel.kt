@@ -6,6 +6,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -18,12 +19,14 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductImageRemoveBackgroundViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val processImageBackgroundRemoval: ImageBackgroundRemoveMachine
+    private val processImageBackgroundRemoval: ImageBackgroundRemoveMachine,
+    private val saveProcessedImage: SaveProcessedImageToTheProduct
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: ProductImageRemoveBackgroundFragmentArgs by savedState.navArgs()
 
     val productImage: Product.Image = navArgs.image
+    private val remoteProductId: Long = navArgs.remoteProductId
 
     private val _state: MutableStateFlow<ViewState> =
         MutableStateFlow(ViewState.BackgroundProcessingInProgress(navArgs.image.source.toUri()))
@@ -61,6 +64,36 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
                     _state.value = ViewState.Failure
                 }
             )
+        }
+    }
+
+    fun onSaveImageTapped() {
+        launch {
+            val bitmap = when (val currentState = _state.value) {
+                is ViewState.Success -> currentState.bitmap
+                else -> return@launch
+            }
+
+            _state.value = ViewState.ImageUploadInProgress
+
+            try {
+                saveProcessedImage(bitmap, remoteProductId)
+
+                triggerEvent(
+                    MultiLiveEvent.Event.ShowSnackbar(
+                        R.string.save_processed_image_success
+                    )
+                )
+                triggerEvent(MultiLiveEvent.Event.Exit)
+            } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to save processed image", error)
+                triggerEvent(
+                    MultiLiveEvent.Event.ShowSnackbar(
+                        R.string.save_processed_image_error
+                    )
+                )
+                _state.value = ViewState.Success(bitmap)
+            }
         }
     }
 }

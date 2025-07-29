@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package com.woocommerce.android.ui.products.images.ai
 
 import android.os.Bundle
@@ -55,7 +57,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.compose.AsyncImage
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -63,8 +64,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.cos
 import kotlin.math.sin
@@ -108,6 +107,9 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
+                }
+                is MultiLiveEvent.Event.ExitWithResult<*> -> {
+                    findNavController().navigateUp()
                 }
             }
         }
@@ -155,11 +157,12 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
     }
 
     private fun handleSaveClicked() {
-        // TODO: Implement save functionality
-        findNavController().navigateUp()
+        val currentState = viewModel.state.value
+        if (currentState is ViewState.Success) {
+            viewModel.onSaveImageTapped()
+        }
     }
 }
-
 
 @Composable
 fun BottomActionMenu(
@@ -223,8 +226,8 @@ fun ProductImageRemoveBackgroundScreen(
         when (val viewState = state.value) {
             is ViewState.Success -> {
                 Box(
-                    modifier = Modifier.padding(paddingValues),
-                    ) {
+                    modifier = Modifier.padding(paddingValues)
+                ) {
                     AsyncImage(
                         model = viewState.bitmap,
                         contentDescription = stringResource(R.string.product_image_content_description),
@@ -429,15 +432,8 @@ private fun DrawScope.drawHeart(center: Offset, size: Float, color: Color) {
 @Composable
 fun ProductImageRemoveBackgroundScreenPreview() {
     WooThemeWithBackground {
-        val image = Product.Image(
-            id = 1L,
-            source = "https://ma.tt/",
-            name = "Sample Image",
-            isCoverImage = true,
-            dateCreated = Date.from(Instant.now()),
-        )
         val state = remember {
-            mutableStateOf(ViewState.Success(createBitmap(23,23)))
+            mutableStateOf(ViewState.Success(createBitmap(23, 23)))
         }
         ProductImageRemoveBackgroundScreen(
             state = state,
