@@ -260,8 +260,7 @@ fun WooPosScanningSetupDialog(
                     is ScanningSetupStep.SoftwareKeyboardSetup -> SoftwareKeyboardSetupContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
-                        onOpenSettings = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnOpenSettings) }
+                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
                     is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> ScannerSetupBarcodesOnProductsContent(
@@ -829,17 +828,6 @@ private fun EventListeners(
             onDismissRequestWrapper()
         }
     }
-    LaunchedEffect(Unit) {
-        viewModel.openSettingsEvent.collect {
-            try {
-                val intent = Intent(Settings.ACTION_SETTINGS)
-                context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                (context.applicationContext as WooCommerce).appInitializer.get().crashLogging.sendReport(e)
-                WooLog.e(WooLog.T.POS, "Settings activity not found.", e)
-            }
-        }
-    }
 }
 
 @Composable
@@ -855,8 +843,7 @@ private fun BulletPointItem(text: String) {
 private fun SoftwareKeyboardSetupContent(
     step: ScanningSetupStep.SoftwareKeyboardSetup,
     onPrimaryClick: () -> Unit,
-    onSecondaryClick: () -> Unit,
-    onOpenSettings: () -> Unit
+    onSecondaryClick: () -> Unit
 ) {
     var testText by remember { mutableStateOf("") }
 
@@ -881,23 +868,6 @@ private fun SoftwareKeyboardSetupContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = stringResource(step.settingsButtonTextRes),
-            style = WooPosTypography.BodyLarge,
-            color = MaterialTheme.colorScheme.primary,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = ripple(bounded = true, radius = 150.dp),
-                    onClick = { onOpenSettings() }
-                )
-                .padding(
-                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                    vertical = WooPosSpacing.Small.value.toAdaptivePadding()
-                )
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))

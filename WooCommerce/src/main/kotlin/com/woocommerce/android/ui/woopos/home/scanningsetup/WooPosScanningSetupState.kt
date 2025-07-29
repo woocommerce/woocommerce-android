@@ -289,10 +289,6 @@ data class WooPosScanningSetupState(
             @get:StringRes
             @IgnoredOnParcel
             val secondaryButtonTextRes = R.string.woopos_scanning_setup_button_back
-
-            @get:StringRes
-            @IgnoredOnParcel
-            val settingsButtonTextRes = R.string.woopos_scanning_setup_go_to_settings
         }
 
         @Parcelize
