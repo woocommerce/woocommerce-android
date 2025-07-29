@@ -1,24 +1,15 @@
 package com.woocommerce.android.ui.products.images.ai
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
-import coil.ImageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.segmentation.subject.SubjectSegmentation
-import com.google.mlkit.vision.segmentation.subject.SubjectSegmenterOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductImageRemoveBackgroundViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    @ApplicationContext private val context: Context
+    private val processImageBackgroundRemoval: ImageBackgroundRemoveMachine
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: ProductImageRemoveBackgroundFragmentArgs by savedState.navArgs()
@@ -39,78 +30,39 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
     val state: StateFlow<ViewState> = _state
 
     init {
-        loadImageAndCreateInputImage()
+        processBackgroundRemoval()
     }
 
-    private fun loadImageAndCreateInputImage() {
+    private fun processBackgroundRemoval() {
         launch {
-            val result = createInputImageFromUrl(navArgs.image.source)
+            val result = processImageBackgroundRemoval(navArgs.image.source)
             result.fold(
-                onSuccess = { removeBackground(it) },
+                onSuccess = { bitmap ->
+                    _state.value = ViewState.Success(bitmap)
+                },
                 onFailure = { error ->
+                    val errorMessage = when {
+                        error.message?.contains("No subject detected") == true -> {
+                            R.string.remove_background_no_subject_detected
+                        }
+                        else -> R.string.remove_background_image_load_error_with_reason
+                    }
+
                     triggerEvent(
                         MultiLiveEvent.Event.ShowSnackbar(
-                            R.string.remove_background_image_load_error_with_reason,
-                            arrayOf(error.message ?: "Unknown error")
+                            errorMessage,
+                            if (errorMessage == R.string.remove_background_image_load_error_with_reason) {
+                                arrayOf(error.message ?: "Unknown error")
+                            } else {
+                                emptyArray()
+                            }
                         )
                     )
+                    _state.value = ViewState.Failure
                 }
             )
         }
     }
-
-    private fun removeBackground(image: InputImage) {
-        val options = SubjectSegmenterOptions.Builder()
-            .enableForegroundBitmap()
-            .enableForegroundConfidenceMask()
-            .build()
-        val segmenter = SubjectSegmentation.getClient(options)
-        segmenter.process(image).addOnSuccessListener { result ->
-            val foregroundBitmap = result.foregroundBitmap
-            if (foregroundBitmap != null) {
-                _state.value = ViewState.Success(foregroundBitmap)
-            } else {
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowSnackbar(
-                        R.string.remove_background_no_subject_detected
-                    )
-                )
-                _state.value = ViewState.Failure
-            }
-        }
-            .addOnFailureListener { exception ->
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowSnackbar(
-                        R.string.remove_background_processing_error,
-                        arrayOf(exception.message ?: "Unknown error")
-                    )
-                )
-                _state.value = ViewState.Failure
-            }
-    }
-
-    private suspend fun createInputImageFromUrl(imageUrl: String): Result<InputImage> {
-        return try {
-            val imageLoader = ImageLoader(context)
-            val imageRequest = ImageRequest.Builder(context)
-                .data(imageUrl)
-                .build()
-
-            val result = imageLoader.execute(imageRequest)
-            when (result) {
-                is SuccessResult -> {
-                    val bitmap = result.drawable.toBitmap()
-                    val inputImage = InputImage.fromBitmap(bitmap, 0)
-                    Result.success(inputImage)
-                }
-                else -> Result.failure(Exception("Image loading failed"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    object ExitScreen : MultiLiveEvent.Event()
 }
 
 sealed class ViewState {

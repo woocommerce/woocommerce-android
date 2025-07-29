@@ -38,7 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import coil.compose.AsyncImage
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
@@ -83,9 +82,6 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ProductImageRemoveBackgroundViewModel.ExitScreen -> {
-                    findNavController().navigateUp()
-                }
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
                 }
