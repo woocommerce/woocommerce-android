@@ -476,7 +476,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun convertCountryCodeToCountry(countryCode: String?) =
-        Locale("", countryCode.orEmpty()).displayName
+        Locale.Builder().setRegion(countryCode.orEmpty()).build().displayName
 
     private fun formatDueDate(state: StripeAccountPendingRequirement) =
         state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() }
