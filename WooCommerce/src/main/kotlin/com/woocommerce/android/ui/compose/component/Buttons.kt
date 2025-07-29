@@ -202,9 +202,9 @@ fun WCRemoveButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
-        contentColor = colorResource(id = R.color.woo_red_50),
-    ),
+    colors: ButtonColors = ButtonDefaults.wcOutlinedButtonColors().copy(
+        contentColor = MaterialTheme.colorScheme.error
+    )
 ) {
     WCOutlinedButton(
         onClick = onClick,
