@@ -74,24 +74,12 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
                 else -> return@launch
             }
 
-            _state.value = ViewState.ImageUploadInProgress
-
             try {
                 saveProcessedImage(bitmap, remoteProductId)
-
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowSnackbar(
-                        R.string.save_processed_image_success
-                    )
-                )
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_success))
                 triggerEvent(MultiLiveEvent.Event.Exit)
             } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
-                WooLog.e(WooLog.T.PRODUCTS, "Failed to save processed image", error)
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowSnackbar(
-                        R.string.save_processed_image_error
-                    )
-                )
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_error))
                 _state.value = ViewState.Success(bitmap)
             }
         }
@@ -102,5 +90,4 @@ sealed class ViewState {
     data class BackgroundProcessingInProgress(val imageUri: Uri) : ViewState()
     data class Success(val bitmap: Bitmap) : ViewState()
     data object Failure : ViewState()
-    data object ImageUploadInProgress : ViewState()
 }

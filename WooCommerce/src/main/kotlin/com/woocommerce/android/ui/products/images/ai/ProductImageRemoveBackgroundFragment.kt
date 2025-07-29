@@ -108,27 +108,8 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
                 }
-                is MultiLiveEvent.Event.ExitWithResult<*> -> {
-                    findNavController().navigateUp()
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewModel.state.collect {
-                when (it) {
-                    is ViewState.BackgroundProcessingInProgress -> {
-                        // Show loading state if needed
-                    }
-                    is ViewState.Success -> {
-                        // Handle the completion of background processing
-                        // For example, you might want to show the processed image
-                    }
-                    is ViewState.Failure -> {
-                        uiMessageResolver.showSnack(R.string.error_generic)
-                    }
-
-                    ViewState.ImageUploadInProgress -> {
-                    }
+                is MultiLiveEvent.Event.Exit -> {
+                    findNavController().popBackStack(R.id.productImagesFragment, false)
                 }
             }
         }
@@ -258,12 +239,6 @@ fun ProductImageRemoveBackgroundScreen(
             ViewState.Failure -> {
                 Box(modifier = Modifier.padding(paddingValues)) {
                     Text("Failure!")
-                }
-            }
-
-            ViewState.ImageUploadInProgress -> {
-                Box(modifier = Modifier.padding(paddingValues)) {
-                    Text("Uploading image...")
                 }
             }
         }
