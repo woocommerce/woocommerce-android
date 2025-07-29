@@ -74,11 +74,11 @@ val Material3LightColorScheme
         inverseSurface = colorResource(R.color.color_on_surface),
         inversePrimary = colorResource(R.color.color_on_primary),
         surfaceBright = colorResource(R.color.color_surface),
-        surfaceContainer = colorResource(R.color.color_surface),
-        surfaceContainerHigh = colorResource(R.color.color_surface),
-        surfaceContainerHighest = colorResource(R.color.color_surface),
-        surfaceContainerLow = colorResource(R.color.color_surface),
-        surfaceContainerLowest = colorResource(R.color.color_surface),
+        surfaceContainer = colorResource(R.color.color_surface_elevated),
+        surfaceContainerHigh = colorResource(R.color.color_surface_elevated),
+        surfaceContainerHighest = colorResource(R.color.color_surface_elevated),
+        surfaceContainerLow = colorResource(R.color.color_surface_elevated),
+        surfaceContainerLowest = colorResource(R.color.color_surface_elevated),
     )
 
 val Material3DarkColorScheme
@@ -111,9 +111,9 @@ val Material3DarkColorScheme
         inverseSurface = colorResource(R.color.color_on_surface),
         inversePrimary = colorResource(R.color.color_on_primary),
         surfaceBright = colorResource(R.color.color_surface),
-        surfaceContainer = colorResource(R.color.color_surface),
-        surfaceContainerHigh = colorResource(R.color.color_surface),
-        surfaceContainerHighest = colorResource(R.color.color_surface),
-        surfaceContainerLow = colorResource(R.color.color_surface),
-        surfaceContainerLowest = colorResource(R.color.color_surface),
+        surfaceContainer = colorResource(R.color.color_surface_elevated),
+        surfaceContainerHigh = colorResource(R.color.color_surface_elevated),
+        surfaceContainerHighest = colorResource(R.color.color_surface_elevated),
+        surfaceContainerLow = colorResource(R.color.color_surface_elevated),
+        surfaceContainerLowest = colorResource(R.color.color_surface_elevated),
     )
