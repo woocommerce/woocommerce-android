@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -61,8 +62,8 @@ fun WooLogViewerScreen(
     onCopyButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-    var currentMatchIndex by remember { mutableIntStateOf(0) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var currentMatchIndex by rememberSaveable { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
