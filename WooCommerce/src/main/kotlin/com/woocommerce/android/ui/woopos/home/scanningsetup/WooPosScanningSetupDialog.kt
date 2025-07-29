@@ -34,8 +34,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,6 +71,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBright
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputField
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -867,30 +866,21 @@ private fun SoftwareKeyboardSetupContent(
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
-        TextField(
+        WooPosInputField(
             value = testText,
             onValueChange = { testText = it },
-            placeholder = {
-                WooPosText(
-                    text = stringResource(step.hintRes),
-                    style = WooPosTypography.BodyLarge
-                )
-            },
+            label = stringResource(step.hintRes),
+            textColor = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding()),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            )
+                .padding(horizontal = WooPosSpacing.XSmall.value.toAdaptivePadding()),
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
         SetupButtonsRow(
             primaryButtonText = stringResource(step.primaryButtonTextRes),
