@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -11,20 +13,31 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -35,9 +48,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.net.toUri
+import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import coil.compose.AsyncImage
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
@@ -63,6 +78,8 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
 
     private val viewModel: ProductImageRemoveBackgroundViewModel by viewModels()
 
+    private lateinit var backPressedCallback: OnBackPressedCallback
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -72,7 +89,12 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
             setContent {
                 WooThemeWithBackground {
                     Surface {
-                        ProductImageRemoveBackgroundScreen(viewModel.state.collectAsState())
+                        ProductImageRemoveBackgroundScreen(
+                            state = viewModel.state.collectAsState(),
+                            onBackPressed = { handleBackPressed() },
+                            onCancelClicked = { findNavController().navigateUp() },
+                            onSaveClicked = { handleSaveClicked() }
+                        )
                     }
                 }
             }
@@ -80,6 +102,8 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupBackPressHandling()
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
@@ -107,26 +131,113 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
             }
         }
     }
+
+    private fun setupBackPressHandling() {
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                handleBackPressed()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+    }
+
+    private fun handleBackPressed() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.discard_changes_question)
+            .setMessage(R.string.changes_not_saved_message)
+            .setPositiveButton(R.string.discard) { _, _ ->
+                findNavController().navigateUp()
+            }
+            .setNegativeButton(R.string.keep_editing) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun handleSaveClicked() {
+        // TODO: Implement save functionality
+        findNavController().navigateUp()
+    }
+}
+
+
+@Composable
+fun BottomActionMenu(
+    modifier: Modifier = Modifier,
+    onCancelClicked: () -> Unit,
+    onSaveClicked: () -> Unit
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth()
+            .padding(16.dp),
+        color = MaterialTheme.colors.surface,
+        elevation = 8.dp,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(onClick = onCancelClicked) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    style = MaterialTheme.typography.button
+                )
+            }
+
+            Button(onClick = onSaveClicked) {
+                Text(
+                    text = stringResource(R.string.save_copy),
+                    style = MaterialTheme.typography.button
+                )
+            }
+        }
+    }
 }
 
 @Composable
-fun ProductImageRemoveBackgroundScreen(state: State<ViewState>) {
+fun ProductImageRemoveBackgroundScreen(
+    state: State<ViewState>,
+    onBackPressed: () -> Unit,
+    onCancelClicked: () -> Unit,
+    onSaveClicked: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.remove_background)) },
-                backgroundColor = MaterialTheme.colors.surface
+                backgroundColor = MaterialTheme.colors.surface,
+                navigationIcon = {
+                    IconButton(onClick = onBackPressed) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
         when (val viewState = state.value) {
             is ViewState.Success -> {
-                AsyncImage(
-                    model = viewState.bitmap,
-                    contentDescription = stringResource(R.string.product_image_content_description),
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize()
-                )
+                Box(
+                    modifier = Modifier.padding(paddingValues),
+                    ) {
+                    AsyncImage(
+                        model = viewState.bitmap,
+                        contentDescription = stringResource(R.string.product_image_content_description),
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize()
+                    )
+
+                    BottomActionMenu(
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        onCancelClicked = onCancelClicked,
+                        onSaveClicked = onSaveClicked
+                    )
+                }
             }
 
             is ViewState.BackgroundProcessingInProgress -> {
@@ -142,11 +253,15 @@ fun ProductImageRemoveBackgroundScreen(state: State<ViewState>) {
             }
 
             ViewState.Failure -> {
-                Text("Failure!")
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    Text("Failure!")
+                }
             }
 
             ViewState.ImageUploadInProgress -> {
-                Text("Uploading image...")
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    Text("Uploading image...")
+                }
             }
         }
     }
@@ -322,9 +437,14 @@ fun ProductImageRemoveBackgroundScreenPreview() {
             dateCreated = Date.from(Instant.now()),
         )
         val state = remember {
-            mutableStateOf(ViewState.BackgroundProcessingInProgress(image.source.toUri()))
+            mutableStateOf(ViewState.Success(createBitmap(23,23)))
         }
-        ProductImageRemoveBackgroundScreen(state)
+        ProductImageRemoveBackgroundScreen(
+            state = state,
+            onBackPressed = { },
+            onCancelClicked = { },
+            onSaveClicked = { }
+        )
     }
 }
 
