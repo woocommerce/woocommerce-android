@@ -877,7 +877,7 @@ private fun SoftwareKeyboardSetupContent(
             onValueChange = { testText = it },
             placeholder = {
                 WooPosText(
-                    text = "Type here to test your keyboard...",
+                    text = stringResource(step.hintRes),
                     style = WooPosTypography.BodyLarge
                 )
             },
@@ -890,7 +890,7 @@ private fun SoftwareKeyboardSetupContent(
             )
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
 
         SetupButtonsRow(
             primaryButtonText = stringResource(step.primaryButtonTextRes),
