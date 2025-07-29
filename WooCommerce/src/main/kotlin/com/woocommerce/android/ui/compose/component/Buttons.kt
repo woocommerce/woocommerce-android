@@ -148,6 +148,7 @@ fun WCOutlinedButton(
     OutlinedButton(
         onClick = onClick,
         enabled = enabled,
+        shape = MaterialTheme.shapes.small,
         colors = colors,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
@@ -285,6 +286,7 @@ fun WCTextButton(
         enabled = enabled,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
+        shape = MaterialTheme.shapes.small,
         colors = colors,
         content = content
     )
@@ -303,7 +305,7 @@ fun WCTextButton(
         disabledContentColor = colorResource(id = R.color.color_on_surface_medium),
     ),
 ) {
-    TextButton(
+    WCTextButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
@@ -329,7 +331,7 @@ fun WCTextButton(
         disabledContentColor = colorResource(id = R.color.color_on_surface_medium),
     ),
 ) {
-    TextButton(
+    WCTextButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
