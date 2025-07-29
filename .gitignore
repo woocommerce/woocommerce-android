@@ -116,3 +116,7 @@ google-upload-credentials.json
 
 # Cursor AI Editor
 /.cursor/
+
+# Junie AI Assistant
+.junie/
+/CLAUDE.md

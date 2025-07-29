@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShi
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -113,37 +113,33 @@ class WooShippingLabelRepository @Inject constructor(
         orderId: Long,
         shippableItems: List<Long>,
         selectedPackage: PackageData,
-        shipmentId: String,
+        shipmentId: Int,
         shipTo: Address,
         shipFrom: OriginShippingAddress,
-        selectedRate: WooShippingRateModel,
+        selectedRate: WooShippingSelectedRateModel,
         weight: Float,
-        lastOrderComplete: Boolean,
-        customsData: List<CustomsData>?,
+        lastOrderCompleted: Boolean,
+        customsData: CustomsData?,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): WooResult<PurchasedLabelData> {
-        val origin = mapper.toOriginAddressPurchaseDTO(shipFrom)
-        val destination = mapper.toDestinationAddressDTO(shipTo)
-        val packageDTO = mapper.toPackagePurchaseDTO(
-            selectedPackage = selectedPackage,
-            selectedRate = selectedRate,
-            shippableItems = shippableItems,
-            weight = weight
-        )
-        val rateDTO = mapper.toRateDTO(selectedRate)
-        val customsDTO = customsData?.let { mapper.toCustomsDTO(it) }
-        val hazmatDTO = mapper.toHazmatDTO(hazmatSelection)
         return restClient.purchaseShippingLabel(
             site = site,
             orderId = orderId,
-            origin = origin,
-            destination = destination,
-            selectedPackage = packageDTO,
-            shipmentId = shipmentId,
-            selectedRate = rateDTO,
-            customs = customsDTO ?: emptyMap(),
-            hazmat = hazmatDTO,
-            markOrderComplete = lastOrderComplete
+            origin = mapper.toOriginAddressPurchaseDTO(shipFrom),
+            destination = mapper.toDestinationAddressDTO(shipTo),
+            selectedPackage = mapper.toPackagePurchaseDTO(
+                shipmentId = shipmentId,
+                selectedPackage = selectedPackage,
+                selectedRate = selectedRate,
+                shippableItems = shippableItems,
+                weight = weight
+            ),
+            selectedRate = mapper.toRateDTO(selectedRate.rate),
+            parentRate = selectedRate.parentRate?.let { mapper.toRateDTO(it) },
+            selectedRateOptions = mapper.toSelectedRateOptions(selectedRate),
+            customs = customsData?.let { mapper.toCustomsDTO(it) },
+            hazmat = mapper.toHazmatDTO(hazmatSelection),
+            lastOrderCompleted = lastOrderCompleted
         ).asWooResult { mapper(it) }
     }
 
@@ -173,9 +169,9 @@ class WooShippingLabelRepository @Inject constructor(
         } else {
             WooResult(
                 WooError(
-                    type = WooErrorType.INVALID_RESPONSE,
+                    type = WooErrorType.API_ERROR,
                     original = GenericErrorType.INVALID_RESPONSE,
-                    message = "Address normalization failed"
+                    message = normalizedAddress.result?.errors?.keys?.first()
                 )
             )
         }
@@ -215,11 +211,12 @@ class WooShippingLabelRepository @Inject constructor(
         site: SiteModel,
         orderId: Long,
         address: Address,
+        isVerified: Boolean
     ): WooResult<DestinationShippingAddress> {
         val updatedAddress = restClient.updateDestinationAddress(
             site = site,
             orderId = orderId,
-            address = mapper.toAddressDTO(address)
+            address = mapper.toAddressDTO(address = address, isVerified = isVerified)
         )
 
         return if (updatedAddress.result?.success == true) {

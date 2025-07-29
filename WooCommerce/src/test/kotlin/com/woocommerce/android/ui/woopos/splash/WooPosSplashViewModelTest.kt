@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.splash
 
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +25,7 @@ class WooPosSplashViewModelTest {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val popularProductsProvider: WooPosPopularProductsProvider = mock()
+    private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
 
     @Rule
     @JvmField
@@ -39,6 +42,34 @@ class WooPosSplashViewModelTest {
         assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loading)
 
         Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `given site not eligible, should update state to NotEligible`() = runTest {
+        // GIVEN
+        whenever(posCanBeLaunchedInTab()).thenReturn(
+            WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
+        )
+
+        // WHEN
+        val sut = createSut()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(
+            WooPosSplashState.NotEligible(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
+        )
+    }
+
+    @Test
+    fun `given site eligible, should update state to Loaded`() = runTest {
+        // GIVEN
+        whenever(posCanBeLaunchedInTab()).thenReturn(WooPosLaunchability.Launchable)
+
+        // WHEN
+        val sut = createSut()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loaded)
     }
 
     @Test
@@ -110,5 +141,10 @@ class WooPosSplashViewModelTest {
         assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loaded)
     }
 
-    private fun createSut() = WooPosSplashViewModel(productsDataSource, popularProductsProvider, analyticsTracker)
+    private fun createSut() = WooPosSplashViewModel(
+        productsDataSource,
+        popularProductsProvider,
+        analyticsTracker,
+        posCanBeLaunchedInTab
+    )
 }

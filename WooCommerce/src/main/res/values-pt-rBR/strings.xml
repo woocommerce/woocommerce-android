@@ -1,18 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-18 16:54:04+0000
+Translation-Revision-Date: 2025-07-14 17:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">Manuseio extra</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Entrega no sábado</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Neutralidade de carbono</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Assinatura de um adulto obrigatória</string>
+    <string name="woo_shipping_rate_option_signature_required">Assinatura obrigatória</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">Mais %1$s</string>
+    <string name="woo_shipping_labels_package_saving_error">Não foi possível salvar o pacote</string>
+    <string name="woo_shipping_labels_package_removing_error">Não foi possível remover o pacote</string>
+    <string name="woopos_eligibility_retry_check_label">Tentar novamente</string>
+    <string name="woopos_eligibility_exit_pos_label">Sair do PDV</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Consulte as instruções do scanner de código de barras Bluetooth para definir o modo HID. Isso geralmente requer a leitura de um código de barras especial no manual.</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">O scanner não enviou caractere de fim de linha</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">O código de barras lido é muito curto</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (taxa básica)</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297 mm)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">Visualizar etiqueta de envio comprada</string>
+    <string name="wpp_shipping_ups_tos_accept">Confirmar e continuar</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">Também aceito o &lt;a href=\"ups-technology-agreement\"&gt;Acordo de tecnologia da UPS®&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">Não enviarei quaisquer &lt;a href=\"ups-prohibited-items\"&gt;Itens proibidos&lt;/a&gt; que a UPS® desaprova nem itens regulamentados sem as permissões necessárias.</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">Eu aceito os &lt;a href=\"ups-tos\"&gt;Termos de serviço da UPS®&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_description">Para começar a fazer envios deste endereço com a UPS®, você precisa concordar com os seguintes termos e condições:</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">Origem do envio</string>
+    <string name="wpp_shipping_ups_tos_title">Termos e condições da UPS®</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">Não foi possível atualizar suas formas de pagamento</string>
+    <string name="woo_shipping_payment_method_added">Forma de pagamento adicionada</string>
+    <string name="woo_shipping_payment_use_card_button">Usar este cartão</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">Enviar o recibo por e-mail</string>
+    <string name="woo_shipping_payment_methods_info_footer">Os cartões de crédito foram recuperados da seguinte conta do WordPress.com: %1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">Novo cartão de crédito ou débito</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">Adicione uma forma de pagamento para  comprar uma etiqueta de envio</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">Adicionar uma forma de pagamento</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">Apenas o proprietário do site pode gerenciar as formas de pagamento de etiquetas de envio. Fale com o proprietário da loja %1$s (%2$s) para gerenciá-las.</string>
+    <string name="woo_shipping_payment_screen_description">Escolha uma forma de pagamento.</string>
+    <string name="woo_shipping_payment_screen_title">Forma de pagamento</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">Erro de servidor: %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">Editar forma de pagamento</string>
+    <string name="shipping_label_shipment_details_add_payment_method">Adicionar forma de pagamento</string>
+    <string name="shipping_label_shipment_details_payment_method">Forma de pagamento</string>
+    <string name="point_of_sale">Ponto de venda</string>
     <string name="no_network_message">Não há rede disponível</string>
     <string name="media_loading_failed">O envio da mídia falhou</string>
     <string name="media_library_title">Biblioteca de mídia do WordPress</string>
     <string name="woo_shipping_refund_note">Observe que esta solicitação de reembolso se aplica apenas à etiqueta de envio não utilizada e não afetará o pedido.</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;Valor elegível para reembolso:&lt;/b&gt; %s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Data da compra:&lt;/b&gt; %s</string>
-    <string name="woo_shipping_refund_description">Solicite o reembolso da etiqueta de envio não utilizada. O processo de reembolso começará imediatamente e costuma ser concluído em 14 dias úteis.</string>
+    <string name="woo_shipping_refund_duration_description">Solicite o reembolso da etiqueta de envio não utilizada. O processo de reembolso começará imediatamente e costuma ser concluído em %d dias úteis.</string>
     <string name="woo_shipping_refund_title">Solicitar um reembolso da etiqueta de envio</string>
     <string name="woo_shipping_split_shipment_error">Não foi possível dividir os envios. Tente novamente.</string>
     <string name="woopos_cart_searching_for_item">Pesquisando</string>
@@ -26,12 +66,10 @@ Language: pt_BR
     <string name="woopos_dialog_barcode_info_quinary_message">O scanner simula um teclado, então algumas vezes ele impedirá que o software do teclado seja exibido, como na pesquisa. Para reabrir o teclado, toque no respectivo ícone.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• Escaneie códigos de barras enquanto estiver na lista de itens para adicionar produtos ao carrinho.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• Conecte seu scanner de código de barras nas configurações Bluetooth do sistema.</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Consulte as instruções do scanner de código de barras Bluetooth para definir o modo HID.</string>
     <string name="woopos_dialog_barcode_info_more_details_link">Mais detalhes</string>
     <string name="woopos_dialog_barcode_info_primary_message">• Configure códigos de barras no campo \"GTIN, UPC, EAN, ISBN\" em Produtos &gt; Detalhes do produto &gt; Inventário. </string>
     <string name="woopos_dialog_barcode_info_intro_message">Escaneie códigos de barra usando um scanner externo para criar rapidamente um carrinho.</string>
     <string name="woopos_dialog_barcode_info_heading">Escaneamento de código de barras</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">Solicitação cancelada</string>
     <string name="woopos_cart_barcode_scan_result_network_error">Sem conexão com a Internet</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Item não compatível: %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Item escaneado desconhecido</string>

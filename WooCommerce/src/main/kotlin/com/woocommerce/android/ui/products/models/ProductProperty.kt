@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Type.LINK
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY_GROUP
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.RATING_BAR
-import com.woocommerce.android.ui.products.models.ProductProperty.Type.READ_MORE
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.SWITCH
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.WARNING
 
@@ -26,7 +25,6 @@ sealed class ProductProperty(val type: Type) {
         PROPERTY_GROUP,
         LINK,
         BUTTON,
-        READ_MORE,
         SWITCH,
         WARNING
     }
@@ -85,12 +83,6 @@ sealed class ProductProperty(val type: Type) {
         @ColorRes val badgeColor: Int? = null,
         val onTextChanged: ((String) -> Unit)? = null
     ) : ProductProperty(EDITABLE)
-
-    data class ReadMore(
-        @StringRes val caption: Int,
-        val content: String = "",
-        val maxLines: Int = 2
-    ) : ProductProperty(READ_MORE)
 
     data class PropertyGroup(
         @StringRes val title: Int,

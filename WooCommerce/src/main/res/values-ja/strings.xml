@@ -1,18 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-17 09:54:05+0000
+Translation-Revision-Date: 2025-07-15 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">追加の処理</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">土曜日の配達</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">カーボンニュートラル</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">成年の署名が必要</string>
+    <string name="woo_shipping_rate_option_signature_required">署名が必要</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">%1$s以上</string>
+    <string name="woo_shipping_labels_package_saving_error">荷物を保存できません</string>
+    <string name="woo_shipping_labels_package_removing_error">荷物を削除できません</string>
+    <string name="woopos_eligibility_retry_check_label">再試行</string>
+    <string name="woopos_eligibility_exit_pos_label">POS を終了</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Bluetooth バーコードスキャナーの手順を参照して HID モードを設定します。 これは通常、マニュアルの特別なバーコードをスキャンする必要があります。</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">スキャナーから改行コードが送信されませんでした</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">スキャンしたバーコードが短すぎます</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (基本料金)</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297mm)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">購入した配送ラベルを表示</string>
+    <string name="wpp_shipping_ups_tos_accept">確認して続行</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">また、&lt;a href=\"ups-technology-agreement\"&gt;UPS® テクノロジー契約条項&lt;/a&gt; にも同意します。</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">UPS® が許可しない&lt;a href=\"ups-prohibited-items\"&gt;禁止品目&lt;/a&gt;または必要な許可を得ていない規制品目を発送しません。</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">&lt;a href=\"ups-tos\"&gt;UPS® 利用規約&lt;/a&gt;に同意します。</string>
+    <string name="wpp_shipping_ups_tos_description">この住所から UPS® を利用して発送を開始するには、以下の利用規約に同意する必要があります。</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">発送元</string>
+    <string name="wpp_shipping_ups_tos_title">UPS® 利用規約</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">支払い方法を更新できません</string>
+    <string name="woo_shipping_payment_method_added">支払い方法が追加されました</string>
+    <string name="woo_shipping_payment_use_card_button">このカードを使用</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">領収書をメールで送信</string>
+    <string name="woo_shipping_payment_methods_info_footer">クレジットカードが次の WordPress.com アカウントから読み込まれました: %1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">新しいクレジットカードまたはデビットカード</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">支払い方法を追加して配送ラベルを購入 </string>
+    <string name="woo_shipping_payment_no_payment_methods_title">支払い方法を追加</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">配送ラベルの支払い方法を管理できるのは、サイトの所有者のみです。 支払い方法を管理するには、ストアの所有者 %1$s (%2$s) にお問い合わせください。</string>
+    <string name="woo_shipping_payment_screen_description">支払い方法を選択します。</string>
+    <string name="woo_shipping_payment_screen_title">支払い方法</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">サーバーエラー - %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">支払い方法を編集</string>
+    <string name="shipping_label_shipment_details_add_payment_method">支払い方法を追加</string>
+    <string name="shipping_label_shipment_details_payment_method">支払い方法</string>
+    <string name="point_of_sale">販売時点管理</string>
     <string name="no_network_message">利用可能なネットワークがありません</string>
     <string name="media_loading_failed">メディア読み込み失敗</string>
     <string name="media_library_title">WordPress メディアライブラリ</string>
     <string name="woo_shipping_refund_note">この返金リクエストは未使用の配送ラベルにのみ適用され、注文そのものには影響しないことに注意してください。</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;返金対象額:&lt;/b&gt; %s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;購入日:&lt;/b&gt; %s</string>
-    <string name="woo_shipping_refund_description">未使用の配送ラベルの返金をリクエストします。 配送ラベルの返金プロセスは直ちに開始され、通常14営業日以内に完了します。</string>
+    <string name="woo_shipping_refund_duration_description">未使用の配送ラベルの返金をリクエストします。 配送ラベルの返金プロセスは直ちに開始され、通常%d営業日以内に完了します。</string>
     <string name="woo_shipping_refund_title">配送ラベルの返金をリクエスト</string>
     <string name="woo_shipping_split_shipment_error">配送を分割できませんでした。 もう一度お試しください。</string>
     <string name="woopos_cart_searching_for_item">検索中</string>
@@ -26,12 +66,10 @@ Language: ja_JP
     <string name="woopos_dialog_barcode_info_quinary_message">スキャナーはキーボードをエミュレートするため、ソフトウェアのキーボードが表示されない場合があります (検索内など)。 キーボードのアイコンをタップすると、ソフトウェアのキーボードが再び表示されます。</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• アイテムリストでバーコードをスキャンすると、商品がお買い物カゴに追加されます。</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• システム Bluetooth 設定でバーコードスキャナーを接続します。</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Bluetooth バーコードスキャナーの手順を参照して HID モードを設定します。</string>
     <string name="woopos_dialog_barcode_info_more_details_link">詳細情報</string>
     <string name="woopos_dialog_barcode_info_primary_message">• 「商品」&gt;「商品情報」&gt;「在庫」の「GTIN、UPC、EAN、ISBN」フィールドでバーコードを設定します。 </string>
     <string name="woopos_dialog_barcode_info_intro_message">外部スキャナーを使用してバーコードをスキャンし、お買い物カゴをすばやく作成できます。</string>
     <string name="woopos_dialog_barcode_info_heading">バーコードスキャン</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">リクエストがキャンセルされました</string>
     <string name="woopos_cart_barcode_scan_result_network_error">インターネットに接続していません</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">サポートされていないアイテム  – %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">不明なスキャン済みアイテム</string>

@@ -204,6 +204,7 @@ class AnalyticsTracker private constructor(
         const val KEY_STATUS = "status"
         const val KEY_PRODUCT = "product"
         const val KEY_CUSTOMER = "customer"
+        const val KEY_SALES_CHANNEL = "sales_channel"
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_TOTAL_COMPLETED_ORDERS = "total_completed_orders"
         const val KEY_SEARCH = "search"
@@ -315,6 +316,8 @@ class AnalyticsTracker private constructor(
         const val KEY_ORDER_DISCOUNT_TYPE = "type"
         const val VALUE_ORDER_DISCOUNT_TYPE_FIXED = "fixed_amount"
         const val VALUE_ORDER_DISCOUNT_TYPE_PERCENTAGE = "percentage"
+
+        const val KEY_IS_REVAMPED_FLOW = "is_revamped_flow"
 
         const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"

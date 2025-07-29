@@ -10,7 +10,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -20,7 +19,7 @@ import javax.inject.Inject
 class WooPosTabController @Inject constructor(
     private val appPrefs: AppPrefs,
     private val selectedSite: SelectedSite,
-    private val isWooPosEnabled: WooPosIsEnabled,
+    private val shouldPosTabBeVisible: WooPosTabShouldBeVisible,
     private val analyticsTracker: WooPosAnalyticsTracker
 ) : DefaultLifecycleObserver {
 
@@ -42,21 +41,16 @@ class WooPosTabController @Inject constructor(
     }
 
     override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
         refreshPOSTabVisibility()
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        super.onDestroy(owner)
         owner.lifecycle.removeObserver(this)
     }
 
     fun refreshPOSTabVisibility() {
         setPOSTabVisibility(false)
-        // Load visibility from prefs for fast UI feedback
         updatePOSTabVisibilityFromPrefs()
-
-        // Then update with the remote value
         updateTabVisibilityFromRemoteAndPersist()
     }
 
@@ -70,10 +64,10 @@ class WooPosTabController @Inject constructor(
 
     private fun updateTabVisibilityFromRemoteAndPersist() {
         activity.lifecycleScope.launch {
-            val isWooPosEnabledValue = isWooPosEnabled()
-            setPOSTabVisibility(isWooPosEnabledValue)
-            appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), isWooPosEnabledValue)
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(isWooPosEnabledValue))
+            val tabShouldBeVisible = shouldPosTabBeVisible()
+            setPOSTabVisibility(tabShouldBeVisible)
+            appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), tabShouldBeVisible)
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(tabShouldBeVisible))
         }
     }
 

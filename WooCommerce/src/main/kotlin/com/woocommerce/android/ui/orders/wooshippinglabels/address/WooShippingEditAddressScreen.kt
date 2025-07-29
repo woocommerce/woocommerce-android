@@ -80,6 +80,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
@@ -401,7 +402,6 @@ fun WooShippingEditAddressScreen(
             }
         }
 
-        val retry = stringResource(id = R.string.retry)
         if (addressSelection != null) {
             WCModalBottomSheet(
                 sheetState = modalSheetState,
@@ -419,21 +419,7 @@ fun WooShippingEditAddressScreen(
                 )
             }
         } else {
-            LaunchedEffect(error) {
-                if (error != null) {
-                    val result = snackbarHostState.showSnackbar(
-                        message = error.message,
-                        duration = SnackbarDuration.Indefinite,
-                        actionLabel = retry
-                    )
-                    when (result) {
-                        SnackbarResult.Dismissed -> {}
-                        SnackbarResult.ActionPerformed -> {
-                            error.onRetry()
-                        }
-                    }
-                }
-            }
+            ErrorSnackbar(snackbarHostState, error)
         }
     }
     if (loading is WooShippingEditAddressViewModel.LoadingState.DisplayLoading) {
@@ -441,6 +427,29 @@ fun WooShippingEditAddressScreen(
             title = loading.title,
             description = loading.message
         )
+    }
+}
+
+@Composable
+private fun ErrorSnackbar(
+    snackbarHostState: SnackbarHostState,
+    error: WooShippingEditAddressViewModel.EditAddressError?,
+) {
+    val retry = stringResource(id = R.string.retry)
+    LaunchedEffect(error) {
+        if (error != null) {
+            val result = snackbarHostState.showSnackbar(
+                message = error.message,
+                duration = if (error.isIndefinite) SnackbarDuration.Indefinite else SnackbarDuration.Short,
+                actionLabel = retry
+            )
+            when (result) {
+                SnackbarResult.Dismissed -> {}
+                SnackbarResult.ActionPerformed -> {
+                    error.onRetry()
+                }
+            }
+        }
     }
 }
 
@@ -460,6 +469,7 @@ internal fun AddressStatusSection(
     ) {
         val buttonText = when (addressStatus) {
             AddressStatus.VERIFIED -> stringResource(id = R.string.close)
+            AddressStatus.VERIFY_FAILED -> stringResource(id = R.string.woo_shipping_address_use_as_entered)
             AddressStatus.UNVERIFIED -> stringResource(id = R.string.woo_shipping_address_validate_and_save)
             AddressStatus.MISSING_INFO -> stringResource(id = R.string.woo_shipping_address_missing_info_hint)
             AddressStatus.SAVE_CHANGES -> stringResource(id = R.string.woo_shipping_address_save_changes)
@@ -479,9 +489,10 @@ internal fun AddressStatusSection(
                 {}
             }
 
-            AddressStatus.SAVE_CHANGES -> {
+            AddressStatus.SAVE_CHANGES, AddressStatus.VERIFY_FAILED -> {
                 { onUpdateAddress(editableAddress) }
             }
+
             AddressStatus.MISSING_ADDRESS -> {
                 {}
             }
@@ -492,12 +503,21 @@ internal fun AddressStatusSection(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        WCColoredButton(
-            onClick = buttonAction,
-            enabled = addressStatus != AddressStatus.MISSING_INFO,
-            text = buttonText,
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (addressStatus == AddressStatus.VERIFY_FAILED) {
+            WCOutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = buttonText,
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+                onClick = buttonAction
+            )
+        } else {
+            WCColoredButton(
+                onClick = buttonAction,
+                enabled = addressStatus != AddressStatus.MISSING_INFO,
+                text = buttonText,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 

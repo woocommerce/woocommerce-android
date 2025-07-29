@@ -38,15 +38,14 @@ sealed class PackageDTO {
 
 data class DestinationAddressDTO(
     val company: String? = null,
+    val name: String? = null,
+    val phone: String? = null,
+    val address: String? = null,
+    @SerializedName("address_2") val address2: String? = null,
     val city: String? = null,
     val state: String? = null,
     val postcode: String? = null,
     val country: String? = null,
-    val phone: String? = null,
-    val name: String? = null,
-    val address: String? = null,
-    val address2: String? = null,
-    val email: String? = null
 )
 
 data class OriginAddressDTO(
@@ -81,4 +80,9 @@ data class ShippingRateDTO(
 
 data class WooShippingRatesDTO(
     val rates: List<ShippingRateDTO>
+)
+
+data class ShippingRateSurchargeDTO(
+    val value: Any,
+    val surcharge: BigDecimal
 )

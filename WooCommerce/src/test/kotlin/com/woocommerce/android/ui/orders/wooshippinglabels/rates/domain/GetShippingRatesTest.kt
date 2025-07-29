@@ -1,16 +1,16 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesRepository
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.generateShippingRates
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,8 +40,6 @@ class GetShippingRatesTest : BaseUnitTest() {
     )
 
     private val defaultCustomData = CustomsData(
-        packageId = "1",
-        packageName = "Package 1",
         contentType = ContentType.MERCHANDISE,
         contentDescription = "",
         restrictionType = RestrictionType.NONE,
@@ -57,7 +55,6 @@ class GetShippingRatesTest : BaseUnitTest() {
                 WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                     carrier = WooShippingCarrier.DHL,
                     deliveryDays = (1..10).random(),
-                    discount = BigDecimal.ZERO,
                     hasFreePickup = true,
                     insurance = null,
                     isTrackingEnabled = true,
@@ -81,7 +78,7 @@ class GetShippingRatesTest : BaseUnitTest() {
 
     @Test
     fun `when shipping rates request succeeds then result is a success`() = testBlocking {
-        whenever(mapper(any(), any())).doReturn(generateShippingRates())
+        whenever(mapper(any(), any())).doReturn(ShippingLabelSampleData.generateShippingRates())
         whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any(), isNull()))
             .doReturn(Result.success(defaultRates))
 
@@ -115,5 +112,23 @@ class GetShippingRatesTest : BaseUnitTest() {
 
         assertTrue(result.isFailure)
         verify(mapper, never()).invoke(any(), any())
+    }
+
+    @Test
+    fun `when shipping rates request returns empty list, then result is a failure`() = testBlocking {
+        whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any(), isNull()))
+            .doReturn(Result.success(emptyList()))
+
+        val result = sut.invoke(
+            orderId = 3L,
+            selectedPackage = defaultSelectedPackage,
+            shipTo = Address.EMPTY,
+            shipFrom = OriginShippingAddress.EMPTY,
+            weight = 15f,
+            currencyCode = "USD",
+            customsData = defaultCustomData
+        )
+
+        assertTrue(result.isFailure)
     }
 }

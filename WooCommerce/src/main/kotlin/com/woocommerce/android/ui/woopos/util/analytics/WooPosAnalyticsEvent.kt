@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.util.analytics
 import com.woocommerce.android.analytics.IAnalyticsEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CartSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsHeaderType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListItemType
@@ -127,7 +128,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data class BarcodeScanned(
             val scanDurationMs: Long,
-            val isNumericOnly: Boolean,
             val barcodeLength: Int,
             val scannerInfo: String?,
         ) : Event() {
@@ -138,7 +138,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     mapOf(
                         "barcode_length" to barcodeLength.toString(),
                         "scan_duration_ms" to scanDurationMs.toString(),
-                        "is_numeric_only" to isNumericOnly.toString(),
                         "scanner_info" to (scannerInfo ?: "unknown")
                     )
                 )
@@ -147,7 +146,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data class BarcodeScanningFailed(
             val scanDurationMs: Long,
-            val isNumericOnly: Boolean,
             val barcodeLength: Int,
             val scannerInfo: String?,
             val failReason: String,
@@ -159,7 +157,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     mapOf(
                         "barcode_length" to barcodeLength.toString(),
                         "scan_duration_ms" to scanDurationMs.toString(),
-                        "is_numeric_only" to isNumericOnly.toString(),
                         "scanner_info" to (scannerInfo ?: "unknown"),
                         "fail_reason" to failReason
                     )
@@ -338,6 +335,139 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "simple_products_explanation_dialog_shown"
         }
 
+        data object BarcodeScannerSetupFlowShown : Event() {
+            override val name: String = "barcode_scanner_setup_flow_shown"
+        }
+
+        data class BarcodeScannerSetupScannerSelected(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_scanner_selected"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupNextTapped(val scanner: String, val step: String) : Event() {
+            override val name: String = "barcode_scanner_setup_next_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "step" to step
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupBackTapped(val scanner: String, val step: String) : Event() {
+            override val name: String = "barcode_scanner_setup_back_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "step" to step
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupOpenSystemSettingsTapped(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_open_system_settings_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupTestScanSuccess(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_test_scan_success"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupTestScanFailed(val scanner: String, val scanValue: String) : Event() {
+            override val name: String = "barcode_scanner_setup_test_scan_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "scan_value" to scanValue
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupTestScanTimedOut(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_test_scan_timed_out"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupDismissed(val scanner: String?, val step: String?) : Event() {
+            override val name: String = "barcode_scanner_setup_dismissed"
+
+            init {
+                addProperties(
+                    buildMap {
+                        if (scanner != null) {
+                            put("scanner", scanner)
+                        }
+                        if (step != null) {
+                            put("step", step)
+                        }
+                    }
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupRetryTapped(val scanner: String) : Event() {
+            override val name: String = "barcode_scanner_setup_retry_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner
+                    )
+                )
+            }
+        }
+
+        data class BarcodeScannerSetupScannerConnected(val scanner: String, val scannerInfo: String) : Event() {
+            override val name: String = "barcode_scanner_setup_scanner_connected"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "scanner" to scanner,
+                        "scanner_info" to scannerInfo
+                    )
+                )
+            }
+        }
+
         data class SearchButtonTapped(
             val source: ItemsListSource,
         ) : Event() {
@@ -409,6 +539,30 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 if (totalItemsCount != null) {
                     addProperties(mapOf("total_items_count" to totalItemsCount.toString()))
                 }
+            }
+        }
+
+        data class IneligibleUIShown(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
+            override val name: String = "ineligible_ui_shown"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason.toAnalyticsReason()
+                    )
+                )
+            }
+        }
+
+        data class IneligibleUIRetryTapped(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
+            override val name: String = "ineligible_ui_retry_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason.toAnalyticsReason()
+                    )
+                )
             }
         }
     }
@@ -656,5 +810,16 @@ internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Str
     when (this) {
         is WooPosAnalyticsEvent -> addProperties(additionalProperties)
         else -> error("Cannot add properties to non-WooPosAnalytics event")
+    }
+}
+
+internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): String {
+    return when (this) {
+        WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound -> "unknown_wc_plugin"
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
+        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> "feature_switch_disabled"
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> "store_currency"
+        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
+        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
     }
 }

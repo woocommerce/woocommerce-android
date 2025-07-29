@@ -58,7 +58,6 @@ import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
-import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.Lazy
 import dagger.android.DispatchingAndroidInjector
@@ -121,8 +120,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
 
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
-
-    @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
 
     @Inject lateinit var sendTelemetry: SendTelemetry
 
@@ -226,7 +223,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         trackStartupAnalytics()
 
-        observeEncryptedLogsUploadResults()
         uploadEncryptedLogs()
 
         appCoroutineScope.launch {

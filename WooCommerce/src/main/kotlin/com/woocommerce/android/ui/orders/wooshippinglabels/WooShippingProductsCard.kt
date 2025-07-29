@@ -101,6 +101,8 @@ private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::cl
                     customsState = WooShippingLabelCreationViewModel.CustomsState.NotRequired,
                     hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection,
                     shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable,
+                    shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
+                    shipmentPrintLabelUI = ShippingLabelSampleData.getShipmentPrintLabelUI()
                 ),
                 isExpanded = isExpanded
             )
@@ -175,7 +177,9 @@ private fun ShippingProductsCardHeaderPreview() {
         packageSelectionState = WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected,
         customsState = WooShippingLabelCreationViewModel.CustomsState.NotRequired,
         hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection,
-        shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable
+        shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable,
+        shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
+        shipmentPrintLabelUI = ShippingLabelSampleData.getShipmentPrintLabelUI()
     )
     val isExpanded = remember { mutableStateOf(false) }
 

@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
+import com.woocommerce.android.ui.orders.filters.domain.IsSalesChannelFilterSupported
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
@@ -48,6 +49,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     private val productListRepository: ProductListRepository = mock()
     private val customerStore: WCCustomerStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val isSalesChannelFilterSupported: IsSalesChannelFilterSupported = mock()
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
 
@@ -172,7 +174,8 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             analyticsTraWrapper = analyticsTraWrapper,
             productRepository = productListRepository,
             customerStore = customerStore,
-            selectedSite = selectedSite
+            selectedSite = selectedSite,
+            isSalesChannelFilterSupported = isSalesChannelFilterSupported
         )
     }
 

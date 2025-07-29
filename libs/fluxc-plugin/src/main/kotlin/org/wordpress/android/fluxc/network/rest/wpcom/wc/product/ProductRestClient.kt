@@ -576,6 +576,7 @@ class ProductRestClient @Inject constructor(
         filterOptions: Map<ProductFilterOption, String>? = null,
         includeTypes: List<WCProductStore.IncludeType> = emptyList(),
         orderCurrency: String? = null,
+        searchFields: List<String>? = null,
     ): WooPayload<List<ProductWithMetaData>> {
         val params = buildProductParametersMap(
             pageSize = pageSize,
@@ -589,7 +590,8 @@ class ProductRestClient @Inject constructor(
             excludedProductIds = excludedProductIds,
             filterOptions = filterOptions,
             includeTypes = includeTypes,
-            orderCurrency = orderCurrency
+            orderCurrency = orderCurrency,
+            searchFields = searchFields
         )
 
         val url = WOOCOMMERCE.products.pathV3
@@ -635,6 +637,7 @@ class ProductRestClient @Inject constructor(
         filterOptions: Map<ProductFilterOption, String>? = null,
         includeTypes: List<WCProductStore.IncludeType> = emptyList(),
         orderCurrency: String? = null,
+        searchFields: List<String>? = null,
     ): MutableMap<String, String> {
         val params = buildBaseParams(pageSize, sortType, offset, includeTypes, orderCurrency)
 
@@ -643,7 +646,11 @@ class ProductRestClient @Inject constructor(
         addFilterOptions(params, filterOptions)
         addSearchParams(params, searchQuery, skuSearchOptions)
         addGlobalUniqueIdSearchQuery(params, globalUniqueIdSearchQuery)
+
         params.putIfNotEmpty("search_name_or_sku" to searchNameOrSkuQuery)
+        if (searchFields != null) {
+            params.putIfNotEmpty("search_fields" to searchFields.joinToString(","))
+        }
 
         return params
     }

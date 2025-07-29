@@ -30,10 +30,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductListItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 
@@ -51,6 +50,8 @@ fun WooShippingCustomsFormScreen(viewModel: WooShippingCustomsFormViewModel) {
         shouldDisplayContentTypeInput = viewState?.shouldDisplayContentTypeInput ?: false,
         shouldDisplayRestrictionTypeInput = viewState?.shouldDisplayRestrictionTypeInput ?: false,
         shippingProducts = viewState?.shippingProducts ?: emptyList(),
+        currencySymbol = viewState?.currencySymbol ?: "",
+        weightUnit = viewState?.weightUnit ?: "",
         onContentTypeClick = viewModel::onContentTypeClick,
         onRestrictionTypeClick = viewModel::onRestrictionTypeClick,
         onItnChanged = viewModel::onITNChanged,
@@ -80,6 +81,8 @@ fun WooShippingCustomsFormScreen(
     shouldDisplayContentTypeInput: Boolean,
     shouldDisplayRestrictionTypeInput: Boolean,
     shippingProducts: List<WooShippingCustomsProductUIModel>,
+    currencySymbol: String,
+    weightUnit: String,
     onContentTypeClick: () -> Unit,
     onRestrictionTypeClick: () -> Unit,
     onItnChanged: (String) -> Unit,
@@ -122,8 +125,7 @@ fun WooShippingCustomsFormScreen(
                     isError = otherContentDetailsInput is InputValue.Error,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = modifier.fillMaxWidth(),
-                    helperText = otherContentDetailsInput.errorMessageOrNull
-                        ?.let { stringResource(it) }
+                    helperText = otherContentDetailsInput.errorMessageOrNull?.getText()
                         ?: stringResource(R.string.woo_shipping_labels_customs_content_details_description)
                 )
             }
@@ -144,8 +146,7 @@ fun WooShippingCustomsFormScreen(
                     isError = otherRestrictionDetailsInput is InputValue.Error,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = modifier.fillMaxWidth(),
-                    helperText = otherRestrictionDetailsInput.errorMessageOrNull
-                        ?.let { stringResource(it) }
+                    helperText = otherRestrictionDetailsInput.errorMessageOrNull?.getText()
                         ?: stringResource(R.string.woo_shipping_labels_customs_restriction_details_description)
                 )
             }
@@ -158,8 +159,7 @@ fun WooShippingCustomsFormScreen(
                 isError = itnValue is InputValue.Error,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 modifier = modifier.fillMaxWidth(),
-                helperText = itnValue.errorMessageOrNull
-                    ?.let { stringResource(it) }
+                helperText = itnValue.errorMessageOrNull?.getText()
             )
 
             Row(
@@ -193,6 +193,8 @@ fun WooShippingCustomsFormScreen(
                 WooShippingCustomsProductListItem(
                     modifier = modifier.fillMaxWidth(),
                     itemData = product,
+                    currencySymbol = currencySymbol,
+                    weightUnit = weightUnit,
                     onExpand = { onProductExpanded(index, it) },
                     onDescriptionChanged = { onDescriptionChanged(index, it) },
                     onTariffChanged = { onTariffChanged(index, it) },
@@ -238,7 +240,8 @@ fun PreviewWooShippingCustomsFormScreen() {
                         originCountry = "United Stats of America",
                         originCountryCode = "US",
                         quantity = 1F,
-                        isExpanded = false
+                        isExpanded = false,
+                        formattedPriceAndWeight = "$15 • 5kg"
                     ),
                     WooShippingCustomsProductUIModel(
                         productId = 0,
@@ -250,9 +253,12 @@ fun PreviewWooShippingCustomsFormScreen() {
                         originCountry = "United Stats of America",
                         originCountryCode = "US",
                         quantity = 1F,
-                        isExpanded = true
+                        isExpanded = true,
+                        formattedPriceAndWeight = "$15 • 5kg"
                     )
                 ),
+                currencySymbol = "$",
+                weightUnit = "kg",
                 onContentTypeClick = {},
                 onRestrictionTypeClick = {},
                 onItnChanged = {},

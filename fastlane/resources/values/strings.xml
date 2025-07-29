@@ -166,6 +166,7 @@
     <string name="store_name_default">Store name</string>
     <string name="sorted_by">Sorted by 1%s</string>
     <string name="add">Add %s</string>
+    <string name="barcode_ean13_content_description">Barcode EAN13</string>
     <!--
         Date/Time Labels
     -->
@@ -626,6 +627,7 @@
     <string name="orderlist_bulk_update_result_no_orders_updated">No orders updated. Please try again.</string>
     <string name="orderlist_bulk_update_result_all_failed">Failed to update orders. Please try again.</string>
     <string name="orderlist_bulk_update_result_partial_success">%d order(s) updated, and %d order(s) failed to update. Please try again.</string>
+    <string name="pos_badge" translatable="false">POS</string>
 
     <!--
          Simple Payments
@@ -907,6 +909,7 @@
     <string name="orderfilters_date_range_filter">Date Range</string>
     <string name="orderfilters_product_filter">Product</string>
     <string name="orderfilters_customer_filter">Customer</string>
+    <string name="orderfilters_sales_channel_filter">Sales Channel</string>
     <string name="orderfilters_selected_filter_fallback_display_value">Id: %d</string>
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
@@ -921,6 +924,7 @@
     <string name="orderfilters_date_range_filter_last_two_days">Last 2 Days</string>
     <string name="orderfilters_date_range_filter_last_7_days">Last 7 days</string>
     <string name="orderfilters_date_range_filter_last_30_days">Last 30 days</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">Point of Sale</string>
     <string name="orderfilters_date_range_filter_custom_range">Custom Range</string>
     <string name="orderfilters_date_range_picker_title">Select dates</string>
     <string name="orderfilters_date_range_start_date">Start Date</string>
@@ -1001,6 +1005,7 @@
     <string name="orderdetail_shipping_label_item_carrier">Shipping carriers and rates</string>
     <string name="orderdetail_shipping_label_item_payment">Payment method</string>
     <string name="orderdetail_shipping_label_item_payment_type">Credit card</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">View purchased shipping label</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Show shipment details</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
@@ -1123,6 +1128,7 @@
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
     <string name="shipping_label_preview_pdf_app_missing">Unable to preview shipping label. Please install a PDF viewer app and try again.</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297mm)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
     <string name="print_receipt_label_info_step_count_1" translatable="false">1</string>
@@ -1291,6 +1297,7 @@
     <string name="shipping_label_shipment_details_title">Shipment details</string>
     <string name="shipping_label_shipment_details_order_details">Order details</string>
     <string name="shipping_label_shipment_details_shipment_cost">Shipment cost</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (base fee)</string>
     <string name="shipping_label_shipment_details_mark_order_complete">After purchasing a label, mark this order as complete and notify the customer.</string>
     <string name="shipping_label_shipment_details_purchase_label">Purchase Label · %1$s </string>
     <string name="shipping_label_shipment_details_purchase_label_disabled">Purchase Label</string>
@@ -4296,6 +4303,8 @@
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item – %s</string>
     <string name="woopos_cart_barcode_scan_result_server_error">Server error - %s</string>
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">Scanned barcode is too short</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">Scanner did not send end-of-line character</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
@@ -4309,21 +4318,10 @@
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
 
-    <string name="woopos_dialog_barcode_info_heading">Barcode scanning</string>
-    <string name="woopos_dialog_barcode_info_intro_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• Set up barcodes in the "GTIN, UPC, EAN, ISBN" field in Products &gt; Product Details &gt; Inventory. </string>
-    <string name="woopos_dialog_barcode_info_more_details_link">More details</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Refer to your Bluetooth barcode scanner\'s instructions to set HID mode.</string>
-    <string name="woopos_dialog_barcode_info_tertiary_message">• Connect your barcode scanner in System Bluetooth settings.</string>
-    <string name="woopos_dialog_barcode_info_quaternary_message">• Scan barcodes while on the item list to add products to the cart.</string>
-    <string name="woopos_dialog_barcode_info_quinary_message">The scanner emulates a keyboard, so sometimes it will prevent the software keyboard from showing, e.g. in search. Tap on the keyboard icon to show the software keyboard back.</string>
-    <string name="woopos_dialog_barcode_info_button_label">OK</string>
-    <string name="woopos_dialog_barcode_info_content_description">Barcode scanning information dialog</string>
-    <string name="woopos_dialog_barcode_info_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
-    <string name="woopos_barcode_scanning_title">Barcode scanning</string>
+    <string name="woopos_barcode_scanning_title">Set up a barcode scanner</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
@@ -4461,6 +4459,57 @@
     <string name="woopos_search_coupons_error_title">Unable to load coupons</string>
     <string name="woopos_search_items_error_description">Please try again.</string>
 
+    <string name="woopos_eligibility_exit_pos_label">Exit POS</string>
+    <string name="woopos_eligibility_retry_check_label">Retry</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Please make sure the WooCommerce plugin is installed and activated from your WordPress admin. If there is still an issue, please contact support for assistance.</string>
+    <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Your WooCommerce version is not supported. The POS system requires WooCommerce version %1$s or above. Please update WooCommerce to the latest version.</string>
+    <string name="woopos_eligibility_reason_check_connection">Check your internet connection and try relaunching the app. If the issue persists, please contact support.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale must be enabled to proceed. Please enable the POS feature from your WordPress admin under WooCommerce settings &gt; Advanced &gt; Features.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">The POS system is not available for your store\'s currency. In %1$s, it currently supports only %2$s. Please check your store currency settings or contact support for assistance.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">The POS system is not available for your store’s currency. Please check your store currency settings or contact support for assistance.</string>
+    <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
+    <string name="woopos_eligibility_screen_US_country_name">the United States</string>
+    <string name="woopos_eligibility_screen_UK_country_name">the United Kingdom</string>
+
+    <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>
+    <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
+    <string name="woopos_scanning_setup_device_selection_title">Set up a barcode scanner</string>
+    <string name="woopos_scanning_setup_device_selection_message">Select a model from the list:</string>
+    <string name="woopos_scanning_setup_hid_title">Scanner setup</string>
+    <string name="woopos_scanning_setup_hid_message">Use your barcode scanner to scan the code below to enable Bluetooth HID mode.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">Scanner setup</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">Use your barcode scanner to scan the code below to enter pairing mode.</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">Pair your scanner</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
+    <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
+    <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
+    <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
+    <string name="woopos_scanning_setup_more_information">How to set up barcodes on products</string>
+    <string name="woopos_scanning_setup_info_title">Scanner setup</string>
+    <string name="woopos_scanning_setup_info_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
+    <string name="woopos_scanning_setup_info_bullet_1">Refer to your bluetooth barcode scanner in System Bluetooth settings.</string>
+    <string name="woopos_scanning_setup_info_bullet_2">Scan barcodes while on the item list to add products to the cart.</string>
+    <string name="woopos_scanning_setup_info_bullet_3">Ensure the search field is not enabled while scanning barcodes.</string>
+    <string name="woopos_scanning_setup_info_text">Barcode scanner may hide keyboard. Tap keyboard icon or enable in OS settings under \"Physical Keyboard\"</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">How to set up barcodes on products</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">You can set up barcodes in the GTIN, UPC, EAN, ISBN field in the product\'s inventory tab. For more details</string>
+    <string name="woopos_scanning_setup_visit_documentation">visit the documentation</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">Barcode setup inventory example</string>
+    <string name="woopos_scanning_setup_test_scanner_title">Test your scanner</string>
+    <string name="woopos_scanning_setup_test_scanner_message">Scan this test barcode to verify your scanner is working correctly.</string>
+    <string name="woopos_scanning_setup_timeout_title">No scan data found yet</string>
+    <string name="woopos_scanning_setup_timeout_message">Scan the barcode to test your scanner. If the issue continues, please check Bluetooth settings and try again.</string>
+    <string name="woopos_scanning_setup_scan_failed_title">Scanning issue found</string>
+    <string name="woopos_scanning_setup_scan_failed_message">Please check the scanner’s manual and reset it to factory settings, then retry the setup flow.</string>
+    <string name="woopos_scanning_setup_button_next">Next</string>
+    <string name="woopos_scanning_setup_button_back">Back</string>
+    <string name="woopos_scanning_setup_button_retry">Retry</string>
+    <string name="woopos_scanning_setup_button_done">Done</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
+    <string name="woopos_scanning_setup_device_other">Other</string>
+
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
     <string name="customers_details_registration_section">Registration</string>
@@ -4569,14 +4618,17 @@
     <string name="woo_shipping_labels_customs_other_error_message">Type must not be empty</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Invalid ITN format</string>
     <string name="woo_shipping_labels_customs_itn_required_error">ITN is required</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">For shipments over $2,500, you need to obtain a 14-digit AES ITN for U.S. export reporting verification.</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">For shipments over $2,500, you need to obtain a 14-digit AES ITN for U.S. export reporting verification.</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">International Transaction Number is required for shipping items valued over $2,500 per tariff number.\nProducts with tariff number %1$s add up to more than $2,500.</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">International Transaction Number is required for shipments to the destination country.</string>
     <string name="woo_shipping_labels_customs_product_details_title">Product Details</string>
     <string name="woo_shipping_labels_customs_product_details_description">Description</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Missing Description</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS tariff number</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Missing tariff number</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">The tariff number must be between 6 and 12 digits long</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">Value per unit</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Weight per unit</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">Weight must be greater than zero</string>
     <string name="woo_shipping_labels_customs_product_details_value_required">Value required</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country">Origin country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Missing country</string>
@@ -4624,8 +4676,12 @@
 
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
+    <string name="woo_shipping_address_use_as_entered">Use address as entered</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
+    <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
+    <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_labels_order_completion_error">Couldn\'t mark the order as complete</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
     <string name="woo_shipping_address_save_changes">Save changes</string>
@@ -4693,6 +4749,14 @@
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">I will not ship any &lt;a href=\"ups-prohibited-items\"&gt;Prohibited Items&lt;/a&gt; that UPS® disallows, nor any regulated items without the necessary permissions.</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">I also agree to the &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_accept">Confirm and continue</string>
+
+    <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_option_signature_required">Signature required</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Adult signature required</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Carbon neutral</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Saturday delivery</string>
+    <string name="woo_shipping_rate_option_additional_handling">Additional handling</string>
 
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>

@@ -10,7 +10,9 @@ data class AccountSettingsModel(
     val canManagePayments: Boolean,
     val canEditSettings: Boolean,
     val storeOwnerName: String,
-    val storeOwnerUsername: String
+    val storeOwnerUsername: String,
+    val paperSize: WooShippingLabelPaperSize,
+    val lastOrderCompleted: Boolean
 )
 
 @Parcelize

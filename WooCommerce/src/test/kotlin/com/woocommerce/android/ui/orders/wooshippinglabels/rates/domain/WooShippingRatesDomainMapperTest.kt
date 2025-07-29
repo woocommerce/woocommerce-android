@@ -20,8 +20,9 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
     private val resourceProvider: ResourceProvider = mock {
-        on(it.getString(any(), any())).thenAnswer { i -> "formatted ${i.arguments[1]}" }
         on(it.getString(any())).thenAnswer { i -> "formatted ${i.arguments[0]}" }
+        on(it.getString(any(), any())).thenAnswer { i -> "formatted ${i.arguments.joinToString(",")}" }
+        on(it.getString(any(), any(), any())).thenAnswer { i -> "formatted ${i.arguments.joinToString(",")}" }
         on(it.getQuantityString(any(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer { i -> "formatted ${i.arguments[0]}" }
     }
@@ -75,7 +76,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = null,
                         isTrackingEnabled = true,
@@ -100,7 +100,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(2, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(2, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -111,7 +111,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = true,
@@ -136,7 +135,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(3, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(3, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -147,7 +146,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = false,
@@ -172,7 +170,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(2, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(2, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -183,7 +181,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = true,
@@ -208,7 +205,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(3, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(3, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -219,7 +216,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = false,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = true,
@@ -244,7 +240,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(2, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(2, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -255,7 +251,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = true,
@@ -280,7 +275,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(3, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(3, rate.shippingRateIncludedOptions.size)
     }
 
     @Suppress("LongMethod")
@@ -300,7 +295,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
             ratesMap[WooShippingRateModel.Option.DEFAULT] = WooShippingRateModel(
                 carrier = carrier,
                 deliveryDays = (1..10).random(),
-                discount = BigDecimal.ZERO,
                 hasFreePickup = true,
                 insurance = BigDecimal.TEN,
                 isTrackingEnabled = true,
@@ -322,7 +316,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
             ratesMap[WooShippingRateModel.Option.SIGNATURE] = WooShippingRateModel(
                 carrier = carrier,
                 deliveryDays = (1..10).random(),
-                discount = BigDecimal.ZERO,
                 hasFreePickup = true,
                 insurance = BigDecimal.TEN,
                 isTrackingEnabled = true,
@@ -344,7 +337,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
             ratesMap[WooShippingRateModel.Option.ADULT_SIGNATURE] = WooShippingRateModel(
                 carrier = carrier,
                 deliveryDays = (1..10).random(),
-                discount = BigDecimal.ZERO,
                 hasFreePickup = true,
                 insurance = BigDecimal.TEN,
                 isTrackingEnabled = true,

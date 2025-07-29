@@ -84,7 +84,7 @@ class ObserveShippingLabelStatus @Inject constructor(
         val updatedConfig = currentConfig.copy(
             shippingLabelData = currentConfig.shippingLabelData.copy(
                 currentOrderLabels = addPurchasedLabelToConfigDTO(
-                    currentConfig.shippingLabelData.currentOrderLabels,
+                    currentConfig.shippingLabelData.currentOrderLabels ?: emptyList(),
                     response
                 )
             )

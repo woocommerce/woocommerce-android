@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.FeeLine
@@ -16,9 +17,9 @@ import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDtoMapper.Companion.toDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
-import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
+import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -41,7 +42,7 @@ class OrderUpdateStore @Inject internal constructor(
     private val ordersDaoDecorator: OrdersDaoDecorator,
     private val metaDataDao: MetaDataDao,
     private val siteSqlUtils: SiteSqlUtils,
-    private val orderSqlUtils: OrderSqlUtils
+    private val orderSummaryDao: OrderSummaryDao
 ) {
     suspend fun updateCustomerOrderNote(
         orderId: Long,
@@ -281,7 +282,7 @@ class OrderUpdateStore @Inject internal constructor(
             } else {
                 ordersDaoDecorator.deleteOrder(site.localId(), orderId)
                 metaDataDao.deleteMetaData(localSiteId = site.localId(), parentItemId = orderId)
-                orderSqlUtils.deleteOrderSummaryById(site, orderId)
+                orderSummaryDao.deleteOrderSummaryById(site.localId(), RemoteId(orderId))
                 WooResult(Unit)
             }
         }

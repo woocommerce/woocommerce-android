@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-19 16:54:04+0000
+Translation-Revision-Date: 2025-07-17 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">Extra verwerking</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Zaterdaglevering</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Koolstofneutraal</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Handtekening volwassene vereist</string>
+    <string name="woo_shipping_rate_option_signature_required">Handtekening vereist</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
+    <string name="woopos_eligibility_retry_check_label">Opnieuw proberen</string>
+    <string name="woopos_eligibility_exit_pos_label">POS afsluiten</string>
+    <string name="woo_shipping_labels_package_saving_error">Kan het pakket niet opslaan</string>
+    <string name="woo_shipping_labels_package_removing_error">Kan het pakket niet verwijderen</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Raadpleeg de instructies van je Bluetooth-streepjescodescanner om de HID-modus in te stellen. Dit vereist meestal het scannen van een speciale streepjescode in de handleiding.</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">Scanner heeft geen regeleinde-teken verzonden</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (basistarief)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">Aangeschaft verzendlabel weergeven</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">Gescande streepjescode is te kort</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297 mm)</string>
+    <string name="wpp_shipping_ups_tos_accept">Bevestigen en doorgaan</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">Ik ga ook akkoord met de &lt;a href=\"ups-technology-agreement\"&gt;UPS®-technologieovereenkomst&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">Ik zal geen &lt;a href=\"ups-prohibited-items\"&gt;Verboden artikelen&lt;/a&gt; verzenden die niet door UPS® zijn toegestaan, alsook geen gereguleerde artikelen zonder de benodigde toestemmingen.</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">Ik ga akkoord met de &lt;a href=\"ups-tos\"&gt;UPS®-servicevoorwaarden&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_description">Je moet akkoord gaan met de volgende algemene voorwaarden om vanaf dit adres te kunnen verzenden met UPS®:</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">Verzenden vanaf</string>
+    <string name="wpp_shipping_ups_tos_title">Algemene voorwaarden van UPS®</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">Vernieuwen van je betalingsmethoden niet mogelijk</string>
+    <string name="woo_shipping_payment_method_added">Betalingsmethode toegevoegd</string>
+    <string name="woo_shipping_payment_use_card_button">Deze kaart gebruiken</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">Betalingsbewijs e-mailen</string>
+    <string name="woo_shipping_payment_methods_info_footer">Creditcards worden opgehaald uit het volgende WordPress.com-account: %1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">Nieuwe creditcard of betaalpas</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">Voeg een betalingsmethode toe om  een verzendlabel aan te schaffen</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">Betalingsmethode toevoegen</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">Alleen de site-eigenaar kan de betalingsmethoden voor verzendlabels beheren. Neem contact op met winkeleigenaar %1$s (%2$s) om betalingsmethoden te beheren.</string>
+    <string name="woo_shipping_payment_screen_description">Kies een betalingsmethode.</string>
+    <string name="woo_shipping_payment_screen_title">Betalingsmethode</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">Serverfout – %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">Betalingsmethode bewerken</string>
+    <string name="shipping_label_shipment_details_add_payment_method">Betalingsmethode toevoegen</string>
+    <string name="shipping_label_shipment_details_payment_method">Betalingsmethode</string>
+    <string name="point_of_sale">Verkooppunt</string>
     <string name="media_loading_failed">Media laden is mislukt</string>
     <string name="no_network_message">Er is geen netwerk beschikbaar</string>
     <string name="media_library_title">WordPress-mediabibliotheek</string>
@@ -18,18 +58,16 @@ Language: nl
     <string name="woopos_dialog_barcode_info_background_content_description">Achtergrond gedimd. Tik om het dialoogvenster te sluiten.</string>
     <string name="woopos_dialog_barcode_info_content_description">Dialoogvenster scaninformatie streepjescode</string>
     <string name="woopos_dialog_barcode_info_button_label">OK</string>
-    <string name="woo_shipping_refund_description">Vraag een terugbetaling voor je ongebruikte verzendlabel aan. Het proces waarmee je het verzendlabel laat terugbetalen, gaat onmiddellijk van start en is gewoonlijk binnen 14 werkdagen afgerond.</string>
     <string name="woo_shipping_split_shipment_error">We konden de verzendingen niet splitsen. Probeer het nog eens.</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">Coupon %1$s toegevoegd aan winkelmandje</string>
     <string name="woopos_cart_product_added_to_cart_accessibility">Product %1$s toegevoegd aan winkelmandje, prijs %2$s</string>
     <string name="woopos_barcode_scanning_title">Streepjescode scannen</string>
     <string name="woopos_dialog_barcode_info_quinary_message">De scanner simuleert een toetsenbord, dus soms wordt het softwaretoetsenbord niet weergegeven, bijvoorbeeld in de zoekbalk. Tik op het toetsenbordpictogram om het softwaretoetsenbord te laten zien.</string>
+    <string name="woo_shipping_refund_duration_description">Vraag een terugbetaling voor je ongebruikte verzendlabel aan. Het proces waarmee je het verzendlabel laat terugbetalen, gaat onmiddellijk van start en is gewoonlijk binnen %d werkdagen afgerond.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• Scan streepjescodes in de lijst met artikelen om producten aan het winkelmandje toe te voegen.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• Verbind je streepjescodescanner in de Bluetooth-instellingen van het systeem.</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Raadpleeg de instructies van de Bluetooth-streepjescodescanner om de HID-modus in te stellen.</string>
     <string name="woopos_dialog_barcode_info_more_details_link">Meer details</string>
     <string name="woopos_dialog_barcode_info_primary_message">• Stel streepjescodes in, in het veld \'GTIN, UPC, EAN, ISBN\' in Producten &gt; Productgegevens &gt; Inventaris. </string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">Aanvraag geannuleerd</string>
     <string name="woopos_cart_barcode_scan_result_network_error">Geen internetverbinding</string>
     <string name="woopos_dialog_barcode_info_intro_message">Je kunt streepjescodes scannen met een externe scanner om snel een winkelmandje te bouwen.</string>
     <string name="woopos_dialog_barcode_info_heading">Streepjescode scannen</string>

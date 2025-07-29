@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -62,35 +63,31 @@ import com.woocommerce.android.ui.compose.component.SelectionCheck
 import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
-import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingRateSummaryUI
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
-import kotlin.random.Random
 
 @Composable
 internal fun ShippingRatesCard(
-    selectedRate: ShippingRateUI?,
-    shippingRates: Map<CarrierUI, List<ShippingRateUI>>,
-    selectedSortOption: ShippingSortOption,
+    state: WooShippingLabelCreationViewModel.ShippingRatesState.DataState,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
-    onSelectedSippingRateChanged: (rate: ShippingRateUI) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         ShippingRatesHeader(
-            selectedSortOption = selectedSortOption,
+            selectedSortOption = state.selectedRatesSortOrder,
             onSortOptionSelected = onSelectedRateSortOrderChanged,
             modifier = Modifier.padding(start = dimensionResource(R.dimen.major_100))
         )
         ShippingRates(
-            selectedRate = selectedRate,
-            shippingRates = shippingRates,
-            onSelectedSippingRateChanged = onSelectedSippingRateChanged
+            shippingRates = state.shippingRates,
+            selectedRate = state.selectedRate,
+            onSelectedSippingRateChanged = state.onSelectedShippingRateChanged,
+            onSelectedRateOptionChanged = state.onSelectedRateOptionChanged,
         )
     }
 }
@@ -99,15 +96,10 @@ internal fun ShippingRatesCard(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = Devices.PIXEL)
 @Composable
 private fun ShippingRatesCardPreview() {
-    val rates = generateShippingRates()
-    val selected = rates.values.first().first()
     WooThemeWithBackground {
         ShippingRatesCard(
-            selectedRate = selected,
-            shippingRates = generateShippingRates(),
-            selectedSortOption = ShippingSortOption.CHEAPEST,
+            state = ShippingLabelSampleData.getShippingRatesSection(),
             onSelectedRateSortOrderChanged = {},
-            onSelectedSippingRateChanged = {}
         )
     }
 }
@@ -121,9 +113,9 @@ internal fun ShippingRatesSectionMissingInfo(
         modifier = modifier
             .dashedBorder(
                 color = colorResource(R.color.divider_color),
-                strokeWidth = 2.dp,
-                dashLength = 8.dp,
-                gapLength = 8.dp,
+                strokeWidth = 1.dp,
+                dashLength = 4.dp,
+                gapLength = 6.dp,
                 shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
             )
             .padding(horizontal = 32.dp, vertical = 40.dp),
@@ -169,9 +161,9 @@ internal fun ShippingRatesLoading(
                 .fillMaxWidth()
                 .dashedBorder(
                     color = colorResource(R.color.divider_color),
-                    strokeWidth = 2.dp,
-                    dashLength = 8.dp,
-                    gapLength = 8.dp,
+                    strokeWidth = 1.dp,
+                    dashLength = 4.dp,
+                    gapLength = 6.dp,
                     shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
                 )
                 .padding(horizontal = 32.dp, vertical = 40.dp),
@@ -274,9 +266,10 @@ private fun SortingDropdownMenu(
 
 @Composable
 fun ShippingRates(
-    selectedRate: ShippingRateUI?,
     shippingRates: Map<CarrierUI, List<ShippingRateUI>>,
+    selectedRate: ShippingRateUI?,
     onSelectedSippingRateChanged: (rate: ShippingRateUI) -> Unit,
+    onSelectedRateOptionChanged: (ShippingRateOption, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     tabModifier: Modifier = Modifier
 ) {
@@ -334,7 +327,7 @@ fun ShippingRates(
                     carrier = carrier,
                     shippingRate = rate,
                     selectedRate = selectedRate,
-                    onSelectedSippingRateChanged = onSelectedSippingRateChanged,
+                    onSelectedRateOptionChanged = onSelectedRateOptionChanged,
                     modifier = Modifier.clickable { onSelectedSippingRateChanged(rate) }
                 )
             }
@@ -362,7 +355,7 @@ private fun ShippingRateItem(
     carrier: CarrierUI,
     shippingRate: ShippingRateUI,
     selectedRate: ShippingRateUI?,
-    onSelectedSippingRateChanged: (rate: ShippingRateUI) -> Unit,
+    onSelectedRateOptionChanged: (ShippingRateOption, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isSelected = selectedRate?.id == shippingRate.id
@@ -403,23 +396,22 @@ private fun ShippingRateItem(
             Column(modifier = Modifier.animateContentSize()) {
                 Row {
                     Text(
-                        text = shippingRate.selectedOption.title,
+                        text = shippingRate.title,
                         style = MaterialTheme.typography.body1,
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 12.dp)
                     )
                     Text(
-                        text = shippingRate.selectedOption.formatedPrice,
+                        text = shippingRate.formattedBasePrice,
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 if (isSelected) {
                     ShippingRateItemExpandedDescription(
-                        shippingRate = shippingRate,
-                        selectedRate = selectedRate,
-                        onSelectedSippingRateChanged = onSelectedSippingRateChanged,
+                        shippingRate = selectedRate!!,
+                        onSelectedRateOptionChanged = onSelectedRateOptionChanged,
                         modifier = Modifier.padding(start = 12.dp, top = 8.dp, end = 16.dp)
                     )
                 } else {
@@ -440,9 +432,9 @@ private fun getShippingRateFormattedDescription(
 ): AnnotatedString {
     return buildAnnotatedString {
         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-            append(shippingRate.defaultRate.formattedEstimatedDays)
+            append(shippingRate.formattedEstimatedDays)
         }
-        val options = shippingRate.defaultRate.shippingRateOptions
+        val options = shippingRate.shippingRateIncludedOptions
         if (options.isNotEmpty()) {
             append(" • ")
             val include = context.getString(
@@ -457,14 +449,13 @@ private fun getShippingRateFormattedDescription(
 @Composable
 private fun ShippingRateItemExpandedDescription(
     shippingRate: ShippingRateUI,
-    selectedRate: ShippingRateUI?,
-    onSelectedSippingRateChanged: (rate: ShippingRateUI) -> Unit,
+    onSelectedRateOptionChanged: (ShippingRateOption, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val options = shippingRate.defaultRate.shippingRateOptions
+    val options = shippingRate.shippingRateIncludedOptions
     Column(modifier = modifier) {
         Text(
-            text = shippingRate.defaultRate.formattedEstimatedDays,
+            text = shippingRate.formattedEstimatedDays,
             style = MaterialTheme.typography.body2,
             modifier = Modifier.padding(top = 8.dp, end = 16.dp, bottom = 8.dp),
             fontWeight = FontWeight.Bold
@@ -484,41 +475,40 @@ private fun ShippingRateItemExpandedDescription(
                 )
             }
         }
-        SelectSignatureRequired(
+        ShippingRateOptions(
             options = shippingRate.options,
-            currentSelectedOption = selectedRate?.selectedOption,
-            onSelectedOption = { option ->
-                val selection = if (option != selectedRate?.selectedOption) {
-                    option
-                } else {
-                    shippingRate.defaultRate
-                }
-                onSelectedSippingRateChanged(shippingRate.copy(selectedOption = selection))
-            },
+            currentSelectedOptions = listOf(shippingRate.selectedOption) + shippingRate.additionalSelectedOptions,
+            onSelectedOption = onSelectedRateOptionChanged,
             modifier = Modifier.padding(top = 8.dp)
         )
     }
 }
 
 @Composable
-private fun SelectSignatureRequired(
-    options: Map<Option, ShippingRateOptionUI>,
-    currentSelectedOption: ShippingRateOptionUI?,
-    onSelectedOption: (selectedOption: ShippingRateOptionUI) -> Unit,
+private fun ShippingRateOptions(
+    options: Map<ShippingRateOption, ShippingRateOptionUI>,
+    currentSelectedOptions: List<ShippingRateOption>,
+    onSelectedOption: (selectedOption: ShippingRateOption, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        options.filter { it.key != Option.DEFAULT }
+        options.filter { it.key != ShippingRateOption.DEFAULT }
             .forEach { option ->
+                val isSelected = currentSelectedOptions.contains(option.key)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .clickable { onSelectedOption(option.value) }
+                        .toggleable(
+                            value = isSelected,
+                            onValueChange = { isChecked ->
+                                onSelectedOption(option.key, isChecked)
+                            }
+                        )
                         .padding(vertical = 8.dp)
                         .fillMaxWidth()
                 ) {
                     SelectionCheck(
-                        isSelected = option.value.rate.rateId == currentSelectedOption?.rate?.rateId,
+                        isSelected = isSelected,
                         onSelectionChange = null,
                         modifier = Modifier.padding(end = 4.dp)
                     )
@@ -536,6 +526,8 @@ enum class ShippingSortOption(@StringRes val stringResource: Int) {
     FASTEST(R.string.shipping_label_shipping_rates_sort_option_fastest)
 }
 
+typealias ShippingRateOption = WooShippingRateModel.Option
+
 @Parcelize
 data class CarrierUI(
     val carrier: WooShippingCarrier,
@@ -545,116 +537,28 @@ data class CarrierUI(
 
 @Parcelize
 data class ShippingRateUI(
-    val options: Map<Option, ShippingRateOptionUI>,
-    val selectedOption: ShippingRateOptionUI
+    val title: String,
+    val formattedBasePrice: String,
+    val shippingRateIncludedOptions: List<String>,
+    val formattedEstimatedDays: String,
+    val options: Map<ShippingRateOption, ShippingRateOptionUI>,
+    val selectedOption: ShippingRateOption,
+    val additionalSelectedOptions: List<ShippingRateOption>,
 ) : Parcelable {
     val id: String
         get() = defaultRate.rate.rateId
     val defaultRate: ShippingRateOptionUI
-        get() = options[Option.DEFAULT] ?: options.values.first()
-
-    val summary: ShippingRateSummaryUI
-        get() = ShippingRateSummaryUI(
-            serviceName = selectedOption.title,
-            total = selectedOption.formatedPrice,
-            optionName = selectedOption.formattedOptionName,
-            optionFee = selectedOption.formattedFee
-        )
+        get() = options.getValue(ShippingRateOption.DEFAULT)
+    val selectedRateOption: ShippingRateOptionUI
+        get() = options.getValue(selectedOption)
 }
 
 @Parcelize
 data class ShippingRateOptionUI(
-    val title: String,
-    val formatedPrice: String,
+    val option: ShippingRateOption,
+    val optionName: String,
+    val fee: BigDecimal,
     val formattedFee: String,
-    val formattedOptionName: String,
     val feeDescription: String,
-    val formattedEstimatedDays: String,
-    val option: Option,
-    val shippingRateOptions: List<String>,
     val rate: WooShippingRateModel
 ) : Parcelable
-
-fun generateShippingRates(): Map<CarrierUI, List<ShippingRateUI>> {
-    val carriers = listOf(
-        CarrierUI(
-            carrier = WooShippingCarrier.DHL,
-            name = "DHL Express",
-            logoRes = R.drawable.dhl_logo
-        ),
-        CarrierUI(
-            carrier = WooShippingCarrier.USPS,
-            name = "USPS",
-            logoRes = R.drawable.usps_logo
-        ),
-        CarrierUI(
-            carrier = WooShippingCarrier.UPS,
-            name = "UPS",
-            logoRes = R.drawable.ups_logo
-        ),
-        CarrierUI(
-            carrier = WooShippingCarrier.FEDEX,
-            name = "Fed Ex",
-            logoRes = R.drawable.fedex_logo
-        ),
-        CarrierUI(
-            carrier = WooShippingCarrier.UNKNOWN,
-            name = "Canada Post",
-            logoRes = null
-        )
-    )
-
-    return carriers.associateWith {
-        generateRates(
-            it.carrier,
-            Random(0).nextInt(from = 3, until = 10)
-        )
-    }
-}
-
-fun generateRates(carrier: WooShippingCarrier, number: Int): List<ShippingRateUI> {
-    return List(number) {
-        val rate = WooShippingRateModel(
-            packageId = "123$it",
-            shipmentId = "123$it",
-            rateId = "123$it",
-            serviceId = "123$it",
-            carrierId = "123$it",
-            serviceName = "$carrier $it",
-            deliveryDays = it,
-            price = it.toBigDecimal(),
-            discount = it.toBigDecimal(),
-            option = Option.DEFAULT,
-            carrier = WooShippingCarrier.DHL,
-            hasFreePickup = true,
-            insurance = BigDecimal.TEN,
-            isTrackingEnabled = true,
-            deliveryDate = null,
-            isDeliveryDateGuaranteed = false,
-            isSelected = false,
-            listRate = BigDecimal.TEN,
-            retailRate = BigDecimal.TEN
-        )
-        val option = ShippingRateOptionUI(
-            title = rate.serviceName,
-            formatedPrice = rate.price.toString(),
-            formattedFee = rate.price.toString(),
-            option = rate.option,
-            rate = rate,
-            shippingRateOptions = listOf(
-                "Tracking",
-                "Insurance",
-                "Free Pickup"
-            ),
-            formattedEstimatedDays = "$it business days",
-            formattedOptionName = "Default",
-            feeDescription = "Default"
-        )
-        val options = mapOf(Option.DEFAULT to option)
-
-        ShippingRateUI(
-            options = options,
-            selectedOption = options.values.first()
-        )
-    }
-}

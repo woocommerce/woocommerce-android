@@ -1,18 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-17 14:54:06+0000
+Translation-Revision-Date: 2025-07-15 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">Zusätzliche Handhabung</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Zustellung am Samstag</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Klimaneutral</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Unterschrift eines Erwachsenen erforderlich</string>
+    <string name="woo_shipping_rate_option_signature_required">Unterschrift erforderlich</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
+    <string name="woo_shipping_labels_package_saving_error">Paket kann nicht gespeichert werden</string>
+    <string name="woo_shipping_labels_package_removing_error">Paket kann nicht entfernt werden</string>
+    <string name="woopos_eligibility_retry_check_label">Erneut versuchen</string>
+    <string name="woopos_eligibility_exit_pos_label">POS beenden</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Informationen zum Festlegen des HID-Modus findest du in der Anleitung des Bluetooth-Barcodescanners. Hierfür ist in der Regel das Scannen eines speziellen Barcodes im Handbuch erforderlich.</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">Der Scanner hat kein Zeilenumbruchzeichen gesendet</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">Gescannter Barcode ist zu kurz</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (Grundgebühr)</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297 mm)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">Gekauftes Versandetikett anzeigen</string>
+    <string name="wpp_shipping_ups_tos_accept">Bestätigen und fortfahren</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">Ich stimme auch der &lt;a href=\"ups-technology-agreement\"&gt;UPS®-Technologievereinbarung&lt;/a&gt; zu.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">Ich werde weder &lt;a href=\"ups-prohibited-items\"&gt;verbotene Artikel&lt;/a&gt; versenden, die UPS® verweigert, noch regulierte Artikel, für die nicht die erforderlichen Berechtigungen vorliegen.</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">Ich stimme den &lt;a href=\"ups-tos\"&gt;UPS®-Geschäftsbedingungen&lt;/a&gt; zu.</string>
+    <string name="wpp_shipping_ups_tos_description">Bevor der Versand von dieser Adresse mit UPS® erfolgen kann, musst du den folgenden Geschäftsbedingungen zustimmen:</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">Versand ab</string>
+    <string name="wpp_shipping_ups_tos_title">UPS®-Geschäftsbedingungen</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">Deine Zahlungsmethoden konnten nicht aktualisiert werden</string>
+    <string name="woo_shipping_payment_method_added">Zahlungsmethode hinzugefügt</string>
+    <string name="woo_shipping_payment_use_card_button">Diese Karte verwenden</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">Beleg per E-Mail senden</string>
+    <string name="woo_shipping_payment_methods_info_footer">Kreditkartendaten werden vom folgenden WordPress.com-Konto abgerufen: %1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">Neue Kredit- oder Debitkarte</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">Füge eine Zahlungsmethode hinzu, um ein Versandetikett zu  kaufen</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">Zahlungsmethode hinzufügen</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">Nur der Website-Betreiber kann die Zahlungsmethoden für Versandetiketten verwalten. Wende dich zur Verwaltung der Zahlungsmethoden bitte an den Website-Betreiber %1$s (%2$s).</string>
+    <string name="woo_shipping_payment_screen_description">Wähle eine Zahlungsmethode aus.</string>
+    <string name="woo_shipping_payment_screen_title">Zahlungsmethode</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">Serverfehler – %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">Zahlungsmethode bearbeiten</string>
+    <string name="shipping_label_shipment_details_add_payment_method">Zahlungsmethode hinzufügen</string>
+    <string name="shipping_label_shipment_details_payment_method">Zahlungsmethode</string>
+    <string name="point_of_sale">Verkaufsort (POS)</string>
     <string name="no_network_message">Es ist kein Netzwerk verfügbar</string>
     <string name="media_loading_failed">Laden der Medien fehlgeschlagen</string>
     <string name="media_library_title">WordPress-Mediathek</string>
     <string name="woo_shipping_refund_note">Bitte beachte, dass sich dieser Antrag auf Rückerstattung nur auf das unbenutzte Versandetikett bezieht und nicht auf die Bestellung selbst.</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;Rückerstattbarer Betrag:&lt;/b&gt; %s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Kaufdatum:&lt;/b&gt; %s</string>
-    <string name="woo_shipping_refund_description">Du kannst eine Rückerstattung für dein unbenutztes Versandetikett anfordern. Der Rückerstattungsprozess für das Versandetikett beginnt sofort und wird normalerweise innerhalb von 14 Geschäftstagen abgeschlossen.</string>
+    <string name="woo_shipping_refund_duration_description">Du kannst eine Rückerstattung für dein unbenutztes Versandetikett anfordern. Der Rückerstattungsprozess für das Versandetikett beginnt sofort und wird normalerweise innerhalb von %d Geschäftstagen abgeschlossen.</string>
     <string name="woo_shipping_refund_title">Rückerstattung eines Versandetiketts anfordern</string>
     <string name="woo_shipping_split_shipment_error">Wir konnten die Sendungen nicht aufteilen. Bitte versuche es erneut.</string>
     <string name="woopos_cart_searching_for_item">Suchen</string>
@@ -26,12 +66,10 @@ Language: de
     <string name="woopos_dialog_barcode_info_quinary_message">Der Scanner zeigt eine Tastatur an, sodass in manchen Fällen die Softwaretastatur nicht angezeigt wird, z. B. in der Suche. Tippe auf das Tastaturicon, um die Softwaretastatur wieder anzuzeigen.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• In der Ansicht mit der Artikelliste kannst du Barcodes scannen, um Produkte zum Warenkorb hinzuzufügen.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• Stelle über die Bluetooth-Systemeinstellungen eine Verbindung mit deinem Barcode-Scanner her.</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Informationen zum Festlegen des HID-Modus findest du in der Anleitung des Bluetooth-Barcodescanners.</string>
     <string name="woopos_dialog_barcode_info_more_details_link">Weitere Details</string>
     <string name="woopos_dialog_barcode_info_primary_message">• Du kannst Barcodes unter „Produkte &gt; Produktdetails &gt; Bestand“ im Feld „GTIN, UPC, EAN, ISBN“ einrichten. </string>
     <string name="woopos_dialog_barcode_info_intro_message">Du kannst Barcodes mit einem externen Scanner scannen, um schnell deinen Warenkorb zu füllen.</string>
     <string name="woopos_dialog_barcode_info_heading">Barcode-Scans</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">Anfrage abgebrochen</string>
     <string name="woopos_cart_barcode_scan_result_network_error">Keine Internetverbindung</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Nicht unterstützter Artikel ‒ %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Gescannter Artikel nicht bekannt</string>

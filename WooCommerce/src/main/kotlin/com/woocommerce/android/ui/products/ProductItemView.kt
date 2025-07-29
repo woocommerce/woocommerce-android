@@ -14,9 +14,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductItemViewBinding
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
-import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
-import com.woocommerce.android.ui.orders.creation.product.discount.GetItemDiscountAmountText
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getStockText
 import org.wordpress.android.util.HtmlUtils
@@ -47,47 +44,13 @@ class ProductItemView @JvmOverloads constructor(
     fun bind(
         product: Product,
         currencyFormatter: CurrencyFormatter,
-        currencyCode: String? = null,
         isActivated: Boolean = false,
         isUploadingMedia: Boolean = false
     ) {
         showProductName(product.name)
         showProductSku(product.sku)
         showProductImage(product.firstImageUrl, isActivated, isUploadingMedia)
-        showProductStockStatusPrice(product, currencyFormatter, currencyCode)
-    }
-
-    fun bind(
-        orderCreationProduct: OrderCreationProduct,
-        currencyFormatter: CurrencyFormatter,
-        currencyCode: String? = null,
-        showDiscount: Boolean = false,
-    ) {
-        showProductName(orderCreationProduct.item.name)
-        showProductSku(orderCreationProduct.item.sku)
-        showProductImage(orderCreationProduct.productInfo.imageUrl)
-        val discountAmount = CalculateItemDiscountAmount()(orderCreationProduct.item)
-        if (showDiscount && currencyCode != null && discountAmount > BigDecimal.ZERO) {
-            binding.productDiscount.isVisible = true
-            binding.productDiscount.text =
-                context.getString(
-                    R.string.order_creation_discount_value,
-                    GetItemDiscountAmountText(currencyFormatter)(discountAmount, currencyCode)
-                )
-        } else {
-            binding.productDiscount.isVisible = false
-        }
-
-        binding.productStockAndStatus.text = buildString {
-            if (orderCreationProduct.item.isVariation && orderCreationProduct.item.attributesDescription.isNotEmpty()) {
-                append(orderCreationProduct.item.attributesDescription)
-            } else {
-                append(orderCreationProduct.getStockText(context))
-            }
-            append(" $bullet ")
-            val decimalFormatter = getDecimalFormatter(currencyFormatter, currencyCode)
-            append(decimalFormatter(orderCreationProduct.item.total).replace(" ", "\u00A0"))
-        }
+        showProductStockStatusPrice(product, currencyFormatter)
     }
 
     private fun showProductName(productName: String) {
@@ -150,19 +113,15 @@ class ProductItemView @JvmOverloads constructor(
 
     private fun getDecimalFormatter(
         currencyFormatter: CurrencyFormatter,
-        currencyCode: String? = null
     ): (BigDecimal) -> String {
-        return currencyCode?.let {
-            currencyFormatter.buildBigDecimalFormatter(it)
-        } ?: currencyFormatter.buildBigDecimalFormatter()
+        return currencyFormatter.buildBigDecimalFormatter()
     }
 
     private fun showProductStockStatusPrice(
         product: Product,
         currencyFormatter: CurrencyFormatter,
-        currencyCode: String? = null
     ) {
-        val decimalFormatter = getDecimalFormatter(currencyFormatter, currencyCode)
+        val decimalFormatter = getDecimalFormatter(currencyFormatter)
 
         val statusHtml = getProductStatusHtml(product.status)
         val stock = product.getStockText(context)

@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
@@ -26,6 +27,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Billing
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Shipping
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDtoMapper.Companion.toDto
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.Companion.BATCH_UPDATE_LIMIT
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
@@ -229,6 +231,7 @@ class OrderRestClient @Inject constructor(
      * the optional parameters in effect.
      * @param offset Used to retrieve older orders
      */
+    @Suppress("LongMethod")
     fun fetchOrderListSummaries(
         listDescriptor: WCOrderListDescriptor,
         offset: Long,
@@ -249,7 +252,8 @@ class OrderRestClient @Inject constructor(
                 "customer" to listDescriptor.customerId?.toString(),
                 "product" to listDescriptor.productId?.toString(),
                 "exclude" to listDescriptor.excludedIds?.joinToString(),
-                "status" to listDescriptor.statusFilter.takeUnless { it.isNullOrBlank() }
+                "status" to listDescriptor.statusFilter.takeUnless { it.isNullOrBlank() },
+                "created_via" to listDescriptor.createdViaFilter.takeUnless { it.isNullOrBlank() }
             )
 
             val network = if (useAppPasswordsForJetpackSites) {
@@ -268,9 +272,7 @@ class OrderRestClient @Inject constructor(
             when (response) {
                 is WPAPIResponse.Success -> {
                     val orderSummaries = response.data?.map {
-                        orderResponseToOrderSummaryModel(it).apply {
-                            localSiteId = listDescriptor.site.id
-                        }
+                        orderResponseToOrderSummaryModel(it, listDescriptor.site.localId())
                     }.orEmpty()
 
                     val canLoadMore = orderSummaries.size == networkPageSize
@@ -314,7 +316,8 @@ class OrderRestClient @Inject constructor(
             "customer" to listDescriptor.customerId?.toString(),
             "product" to listDescriptor.productId?.toString(),
             "exclude" to listDescriptor.excludedIds?.joinToString(),
-            "status" to listDescriptor.statusFilter.takeUnless { it.isNullOrBlank() }
+            "status" to listDescriptor.statusFilter.takeUnless { it.isNullOrBlank() },
+            "created_via" to listDescriptor.createdViaFilter.takeUnless { it.isNullOrBlank() }
         )
 
         return wooNetwork.executeGetGsonRequest(
@@ -1190,10 +1193,12 @@ class OrderRestClient @Inject constructor(
         }
     }
 
-    private fun orderResponseToOrderSummaryModel(response: OrderSummaryApiResponse): WCOrderSummaryModel {
-        return WCOrderSummaryModel().apply {
-            orderId = response.id ?: 0
-            dateCreated = convertDateToUTCString(response.dateCreatedGmt)
+    private fun orderResponseToOrderSummaryModel(response: OrderSummaryApiResponse, siteId: LocalId): WCOrderSummaryModel {
+        return WCOrderSummaryModel(
+            siteId = siteId,
+            orderId = RemoteId(response.id ?: 0),
+            dateCreated = convertDateToUTCString(response.dateCreatedGmt),
+        ).apply {
             dateModified = convertDateToUTCString(response.dateModifiedGmt)
         }
     }
@@ -1291,7 +1296,8 @@ class OrderRestClient @Inject constructor(
             "is_editable",
             "needs_payment",
             "needs_processing",
-            "shipping_tax"
+            "shipping_tax",
+            "created_via"
         ).joinToString(separator = ",")
 
         private val TRACKING_FIELDS = arrayOf(

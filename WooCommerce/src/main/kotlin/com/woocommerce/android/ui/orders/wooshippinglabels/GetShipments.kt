@@ -6,8 +6,11 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -47,7 +50,7 @@ class GetShipments @Inject constructor(
 
         val shipments = config?.shipments
 
-        val shipmentUIModelList = if (shipments.isNullOrEmpty()) {
+        var shipmentUIModelList = if (shipments.isNullOrEmpty()) {
             listOf(ShipmentUIModel(localId = "0", items = orderItems))
         } else {
             shipments.map { (shipmentId, shipmentItems) ->
@@ -61,23 +64,55 @@ class GetShipments @Inject constructor(
             }
         }.sortedBy { it.localId.toLong() }
 
-        // If there are purchased labels, merge their data into the result list
-        return config?.shippingLabelData?.currentOrderLabels?.let { data ->
-            mergePurchaseData(shipmentUIModelList, data)
-        } ?: shipmentUIModelList
+        config?.shippingLabelData?.let { data ->
+            // If there are purchased labels, merge their data into the result list
+            data.currentOrderLabels?.let { labels ->
+                shipmentUIModelList = mergePurchaseData(shipmentUIModelList, labels)
+            }
+
+            // If there are stored addresses, merge them into the result list
+            data.storedData?.let { storedData ->
+                shipmentUIModelList = mergeAddresses(
+                    shipmentUIModelList,
+                    storedData.selectedOrigin,
+                    storedData.selectedDestination
+                )
+            }
+        }
+
+        return shipmentUIModelList
     }
 
     private fun mergePurchaseData(
         shipmentUIModelList: List<ShipmentUIModel>,
         currentOrderLabels: List<ShippingLabelDTO>
     ) = shipmentUIModelList.map { shipmentUIModel ->
-        val noRefundedLabelForShipment = currentOrderLabels.find {
-            it.shipmentId == shipmentUIModel.remoteId && it.refund == null
+        val purchasedNonRefundedLabel = currentOrderLabels.find {
+            it.shipmentId == shipmentUIModel.remoteId && it.status == ShippingLabelStatus.PURCHASED && it.refund == null
         }
-        if (noRefundedLabelForShipment == null) {
+        if (purchasedNonRefundedLabel == null) {
             shipmentUIModel
         } else {
-            shipmentUIModel.copy(purchased = true, label = mapper.invoke(noRefundedLabelForShipment))
+            shipmentUIModel.copy(purchased = true, label = mapper.invoke(purchasedNonRefundedLabel))
         }
     }
+
+    private fun mergeAddresses(
+        shipmentUIModelList: List<ShipmentUIModel>,
+        originAddresses: Map<String, OriginAddressDTO>?,
+        destinationAddresses: Map<String, DestinationAddressDTO>?
+    ): List<ShipmentUIModel> = shipmentUIModelList.map { shipmentUIModel ->
+        val remoteId = shipmentUIModel.remoteId ?: return@map shipmentUIModel
+        val key = getStoredDataKey(remoteId)
+
+        val updatedLabel = shipmentUIModel.label?.copy(
+            originAddress = originAddresses?.get(key)?.let { mapper(it) }
+                ?: shipmentUIModel.label.originAddress,
+            destinationAddress = destinationAddresses?.get(key)?.let { mapper(it) }
+                ?: shipmentUIModel.label.destinationAddress
+        )
+        shipmentUIModel.copy(label = updatedLabel)
+    }
+
+    private fun getStoredDataKey(shipmentId: String) = "shipment_$shipmentId"
 }

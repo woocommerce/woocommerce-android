@@ -6,7 +6,9 @@ import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
@@ -59,6 +61,45 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when site settings are updated through observeAllSiteSettings the currency updates`() =
+        runTest {
+            // GIVEN
+            val site = SiteModel().also { it.id = 1 }
+            val siteFlow = flowOf(site)
+            val settingsFlow = MutableStateFlow(mapOf<LocalId, Settings>())
+
+            whenever(selectedSite.observe()).thenReturn(siteFlow)
+            whenever(wcStore.observeAllSiteSettings()).thenReturn(settingsFlow)
+            whenever(wcStore.getSiteSettings(site)).thenReturn(null)
+            whenever(wcStore.fetchSiteGeneralSettings(site)).thenReturn(WooResult())
+            whenever(localeProvider.provideLocale()).thenReturn(Locale.US)
+
+            formatter = CurrencyFormatter(
+                wcStore = wcStore,
+                selectedSite = selectedSite,
+                siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
+                appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
+                dispatchers = coroutinesTestRule.testDispatchers
+            )
+
+            advanceTimeBy(5_000)
+            var result = formatter.formatAmountWithCurrency(100.0)
+            assertThat(result).contains("$")
+
+            val eurSettings = generateSettings(LocalId(1)).copy(currencyCode = "EUR")
+            settingsFlow.value = mapOf(LocalId(1) to eurSettings)
+            advanceTimeBy(100)
+            result = formatter.formatAmountWithCurrency(100.0)
+            assertThat(result).contains("€")
+
+            val gbpSettings = generateSettings(LocalId(1)).copy(currencyCode = "GBP")
+            settingsFlow.value = mapOf(LocalId(1) to gbpSettings)
+            advanceTimeBy(100)
+            result = formatter.formatAmountWithCurrency(100.0)
+            assertThat(result).contains("£")
+        }
+
+    @Test
     fun `when fetching site settings are null then retry fetching settings with exponential backoff`() =
         runTest {
             // First time fetch site setting will return an invalid response error
@@ -73,6 +114,59 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             assertThat(result).contains("ARS")
         }
 
+    @Test
+    fun `when multiple sites have settings in observeAllSiteSettings map`() =
+        runTest {
+            // GIVEN
+            val site1 = SiteModel().also { it.id = 1 }
+            val site2 = SiteModel().also { it.id = 2 }
+            val site3 = SiteModel().also { it.id = 3 }
+
+            val settings1 = generateSettings(LocalId(1)).copy(currencyCode = "AUD")
+            val settings2 = generateSettings(LocalId(2)).copy(currencyCode = "CAD")
+            val settings3 = generateSettings(LocalId(3)).copy(currencyCode = "NZD")
+
+            val settingsFlow = MutableStateFlow(
+                mapOf(
+                    LocalId(1) to settings1,
+                    LocalId(2) to settings2,
+                    LocalId(3) to settings3
+                )
+            )
+
+            val siteFlow = flow {
+                emit(site1)
+                delay(1_000)
+                emit(site2)
+                delay(1_000)
+                emit(site3)
+            }
+
+            whenever(selectedSite.observe()).thenReturn(siteFlow)
+            whenever(wcStore.observeAllSiteSettings()).thenReturn(settingsFlow)
+            whenever(localeProvider.provideLocale()).thenReturn(Locale.US)
+
+            formatter = CurrencyFormatter(
+                wcStore = wcStore,
+                selectedSite = selectedSite,
+                siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
+                appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
+                dispatchers = coroutinesTestRule.testDispatchers
+            )
+
+            advanceTimeBy(100)
+            var result = formatter.formatAmountWithCurrency(100.0)
+            assertThat(result).contains("A$")
+
+            advanceTimeBy(1_000)
+            result = formatter.formatAmountWithCurrency(100.0)
+            assertThat(result).contains("CA$")
+
+            advanceTimeBy(1_000)
+            result = formatter.formatAmountWithCurrency(100.0)
+            assertThat(result).contains("NZ$")
+        }
+
     private fun setupSitesFlow() {
         val firstSite = SiteModel().also { it.id = 1 }
         val secondSite = SiteModel().also { it.id = 2 }
@@ -84,10 +178,16 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             emit(secondSite)
         }
         val firstSettings = generateSettings(LocalId(1)).copy(currencyCode = "ARS")
-        val secondSettings = firstSettings.copy(currencyCode = "USD")
+        val secondSettings = generateSettings(LocalId(2)).copy(currencyCode = "USD")
+
+        val settingsMap = MutableStateFlow(mapOf<LocalId, Settings>())
+        settingsMap.value = mapOf(
+            LocalId(1) to firstSettings,
+            LocalId(2) to secondSettings
+        )
+
         whenever(selectedSite.observe()).thenReturn(sitesFlow)
-        whenever(wcStore.getSiteSettings(firstSite)).thenReturn(firstSettings)
-        whenever(wcStore.getSiteSettings(secondSite)).thenReturn(secondSettings)
+        whenever(wcStore.observeAllSiteSettings()).thenReturn(settingsMap)
         whenever(localeProvider.provideLocale()).thenReturn(Locale.US)
         formatter = CurrencyFormatter(
             wcStore = wcStore,
@@ -102,7 +202,11 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
         val site = SiteModel().also { it.id = 1 }
         val sitesFlow = flow { emit(site) }
         val siteSettings = generateSettings(LocalId(1)).copy(currencyCode = "ARS")
+
+        val settingsMap = MutableStateFlow(mapOf<LocalId, Settings>())
+
         whenever(selectedSite.observe()).thenReturn(sitesFlow)
+        whenever(wcStore.observeAllSiteSettings()).thenReturn(settingsMap)
         // First time return an error
         val firstCall = WooResult<Settings>(
             error = WooError(

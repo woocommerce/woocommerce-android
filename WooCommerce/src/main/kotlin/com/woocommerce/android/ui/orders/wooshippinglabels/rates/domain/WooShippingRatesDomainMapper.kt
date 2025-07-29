@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCar
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOptionUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
@@ -25,6 +26,22 @@ class WooShippingRatesDomainMapper @Inject constructor(
         return rates.groupBy { it.defaultRate.carrier }.map { entry ->
             getCarrier(entry.key) to entry.value.map { getShippingRate(it, resourceProvider, currencyCode) }
         }.toMap()
+    }
+
+    operator fun invoke(
+        selectedRate: ShippingRateUI
+    ): WooShippingSelectedRateModel {
+        return WooShippingSelectedRateModel(
+            rate = selectedRate.selectedRateOption.rate,
+            parentRate = if (selectedRate.selectedOption != Option.DEFAULT) {
+                selectedRate.defaultRate.rate
+            } else {
+                null
+            },
+            additionalRates = selectedRate.additionalSelectedOptions.map {
+                selectedRate.options.getValue(it).rate
+            }
+        )
     }
 
     private fun getCarrier(carrier: WooShippingCarrier): CarrierUI {
@@ -67,75 +84,47 @@ class WooShippingRatesDomainMapper @Inject constructor(
         resourceProvider: ResourceProvider,
         currencyCode: String?
     ): ShippingRateUI {
-        val options = rate.rateOptions.mapValues {
-            when (it.value.option) {
+        val options = rate.rateOptions.mapValues { rateOption ->
+            when (rateOption.value.option) {
                 Option.DEFAULT -> {
                     ShippingRateOptionUI(
-                        title = it.value.serviceName,
-                        formatedPrice = formatCurrency(it.value.price, currencyCode),
+                        optionName = "",
+                        fee = BigDecimal.ZERO,
                         formattedFee = "",
                         feeDescription = "",
-                        formattedOptionName = "",
-                        formattedEstimatedDays = getEstimatedDays(it.value, resourceProvider),
-                        shippingRateOptions = getShippingRateOptionsList(it.value, resourceProvider, currencyCode),
-                        option = it.value.option,
-                        rate = it.value
+                        option = rateOption.value.option,
+                        rate = rateOption.value
                     )
                 }
 
-                Option.SIGNATURE -> {
-                    val fee = rate.rateOptions[Option.DEFAULT]?.let { default ->
-                        it.value.price.minus(default.price)
-                    }
+                else -> {
+                    val fee = rateOption.value.price.minus(rate.defaultRate.price)
                     val formattedFee = formatFee(fee, currencyCode)
-                    ShippingRateOptionUI(
-                        title = it.value.serviceName,
-                        formatedPrice = formatCurrency(it.value.price, currencyCode),
-                        formattedFee = formattedFee,
-                        feeDescription = resourceProvider.getString(
-                            R.string.shipping_label_rate_option_signature_required,
-                            formattedFee
-                        ),
-                        formattedEstimatedDays = getEstimatedDays(it.value, resourceProvider),
-                        shippingRateOptions = getShippingRateOptionsList(it.value, resourceProvider, currencyCode),
-                        option = it.value.option,
-                        rate = it.value,
-                        formattedOptionName = resourceProvider.getString(
-                            R.string.shipping_label_rate_option_signature_required_name
-                        )
-                    )
-                }
 
-                Option.ADULT_SIGNATURE -> {
-                    val fee = rate.rateOptions[Option.DEFAULT]?.let { default ->
-                        it.value.price.minus(default.price)
-                    }
-                    val formattedFee = formatFee(fee, currencyCode)
                     ShippingRateOptionUI(
-                        title = it.value.serviceName,
-                        formatedPrice = formatCurrency(it.value.price, currencyCode),
+                        optionName = rateOption.value.option.getTitle(),
+                        fee = fee,
                         formattedFee = formattedFee,
                         feeDescription = resourceProvider.getString(
-                            R.string.shipping_label_rate_option_adult_signature_required,
+                            R.string.woo_shipping_rate_surcharge_description_template,
+                            rateOption.value.option.getTitle(),
                             formattedFee
                         ),
-                        formattedEstimatedDays = getEstimatedDays(it.value, resourceProvider),
-                        shippingRateOptions = getShippingRateOptionsList(it.value, resourceProvider, currencyCode),
-                        option = it.value.option,
-                        rate = it.value,
-                        formattedOptionName = resourceProvider.getString(
-                            R.string.shipping_label_rate_option_adult_signature_required_name
-                        )
+                        option = rateOption.value.option,
+                        rate = rateOption.value,
                     )
                 }
             }
         }
 
-        val selectedOption = options[Option.DEFAULT] ?: options.values.first()
-
         return ShippingRateUI(
+            title = rate.defaultRate.serviceName,
+            formattedBasePrice = formatCurrency(rate.defaultRate.price, currencyCode),
+            shippingRateIncludedOptions = getShippingRateOptionsList(rate.defaultRate, resourceProvider, currencyCode),
+            formattedEstimatedDays = getEstimatedDays(rate.defaultRate, resourceProvider),
             options = options,
-            selectedOption = selectedOption
+            selectedOption = Option.DEFAULT,
+            additionalSelectedOptions = emptyList()
         )
     }
 
@@ -185,7 +174,13 @@ class WooShippingRatesDomainMapper @Inject constructor(
         return when {
             price == null -> "N/A"
             price.isEqualTo(BigDecimal.ZERO) -> resourceProvider.getString(R.string.free)
-            else -> formatCurrency(price, currencyCode)
+            else -> formatCurrency(price, currencyCode).let {
+                if (price > BigDecimal.ZERO) {
+                    resourceProvider.getString(R.string.woo_shipping_rate_extra_cost_format, it)
+                } else {
+                    it
+                }
+            }
         }
     }
 
@@ -193,5 +188,14 @@ class WooShippingRatesDomainMapper @Inject constructor(
         return currencyCode?.let {
             currencyFormatter.formatCurrency(amount = amount, currencyCode = it)
         } ?: currencyFormatter.formatCurrency(amount = amount)
+    }
+
+    private fun Option.getTitle() = when (this) {
+        Option.DEFAULT -> ""
+        Option.SIGNATURE -> resourceProvider.getString(R.string.woo_shipping_rate_option_signature_required)
+        Option.ADULT_SIGNATURE -> resourceProvider.getString(R.string.woo_shipping_rate_option_adult_signature_required)
+        Option.CARBON_NEUTRAL -> resourceProvider.getString(R.string.woo_shipping_rate_option_carbon_neutral)
+        Option.ADDITIONAL_HANDLING -> resourceProvider.getString(R.string.woo_shipping_rate_option_additional_handling)
+        Option.SATURDAY_DELIVERY -> resourceProvider.getString(R.string.woo_shipping_rate_option_saturday_delivery)
     }
 }

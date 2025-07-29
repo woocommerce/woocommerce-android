@@ -9,12 +9,14 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.WooShippingRatesDomainMapper
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import javax.inject.Inject
 
 class PurchaseShippingLabel @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val wooShippingLabelRepository: WooShippingLabelRepository
+    private val wooShippingLabelRepository: WooShippingLabelRepository,
+    private val ratesMapper: WooShippingRatesDomainMapper
 ) {
     @Suppress("LongParameterList")
     suspend operator fun invoke(
@@ -24,22 +26,22 @@ class PurchaseShippingLabel @Inject constructor(
         shipmentId: Int,
         shipTo: Address,
         shipFrom: OriginShippingAddress,
-        shippingRate: WooShippingRateModel,
+        shippingRate: ShippingRateUI,
         weight: Float,
-        lastOrderComplete: Boolean,
-        customsData: List<CustomsData>? = null,
+        lastOrderCompleted: Boolean,
+        customsData: CustomsData? = null,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): Result<PurchasedLabelData> {
         val response = wooShippingLabelRepository.purchaseShippingLabel(
             orderId = orderId,
             shippableItems = shippableItems,
             selectedPackage = selectedPackage,
-            shipmentId = shipmentId.toString(),
+            shipmentId = shipmentId,
             shipTo = shipTo,
             shipFrom = shipFrom,
-            selectedRate = shippingRate,
+            selectedRate = ratesMapper(shippingRate),
             weight = weight,
-            lastOrderComplete = lastOrderComplete,
+            lastOrderCompleted = lastOrderCompleted,
             customsData = customsData,
             hazmatSelection = hazmatSelection,
             site = selectedSite.get()

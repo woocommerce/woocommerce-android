@@ -1,18 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-17 14:54:09+0000
+Translation-Revision-Date: 2025-07-16 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">特殊处理</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">星期六配送</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">碳中和</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">必须由成年人签收</string>
+    <string name="woo_shipping_rate_option_signature_required">必须签收</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
+    <string name="woo_shipping_labels_package_saving_error">无法保存此包裹</string>
+    <string name="woo_shipping_labels_package_removing_error">无法删除此包裹</string>
+    <string name="woopos_eligibility_retry_check_label">重试</string>
+    <string name="woopos_eligibility_exit_pos_label">退出 POS</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• 参阅蓝牙条形码扫描仪的使用说明，设置 HID 模式。 这通常需要扫描手册中的专用条形码。</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">扫描仪未发送行尾字符</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">扫描的条形码过短</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s（基本费用）</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297mm)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">查看已购买的运输标签</string>
+    <string name="wpp_shipping_ups_tos_accept">确认并继续</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">我也同意 &lt;a href=\"ups-technology-agreement\"&gt;UPS® 技术协议&lt;/a&gt;。</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">我不会运送 UPS® 禁止运送的任何&lt;a href=\"ups-prohibited-items\"&gt;违禁品&lt;/a&gt;，也不会未经必要许可运送任何管制品。</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">我同意 &lt;a href=\"ups-tos\"&gt;UPS® 服务条款&lt;/a&gt;。</string>
+    <string name="wpp_shipping_ups_tos_description">要开始使用 UPS® 从该地址发货，我们需要您同意以下条款和条件：</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">发货地</string>
+    <string name="wpp_shipping_ups_tos_title">UPS® 条款和条件</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">无法刷新您的付款方式</string>
+    <string name="woo_shipping_payment_method_added">付款方式已添加</string>
+    <string name="woo_shipping_payment_use_card_button">使用此银行卡</string>
+    <string name="woo_shipping_payment_email_receipt_toggle">通过电子邮件发送收据</string>
+    <string name="woo_shipping_payment_methods_info_footer">从以下 WordPress.com 账户检索信用卡：%1$s &lt;%2$s&gt;</string>
+    <string name="woo_shipping_payment_add_new_button">新信用卡或借记卡</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">添加付款方式以 购买配送标签</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">添加付款方式</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">只有站点所有者可以管理配送标签付款方式。 请联系商店所有者 %1$s (%2$s) 以管理付款方式。</string>
+    <string name="woo_shipping_payment_screen_description">选择付款方式。</string>
+    <string name="woo_shipping_payment_screen_title">付款方式</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">服务器错误 - %s</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">编辑付款方式</string>
+    <string name="shipping_label_shipment_details_add_payment_method">添加付款方式</string>
+    <string name="shipping_label_shipment_details_payment_method">付款方式</string>
+    <string name="point_of_sale">销售点</string>
     <string name="no_network_message">没用可用的网络</string>
     <string name="media_loading_failed">媒体加载失败</string>
     <string name="media_library_title">WordPress 媒体库</string>
     <string name="woo_shipping_refund_note">请注意，此退款请求仅适用于未使用的运输标签，并且不会影响订单本身。</string>
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;符合退款条件的金额：&lt;/b&gt;%s</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;购买日期：&lt;/b&gt;%s</string>
-    <string name="woo_shipping_refund_description">为您未使用的运输标签请求退款。 该运输标签的退款流程将立即开始，通常会在 14 个工作日内完成。</string>
+    <string name="woo_shipping_refund_duration_description">为您未使用的配送标签请求退款。 该配送标签的退款流程将立即开始，通常会在 %d 个工作日内完成。</string>
     <string name="woo_shipping_refund_title">请求运输标签退款</string>
     <string name="woo_shipping_split_shipment_error">我们无法分批发货。 请重试。</string>
     <string name="woopos_cart_searching_for_item">正在搜索</string>
@@ -26,12 +66,10 @@ Language: zh_CN
     <string name="woopos_dialog_barcode_info_quinary_message">扫描程序使用模拟键盘，因此有时会导致软件键盘无法显示，如在搜索时。 轻点键盘图标，重新调用软件键盘。</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• 在商品列表上扫描条形码，将产品添加到购物车。</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• 在系统蓝牙设置中连接条形码扫描程序。</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• 参阅蓝牙条形码扫描程序的说明，以设置 HID 模式。</string>
     <string name="woopos_dialog_barcode_info_more_details_link">更多详情</string>
     <string name="woopos_dialog_barcode_info_primary_message">• 在“产品 &gt; 产品详细信息 &gt; 库存”中的“GTIN、UPC、EAN、ISBN”字段中设置条形码。 </string>
     <string name="woopos_dialog_barcode_info_intro_message">您可以使用外部扫描程序扫描条形码，快速创建购物车。</string>
     <string name="woopos_dialog_barcode_info_heading">条形码扫描</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">请求已取消</string>
     <string name="woopos_cart_barcode_scan_result_network_error">未连接互联网</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">不受支持的商品 — %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">未知扫描商品</string>

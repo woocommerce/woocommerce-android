@@ -54,8 +54,11 @@ object OrderTestUtils {
         remoteId: Number,
         modified: String = "1955-11-05T14:15:00Z"
     ): WCOrderSummaryModel {
-        return WCOrderSummaryModel(id.toInt()).apply {
-            orderId = remoteId.toLong()
+        return WCOrderSummaryModel(
+            siteId = LocalId(id.toInt()),
+            orderId = RemoteId(remoteId.toLong()),
+            dateCreated = "1955-11-05T14:15:00Z",
+        ).apply {
             dateModified = modified
         }
     }
@@ -145,10 +148,11 @@ object OrderTestUtils {
         val responseType = object : TypeToken<List<OrderSummaryApiResponse>>() {}.type
         val converted = Gson().fromJson(json, responseType) as? List<OrderSummaryApiResponse> ?: emptyList()
         return converted.map { response ->
-            WCOrderSummaryModel().apply {
-                localSiteId = siteId
-                orderId = response.id ?: 0
-                dateCreated = response.dateCreatedGmt?.let { DateUtils.formatGmtAsUtcDateString(it) } ?: ""
+            WCOrderSummaryModel(
+                siteId = LocalId(siteId),
+                orderId = RemoteId(response.id ?: 0),
+                dateCreated = response.dateCreatedGmt?.let { DateUtils.formatGmtAsUtcDateString(it) } ?: "",
+            ).apply {
                 dateModified = response.dateModifiedGmt?.let { DateUtils.formatGmtAsUtcDateString(it) } ?: ""
             }
         }

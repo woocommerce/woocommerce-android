@@ -129,7 +129,9 @@
     <color name="tag_bg_completed">@color/woo_blue_5</color>
     <color name="tag_bg_other">@color/woo_gray_5</color>
     <color name="tag_bg_main">@color/woo_purple_0</color>
+    <color name="tag_bg_pos">@color/woo_purple_5</color>
     <color name="tag_text_main">@color/color_primary</color>
+    <color name="tag_text_pos">@color/woo_purple_60</color>
     <color name="tag_task_label">@color/woo_gray_6</color>
     <color name="tag_task_label_text">@color/woo_black_90_alpha_060</color>
     <color name="tag_icon">@color/color_primary</color>
@@ -347,5 +349,12 @@
         Order Creation
     -->
     <color name="order_update_overlay_background">@color/woo_white_alpha_060</color>
+
+    <!--
+        WooPos colors
+    -->
+    <color name="woopos_bluetooth_icon_primary">@color/woo_purple_40</color>
+    <color name="woopos_bluetooth_icon_secondary">@color/woo_purple_10</color>
+    <color name="woopos_bluetooth_icon_tertiary">@color/woo_purple_80</color>
 
 </resources>
