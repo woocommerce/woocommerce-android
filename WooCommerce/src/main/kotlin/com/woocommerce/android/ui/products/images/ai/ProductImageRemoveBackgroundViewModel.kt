@@ -1,12 +1,9 @@
 package com.woocommerce.android.ui.products.images.ai
 
-import android.graphics.Bitmap
-import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -61,7 +58,6 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
                             }
                         )
                     )
-                    _state.value = ViewState.Failure
                 }
             )
         }
@@ -84,10 +80,4 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
             }
         }
     }
-}
-
-sealed class ViewState {
-    data class BackgroundProcessingInProgress(val imageUri: Uri) : ViewState()
-    data class Success(val bitmap: Bitmap) : ViewState()
-    data object Failure : ViewState()
 }
