@@ -198,7 +198,6 @@ fun WooLogViewerScreen(
             LogViewerEntries(
                 entries = allEntries,
                 lazyListState = lazyListState,
-                searchQuery = searchQuery,
                 currentMatchIndex = if (hasMatches) searchMatches[currentMatchIndex] else -1,
                 modifier = Modifier.weight(1f)
             )
@@ -210,7 +209,6 @@ fun WooLogViewerScreen(
 private fun LogViewerEntries(
     entries: List<RollingLogEntries.LogEntry>,
     lazyListState: LazyListState,
-    searchQuery: String,
     currentMatchIndex: Int,
     modifier: Modifier = Modifier
 ) {
@@ -223,7 +221,6 @@ private fun LogViewerEntries(
             LogViewerEntry(
                 index = index,
                 entry = entry,
-                searchQuery = searchQuery,
                 isCurrentMatch = index == currentMatchIndex
             )
             if (index < entries.lastIndex) {
@@ -240,7 +237,6 @@ private fun LogViewerEntries(
 private fun LogViewerEntry(
     index: Int,
     entry: RollingLogEntries.LogEntry,
-    @Suppress("UNUSED_PARAMETER") searchQuery: String,
     isCurrentMatch: Boolean
 ) {
     val backgroundColor = if (isCurrentMatch) {
