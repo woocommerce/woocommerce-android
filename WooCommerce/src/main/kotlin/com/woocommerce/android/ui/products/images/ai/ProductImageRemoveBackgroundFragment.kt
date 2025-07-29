@@ -160,7 +160,6 @@ fun ProductImageRemoveBackgroundScreen(state: State<ViewState>) {
 fun MagicSparkles() {
     val infiniteTransition = rememberInfiniteTransition(label = "sparkle_transition")
 
-    // Master animation cycle - 3 seconds total
     val animationProgress by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
@@ -172,27 +171,24 @@ fun MagicSparkles() {
     )
 
     Canvas(modifier = Modifier.fillMaxSize()) {
-        // Generate sparkles based on the actual canvas size in pixels
         val sparkleEvents = generateSparkleEvents(size.width.toInt(), size.height.toInt())
 
         sparkleEvents.forEach { sparkle ->
             val sparkleProgress = ((animationProgress - sparkle.startTime + 1f) % 1f)
 
-            // Only draw sparkle if it's within its active duration
             if (sparkleProgress >= 0f && sparkleProgress <= sparkle.duration) {
                 val normalizedProgress = sparkleProgress / sparkle.duration
 
-                // Pulse animation: fade in, grow, fade out
                 val pulseAlpha = when {
                     normalizedProgress < 0.3f -> normalizedProgress / 0.3f // Fade in
                     normalizedProgress > 0.7f -> 1f - ((normalizedProgress - 0.7f) / 0.3f) // Fade out
-                    else -> 1f // Full opacity
+                    else -> 1f
                 }
 
                 val pulseSize = when {
-                    normalizedProgress < 0.2f -> normalizedProgress / 0.2f // Grow from 0
-                    normalizedProgress > 0.8f -> 1f - ((normalizedProgress - 0.8f) / 0.2f) * 0.5f // Shrink slightly
-                    else -> 1f + sin(normalizedProgress * Math.PI * 4).toFloat() * 0.2f // Pulse
+                    normalizedProgress < 0.2f -> normalizedProgress / 0.2f
+                    normalizedProgress > 0.8f -> 1f - ((normalizedProgress - 0.8f) / 0.2f) * 0.5f
+                    else -> 1f + sin(normalizedProgress * Math.PI * 4).toFloat() * 0.2f
                 }
 
                 if (pulseAlpha > 0f && pulseSize > 0f) {
@@ -209,7 +205,7 @@ fun MagicSparkles() {
 }
 
 private enum class SparkleShape {
-    STAR_4, STAR_6, STAR_8, CIRCLE, DIAMOND, PLUS, HEART
+    STAR_4, HEART
 }
 
 private data class SparkleEvent(
@@ -241,16 +237,16 @@ private fun generateSparkleEvents(width: Int, height: Int): List<SparkleEvent> {
             Color(0xFF6620D3)
         )
 
-        val shapes = SparkleShape.values()
+        val shapes = SparkleShape.entries.toTypedArray()
 
         SparkleEvent(
             position = Offset(
                 x = random.nextFloat() * width,
                 y = random.nextFloat() * height
             ),
-            startTime = random.nextFloat(), // Random start time within 3-second cycle
-            duration = 0.15f + random.nextFloat() * 0.4f, // 0.15 to 0.55 seconds
-            baseSize = (6 + random.nextInt(20)) * 2.5f, // More size variety: 15-65px
+            startTime = random.nextFloat(),
+            duration = 0.15f + random.nextFloat() * 0.4f,
+            baseSize = (6 + random.nextInt(20)) * 2.5f,
             color = colors[random.nextInt(colors.size)],
             shape = shapes[random.nextInt(shapes.size)]
         )
@@ -265,11 +261,6 @@ private fun DrawScope.drawSparkle(
 ) {
     when (shape) {
         SparkleShape.STAR_4 -> drawStar(center, size, color, 4)
-        SparkleShape.STAR_6 -> drawStar(center, size, color, 6)
-        SparkleShape.STAR_8 -> drawStar(center, size, color, 8)
-        SparkleShape.CIRCLE -> drawCircle(color, size, center)
-        SparkleShape.DIAMOND -> drawDiamond(center, size, color)
-        SparkleShape.PLUS -> drawPlus(center, size, color)
         SparkleShape.HEART -> drawHeart(center, size, color)
     }
 }
@@ -293,33 +284,6 @@ private fun DrawScope.drawStar(center: Offset, size: Float, color: Color, rays: 
 
     path.close()
     drawPath(path, color)
-}
-
-private fun DrawScope.drawDiamond(center: Offset, size: Float, color: Color) {
-    val path = Path().apply {
-        moveTo(center.x, center.y - size)
-        lineTo(center.x + size, center.y)
-        lineTo(center.x, center.y + size)
-        lineTo(center.x - size, center.y)
-        close()
-    }
-    drawPath(path, color)
-}
-
-private fun DrawScope.drawPlus(center: Offset, size: Float, color: Color) {
-    val thickness = size * 0.3f
-    // Vertical bar
-    drawRect(
-        color = color,
-        topLeft = Offset(center.x - thickness / 2, center.y - size),
-        size = androidx.compose.ui.geometry.Size(thickness, size * 2)
-    )
-    // Horizontal bar
-    drawRect(
-        color = color,
-        topLeft = Offset(center.x - size, center.y - thickness / 2),
-        size = androidx.compose.ui.geometry.Size(size * 2, thickness)
-    )
 }
 
 private fun DrawScope.drawHeart(center: Offset, size: Float, color: Color) {
