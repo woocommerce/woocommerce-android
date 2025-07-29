@@ -99,7 +99,7 @@ class WooPosScannerSetupNavigatorTest {
     }
 
     @Test
-    fun `given TestYourScanner step, when TERA_1200 device, then should navigate to ScannerSetupSuccess`() {
+    fun `given TestYourScanner step, when TERA_1200 device, then should navigate to SoftwareKeyboardSetup`() {
         // GIVEN
         val testScannerStep = ScanningSetupStep.TestYourScanner
 
@@ -107,7 +107,7 @@ class WooPosScannerSetupNavigatorTest {
         val nextStep = navigator.getNextStep(BarcodeReaderDevice.TERA_1200, testScannerStep)
 
         // THEN
-        assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerSetupSuccess::class.java)
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.SoftwareKeyboardSetup::class.java)
     }
 
     @Test
@@ -164,7 +164,7 @@ class WooPosScannerSetupNavigatorTest {
     }
 
     @Test
-    fun `given TestYourScanner step, when STAR_BSH_20B device, then should navigate to ScannerSetupSuccess`() {
+    fun `given TestYourScanner step, when STAR_BSH_20B device, then should navigate to SoftwareKeyboardSetup`() {
         // GIVEN
         val testScannerStep = ScanningSetupStep.TestYourScanner
 
@@ -172,7 +172,7 @@ class WooPosScannerSetupNavigatorTest {
         val nextStep = navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, testScannerStep)
 
         // THEN
-        assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerSetupSuccess::class.java)
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.SoftwareKeyboardSetup::class.java)
     }
 
     @Test
@@ -266,7 +266,7 @@ class WooPosScannerSetupNavigatorTest {
     }
 
     @Test
-    fun `given ScannerSetupSuccess step, when getting previous step for TERA_1200, then should return TestYourScanner`() {
+    fun `given ScannerSetupSuccess step, when getting previous step for TERA_1200, then should return SoftwareKeyboardSetup`() {
         // GIVEN
         val currentStep = ScanningSetupStep.ScannerSetupSuccess
 
@@ -274,11 +274,11 @@ class WooPosScannerSetupNavigatorTest {
         val previousStep = navigator.getPreviousStep(BarcodeReaderDevice.TERA_1200, currentStep)
 
         // THEN
-        assertThat(previousStep).isInstanceOf(ScanningSetupStep.TestYourScanner::class.java)
+        assertThat(previousStep).isInstanceOf(ScanningSetupStep.SoftwareKeyboardSetup::class.java)
     }
 
     @Test
-    fun `given ScannerSetupSuccess step, when getting previous step for STAR_BSH_20B, then should return TestYourScanner`() {
+    fun `given ScannerSetupSuccess step, when getting previous step for STAR_BSH_20B, then should return SoftwareKeyboardSetup`() {
         // GIVEN
         val currentStep = ScanningSetupStep.ScannerSetupSuccess
 
@@ -286,7 +286,7 @@ class WooPosScannerSetupNavigatorTest {
         val previousStep = navigator.getPreviousStep(BarcodeReaderDevice.STAR_BSH_20B, currentStep)
 
         // THEN
-        assertThat(previousStep).isInstanceOf(ScanningSetupStep.TestYourScanner::class.java)
+        assertThat(previousStep).isInstanceOf(ScanningSetupStep.SoftwareKeyboardSetup::class.java)
     }
 
     @Test
@@ -310,7 +310,7 @@ class WooPosScannerSetupNavigatorTest {
         val nextStep = navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, currentStep)
 
         // THEN
-        assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerSetupSuccess::class.java)
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.SoftwareKeyboardSetup::class.java)
     }
 
     @Test
@@ -334,7 +334,7 @@ class WooPosScannerSetupNavigatorTest {
         val nextStep = navigator.getNextStepForValidBarcode(BarcodeReaderDevice.TERA_1200, currentStep)
 
         // THEN
-        assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerSetupSuccess::class.java)
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.SoftwareKeyboardSetup::class.java)
     }
 
     @Test
