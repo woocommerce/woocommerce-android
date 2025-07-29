@@ -4506,7 +4506,7 @@
     <string name="woopos_scanning_setup_button_retry">Retry</string>
     <string name="woopos_scanning_setup_button_done">Done</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Configure software keyboard</string>
-    <string name="woopos_scanning_setup_software_keyboard_message">Android treats a barcode scanner as external keyboard, which may hide your on-screen keyboard.\n\nTo enable it:\n• Go to Android\'s Settings and search for \"keyboard\"\n• Enable \"Show on-screen keyboard when physical keyboard is connected\"\n• Your keyboard app may also have its own setting to enable</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android treats a barcode scanner as external keyboard, which may hide your on-screen keyboard.\n\nTo enable it:\n• Go to Android\'s Settings and search for \"keyboard\"\n• Enable \"Show on-screen keyboard when physical keyboard is connected\"\n• You may need to enable on-screen keyboard in your software keyboard app settings</string>
     <string name="woopos_scanning_setup_software_keyboard_hint">Tap here to test your keyboard visibility…</string>
     <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
