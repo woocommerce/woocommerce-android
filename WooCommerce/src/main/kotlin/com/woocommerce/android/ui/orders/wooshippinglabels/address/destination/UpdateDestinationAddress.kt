@@ -15,23 +15,22 @@ class UpdateDestinationAddress @Inject constructor(
 ) {
     suspend operator fun invoke(
         address: Address,
-        orderId: Long
-    ): Result<DestinationShippingAddress> {
-        return withContext(coroutineDispatchers.io) {
-            selectedSite.getOrNull()?.let {
-                val response = shippingRepository.updateDestinationAddress(it, orderId, address)
-                val result = response.model
-                when {
-                    response.isError || result == null -> {
-                        val message =
-                            response.error.message
-                                ?: if (result == null) "Empty response" else "Unknown error"
-                        Result.failure(Exception(message))
-                    }
-
-                    else -> Result.success(result)
+        orderId: Long,
+        isVerified: Boolean
+    ): Result<DestinationShippingAddress> = withContext(coroutineDispatchers.io) {
+        selectedSite.getOrNull()?.let {
+            val response = shippingRepository.updateDestinationAddress(it, orderId, address, isVerified)
+            val result = response.model
+            when {
+                response.isError || result == null -> {
+                    val message =
+                        response.error.message
+                            ?: if (result == null) "Empty response" else "Unknown error"
+                    Result.failure(Exception(message))
                 }
-            } ?: Result.failure(Exception("No site selected"))
-        }
+
+                else -> Result.success(result)
+            }
+        } ?: Result.failure(Exception("No site selected"))
     }
 }

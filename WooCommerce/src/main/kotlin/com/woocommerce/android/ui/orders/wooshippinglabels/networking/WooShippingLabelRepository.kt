@@ -118,7 +118,7 @@ class WooShippingLabelRepository @Inject constructor(
         shipFrom: OriginShippingAddress,
         selectedRate: WooShippingSelectedRateModel,
         weight: Float,
-        lastOrderComplete: Boolean,
+        lastOrderCompleted: Boolean,
         customsData: CustomsData?,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): WooResult<PurchasedLabelData> {
@@ -139,7 +139,7 @@ class WooShippingLabelRepository @Inject constructor(
             selectedRateOptions = mapper.toSelectedRateOptions(selectedRate),
             customs = customsData?.let { mapper.toCustomsDTO(it) },
             hazmat = mapper.toHazmatDTO(hazmatSelection),
-            markOrderComplete = lastOrderComplete
+            lastOrderCompleted = lastOrderCompleted
         ).asWooResult { mapper(it) }
     }
 
@@ -211,11 +211,12 @@ class WooShippingLabelRepository @Inject constructor(
         site: SiteModel,
         orderId: Long,
         address: Address,
+        isVerified: Boolean
     ): WooResult<DestinationShippingAddress> {
         val updatedAddress = restClient.updateDestinationAddress(
             site = site,
             orderId = orderId,
-            address = mapper.toAddressDTO(address)
+            address = mapper.toAddressDTO(address = address, isVerified = isVerified)
         )
 
         return if (updatedAddress.result?.success == true) {

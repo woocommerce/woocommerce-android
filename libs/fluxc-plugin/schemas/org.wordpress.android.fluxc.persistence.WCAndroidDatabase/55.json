@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 55,
-    "identityHash": "daad0c9fa90134f270088a7b423c739e",
+    "identityHash": "9ce88714ca32354e532d87c078285f97",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3362,11 +3362,11 @@
       },
       {
         "tableName": "OrderStatusEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `statusKey` TEXT NOT NULL, `label` TEXT NOT NULL, `statusCount` INTEGER NOT NULL, PRIMARY KEY(`localSiteId`, `statusKey`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `statusKey` TEXT NOT NULL, `label` TEXT NOT NULL, `statusCount` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `statusKey`))",
         "fields": [
           {
-            "fieldPath": "localSiteId",
-            "columnName": "localSiteId",
+            "fieldPath": "siteId",
+            "columnName": "siteId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -3392,7 +3392,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "localSiteId",
+            "siteId",
             "statusKey"
           ]
         },
@@ -3403,7 +3403,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'daad0c9fa90134f270088a7b423c739e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ce88714ca32354e532d87c078285f97')"
     ]
   }
 }

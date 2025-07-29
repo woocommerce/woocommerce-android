@@ -118,6 +118,7 @@ fun WooShippingLabelsPackageCreationScreenPreview() {
                     packageWidth = "10",
                     packageHeight = "10",
                     packageWeight = "10",
+                    dimensionUnit = "cm",
                     isAddPackageEnabled = true,
                     isSaveAsTemplateChecked = true,
                     onAddPackageClick = {},

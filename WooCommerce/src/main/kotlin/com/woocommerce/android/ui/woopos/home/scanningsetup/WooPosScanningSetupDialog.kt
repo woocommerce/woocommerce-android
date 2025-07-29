@@ -200,7 +200,7 @@ fun WooPosScanningSetupDialog(
                     is ScanningSetupStep.ScannerHIDModeSetup -> ScannerModeSetupContent(
                         title = stringResource(step.titleRes),
                         message = stringResource(step.messageRes),
-                        qrCodeImageRes = step.qrCodeImageRes,
+                        codeImageRes = step.qrCodeImageRes,
                         primaryButtonText = stringResource(step.primaryButtonTextRes),
                         secondaryButtonText = stringResource(step.secondaryButtonTextRes),
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
@@ -210,7 +210,7 @@ fun WooPosScanningSetupDialog(
                     is ScanningSetupStep.ScannerPairModeSetup -> ScannerModeSetupContent(
                         title = stringResource(step.titleRes),
                         message = stringResource(step.messageRes),
-                        qrCodeImageRes = step.qrCodeImageRes,
+                        codeImageRes = step.qrCodeImageRes,
                         primaryButtonText = stringResource(step.primaryButtonTextRes),
                         secondaryButtonText = stringResource(step.secondaryButtonTextRes),
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
@@ -280,7 +280,7 @@ fun WooPosScanningSetupDialog(
 private fun ScannerModeSetupContent(
     title: String,
     message: String,
-    @DrawableRes qrCodeImageRes: Int,
+    @DrawableRes codeImageRes: Int,
     primaryButtonText: String,
     secondaryButtonText: String,
     onPrimaryClick: () -> Unit,
@@ -311,18 +311,16 @@ private fun ScannerModeSetupContent(
 
         Box(
             modifier = Modifier
-                .size(184.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
                 .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = qrCodeImageRes),
+                painter = painterResource(id = codeImageRes),
                 contentDescription = stringResource(
                     id = R.string.woopos_scanning_setup_barcode_content_description
                 ),
-                modifier = Modifier.size(168.dp)
             )
         }
 
@@ -888,7 +886,7 @@ fun WooPosScanningSetupTestQRContent() {
                 secondaryButtonText = "Back",
                 title = "Scanner Mode Setup",
                 message = "Follow the instructions to set up your scanner in HID mode.",
-                qrCodeImageRes = R.drawable.ic_woopos_reader_setup_code_star_bsh_20
+                codeImageRes = R.drawable.ic_woopos_reader_setup_code_star_bsh_20
             )
         }
     }

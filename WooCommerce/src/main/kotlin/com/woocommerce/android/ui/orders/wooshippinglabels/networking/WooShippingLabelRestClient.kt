@@ -154,7 +154,7 @@ class WooShippingLabelRestClient @Inject constructor(
         selectedRate: RateDTO,
         parentRate: RateDTO?,
         selectedRateOptions: Map<WooShippingRateModel.Option, ShippingRateSurchargeDTO>,
-        markOrderComplete: Boolean,
+        lastOrderCompleted: Boolean,
         hazmat: HazmatDTO,
         customs: CustomsDTO?,
     ): WooPayload<PurchasedShippingLabelResponseDTO> {
@@ -176,7 +176,7 @@ class WooShippingLabelRestClient @Inject constructor(
                 "selected_rate_options" to selectedRateOptions.mapKeys { it.key.typeId },
                 "hazmat" to mapOf(shipmentKey to hazmat),
                 "customs" to customs?.let { mapOf(shipmentKey to it) }.orEmpty(),
-                "user_meta" to mapOf("last_order_completed" to markOrderComplete),
+                "user_meta" to mapOf("last_order_completed" to lastOrderCompleted),
                 "features_supported_by_client" to listOf("upsdap"),
             ),
             clazz = PurchasedShippingLabelResponseDTO::class.java,
@@ -239,10 +239,7 @@ class WooShippingLabelRestClient @Inject constructor(
         val result = wooNetwork.executePostGsonRequest(
             site = site,
             path = url,
-            body = mapOf(
-                "address" to address.copy(isVerified = true),
-                "isVerified" to true // We always verify the address before saving it
-            ),
+            body = mapOf("address" to address, "isVerified" to address.isVerified),
             clazz = UpdateAddressResponseDTO::class.java,
         )
 

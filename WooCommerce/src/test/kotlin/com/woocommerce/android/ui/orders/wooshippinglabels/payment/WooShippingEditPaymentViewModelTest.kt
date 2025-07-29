@@ -67,7 +67,8 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         canEditSettings = true,
         storeOwnerName = "John Doe",
         storeOwnerUsername = "johndoe",
-        paperSize = WooShippingLabelPaperSize.LABEL
+        paperSize = WooShippingLabelPaperSize.LABEL,
+        lastOrderCompleted = false
     )
 
     private val observeAccountSettings: ObserveAccountSettings = mock {

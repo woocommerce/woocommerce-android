@@ -15,7 +15,7 @@ class GetShippingRates @Inject constructor(
     private val shippingMapper: WooShippingRatesDomainMapper
 ) {
 
-    @Suppress("LongParameterList")
+    @Suppress("LongParameterList", "TooGenericExceptionCaught")
     suspend operator fun invoke(
         orderId: Long,
         selectedPackage: PackageData,
@@ -25,21 +25,29 @@ class GetShippingRates @Inject constructor(
         currencyCode: String?,
         customsData: CustomsData?,
         hazmatSelection: ShippingLabelHazmatCategory? = null
-    ): Result<Map<CarrierUI, List<ShippingRateUI>>> {
-        val result = repository.getShippingRates(
-            orderId = orderId,
-            selectedPackage = selectedPackage,
-            shipTo = shipTo,
-            shipFrom = shipFrom,
-            weight = weight,
-            customsData = customsData,
-            hazmatSelection = hazmatSelection
-        )
-        return if (result.isSuccess) {
-            val rates = shippingMapper(result.getOrThrow(), currencyCode)
-            Result.success(rates)
-        } else {
-            Result.failure(result.exceptionOrNull() ?: Exception("Failed to get shipping rates"))
+    ): Result<Map<CarrierUI, List<ShippingRateUI>>> = repository.getShippingRates(
+        orderId = orderId,
+        selectedPackage = selectedPackage,
+        shipTo = shipTo,
+        shipFrom = shipFrom,
+        weight = weight,
+        customsData = customsData,
+        hazmatSelection = hazmatSelection
+    ).fold(
+        onSuccess = { ratesResponse ->
+            if (ratesResponse.isEmpty()) {
+                Result.failure(Exception("no_rates_available"))
+            } else {
+                try {
+                    val mappedRates = shippingMapper(ratesResponse, currencyCode)
+                    Result.success(mappedRates)
+                } catch (e: Exception) {
+                    Result.failure(Exception("Failed to map shipping rates", e))
+                }
+            }
+        },
+        onFailure = { exception ->
+            Result.failure(exception)
         }
-    }
+    )
 }

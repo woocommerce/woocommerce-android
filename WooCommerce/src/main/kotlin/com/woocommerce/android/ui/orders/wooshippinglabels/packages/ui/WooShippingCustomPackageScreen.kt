@@ -43,6 +43,7 @@ fun WooShippingCustomPackageCreationScreen(viewModel: WooShippingLabelPackageCre
         packageLength = viewState?.customPackageCreationData?.length.orEmpty(),
         packageWidth = viewState?.customPackageCreationData?.width.orEmpty(),
         packageWeight = viewState?.customPackageCreationData?.weight.orEmpty(),
+        dimensionUnit = viewState?.storeOptions?.dimensionUnit.orEmpty(),
         isAddPackageEnabled = viewState?.customPackageCreationData?.isValid ?: false,
         isSaveAsTemplateChecked = viewState?.customPackageCreationData?.saveAsTemplate ?: false,
         onAddPackageClick = viewModel::onAddCustomPackageClick,
@@ -65,6 +66,7 @@ fun WooShippingCustomPackageCreationScreen(
     packageWidth: String,
     packageHeight: String,
     packageWeight: String,
+    dimensionUnit: String,
     isAddPackageEnabled: Boolean,
     isSaveAsTemplateChecked: Boolean,
     onAddPackageClick: (saveAsTemplate: Boolean) -> Unit,
@@ -99,41 +101,83 @@ fun WooShippingCustomPackageCreationScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = modifier.fillMaxWidth()
             ) {
-                WCOutlinedTextField(
-                    value = packageLength,
-                    onValueChange = onLengthChange,
-                    label = stringResource(id = R.string.woo_shipping_labels_package_creation_length),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = modifier.weight(1f)
-                )
+                Column(modifier = modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(id = R.string.woo_shipping_labels_package_creation_length),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    )
+                    WCOutlinedTextField(
+                        value = packageLength,
+                        onValueChange = onLengthChange,
+                        label = "",
+                        trailingIcon = {
+                            Text(
+                                text = dimensionUnit,
+                                style = MaterialTheme.typography.body2,
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-                WCOutlinedTextField(
-                    value = packageWidth,
-                    onValueChange = onWidthChange,
-                    label = stringResource(id = R.string.woo_shipping_labels_package_creation_width),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = modifier.weight(1f)
-                )
+                Column(modifier = modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(id = R.string.woo_shipping_labels_package_creation_width),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    )
+                    WCOutlinedTextField(
+                        value = packageWidth,
+                        onValueChange = onWidthChange,
+                        label = "",
+                        trailingIcon = {
+                            Text(
+                                text = dimensionUnit,
+                                style = MaterialTheme.typography.body2,
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-                WCOutlinedTextField(
-                    value = packageHeight,
-                    onValueChange = onHeightChange,
-                    label = stringResource(id = R.string.woo_shipping_labels_package_creation_height),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = modifier.weight(1f)
-                )
+                Column(modifier = modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(id = R.string.woo_shipping_labels_package_creation_height),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    )
+                    WCOutlinedTextField(
+                        value = packageHeight,
+                        onValueChange = onHeightChange,
+                        label = "",
+                        trailingIcon = {
+                            Text(
+                                text = dimensionUnit,
+                                style = MaterialTheme.typography.body2,
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
             Row(
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween,
@@ -199,6 +243,7 @@ fun PreviewWooShippingCustomPackageCreationScreen() {
             packageWidth = "10",
             packageHeight = "10",
             packageWeight = "10",
+            dimensionUnit = "cm",
             isAddPackageEnabled = true,
             isSaveAsTemplateChecked = true,
             onAddPackageClick = {},

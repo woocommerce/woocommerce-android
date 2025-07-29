@@ -7,100 +7,133 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
 class WooShippingCustomsFormViewModel @Inject constructor(
     private val getAllCountries: GetAllCountries,
-    private val shouldRequireITN: ShouldRequireITN,
+    private val validateITN: ValidateITN,
+    private val validateHSTariffNumber: ValidateHSTariffNumber,
+    private val dispatchers: CoroutineDispatchers,
+    private val currencyFormatter: CurrencyFormatter,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val itnRegex by lazy { ITN_REGEX_STRING.toRegex() }
-
     private val navArgs: WooShippingCustomsFormFragmentArgs by savedState.navArgs()
     private val destinationCountryCode = navArgs.destinationCountryCode
+    private val storeOptions = navArgs.storeOptions
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = ViewState()
+        initialValue = loadViewStateFromCustomsData(
+            customData = navArgs.customsData,
+            currencySymbol = storeOptions.currencySymbol,
+            weightUnit = storeOptions.weightUnit
+        )
     )
     val viewState = _viewState.asLiveData()
 
     private var possibleLocations: List<Location>? = null
     private var itemIndexUnderCountrySelection: Int? = null
 
-    private val List<WooShippingCustomsProductUIModel>.isITNRequired: Boolean
-        get() {
-            val totalShippingValue = mapNotNull { it.shippingTotalValue }
-                .takeIf { it.isNotEmpty() }
-                ?.reduce { acc, current -> acc + current }
-                ?: BigDecimal.ZERO
-
-            return shouldRequireITN(destinationCountryCode, totalShippingValue)
-        }
-
     init {
         launch { loadCountries() }
-        navArgs.customsData?.let { customData ->
-            loadViewStateFromExistentCustomData(customData)
-        } ?: run {
-            val shippableProducts = navArgs.shippableItems.map { item -> item.toProductUIModel() }
-            _viewState.update { it.copy(shippingProducts = shippableProducts) }
+        monitorITNValidationStatus()
+    }
+
+    private fun monitorITNValidationStatus() {
+        fun ValidateITN.ITNMissingCause.errorMessage() = when (this) {
+            ValidateITN.ITNMissingCause.TotalValue ->
+                UiString.UiStringRes(R.string.woo_shipping_labels_customs_itn_required_total_value)
+
+            is ValidateITN.ITNMissingCause.HSTariffValue ->
+                UiString.UiStringRes(
+                    stringRes = R.string.woo_shipping_labels_customs_itn_required_hs_tariff_value,
+                    params = listOf(UiString.UiStringText(this.hsTariffNumber))
+                )
+
+            ValidateITN.ITNMissingCause.DestinationCountry ->
+                UiString.UiStringRes(R.string.woo_shipping_labels_customs_itn_required_destination_country)
         }
-        observeShippableItemsChanges()
-    }
 
-    private fun observeShippableItemsChanges() {
-        _viewState
-            .map { Pair(it.shippingProducts, it.itnValue) }
-            .distinctUntilChanged()
-            .onEach { (products, itnValue) ->
-                onITNChanged(itnValue.currentInput, products.isITNRequired)
-            }.launchIn(viewModelScope)
-    }
+        _viewState.map { it.asCustomData }
+            .map { customsData ->
+                validateITN(customsData, destinationCountryCode)
+            }
+            .flowOn(dispatchers.computation)
+            .onEach { validationResult ->
+                _viewState.update {
+                    val itnValue = it.itnValue.currentInput
+                    it.copy(
+                        itnValue = when (validationResult) {
+                            ValidateITN.ITNValidationResult.Valid -> InputValue.Data(itnValue)
+                            is ValidateITN.ITNValidationResult.Missing -> InputValue.Error(
+                                input = itnValue,
+                                errorMessageId = validationResult.cause.errorMessage()
+                            )
 
-    private fun loadViewStateFromExistentCustomData(customData: CustomsData) {
-        _viewState.update {
-            it.copy(
-                contentType = customData.contentType,
-                otherContentInput = InputValue.Data(customData.contentDescription),
-                restrictionType = customData.restrictionType,
-                otherRestrictionInput = InputValue.Data(customData.restrictionDescription),
-                itnValue = InputValue.Data(customData.itn),
-                returnToSenderChecked = customData.isReturnToSender,
-                shippingProducts = customData.items.map { item ->
-                    WooShippingCustomsProductUIModel(
-                        productId = item.productID,
-                        name = item.description,
-                        description = InputValue.Data(item.description),
-                        tariffNumber = InputValue.Data(item.hsTariffNumber),
-                        valuePerUnit = InputValue.Data(item.value.toString()),
-                        weightPerUnit = InputValue.Data(item.weight.toString()),
-                        originCountry = item.originCountry,
-                        originCountryCode = item.originCountryCode,
-                        quantity = item.quantity,
-                        isExpanded = false
+                            ValidateITN.ITNValidationResult.InvalidFormat -> InputValue.Error(
+                                input = itnValue,
+                                errorMessageId = R.string.woo_shipping_labels_customs_itn_error_message
+                            )
+                        }
                     )
                 }
-            )
-        }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun loadViewStateFromCustomsData(
+        customData: CustomsData,
+        currencySymbol: String,
+        weightUnit: String
+    ): ViewState {
+        return ViewState(
+            contentType = customData.contentType,
+            otherContentInput = InputValue.Data(customData.contentDescription),
+            restrictionType = customData.restrictionType,
+            otherRestrictionInput = InputValue.Data(customData.restrictionDescription),
+            itnValue = InputValue.Data(customData.itn),
+            returnToSenderChecked = customData.isReturnToSender,
+            shippingProducts = customData.items.map { item ->
+                WooShippingCustomsProductUIModel(
+                    productId = item.productID,
+                    name = item.description,
+                    description = validateProductDescription(item.description),
+                    tariffNumber = validateHSTariffNumber(item.hsTariffNumber, destinationCountryCode),
+                    valuePerUnit = validateProductValue(item.value.toString()),
+                    weightPerUnit = validateProductWeight(item.weight.takeIf { it != 0f }?.toString() ?: ""),
+                    originCountry = item.originCountry,
+                    originCountryCode = item.originCountryCode,
+                    quantity = item.quantity,
+                    isExpanded = false,
+                    formattedPriceAndWeight = formatPriceAndWeightPerItem(
+                        item.value.toString(),
+                        item.weight.toString()
+                    )
+                )
+            },
+            currencySymbol = currencySymbol,
+            weightUnit = weightUnit
+        )
     }
 
     fun onContentTypeClick() {
@@ -157,26 +190,8 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         }
     }
 
-    fun onITNChanged(
-        newItnValue: String,
-        shouldRequireITN: Boolean = false
-    ) {
-        val input = when {
-            newItnValue.isBlank() && shouldRequireITN ->
-                InputValue.Error(
-                    input = newItnValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_itn_required_message
-                )
-
-            newItnValue.isNotBlank() && itnRegex.matches(newItnValue).not() ->
-                InputValue.Error(
-                    input = newItnValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_itn_error_message
-                )
-
-            else -> InputValue.Data(newItnValue)
-        }
-        _viewState.update { it.copy(itnValue = input) }
+    fun onITNChanged(newItnValue: String) {
+        _viewState.update { it.copy(itnValue = InputValue.Data(newItnValue)) }
     }
 
     fun onShippableProductExpanded(itemIndex: Int, isExpanded: Boolean) {
@@ -192,43 +207,46 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     fun onShippableProductDescriptionChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank()) {
-                false -> InputValue.Data(newValue)
-                true -> InputValue.Error(
-                    input = newValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_product_details_description_missing
-                )
-            }.let { item.copy(description = it) }
+            item.copy(description = validateProductDescription(newValue))
         }
     }
 
     fun onShippableProductTariffNumberChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank()) {
-                false -> InputValue.Data(newValue)
-                true -> InputValue.Error(
-                    input = newValue,
-                    errorMessageId = R.string.woo_shipping_labels_customs_product_details_tariff_missing
+            item.copy(
+                tariffNumber = validateHSTariffNumber(
+                    tariffNumber = newValue,
+                    destinationCountryCode = destinationCountryCode
                 )
-            }.let { item.copy(tariffNumber = it) }
+            )
         }
     }
 
     fun onShippableProductValuePerUnitChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank()) {
-                false -> InputValue.Data(newValue)
-                true -> newValue.asInputValueError
-            }.let { item.copy(valuePerUnit = it) }
+            validateProductValue(newValue).let {
+                item.copy(
+                    valuePerUnit = it,
+                    formattedPriceAndWeight = formatPriceAndWeightPerItem(
+                        it.currentInput,
+                        item.weightPerUnit.currentInput
+                    )
+                )
+            }
         }
     }
 
     fun onShippableProductWeightPerUnitChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            when (newValue.isBlank()) {
-                false -> InputValue.Data(newValue)
-                true -> newValue.asInputValueError
-            }.let { item.copy(weightPerUnit = it) }
+            validateProductWeight(newValue).let {
+                item.copy(
+                    weightPerUnit = it,
+                    formattedPriceAndWeight = formatPriceAndWeightPerItem(
+                        item.valuePerUnit.currentInput,
+                        it.currentInput
+                    )
+                )
+            }
         }
     }
 
@@ -262,6 +280,30 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         _viewState.value.asCustomData.let { triggerEvent(FinishCustomsForm(it)) }
     }
 
+    private fun validateProductDescription(description: String) = when (description.isBlank()) {
+        false -> InputValue.Data(description)
+        true -> InputValue.Error(
+            input = description,
+            errorMessageId = R.string.woo_shipping_labels_customs_product_details_description_missing
+        )
+    }
+
+    private fun validateProductValue(value: String): InputValue =
+        when (value.isBlank()) {
+            false -> InputValue.Data(value)
+            true -> value.asInputValueError
+        }
+
+    private fun validateProductWeight(weight: String): InputValue = when {
+        weight.isBlank() -> weight.asInputValueError
+        weight.toFloatOrNull() == null || weight.toFloat() == 0f -> InputValue.Error(
+            input = weight,
+            errorMessageId = R.string.woo_shipping_labels_customs_product_details_weight_invalid
+        )
+
+        else -> InputValue.Data(weight)
+    }
+
     private fun updateShippingProductsAt(
         itemIndex: Int,
         generateUpdatedItem: (WooShippingCustomsProductUIModel) -> WooShippingCustomsProductUIModel
@@ -283,36 +325,15 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         )
     }
 
-    private fun ShippableItemModel.toProductUIModel() = WooShippingCustomsProductUIModel(
-        productId = productId,
-        name = title,
-        description = "".asInputValueError,
-        tariffNumber = "".asInputValueError,
-        quantity = quantity,
-        originCountry = "",
-        originCountryCode = "",
-        isExpanded = false,
-        valuePerUnit = when {
-            price == BigDecimal.ZERO -> InputValue.Error(
-                input = "",
-                errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
-            )
-            else -> InputValue.Data(shippingTotalValue.toString())
-        },
-        weightPerUnit = when {
-            weight == 0f -> InputValue.Error(
-                input = "",
-                errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
-            )
-            else -> InputValue.Data(weight.toString())
-        }
-    )
-
     private val String.asInputValueError
         get() = InputValue.Error(
             input = this,
             errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
         )
+
+    private fun formatPriceAndWeightPerItem(price: String, weight: String): String =
+        "${currencyFormatter.formatCurrency(price, storeOptions.currencySymbol)} " +
+            "• $weight${storeOptions.weightUnit}"
 
     @Parcelize
     data class ViewState(
@@ -322,7 +343,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         val otherRestrictionInput: InputValue = InputValue.Empty,
         val itnValue: InputValue = InputValue.Empty,
         val returnToSenderChecked: Boolean = false,
-        val shippingProducts: List<WooShippingCustomsProductUIModel> = emptyList()
+        val shippingProducts: List<WooShippingCustomsProductUIModel> = emptyList(),
+        val currencySymbol: String,
+        val weightUnit: String,
     ) : Parcelable {
         val shouldDisplayContentTypeInput: Boolean
             get() = contentType == ContentType.OTHER
@@ -353,10 +376,18 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         data class Data(val input: String) : InputValue()
         data class Error(
             val input: String,
-            val errorMessageId: Int
-        ) : InputValue()
+            val errorMessageId: UiString
+        ) : InputValue() {
+            constructor(input: String, errorMessageId: Int) : this(
+                input = input,
+                errorMessageId = UiString.UiStringRes(errorMessageId)
+            )
+        }
 
         data object Empty : InputValue()
+
+        val isValid: Boolean
+            get() = this is Data
 
         val currentInput
             get() = when (this) {
@@ -365,7 +396,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 is Empty -> ""
             }
 
-        val errorMessageOrNull: Int?
+        val errorMessageOrNull: UiString?
             get() = run { this as? Error }?.errorMessageId
     }
 
@@ -373,13 +404,4 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     data class ShowRestrictionTypeDialog(val currentSelection: RestrictionType) : MultiLiveEvent.Event()
     data class ShowCountrySelector(val countries: List<Location>) : MultiLiveEvent.Event()
     data class FinishCustomsForm(val customData: CustomsData) : MultiLiveEvent.Event()
-
-    companion object {
-        /**
-         * For information regarding the format of the ITN, check the Appendix A of
-         * [Export Compliance Customs Data Requirements](https://postalpro.usps.com/node/3973)
-         */
-        private const val ITN_REGEX_STRING =
-            """^(?:(?:AES X\d{14})|(?:NOEEI 30\.\d{1,2}(?:\([a-z]\)(?:\(\d\))?)?))${'$'}"""
-    }
 }

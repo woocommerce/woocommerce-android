@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+23.0
+-----
+- [**] You can now access POS mode faster than ever with the new POS tab in the app’s bottom navigation bar—just one tap and you’re in! If you spotted this feature mentioned a couple releases ago… well, let’s just say we got a little too excited. 😅 It’s finally here for real, and fully available in the UK and US! [https://github.com/woocommerce/woocommerce-android/pull/14337]
+
 22.9
 -----
 - [*] Fixed infinite loading animation in Order details pane when order list is empty [https://github.com/woocommerce/woocommerce-android/pull/14316]
@@ -11,6 +15,8 @@
 - [*] Added POS badge to Most recent orders section in the My store dashboard [https://github.com/woocommerce/woocommerce-android/pull/14328]
 - [*] Update cache with currency code after restarting the app [https://github.com/woocommerce/woocommerce-android/pull/14363]
 - [**] POS: Barcode readers setup flow added [https://github.com/woocommerce/woocommerce-android/pull/14362]
+- [**] Improved logic responsible for identifying active WC plugins [https://github.com/woocommerce/woocommerce-android/pull/14368]
+- [*] Shipping Labels: Allow confirming destination addresses when validation fails. [https://github.com/woocommerce/woocommerce-android/pull/14376]
 
 22.8
 -----

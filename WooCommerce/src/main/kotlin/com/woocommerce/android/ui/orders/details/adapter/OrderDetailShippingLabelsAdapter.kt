@@ -109,9 +109,14 @@ class OrderDetailShippingLabelsAdapter(
 
             // Shipping label header
             with(viewBinding.shippingLabelListLblPackage) {
+                val packageNumber = if (isRevampWooShippingEnabled) {
+                    (shippingLabel.shipmentId?.toIntOrNull() ?: -1) + 1
+                } else {
+                    bindingAdapterPosition + 1
+                }
                 text = context.getString(
                     R.string.orderdetail_shipping_label_item_header,
-                    bindingAdapterPosition + 1
+                    packageNumber
                 )
             }
 

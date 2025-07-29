@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-01 09:54:04+0000
+Translation-Revision-Date: 2025-07-15 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_rate_option_additional_handling">追加の処理</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">土曜日の配達</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">カーボンニュートラル</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">成年の署名が必要</string>
+    <string name="woo_shipping_rate_option_signature_required">署名が必要</string>
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_extra_cost_format">%1$s以上</string>
+    <string name="woo_shipping_labels_package_saving_error">荷物を保存できません</string>
+    <string name="woo_shipping_labels_package_removing_error">荷物を削除できません</string>
+    <string name="woopos_eligibility_retry_check_label">再試行</string>
+    <string name="woopos_eligibility_exit_pos_label">POS を終了</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Bluetooth バーコードスキャナーの手順を参照して HID モードを設定します。 これは通常、マニュアルの特別なバーコードをスキャンする必要があります。</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">スキャナーから改行コードが送信されませんでした</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">スキャンしたバーコードが短すぎます</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (基本料金)</string>
+    <string name="shipping_label_paper_size_a4">A4 (210 x 297mm)</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">購入した配送ラベルを表示</string>
     <string name="wpp_shipping_ups_tos_accept">確認して続行</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">また、&lt;a href=\"ups-technology-agreement\"&gt;UPS® テクノロジー契約条項&lt;/a&gt; にも同意します。</string>
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">UPS® が許可しない&lt;a href=\"ups-prohibited-items\"&gt;禁止品目&lt;/a&gt;または必要な許可を得ていない規制品目を発送しません。</string>
@@ -49,7 +66,6 @@ Language: ja_JP
     <string name="woopos_dialog_barcode_info_quinary_message">スキャナーはキーボードをエミュレートするため、ソフトウェアのキーボードが表示されない場合があります (検索内など)。 キーボードのアイコンをタップすると、ソフトウェアのキーボードが再び表示されます。</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">• アイテムリストでバーコードをスキャンすると、商品がお買い物カゴに追加されます。</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• システム Bluetooth 設定でバーコードスキャナーを接続します。</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Bluetooth バーコードスキャナーの手順を参照して HID モードを設定します。</string>
     <string name="woopos_dialog_barcode_info_more_details_link">詳細情報</string>
     <string name="woopos_dialog_barcode_info_primary_message">• 「商品」&gt;「商品情報」&gt;「在庫」の「GTIN、UPC、EAN、ISBN」フィールドでバーコードを設定します。 </string>
     <string name="woopos_dialog_barcode_info_intro_message">外部スキャナーを使用してバーコードをスキャンし、お買い物カゴをすばやく作成できます。</string>
