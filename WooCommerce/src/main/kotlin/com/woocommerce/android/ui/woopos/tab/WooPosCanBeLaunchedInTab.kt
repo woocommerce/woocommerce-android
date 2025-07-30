@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @Singleton
 class WooPosCanBeLaunchedInTab @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val getWooCoreVersion: GetWooCorePluginCachedVersion,
+    private val getWooCoreCachedVersion: GetWooCorePluginCachedVersion,
     private val fetchWooCoreVersion: FetchActiveWCPluginVersion,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemotelyEnabled: WooPOSIsRemotelyEnabled
@@ -34,7 +34,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         val wooCoreVersion = if (forceRefresh) {
             fetchWooCoreVersion()
         } else {
-            getWooCoreVersion()
+            getWooCoreCachedVersion()
         } ?: return@withContext WooPosLaunchability.NotLaunchable(
             WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound
         )

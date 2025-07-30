@@ -8,6 +8,8 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.SurfaceOrientedMeteringPointFactory
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
@@ -75,12 +77,16 @@ fun BarcodeScanner(
                     try {
                         val cameraProvider = cameraProviderFuture.get()
                         val imageAnalysisUseCase = ImageAnalysis.Builder()
-                            .setTargetResolution(
-                                Size(
-                                    previewView.width,
-                                    previewView.height
-                                )
-                            ).setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
+                            .setResolutionSelector(
+                                ResolutionSelector.Builder()
+                                    .setResolutionStrategy(
+                                        ResolutionStrategy(
+                                            Size(previewView.width, previewView.height),
+                                            ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER
+                                        )
+                                    ).build()
+                            )
+                            .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
                             .build()
                             .apply {
                                 setAnalyzer(ContextCompat.getMainExecutor(context), onNewFrame)

@@ -28,6 +28,7 @@ import com.woocommerce.android.R
 
 @Composable
 fun SearchLayoutWithParams(
+    modifier: Modifier = Modifier,
     state: SearchLayoutWithParamsState,
     paramsFillWidth: Boolean,
     onSearchQueryChanged: (String) -> Unit,
@@ -40,7 +41,9 @@ fun SearchLayoutWithParams(
     val searchQuery = remember { mutableStateOf(state.searchQuery) }
     val newLineRegex = Regex("[\n\r]")
 
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         WCSearchField(
             value = state.searchQuery,
             onValueChange = { newValue: String ->
