@@ -1,25 +1,17 @@
-@file:Suppress("DEPRECATION_ERROR", "ForbiddenComment")
-// TODO: @malinajirka Issue: https://github.com/woocommerce/woocommerce-android/issues/6899
-
 package com.woocommerce.android.ui.reviews
 
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
-import kotlinx.coroutines.Dispatchers
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -35,7 +27,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 
 @ExperimentalCoroutinesApi
-class ReviewModerationHandlerTests {
+class ReviewModerationHandlerTests : BaseUnitTest()  {
     private val selectedSite: SelectedSite = mock {
         on { get() } doReturn SiteModel()
     }
@@ -45,31 +37,18 @@ class ReviewModerationHandlerTests {
 
     private lateinit var handler: ReviewModerationHandler
 
-    private val testDispatcher = TestCoroutineDispatcher()
-
-    @Before
-    fun starting() {
-        Dispatchers.setMain(testDispatcher)
-    }
-
-    @After
-    fun ending() {
-        Dispatchers.resetMain()
-        testDispatcher.cleanupTestCoroutines()
-    }
-
-    suspend fun setup(initMocks: suspend () -> Unit = {}) {
+    suspend fun setup(coroutineScope: CoroutineScope, initMocks: suspend () -> Unit = {}) {
         initMocks()
         handler = ReviewModerationHandler(
             selectedSite = selectedSite,
             productStore = productStore,
-            appCoroutineScope = TestCoroutineScope(testDispatcher)
+            appCoroutineScope = coroutineScope,
         )
     }
 
     @Test
-    fun `when moderating a review, then start with a pending state`() = testDispatcher.runBlockingTest {
-        setup()
+    fun `when moderating a review, then start with a pending state`() = runTest {
+        setup(this)
 
         val status = runTestAndCollectLastStatus {
             handler.postModerationRequest(review, HOLD)
@@ -81,8 +60,8 @@ class ReviewModerationHandlerTests {
 
     @Test
     fun `given moderating a review, when the undo delay is passed, then change status to submitted`() =
-        testDispatcher.runBlockingTest {
-            setup()
+        runTest {
+            setup(this)
 
             val latestStatus = runTestAndCollectLastStatus {
                 handler.postModerationRequest(review, HOLD)
@@ -97,8 +76,8 @@ class ReviewModerationHandlerTests {
 
     @Test
     fun `given moderating a review, when the undo delay is passed, then submit status to the API`() =
-        testDispatcher.runBlockingTest {
-            setup {
+        runTest {
+            setup(this) {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
                         WCProductReviewModel(
@@ -122,8 +101,8 @@ class ReviewModerationHandlerTests {
 
     @Test
     fun `when review status update succeeds, then status removed after a given time`() =
-        testDispatcher.runBlockingTest {
-            setup {
+        runTest {
+            setup(this) {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
                         WCProductReviewModel(
@@ -150,8 +129,8 @@ class ReviewModerationHandlerTests {
         }
 
     @Test
-    fun `when review status update fails, then change status to error`() = testDispatcher.runBlockingTest {
-        setup {
+    fun `when review status update fails, then change status to error`() = runTest {
+        setup(this) {
             whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                 WooResult(
                     WooError(GENERIC_ERROR, UNKNOWN, "")
@@ -171,8 +150,8 @@ class ReviewModerationHandlerTests {
     }
 
     @Test
-    fun `when review status update fails, then status removed after a given time`() = testDispatcher.runBlockingTest {
-        setup {
+    fun `when review status update fails, then status removed after a given time`() = runTest {
+        setup(this) {
             whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                 WooResult(
                     WooError(GENERIC_ERROR, UNKNOWN, "")
@@ -196,8 +175,8 @@ class ReviewModerationHandlerTests {
     }
 
     @Test
-    fun `when moderation is canceled, then submit success with original status`() = testDispatcher.runBlockingTest {
-        setup()
+    fun `when moderation is canceled, then submit success with original status`() = runTest {
+        setup(this)
 
         val latestStatus = runTestAndCollectLastStatus {
             handler.postModerationRequest(review, HOLD)
@@ -214,8 +193,8 @@ class ReviewModerationHandlerTests {
 
     @Test
     fun `when queuing a second moderation request, then skip delay for the previous one`() =
-        testDispatcher.runBlockingTest {
-            setup {
+        runTest {
+            setup(this) {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
                         WCProductReviewModel(
@@ -239,8 +218,8 @@ class ReviewModerationHandlerTests {
 
     @Test
     fun `when adding a second moderation request, then queue it after the previous one`() =
-        testDispatcher.runBlockingTest {
-            setup {
+        runTest {
+            setup(this) {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
                         WCProductReviewModel(
@@ -264,8 +243,8 @@ class ReviewModerationHandlerTests {
 
     @Test
     fun `when queuing moderations, then make sure the pending status list is ordered`() =
-        testDispatcher.runBlockingTest {
-            setup {
+        runTest {
+            setup(this) {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
                         WCProductReviewModel(
