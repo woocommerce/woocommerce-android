@@ -6,6 +6,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.WooLog
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,4 +50,7 @@ class AppConfigModule {
 
     @Provides
     fun provideWebViewCookieManager() = CookieManager.getInstance()
+
+    @Provides
+    fun provideWooLog() = WooLog
 }

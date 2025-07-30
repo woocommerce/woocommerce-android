@@ -1,6 +1,6 @@
 package com.woocommerce.android.util.crashlogging
 
-import com.woocommerce.android.util.WooLogWrapper
+import com.woocommerce.android.util.WooLog
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -13,17 +13,17 @@ import org.mockito.kotlin.whenever
 class WooLogFileProviderTest {
     private lateinit var sut: WooLogFileProvider
 
-    private val wooLogWrapper: WooLogWrapper = mock()
+    private val wooLog: WooLog = mock()
 
     @Before
     fun setUp() {
-        sut = WooLogFileProvider(wooLogWrapper)
+        sut = WooLogFileProvider(wooLog)
     }
 
     @Test
     fun `should provide a valid log file`() {
         val testLog = "testLog"
-        whenever(wooLogWrapper.provideLogs()).thenReturn(testLog)
+        whenever(wooLog.provideLogs()).thenReturn(testLog)
 
         val resultFile = sut.provide()
 

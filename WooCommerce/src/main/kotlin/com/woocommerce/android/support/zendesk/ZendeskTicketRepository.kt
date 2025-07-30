@@ -14,7 +14,6 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.channels.awaitClose
@@ -35,7 +34,7 @@ class ZendeskTicketRepository @Inject constructor(
     private val envDataSource: ZendeskEnvironmentDataSource,
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers,
-    private val wooLogWrapper: WooLogWrapper,
+    private val wooLog: WooLog,
     private val ssrFetcher: WCSSRModelCachingFetcher
 ) {
     /**
@@ -103,12 +102,12 @@ class ZendeskTicketRepository @Inject constructor(
     }.flowOn(dispatchers.io)
 
     private suspend fun fetchSSR(selectedSite: SiteModel): String? {
-        wooLogWrapper.i(WooLog.T.SUPPORT, "Fetching SSR")
+        wooLog.i(WooLog.T.SUPPORT, "Fetching SSR")
         val result = ssrFetcher.load(selectedSite)
         if (result.isError) {
-            wooLogWrapper.e(WooLog.T.SUPPORT, "Error fetching SSR")
+            wooLog.e(WooLog.T.SUPPORT, "Error fetching SSR")
         } else {
-            wooLogWrapper.i(WooLog.T.SUPPORT, "SSR fetched successfully")
+            wooLog.i(WooLog.T.SUPPORT, "SSR fetched successfully")
         }
         return result.model?.formatResult()
     }

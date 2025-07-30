@@ -193,5 +193,7 @@ object WooLog {
         return errors.toString()
     }
 
+    fun provideLogs() = toString()
+
     override fun toString() = logEntries.toString()
 }

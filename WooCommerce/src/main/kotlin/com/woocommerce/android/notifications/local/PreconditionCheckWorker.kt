@@ -12,8 +12,8 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_SITE_ID
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.ui.dashboard.data.ObserveBlazeWidgetStatus
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.WooPermissionUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -24,7 +24,7 @@ import org.wordpress.android.fluxc.store.SiteStore
 class PreconditionCheckWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val wooLogWrapper: WooLogWrapper,
+    private val wooLog: WooLog,
     private val siteStore: SiteStore,
     private val observeBlazeWidgetStatus: ObserveBlazeWidgetStatus,
     private val crashLogging: CrashLogging,
@@ -67,7 +67,7 @@ class PreconditionCheckWorker @AssistedInject constructor(
         get() = VERSION.SDK_INT < VERSION_CODES.TIRAMISU || WooPermissionUtils.hasNotificationsPermission(appContext)
 
     private fun cancelWork(message: String): Result {
-        wooLogWrapper.i(NOTIFICATIONS, message)
+        wooLog.i(NOTIFICATIONS, message)
         WorkManager.getInstance(appContext).cancelWorkById(id)
         return Result.failure()
     }
