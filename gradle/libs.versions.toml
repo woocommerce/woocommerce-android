@@ -79,6 +79,7 @@ google-services = '4.4.0'
 google-zxing = '3.5.3'
 gravatar = '0.2.0'
 jackson-databind = '2.12.7.1'
+jackson = '2.15.0'
 java = '11'
 jetty-webapp = '9.4.51.v20230217'
 json-path = '2.9.0'
@@ -241,6 +242,7 @@ google-protobuf-protoc = { group = "com.google.protobuf", name = "protoc", versi
 google-zxing-core = { group = "com.google.zxing", name = "core", version.ref = "google-zxing" }
 gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-databind" }
+jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
 jetty-webapp = { group = "org.eclipse.jetty", name = "jetty-webapp", version.ref = "jetty-webapp" }
 json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "json-path" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
