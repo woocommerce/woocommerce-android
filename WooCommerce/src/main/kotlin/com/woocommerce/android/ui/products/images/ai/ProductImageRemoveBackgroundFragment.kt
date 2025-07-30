@@ -212,6 +212,7 @@ private data class SparkleEvent(
     val shape: SparkleShape
 )
 
+@Suppress("MagicNumber")
 private fun generateSparkleEvents(width: Int, height: Int): List<SparkleEvent> {
     val random = Random(42)
     val sparkleCount = 150
@@ -255,16 +256,17 @@ private fun DrawScope.drawSparkle(
     shape: SparkleShape
 ) {
     when (shape) {
-        SparkleShape.STAR -> drawStar(center, size, color, 4)
+        SparkleShape.STAR -> drawStar(center, size, color)
         SparkleShape.HEART -> drawHeart(center, size, color)
     }
 }
 
-private fun DrawScope.drawStar(center: Offset, size: Float, color: Color, rays: Int) {
+@Suppress("MagicNumber")
+private fun DrawScope.drawStar(center: Offset, size: Float, color: Color) {
     val path = Path()
-
-    for (i in 0 until rays * 2) {
-        val angle = (i * Math.PI / rays).toFloat()
+    val starRays = 4
+    for (i in 0 until starRays * 2) {
+        val angle = (i * Math.PI / starRays).toFloat()
         val radius = if (i % 2 == 0) size else size * 0.4f
 
         val x = center.x + cos(angle) * radius
@@ -281,6 +283,7 @@ private fun DrawScope.drawStar(center: Offset, size: Float, color: Color, rays: 
     drawPath(path, color)
 }
 
+@Suppress("MagicNumber")
 private fun DrawScope.drawHeart(center: Offset, size: Float, color: Color) {
     val path = Path()
     val scale = size / 30f
