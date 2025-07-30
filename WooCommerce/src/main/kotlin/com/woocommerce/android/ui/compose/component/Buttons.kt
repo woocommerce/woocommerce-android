@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -146,7 +147,7 @@ fun WCOutlinedButton(
     enabled: Boolean = true,
     shape: Shape = MaterialTheme.shapes.small,
     colors: ButtonColors = ButtonDefaults.wcOutlinedButtonColors(),
-    border: BorderStroke? = ButtonDefaults.outlinedButtonBorder(enabled),
+    border: BorderStroke? = ButtonDefaults.wcOutlinedButtonBorder(enabled),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     interactionSource: MutableInteractionSource? = null,
     content: @Composable RowScope.() -> Unit
@@ -174,7 +175,7 @@ fun WCOutlinedButton(
     enabled: Boolean = true,
     shape: Shape = MaterialTheme.shapes.small,
     colors: ButtonColors = ButtonDefaults.wcOutlinedButtonColors(),
-    border: BorderStroke? = ButtonDefaults.outlinedButtonBorder(enabled),
+    border: BorderStroke? = ButtonDefaults.wcOutlinedButtonBorder(enabled),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     interactionSource: MutableInteractionSource? = null,
 ) {
@@ -212,7 +213,10 @@ fun WCRemoveButton(
     colors: ButtonColors = ButtonDefaults.wcOutlinedButtonColors().copy(
         contentColor = MaterialTheme.colorScheme.error,
     ),
-    border: BorderStroke? = ButtonDefaults.outlinedButtonBorder(enabled),
+    border: BorderStroke? = ButtonDefaults.wcOutlinedButtonBorder(
+        enabled = enabled,
+        color = MaterialTheme.colorScheme.error
+    ),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     interactionSource: MutableInteractionSource? = null,
 ) {
@@ -348,6 +352,24 @@ private fun ButtonDefaults.wcOutlinedButtonColors(): ButtonColors {
     return outlinedButtonColors(
         containerColor = MaterialTheme.colorScheme.surface,
         disabledContainerColor = MaterialTheme.colorScheme.surface
+    )
+}
+
+@Composable
+private fun ButtonDefaults.wcOutlinedButtonBorder(
+    enabled: Boolean,
+    color: Color = MaterialTheme.colorScheme.outline
+): BorderStroke {
+    return outlinedButtonBorder(enabled).copy(
+        brush = SolidColor(
+            color.let {
+                if (!enabled) {
+                    it.copy(alpha = 0.12f) // Disabled state
+                } else {
+                    it
+                }
+            }
+        )
     )
 }
 
