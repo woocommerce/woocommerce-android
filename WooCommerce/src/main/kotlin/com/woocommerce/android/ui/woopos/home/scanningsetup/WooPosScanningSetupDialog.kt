@@ -45,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -60,6 +61,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
@@ -259,7 +262,6 @@ fun WooPosScanningSetupDialog(
                     is ScanningSetupStep.SoftwareKeyboardSetup -> SoftwareKeyboardSetupContent(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
-                        onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
                     )
 
                     is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> ScannerSetupBarcodesOnProductsContent(
@@ -830,65 +832,116 @@ private fun EventListeners(
 }
 
 @Composable
+private fun SoftwareKeyboardSetupContent(
+    step: ScanningSetupStep.SoftwareKeyboardSetup,
+    onPrimaryClick: () -> Unit,
+) {
+    var testText by remember { mutableStateOf("") }
+    var isInputFieldFocused by remember { mutableStateOf(false) }
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+    ) {
+        val (title, message, inputField, bulletPoints, button) = createRefs()
+
+        WooPosText(
+            text = stringResource(step.titleRes),
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.constrainAs(title) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        val marginMedium = WooPosSpacing.Medium.value.toAdaptivePadding()
+        val marginLarge = WooPosSpacing.Large.value.toAdaptivePadding()
+        val marginSmall = WooPosSpacing.Small.value.toAdaptivePadding()
+        WooPosText(
+            text = stringResource(step.messageRes),
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.constrainAs(message) {
+                top.linkTo(title.bottom, margin = marginMedium)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .constrainAs(inputField) {
+                    top.linkTo(message.bottom, margin = marginLarge)
+                    start.linkTo(parent.start, margin = marginSmall)
+                    end.linkTo(parent.end, margin = marginSmall)
+                    width = Dimension.fillToConstraints
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            WooPosInputField(
+                value = testText,
+                onValueChange = { testText = it },
+                label = stringResource(step.hintRes),
+                textStyle = WooPosTypography.Heading,
+                textColor = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .onFocusChanged { focusState ->
+                        if (!isInputFieldFocused && focusState.isFocused) {
+                            isInputFieldFocused = true
+                        }
+                    }
+            )
+        }
+
+        if (isInputFieldFocused) {
+            Column(
+                modifier = Modifier
+                    .constrainAs(bulletPoints) {
+                        top.linkTo(inputField.bottom, margin = marginLarge)
+                        start.linkTo(parent.start, margin = marginMedium)
+                        end.linkTo(parent.end, margin = marginMedium)
+                        width = Dimension.fillToConstraints
+                    },
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
+            ) {
+                BulletPointItem(text = stringResource(R.string.woopos_scanning_setup_software_keyboard_visible))
+                BulletPointItem(text = stringResource(R.string.woopos_scanning_setup_software_keyboard_hidden))
+                BulletPointItem(text = stringResource(R.string.woopos_scanning_setup_software_keyboard_no_icon))
+            }
+        }
+
+        WooPosButton(
+            onClick = onPrimaryClick,
+            text = stringResource(step.primaryButtonTextRes),
+            modifier = Modifier.constrainAs(button) {
+                if (isInputFieldFocused) {
+                    top.linkTo(bulletPoints.bottom, margin = marginLarge)
+                } else {
+                    top.linkTo(inputField.bottom, margin = marginLarge)
+                }
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            },
+            state = if (isInputFieldFocused) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
+        )
+    }
+}
+
+@Composable
 private fun BulletPointItem(text: String) {
     WooPosText(
         text = "• $text",
         style = WooPosTypography.BodyLarge,
         modifier = Modifier.fillMaxWidth()
     )
-}
-
-@Composable
-private fun SoftwareKeyboardSetupContent(
-    step: ScanningSetupStep.SoftwareKeyboardSetup,
-    onPrimaryClick: () -> Unit,
-    onSecondaryClick: () -> Unit
-) {
-    var testText by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        WooPosText(
-            text = stringResource(step.titleRes),
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = stringResource(step.messageRes),
-            style = WooPosTypography.BodyLarge,
-            textAlign = TextAlign.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-
-        WooPosInputField(
-            value = testText,
-            onValueChange = { testText = it },
-            label = stringResource(step.hintRes),
-            textColor = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.XSmall.value.toAdaptivePadding()),
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-
-        SetupButtonsRow(
-            primaryButtonText = stringResource(step.primaryButtonTextRes),
-            secondaryButtonText = stringResource(step.secondaryButtonTextRes),
-            onPrimaryClick = onPrimaryClick,
-            onSecondaryClick = onSecondaryClick
-        )
-    }
 }
 
 @FontScalePreviews
@@ -981,6 +1034,22 @@ fun WooPosScanningSetupTestBarcodeContent() {
                 message = "Follow the instructions to set up your scanner in HID mode.",
                 barcodeValue = "123456789012",
                 onBarcodeScanned = {},
+            )
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosScanningSetupSoftwareKeyboardContent() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            SoftwareKeyboardSetupContent(
+                step = ScanningSetupStep.SoftwareKeyboardSetup,
+                onPrimaryClick = {}
             )
         }
     }
