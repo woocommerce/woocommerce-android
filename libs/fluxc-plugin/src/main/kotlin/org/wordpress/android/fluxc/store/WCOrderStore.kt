@@ -1119,53 +1119,8 @@ class WCOrderStore @Inject internal constructor(
     private suspend fun onOrderStatusOptionsChanged(
         payload: FetchOrderStatusOptionsResponsePayload
     ): OnOrderStatusOptionsChanged {
-        val existingOptions = orderStatusDao.getOrderStatusOptions(payload.site.localId())
-
-        orderStatusDao.upsertOrderStatuses(addOrUpdateOptions(payload, existingOptions))
-        orderStatusDao.deleteOrderStatuses(deleteOptions(payload, existingOptions))
-
+        orderStatusDao.replaceAll(siteId = payload.site.localId(), statuses = payload.labels)
         return OnOrderStatusOptionsChanged()
-    }
-
-    @Suppress("NestedBlockDepth")
-    private fun addOrUpdateOptions(
-        payload: FetchOrderStatusOptionsResponsePayload,
-        existingOptions: List<WCOrderStatusModel>
-    ): List<WCOrderStatusModel> {
-        val addOrUpdateOptions = mutableListOf<WCOrderStatusModel>()
-        payload.labels.iterator().forEach { newOption ->
-            var exists = false
-            existingOptions.iterator().forEach eoi@{ existingOption ->
-                if (newOption.statusKey == existingOption.statusKey) {
-                    exists = true
-                    if (newOption.label != existingOption.label ||
-                        newOption.statusCount != existingOption.statusCount) {
-                        addOrUpdateOptions.add(newOption)
-                    }
-                    return@eoi
-                }
-            }
-            if (!exists) addOrUpdateOptions.add(newOption)
-        }
-        return addOrUpdateOptions
-    }
-
-    private fun deleteOptions(
-        payload: FetchOrderStatusOptionsResponsePayload,
-        existingOptions: List<WCOrderStatusModel>
-    ): List<WCOrderStatusModel> {
-        val deleteOptions = mutableListOf<WCOrderStatusModel>()
-        existingOptions.iterator().forEach { existingOption ->
-            var exists = false
-            payload.labels.iterator().forEach noi@{ newOption ->
-                if (newOption.statusKey == existingOption.statusKey) {
-                    exists = true
-                    return@noi
-                }
-            }
-            if (!exists) deleteOptions.add(existingOption)
-        }
-        return deleteOptions
     }
 
     suspend fun fetchOrdersListFirstPage(

@@ -29,12 +29,12 @@ class OrderStatusDaoTest {
     }
 
     @Test
-    fun `upsert and retrieve order statuses for site`() = runTest {
+    fun `replaceAll inserts order statuses for site`() = runTest {
         // given
         val orderStatuses = listOf(pendingStatus, processingStatus, completedStatus)
 
         // when
-        orderStatusDao.upsertOrderStatuses(orderStatuses)
+        orderStatusDao.replaceAll(siteId1, orderStatuses)
         val retrievedStatuses = orderStatusDao.getOrderStatusOptions(siteId1)
 
         // then
@@ -48,8 +48,8 @@ class OrderStatusDaoTest {
         val statusesSite2 = listOf(pendingStatus.copy(siteId = siteId2))
 
         // when
-        orderStatusDao.upsertOrderStatuses(statusesSite1)
-        orderStatusDao.upsertOrderStatuses(statusesSite2)
+        orderStatusDao.replaceAll(siteId1, statusesSite1)
+        orderStatusDao.replaceAll(siteId2, statusesSite2)
         val retrievedStatusesSite1 = orderStatusDao.getOrderStatusOptions(siteId1)
         val retrievedStatusesSite2 = orderStatusDao.getOrderStatusOptions(siteId2)
 
@@ -61,7 +61,7 @@ class OrderStatusDaoTest {
     @Test
     fun `get specific order status option returns correct status`() = runTest {
         // when
-        orderStatusDao.upsertOrderStatuses(listOf(pendingStatus))
+        orderStatusDao.replaceAll(siteId1, listOf(pendingStatus))
         val retrievedStatus = orderStatusDao.getOrderStatusOption(siteId1, statusKey = "pending")
 
         // then
@@ -78,35 +78,22 @@ class OrderStatusDaoTest {
     }
 
     @Test
-    fun `upsert updates existing order status`() = runTest {
+    fun `replaceAll replaces all statuses for site`() = runTest {
         // given
-        val updatedStatus = pendingStatus.copy(
-            label = "Updated Pending payment",
-            statusCount = 10
-        )
+        val initialStatuses = listOf(pendingStatus, processingStatus)
+        val newStatuses = listOf(completedStatus)
 
         // when
-        orderStatusDao.upsertOrderStatuses(listOf(pendingStatus))
-        val initialStatus = orderStatusDao.getOrderStatusOption(siteId1, statusKey = "pending")
-        assertThat(initialStatus).isEqualTo(pendingStatus)
+        orderStatusDao.replaceAll(siteId1, initialStatuses)
+        val statusesBeforeReplace = orderStatusDao.getOrderStatusOptions(siteId1)
 
-        orderStatusDao.upsertOrderStatuses(listOf(updatedStatus))
-        val finalStatus = orderStatusDao.getOrderStatusOption(siteId1, statusKey = "pending")
-
-        // then
-        assertThat(finalStatus).isEqualTo(updatedStatus)
-    }
-
-    @Test
-    fun `delete order statuses removes specified statuses`() = runTest {
-        // when
-        orderStatusDao.upsertOrderStatuses(listOf(pendingStatus, processingStatus, completedStatus))
-
-        orderStatusDao.deleteOrderStatuses(listOf(pendingStatus, completedStatus))
-        val remainingStatuses = orderStatusDao.getOrderStatusOptions(siteId1)
+        orderStatusDao.replaceAll(siteId1, newStatuses)
+        val statusesAfterReplace = orderStatusDao.getOrderStatusOptions(siteId1)
 
         // then
-        assertThat(remainingStatuses).containsExactly(processingStatus)
+        assertThat(statusesAfterReplace)
+            .containsExactlyElementsOf(newStatuses)
+            .doesNotContainAnyElementsOf(statusesBeforeReplace)
     }
 
     companion object {
