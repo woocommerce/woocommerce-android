@@ -4,6 +4,7 @@
 
 23.0
 -----
+- [Internal] Introduced Material 3 based theme and migrated some components to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/14401]
 
 22.9.1
 -----
