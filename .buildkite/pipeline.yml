@@ -22,9 +22,7 @@ steps:
       queue: "mac-metal"
 
   - label: "Instrumented tests without GMD (ReviewsUITest)"
-    command: |
-      echo "--- 🧪 Testing"
-      ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.woocommerce.android.e2e.tests.ui.ReviewsUITest
+    command: .buildkite/commands/run-instrumented-tests-emulator.sh
     plugins: [ $CI_TOOLKIT ]
     artifact_paths:
       - "**/build/reports/androidTests/connected/**/**/**/*"
