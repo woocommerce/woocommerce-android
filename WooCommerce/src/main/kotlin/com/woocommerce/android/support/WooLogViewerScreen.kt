@@ -1,6 +1,5 @@
 package com.woocommerce.android.support
 
-import androidx.annotation.ColorRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,16 +18,16 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,7 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,6 +48,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.theme.WooThemeM3WithBackground
 import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.launch
@@ -133,14 +133,14 @@ fun WooLogViewerScreen(
                         Icon(
                             painter = painterResource(R.drawable.ic_copy_white_24dp),
                             contentDescription = stringResource(id = R.string.copy),
-                            tint = colorResource(id = R.color.color_icon_menu)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     IconButton(onClick = { onShareButtonClick() }) {
                         Icon(
                             Icons.Filled.Share,
                             contentDescription = stringResource(id = R.string.share),
-                            tint = colorResource(id = R.color.color_icon_menu)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -148,12 +148,12 @@ fun WooLogViewerScreen(
         },
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(id = R.color.color_toolbar))
+            .background(color = MaterialTheme.colorScheme.surface)
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             SearchLayoutWithParams(
-                modifier = Modifier.background(color = colorResource(id = R.color.color_toolbar)),
+                modifier = Modifier.background(color = MaterialTheme.colorScheme.surface),
                 state = SearchLayoutWithParamsState(
                     hint = R.string.search,
                     searchQuery = searchQuery,
@@ -186,8 +186,8 @@ private fun SearchNavigationActions(
     if (hasMatches) {
         Text(
             text = "${currentMatchIndex + 1}/$totalMatches",
-            color = colorResource(id = R.color.color_icon_menu),
-            style = MaterialTheme.typography.body2,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.minor_100))
         )
         IconButton(
@@ -198,9 +198,9 @@ private fun SearchNavigationActions(
                 Icons.Filled.KeyboardArrowUp,
                 contentDescription = "",
                 tint = if (currentMatchIndex > 0) {
-                    colorResource(id = R.color.color_icon_menu)
+                    MaterialTheme.colorScheme.onSurface
                 } else {
-                    colorResource(id = R.color.woo_gray_40)
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                 }
             )
         }
@@ -212,9 +212,9 @@ private fun SearchNavigationActions(
                 Icons.Filled.KeyboardArrowDown,
                 contentDescription = "",
                 tint = if (currentMatchIndex < totalMatches - 1) {
-                    colorResource(id = R.color.color_icon_menu)
+                    MaterialTheme.colorScheme.onSurface
                 } else {
-                    colorResource(id = R.color.woo_gray_40)
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                 }
             )
         }
@@ -240,8 +240,8 @@ private fun LogViewerEntries(
                 isCurrentMatch = index == currentMatchIndex
             )
             if (index < entries.lastIndex) {
-                Divider(
-                    color = colorResource(id = R.color.divider_color),
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     thickness = 1.dp
                 )
             }
@@ -256,9 +256,9 @@ private fun LogViewerEntry(
     isCurrentMatch: Boolean
 ) {
     val backgroundColor = if (isCurrentMatch) {
-        MaterialTheme.colors.primary.copy(alpha = 0.12f)
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
     } else {
-        MaterialTheme.colors.surface
+        MaterialTheme.colorScheme.surface
     }
 
     Column(
@@ -275,29 +275,29 @@ private fun LogViewerEntry(
         ) {
             Text(
                 text = format(Locale.US, "%02d", index + 1),
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(end = dimensionResource(R.dimen.minor_100)),
-                color = colorResource(id = R.color.woo_gray_40)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             SelectionContainer {
                 Text(
                     text = entry.toString(),
-                    style = MaterialTheme.typography.body2,
-                    color = colorResource(id = logLevelColor(entry.level))
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = logLevelColorM3(entry.level)
                 )
             }
         }
     }
 }
 
-@ColorRes
-private fun logLevelColor(level: WooLog.LogLevel): Int {
+@Composable
+private fun logLevelColorM3(level: WooLog.LogLevel): Color {
     return when (level) {
-        WooLog.LogLevel.v -> R.color.log_text_verbose
-        WooLog.LogLevel.d -> R.color.log_text_debug
-        WooLog.LogLevel.i -> R.color.log_text_info
-        WooLog.LogLevel.w -> R.color.log_text_warning
-        WooLog.LogLevel.e -> R.color.log_text_error
+        WooLog.LogLevel.v -> MaterialTheme.colorScheme.onSurfaceVariant
+        WooLog.LogLevel.d -> MaterialTheme.colorScheme.tertiary
+        WooLog.LogLevel.i -> MaterialTheme.colorScheme.primary
+        WooLog.LogLevel.w -> Color(0xFFFF9800)
+        WooLog.LogLevel.e -> MaterialTheme.colorScheme.error
     }
 }
 
@@ -321,10 +321,12 @@ private fun WooLogViewerScreenPreview() {
             RollingLogEntries.LogEntry(WooLog.T.DASHBOARD, WooLog.LogLevel.e, "Error")
         )
     }
-    WooLogViewerScreen(
-        entries,
-        onBackPress = {},
-        onShareButtonClick = {},
-        onCopyButtonClick = {}
-    )
+    WooThemeM3WithBackground {
+        WooLogViewerScreen(
+            entries,
+            onBackPress = {},
+            onShareButtonClick = {},
+            onCopyButtonClick = {}
+        )
+    }
 }
