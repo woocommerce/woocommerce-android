@@ -25,8 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -37,12 +35,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import coil.compose.AsyncImage
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -50,8 +46,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.cos
 import kotlin.math.sin
@@ -168,7 +162,7 @@ fun MagicSparkles() {
             animation = tween(3000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
-        label = "master_animation"
+        label = "magic_sparkles"
     )
 
     Canvas(modifier = Modifier.fillMaxSize()) {
@@ -181,8 +175,8 @@ fun MagicSparkles() {
                 val normalizedProgress = sparkleProgress / sparkle.duration
 
                 val pulseAlpha = when {
-                    normalizedProgress < 0.3f -> normalizedProgress / 0.3f // Fade in
-                    normalizedProgress > 0.7f -> 1f - ((normalizedProgress - 0.7f) / 0.3f) // Fade out
+                    normalizedProgress < 0.3f -> normalizedProgress / 0.3f
+                    normalizedProgress > 0.7f -> 1f - ((normalizedProgress - 0.7f) / 0.3f)
                     else -> 1f
                 }
 
@@ -206,21 +200,21 @@ fun MagicSparkles() {
 }
 
 private enum class SparkleShape {
-    STAR_4, HEART
+    STAR, HEART
 }
 
 private data class SparkleEvent(
     val position: Offset,
-    val startTime: Float, // 0.0 to 1.0 within the 3-second cycle
-    val duration: Float, // How long the sparkle lasts (0.0 to 1.0)
+    val startTime: Float,
+    val duration: Float,
     val baseSize: Float,
     val color: Color,
     val shape: SparkleShape
 )
 
 private fun generateSparkleEvents(width: Int, height: Int): List<SparkleEvent> {
-    val random = Random(42) // Fixed seed for consistent animation
-    val sparkleCount = 15
+    val random = Random(42)
+    val sparkleCount = 150
 
     return (1..sparkleCount).map { index ->
         val colors = listOf(
@@ -261,7 +255,7 @@ private fun DrawScope.drawSparkle(
     shape: SparkleShape
 ) {
     when (shape) {
-        SparkleShape.STAR_4 -> drawStar(center, size, color, 4)
+        SparkleShape.STAR -> drawStar(center, size, color, 4)
         SparkleShape.HEART -> drawHeart(center, size, color)
     }
 }
@@ -313,24 +307,6 @@ private fun DrawScope.drawHeart(center: Offset, size: Float, color: Color) {
 
     path.close()
     drawPath(path, color)
-}
-
-@Preview
-@Composable
-fun ProductImageRemoveBackgroundScreenPreview() {
-    WooThemeWithBackground {
-        val image = Product.Image(
-            id = 1L,
-            source = "https://ma.tt/",
-            name = "Sample Image",
-            isCoverImage = true,
-            dateCreated = Date.from(Instant.now()),
-        )
-        val state = remember {
-            mutableStateOf(ViewState.BackgroundProcessingInProgress(image.source.toUri()))
-        }
-        ProductImageRemoveBackgroundScreen(state)
-    }
 }
 
 @Preview
