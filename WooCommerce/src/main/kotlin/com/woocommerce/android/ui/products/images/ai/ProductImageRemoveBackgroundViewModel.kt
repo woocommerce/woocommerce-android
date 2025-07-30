@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductImageRemoveBackgroundViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val processImageBackgroundRemoval: ImageBackgroundRemoveMachine
+    private val processImageBackgroundRemoval: PerformImageBackgroundRemoval
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: ProductImageRemoveBackgroundFragmentArgs by savedState.navArgs()
