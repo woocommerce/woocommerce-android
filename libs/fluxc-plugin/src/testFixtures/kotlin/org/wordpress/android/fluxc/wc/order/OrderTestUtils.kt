@@ -71,19 +71,6 @@ object OrderTestUtils {
         }
     }
 
-    fun getOrderStatusOptionsFromJson(json: String, siteId: Int): List<WCOrderStatusModel> {
-        val responseType = object : TypeToken<List<OrderStatusApiResponse>>() {}.type
-        val converted = Gson().fromJson(json, responseType) as? List<OrderStatusApiResponse> ?: emptyList()
-        return converted.map {
-            WCOrderStatusModel(
-                siteId = LocalId(siteId),
-                statusKey = it.slug ?: "",
-                label = it.name ?: "",
-                statusCount = it.total,
-            )
-        }
-    }
-
     fun getOrderShipmentTrackingsFromJson(
         json: String,
         siteId: Int,
