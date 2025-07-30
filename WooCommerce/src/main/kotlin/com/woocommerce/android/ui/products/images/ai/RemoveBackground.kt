@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products.images.ai
 
 import android.graphics.Bitmap
+import android.graphics.Color
+import androidx.core.graphics.createBitmap
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmentation
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmenterOptions
@@ -24,7 +26,8 @@ class RemoveBackground @Inject constructor() {
                 .addOnSuccessListener { result ->
                     val foregroundBitmap = result.foregroundBitmap
                     if (foregroundBitmap != null) {
-                        continuation.resume(Result.success(foregroundBitmap))
+                        val processedBitmap = replaceBackgroundWithWhite(foregroundBitmap)
+                        continuation.resume(Result.success(processedBitmap))
                     } else {
                         continuation.resume(Result.failure(Exception("No subject detected in image")))
                     }
@@ -36,5 +39,24 @@ class RemoveBackground @Inject constructor() {
                     continuation.resume(Result.failure(Exception("Background removal was cancelled")))
                 }
         }
+    }
+
+    private fun replaceBackgroundWithWhite(bitmap: Bitmap): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+        val pixels = IntArray(width * height)
+
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
+        for (i in pixels.indices) {
+            val alpha = Color.alpha(pixels[i])
+            if (alpha == 0) {
+                pixels[i] = Color.WHITE
+            }
+        }
+
+        val resultBitmap = createBitmap(width, height)
+        resultBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
+        return resultBitmap
     }
 }
