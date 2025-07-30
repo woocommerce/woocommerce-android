@@ -70,7 +70,7 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
                 saveProcessedImage(bitmap, remoteProductId)
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_success))
                 triggerEvent(MultiLiveEvent.Event.Exit)
-            } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
+            } catch (@Suppress("TooGenericExceptionCaught", "SwallowedException") error: Throwable) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_error))
                 _state.value = ViewState.Success(bitmap)
             }
