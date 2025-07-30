@@ -31,7 +31,12 @@ fun ToolbarM3(
 ) {
     ToolbarM3(
         modifier = modifier,
-        title = { Text(title) },
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
