@@ -912,9 +912,9 @@ private fun SoftwareKeyboardSetupContent(
                     },
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
             ) {
-                BulletPointItem(text = stringResource(R.string.woopos_scanning_setup_software_keyboard_visible))
-                BulletPointItem(text = stringResource(R.string.woopos_scanning_setup_software_keyboard_hidden))
-                BulletPointItem(text = stringResource(R.string.woopos_scanning_setup_software_keyboard_no_icon))
+                step.bulletPointsRes.forEach { bulletPointRes ->
+                    BulletPointItem(text = stringResource(bulletPointRes))
+                }
             }
         }
 

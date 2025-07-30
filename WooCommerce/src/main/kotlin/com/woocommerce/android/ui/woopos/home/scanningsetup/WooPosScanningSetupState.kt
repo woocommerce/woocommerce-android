@@ -289,6 +289,14 @@ data class WooPosScanningSetupState(
             @get:StringRes
             @IgnoredOnParcel
             val primaryButtonTextRes = R.string.woopos_scanning_setup_button_next
+
+            @IgnoredOnParcel
+            val bulletPointsRes = listOf(
+                R.string.woopos_scanning_setup_software_keyboard_visible,
+                R.string.woopos_scanning_setup_software_keyboard_hidden,
+                R.string.woopos_scanning_setup_software_keyboard_no_icon,
+                R.string.woopos_scanning_setup_software_keyboard_manufacturer_support
+            )
         }
 
         @Parcelize
