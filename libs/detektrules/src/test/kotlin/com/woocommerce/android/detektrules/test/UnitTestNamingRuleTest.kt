@@ -10,24 +10,19 @@ import org.junit.jupiter.api.Test
 class UnitTestNamingRuleTest {
 
     @Test
-    fun `given valid test names with given when then format, then no violations are reported`() {
+    fun `given valid test names with mandatory when and then, then no violations are reported`() {
         val code = """
             import org.junit.jupiter.api.Test
             
             class SampleTest {
                 @Test
                 fun `given user is logged in, when button is clicked, then dashboard is shown`() {
-                    // Test implementation
+                    // Valid: given, when, then
                 }
                 
                 @Test
                 fun `when button is clicked, then sum label is updated`() {
-                    // Test implementation
-                }
-                
-                @Test
-                fun `then default state is shown`() {
-                    // Test implementation
+                    // Valid: when, then (given is optional)
                 }
             }
         """.trimIndent()
@@ -39,24 +34,122 @@ class UnitTestNamingRuleTest {
     }
 
     @Test
-    fun `given invalid test names without proper format, then violations are reported`() {
+    fun `given invalid test names without mandatory when or then, then violations are reported`() {
         val code = """
             import org.junit.jupiter.api.Test
             
             class SampleTest {
                 @Test
+                fun `then default state is shown`() {
+                    // Invalid: missing when
+                }
+                
+                @Test
+                fun `given user exists, when login is attempted`() {
+                    // Invalid: missing then
+                }
+                
+                @Test
+                fun `given user exists, then success is returned`() {
+                    // Invalid: missing when
+                }
+                
+                @Test
                 fun `invalid test name format`() {
-                    // Test implementation
+                    // Invalid: missing when and then
+                }
+            }
+        """.trimIndent()
+
+        val rule = UnitTestNamingRule(Config.empty)
+        val findings = rule.compileAndLint(code)
+
+        assertThat(findings).hasSize(4)
+        assertThat(findings.all { it.message.contains("should follow the naming convention") }).isTrue()
+    }
+
+    @Test
+    fun `given test names with uppercase when or then, then violations are reported`() {
+        val code = """
+            import org.junit.jupiter.api.Test
+            
+            class SampleTest {
+                @Test
+                fun `given user exists, When login is attempted, then success is returned`() {
+                    // Invalid: uppercase When
                 }
                 
                 @Test
-                fun testSomething() {
-                    // Test implementation
+                fun `given data is loaded, when refresh is triggered, Then updated data is shown`() {
+                    // Invalid: uppercase Then
                 }
                 
                 @Test
-                fun `just a description without proper format`() {
-                    // Test implementation
+                fun `Given user exists, When login is attempted, Then success is returned`() {
+                    // Invalid: uppercase When and Then (given can be any case)
+                }
+                
+                @Test
+                fun `WHEN button is clicked, THEN result is shown`() {
+                    // Invalid: uppercase WHEN and THEN
+                }
+            }
+        """.trimIndent()
+
+        val rule = UnitTestNamingRule(Config.empty)
+        val findings = rule.compileAndLint(code)
+
+        assertThat(findings).hasSize(4)
+    }
+
+    @Test
+    fun `given test names with different given case variations, then only when and then case matters`() {
+        val code = """
+            import org.junit.jupiter.api.Test
+            
+            class SampleTest {
+                @Test
+                fun `Given user exists, when login is attempted, then success is returned`() {
+                    // Valid: uppercase Given is allowed
+                }
+                
+                @Test
+                fun `GIVEN data is loaded, when refresh is triggered, then updated data is shown`() {
+                    // Valid: uppercase GIVEN is allowed
+                }
+                
+                @Test
+                fun `GiVeN mixed case, when action occurs, then result happens`() {
+                    // Valid: mixed case given is allowed
+                }
+            }
+        """.trimIndent()
+
+        val rule = UnitTestNamingRule(Config.empty)
+        val findings = rule.compileAndLint(code)
+
+        assertThat(findings).isEmpty()
+    }
+
+    @Test
+    fun `given edge cases with punctuation, then violations are reported correctly`() {
+        val code = """
+            import org.junit.jupiter.api.Test
+            
+            class SampleTest {
+                @Test
+                fun `given user exists, when login is attempted then success is returned`() {
+                    // Invalid: missing comma before 'then'
+                }
+                
+                @Test
+                fun `given user exists when login is attempted, then success is returned`() {
+                    // Invalid: missing comma after given clause
+                }
+                
+                @Test
+                fun `when button is clicked then result is shown`() {
+                    // Invalid: missing comma before 'then'
                 }
             }
         """.trimIndent()
@@ -65,9 +158,6 @@ class UnitTestNamingRuleTest {
         val findings = rule.compileAndLint(code)
 
         assertThat(findings).hasSize(3)
-        assertThat(findings[0].message).contains("should follow the naming convention")
-        assertThat(findings[1].message).contains("should follow the naming convention")
-        assertThat(findings[2].message).contains("should follow the naming convention")
     }
 
     @Test
@@ -75,11 +165,11 @@ class UnitTestNamingRuleTest {
         val code = """
             class SampleClass {
                 fun `invalid function name without test annotation`() {
-                    // Regular function
+                    // Regular function - should be ignored
                 }
                 
-                fun regularFunction() {
-                    // Regular function
+                fun `When something, Then something`() {
+                    // Regular function - should be ignored
                 }
             }
         """.trimIndent()
@@ -98,7 +188,12 @@ class UnitTestNamingRuleTest {
             class SampleTest {
                 @ParameterizedTest
                 fun `given different inputs, when validation is performed, then correct result is returned`() {
-                    // Test implementation
+                    // Valid parameterized test
+                }
+                
+                @ParameterizedTest
+                fun `when input is provided, then output is generated`() {
+                    // Valid parameterized test without given
                 }
             }
         """.trimIndent()
@@ -107,59 +202,6 @@ class UnitTestNamingRuleTest {
         val findings = rule.compileAndLint(code)
 
         assertThat(findings).isEmpty()
-    }
-
-    @Test
-    fun `given case insensitive naming variations, then no violations are reported`() {
-        val code = """
-            import org.junit.jupiter.api.Test
-            
-            class SampleTest {
-                @Test
-                fun `Given user exists, When login is attempted, Then success is returned`() {
-                    // Test implementation
-                }
-                
-                @Test
-                fun `GIVEN data is loaded, WHEN refresh is triggered, THEN updated data is shown`() {
-                    // Test implementation
-                }
-            }
-        """.trimIndent()
-
-        val rule = UnitTestNamingRule(Config.empty)
-        val findings = rule.compileAndLint(code)
-
-        assertThat(findings).isEmpty()
-    }
-
-    @Test
-    fun `given edge cases with punctuation and special characters, then violations are reported correctly`() {
-        val code = """
-            import org.junit.jupiter.api.Test
-            
-            class SampleTest {
-                @Test
-                fun `given user exists, when login is attempted then success is returned`() {
-                    // Missing comma before 'then'
-                }
-                
-                @Test
-                fun `given user exists when login is attempted, then success is returned`() {
-                    // Missing comma after 'given'
-                }
-                
-                @Test
-                fun `when button is clicked then result is shown`() {
-                    // Missing comma before 'then'
-                }
-            }
-        """.trimIndent()
-
-        val rule = UnitTestNamingRule(Config.empty)
-        val findings = rule.compileAndLint(code)
-
-        assertThat(findings).hasSize(3)
     }
 
     @Test
@@ -172,17 +214,17 @@ class UnitTestNamingRuleTest {
             class SampleTest {
                 @BeforeEach
                 fun `setup invalid name`() {
-                    // Should be ignored
+                    // Should be ignored - not a test
                 }
                 
                 @AfterEach
                 fun `cleanup invalid name`() {
-                    // Should be ignored
+                    // Should be ignored - not a test
                 }
                 
                 @Test
                 fun `invalid test name`() {
-                    // Should be flagged
+                    // Should be flagged - missing when and then
                 }
             }
         """.trimIndent()
@@ -207,7 +249,7 @@ class UnitTestNamingRuleTest {
                 
                 @Test
                 fun `invalid name format`() {
-                    // Invalid
+                    // Invalid: missing when and then
                 }
                 
                 @Test
@@ -216,8 +258,8 @@ class UnitTestNamingRuleTest {
                 }
                 
                 @Test
-                fun anotherInvalidName() {
-                    // Invalid
+                fun `given setup, then outcome`() {
+                    // Invalid: missing when
                 }
             }
         """.trimIndent()
@@ -228,7 +270,7 @@ class UnitTestNamingRuleTest {
         assertThat(findings).hasSize(2)
         assertThat(findings.map { it.entity.signature }).containsExactlyInAnyOrder(
             "invalid name format",
-            "anotherInvalidName"
+            "given setup, then outcome"
         )
     }
 
@@ -264,7 +306,7 @@ class UnitTestNamingRuleTest {
                 
                 @ParameterizedTest
                 fun `invalid parameterized test name`() {
-                    // Invalid name
+                    // Invalid name - missing when and then
                 }
             }
         """.trimIndent()

@@ -18,8 +18,7 @@ class UnitTestNamingRule(config: Config) : Rule(config) {
     )
 
     private val validTestNamePattern = Regex(
-        "^(given .+, )?(when .+, )?then .+$",
-        RegexOption.IGNORE_CASE
+        "^(given .+, )?when .+, then .+$"
     )
 
     override fun visitNamedFunction(function: KtNamedFunction) {
@@ -35,8 +34,8 @@ class UnitTestNamingRule(config: Config) : Rule(config) {
                     issue,
                     Entity.from(function),
                     "Test function '$functionName' should follow the naming convention: " +
-                        "'given something is, when something happens, then something is expected'. " +
-                        "Use backticks for the function name."
+                        "'[given something,] when something happens, then something is expected'. " +
+                        "The 'when' and 'then' parts are mandatory and must be lowercase. Use backticks for the function name."
                 )
             )
         }
