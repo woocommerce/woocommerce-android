@@ -9,7 +9,7 @@ import javax.inject.Inject
  * 2. Remove background using ML Kit
  * 3. Return the processed bitmap
  */
-class ImageBackgroundRemoveMachine @Inject constructor(
+class PerformImageBackgroundRemoval @Inject constructor(
     private val createInputImageFromUrl: CreateInputImageFromUrl,
     private val removeBackground: RemoveBackground
 ) {

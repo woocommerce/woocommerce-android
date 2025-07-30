@@ -10,7 +10,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -35,7 +34,7 @@ fun MagicSparkles() {
             animation = tween(3000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
-        label = "master_animation"
+        label = "magic_sparkles"
     )
 
     Canvas(modifier = Modifier.fillMaxSize()) {
@@ -48,8 +47,8 @@ fun MagicSparkles() {
                 val normalizedProgress = sparkleProgress / sparkle.duration
 
                 val pulseAlpha = when {
-                    normalizedProgress < 0.3f -> normalizedProgress / 0.3f // Fade in
-                    normalizedProgress > 0.7f -> 1f - ((normalizedProgress - 0.7f) / 0.3f) // Fade out
+                    normalizedProgress < 0.3f -> normalizedProgress / 0.3f
+                    normalizedProgress > 0.7f -> 1f - ((normalizedProgress - 0.7f) / 0.3f)
                     else -> 1f
                 }
 
@@ -87,7 +86,7 @@ private data class SparkleEvent(
 
 private fun generateSparkleEvents(width: Int, height: Int): List<SparkleEvent> {
     val random = Random(42)
-    val sparkleCount = 15
+    val sparkleCount = 42
 
     return (1..sparkleCount).map { index ->
         val colors = listOf(
@@ -114,7 +113,7 @@ private fun generateSparkleEvents(width: Int, height: Int): List<SparkleEvent> {
             ),
             startTime = random.nextFloat(),
             duration = 0.15f + random.nextFloat() * 0.4f,
-            baseSize = (6 + random.nextInt(20)) * 2.5f,
+            baseSize = (3 + random.nextInt(20)) * 2.5f,
             color = colors[random.nextInt(colors.size)],
             shape = shapes[random.nextInt(shapes.size)]
         )
@@ -128,28 +127,25 @@ private fun DrawScope.drawSparkle(
     shape: SparkleShape
 ) {
     when (shape) {
-        SparkleShape.STAR -> drawStar(center, size, color, 4)
+        SparkleShape.STAR -> drawStar(center, size, color)
         SparkleShape.HEART -> drawHeart(center, size, color)
     }
 }
 
-private fun DrawScope.drawStar(center: Offset, size: Float, color: Color, rays: Int) {
+private fun DrawScope.drawStar(center: Offset, size: Float, color: Color) {
     val path = Path()
-
-    for (i in 0 until rays * 2) {
-        val angle = (i * Math.PI / rays).toFloat()
+    val starRays = 4
+    for (i in 0 until starRays * 2) {
+        val angle = (i * Math.PI / starRays).toFloat()
         val radius = if (i % 2 == 0) size else size * 0.4f
-
         val x = center.x + cos(angle) * radius
         val y = center.y + sin(angle) * radius
-
         if (i == 0) {
             path.moveTo(x, y)
         } else {
             path.lineTo(x, y)
         }
     }
-
     path.close()
     drawPath(path, color)
 }
@@ -186,8 +182,6 @@ private fun DrawScope.drawHeart(center: Offset, size: Float, color: Color) {
 @Composable
 fun MagicSparklesPreview() {
     WooThemeWithBackground {
-        Surface(color = Color.Black.copy(alpha = 0.3f)) {
-            MagicSparkles()
-        }
+        MagicSparkles()
     }
 }

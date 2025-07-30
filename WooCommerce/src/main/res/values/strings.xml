@@ -2423,7 +2423,8 @@
     <string name="product_image_service_busy">Please wait for the current operation to complete</string>
     <string name="product_image_capture_failed">Failed to capture image</string>
     <string name="product_image_remove_confirmation">Are you sure you want to remove this image?</string>
-    <string name="remove_background">Scene Cleaner ✨</string>
+    <string name="remove_background">Remove background with AI</string>
+    <string name="remove_background_title">Image scene cleaner ✨</string>
     <string name="remove_background_image_load_error">Failed to load image</string>
     <string name="remove_background_image_load_error_with_reason">Error loading image: %1$s</string>
     <string name="remove_background_no_subject_detected">No clear subject detected. Try with a different image.</string>

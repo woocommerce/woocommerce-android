@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.images.ai
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -16,13 +15,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductImageRemoveBackgroundViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val processImageBackgroundRemoval: ImageBackgroundRemoveMachine,
+    private val performBackgroundRemoval: PerformImageBackgroundRemoval,
     private val saveProcessedImage: SaveProcessedImageToTheProduct
 ) : ScopedViewModel(savedState) {
-
     private val navArgs: ProductImageRemoveBackgroundFragmentArgs by savedState.navArgs()
-
-    val productImage: Product.Image = navArgs.image
     private val remoteProductId: Long = navArgs.remoteProductId
 
     private val _state: MutableStateFlow<ViewState> =
@@ -35,7 +31,7 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
 
     private fun processBackgroundRemoval() {
         launch {
-            val result = processImageBackgroundRemoval(navArgs.image.source)
+            val result = performBackgroundRemoval(navArgs.image.source)
             result.fold(
                 onSuccess = { bitmap ->
                     _state.value = ViewState.Success(bitmap)

@@ -8,8 +8,8 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,13 +22,21 @@ import com.woocommerce.android.R
 
 @Composable
 fun ShippingLabelsSnackbar(visuals: ShippingLabelsSnackbarVisuals, action: () -> Unit) {
-    Surface(
-        color = SnackbarDefaults.color,
+    Snackbar(
+        action = {
+            visuals.actionLabel?.let { label ->
+                TextButton(
+                    onClick = action,
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text(text = label)
+                }
+            }
+        },
         shape = SnackbarDefaults.shape,
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.padding(12.dp)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -44,19 +52,7 @@ fun ShippingLabelsSnackbar(visuals: ShippingLabelsSnackbarVisuals, action: () ->
                 text = visuals.message,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 16.dp),
-                style = MaterialTheme.typography.titleMedium,
-                color = SnackbarDefaults.contentColor
             )
-
-            visuals.actionLabel?.let { label ->
-                TextButton(
-                    onClick = action,
-                    colors = ButtonDefaults.textButtonColors(contentColor = SnackbarDefaults.actionContentColor)
-                ) {
-                    Text(text = label)
-                }
-            }
         }
     }
 }
