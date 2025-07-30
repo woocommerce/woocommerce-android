@@ -2,63 +2,118 @@ package com.woocommerce.android.ui.compose.theme
 
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.colorResource
+import com.woocommerce.android.R
 
-@Suppress("MagicNumber")
-object WooColors {
-    val md_theme_light_primary = Color(0xFF873EFF)
-    val md_theme_light_onPrimary = Color(0xFFFFFFFF)
-    val md_theme_light_primary_variant = Color(0xFF3C087E)
-    val md_theme_light_secondary = Color(0xFFC9356E)
-    val md_theme_light_onSecondary = Color(0xFF000000)
-    val md_theme_light_secondary_variant = Color(0xFF880E4F)
-    val md_theme_light_error = Color(0xFFB32D2E)
-    val md_theme_light_onError = Color(0xFFFFFFFF)
-    val md_theme_light_background = Color(0xFFF2F2F2)
-    val md_theme_light_onBackground = Color(0xFF000000)
-    val md_theme_light_surface = Color(0xFFFFFFFF)
-    val md_theme_light_onSurface = Color(0xFF000000)
+// Material 2 colors for backward compatibility
+val Material2LightColors
+    @Composable
+    get() = lightColors(
+        primary = colorResource(R.color.color_primary),
+        primaryVariant = colorResource(R.color.color_primary_variant),
+        secondary = colorResource(R.color.color_secondary),
+        secondaryVariant = colorResource(R.color.color_secondary_variant),
+        background = colorResource(R.color.default_window_background),
+        surface = colorResource(R.color.color_surface),
+        error = colorResource(R.color.color_error),
+        onPrimary = colorResource(R.color.color_on_primary),
+        onSecondary = colorResource(R.color.color_on_secondary),
+        onBackground = colorResource(R.color.color_on_background),
+        onSurface = colorResource(R.color.color_on_surface),
+        onError = colorResource(R.color.color_on_error),
+    )
 
-    val md_theme_dark_primary = Color(0xFFA77EFF)
-    val md_theme_dark_onPrimary = Color(0xFF000000)
-    val md_theme_dark_primary_variant = Color(0xFF7F54B3)
-    val md_theme_dark_secondary = Color(0xFFEB6594)
-    val md_theme_dark_onSecondary = Color(0xFF000000)
-    val md_theme_dark_secondary_variant = Color(0xFFC9356E)
-    val md_theme_dark_error = Color(0xFFF86368)
-    val md_theme_dark_onError = Color(0xFF000000)
-    val md_theme_dark_background = Color(0xFF121212)
-    val md_theme_dark_onBackground = Color(0xFFFFFFFF)
-    val md_theme_dark_surface = Color(0xFF121212)
-    val md_theme_dark_onSurface = Color(0xFFFFFFFF)
-}
+val Material2DarkColors
+    @Composable
+    get() = darkColors(
+        primary = colorResource(R.color.color_primary),
+        primaryVariant = colorResource(R.color.color_primary_variant),
+        secondary = colorResource(R.color.color_secondary),
+        secondaryVariant = colorResource(R.color.color_secondary_variant),
+        background = colorResource(R.color.default_window_background),
+        surface = colorResource(R.color.color_surface),
+        error = colorResource(R.color.color_error),
+        onPrimary = colorResource(R.color.color_on_primary),
+        onSecondary = colorResource(R.color.color_on_secondary),
+        onBackground = colorResource(R.color.color_on_background),
+        onSurface = colorResource(R.color.color_on_surface),
+        onError = colorResource(R.color.color_on_error),
+    )
 
-val LightColors = lightColors(
-    primary = WooColors.md_theme_light_primary,
-    primaryVariant = WooColors.md_theme_light_primary_variant,
-    secondary = WooColors.md_theme_light_secondary,
-    secondaryVariant = WooColors.md_theme_light_secondary_variant,
-    background = WooColors.md_theme_light_background,
-    surface = WooColors.md_theme_light_surface,
-    error = WooColors.md_theme_light_error,
-    onPrimary = WooColors.md_theme_light_onPrimary,
-    onSecondary = WooColors.md_theme_light_onSecondary,
-    onBackground = WooColors.md_theme_light_onBackground,
-    onSurface = WooColors.md_theme_light_onSurface,
-    onError = WooColors.md_theme_light_onError,
-)
+// Material 3 color schemes
+val Material3LightColorScheme
+    @Composable
+    get() = lightColorScheme(
+        primary = colorResource(R.color.color_primary),
+        onPrimary = colorResource(R.color.color_on_primary),
+        primaryContainer = colorResource(R.color.color_primary),
+        onPrimaryContainer = colorResource(R.color.color_on_primary),
+        secondary = colorResource(R.color.color_secondary),
+        onSecondary = colorResource(R.color.color_on_secondary),
+        secondaryContainer = colorResource(R.color.color_secondary),
+        onSecondaryContainer = colorResource(R.color.color_on_secondary),
+        tertiary = colorResource(R.color.color_secondary),
+        onTertiary = colorResource(R.color.color_on_secondary),
+        tertiaryContainer = colorResource(R.color.color_secondary),
+        onTertiaryContainer = colorResource(R.color.color_on_secondary),
+        error = colorResource(R.color.color_error),
+        onError = colorResource(R.color.color_on_error),
+        errorContainer = colorResource(R.color.color_error),
+        onErrorContainer = colorResource(R.color.color_on_error),
+        background = colorResource(R.color.default_window_background),
+        onBackground = colorResource(R.color.color_on_background),
+        surface = colorResource(R.color.color_surface),
+        onSurface = colorResource(R.color.color_on_surface),
+        surfaceVariant = colorResource(R.color.color_surface_variant),
+        onSurfaceVariant = colorResource(R.color.color_on_surface),
+        outline = colorResource(R.color.divider_color),
+        inverseOnSurface = colorResource(R.color.color_surface),
+        inverseSurface = colorResource(R.color.color_on_surface),
+        inversePrimary = colorResource(R.color.color_on_primary),
+        surfaceBright = colorResource(R.color.color_surface),
+        surfaceContainer = colorResource(R.color.color_surface_elevated),
+        surfaceContainerHigh = colorResource(R.color.color_surface_elevated),
+        surfaceContainerHighest = colorResource(R.color.color_surface_elevated),
+        surfaceContainerLow = colorResource(R.color.color_surface_elevated),
+        surfaceContainerLowest = colorResource(R.color.color_surface_elevated),
+    )
 
-val DarkColors = darkColors(
-    primary = WooColors.md_theme_dark_primary,
-    primaryVariant = WooColors.md_theme_dark_primary_variant,
-    secondary = WooColors.md_theme_dark_secondary,
-    secondaryVariant = WooColors.md_theme_dark_secondary_variant,
-    background = WooColors.md_theme_dark_background,
-    surface = WooColors.md_theme_dark_surface,
-    error = WooColors.md_theme_dark_error,
-    onPrimary = WooColors.md_theme_dark_onPrimary,
-    onSecondary = WooColors.md_theme_dark_onSecondary,
-    onBackground = WooColors.md_theme_dark_onBackground,
-    onSurface = WooColors.md_theme_dark_onSurface,
-    onError = WooColors.md_theme_dark_onError,
-)
+val Material3DarkColorScheme
+    @Composable
+    get() = darkColorScheme(
+        primary = colorResource(R.color.color_primary),
+        onPrimary = colorResource(R.color.color_on_primary),
+        primaryContainer = colorResource(R.color.color_primary),
+        onPrimaryContainer = colorResource(R.color.color_on_primary),
+        secondary = colorResource(R.color.color_secondary),
+        onSecondary = colorResource(R.color.color_on_secondary),
+        secondaryContainer = colorResource(R.color.color_secondary),
+        onSecondaryContainer = colorResource(R.color.color_on_secondary),
+        tertiary = colorResource(R.color.color_secondary),
+        onTertiary = colorResource(R.color.color_on_secondary),
+        tertiaryContainer = colorResource(R.color.color_secondary),
+        onTertiaryContainer = colorResource(R.color.color_on_secondary),
+        error = colorResource(R.color.color_error),
+        onError = colorResource(R.color.color_on_error),
+        errorContainer = colorResource(R.color.color_error),
+        onErrorContainer = colorResource(R.color.color_on_error),
+        background = colorResource(R.color.default_window_background),
+        onBackground = colorResource(R.color.color_on_background),
+        surface = colorResource(R.color.color_surface),
+        onSurface = colorResource(R.color.color_on_surface),
+        surfaceVariant = colorResource(R.color.color_surface_variant),
+        onSurfaceVariant = colorResource(R.color.color_on_surface),
+        outline = colorResource(R.color.divider_color),
+        inverseOnSurface = colorResource(R.color.color_surface),
+        inverseSurface = colorResource(R.color.color_on_surface),
+        inversePrimary = colorResource(R.color.color_on_primary),
+        surfaceBright = colorResource(R.color.color_surface),
+        surfaceContainer = colorResource(R.color.color_surface_elevated),
+        surfaceContainerHigh = colorResource(R.color.color_surface_elevated),
+        surfaceContainerHighest = colorResource(R.color.color_surface_elevated),
+        surfaceContainerLow = colorResource(R.color.color_surface_elevated),
+        surfaceContainerLowest = colorResource(R.color.color_surface_elevated),
+    )
