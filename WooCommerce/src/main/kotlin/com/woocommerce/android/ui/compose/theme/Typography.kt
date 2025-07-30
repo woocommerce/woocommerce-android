@@ -122,33 +122,33 @@ val Material3Typography = Typography(
     headlineMedium = TextStyle(
         fontFamily = robotoFamily,
         fontWeight = FontWeight.Normal,
+        fontSize = 28.sp,
+        lineHeight = 36.sp
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = robotoFamily,
+        fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         lineHeight = 24.sp
     ),
-    headlineSmall = TextStyle(
+    titleLarge = TextStyle(
         fontFamily = robotoFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
-    titleLarge = TextStyle(
+    titleMedium = TextStyle(
         fontFamily = robotoFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = 24.sp
-    ),
-    titleMedium = TextStyle(
-        fontFamily = robotoFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
         lineHeight = 24.sp
     ),
     titleSmall = TextStyle(
         fontFamily = robotoFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
-        lineHeight = 20.sp
+        lineHeight = 24.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = robotoFamily,
