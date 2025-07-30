@@ -21,12 +21,24 @@ steps:
     agents:
       queue: "mac-metal"
 
-  - label: "Instrumented tests (ReviewsUITest)"
+  - label: "Instrumented tests without GMD (ReviewsUITest)"
     command: |
       echo "--- 🧪 Testing"
       ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.woocommerce.android.e2e.tests.ui.ReviewsUITest
     plugins: [ $CI_TOOLKIT ]
     artifact_paths:
-      - "**/build/reports/androidTests/**/**/**/**/**/*"
+      - "**/build/reports/androidTests/connected/**/**/**/*"
+      - "**/build/reports/androidTests/connected/**/**/**/**/*"
+    agents:
+      queue: "mac-metal"
+
+  - label: "Instrumented tests with GMD (ReviewsUITest)"
+    command: |
+      echo "--- 🧪 Testing"
+      ./gradlew :WooCommerce:pixel5api34VanillaDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.woocommerce.android.e2e.tests.ui.ReviewsUITest
+    plugins: [ $CI_TOOLKIT ]
+    artifact_paths:
+      - "**/build/reports/androidTests/managedDevice/**/**/**/pixel5api34/*"
+      - "**/build/reports/androidTests/managedDevice/**/**/**/pixel5api34/**/*"
     agents:
       queue: "mac-metal"

@@ -175,6 +175,15 @@ android {
     testOptions {
         animationsDisabled = true
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        managedDevices {
+            localDevices {
+                pixel5api34 {
+                    device = "Pixel 5"
+                    apiLevel = 34
+                    systemImageSource = "google"
+                }
+            }
+        }
     }
 
     signingConfigs {
