@@ -12,22 +12,10 @@ import javax.inject.Inject
 class ProductImageRemoveBackgroundViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    
+
     private val navArgs: ProductImageRemoveBackgroundFragmentArgs by savedState.navArgs()
-    
+
     val productImage: Product.Image = navArgs.image
-    
-    fun onRemoveBackgroundClicked() {
-        // TODO: Implement ML Kit background removal
-    }
-    
-    fun onSaveClicked() {
-        // TODO: Implement save functionality
-    }
-    
-    fun onCancelClicked() {
-        triggerEvent(ExitScreen)
-    }
-    
+
     object ExitScreen : MultiLiveEvent.Event()
 }

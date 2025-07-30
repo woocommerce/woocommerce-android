@@ -89,7 +89,7 @@ class ProductImageViewerFragment :
         }
         toolbar.inflateMenu(R.menu.menu_product_image)
         toolbar.menu.findItem(R.id.menu_delete_image).isVisible = navArgs.isDeletingAllowed
-        toolbar.menu.findItem(R.id.menu_remove_background).isVisible = 
+        toolbar.menu.findItem(R.id.menu_remove_background).isVisible =
             FeatureFlag.AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL.isEnabled(context)
     }
 
@@ -206,7 +206,7 @@ class ProductImageViewerFragment :
     private fun navigateToRemoveBackground() {
         val currentPosition = binding.viewPager.currentItem
         val currentImage = pagerAdapter.images[currentPosition]
-        
+
         val action = ProductImageViewerFragmentDirections
             .actionProductImageViewerFragmentToProductImageRemoveBackgroundFragment(currentImage)
         findNavController().navigate(action)
