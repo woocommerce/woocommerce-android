@@ -82,6 +82,7 @@ jackson-databind = '2.12.7.1'
 java = '11'
 jetty-webapp = '9.4.51.v20230217'
 json-path = '2.9.0'
+json-smart = '2.5.2'
 junit = '4.13.2'
 lottie = '5.2.0'
 kotlin = '2.1.10'
@@ -243,6 +244,7 @@ gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar"
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-databind" }
 jetty-webapp = { group = "org.eclipse.jetty", name = "jetty-webapp", version.ref = "jetty-webapp" }
 json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "json-path" }
+json-smart = { group = "net.minidev", name = "json-smart", version.ref = "json-smart" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
