@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarM3
 import com.woocommerce.android.ui.compose.theme.WooThemeM3WithBackground
 import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
@@ -118,7 +118,7 @@ fun WooLogViewerScreen(
     }
     Scaffold(
         topBar = {
-            Toolbar(
+            ToolbarM3(
                 title = stringResource(id = R.string.logviewer_activity_title),
                 onNavigationButtonClick = onBackPress,
                 actions = {
@@ -132,18 +132,16 @@ fun WooLogViewerScreen(
                     IconButton(onClick = { onCopyButtonClick() }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_copy_white_24dp),
-                            contentDescription = stringResource(id = R.string.copy),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            contentDescription = stringResource(id = R.string.copy)
                         )
                     }
                     IconButton(onClick = { onShareButtonClick() }) {
                         Icon(
                             Icons.Filled.Share,
-                            contentDescription = stringResource(id = R.string.share),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            contentDescription = stringResource(id = R.string.share)
                         )
                     }
-                },
+                }
             )
         },
         modifier = Modifier
