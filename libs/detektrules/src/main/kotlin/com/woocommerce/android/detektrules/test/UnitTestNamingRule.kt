@@ -35,7 +35,9 @@ class UnitTestNamingRule(config: Config) : Rule(config) {
                     Entity.from(function),
                     "Test function '$functionName' should follow the naming convention: " +
                         "'[given something,] when something happens, then something is expected'. " +
-                        "The 'when' and 'then' parts are mandatory and must be lowercase. Use backticks for the function name."
+                        "The 'given' part is optional but if present must be lowercase. " +
+                        "The 'when' and 'then' parts are mandatory and must be lowercase. " +
+                        "Use backticks for the function name."
                 )
             )
         }
@@ -44,7 +46,7 @@ class UnitTestNamingRule(config: Config) : Rule(config) {
     private fun isTestFunction(function: KtNamedFunction): Boolean {
         return function.annotationEntries.any { annotation ->
             val annotationName = annotation.shortName?.asString()
-            annotationName == "Test" || annotationName == "ParameterizedTest"
+            annotationName == "Test"
         }
     }
 }
