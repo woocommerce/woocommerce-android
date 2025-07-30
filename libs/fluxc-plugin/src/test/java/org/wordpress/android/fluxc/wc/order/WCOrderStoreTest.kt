@@ -3,7 +3,6 @@ package org.wordpress.android.fluxc.wc.order
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
-import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
@@ -25,7 +24,6 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder.newFetchedOrderListAction
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -39,7 +37,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.C
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
@@ -101,14 +98,6 @@ internal class WCOrderStoreTest {
                 orderSummaryDao = databaseRule.db.orderSummaryDao,
                 insertOrder = insertOrder
         )
-
-        val config = SingleStoreWellSqlConfigForTests(
-                context,
-                listOf(),
-                WellSqlConfig.ADDON_WOOCOMMERCE
-        )
-        WellSql.init(config)
-        config.reset()
     }
 
     @Test
