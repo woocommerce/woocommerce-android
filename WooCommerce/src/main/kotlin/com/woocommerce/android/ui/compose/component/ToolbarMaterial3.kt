@@ -14,8 +14,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +25,7 @@ fun ToolbarM3(
     title: String = "",
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
-    navigationIconContentDescription: String = stringResource(id = string.back),
+    navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
@@ -46,7 +47,7 @@ fun ToolbarM3(
     title: @Composable () -> Unit,
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = null,
-    navigationIconContentDescription: String = stringResource(id = string.back),
+    navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
@@ -68,7 +69,7 @@ fun ToolbarM3(
         },
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = colorResource(id = R.color.color_toolbar),
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
             actionIconContentColor = MaterialTheme.colorScheme.onSurface

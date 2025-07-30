@@ -39,6 +39,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -146,7 +147,7 @@ fun WooLogViewerScreen(
         },
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.surface)
+            .background(color = colorResource(id = R.color.color_toolbar))
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
