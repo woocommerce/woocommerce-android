@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.SelectionCheck
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooTypography
 import com.woocommerce.android.ui.sitepicker.sitevisibility.WooSitesVisibilityViewModel.WooStoreUi
 import com.woocommerce.android.ui.sitepicker.sitevisibility.WooSitesVisibilityViewModel.WooStoresUiState
 
@@ -109,13 +108,13 @@ fun WooSitesVisibilityScreen(
             Text(
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                 text = stringResource(R.string.site_picker_edit_store_current_site_header),
-                style = WooTypography.subtitle1,
+                style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
             )
             Text(
                 modifier = Modifier.padding(bottom = 8.dp),
                 text = stringResource(R.string.site_picker_edit_store_current_site_footer),
-                style = WooTypography.caption,
+                style = MaterialTheme.typography.caption,
                 color = MaterialTheme.colors.onSurface,
             )
             StoreItem(
@@ -132,13 +131,13 @@ fun WooSitesVisibilityScreen(
             Text(
                 modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
                 text = stringResource(R.string.site_picker_edit_store_list_header),
-                style = WooTypography.subtitle1,
+                style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
             )
             Text(
                 modifier = Modifier.padding(bottom = 8.dp),
                 text = stringResource(R.string.site_picker_edit_store_list_footer),
-                style = WooTypography.caption,
+                style = MaterialTheme.typography.caption,
                 color = MaterialTheme.colors.onSurface,
             )
             AvailableStoresForHiding(
@@ -194,14 +193,14 @@ private fun StoreItem(
     Column(modifier = modifier) {
         Text(
             text = wooStore.siteName,
-            style = WooTypography.body1,
+            style = MaterialTheme.typography.body1,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(Modifier.height(4.dp))
         Text(
             modifier = Modifier.padding(end = 8.dp),
             text = wooStore.siteUrl,
-            style = WooTypography.body2,
+            style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         Spacer(Modifier.height(16.dp))
