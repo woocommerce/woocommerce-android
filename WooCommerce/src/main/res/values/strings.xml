@@ -4483,7 +4483,7 @@
     <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
     <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
     <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
-    <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
+    <string name="woopos_scanning_setup_success_message">You are ready to start scanning products. Next time you need to connect your scanner, just turn on the scanner and it\'ll reconnect automatically.</string>
     <string name="woopos_scanning_setup_more_information">How to set up barcodes on products</string>
     <string name="woopos_scanning_setup_info_title">Scanner setup</string>
     <string name="woopos_scanning_setup_info_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
