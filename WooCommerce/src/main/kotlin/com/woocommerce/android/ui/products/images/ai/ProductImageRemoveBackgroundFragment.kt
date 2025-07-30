@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package com.woocommerce.android.ui.products.images.ai
 
 import android.os.Bundle
@@ -8,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -41,14 +38,12 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    Surface {
-                        ProductImageRemoveBackgroundScreen(
-                            state = viewModel.state.collectAsState(),
-                            onBackPressed = { handleBackPressed() },
-                            onCancelClicked = { findNavController().navigateUp() },
-                            onSaveClicked = { handleSaveClicked() }
-                        )
-                    }
+                    ProductImageRemoveBackgroundScreen(
+                        state = viewModel.state.collectAsState(),
+                        onBackPressed = { handleBackPressed() },
+                        onCancelClicked = { findNavController().navigateUp() },
+                        onSaveClicked = { handleSaveClicked() }
+                    )
                 }
             }
         }
