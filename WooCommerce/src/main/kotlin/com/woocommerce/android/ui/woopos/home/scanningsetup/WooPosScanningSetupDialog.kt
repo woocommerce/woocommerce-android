@@ -839,6 +839,7 @@ private fun SoftwareKeyboardSetupContent(
     var testText by remember { mutableStateOf("") }
     var isInputFieldFocused by remember { mutableStateOf(false) }
 
+    @Suppress("DestructuringDeclarationWithTooManyEntries")
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
