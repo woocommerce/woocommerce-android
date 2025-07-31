@@ -4510,7 +4510,7 @@
     <string name="woopos_scanning_setup_software_keyboard_message_two">If the keyboard is not visible, try these options:</string>
     <string name="woopos_scanning_setup_software_keyboard_hint">Tap here to test keyboard visibility</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">Look for a keyboard icon or toolbar on the screen.</string>
-    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Go to device settings, search "keyboard", then enable "Show on-screen keyboard when physical keyboard connected." This setting may be in your keyboard app settings.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Go to device settings, search \"keyboard\", then enable \"Show on-screen keyboard when physical keyboard connected\". This setting may be in your keyboard app settings.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">Still not working? Check your mobile device\'s support.</string>
     <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
