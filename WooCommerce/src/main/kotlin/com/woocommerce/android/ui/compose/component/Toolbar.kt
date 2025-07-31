@@ -2,11 +2,14 @@ package com.woocommerce.android.ui.compose.component
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -15,12 +18,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.autoMirror
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolbarWithHelpButton(
     modifier: Modifier = Modifier,
@@ -28,7 +31,7 @@ fun ToolbarWithHelpButton(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = WindowInsets(0),
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     onHelpButtonClick: (() -> Unit)
 ) {
     Toolbar(
@@ -44,6 +47,7 @@ fun ToolbarWithHelpButton(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Toolbar(
     modifier: Modifier = Modifier,
@@ -51,11 +55,11 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit),
     navigationIcon: ImageVector = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = WindowInsets(0),
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
     Toolbar(
         modifier = modifier,
-        title = { Text(title) },
+        title = { Text(title, style = MaterialTheme.typography.headlineSmall) },
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
@@ -63,6 +67,7 @@ fun Toolbar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Toolbar(
     modifier: Modifier = Modifier,
@@ -70,14 +75,14 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = WindowInsets(0),
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     actionButtonIcon: ImageVector,
     onActionButtonClick: (() -> Unit),
     actionIconContentDescription: String
 ) {
     Toolbar(
         modifier = modifier,
-        title = { Text(title) },
+        title = { Text(title, style = MaterialTheme.typography.headlineSmall) },
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
@@ -86,13 +91,15 @@ fun Toolbar(
             IconButton(onClick = onActionButtonClick) {
                 Icon(
                     imageVector = actionButtonIcon,
-                    contentDescription = actionIconContentDescription
+                    contentDescription = actionIconContentDescription,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Toolbar(
     modifier: Modifier = Modifier,
@@ -100,12 +107,12 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = WindowInsets(0),
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     Toolbar(
         modifier = modifier,
-        title = { Text(title) },
+        title = { Text(title, style = MaterialTheme.typography.headlineSmall) },
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
@@ -114,6 +121,7 @@ fun Toolbar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Toolbar(
     modifier: Modifier = Modifier,
@@ -121,13 +129,13 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = WindowInsets(0),
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     onActionButtonClick: (() -> Unit),
     actionButtonText: String
 ) {
     Toolbar(
         modifier = modifier,
-        title = { Text(title) },
+        title = { Text(title, style = MaterialTheme.typography.headlineSmall) },
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
@@ -140,6 +148,7 @@ fun Toolbar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Toolbar(
     modifier: Modifier = Modifier,
@@ -147,12 +156,17 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = WindowInsets(0),
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
         windowInsets = windowInsets,
-        backgroundColor = colorResource(id = R.color.color_toolbar),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = colorResource(id = R.color.color_toolbar),
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+            actionIconContentColor = MaterialTheme.colorScheme.onSurface
+        ),
         title = title,
         navigationIcon = {
             if (navigationIcon != null) {
@@ -171,7 +185,6 @@ fun Toolbar(
             }
         },
         actions = actions,
-        elevation = 0.dp,
         modifier = modifier
     )
 }

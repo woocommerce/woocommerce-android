@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
-import com.woocommerce.android.ui.compose.component.ToolbarM3
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
@@ -118,7 +118,7 @@ fun WooLogViewerScreen(
     }
     Scaffold(
         topBar = {
-            ToolbarM3(
+            Toolbar(
                 title = stringResource(id = R.string.logviewer_activity_title),
                 onNavigationButtonClick = onBackPress,
                 actions = {
