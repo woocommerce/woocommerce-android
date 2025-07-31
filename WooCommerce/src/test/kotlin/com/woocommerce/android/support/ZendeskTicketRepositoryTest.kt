@@ -707,7 +707,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private fun mockEnvDataSource() = mock<ZendeskEnvironmentDataSource> {
         on { totalAvailableMemorySize } doReturn "100"
         on { deviceLanguage } doReturn "testLanguage"
-        on { deviceLogs } doReturn "logs"
+        onBlocking { getDeviceLogs() } doReturn "logs"
         on { generateVersionName(any()) } doReturn "version"
         on { generateNetworkInformation(any()) } doReturn "networkInfo"
         on { generateCombinedLogInformationOfSites(any()) } doReturn "sitesInfo"

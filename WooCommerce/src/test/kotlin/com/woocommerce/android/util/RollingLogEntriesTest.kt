@@ -1,8 +1,8 @@
 package com.woocommerce.android.util
 
-import com.woocommerce.android.util.RollingLogEntries.LogEntry
 import com.woocommerce.android.util.WooLog.LogLevel.d
 import com.woocommerce.android.util.WooLog.T.UTILS
+import com.woocommerce.android.util.logs.LogEntry
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.security.InvalidParameterException

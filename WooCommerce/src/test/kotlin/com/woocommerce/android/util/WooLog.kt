@@ -1,5 +1,7 @@
 package com.woocommerce.android.util
 
+import com.woocommerce.android.util.logs.LogEntry
+
 /**
  * Simple wrapper for Android log calls, enables registering listeners for log events.
  *
@@ -36,6 +38,11 @@ object WooLog {
     enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun getCurrentLogEntries(): List<LogEntry> {
+        return emptyList()
+    }
 
     /**
      * Sends a VERBOSE log message

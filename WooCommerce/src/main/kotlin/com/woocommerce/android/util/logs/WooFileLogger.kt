@@ -39,7 +39,11 @@ class WooFileLogger @Inject constructor(
         }
     }
 
-    fun getCurrentLogFile(): File = logFileProvider.getLogFiles().last()
+    suspend fun getCurrentLogFile(): File {
+        return withContext(dispatchers.io) {
+            logFileProvider.getLogFiles().last()
+        }
+    }
 
     suspend fun getCurrentLogFileContent(): List<LogEntry> =
         getLogFileContent(getCurrentLogFile().name).orEmpty()

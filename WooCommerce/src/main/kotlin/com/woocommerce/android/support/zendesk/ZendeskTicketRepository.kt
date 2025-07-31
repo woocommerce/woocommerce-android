@@ -116,12 +116,12 @@ class ZendeskTicketRepository @Inject constructor(
      * This is a helper function which builds a list of `CustomField`s which will be used during ticket creation. They
      * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
      */
-    private fun buildZendeskCustomFields(params: ZendeskCustomFieldsParams): List<CustomField> {
+    private suspend fun buildZendeskCustomFields(params: ZendeskCustomFieldsParams): List<CustomField> {
         return listOf(
             CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(params.context)),
             CustomField(TicketCustomField.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
             CustomField(TicketCustomField.networkInformation, envDataSource.generateNetworkInformation(params.context)),
-            CustomField(TicketCustomField.logs, envDataSource.deviceLogs),
+            CustomField(TicketCustomField.logs, envDataSource.getDeviceLogs()),
             CustomField(TicketCustomField.ssr, params.ssr),
             CustomField(TicketCustomField.currentSite, envDataSource.generateHostData(params.selectedSite)),
             CustomField(TicketCustomField.sourcePlatform, ZendeskEnvironmentDataSource.sourcePlatform),

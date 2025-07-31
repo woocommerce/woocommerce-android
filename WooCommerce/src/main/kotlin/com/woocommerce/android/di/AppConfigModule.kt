@@ -52,5 +52,9 @@ class AppConfigModule {
     fun provideWebViewCookieManager() = CookieManager.getInstance()
 
     @Provides
-    fun provideWooLog() = WooLog
+    @Singleton
+    fun provideWooLog(context: Context): WooLog {
+        WooLog.init(context)
+        return WooLog
+    }
 }
