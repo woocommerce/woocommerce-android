@@ -13,33 +13,34 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 
 class RemoveBackground @Inject constructor() {
-    suspend operator fun invoke(inputImage: InputImage): Result<Bitmap> = withContext(Dispatchers.Default) {
-        suspendCancellableCoroutine { continuation ->
-            val options = SubjectSegmenterOptions.Builder()
-                .enableForegroundBitmap()
-                .enableForegroundConfidenceMask()
-                .build()
+    suspend operator fun invoke(inputImage: InputImage): Result<Bitmap> =
+        withContext(Dispatchers.IO) {
+            suspendCancellableCoroutine { continuation ->
+                val options = SubjectSegmenterOptions.Builder()
+                    .enableForegroundBitmap()
+                    .enableForegroundConfidenceMask()
+                    .build()
 
-            val segmenter = SubjectSegmentation.getClient(options)
+                val segmenter = SubjectSegmentation.getClient(options)
 
-            segmenter.process(inputImage)
-                .addOnSuccessListener { result ->
-                    val foregroundBitmap = result.foregroundBitmap
-                    if (foregroundBitmap != null) {
-                        val processedBitmap = replaceBackgroundWithWhite(foregroundBitmap)
-                        continuation.resume(Result.success(processedBitmap))
-                    } else {
-                        continuation.resume(Result.failure(Exception("No subject detected in image")))
+                segmenter.process(inputImage)
+                    .addOnSuccessListener { result ->
+                        val foregroundBitmap = result.foregroundBitmap
+                        if (foregroundBitmap != null) {
+                            val processedBitmap = replaceBackgroundWithWhite(foregroundBitmap)
+                            continuation.resume(Result.success(processedBitmap))
+                        } else {
+                            continuation.resume(Result.failure(Exception("No subject detected in image")))
+                        }
                     }
-                }
-                .addOnFailureListener { exception ->
-                    continuation.resume(Result.failure(exception))
-                }
-                .addOnCanceledListener {
-                    continuation.resume(Result.failure(Exception("Background removal was cancelled")))
-                }
+                    .addOnFailureListener { exception ->
+                        continuation.resume(Result.failure(exception))
+                    }
+                    .addOnCanceledListener {
+                        continuation.resume(Result.failure(Exception("Background removal was cancelled")))
+                    }
+            }
         }
-    }
 
     private fun replaceBackgroundWithWhite(bitmap: Bitmap): Bitmap {
         val width = bitmap.width
