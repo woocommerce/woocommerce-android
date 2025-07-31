@@ -38,41 +38,6 @@ import coil.compose.AsyncImage
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
-@Composable
-fun BottomActionMenu(
-    modifier: Modifier = Modifier,
-    onCancelClicked: () -> Unit,
-    onSaveClicked: () -> Unit
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.major_100)),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = dimensionResource(R.dimen.appbar_elevation),
-        shape = RoundedCornerShape(dimensionResource(R.dimen.minor_100))
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.major_100)),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            TextButton(onClick = onCancelClicked) {
-                Text(
-                    text = stringResource(R.string.cancel),
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
-
-            Button(onClick = onSaveClicked) {
-                Text(
-                    text = stringResource(R.string.save_copy),
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductImageRemoveBackgroundScreen(
@@ -133,6 +98,41 @@ fun ProductImageRemoveBackgroundScreen(
                         MagicSparkles()
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomActionMenu(
+    modifier: Modifier = Modifier,
+    onCancelClicked: () -> Unit,
+    onSaveClicked: () -> Unit
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.major_100)),
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = dimensionResource(R.dimen.appbar_elevation),
+        shape = RoundedCornerShape(dimensionResource(R.dimen.minor_100))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.major_100)),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(onClick = onCancelClicked) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+
+            Button(onClick = onSaveClicked) {
+                Text(
+                    text = stringResource(R.string.save_copy),
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
     }
