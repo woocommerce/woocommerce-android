@@ -36,6 +36,7 @@ import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.UiHelpers.getIllustrationVisibilityForAccessibility
 import com.woocommerce.android.util.UiHelpers.getTextOfUiString
+import com.woocommerce.android.util.announceAccessibilityChange
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,6 +87,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     event.receiptUrl,
                     event.documentName
                 )
+
                 InteracRefundSuccessful -> navigateBackWithNotice(KEY_INTERAC_SUCCESS)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowSnackbarInDialog -> Snackbar.make(
@@ -93,6 +95,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     event.message,
                     BaseTransientBottomBar.LENGTH_LONG
                 ).show()
+
                 is PlayChaChing -> playChaChing()
                 is ContactSupport -> openSupportRequestScreen()
                 is EnableNfc -> openEnableNfcScreen()
@@ -171,15 +174,15 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     viewState is ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
             if (isPaymentSuccessful || isPaymentSuccessfulReceiptSentAutomatically) {
                 viewState.headerLabel?.let {
-                    headerLabel.announceForAccessibility(getString(it) + viewState.amountWithCurrencyLabel)
+                    headerLabel.announceAccessibilityChange(getString(it) + viewState.amountWithCurrencyLabel)
                 }
             } else {
                 viewState.paymentStateLabel?.let {
-                    paymentStateLabel.announceForAccessibility(getTextOfUiString(requireContext(), it))
+                    paymentStateLabel.announceAccessibilityChange(getTextOfUiString(requireContext(), it))
                 }
             }
             viewState.hintLabel?.let {
-                hintLabel.announceForAccessibility(getString(it))
+                hintLabel.announceAccessibilityChange(getString(it))
             }
         }
     }
