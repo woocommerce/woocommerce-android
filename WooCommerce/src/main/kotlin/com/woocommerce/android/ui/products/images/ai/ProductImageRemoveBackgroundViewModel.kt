@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -70,12 +71,10 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
                 saveProcessedImage(bitmap, remoteProductId)
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_success))
                 triggerEvent(MultiLiveEvent.Event.Exit)
-            } catch (e: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_error))
-                _state.value = ViewState.Success(bitmap)
-            } catch (e: java.io.IOException) {
+            } catch (_: IOException) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_error))
-                _state.value = ViewState.Success(bitmap)
             }
         }
     }
