@@ -6,7 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
-import com.woocommerce.android.ui.compose.theme.WooThemeM3
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils
@@ -16,7 +16,7 @@ class WooLogViewerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            WooThemeM3 {
+            WooTheme {
                 WooLogViewerScreen(
                     WooLog.logEntries,
                     onBackPress = onBackPressedDispatcher::onBackPressed,

@@ -48,7 +48,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.ToolbarM3
-import com.woocommerce.android.ui.compose.theme.WooThemeM3
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.launch
@@ -320,7 +320,7 @@ private fun WooLogViewerScreenPreview() {
             RollingLogEntries.LogEntry(WooLog.T.DASHBOARD, WooLog.LogLevel.e, "Error")
         )
     }
-    WooThemeM3 {
+    WooTheme {
         WooLogViewerScreen(
             entries,
             onBackPress = {},
