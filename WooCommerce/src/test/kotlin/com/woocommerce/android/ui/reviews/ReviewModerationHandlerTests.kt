@@ -2,14 +2,11 @@ package com.woocommerce.android.ui.reviews
 
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -38,7 +35,11 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
 
     private val review = ProductReviewTestUtils.generateProductReview(0L, 0L)
 
-    private lateinit var handler: ReviewModerationHandler
+    private val handler = ReviewModerationHandler(
+        selectedSite = selectedSite,
+        productStore = productStore,
+        appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
+    )
 
     @Before
     fun setup() = runTest {
@@ -46,7 +47,7 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
             WooResult(
                 WCProductReviewModel(
                     remoteProductReviewId = RemoteId(review.remoteId),
-                    status = HOLD.toString(),
+                    status = ProductReviewStatus.HOLD.toString(),
                 )
             )
         )
@@ -56,11 +57,6 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     fun `when moderating a review, then start with a pending state`() = runTest {
         // GIVEN
         val statusUpdates = mutableListOf<List<ReviewModerationStatus>>()
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
 
         val collectJob = launch {
             handler.pendingModerationStatus.collect { statuses ->
@@ -70,7 +66,7 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         runCurrent()
 
         // WHEN
-        handler.postModerationRequest(review, HOLD)
+        handler.postModerationRequest(review, ProductReviewStatus.HOLD)
         runCurrent()
 
         // THEN
@@ -86,11 +82,6 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     fun `given moderating a review, when the undo delay is passed, then change status to submitted`() = runTest {
         // GIVEN
         val statusUpdates = mutableListOf<List<ReviewModerationStatus>>()
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
 
         val collectJob = launch {
             handler.pendingModerationStatus.collect { statuses ->
@@ -99,7 +90,7 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         }
 
         runCurrent()
-        handler.postModerationRequest(review, HOLD)
+        handler.postModerationRequest(review, ProductReviewStatus.HOLD)
         runCurrent()
 
         val pendingStatuses = statusUpdates.flatten().filter { it.actionStatus == ActionStatus.PENDING }
@@ -124,11 +115,6 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     fun `given moderating a review, when the undo delay is passed, then submit status to the API`() = runTest {
         // GIVEN
         val statusUpdates = mutableListOf<List<ReviewModerationStatus>>()
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
 
         val collectJob = launch {
             handler.pendingModerationStatus.collect { statuses ->
@@ -137,7 +123,7 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         }
 
         runCurrent()
-        handler.postModerationRequest(review, HOLD)
+        handler.postModerationRequest(review, ProductReviewStatus.HOLD)
         runCurrent()
 
         // WHEN
@@ -154,14 +140,8 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     @Test
     fun `when review status update succeeds, then status removed after a given time`() = runTest {
         // GIVEN
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
-
         runCurrent()
-        handler.postModerationRequest(review, HOLD)
+        handler.postModerationRequest(review, ProductReviewStatus.HOLD)
         runCurrent()
 
         advanceTimeBy(ReviewModerationHandler.UNDO_DELAY + 100)
@@ -184,11 +164,6 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         )
 
         val statusUpdates = mutableListOf<List<ReviewModerationStatus>>()
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
 
         val collectJob = launch {
             handler.pendingModerationStatus.collect { statuses ->
@@ -197,7 +172,7 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         }
 
         runCurrent()
-        handler.postModerationRequest(review, HOLD)
+        handler.postModerationRequest(review, ProductReviewStatus.HOLD)
         runCurrent()
 
         // WHEN
@@ -218,14 +193,8 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
             WooResult(WooError(GENERIC_ERROR, UNKNOWN, ""))
         )
 
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
-
         runCurrent()
-        handler.postModerationRequest(review, HOLD)
+        handler.postModerationRequest(review, ProductReviewStatus.HOLD)
         runCurrent()
 
         advanceTimeBy(ReviewModerationHandler.UNDO_DELAY + 100)
@@ -243,14 +212,8 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     @Test
     fun `when moderation is canceled, then submit success with original status`() = runTest {
         // GIVEN
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
-
         runCurrent()
-        handler.postModerationRequest(review, HOLD)
+        handler.postModerationRequest(review, ProductReviewStatus.HOLD)
         runCurrent()
 
         val pendingStatus = handler.pendingModerationStatus.first()
@@ -271,11 +234,6 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     fun `when queuing a second moderation request, then skip delay for the previous one`() = runTest {
         // GIVEN
         val statusUpdates = mutableListOf<List<ReviewModerationStatus>>()
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
 
         val review1 = review.copy(remoteId = 1L)
         val review2 = review.copy(remoteId = 2L)
@@ -287,12 +245,12 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         }
 
         runCurrent()
-        handler.postModerationRequest(review1, HOLD)
+        handler.postModerationRequest(review1, ProductReviewStatus.HOLD)
         advanceTimeBy(100)
         runCurrent()
 
         // WHEN
-        handler.postModerationRequest(review2, HOLD)
+        handler.postModerationRequest(review2, ProductReviewStatus.HOLD)
         advanceTimeBy(100)
         runCurrent()
 
@@ -309,11 +267,6 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     fun `when adding a second moderation request, then queue it after the previous one`() = runTest {
         // GIVEN
         val statusUpdates = mutableListOf<List<ReviewModerationStatus>>()
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
 
         val review1 = review.copy(remoteId = 1L)
         val review2 = review.copy(remoteId = 2L)
@@ -327,8 +280,8 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         runCurrent()
 
         // WHEN
-        handler.postModerationRequest(review1, HOLD)
-        handler.postModerationRequest(review2, HOLD)
+        handler.postModerationRequest(review1, ProductReviewStatus.HOLD)
+        handler.postModerationRequest(review2, ProductReviewStatus.HOLD)
         advanceTimeBy(100)
         runCurrent()
 
@@ -342,20 +295,14 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     @Test
     fun `when queuing moderations, then make sure the pending status list is ordered`() = runTest {
         // GIVEN
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
-
         val review1 = review.copy(remoteId = 1L)
         val review2 = review.copy(remoteId = 2L)
 
         runCurrent()
 
         // WHEN
-        handler.postModerationRequest(review1, HOLD)
-        handler.postModerationRequest(review2, HOLD)
+        handler.postModerationRequest(review1, ProductReviewStatus.HOLD)
+        handler.postModerationRequest(review2, ProductReviewStatus.HOLD)
         advanceTimeBy(100)
         runCurrent()
 
@@ -369,7 +316,11 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     @Test
     fun `when moderating to different review statuses, then handle each correctly`() = runTest {
         // GIVEN
-        val statuses = listOf(APPROVED, SPAM, TRASH)
+        val statuses = listOf(
+            ProductReviewStatus.APPROVED,
+            ProductReviewStatus.SPAM,
+            ProductReviewStatus.TRASH
+        )
 
         for (status in statuses) {
             // GIVEN
@@ -380,12 +331,6 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
                         status = status.toString(),
                     )
                 )
-            )
-
-            handler = ReviewModerationHandler(
-                selectedSite = selectedSite,
-                productStore = productStore,
-                appCoroutineScope = backgroundScope,
             )
 
             runCurrent()
@@ -408,11 +353,6 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     fun `when posting multiple requests for same review rapidly, then only process the latest`() = runTest {
         // GIVEN
         val statusUpdates = mutableListOf<List<ReviewModerationStatus>>()
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
 
         val collectJob = launch {
             handler.pendingModerationStatus.collect { statuses ->
@@ -423,9 +363,9 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         runCurrent()
 
         // WHEN
-        handler.postModerationRequest(review, HOLD)
-        handler.postModerationRequest(review, APPROVED)
-        handler.postModerationRequest(review, SPAM)
+        handler.postModerationRequest(review, ProductReviewStatus.HOLD)
+        handler.postModerationRequest(review, ProductReviewStatus.APPROVED)
+        handler.postModerationRequest(review, ProductReviewStatus.SPAM)
         runCurrent()
         advanceTimeBy(100)
         runCurrent()
@@ -438,18 +378,12 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         }
 
         val latestPending = pendingForSameReview.lastOrNull()
-        assertThat(latestPending?.newStatus).isEqualTo(SPAM)
+        assertThat(latestPending?.newStatus).isEqualTo(ProductReviewStatus.SPAM)
     }
 
     @Test
     fun `when undoing operation that doesn't exist, then handle gracefully`() = runTest {
         // GIVEN
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
-
         runCurrent()
         val nonExistentReview = review.copy(remoteId = 999L)
 
@@ -466,11 +400,6 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     fun `when handling concurrent operations on different reviews, then process all correctly`() = runTest {
         // GIVEN
         val statusUpdates = mutableListOf<List<ReviewModerationStatus>>()
-        handler = ReviewModerationHandler(
-            selectedSite = selectedSite,
-            productStore = productStore,
-            appCoroutineScope = backgroundScope,
-        )
 
         val review1 = review.copy(remoteId = 1L)
         val review2 = review.copy(remoteId = 2L)
@@ -485,9 +414,9 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         runCurrent()
 
         // WHEN
-        handler.postModerationRequest(review1, APPROVED)
-        handler.postModerationRequest(review2, SPAM)
-        handler.postModerationRequest(review3, TRASH)
+        handler.postModerationRequest(review1, ProductReviewStatus.APPROVED)
+        handler.postModerationRequest(review2, ProductReviewStatus.SPAM)
+        handler.postModerationRequest(review3, ProductReviewStatus.TRASH)
         runCurrent()
         advanceTimeBy(100)
         runCurrent()
