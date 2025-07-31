@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.ui.products.images.ai
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -46,6 +47,8 @@ fun ProductImageRemoveBackgroundScreen(
     onCancelClicked: () -> Unit,
     onSaveClicked: () -> Unit
 ) {
+    BackHandler { onBackPressed() }
+    
     Scaffold(
         topBar = {
             TopAppBar(

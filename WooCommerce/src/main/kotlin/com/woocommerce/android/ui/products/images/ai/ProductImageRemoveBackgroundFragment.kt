@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
@@ -28,7 +28,6 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
 
     private val viewModel: ProductImageRemoveBackgroundViewModel by viewModels()
 
-    private lateinit var backPressedCallback: OnBackPressedCallback
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -50,8 +49,6 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupBackPressHandling()
-
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
@@ -64,14 +61,6 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
         }
     }
 
-    private fun setupBackPressHandling() {
-        backPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                handleBackPressed()
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
-    }
 
     private fun handleBackPressed() {
         AlertDialog.Builder(requireContext())
