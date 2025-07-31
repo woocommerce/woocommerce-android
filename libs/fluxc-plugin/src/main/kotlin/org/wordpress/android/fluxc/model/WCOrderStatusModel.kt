@@ -11,5 +11,6 @@ data class WCOrderStatusModel(
     val siteId: LocalId = LocalId(0),
     val statusKey: String = "",
     val label: String = "",
-    val statusCount: Int = 0
+    val statusCount: Int = 0,
+    val position: Int = 0,
 )

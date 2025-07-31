@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 55,
-    "identityHash": "9ce88714ca32354e532d87c078285f97",
+    "identityHash": "c5c03bfdc561d376a0037d12d3444937",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3362,7 +3362,7 @@
       },
       {
         "tableName": "OrderStatusEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `statusKey` TEXT NOT NULL, `label` TEXT NOT NULL, `statusCount` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `statusKey`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `statusKey` TEXT NOT NULL, `label` TEXT NOT NULL, `statusCount` INTEGER NOT NULL, `position` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `statusKey`))",
         "fields": [
           {
             "fieldPath": "siteId",
@@ -3387,6 +3387,12 @@
             "columnName": "statusCount",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -3403,7 +3409,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ce88714ca32354e532d87c078285f97')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c5c03bfdc561d376a0037d12d3444937')"
     ]
   }
 }

@@ -13,6 +13,7 @@ internal abstract class OrderStatusDao {
         """
         SELECT * FROM OrderStatusEntity
         WHERE siteId = :siteId
+        ORDER BY position ASC
         """
     )
     abstract suspend fun getOrderStatusOptions(siteId: LocalId): List<WCOrderStatusModel>
