@@ -78,4 +78,24 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
             }
         }
     }
+
+    fun onBackPressed() {
+        val currentState = _state.value
+        _state.value = when (currentState) {
+            is ViewState.BackgroundProcessingInProgress -> currentState.copy(showBackDialog = true)
+            is ViewState.Success -> currentState.copy(showBackDialog = true)
+        }
+    }
+
+    fun onBackDialogDismissed() {
+        val currentState = _state.value
+        _state.value = when (currentState) {
+            is ViewState.BackgroundProcessingInProgress -> currentState.copy(showBackDialog = false)
+            is ViewState.Success -> currentState.copy(showBackDialog = false)
+        }
+    }
+
+    fun onBackDialogConfirmed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
 }

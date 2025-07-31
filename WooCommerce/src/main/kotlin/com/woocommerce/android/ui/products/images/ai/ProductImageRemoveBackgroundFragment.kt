@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.compose.BackHandler
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -39,7 +37,9 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
                 WooThemeWithBackground {
                     ProductImageRemoveBackgroundScreen(
                         state = viewModel.state.collectAsState(),
-                        onBackPressed = { handleBackPressed() },
+                        onBackPressed = { viewModel.onBackPressed() },
+                        onBackDialogDismissed = { viewModel.onBackDialogDismissed() },
+                        onBackDialogConfirmed = { viewModel.onBackDialogConfirmed() },
                         onCancelClicked = { findNavController().navigateUp() },
                         onSaveClicked = { handleSaveClicked() }
                     )
@@ -59,20 +59,6 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-
-    private fun handleBackPressed() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.discard_changes_question)
-            .setMessage(R.string.changes_not_saved_message)
-            .setPositiveButton(R.string.discard) { _, _ ->
-                findNavController().navigateUp()
-            }
-            .setNegativeButton(R.string.keep_editing) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
     }
 
     private fun handleSaveClicked() {

@@ -5,6 +5,7 @@ package com.woocommerce.android.ui.products.images.ai
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -44,11 +46,13 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun ProductImageRemoveBackgroundScreen(
     state: State<ViewState>,
     onBackPressed: () -> Unit,
+    onBackDialogDismissed: () -> Unit,
+    onBackDialogConfirmed: () -> Unit,
     onCancelClicked: () -> Unit,
     onSaveClicked: () -> Unit
 ) {
     BackHandler { onBackPressed() }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -104,6 +108,53 @@ fun ProductImageRemoveBackgroundScreen(
             }
         }
     }
+
+    if (state.value.showBackDialog) {
+        ConfirmDiscardChangesDialog(onBackDialogDismissed, onBackDialogConfirmed)
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun ConfirmDiscardChangesDialog(
+    onBackDialogDismissed: () -> Unit,
+    onBackDialogConfirmed: () -> Unit
+) {
+    BasicAlertDialog(
+        onDismissRequest = onBackDialogDismissed
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large)),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+            ) {
+                Text(
+                    text = stringResource(R.string.discard_changes_question),
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(bottom = dimensionResource(R.dimen.major_100))
+                )
+                Text(
+                    text = stringResource(R.string.changes_not_saved_message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = dimensionResource(R.dimen.major_100))
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onBackDialogDismissed) {
+                        Text(stringResource(R.string.keep_editing))
+                    }
+                    Button(onClick = onBackDialogConfirmed) {
+                        Text(stringResource(R.string.discard))
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -151,6 +202,8 @@ fun ProductImageRemoveBackgroundScreenPreview() {
         ProductImageRemoveBackgroundScreen(
             state = state,
             onBackPressed = { },
+            onBackDialogDismissed = { },
+            onBackDialogConfirmed = { },
             onCancelClicked = { },
             onSaveClicked = { }
         )
@@ -167,6 +220,8 @@ fun ProductImageRemoveBackgroundScreenProgressPreview() {
         ProductImageRemoveBackgroundScreen(
             state = state,
             onBackPressed = { },
+            onBackDialogDismissed = { },
+            onBackDialogConfirmed = { },
             onCancelClicked = { },
             onSaveClicked = { }
         )
