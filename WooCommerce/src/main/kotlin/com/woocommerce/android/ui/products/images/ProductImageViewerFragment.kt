@@ -208,7 +208,10 @@ class ProductImageViewerFragment :
         val currentImage = pagerAdapter.images[currentPosition]
 
         val action = ProductImageViewerFragmentDirections
-            .actionProductImageViewerFragmentToProductImageRemoveBackgroundFragment(currentImage)
+            .actionProductImageViewerFragmentToProductImageRemoveBackgroundFragment(
+                image = currentImage,
+                remoteProductId = navArgs.remoteId
+            )
         findNavController().navigate(action)
     }
 

@@ -4,42 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import coil.compose.AsyncImage
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.Instant
-import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -58,9 +34,14 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    Surface {
-                        ProductImageRemoveBackgroundScreen(viewModel.productImage)
-                    }
+                    ProductImageRemoveBackgroundScreen(
+                        state = viewModel.state.collectAsState(),
+                        onBackPressed = { viewModel.onBackPressed() },
+                        onBackDialogDismissed = { viewModel.onBackDialogDismissed() },
+                        onBackDialogConfirmed = { viewModel.onBackDialogConfirmed() },
+                        onCancelClicked = { findNavController().navigateUp() },
+                        onSaveClicked = { handleSaveClicked() }
+                    )
                 }
             }
         }
@@ -69,67 +50,20 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ProductImageRemoveBackgroundViewModel.ExitScreen -> {
-                    findNavController().navigateUp()
-                }
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
                 }
+                is MultiLiveEvent.Event.Exit -> {
+                    findNavController().popBackStack(R.id.productImagesFragment, false)
+                }
             }
         }
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ProductImageRemoveBackgroundScreen(productImage: Product.Image) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.remove_background)) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
+    private fun handleSaveClicked() {
+        val currentState = viewModel.state.value
+        if (currentState is ViewState.Success) {
+            viewModel.onSaveImageTapped()
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = productImage.source,
-                    contentDescription = stringResource(R.string.product_image_content_description),
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-    }
-}
-
-@Preview
-@Composable
-fun ProductImageRemoveBackgroundScreenPreview() {
-    WooThemeWithBackground {
-        val image = Product.Image(
-            id = 1L,
-            source = "https://ma.tt/",
-            name = "Sample Image",
-            isCoverImage = true,
-            dateCreated = Date.from(Instant.now()),
-        )
-        ProductImageRemoveBackgroundScreen(image)
     }
 }
