@@ -788,7 +788,7 @@
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_customer_search_empty">No customers found</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Search for an existing customer or</string>
-    <string name="order_creation_customer_search_hint">Search for customers</string>
+    <string name="order_creation_customer_search_hint">Search for customers and coupons</string>
     <string name="order_creation_customer_search_old_wc_hint">Search for customers by</string>
     <string name="order_creation_customer_search_email">Email</string>
     <string name="order_creation_customer_search_name">Name</string>
