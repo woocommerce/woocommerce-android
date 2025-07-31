@@ -45,7 +45,7 @@ class ObserveSiteOrdersState @Inject constructor(
 
     private fun observeHasOrdersFromOrdersStatusOptions(site: SiteModel) =
         dispatcher.observeEvents<OnOrderStatusOptionsChanged>()
-            .onStart { emit(OnOrderStatusOptionsChanged(0)) }
+            .onStart { emit(OnOrderStatusOptionsChanged()) }
             .map {
                 orderStore.getOrderStatusOptionsForSite(site)
                     .filter { it.statusKey != "checkout-draft" }
