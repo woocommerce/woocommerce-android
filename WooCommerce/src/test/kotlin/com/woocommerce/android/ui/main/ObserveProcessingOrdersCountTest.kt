@@ -32,7 +32,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChange
 class ObserveProcessingOrdersCountTest : BaseUnitTest() {
     private val dispatcher = FakeDispatcher().apply {
         registerActionHandler(WCOrderAction.FETCH_ORDER_STATUS_OPTIONS) {
-            emitChange(OnOrderStatusOptionsChanged(0))
+            emitChange(OnOrderStatusOptionsChanged())
         }
     }
     private val site = SiteModel()
@@ -64,9 +64,7 @@ class ObserveProcessingOrdersCountTest : BaseUnitTest() {
         whenever(
             orderStore.getOrderStatusForSiteAndKey(site, CoreOrderStatus.PROCESSING.value)
         ).thenReturn(
-            WCOrderStatusModel(0).apply {
-                statusCount = 1
-            }
+            WCOrderStatusModel(statusCount = 1)
         )
 
         val count = sut.invoke().first()
@@ -79,17 +77,13 @@ class ObserveProcessingOrdersCountTest : BaseUnitTest() {
         whenever(
             orderStore.getOrderStatusForSiteAndKey(site, CoreOrderStatus.PROCESSING.value)
         ).thenReturn(
-            WCOrderStatusModel(0).apply {
-                statusCount = 1
-            }
+            WCOrderStatusModel(statusCount = 1)
         ).thenReturn(
-            WCOrderStatusModel(0).apply {
-                statusCount = 2
-            }
+            WCOrderStatusModel(statusCount = 2)
         )
 
         val count = runAndReturnLastValue {
-            dispatcher.emitChange(OnOrderStatusOptionsChanged(0))
+            dispatcher.emitChange(OnOrderStatusOptionsChanged())
         }
 
         assertThat(count).isEqualTo(2)
@@ -100,13 +94,9 @@ class ObserveProcessingOrdersCountTest : BaseUnitTest() {
         whenever(
             orderStore.getOrderStatusForSiteAndKey(site, CoreOrderStatus.PROCESSING.value)
         ).thenReturn(
-            WCOrderStatusModel(0).apply {
-                statusCount = 1
-            }
+            WCOrderStatusModel(statusCount = 1)
         ).thenReturn(
-            WCOrderStatusModel(0).apply {
-                statusCount = 2
-            }
+            WCOrderStatusModel(statusCount = 2)
         )
 
         val count = runAndReturnLastValue {
@@ -127,13 +117,9 @@ class ObserveProcessingOrdersCountTest : BaseUnitTest() {
         whenever(
             orderStore.getOrderStatusForSiteAndKey(site, CoreOrderStatus.PROCESSING.value)
         ).thenReturn(
-            WCOrderStatusModel(0).apply {
-                statusCount = 1
-            }
+            WCOrderStatusModel(statusCount = 1)
         ).thenReturn(
-            WCOrderStatusModel(0).apply {
-                statusCount = 2
-            }
+            WCOrderStatusModel(statusCount = 2)
         )
 
         val count = runAndReturnLastValue {
@@ -158,13 +144,9 @@ class ObserveProcessingOrdersCountTest : BaseUnitTest() {
         whenever(
             orderStore.getOrderStatusForSiteAndKey(site, CoreOrderStatus.PROCESSING.value)
         ).thenReturn(
-            WCOrderStatusModel(0).apply {
-                statusCount = 1
-            }
+            WCOrderStatusModel(statusCount = 1)
         ).thenReturn(
-            WCOrderStatusModel(0).apply {
-                statusCount = 2
-            }
+            WCOrderStatusModel(statusCount = 2)
         )
 
         val count = runAndReturnLastValue {

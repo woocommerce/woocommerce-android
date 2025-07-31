@@ -5,6 +5,10 @@ plugins {
 
 dependencies {
     implementation("io.gitlab.arturbosch.detekt:detekt-api:${libs.versions.detekt.get()}")
+
+    testImplementation("io.gitlab.arturbosch.detekt:detekt-test:${libs.versions.detekt.get()}")
+    testImplementation(libs.junit)
+    testImplementation(libs.assertj.core)
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {

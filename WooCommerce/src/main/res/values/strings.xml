@@ -4330,7 +4330,7 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
-    <string name="woopos_barcode_scanning_title">Set up a barcode scanner</string>
+    <string name="woopos_barcode_scanning_title">Initial barcode scanner setup</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
@@ -4492,7 +4492,7 @@
     <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
     <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
     <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
-    <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
+    <string name="woopos_scanning_setup_success_message">You are ready to start scanning products. Next time you need to connect your scanner, just turn on the scanner and it\'ll reconnect automatically.</string>
     <string name="woopos_scanning_setup_more_information">How to set up barcodes on products</string>
     <string name="woopos_scanning_setup_info_title">Scanner setup</string>
     <string name="woopos_scanning_setup_info_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
@@ -4514,6 +4514,13 @@
     <string name="woopos_scanning_setup_button_back">Back</string>
     <string name="woopos_scanning_setup_button_retry">Retry</string>
     <string name="woopos_scanning_setup_button_done">Done</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">Show the On-Screen Keyboard</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android treats barcode scanners as physical keyboards, which may hide your on-screen keyboard. Let\'s check:</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">If the keyboard is not visible, try these options:</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">Tap here to test keyboard visibility</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">Look for a keyboard icon or toolbar on the screen.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Go to device settings, search \"keyboard\", then enable \"Show on-screen keyboard when physical keyboard connected\". This setting may be in your keyboard app settings.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">Still not working? Contact your device manufacturer\'s customer support.</string>
     <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
     <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
