@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Share
@@ -40,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -132,14 +132,16 @@ fun WooLogViewerScreen(
                     if (searchQuery.isBlank()) {
                         IconButton(onClick = { onCopyButtonClick() }) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_copy_white_24dp),
-                                contentDescription = stringResource(id = R.string.copy)
+                                imageVector = Icons.Filled.ContentCopy,
+                                contentDescription = stringResource(id = R.string.copy),
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                         IconButton(onClick = { onShareButtonClick() }) {
                             Icon(
-                                Icons.Filled.Share,
-                                contentDescription = stringResource(id = R.string.share)
+                                imageVector = Icons.Filled.Share,
+                                contentDescription = stringResource(id = R.string.share),
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
