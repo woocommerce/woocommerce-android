@@ -24,6 +24,12 @@
         android:background="?attr/colorSurface"
         android:orientation="vertical">
 
+        <!-- Invisible text view for talkback support -->
+        <TextView
+            android:id="@+id/card_reader_connection_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
         <include
             android:id="@+id/reader_connected_state"
             layout="@layout/fragment_card_reader_detail_connected_state" />

@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateVie
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.announceAccessibilityChange
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils.dpToPx
@@ -68,11 +69,6 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         }
     }
 
-    private fun View.announceAccessibilityChange(message: String) {
-        this.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
-        this.contentDescription = message
-    }
-
     private fun observeEvents(binding: FragmentCardReaderDetailBinding) {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -87,11 +83,13 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                                     EXTERNAL,
                                 )
                         )
+
                 is CardReaderUpdateScreen ->
                     findNavController().navigateSafely(
                         CardReaderDetailFragmentDirections
                             .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(requiredUpdate = false)
                     )
+
                 is ShowSnackbar -> {
                     Snackbar.make(
                         binding.root,
@@ -99,20 +97,25 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         BaseTransientBottomBar.LENGTH_LONG
                     ).show()
                 }
+
                 is CopyReadersNameToClipboard -> requireContext().copyToClipboard(
                     event.readersName,
                     event.readersName
                 )
+
                 is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected ->
-                    binding.readerDisconnectedState.cardReaderDetailConnectBtn.announceAccessibilityChange(
+                    binding.cardReaderConnectionState.announceAccessibilityChange(
                         getString(event.accessibilityDisconnectedText)
                     )
+
                 is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected ->
-                    binding.readerConnectedState.primaryActionBtn.announceAccessibilityChange(
+                    binding.cardReaderConnectionState.announceAccessibilityChange(
                         getString(event.accessibilityConnectedText)
                     )
+
                 is NavigateToUrlInGenericWebView ->
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url, ThreeQuarters)
+
                 else -> event.isHandled = false
             }
         }
@@ -154,6 +157,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         }
                     }
                 }
+
                 is NotConnectedState -> {
                     with(binding.readerDisconnectedState) {
                         UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
@@ -176,6 +180,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         }
                     }
                 }
+
                 Loading -> {
                 }
             }
