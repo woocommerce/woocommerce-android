@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import android.R.attr
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -128,7 +129,15 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
 
     override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo?) {
         info?.isCheckable = true
-        info?.isChecked = isChecked
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            info?.setChecked(
+                if (isChecked) AccessibilityNodeInfo.CHECKED_STATE_TRUE
+                else AccessibilityNodeInfo.CHECKED_STATE_FALSE
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            info?.isChecked = isChecked
+        }
         super.onInitializeAccessibilityNodeInfo(info)
     }
     // endregion
