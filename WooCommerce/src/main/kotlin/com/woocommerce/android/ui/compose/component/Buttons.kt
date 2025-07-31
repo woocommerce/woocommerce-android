@@ -32,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RippleConfiguration
@@ -54,6 +55,9 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import androidx.compose.material.LocalContentColor as LocalContentColorM2
+import androidx.compose.material.LocalTextStyle as LocalTextStyleM2
+import androidx.compose.material.Text as TextM2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +85,11 @@ fun WCColoredButton(
             contentPadding = contentPadding,
             modifier = modifier,
             shape = shape,
-            content = content
+            content = {
+                ProvideMaterial3CompositionForMaterial2 {
+                    content()
+                }
+            }
         )
     }
 }
@@ -161,7 +169,11 @@ fun WCOutlinedButton(
         interactionSource = interactionSource,
         border = border,
         modifier = modifier,
-        content = content
+        content = {
+            ProvideMaterial3CompositionForMaterial2 {
+                content()
+            }
+        }
     )
 }
 
@@ -293,7 +305,11 @@ fun WCTextButton(
         colors = colors,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
-        content = content
+        content = {
+            ProvideMaterial3CompositionForMaterial2 {
+                content()
+            }
+        }
     )
 }
 
@@ -380,6 +396,23 @@ private fun ButtonDefaults.wcTextButtonColors(): ButtonColors {
     )
 }
 
+/**
+ * Provides Material 3 content color for Material 2 components.
+ * This is needed for now while we mix Material 2 components with Material 3 ones,
+ * as Material 2 components use `LocalContentColor` from Material 2.
+ */
+@Composable
+private fun ProvideMaterial3CompositionForMaterial2(
+    content: @Composable () -> Unit
+) {
+    CompositionLocalProvider(
+        LocalContentColorM2 provides LocalContentColor.current,
+        LocalTextStyleM2 provides LocalTextStyle.current,
+    ) {
+        content()
+    }
+}
+
 @LightDarkThemePreviews
 @Composable
 private fun ButtonsPreview() {
@@ -394,6 +427,9 @@ private fun ButtonsPreview() {
         ) {
             WCColoredButton(onClick = {}) {
                 Text("Button")
+            }
+            WCColoredButton(onClick = {}) {
+                TextM2("Button M2")
             }
             WCColoredButton(
                 onClick = {},
@@ -440,6 +476,9 @@ private fun ButtonsPreview() {
 
             WCTextButton(onClick = {}) {
                 Text(text = "Text button")
+            }
+            WCTextButton(onClick = {}) {
+                TextM2(text = "Text Button M2")
             }
             WCTextButton(onClick = {}, text = "Text Button")
             WCTextButton(
