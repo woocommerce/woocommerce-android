@@ -55,6 +55,7 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
                             }
                         )
                     )
+                    triggerEvent(MultiLiveEvent.Event.Exit)
                 }
             )
         }
