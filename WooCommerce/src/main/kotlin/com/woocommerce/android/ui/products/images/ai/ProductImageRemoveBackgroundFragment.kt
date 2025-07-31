@@ -26,7 +26,6 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
 
     private val viewModel: ProductImageRemoveBackgroundViewModel by viewModels()
 
-
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
