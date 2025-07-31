@@ -176,6 +176,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
     }
 
     private fun handleBarcodeScanned(barcodeResult: BarcodeInputDetector.BarcodeResult) {
+        val currentStep = _state.value.currentStep
+        if (currentStep !is ScanningSetupStep.TestYourScanner &&
+            currentStep !is ScanningSetupStep.TestYourScannerTimeout
+        ) {
+            return
+        }
         val selectedDevice = requireNotNull(_state.value.selectedDevice) { "Selected device cannot be null" }
         val nextStep = if (barcodeResult.barcode == TEST_BARCODE_EAN13) {
             viewModelScope.launch { analyticsTracker.trackTestScanSuccess(selectedDevice) }
