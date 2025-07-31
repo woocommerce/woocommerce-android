@@ -1,7 +1,6 @@
-import com.automattic.android.measure.MeasureBuildsExtension
 import com.automattic.android.measure.reporters.InternalA8cCiReporter
-import com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter
 import com.automattic.android.measure.reporters.RemoteBuildCacheMetricsReporter
+import com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 

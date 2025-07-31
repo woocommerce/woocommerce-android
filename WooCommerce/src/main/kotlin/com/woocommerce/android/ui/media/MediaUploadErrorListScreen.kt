@@ -33,7 +33,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.theme.WooTypography
 import com.woocommerce.android.ui.media.MediaUploadErrorListViewModel.ErrorUiModel
 
 @Composable
@@ -125,11 +124,11 @@ fun MediaUploadErrorListItem(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Text(
-                style = WooTypography.subtitle2,
+                style = MaterialTheme.typography.subtitle2,
                 text = error.fileName
             )
             Text(
-                style = WooTypography.body2,
+                style = MaterialTheme.typography.body2,
                 text = error.errorMessage
             )
         }

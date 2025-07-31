@@ -9,3 +9,7 @@ WooPosRules:
     active: true
   WooPosDesignSystemButtonUsageRule:
     active: true
+
+TestRules:
+  UnitTestNamingRule:
+    active: true

@@ -82,7 +82,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
@@ -143,6 +142,11 @@ fun WooPosScanningSetupDialog(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surfaceBright)
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .listenForBarcodes(
+                    { barcodeResult ->
+                        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
+                    }
+                )
         ) {
             Row {
                 Spacer(modifier = Modifier.weight(1f))
@@ -226,9 +230,6 @@ fun WooPosScanningSetupDialog(
                         barcodeValue = step.barcodeValue,
                         secondaryButtonText = stringResource(step.secondaryButtonTextRes),
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
-                        onBarcodeScanned = { barcodeResult ->
-                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
-                        }
                     )
 
                     is ScanningSetupStep.TestYourScannerTimeout -> TestScannerContent(
@@ -237,9 +238,6 @@ fun WooPosScanningSetupDialog(
                         barcodeValue = step.barcodeValue,
                         secondaryButtonText = stringResource(step.secondaryButtonTextRes),
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
-                        onBarcodeScanned = { barcodeResult ->
-                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
-                        }
                     )
 
                     is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
@@ -341,14 +339,12 @@ private fun TestScannerContent(
     message: String,
     barcodeValue: String,
     secondaryButtonText: String,
-    onSecondaryClick: () -> Unit,
-    onBarcodeScanned: (BarcodeInputDetector.BarcodeResult) -> Unit
+    onSecondaryClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .listenForBarcodes(onBarcodeScanned),
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         WooPosText(
@@ -976,7 +972,6 @@ fun WooPosScanningSetupTestScannerStep() {
                 barcodeValue = "123456789012",
                 secondaryButtonText = "Skip",
                 onSecondaryClick = {},
-                onBarcodeScanned = {}
             )
         }
     }
@@ -1034,7 +1029,6 @@ fun WooPosScanningSetupTestBarcodeContent() {
                 title = "Scanner Mode Setup",
                 message = "Follow the instructions to set up your scanner in HID mode.",
                 barcodeValue = "123456789012",
-                onBarcodeScanned = {},
             )
         }
     }
