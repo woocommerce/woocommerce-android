@@ -5,6 +5,7 @@ import androidx.core.graphics.drawable.toBitmap
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import coil.size.Scale
 import com.google.mlkit.vision.common.InputImage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,10 @@ class CreateInputImageFromUrl @Inject constructor(
                 val imageLoader = ImageLoader(context)
                 val imageRequest = ImageRequest.Builder(context)
                     .data(imageUrl)
+                    // ARGB_8888 max memory consumption: ~16.7 MB (2048 × 2048 × 4 bytes per pixel)
+                    .size(2048, 2048)
+                    // Preserve aspect ratio
+                    .scale(Scale.FIT)
                     .build()
 
                 val result = imageLoader.execute(imageRequest)
@@ -34,8 +39,6 @@ class CreateInputImageFromUrl @Inject constructor(
                 }
             } catch (e: IllegalArgumentException) {
                 Result.failure(e)
-            } catch (e: OutOfMemoryError) {
-                Result.failure(Exception("Out of memory loading image", e))
             }
         }
 }
