@@ -3,7 +3,6 @@ package com.woocommerce.android.util.logs
 import android.content.Context
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.RollingLogEntries
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,7 +29,7 @@ class WooFileLogger @Inject constructor(
         }
     }
 
-    fun addEntry(logEntry: RollingLogEntries.LogEntry) {
+    fun addEntry(logEntry: LogEntry) {
         logFileWriter.write("${LOG_ENTRY_PREFIX}$logEntry\n")
     }
 
@@ -42,15 +41,15 @@ class WooFileLogger @Inject constructor(
 
     fun getCurrentLogFile(): File = logFileProvider.getLogFiles().last()
 
-    suspend fun getCurrentLogFileContent(): List<RollingLogEntries.LogEntry> =
+    suspend fun getCurrentLogFileContent(): List<LogEntry> =
         getLogFileContent(getCurrentLogFile().name).orEmpty()
 
-    suspend fun getLogFileContent(fileName: String): List<RollingLogEntries.LogEntry>? {
+    suspend fun getLogFileContent(fileName: String): List<LogEntry>? {
         return withContext(dispatchers.io) {
             runCatching {
                 logFileProvider.getLogFiles().find { it.name == fileName }?.readText()?.let {
                     it.split("\n${LOG_ENTRY_PREFIX}").map {
-                        RollingLogEntries.LogEntry(it.removePrefix(LOG_ENTRY_PREFIX))
+                        LogEntry(it.removePrefix(LOG_ENTRY_PREFIX))
                     }
                 }
             }.onFailure {
