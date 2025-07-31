@@ -42,19 +42,10 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
                         error.message?.contains("No subject detected") == true -> {
                             R.string.remove_background_no_subject_detected
                         }
-                        else -> R.string.remove_background_image_load_error_with_reason
+                        else -> R.string.remove_background_image_load_error
                     }
 
-                    triggerEvent(
-                        MultiLiveEvent.Event.ShowSnackbar(
-                            errorMessage,
-                            if (errorMessage == R.string.remove_background_image_load_error_with_reason) {
-                                arrayOf(error.message ?: "Unknown error")
-                            } else {
-                                emptyArray()
-                            }
-                        )
-                    )
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(errorMessage))
                     triggerEvent(MultiLiveEvent.Event.Exit)
                 }
             )
