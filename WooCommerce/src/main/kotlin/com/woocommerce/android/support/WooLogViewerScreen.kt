@@ -134,14 +134,14 @@ fun WooLogViewerScreen(
                             Icon(
                                 imageVector = Icons.Filled.ContentCopy,
                                 contentDescription = stringResource(id = R.string.copy),
-                                tint = MaterialTheme.colorScheme.onSurface
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                         IconButton(onClick = { onShareButtonClick() }) {
                             Icon(
                                 imageVector = Icons.Filled.Share,
                                 contentDescription = stringResource(id = R.string.share),
-                                tint = MaterialTheme.colorScheme.onSurface
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -200,9 +200,9 @@ private fun SearchNavigationActions(
                 Icons.Filled.KeyboardArrowUp,
                 contentDescription = "",
                 tint = if (currentMatchIndex > 0) {
-                    MaterialTheme.colorScheme.onSurface
+                    MaterialTheme.colorScheme.primary
                 } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.38f)
                 }
             )
         }
@@ -214,9 +214,9 @@ private fun SearchNavigationActions(
                 Icons.Filled.KeyboardArrowDown,
                 contentDescription = "",
                 tint = if (currentMatchIndex < totalMatches - 1) {
-                    MaterialTheme.colorScheme.onSurface
+                    MaterialTheme.colorScheme.primary
                 } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.38f)
                 }
             )
         }
