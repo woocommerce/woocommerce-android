@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.compose.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -83,23 +82,6 @@ private val DarkColorScheme = darkColorScheme(
     inverseOnSurface = Color(0xFF313033),
     inversePrimary = WooColors.md_theme_light_primary
 )
-
-/**
- * This theme should be used to support light/dark colors if the composable root of the view tree
- * does not support the use of contentColor.
- * @see <a href="https://developer.android.com/jetpack/compose/themes/material#content-color</a> for more details
- */
-@Composable
-fun WooThemeM3WithBackground(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    WooThemeM3(useDarkTheme) {
-        Surface(color = MaterialTheme.colorScheme.background) {
-            content()
-        }
-    }
-}
 
 @Composable
 fun WooThemeM3(

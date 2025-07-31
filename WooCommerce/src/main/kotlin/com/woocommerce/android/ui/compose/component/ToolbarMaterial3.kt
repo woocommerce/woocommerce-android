@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.compose.component
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,7 +25,6 @@ fun ToolbarM3(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = R.string.back),
-    windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     ToolbarM3(
@@ -40,7 +38,6 @@ fun ToolbarM3(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
-        windowInsets = windowInsets,
         actions = actions
     )
 }
@@ -53,11 +50,9 @@ fun ToolbarM3(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String = stringResource(id = R.string.back),
-    windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
-        windowInsets = windowInsets,
         title = title,
         navigationIcon = {
             if (navigationIcon != null) {
