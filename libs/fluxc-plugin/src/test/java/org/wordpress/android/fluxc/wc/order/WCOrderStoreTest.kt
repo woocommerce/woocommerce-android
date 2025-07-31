@@ -3,7 +3,6 @@ package org.wordpress.android.fluxc.wc.order
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
-import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
@@ -25,9 +24,7 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.UnitTestUtils
-import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder.newFetchedOrderListAction
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -40,8 +37,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.C
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.OrderSqlUtils
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
@@ -52,7 +47,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.BulkUpdateOrderStatusResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListResponsePayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
@@ -100,17 +94,10 @@ internal class WCOrderStoreTest {
                 orderNotesDao = orderNotesDao,
                 metaDataDao = metaDataDao,
                 orderShipmentProvidersDao = databaseRule.db.orderShipmentProvidersDao,
+                orderStatusDao = databaseRule.db.orderStatusDao,
                 orderSummaryDao = databaseRule.db.orderSummaryDao,
                 insertOrder = insertOrder
         )
-
-        val config = SingleStoreWellSqlConfigForTests(
-                context,
-                listOf(WCOrderStatusModel::class.java),
-                WellSqlConfig.ADDON_WOOCOMMERCE
-        )
-        WellSql.init(config)
-        config.reset()
     }
 
     @Test
@@ -207,7 +194,7 @@ internal class WCOrderStoreTest {
             .updateOrderStatusAndPaymentDetails(eq(orderModel), eq(site), eq(CoreOrderStatus.REFUNDED.value), any())
         ).thenReturn(result)
 
-        orderStore.updateOrderStatus(orderModel.orderId, site, WCOrderStatusModel(CoreOrderStatus.REFUNDED.value))
+        orderStore.updateOrderStatus(orderModel.orderId, site, WCOrderStatusModel(statusKey = CoreOrderStatus.REFUNDED.value))
             .toList()
 
         with(orderStore.getOrderByIdAndSite(orderModel.orderId, site)!!) {
@@ -264,34 +251,6 @@ internal class WCOrderStoreTest {
                 eq(newStatus.statusKey),
                 eq(paymentDetails)
             )
-        }
-    }
-
-    @Test
-    fun testGetOrderStatusOptions() {
-        val site = SiteModel().apply { id = 8 }
-        val optionsJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order_status_options.json")
-        val orderStatusOptions = OrderTestUtils.getOrderStatusOptionsFromJson(optionsJson, site.id)
-        orderStatusOptions.sumBy { OrderSqlUtils.insertOrUpdateOrderStatusOption(it) }
-
-        // verify that the order status options are stored correctly
-        val storedOrderStatusOptions = OrderSqlUtils.getOrderStatusOptionsForSite(site)
-        assertEquals(orderStatusOptions.size, storedOrderStatusOptions.size)
-
-        val firstOrderStatusOption = storedOrderStatusOptions[0]
-        assertEquals(firstOrderStatusOption.label, orderStatusOptions[0].label)
-        assertEquals(firstOrderStatusOption.statusCount, orderStatusOptions[0].statusCount)
-        firstOrderStatusOption.apply { statusCount = 100 }
-
-        // Simulate incoming action with updated order status model list
-        val payload = FetchOrderStatusOptionsResponsePayload(site, storedOrderStatusOptions)
-        orderStore.onAction(WCOrderActionBuilder.newFetchedOrderStatusOptionsAction(payload))
-
-        with(OrderSqlUtils.getOrderStatusOptionsForSite(site)[0]) {
-            // The status count of the first order status model in the database should have updated
-            assertEquals(firstOrderStatusOption.statusCount, statusCount)
-            // Other fields should not be altered by the update
-            assertEquals(firstOrderStatusOption.label, label)
         }
     }
 
@@ -392,7 +351,7 @@ internal class WCOrderStoreTest {
         orderStore.updateOrderStatus(
                 orderModel.orderId,
                 site,
-                WCOrderStatusModel(CoreOrderStatus.COMPLETED.value)
+                WCOrderStatusModel(statusKey = CoreOrderStatus.COMPLETED.value)
         ).toList()
 
         assertThat(ordersDaoDecorator.getOrder(orderModel.orderId, orderModel.localSiteId)?.status)
@@ -424,7 +383,7 @@ internal class WCOrderStoreTest {
         val response = orderStore.updateOrderStatus(
                 orderModel.orderId,
                 site,
-                WCOrderStatusModel(CoreOrderStatus.COMPLETED.value)
+                WCOrderStatusModel(statusKey = CoreOrderStatus.COMPLETED.value)
         ).toList().last()
 
         // Ensure the error is sent in the response
@@ -468,7 +427,7 @@ internal class WCOrderStoreTest {
         orderStore.updateOrderStatusAndPaymentDetails(
             orderModel.orderId,
             site,
-            WCOrderStatusModel(CoreOrderStatus.COMPLETED.value),
+            WCOrderStatusModel(statusKey = CoreOrderStatus.COMPLETED.value),
             newPaymentMethodId = COD_PAYMENT_METHOD_ID,
             newPaymentMethodTitle = CUSTOM_PAYMENT_METHOD_TITLE
         ).toList()
@@ -513,7 +472,7 @@ internal class WCOrderStoreTest {
         val response = orderStore.updateOrderStatusAndPaymentDetails(
             orderModel.orderId,
             site,
-            WCOrderStatusModel(CoreOrderStatus.COMPLETED.value),
+            WCOrderStatusModel(statusKey = CoreOrderStatus.COMPLETED.value),
             newPaymentMethodId = COD_PAYMENT_METHOD_ID,
             newPaymentMethodTitle = CUSTOM_PAYMENT_METHOD_TITLE
         ).toList().last()
@@ -705,7 +664,7 @@ internal class WCOrderStoreTest {
             val result = orderStore.batchUpdateOrdersStatus(
                 site,
                 orderIds,
-                WCOrderStatusModel(COMPLETED.value)
+                WCOrderStatusModel(statusKey = COMPLETED.value)
             )
 
             // Then
@@ -755,7 +714,7 @@ internal class WCOrderStoreTest {
             val result = orderStore.batchUpdateOrdersStatus(
                 site,
                 orderIds,
-                WCOrderStatusModel(COMPLETED.value)
+                WCOrderStatusModel(statusKey = COMPLETED.value)
             )
 
             // Then

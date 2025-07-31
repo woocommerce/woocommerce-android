@@ -18,7 +18,7 @@ androidx-exifinterface = "1.0.0"
 androidx-fragment = '1.8.5'
 androidx-hilt = '1.2.0'
 androidx-lifecycle = '2.8.7'
-androidx-navigation = '2.7.7'
+androidx-navigation = '2.9.2'
 androidx-paging-runtime = "2.1.2"
 androidx-preference = '1.2.1'
 androidx-recyclerview-main = '1.3.2'
@@ -80,7 +80,7 @@ google-zxing = '3.5.3'
 gravatar = '0.2.0'
 jackson-databind = '2.12.7.1'
 java = '11'
-jetty-webapp = '9.4.51.v20230217'
+jetty = '9.4.57.v20241219'
 json-path = '2.9.0'
 junit = '4.13.2'
 lottie = '5.2.0'
@@ -241,7 +241,8 @@ google-protobuf-protoc = { group = "com.google.protobuf", name = "protoc", versi
 google-zxing-core = { group = "com.google.zxing", name = "core", version.ref = "google-zxing" }
 gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-databind" }
-jetty-webapp = { group = "org.eclipse.jetty", name = "jetty-webapp", version.ref = "jetty-webapp" }
+jetty-webapp = { group = "org.eclipse.jetty", name = "jetty-webapp", version.ref = "jetty" }
+jetty-server = { group = "org.eclipse.jetty", name = "jetty-server", version.ref = "jetty" }
 json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "json-path" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }

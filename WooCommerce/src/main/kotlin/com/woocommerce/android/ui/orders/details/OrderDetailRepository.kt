@@ -188,14 +188,16 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrderStatus(key: String): OrderStatus {
         return (
-            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel().apply {
-                statusKey = key
-                label = key
+            runBlocking {
+                orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel(
+                    statusKey = key, label = key
+                )
             }
             ).toOrderStatus()
     }
 
-    fun getOrderStatusOptions() = orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
+    fun getOrderStatusOptions() =
+        runBlocking { orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() } }
 
     suspend fun getOrderNotes(orderId: Long) =
         orderStore.getOrderNotesForOrder(site = selectedSite.get(), orderId = orderId)

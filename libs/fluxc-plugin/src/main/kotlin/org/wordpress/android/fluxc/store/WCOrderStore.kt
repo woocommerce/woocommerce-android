@@ -35,6 +35,7 @@ import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
+import org.wordpress.android.fluxc.persistence.dao.OrderStatusDao
 import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -67,6 +68,7 @@ class WCOrderStore @Inject internal constructor(
     private val orderNotesDao: OrderNotesDao,
     private val metaDataDao: MetaDataDao,
     private val orderShipmentProvidersDao: OrderShipmentProvidersDao,
+    private val orderStatusDao: OrderStatusDao,
     private val orderSummaryDao: OrderSummaryDao,
     private val insertOrder: InsertOrder
 ) : Store(dispatcher) {
@@ -393,9 +395,7 @@ class WCOrderStore @Inject internal constructor(
         var searchResults: List<OrderEntity> = emptyList()
     ) : OnChanged<OrderError>()
 
-    class OnOrderStatusOptionsChanged(
-        var rowsAffected: Int
-    ) : OnChanged<OrderError>()
+    class OnOrderStatusOptionsChanged : OnChanged<OrderError>()
 
     data class OnOrderShipmentProvidersChanged(
         val shipmentProvidersFetchedCount: Int
@@ -509,14 +509,14 @@ class WCOrderStore @Inject internal constructor(
     /**
      * Returns the order status options available for the provided site [SiteModel] as a list of [WCOrderStatusModel].
      */
-    fun getOrderStatusOptionsForSite(site: SiteModel): List<WCOrderStatusModel> =
-        OrderSqlUtils.getOrderStatusOptionsForSite(site)
+    suspend fun getOrderStatusOptionsForSite(site: SiteModel): List<WCOrderStatusModel> =
+        orderStatusDao.getOrderStatusOptions(site.localId())
 
     /**
      * Returns the order status as a [WCOrderStatusModel] that matches the provided order status key.
      */
-    fun getOrderStatusForSiteAndKey(site: SiteModel, key: String): WCOrderStatusModel? =
-        OrderSqlUtils.getOrderStatusOptionForSiteByKey(site, key)
+    suspend fun getOrderStatusForSiteAndKey(site: SiteModel, key: String): WCOrderStatusModel? =
+        orderStatusDao.getOrderStatusOption(site.localId(), key)
 
     /**
      * Returns shipment trackings as list of [WCOrderShipmentTrackingModel] for a single [OrderEntity]
@@ -1103,69 +1103,24 @@ class WCOrderStore @Inject internal constructor(
     }
 
     private fun handleFetchOrderStatusOptionsCompleted(payload: FetchOrderStatusOptionsResponsePayload) {
-        val onOrderStatusLabelsChanged: OnOrderStatusOptionsChanged
+        coroutineEngine.launch(API, this, "handleFetchOrderStatusOptionsCompleted") {
+            val onOrderStatusLabelsChanged: OnOrderStatusOptionsChanged
 
-        if (payload.isError) {
-            onOrderStatusLabelsChanged = OnOrderStatusOptionsChanged(0).also { it.error = payload.error }
-        } else {
-            onOrderStatusLabelsChanged = onOrderStatusOptionsChanged(payload)
+            if (payload.isError) {
+                onOrderStatusLabelsChanged = OnOrderStatusOptionsChanged().also { it.error = payload.error }
+            } else {
+                onOrderStatusLabelsChanged = onOrderStatusOptionsChanged(payload)
+            }
+
+            emitChange(onOrderStatusLabelsChanged)
         }
-
-        emitChange(onOrderStatusLabelsChanged)
     }
 
-    private fun onOrderStatusOptionsChanged(
+    private suspend fun onOrderStatusOptionsChanged(
         payload: FetchOrderStatusOptionsResponsePayload
     ): OnOrderStatusOptionsChanged {
-        val existingOptions = OrderSqlUtils.getOrderStatusOptionsForSite(payload.site)
-        var rowsAffected = addOrUpdateOptions(payload, existingOptions).sumBy {
-            OrderSqlUtils.insertOrUpdateOrderStatusOption(it)
-        }
-        rowsAffected += deleteOptions(payload, existingOptions).sumBy {
-            OrderSqlUtils.deleteOrderStatusOption(it)
-        }
-        return OnOrderStatusOptionsChanged(rowsAffected)
-    }
-
-    @Suppress("NestedBlockDepth")
-    private fun addOrUpdateOptions(
-        payload: FetchOrderStatusOptionsResponsePayload,
-        existingOptions: List<WCOrderStatusModel>
-    ): List<WCOrderStatusModel> {
-        val addOrUpdateOptions = mutableListOf<WCOrderStatusModel>()
-        payload.labels.iterator().forEach { newOption ->
-            var exists = false
-            existingOptions.iterator().forEach eoi@{ existingOption ->
-                if (newOption.statusKey == existingOption.statusKey) {
-                    exists = true
-                    if (newOption.label != existingOption.label ||
-                        newOption.statusCount != existingOption.statusCount) {
-                        addOrUpdateOptions.add(newOption)
-                    }
-                    return@eoi
-                }
-            }
-            if (!exists) addOrUpdateOptions.add(newOption)
-        }
-        return addOrUpdateOptions
-    }
-
-    private fun deleteOptions(
-        payload: FetchOrderStatusOptionsResponsePayload,
-        existingOptions: List<WCOrderStatusModel>
-    ): List<WCOrderStatusModel> {
-        val deleteOptions = mutableListOf<WCOrderStatusModel>()
-        existingOptions.iterator().forEach { existingOption ->
-            var exists = false
-            payload.labels.iterator().forEach noi@{ newOption ->
-                if (newOption.statusKey == existingOption.statusKey) {
-                    exists = true
-                    return@noi
-                }
-            }
-            if (!exists) deleteOptions.add(existingOption)
-        }
-        return deleteOptions
+        orderStatusDao.replaceAll(siteId = payload.site.localId(), statuses = payload.labels)
+        return OnOrderStatusOptionsChanged()
     }
 
     suspend fun fetchOrdersListFirstPage(
