@@ -111,6 +111,18 @@ class WooPosScannerSetupNavigatorTest {
     }
 
     @Test
+    fun `given SoftwareKeyboardSetup step, when TERA_1200 device, then should navigate to ScannerSetupSuccess`() {
+        // GIVEN
+        val softwareKeyboardSetupStep = ScanningSetupStep.SoftwareKeyboardSetup
+
+        // WHEN
+        val nextStep = navigator.getNextStep(BarcodeReaderDevice.TERA_1200, softwareKeyboardSetupStep)
+
+        // THEN
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerSetupSuccess::class.java)
+    }
+
+    @Test
     fun `given DeviceSelection step, when STAR_BSH_20B selected, then should navigate to ScannerHIDModeSetup`() {
         // GIVEN
         val deviceSelectionStep = ScanningSetupStep.DeviceSelection
@@ -173,6 +185,30 @@ class WooPosScannerSetupNavigatorTest {
 
         // THEN
         assertThat(nextStep).isInstanceOf(ScanningSetupStep.SoftwareKeyboardSetup::class.java)
+    }
+
+    @Test
+    fun `given SoftwareKeyboardSetup step, when STAR_BSH_20B device, then should navigate to ScannerSetupSuccess`() {
+        // GIVEN
+        val softwareKeyboardSetupStep = ScanningSetupStep.SoftwareKeyboardSetup
+
+        // WHEN
+        val nextStep = navigator.getNextStep(BarcodeReaderDevice.STAR_BSH_20B, softwareKeyboardSetupStep)
+
+        // THEN
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerSetupSuccess::class.java)
+    }
+
+    @Test
+    fun `given SoftwareKeyboardSetup step, when NETUM_1228BC device, then should navigate to ScannerSetupSuccess`() {
+        // GIVEN
+        val softwareKeyboardSetupStep = ScanningSetupStep.SoftwareKeyboardSetup
+
+        // WHEN
+        val nextStep = navigator.getNextStep(BarcodeReaderDevice.NETUM_1228BC, softwareKeyboardSetupStep)
+
+        // THEN
+        assertThat(nextStep).isInstanceOf(ScanningSetupStep.ScannerSetupSuccess::class.java)
     }
 
     @Test
