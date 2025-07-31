@@ -9,7 +9,6 @@ import coil.size.Scale
 import com.google.mlkit.vision.common.InputImage
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
