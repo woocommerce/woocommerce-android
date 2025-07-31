@@ -6,6 +6,7 @@
 -----
 - [**] You can now access POS mode faster than ever with the new POS tab in the app’s bottom navigation bar—just one tap and you’re in! If you spotted this feature mentioned a couple releases ago… well, let’s just say we got a little too excited. 😅 It’s finally here for real, and fully available in the UK and US! [https://github.com/woocommerce/woocommerce-android/pull/14337]
 - [*] Add search functionality to application log viewer [https://github.com/woocommerce/woocommerce-android/pull/14386]
+- [*] POS: Extra step into the barcode scanner setup flow to explain how to setup software keyboard [https://github.com/woocommerce/woocommerce-android/pull/14395]
 
 22.9.1
 -----
