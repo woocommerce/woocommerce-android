@@ -49,6 +49,8 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -834,12 +836,23 @@ private fun SoftwareKeyboardSetupContent(
 ) {
     var testText by remember { mutableStateOf("") }
     var isInputFieldFocused by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     @Suppress("DestructuringDeclarationWithTooManyEntries")
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                if (isInputFieldFocused) {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
+            },
     ) {
         val (title, message, inputField, bulletPoints, button) = createRefs()
 
