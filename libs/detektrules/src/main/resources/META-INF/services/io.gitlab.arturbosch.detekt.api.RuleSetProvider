@@ -1,1 +1,2 @@
-com.woocommerce.android.detektrules.CustomRuleSetProvider
+com.woocommerce.android.detektrules.WooPosRuleSetProvider
+com.woocommerce.android.detektrules.TestRuleSetProvider
