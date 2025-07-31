@@ -303,6 +303,7 @@ fun WCTextButton(
         modifier = modifier,
         enabled = enabled,
         colors = colors,
+        shape = MaterialTheme.shapes.small,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
         content = {
