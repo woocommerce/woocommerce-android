@@ -141,11 +141,10 @@ fun WooLogViewerScreen(
         },
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(id = R.color.color_toolbar)),
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             SearchLayoutWithParams(
-                modifier = Modifier.background(color = MaterialTheme.colorScheme.surface),
+                modifier = Modifier.background(color = colorResource(id = R.color.color_toolbar)),
                 state = SearchLayoutWithParamsState(
                     hint = R.string.search,
                     searchQuery = searchQuery,
