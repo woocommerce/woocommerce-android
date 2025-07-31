@@ -398,9 +398,10 @@ private fun ButtonDefaults.wcTextButtonColors(): ButtonColors {
 }
 
 /**
- * Provides Material 3 content color for Material 2 components.
+ * Provides Material 3 compositions for Material 2 components.
  * This is needed for now while we mix Material 2 components with Material 3 ones,
- * as Material 2 components use `LocalContentColor` from Material 2.
+ * as Material 2 components use `androidx.compose.material` compositions from Material 2 and not
+ * `androidx.compose.material3` ones.
  */
 @Composable
 private fun ProvideMaterial3CompositionForMaterial2(
