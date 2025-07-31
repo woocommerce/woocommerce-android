@@ -22,7 +22,7 @@ class CreateInputImageFromUrl @Inject constructor(
                 val imageRequest = ImageRequest.Builder(context)
                     .data(imageUrl)
                     // ARGB_8888 max memory consumption: ~16.7 MB (2048 × 2048 × 4 bytes per pixel)
-                    .size(2048, 2048)
+                    .size(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
                     // Preserve aspect ratio
                     .scale(Scale.FIT)
                     .build()
@@ -41,4 +41,8 @@ class CreateInputImageFromUrl @Inject constructor(
                 Result.failure(e)
             }
         }
+
+    private companion object {
+        private const val MAX_IMAGE_SIZE = 2048
+    }
 }
