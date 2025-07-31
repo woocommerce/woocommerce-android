@@ -7,16 +7,18 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Scale
 import com.google.mlkit.vision.common.InputImage
+import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class CreateInputImageFromUrl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val dispatchers: CoroutineDispatchers
 ) {
     suspend operator fun invoke(imageUrl: String): Result<InputImage> =
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io) {
             try {
                 val imageLoader = ImageLoader(context)
                 val imageRequest = ImageRequest.Builder(context)

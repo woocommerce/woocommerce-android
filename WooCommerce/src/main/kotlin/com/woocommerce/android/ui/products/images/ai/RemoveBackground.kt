@@ -6,15 +6,18 @@ import androidx.core.graphics.createBitmap
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmentation
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmenterOptions
+import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
-class RemoveBackground @Inject constructor() {
+class RemoveBackground @Inject constructor(
+    private val dispatchers: CoroutineDispatchers
+) {
     suspend operator fun invoke(inputImage: InputImage): Result<Bitmap> =
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io) {
             suspendCancellableCoroutine { continuation ->
                 val options = SubjectSegmenterOptions.Builder()
                     .enableForegroundBitmap()
