@@ -124,17 +124,19 @@ fun WooLogViewerScreen(
                         onPreviousClick = goToPreviousMatch,
                         onNextClick = goToNextMatch
                     )
-                    IconButton(onClick = { onCopyButtonClick() }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_copy_white_24dp),
-                            contentDescription = stringResource(id = R.string.copy)
-                        )
-                    }
-                    IconButton(onClick = { onShareButtonClick() }) {
-                        Icon(
-                            Icons.Filled.Share,
-                            contentDescription = stringResource(id = R.string.share)
-                        )
+                    if (searchQuery.isBlank()) {
+                        IconButton(onClick = { onCopyButtonClick() }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_copy_white_24dp),
+                                contentDescription = stringResource(id = R.string.copy)
+                            )
+                        }
+                        IconButton(onClick = { onShareButtonClick() }) {
+                            Icon(
+                                Icons.Filled.Share,
+                                contentDescription = stringResource(id = R.string.share)
+                            )
+                        }
                     }
                 }
             )
