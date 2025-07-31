@@ -142,7 +142,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         // Then the order status is changed to PENDING
         val request = UpdateOrderRequest(
-            status = WCOrderStatusModel(CoreOrderStatus.PENDING.value),
+            status = WCOrderStatusModel(statusKey = CoreOrderStatus.PENDING.value),
             lineItems = emptyList(),
             shippingAddress = null,
             billingAddress = null,
@@ -172,7 +172,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         // Then the order status is not changed
         val request = UpdateOrderRequest(
-            status = WCOrderStatusModel(Order.Status.AUTO_DRAFT),
+            status = WCOrderStatusModel(statusKey = Order.Status.AUTO_DRAFT),
             lineItems = emptyList(),
             shippingAddress = null,
             billingAddress = null,
@@ -200,7 +200,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         // THEN the order status is not changed
         val request = UpdateOrderRequest(
-            status = WCOrderStatusModel(Order.Status.AUTO_DRAFT),
+            status = WCOrderStatusModel(statusKey = Order.Status.Pending.value, label = Order.Status.Pending.value),
             lineItems = emptyList(),
             shippingAddress = null,
             billingAddress = null,
@@ -228,7 +228,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         // Then the order status is not changed
         val request = UpdateOrderRequest(
-            status = WCOrderStatusModel(Order.Status.AUTO_DRAFT),
+            status = WCOrderStatusModel(statusKey = Order.Status.Pending.value, label = Order.Status.Pending.value),
             lineItems = emptyList(),
             shippingAddress = null,
             billingAddress = null,
