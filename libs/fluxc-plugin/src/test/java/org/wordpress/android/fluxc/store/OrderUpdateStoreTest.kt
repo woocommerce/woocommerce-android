@@ -543,7 +543,7 @@ class OrderUpdateStoreTest {
         const val SIMPLE_PAYMENT_CUSTOMER_NOTE = "Simple payment customer note"
         const val SIMPLE_PAYMENT_BILLING_EMAIL = "example@example.com"
         const val SIMPLE_PAYMENT_IS_TAXABLE = true
-        val SIMPLE_PAYMENT_ORDER_STATUS = WCOrderStatusModel(CoreOrderStatus.PROCESSING.value)
+        val SIMPLE_PAYMENT_ORDER_STATUS = WCOrderStatusModel(label = CoreOrderStatus.PROCESSING.value)
         val SIMPLE_PAYMENT_TAX_STATUS = FeeLineTaxStatus.Taxable.value
 
         val initialOrder = OrderEntity(

@@ -356,6 +356,9 @@ dependencies {
         androidTestImplementation(libs.jetty.webapp) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
+        androidTestImplementation(libs.jetty.server) {
+            because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
+        }
         androidTestImplementation(libs.jackson.databind) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
