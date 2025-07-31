@@ -284,6 +284,10 @@ data class WooPosScanningSetupState(
 
             @get:StringRes
             @IgnoredOnParcel
+            val messageTwoRes = R.string.woopos_scanning_setup_software_keyboard_message_two
+
+            @get:StringRes
+            @IgnoredOnParcel
             val hintRes = R.string.woopos_scanning_setup_software_keyboard_hint
 
             @get:StringRes
@@ -292,10 +296,9 @@ data class WooPosScanningSetupState(
 
             @IgnoredOnParcel
             val bulletPointsRes = listOf(
-                R.string.woopos_scanning_setup_software_keyboard_visible,
-                R.string.woopos_scanning_setup_software_keyboard_hidden,
-                R.string.woopos_scanning_setup_software_keyboard_no_icon,
-                R.string.woopos_scanning_setup_software_keyboard_manufacturer_support
+                R.string.woopos_scanning_setup_software_keyboard_bullet_one,
+                R.string.woopos_scanning_setup_software_keyboard_bullet_two,
+                R.string.woopos_scanning_setup_software_keyboard_bullet_three
             )
         }
 

@@ -921,6 +921,12 @@ private fun SoftwareKeyboardSetupContent(
                     },
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
             ) {
+                WooPosText(
+                    text = stringResource(step.messageTwoRes),
+                    style = WooPosTypography.BodyLarge,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
                 step.bulletPointsRes.forEach { bulletPointRes ->
                     BulletPointItem(text = stringResource(bulletPointRes))
                 }
