@@ -9,6 +9,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.DeviceInfo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.logs.LogEntry
+import com.woocommerce.android.util.logs.LogFileWriter
 import com.woocommerce.android.util.logs.WooFileLogger
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -16,6 +17,9 @@ import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +28,7 @@ class WooLogViewerViewModel @Inject constructor(
     private val wooFileLogger: WooFileLogger
 ) : ScopedViewModel(savedState) {
 
-    private val selectedLogFile = savedState.getNullableStateFlow<LogFile?>(
+    private val selectedLogFile = savedState.getNullableStateFlow(
         viewModelScope,
         null,
         LogFile::class.java,
@@ -40,6 +44,19 @@ class WooLogViewerViewModel @Inject constructor(
     }.asLiveData()
 
     private suspend fun prepareFilesListState(): UiState.LogFilesList {
+        fun prepareFileDisplayName(file: File): String {
+            val dateString = file.name
+                .removePrefix(LogFileWriter.LOG_FILE_NAME_PREFIX)
+                .substringBeforeLast(".")
+
+            val date = SimpleDateFormat(LogFileWriter.DATE_FORMAT_PATTERN, Locale.ROOT).parse(dateString)
+            val dateDisplayFormatter = SimpleDateFormat.getDateInstance()
+
+            return date?.let {
+                dateDisplayFormatter.format(date)
+            } ?: dateString
+        }
+
         return UiState.LogFilesList(
             logFiles = wooFileLogger.getLogFiles().mapIndexed { index, file ->
                 LogFile(
@@ -47,7 +64,7 @@ class WooLogViewerViewModel @Inject constructor(
                     displayName = if (index == 0) {
                         UiString.UiStringRes(R.string.logviewer_current_log_file)
                     } else {
-                        UiString.UiStringText(file.name)
+                        UiString.UiStringText(prepareFileDisplayName(file))
                     }
                 )
             },
