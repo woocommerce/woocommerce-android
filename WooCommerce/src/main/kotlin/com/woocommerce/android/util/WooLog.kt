@@ -71,6 +71,7 @@ object WooLog {
     }
 
     suspend fun getCurrentLogEntries(): List<LogEntry> {
+        fileLogger.forceFlush()
         return fileLogger.getCurrentLogFileContent()
     }
 
