@@ -1,6 +1,7 @@
 package com.woocommerce.android.util.logs
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
@@ -105,7 +106,8 @@ class WooFileLogger(
     }
 
     companion object Companion {
-        private const val FLUSH_PERIOD_MS = 500L
+        @VisibleForTesting
+        const val FLUSH_PERIOD_MS = 500L
         private const val LOG_FILE_DIRECTORY = "logs"
         private const val MAX_LOG_FILES = 7
         private const val LOG_ENTRY_PREFIX = "--"
