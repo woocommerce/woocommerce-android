@@ -89,7 +89,7 @@ class WooFileLogger(
                 logFileWriter.getLogFiles().find { it.name == fileName }?.readText()?.let { text ->
                     if (text.isBlank()) return@let emptyList<LogEntry>()
                     text.split("\n${LOG_ENTRY_PREFIX}").map {
-                        LogEntry(it.removePrefix(LOG_ENTRY_PREFIX))
+                        LogEntry.fromString(it.removePrefix(LOG_ENTRY_PREFIX))
                     }
                 }
             }.onFailure {
