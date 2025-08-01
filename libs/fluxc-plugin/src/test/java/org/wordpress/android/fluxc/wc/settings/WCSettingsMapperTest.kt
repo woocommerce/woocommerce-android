@@ -76,4 +76,16 @@ internal class WCSettingsMapperTest {
             assertEquals(expectedModel.weightUnit, weightUnit)
         }
     }
+
+    @Test
+    fun `incorrect currency position maps to default`() {
+        // given
+        val siteProductResponse = WCSettingsTestUtils.getMalformedCurrencyPosSiteSettingsResponse()
+
+        // when
+        val result = mapper.mapSiteSettings(siteProductResponse!!, site)
+
+        // then
+        assertEquals(CurrencyPosition.LEFT, result.currencyPosition)
+    }
 }
