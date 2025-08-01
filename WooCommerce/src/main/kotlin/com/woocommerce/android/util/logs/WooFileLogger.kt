@@ -2,6 +2,7 @@ package com.woocommerce.android.util.logs
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
@@ -18,23 +19,27 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
 class WooFileLogger(
     private val logsDirectory: File,
     private val appCoroutineScope: CoroutineScope,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val crashLogging: Provider<CrashLogging>? = null
 ) {
     @Inject
     constructor(
         context: Context,
         @AppCoroutineScope appCoroutineScope: CoroutineScope,
-        dispatchers: CoroutineDispatchers
+        dispatchers: CoroutineDispatchers,
+        crashLogging: Provider<CrashLogging>
     ) : this(
         logsDirectory = File(context.filesDir, LOG_FILE_DIRECTORY),
         appCoroutineScope = appCoroutineScope,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        crashLogging = crashLogging
     )
 
     private val logFileWriter: LogFileWriter = LogFileWriter(
@@ -95,14 +100,20 @@ class WooFileLogger(
                 }
             }.onFailure {
                 it.printStackTrace()
+                crashLogging?.get()?.sendReport(it, message = "Error reading log file: $fileName")
             }.getOrNull()
         }
     }
 
     private suspend fun processLogs(logs: List<LogEntry>) {
-        logFileWriter.writeLogs(
-            logs.joinToString("\n") { "${LOG_ENTRY_PREFIX}${it}" }
-        )
+        runCatching {
+            logFileWriter.writeLogs(
+                logs.joinToString("\n") { "${LOG_ENTRY_PREFIX}${it}" }
+            )
+        }.onFailure {
+            it.printStackTrace()
+            crashLogging?.get()?.sendReport(it, message = "Error writing logs to file")
+        }
     }
 
     companion object Companion {
