@@ -75,27 +75,18 @@ class WooLogViewerViewModel @Inject constructor(
     }
 
     private suspend fun prepareLogFileContentState(logFile: LogFile): UiState.LogFileContent {
-        val logContent = wooFileLogger.getLogFileContent(logFile.name).orEmpty()
+        fun getShareLogs(entries: List<LogEntry>): String {
+            return (entries.takeLast(MAX_LOG_ENTRIES_TO_SHARE) + getDeviceInfo())
+                .joinToString("\n")
+        }
+
+        val logEntries = wooFileLogger.getLogFileContent(logFile.name).orEmpty()
         return UiState.LogFileContent(
             logFile = logFile,
-            logContent = logContent,
-            onBackPressed = {
-                selectedLogFile.value = null
-            },
-            onShareClicked = {
-                triggerEvent(
-                    ShareLogs(
-                        logs = (logContent + getDeviceInfo()).joinToString("\n")
-                    )
-                )
-            },
-            onCopyClicked = {
-                triggerEvent(
-                    CopyLogs(
-                        logs = (logContent + getDeviceInfo()).joinToString("\n")
-                    )
-                )
-            }
+            logEntries = logEntries,
+            onBackPressed = { selectedLogFile.value = null },
+            onShareClicked = { triggerEvent(ShareLogs(logs = getShareLogs(logEntries))) },
+            onCopyClicked = { triggerEvent(CopyLogs(logs = getShareLogs(logEntries))) }
         )
     }
 
@@ -113,7 +104,7 @@ class WooLogViewerViewModel @Inject constructor(
 
         data class LogFileContent(
             val logFile: LogFile,
-            val logContent: List<LogEntry>,
+            val logEntries: List<LogEntry>,
             val onBackPressed: () -> Unit,
             val onShareClicked: () -> Unit,
             val onCopyClicked: () -> Unit
@@ -128,4 +119,10 @@ class WooLogViewerViewModel @Inject constructor(
 
     data class ShareLogs(val logs: String) : MultiLiveEvent.Event()
     data class CopyLogs(val logs: String) : MultiLiveEvent.Event()
+
+    companion object {
+        // If we try to share very large number of entries, Android might throw TransactionTooLargeException
+        // when trying to send the intent.
+        private const val MAX_LOG_ENTRIES_TO_SHARE = 1000
+    }
 }

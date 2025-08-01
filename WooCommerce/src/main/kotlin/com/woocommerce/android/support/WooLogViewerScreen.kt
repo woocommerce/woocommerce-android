@@ -60,8 +60,8 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.component.getText
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.logs.LogEntry
 import kotlinx.coroutines.launch
@@ -97,11 +97,7 @@ fun WooLogViewerScreen(
                 }
 
                 is WooLogViewerViewModel.UiState.LogFileContent -> {
-                    LogFileContent(
-                        state = targetState.copy(
-                            logContent = targetState.logContent
-                        )
-                    )
+                    LogFileContent(targetState)
                 }
             }
         }
@@ -179,11 +175,11 @@ private fun LogFileContent(
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    val searchMatches = remember(state.logContent, searchQuery) {
+    val searchMatches = remember(state.logEntries, searchQuery) {
         if (searchQuery.isBlank()) {
             emptyList()
         } else {
-            state.logContent.mapIndexedNotNull { index, entry ->
+            state.logEntries.mapIndexedNotNull { index, entry ->
                 if (entry.toString().contains(searchQuery, ignoreCase = true)) {
                     index
                 } else {
@@ -281,7 +277,7 @@ private fun LogFileContent(
                 onSearchTypeSelected = { }
             )
             LogViewerEntries(
-                entries = state.logContent,
+                entries = state.logEntries,
                 lazyListState = lazyListState,
                 currentMatchIndex = if (hasMatches) searchMatches[currentMatchIndex] else -1,
                 modifier = Modifier.weight(1f)
@@ -449,7 +445,7 @@ private fun LogFileContentPreview() {
                     "log_example.txt",
                     UiString.UiStringText("Example Log File")
                 ),
-                logContent = entries,
+                logEntries = entries,
                 onBackPressed = {},
                 onShareClicked = {},
                 onCopyClicked = {}
