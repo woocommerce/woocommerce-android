@@ -243,14 +243,14 @@ private fun LogFileContent(
                         onNextClick = goToNextMatch
                     )
                     if (searchQuery.isBlank()) {
-                        IconButton(onClick = { TODO("onCopyButtonClick()") }) {
+                        IconButton(onClick = state.onCopyClicked) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_copy_white_24dp),
                                 contentDescription = stringResource(id = R.string.copy),
                                 tint = colorResource(id = R.color.color_icon_menu)
                             )
                         }
-                        IconButton(onClick = { TODO("onShareButtonClick()") }) {
+                        IconButton(onClick = state.onShareClicked) {
                             Icon(
                                 Icons.Filled.Share,
                                 contentDescription = stringResource(id = R.string.share),
@@ -450,7 +450,9 @@ private fun LogFileContentPreview() {
                     UiString.UiStringText("Example Log File")
                 ),
                 logContent = entries,
-                onBackPressed = {}
+                onBackPressed = {},
+                onShareClicked = {},
+                onCopyClicked = {}
             )
         )
     }

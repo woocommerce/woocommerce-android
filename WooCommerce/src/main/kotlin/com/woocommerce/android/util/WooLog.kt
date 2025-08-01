@@ -205,12 +205,6 @@ object WooLog {
         }
     }
 
-    fun addDeviceInfoEntry(tag: T, level: LogLevel = LogLevel.i) {
-        with(DeviceInfo) {
-            addEntry(tag, level, "OS: ${OS}\nDeviceName: ${name}\nLanguage: $locale")
-        }
-    }
-
     private fun getStringStackTrace(throwable: Throwable): String {
         val errors = StringWriter()
         throwable.printStackTrace(PrintWriter(errors))

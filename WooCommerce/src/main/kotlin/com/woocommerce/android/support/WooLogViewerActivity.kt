@@ -25,13 +25,19 @@ class WooLogViewerActivity : ComponentActivity() {
                 WooLogViewerScreen(viewModel)
             }
         }
+
+        viewModel.event.observe(this) { event ->
+            when (event) {
+                is WooLogViewerViewModel.ShareLogs -> shareAppLog(event.logs)
+                is WooLogViewerViewModel.CopyLogs -> copyAppLogToClipboard(event.logs)
+            }
+        }
     }
 
-    private fun shareAppLog() {
-        WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
+    private fun shareAppLog(logs: String) {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_TEXT, WooLog.toString())
+        intent.putExtra(Intent.EXTRA_TEXT, logs)
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " " + title)
         try {
             startActivity(Intent.createChooser(intent, getString(R.string.share)))
@@ -40,10 +46,9 @@ class WooLogViewerActivity : ComponentActivity() {
         }
     }
 
-    private fun copyAppLogToClipboard() {
+    private fun copyAppLogToClipboard(logs: String) {
         try {
-            WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
-            copyToClipboard("AppLog", WooLog.toString())
+            copyToClipboard("AppLog", logs)
             ToastUtils.showToast(this, R.string.logviewer_copied_to_clipboard)
         } catch (e: Exception) {
             WooLog.e(T.UTILS, e)
