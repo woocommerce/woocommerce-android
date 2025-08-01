@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class EnqueueSendingEncryptedLogs @Inject constructor(
     private val encryptedLogging: EncryptedLogging,
-    private val wooLogFileProvider: WooLogFileProvider,
+    private val encryptedLogsFileProvider: EncryptedLogsFileProvider,
     private val networkStatus: NetworkStatus
 ) {
     operator fun invoke(
@@ -17,7 +17,7 @@ class EnqueueSendingEncryptedLogs @Inject constructor(
     ) {
         encryptedLogging.enqueueSendingEncryptedLogs(
             uuid = uuid,
-            file = wooLogFileProvider.provide(),
+            file = encryptedLogsFileProvider.provide(),
             shouldUploadImmediately = eventLevel != FATAL && networkStatus.isConnected()
         )
     }

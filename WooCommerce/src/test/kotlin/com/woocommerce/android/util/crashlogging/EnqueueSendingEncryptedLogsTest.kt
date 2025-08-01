@@ -25,7 +25,7 @@ class EnqueueSendingEncryptedLogsTest {
     private val uuid = "uuid"
     private val tempFile = File("temp")
 
-    private val wooLogFileProvider: WooLogFileProvider = mock {
+    private val encryptedLogsFileProvider: EncryptedLogsFileProvider = mock {
         on { provide() } doReturn tempFile
     }
 
@@ -33,7 +33,7 @@ class EnqueueSendingEncryptedLogsTest {
     fun setUp() {
         sut = EnqueueSendingEncryptedLogs(
             encryptedLogging = encryptedLogging,
-            wooLogFileProvider = wooLogFileProvider,
+            encryptedLogsFileProvider = encryptedLogsFileProvider,
             networkStatus = networkStatus
         )
     }

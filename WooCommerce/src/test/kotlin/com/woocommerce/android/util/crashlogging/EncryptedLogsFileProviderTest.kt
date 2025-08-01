@@ -14,14 +14,14 @@ import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(MockitoJUnitRunner::class)
-class WooLogFileProviderTest : BaseUnitTest() {
-    private lateinit var sut: WooLogFileProvider
+class EncryptedLogsFileProviderTest : BaseUnitTest() {
+    private lateinit var sut: EncryptedLogsFileProvider
 
     private val wooLog: WooLog = mock()
 
     @Before
     fun setUp() {
-        sut = WooLogFileProvider(wooLog)
+        sut = EncryptedLogsFileProvider(wooLog)
     }
 
     @Test
