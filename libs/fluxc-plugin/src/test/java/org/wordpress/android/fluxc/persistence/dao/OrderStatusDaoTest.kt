@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
+@Suppress("UnitTestNamingRule")
 class OrderStatusDaoTest {
     private lateinit var orderStatusDao: OrderStatusDao
 

@@ -29,7 +29,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.component.WcExposedDropDown
+import com.woocommerce.android.ui.compose.component.WCExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptionExpiration
@@ -110,8 +110,8 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(stringResource(id = string.subscription_expire))
-                        WcExposedDropDown(
-                            items = items.keys.toTypedArray(),
+                        WCExposedDropDown(
+                            items = items.keys,
                             onSelected = { selectedExpiration = items[it] },
                             currentValue = currentValue,
                             modifier = Modifier
