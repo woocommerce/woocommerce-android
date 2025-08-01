@@ -1,5 +1,6 @@
 package com.woocommerce.android.support
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.slideInHorizontally
@@ -222,6 +223,9 @@ private fun LogFileContent(
             currentMatchIndex--
         }
     }
+
+    BackHandler(onBack = state.onBackPressed)
+
     Scaffold(
         topBar = {
             Toolbar(
