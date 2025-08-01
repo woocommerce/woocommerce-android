@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -23,6 +22,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -223,7 +224,11 @@ fun FieldEditValue(
     text: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    colors: TextFieldColors = TextFieldDefaults.textFieldColors(),
+    colors: TextFieldColors = TextFieldDefaults.textFieldColors(
+        backgroundColor = Color.Transparent,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent
+    ),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     BasicTextField(
@@ -252,7 +257,12 @@ fun FieldEditValue(
                 },
                 enabled = true,
                 singleLine = true,
-                visualTransformation = VisualTransformation.None
+                visualTransformation = VisualTransformation.None,
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                )
             )
         }
     )
