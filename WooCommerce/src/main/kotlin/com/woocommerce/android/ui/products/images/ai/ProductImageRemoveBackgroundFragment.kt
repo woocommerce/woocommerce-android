@@ -1,14 +1,9 @@
-@file:Suppress("MagicNumber")
-
 package com.woocommerce.android.ui.products.images.ai
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
-import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -31,8 +26,6 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
 
     private val viewModel: ProductImageRemoveBackgroundViewModel by viewModels()
 
-    private lateinit var backPressedCallback: OnBackPressedCallback
-
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -41,22 +34,20 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    Surface {
-                        ProductImageRemoveBackgroundScreen(
-                            state = viewModel.state.collectAsState(),
-                            onBackPressed = { handleBackPressed() },
-                            onCancelClicked = { findNavController().navigateUp() },
-                            onSaveClicked = { handleSaveClicked() }
-                        )
-                    }
+                    ProductImageRemoveBackgroundScreen(
+                        state = viewModel.state.collectAsState(),
+                        onBackPressed = { viewModel.onBackPressed() },
+                        onBackDialogDismissed = { viewModel.onBackDialogDismissed() },
+                        onBackDialogConfirmed = { viewModel.onBackDialogConfirmed() },
+                        onCancelClicked = { findNavController().navigateUp() },
+                        onSaveClicked = { handleSaveClicked() }
+                    )
                 }
             }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupBackPressHandling()
-
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
@@ -67,28 +58,6 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-    private fun setupBackPressHandling() {
-        backPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                handleBackPressed()
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
-    }
-
-    private fun handleBackPressed() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.discard_changes_question)
-            .setMessage(R.string.changes_not_saved_message)
-            .setPositiveButton(R.string.discard) { _, _ ->
-                findNavController().navigateUp()
-            }
-            .setNegativeButton(R.string.keep_editing) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
     }
 
     private fun handleSaveClicked() {

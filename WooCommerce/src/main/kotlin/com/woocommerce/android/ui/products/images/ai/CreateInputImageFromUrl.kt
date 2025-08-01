@@ -5,33 +5,45 @@ import androidx.core.graphics.drawable.toBitmap
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import coil.size.Scale
 import com.google.mlkit.vision.common.InputImage
+import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class CreateInputImageFromUrl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val dispatchers: CoroutineDispatchers
 ) {
-    suspend operator fun invoke(imageUrl: String): Result<InputImage> {
-        return try {
-            val imageLoader = ImageLoader(context)
-            val imageRequest = ImageRequest.Builder(context)
-                .data(imageUrl)
-                .build()
+    suspend operator fun invoke(imageUrl: String): Result<InputImage> =
+        withContext(dispatchers.io) {
+            try {
+                val imageLoader = ImageLoader(context)
+                val imageRequest = ImageRequest.Builder(context)
+                    .data(imageUrl)
+                    // ARGB_8888 max memory consumption: ~16.7 MB (2048 × 2048 × 4 bytes per pixel)
+                    .size(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
+                    // Preserve aspect ratio
+                    .scale(Scale.FIT)
+                    .build()
 
-            val result = imageLoader.execute(imageRequest)
-            when (result) {
-                is SuccessResult -> {
-                    val bitmap = result.drawable.toBitmap()
-                    val inputImage = InputImage.fromBitmap(bitmap, 0)
-                    Result.success(inputImage)
+                val result = imageLoader.execute(imageRequest)
+                when (result) {
+                    is SuccessResult -> {
+                        val bitmap = result.drawable.toBitmap()
+                        val inputImage = InputImage.fromBitmap(bitmap, 0)
+                        Result.success(inputImage)
+                    }
+
+                    else -> Result.failure(Exception("Image loading failed"))
                 }
-                else -> Result.failure(Exception("Image loading failed"))
+            } catch (e: IllegalArgumentException) {
+                Result.failure(e)
             }
-        } catch (e: IllegalArgumentException) {
-            Result.failure(e)
-        } catch (e: OutOfMemoryError) {
-            Result.failure(Exception("Out of memory loading image", e))
         }
+
+    private companion object {
+        private const val MAX_IMAGE_SIZE = 2048
     }
 }

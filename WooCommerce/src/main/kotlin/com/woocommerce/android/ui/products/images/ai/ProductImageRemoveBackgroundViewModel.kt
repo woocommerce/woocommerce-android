@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,19 +42,11 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
                         error.message?.contains("No subject detected") == true -> {
                             R.string.remove_background_no_subject_detected
                         }
-                        else -> R.string.remove_background_image_load_error_with_reason
+                        else -> R.string.remove_background_image_load_error
                     }
 
-                    triggerEvent(
-                        MultiLiveEvent.Event.ShowSnackbar(
-                            errorMessage,
-                            if (errorMessage == R.string.remove_background_image_load_error_with_reason) {
-                                arrayOf(error.message ?: "Unknown error")
-                            } else {
-                                emptyArray()
-                            }
-                        )
-                    )
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(errorMessage))
+                    triggerEvent(MultiLiveEvent.Event.Exit)
                 }
             )
         }
@@ -70,10 +63,31 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
                 saveProcessedImage(bitmap, remoteProductId)
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_success))
                 triggerEvent(MultiLiveEvent.Event.Exit)
-            } catch (@Suppress("TooGenericExceptionCaught", "SwallowedException") error: Throwable) {
+            } catch (_: IllegalArgumentException) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_error))
-                _state.value = ViewState.Success(bitmap)
+            } catch (_: IOException) {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.save_processed_image_error))
             }
         }
+    }
+
+    fun onBackPressed() {
+        val currentState = _state.value
+        _state.value = when (currentState) {
+            is ViewState.BackgroundProcessingInProgress -> currentState.copy(showBackDialog = true)
+            is ViewState.Success -> currentState.copy(showBackDialog = true)
+        }
+    }
+
+    fun onBackDialogDismissed() {
+        val currentState = _state.value
+        _state.value = when (currentState) {
+            is ViewState.BackgroundProcessingInProgress -> currentState.copy(showBackDialog = false)
+            is ViewState.Success -> currentState.copy(showBackDialog = false)
+        }
+    }
+
+    fun onBackDialogConfirmed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 }

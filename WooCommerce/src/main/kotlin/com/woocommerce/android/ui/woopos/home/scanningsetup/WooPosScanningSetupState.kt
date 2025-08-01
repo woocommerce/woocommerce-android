@@ -34,6 +34,7 @@ data class WooPosScanningSetupState(
                     ),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.SoftwareKeyboardSetup,
                     ScanningSetupStep.ScannerSetupSuccess,
                     ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
@@ -45,6 +46,7 @@ data class WooPosScanningSetupState(
                     ),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.SoftwareKeyboardSetup,
                     ScanningSetupStep.ScannerSetupSuccess,
                     ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
@@ -59,6 +61,7 @@ data class WooPosScanningSetupState(
                     ),
                     ScanningSetupStep.PairYourScanner(deviceName = device.displayNameRes),
                     ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.SoftwareKeyboardSetup,
                     ScanningSetupStep.ScannerSetupSuccess,
                     ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
@@ -67,6 +70,7 @@ data class WooPosScanningSetupState(
                     ScanningSetupStep.DeviceSelection,
                     ScanningSetupStep.ScannerSetupInfo,
                     ScanningSetupStep.TestYourScanner,
+                    ScanningSetupStep.SoftwareKeyboardSetup,
                     ScanningSetupStep.ScannerSetupSuccess,
                     ScanningSetupStep.ScannerSetupBarcodesOnProducts,
                 )
@@ -265,6 +269,36 @@ data class WooPosScanningSetupState(
                 R.string.woopos_scanning_setup_info_bullet_1,
                 R.string.woopos_scanning_setup_info_bullet_2,
                 R.string.woopos_scanning_setup_info_bullet_3
+            )
+        }
+
+        @Parcelize
+        data object SoftwareKeyboardSetup : ScanningSetupStep() {
+            @get:StringRes
+            @IgnoredOnParcel
+            val titleRes = R.string.woopos_scanning_setup_software_keyboard_title
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageRes = R.string.woopos_scanning_setup_software_keyboard_message
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val messageTwoRes = R.string.woopos_scanning_setup_software_keyboard_message_two
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val hintRes = R.string.woopos_scanning_setup_software_keyboard_hint
+
+            @get:StringRes
+            @IgnoredOnParcel
+            val primaryButtonTextRes = R.string.woopos_scanning_setup_button_next
+
+            @IgnoredOnParcel
+            val bulletPointsRes = listOf(
+                R.string.woopos_scanning_setup_software_keyboard_bullet_one,
+                R.string.woopos_scanning_setup_software_keyboard_bullet_two,
+                R.string.woopos_scanning_setup_software_keyboard_bullet_three
             )
         }
 

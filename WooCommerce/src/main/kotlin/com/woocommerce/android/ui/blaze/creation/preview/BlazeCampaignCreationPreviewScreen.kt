@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
@@ -30,6 +29,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -326,7 +326,7 @@ fun AdPreview(
                         text = adDetails.ctaText,
                         colors = ButtonDefaults.buttonColors(
                             contentColor = colorResource(id = R.color.color_on_primary_surface),
-                            backgroundColor = colorResource(id = R.color.blaze_ad_cta_background),
+                            containerColor = colorResource(id = R.color.blaze_ad_cta_background),
                         ),
                         onClick = { /*TODO*/ },
                     )

@@ -35,6 +35,9 @@ class WooPosScanningSetupViewModel @Inject constructor(
     private val _openBluetoothSettingsEvent = MutableSharedFlow<Unit>()
     val openBluetoothSettingsEvent: SharedFlow<Unit> = _openBluetoothSettingsEvent.asSharedFlow()
 
+    private val _openSettingsEvent = MutableSharedFlow<Unit>()
+    val openSettingsEvent: SharedFlow<Unit> = _openSettingsEvent.asSharedFlow()
+
     private val _dismissDialogEvent = MutableSharedFlow<Unit>()
     val dismissDialogEvent: SharedFlow<Unit> = _dismissDialogEvent.asSharedFlow()
 
@@ -83,6 +86,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
                 }
             }
 
+            WooPosScanningSetupUiEvent.OnOpenSettings -> {
+                viewModelScope.launch {
+                    _openSettingsEvent.emit(Unit)
+                }
+            }
+
             is WooPosScanningSetupUiEvent.OnBarcodeScanned -> {
                 handleBarcodeScanned(event.barcodeResult)
             }
@@ -111,6 +120,7 @@ class WooPosScanningSetupViewModel @Inject constructor(
             is ScanningSetupStep.ScannerPairModeSetup,
             is ScanningSetupStep.PairYourScanner,
             is ScanningSetupStep.ScannerSetupInfo,
+            is ScanningSetupStep.SoftwareKeyboardSetup,
             is ScanningSetupStep.ScannerSetupSuccess -> {
                 navigateToNextStep()
             }
@@ -176,6 +186,12 @@ class WooPosScanningSetupViewModel @Inject constructor(
     }
 
     private fun handleBarcodeScanned(barcodeResult: BarcodeInputDetector.BarcodeResult) {
+        val currentStep = _state.value.currentStep
+        if (currentStep !is ScanningSetupStep.TestYourScanner &&
+            currentStep !is ScanningSetupStep.TestYourScannerTimeout
+        ) {
+            return
+        }
         val selectedDevice = requireNotNull(_state.value.selectedDevice) { "Selected device cannot be null" }
         val nextStep = if (barcodeResult.barcode == TEST_BARCODE_EAN13) {
             viewModelScope.launch { analyticsTracker.trackTestScanSuccess(selectedDevice) }
