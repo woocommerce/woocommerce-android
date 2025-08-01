@@ -1,11 +1,14 @@
 package com.woocommerce.android.support
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
@@ -33,6 +36,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +60,83 @@ import com.woocommerce.android.util.logs.LogEntry
 import kotlinx.coroutines.launch
 import java.lang.String.format
 import java.util.Locale
+
+@Composable
+fun WooLogViewerScreen(
+    viewerViewModel: WooLogViewerViewModel
+) {
+    viewerViewModel.uiState.observeAsState().value?.let {
+        when (it) {
+            is WooLogViewerViewModel.UiState.LogFilesList -> {
+                LogFilesListScreen(it)
+            }
+
+            is WooLogViewerViewModel.UiState.LogFileContent -> {
+                TODO()
+            }
+        }
+    }
+}
+
+@Composable
+private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList) {
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current
+
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = stringResource(id = R.string.logviewer_activity_title),
+                onNavigationButtonClick = { backDispatcher?.onBackPressedDispatcher?.onBackPressed() }
+            )
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.color_toolbar))
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
+            contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+        ) {
+            item {
+                Text(
+                    "Log files by created date",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+
+            itemsIndexed(state.logFiles) { index, logFile ->
+                if (index == 0) {
+                    HorizontalDivider()
+                }
+                Text(
+                    text = logFile.displayName,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .clickable(onClick = { state.onLogFileSelected(logFile) })
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 16.dp
+                        ),
+                )
+                HorizontalDivider()
+            }
+
+            item {
+                Text(
+                    "Up to seven day's worth of logs are stored.",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

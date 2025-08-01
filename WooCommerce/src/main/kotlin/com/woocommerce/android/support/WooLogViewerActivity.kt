@@ -4,37 +4,25 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.activity.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.logs.LogEntry
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 
+@AndroidEntryPoint
 class WooLogViewerActivity : ComponentActivity() {
+    private val viewModel: WooLogViewerViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             WooTheme {
-                var logEntries by remember { mutableStateOf<List<LogEntry>>(emptyList()) }
-
-                LaunchedEffect(Unit) {
-                    logEntries = WooLog.getCurrentLogEntries()
-                }
-
-                WooLogViewerScreen(
-                    logEntries,
-                    onBackPress = onBackPressedDispatcher::onBackPressed,
-                    onCopyButtonClick = ::copyAppLogToClipboard,
-                    onShareButtonClick = ::shareAppLog
-                )
+                WooLogViewerScreen(viewModel)
             }
         }
     }
