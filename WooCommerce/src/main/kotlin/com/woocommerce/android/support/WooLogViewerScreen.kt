@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Share
@@ -47,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,7 +72,7 @@ fun WooLogViewerScreen(
             }
 
             is WooLogViewerViewModel.UiState.LogFileContent -> {
-                TODO()
+                LogFileContent(state = it)
             }
         }
     }
@@ -140,11 +140,8 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WooLogViewerScreen(
-    entries: List<LogEntry>,
-    onBackPress: () -> Unit,
-    onCopyButtonClick: () -> Unit,
-    onShareButtonClick: () -> Unit
+private fun LogFileContent(
+    state: WooLogViewerViewModel.UiState.LogFileContent
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var currentMatchIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -152,13 +149,11 @@ fun WooLogViewerScreen(
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    val allEntries = remember(entries) { entries.toList() }
-
-    val searchMatches = remember(allEntries, searchQuery) {
+    val searchMatches = remember(state.logContent, searchQuery) {
         if (searchQuery.isBlank()) {
             emptyList()
         } else {
-            allEntries.mapIndexedNotNull { index, entry ->
+            state.logContent.mapIndexedNotNull { index, entry ->
                 if (entry.toString().contains(searchQuery, ignoreCase = true)) {
                     index
                 } else {
@@ -203,8 +198,8 @@ fun WooLogViewerScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = stringResource(id = R.string.logviewer_activity_title),
-                onNavigationButtonClick = onBackPress,
+                title = state.logFile.displayName,
+                onNavigationButtonClick = state.onBackPressed,
                 windowInsets = TopAppBarDefaults.windowInsets,
                 actions = {
                     SearchNavigationActions(
@@ -215,16 +210,18 @@ fun WooLogViewerScreen(
                         onNextClick = goToNextMatch
                     )
                     if (searchQuery.isBlank()) {
-                        IconButton(onClick = { onCopyButtonClick() }) {
+                        IconButton(onClick = { TODO("onCopyButtonClick()") }) {
                             Icon(
-                                imageVector = Icons.Filled.ContentCopy,
+                                painter = painterResource(R.drawable.ic_copy_white_24dp),
                                 contentDescription = stringResource(id = R.string.copy),
+                                tint = colorResource(id = R.color.color_icon_menu)
                             )
                         }
-                        IconButton(onClick = { onShareButtonClick() }) {
+                        IconButton(onClick = { TODO("onShareButtonClick()") }) {
                             Icon(
-                                imageVector = Icons.Filled.Share,
+                                Icons.Filled.Share,
                                 contentDescription = stringResource(id = R.string.share),
+                                tint = colorResource(id = R.color.color_icon_menu)
                             )
                         }
                     }
@@ -251,7 +248,7 @@ fun WooLogViewerScreen(
                 onSearchTypeSelected = { }
             )
             LogViewerEntries(
-                entries = allEntries,
+                entries = state.logContent,
                 lazyListState = lazyListState,
                 currentMatchIndex = if (hasMatches) searchMatches[currentMatchIndex] else -1,
                 modifier = Modifier.weight(1f)
@@ -387,7 +384,24 @@ private fun logLevelColorM3(level: WooLog.LogLevel): Color {
 
 @Preview
 @Composable
-private fun WooLogViewerScreenPreview() {
+private fun LogFilesListPreview() {
+    val logFiles = listOf(
+        WooLogViewerViewModel.LogFile("log1.txt", "Log File 1"),
+        WooLogViewerViewModel.LogFile("log2.txt", "Log File 2"),
+        WooLogViewerViewModel.LogFile("log3.txt", "Log File 3")
+    )
+    val state = WooLogViewerViewModel.UiState.LogFilesList(
+        logFiles = logFiles,
+        onLogFileSelected = {}
+    )
+    WooTheme {
+        LogFilesListScreen(state)
+    }
+}
+
+@Preview
+@Composable
+private fun LogFileContentPreview() {
     val entries = buildList {
         add(LogEntry(WooLog.T.ORDERS, WooLog.LogLevel.v, "Verbose"))
         add(LogEntry(WooLog.T.PRODUCTS, WooLog.LogLevel.d, "Debug"))
@@ -396,11 +410,15 @@ private fun WooLogViewerScreenPreview() {
         add(LogEntry(WooLog.T.DASHBOARD, WooLog.LogLevel.e, "Error"))
     }
     WooTheme {
-        WooLogViewerScreen(
-            entries,
-            onBackPress = {},
-            onShareButtonClick = {},
-            onCopyButtonClick = {}
+        LogFileContent(
+            state = WooLogViewerViewModel.UiState.LogFileContent(
+                logFile = WooLogViewerViewModel.LogFile(
+                    "log_example.txt",
+                    "Example Log File"
+                ),
+                logContent = entries,
+                onBackPressed = {}
+            )
         )
     }
 }

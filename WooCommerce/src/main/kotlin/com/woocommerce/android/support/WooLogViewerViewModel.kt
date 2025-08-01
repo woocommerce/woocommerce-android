@@ -50,7 +50,7 @@ class WooLogViewerViewModel @Inject constructor(
 
     private suspend fun prepareLogFileContentState(logFile: LogFile) =
         UiState.LogFileContent(
-            logFileName = logFile,
+            logFile = logFile,
             logContent = wooFileLogger.getLogFileContent(logFile.name).orEmpty(),
             onBackPressed = {
                 selectedLogFile.value = null
@@ -64,7 +64,7 @@ class WooLogViewerViewModel @Inject constructor(
         ) : UiState
 
         data class LogFileContent(
-            val logFileName: LogFile,
+            val logFile: LogFile,
             val logContent: List<LogEntry>,
             val onBackPressed: () -> Unit
         ) : UiState
