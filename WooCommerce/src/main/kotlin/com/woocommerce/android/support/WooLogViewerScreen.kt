@@ -1,6 +1,10 @@
 package com.woocommerce.android.support
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -66,13 +70,36 @@ fun WooLogViewerScreen(
     viewerViewModel: WooLogViewerViewModel
 ) {
     viewerViewModel.uiState.observeAsState().value?.let {
-        when (it) {
-            is WooLogViewerViewModel.UiState.LogFilesList -> {
-                LogFilesListScreen(it)
+        AnimatedContent(
+            targetState = it,
+            transitionSpec = {
+                slideInHorizontally { width ->
+                    if (targetState is WooLogViewerViewModel.UiState.LogFileContent) {
+                        width
+                    } else {
+                        -width
+                    }
+                } togetherWith slideOutHorizontally { width ->
+                    if (targetState is WooLogViewerViewModel.UiState.LogFileContent) {
+                        -width
+                    } else {
+                        width
+                    }
+                }
             }
+        ) { targetState ->
+            when (targetState) {
+                is WooLogViewerViewModel.UiState.LogFilesList -> {
+                    LogFilesListScreen(targetState)
+                }
 
-            is WooLogViewerViewModel.UiState.LogFileContent -> {
-                LogFileContent(state = it)
+                is WooLogViewerViewModel.UiState.LogFileContent -> {
+                    LogFileContent(
+                        state = targetState.copy(
+                            logContent = targetState.logContent
+                        )
+                    )
+                }
             }
         }
     }
