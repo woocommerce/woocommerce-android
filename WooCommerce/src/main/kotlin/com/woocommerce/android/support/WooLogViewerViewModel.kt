@@ -65,7 +65,8 @@ class WooLogViewerViewModel @Inject constructor(
                         UiString.UiStringRes(R.string.logviewer_current_log_file)
                     } else {
                         UiString.UiStringText(prepareFileDisplayName(file))
-                    }
+                    },
+                    isCurrent = index == 0
                 )
             },
             onLogFileSelected = { selectedFile ->
@@ -80,6 +81,10 @@ class WooLogViewerViewModel @Inject constructor(
                 .joinToString("\n")
         }
 
+        if (logFile.isCurrent) {
+            // When the current log file is selected, ensure the buffer is flushed to disk
+            wooFileLogger.forceFlush()
+        }
         val logEntries = wooFileLogger.getLogFileContent(logFile.name).orEmpty()
         return UiState.LogFileContent(
             logFile = logFile,
@@ -114,7 +119,8 @@ class WooLogViewerViewModel @Inject constructor(
     @Parcelize
     data class LogFile(
         val name: String,
-        val displayName: UiString
+        val displayName: UiString,
+        val isCurrent: Boolean = false
     ) : Parcelable
 
     data class ShareLogs(val logs: String) : MultiLiveEvent.Event()
