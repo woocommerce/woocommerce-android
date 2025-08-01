@@ -108,7 +108,7 @@ class WooFileLogger(
     private suspend fun processLogs(logs: List<LogEntry>) {
         runCatching {
             logFileWriter.writeLogs(
-                logs.joinToString("\n") { "${LOG_ENTRY_PREFIX}${it}" }
+                logs.joinToString("\n") { "$LOG_ENTRY_PREFIX$it" }
             )
         }.onFailure {
             it.printStackTrace()
