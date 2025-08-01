@@ -8,6 +8,7 @@
 - [*] Add search functionality to application log viewer [https://github.com/woocommerce/woocommerce-android/pull/14386]
 - [*] POS: Extra step into the barcode scanner setup flow to explain how to setup software keyboard [https://github.com/woocommerce/woocommerce-android/pull/14395]
 - [Internal] Introduced Material 3 based theme and migrated some components to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/14401]
+- [Internal] Update jackson databinding (faster XML) library to the newest veresion [https://github.com/woocommerce/woocommerce-android/pull/14424]
 
 22.9.1
 -----
