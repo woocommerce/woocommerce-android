@@ -1,8 +1,12 @@
 package com.woocommerce.android.util.logs
 
 import com.woocommerce.android.util.CoroutineDispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 /**
  * A simple utility class for writing logs to files.
@@ -17,12 +21,17 @@ class LogFileWriter(
     private val dispatchers: CoroutineDispatchers
 ) {
     private var lastUsedFile: File? = null
-    private val dateFormatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+    private val dateFormatter
+        get() = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private val mutex = Mutex()
 
     suspend fun writeLogs(logs: String) {
         val logFile = getLogFile()
-        withContext(dispatchers.io) {
-            logFile.appendText("$logs\n")
+
+        mutex.withLock {
+            withContext(dispatchers.io) {
+                logFile.appendText("$logs\n")
+            }
         }
     }
 
@@ -51,8 +60,10 @@ class LogFileWriter(
         suspend fun ensureFileExists(file: File): File {
             ensureDirectoryExists()
             withContext(dispatchers.io) {
-                if (!file.exists()) {
-                    file.createNewFile()
+                mutex.withLock {
+                    if (!file.exists()) {
+                        file.createNewFile()
+                    }
                 }
             }
             return file
@@ -77,13 +88,17 @@ class LogFileWriter(
         return logFile
     }
 
-    private fun rotateLogFilesIfNeeded() {
-        val logFiles = logsDirectory.listFiles { file -> file.isFile && file.name.startsWith("log_") }
-            ?.sortedByDescending { it.lastModified() } ?: return
+    private suspend fun rotateLogFilesIfNeeded() {
+        withContext(dispatchers.io) {
+            val logFiles = logsDirectory.listFiles { file -> file.isFile && file.name.startsWith("log_") }
+                ?.sortedByDescending { it.lastModified() } ?: return@withContext
 
-        if (logFiles.size > maxLogFiles) {
-            logFiles.takeLast(logFiles.size - maxLogFiles).forEach { file ->
-                file.delete()
+            mutex.withLock {
+                if (logFiles.size > maxLogFiles) {
+                    logFiles.takeLast(logFiles.size - maxLogFiles).forEach { file ->
+                        file.delete()
+                    }
+                }
             }
         }
     }
