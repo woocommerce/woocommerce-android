@@ -55,7 +55,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -91,6 +90,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
+import com.woocommerce.android.ui.woopos.util.ext.announceForAccessibility
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -288,40 +288,41 @@ private fun CartBodyWithItems(
 private fun AnnounceCartItemChangesForAccessibility(
     items: List<WooPosCartItemViewState>,
 ) {
-    val localView = LocalView.current
+    val context = LocalContext.current
     val previousItems = remember { mutableStateOf<List<WooPosCartItemViewState>>(emptyList()) }
+
     LaunchedEffect(items) {
         val changedItem = items.firstOrNull { currentItem ->
             val previousItem = previousItems.value.find { it.itemNumber == currentItem.itemNumber }
             previousItem == null || currentItem::class != previousItem::class
         }
 
-        changedItem?.let { currentItem ->
+        changedItem?.let { currentItem: WooPosCartItemViewState ->
             val message = when (currentItem) {
                 is WooPosCartItemViewState.Product ->
-                    localView.context.getString(
+                    context.getString(
                         R.string.woopos_cart_product_added_to_cart_accessibility,
                         currentItem.name,
                         currentItem.price
                     )
 
                 is WooPosCartItemViewState.Coupon ->
-                    localView.context.getString(
+                    context.getString(
                         R.string.woopos_cart_coupon_added_to_cart_accessibility,
                         currentItem.name
                     )
 
                 is WooPosCartItemViewState.Error ->
-                    localView.context.getString(
+                    context.getString(
                         R.string.woopos_cart_adding_item_to_cart_failed,
                         currentItem.message
                     )
 
                 is WooPosCartItemViewState.Loading ->
-                    localView.context.getString(R.string.woopos_cart_searching_for_item)
+                    context.getString(R.string.woopos_cart_searching_for_item)
             }
 
-            localView.announceForAccessibility(message)
+            context.announceForAccessibility(message)
         }
         previousItems.value = items
     }
