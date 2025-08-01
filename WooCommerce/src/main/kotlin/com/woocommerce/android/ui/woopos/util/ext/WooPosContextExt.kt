@@ -32,6 +32,7 @@ fun Context.announceForAccessibility(text: String) {
             @Suppress("DEPRECATION")
             AccessibilityEvent.obtain()
         }
+        @Suppress("DEPRECATION")
         event.eventType = AccessibilityEvent.TYPE_ANNOUNCEMENT
         event.text.add(text)
         manager.sendAccessibilityEvent(event)
