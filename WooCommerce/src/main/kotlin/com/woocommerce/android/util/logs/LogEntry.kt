@@ -41,6 +41,7 @@ class LogEntry(
         private val formatter
             get() = SimpleDateFormat("MMM-dd kk:mm:ss:SSS", Locale.US)
 
+        @Suppress("MagicNumber")
         fun fromString(log: String): LogEntry {
             val firstParts = log.removePrefix("[").substringBefore("]")
             val parts = firstParts.split(" ")

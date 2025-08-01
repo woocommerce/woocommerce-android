@@ -134,10 +134,4 @@ object WooLog {
         }
         println("e - $TAG-$tag - $logText")
     }
-
-    fun provideLogs(): String {
-        // This is a placeholder for the actual log retrieval logic.
-        // In a real implementation, this would return the collected logs as a string.
-        return "Logs are not available in this testing version."
-    }
 }
