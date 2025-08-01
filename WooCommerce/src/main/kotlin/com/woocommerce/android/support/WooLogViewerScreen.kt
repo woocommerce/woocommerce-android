@@ -56,10 +56,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.logs.LogEntry
 import kotlinx.coroutines.launch
@@ -131,7 +133,7 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
         ) {
             item {
                 Text(
-                    "Log files by created date",
+                    text = stringResource(R.string.logviewer_log_files_list_header),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -142,7 +144,7 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
                     HorizontalDivider()
                 }
                 Text(
-                    text = logFile.displayName,
+                    text = logFile.displayName.getText(),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .clickable(onClick = { state.onLogFileSelected(logFile) })
@@ -157,7 +159,7 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
 
             item {
                 Text(
-                    "Up to seven day's worth of logs are stored.",
+                    text = stringResource(R.string.logviewer_log_files_list_footer),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -229,7 +231,7 @@ private fun LogFileContent(
     Scaffold(
         topBar = {
             Toolbar(
-                title = state.logFile.displayName,
+                title = state.logFile.displayName.getText(),
                 onNavigationButtonClick = state.onBackPressed,
                 windowInsets = TopAppBarDefaults.windowInsets,
                 actions = {
@@ -417,9 +419,9 @@ private fun logLevelColorM3(level: WooLog.LogLevel): Color {
 @Composable
 private fun LogFilesListPreview() {
     val logFiles = listOf(
-        WooLogViewerViewModel.LogFile("log1.txt", "Log File 1"),
-        WooLogViewerViewModel.LogFile("log2.txt", "Log File 2"),
-        WooLogViewerViewModel.LogFile("log3.txt", "Log File 3")
+        WooLogViewerViewModel.LogFile("log1.txt", UiString.UiStringText("Log File 1")),
+        WooLogViewerViewModel.LogFile("log2.txt", UiString.UiStringText("Log File 2")),
+        WooLogViewerViewModel.LogFile("log3.txt", UiString.UiStringText("Log File 3"))
     )
     val state = WooLogViewerViewModel.UiState.LogFilesList(
         logFiles = logFiles,
@@ -445,7 +447,7 @@ private fun LogFileContentPreview() {
             state = WooLogViewerViewModel.UiState.LogFileContent(
                 logFile = WooLogViewerViewModel.LogFile(
                     "log_example.txt",
-                    "Example Log File"
+                    UiString.UiStringText("Example Log File")
                 ),
                 logContent = entries,
                 onBackPressed = {}

@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.logs.LogEntry
 import com.woocommerce.android.util.logs.WooFileLogger
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -39,7 +41,11 @@ class WooLogViewerViewModel @Inject constructor(
             logFiles = wooFileLogger.getLogFiles().mapIndexed { index, file ->
                 LogFile(
                     name = file.name,
-                    displayName = if (index == 0) "Current" else file.name
+                    displayName = if (index == 0) {
+                        UiString.UiStringRes(R.string.logviewer_current_log_file)
+                    } else {
+                        UiString.UiStringText(file.name)
+                    }
                 )
             },
             onLogFileSelected = { selectedFile ->
@@ -73,6 +79,6 @@ class WooLogViewerViewModel @Inject constructor(
     @Parcelize
     data class LogFile(
         val name: String,
-        val displayName: String
+        val displayName: UiString
     ) : Parcelable
 }
