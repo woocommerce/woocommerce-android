@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateVie
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.util.announceAccessibilityChange
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils.dpToPx
@@ -104,14 +103,12 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 )
 
                 is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected ->
-                    binding.cardReaderConnectionState.announceAccessibilityChange(
+                    binding.cardReaderConnectionState.contentDescription =
                         getString(event.accessibilityDisconnectedText)
-                    )
 
                 is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected ->
-                    binding.cardReaderConnectionState.announceAccessibilityChange(
+                    binding.cardReaderConnectionState.contentDescription =
                         getString(event.accessibilityConnectedText)
-                    )
 
                 is NavigateToUrlInGenericWebView ->
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url, ThreeQuarters)
