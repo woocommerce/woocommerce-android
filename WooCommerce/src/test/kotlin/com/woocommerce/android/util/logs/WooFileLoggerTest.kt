@@ -106,4 +106,90 @@ class WooFileLoggerTest : BaseUnitTest() {
             assertThat(wooFileLogger.getCurrentLogFileContent().any { it.text == "Test log message $i" }).isTrue()
         }
     }
+
+    @Test
+    fun `when getting log files, then a list of log files should be returned`() = testBlocking {
+        // Add and flush some log entries to create a log file
+        val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message")
+        wooFileLogger.addEntry(logEntry)
+        wooFileLogger.forceFlush()
+        advanceTimeBy(100)
+
+        // Get log files
+        val logFiles = wooFileLogger.getLogFiles()
+
+        // Verify there is at least one log file
+        assertThat(logFiles).isNotEmpty()
+
+        // Verify the log file is in the logs directory
+        assertThat(logFiles.first().parentFile).isEqualTo(logsDirectory)
+
+        // Verify the log file name starts with "log_"
+        assertThat(logFiles.first().name).startsWith("log_")
+    }
+
+    @Test
+    fun `when getting current log file, then the current log file should be returned`() = testBlocking {
+        // Add and flush some log entries to create a log file
+        val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message")
+        wooFileLogger.addEntry(logEntry)
+        wooFileLogger.forceFlush()
+        advanceTimeBy(100)
+
+        // Get current log file
+        val currentLogFile = wooFileLogger.getCurrentLogFile()
+
+        // Verify the current log file exists
+        assertThat(currentLogFile.exists()).isTrue()
+
+        // Verify the current log file is in the logs directory
+        assertThat(currentLogFile.parentFile).isEqualTo(logsDirectory)
+
+        // Verify the current log file name starts with "log_"
+        assertThat(currentLogFile.name).startsWith("log_")
+    }
+
+    @Test
+    fun `when getting log file content for a specific file, then log entries from that file should be returned`() = testBlocking {
+        // Add and flush some log entries to create a log file
+        val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message")
+        wooFileLogger.addEntry(logEntry)
+        wooFileLogger.forceFlush()
+        advanceTimeBy(100)
+
+        // Get current log file
+        val currentLogFile = wooFileLogger.getCurrentLogFile()
+
+        // Get log file content
+        val logFileContent = wooFileLogger.getLogFileContent(currentLogFile.name)
+
+        // Verify the log file content contains the log entry
+        assertThat(logFileContent).isNotNull()
+        assertThat(logFileContent).hasSize(1)
+        assertThat(logFileContent!!.first()).isEqualTo(logEntry)
+    }
+
+    @Test
+    fun `when getting log file content for a non-existent file, then null should be returned`() = testBlocking {
+        // Get log file content for a non-existent file
+        val logFileContent = wooFileLogger.getLogFileContent("non_existent_file.txt")
+
+        // Verify the log file content is null
+        assertThat(logFileContent).isNull()
+    }
+
+    @Test
+    fun `when getting log file content for an empty file, then an empty list should be returned`() = testBlocking {
+        // Create an empty log file
+        val emptyLogFile = File(logsDirectory, "log_empty.txt")
+        logsDirectory.mkdirs()
+        emptyLogFile.createNewFile()
+
+        // Get log file content for the empty file
+        val logFileContent = wooFileLogger.getLogFileContent(emptyLogFile.name)
+
+        // Verify the log file content is an empty list
+        assertThat(logFileContent).isNotNull()
+        assertThat(logFileContent).isEmpty()
+    }
 }
