@@ -49,10 +49,12 @@ class WooLogViewerViewModel @Inject constructor(
                 .removePrefix(LogFileWriter.LOG_FILE_NAME_PREFIX)
                 .substringBeforeLast(".")
 
-            val date = SimpleDateFormat(LogFileWriter.DATE_FORMAT_PATTERN, Locale.ROOT).parse(dateString)
-            val dateDisplayFormatter = SimpleDateFormat.getDateInstance()
+            val date = runCatching {
+                SimpleDateFormat(LogFileWriter.DATE_FORMAT_PATTERN, Locale.ROOT).parse(dateString)
+            }.getOrNull()
 
             return date?.let {
+                val dateDisplayFormatter = SimpleDateFormat.getDateInstance()
                 dateDisplayFormatter.format(date)
             } ?: dateString
         }
