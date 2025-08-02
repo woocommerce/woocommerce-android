@@ -131,8 +131,11 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
         info?.isCheckable = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
             info?.setChecked(
-                if (isChecked) AccessibilityNodeInfo.CHECKED_STATE_TRUE
-                else AccessibilityNodeInfo.CHECKED_STATE_FALSE
+                if (isChecked) {
+                    AccessibilityNodeInfo.CHECKED_STATE_TRUE
+                } else {
+                    AccessibilityNodeInfo.CHECKED_STATE_FALSE
+                }
             )
         } else {
             @Suppress("DEPRECATION")
