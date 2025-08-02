@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.ConfirmRemoveProductImageDialog
 import com.woocommerce.android.ui.products.ImageViewerFragment
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
@@ -86,12 +87,19 @@ class ProductImageViewerFragment :
         toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
-        toolbar.inflateMenu(R.menu.menu_product_delete_image)
+        toolbar.inflateMenu(R.menu.menu_product_image)
         toolbar.menu.findItem(R.id.menu_delete_image).isVisible = navArgs.isDeletingAllowed
+        toolbar.menu.findItem(R.id.menu_remove_background).isVisible =
+            FeatureFlag.AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL.isEnabled(context)
     }
 
     private fun onMenuItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
+            R.id.menu_remove_background -> {
+                navigateToRemoveBackground()
+                true
+            }
+
             R.id.menu_delete_image -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
                 confirmRemoveProductImage()
@@ -193,6 +201,18 @@ class ProductImageViewerFragment :
             })
             start()
         }
+    }
+
+    private fun navigateToRemoveBackground() {
+        val currentPosition = binding.viewPager.currentItem
+        val currentImage = pagerAdapter.images[currentPosition]
+
+        val action = ProductImageViewerFragmentDirections
+            .actionProductImageViewerFragmentToProductImageRemoveBackgroundFragment(
+                image = currentImage,
+                remoteProductId = navArgs.remoteId
+            )
+        findNavController().navigate(action)
     }
 
     override fun onImageTapped() {

@@ -43,7 +43,7 @@ import com.woocommerce.android.model.SubscriptionPeriod.Week
 import com.woocommerce.android.model.SubscriptionPeriod.Year
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.component.WcExposedDropDown
+import com.woocommerce.android.ui.compose.component.WCExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -167,8 +167,8 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
                                 .weight(.3f)
                                 .padding(end = dimensionResource(id = dimen.major_100))
                         )
-                        WcExposedDropDown(
-                            items = items.toTypedArray(),
+                        WCExposedDropDown(
+                            items = items.toSet(),
                             onSelected = { onTrialPeriodUpdated(it) },
                             currentValue = period,
                             mapper = { it.getPeriodString(resourceProvider, length) },
