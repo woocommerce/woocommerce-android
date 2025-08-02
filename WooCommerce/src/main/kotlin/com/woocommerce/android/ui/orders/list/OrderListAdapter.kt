@@ -278,10 +278,10 @@ class OrderListAdapter(
         }
 
         private fun createTempOrderStatus(status: String): WCOrderStatusModel {
-            return WCOrderStatusModel().apply {
-                statusKey = status
+            return WCOrderStatusModel(
+                statusKey = status,
                 label = status
-            }
+            )
         }
 
         override fun isSwipeAble(): Boolean = isNotCompleted

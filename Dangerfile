@@ -35,7 +35,7 @@ view_changes_checker.check
 
 pr_size_checker.check_diff_size(
   max_size: 300,
-  file_selector: ->(path) { !path.include?('/src/test') }
+  file_selector: ->(path) { !path.include?('/src/test') && !path.include?('/src/main/res') }
 )
 
 android_unit_test_checker.check_missing_tests

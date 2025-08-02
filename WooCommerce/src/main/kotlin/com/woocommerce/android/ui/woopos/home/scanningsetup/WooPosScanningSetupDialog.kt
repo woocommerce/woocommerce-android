@@ -41,12 +41,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -59,6 +63,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
@@ -70,6 +76,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBright
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputField
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -77,7 +84,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
@@ -118,22 +124,11 @@ fun WooPosScanningSetupDialog(
         isClosing.value = true
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.openBluetoothSettingsEvent.collect {
-            try {
-                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-                context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                (context.applicationContext as WooCommerce).appInitializer.get().crashLogging.sendReport(e)
-                WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
-            }
-        }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.dismissDialogEvent.collect {
-            onDismissRequestWrapper()
-        }
-    }
+    EventListeners(
+        viewModel = viewModel,
+        context = context,
+        onDismissRequestWrapper = onDismissRequestWrapper
+    )
 
     WooPosDialogWrapper(
         isVisible = isVisible,
@@ -149,6 +144,11 @@ fun WooPosScanningSetupDialog(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surfaceBright)
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .listenForBarcodes(
+                    { barcodeResult ->
+                        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
+                    }
+                )
         ) {
             Row {
                 Spacer(modifier = Modifier.weight(1f))
@@ -232,9 +232,6 @@ fun WooPosScanningSetupDialog(
                         barcodeValue = step.barcodeValue,
                         secondaryButtonText = stringResource(step.secondaryButtonTextRes),
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
-                        onBarcodeScanned = { barcodeResult ->
-                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
-                        }
                     )
 
                     is ScanningSetupStep.TestYourScannerTimeout -> TestScannerContent(
@@ -243,9 +240,6 @@ fun WooPosScanningSetupDialog(
                         barcodeValue = step.barcodeValue,
                         secondaryButtonText = stringResource(step.secondaryButtonTextRes),
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) },
-                        onBarcodeScanned = { barcodeResult ->
-                            viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
-                        }
                     )
 
                     is ScanningSetupStep.ScannerSetupSuccess -> ScannerSetupSuccessContent(
@@ -263,6 +257,11 @@ fun WooPosScanningSetupDialog(
                         step = step,
                         onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                         onSecondaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnSecondaryButtonClicked) }
+                    )
+
+                    is ScanningSetupStep.SoftwareKeyboardSetup -> SoftwareKeyboardSetupContent(
+                        step = step,
+                        onPrimaryClick = { viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnPrimaryButtonClicked) },
                     )
 
                     is ScanningSetupStep.ScannerSetupBarcodesOnProducts -> ScannerSetupBarcodesOnProductsContent(
@@ -342,14 +341,12 @@ private fun TestScannerContent(
     message: String,
     barcodeValue: String,
     secondaryButtonText: String,
-    onSecondaryClick: () -> Unit,
-    onBarcodeScanned: (BarcodeInputDetector.BarcodeResult) -> Unit
+    onSecondaryClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .listenForBarcodes(onBarcodeScanned),
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         WooPosText(
@@ -809,6 +806,152 @@ private fun ScannerSetupInfoContent(
 }
 
 @Composable
+private fun EventListeners(
+    viewModel: WooPosScanningSetupViewModel,
+    context: android.content.Context,
+    onDismissRequestWrapper: () -> Unit
+) {
+    LaunchedEffect(Unit) {
+        viewModel.openBluetoothSettingsEvent.collect {
+            try {
+                val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                (context.applicationContext as WooCommerce).appInitializer.get().crashLogging.sendReport(e)
+                WooLog.e(WooLog.T.POS, "Bluetooth settings activity not found.", e)
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.dismissDialogEvent.collect {
+            onDismissRequestWrapper()
+        }
+    }
+}
+
+@Composable
+private fun SoftwareKeyboardSetupContent(
+    step: ScanningSetupStep.SoftwareKeyboardSetup,
+    onPrimaryClick: () -> Unit,
+) {
+    var testText by remember { mutableStateOf("") }
+    var isInputFieldFocused by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    @Suppress("DestructuringDeclarationWithTooManyEntries")
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                if (isInputFieldFocused) {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
+            },
+    ) {
+        val (title, message, inputField, bulletPoints, button) = createRefs()
+
+        WooPosText(
+            text = stringResource(step.titleRes),
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.constrainAs(title) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        val marginMedium = WooPosSpacing.Medium.value.toAdaptivePadding()
+        val marginLarge = WooPosSpacing.Large.value.toAdaptivePadding()
+        val marginSmall = WooPosSpacing.Small.value.toAdaptivePadding()
+        WooPosText(
+            text = stringResource(step.messageRes),
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.constrainAs(message) {
+                top.linkTo(title.bottom, margin = marginMedium)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .constrainAs(inputField) {
+                    top.linkTo(message.bottom, margin = marginLarge)
+                    start.linkTo(parent.start, margin = marginSmall)
+                    end.linkTo(parent.end, margin = marginSmall)
+                    width = Dimension.fillToConstraints
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            WooPosInputField(
+                value = testText,
+                onValueChange = { testText = it },
+                label = stringResource(step.hintRes),
+                textStyle = WooPosTypography.Heading,
+                textColor = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .onFocusChanged { focusState ->
+                        if (!isInputFieldFocused && focusState.isFocused) {
+                            isInputFieldFocused = true
+                        }
+                    }
+            )
+        }
+
+        if (isInputFieldFocused) {
+            Column(
+                modifier = Modifier
+                    .constrainAs(bulletPoints) {
+                        top.linkTo(inputField.bottom, margin = marginLarge)
+                        start.linkTo(parent.start, margin = marginMedium)
+                        end.linkTo(parent.end, margin = marginMedium)
+                        width = Dimension.fillToConstraints
+                    },
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
+            ) {
+                WooPosText(
+                    text = stringResource(step.messageTwoRes),
+                    style = WooPosTypography.BodyLarge,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                step.bulletPointsRes.forEach { bulletPointRes ->
+                    BulletPointItem(text = stringResource(bulletPointRes))
+                }
+            }
+        }
+
+        WooPosButton(
+            onClick = onPrimaryClick,
+            text = stringResource(step.primaryButtonTextRes),
+            modifier = Modifier.constrainAs(button) {
+                if (isInputFieldFocused) {
+                    top.linkTo(bulletPoints.bottom, margin = marginLarge)
+                } else {
+                    top.linkTo(inputField.bottom, margin = marginLarge)
+                }
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            },
+            state = if (isInputFieldFocused) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
+        )
+    }
+}
+
+@Composable
 private fun BulletPointItem(text: String) {
     WooPosText(
         text = "• $text",
@@ -848,7 +991,6 @@ fun WooPosScanningSetupTestScannerStep() {
                 barcodeValue = "123456789012",
                 secondaryButtonText = "Skip",
                 onSecondaryClick = {},
-                onBarcodeScanned = {}
             )
         }
     }
@@ -906,7 +1048,22 @@ fun WooPosScanningSetupTestBarcodeContent() {
                 title = "Scanner Mode Setup",
                 message = "Follow the instructions to set up your scanner in HID mode.",
                 barcodeValue = "123456789012",
-                onBarcodeScanned = {},
+            )
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosScanningSetupSoftwareKeyboardContent() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            SoftwareKeyboardSetupContent(
+                step = ScanningSetupStep.SoftwareKeyboardSetup,
+                onPrimaryClick = {}
             )
         }
     }

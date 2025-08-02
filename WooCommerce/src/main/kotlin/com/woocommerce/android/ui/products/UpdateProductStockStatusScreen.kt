@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
-import com.woocommerce.android.ui.compose.component.WcExposedDropDown
+import com.woocommerce.android.ui.compose.component.WCExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Companion.AVAILABLE_STOCK_STATUSES
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState
@@ -157,8 +157,8 @@ fun StockStatusDropdown(
 
     val initialStatusDisplayString = stringResource(id = currentProductStockStatus.stringResource)
 
-    WcExposedDropDown(
-        items = displayStringToStatusMap.keys.toTypedArray(),
+    WCExposedDropDown(
+        items = displayStringToStatusMap.keys,
         onSelected = { selectedString ->
             displayStringToStatusMap[selectedString]?.let { onSelectionChanged(it) }
         },

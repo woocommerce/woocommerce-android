@@ -12,13 +12,10 @@ import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
-import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -29,110 +26,11 @@ class OrderSqlUtilsTest {
         val config = SingleStoreWellSqlConfigForTests(
                 appContext,
                 listOf(
-                        WCOrderStatusModel::class.java,
                         WCOrderShipmentTrackingModel::class.java,
                         SiteModel::class.java),
                 WellSqlConfig.ADDON_WOOCOMMERCE)
         WellSql.init(config)
         config.reset()
-    }
-
-    @Test
-    fun testInsertOrUpdateOrderStatusOptions() {
-        val siteModel = SiteModel().apply { id = 1 }
-        val optionsJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order_status_options.json")
-        val orderStatusOptions = OrderTestUtils.getOrderStatusOptionsFromJson(optionsJson, siteModel.id)
-        assertEquals(8, orderStatusOptions.size)
-
-        // Save first option to the database, retrieve and verify fields
-        val firstOption = orderStatusOptions[0]
-        var rowsAffected = OrderSqlUtils.insertOrUpdateOrderStatusOption(firstOption)
-        assertEquals(1, rowsAffected)
-        val firstOptionDb = OrderSqlUtils.getOrderStatusOptionsForSite(siteModel).first()
-        assertNotNull(firstOptionDb)
-        assertEquals(firstOptionDb.localSiteId, firstOption.id)
-        assertEquals(firstOptionDb.statusKey, firstOption.statusKey)
-        assertEquals(firstOptionDb.label, firstOption.label)
-        assertEquals(firstOptionDb.statusCount, firstOption.statusCount)
-
-        // Save full list, but only all but the first 2 should be inserted
-        rowsAffected = orderStatusOptions.sumBy { OrderSqlUtils.insertOrUpdateOrderStatusOption(it) }
-        assertEquals(8, rowsAffected)
-
-        // Update a single option
-        val newLabel = "New Label"
-        firstOption.apply { label = newLabel }
-        rowsAffected = OrderSqlUtils.insertOrUpdateOrderStatusOption(firstOption)
-        assertEquals(1, rowsAffected)
-        val newFirstOption = OrderSqlUtils.getOrderStatusOptionsForSite(siteModel).first {
-            it.statusKey == firstOption.statusKey
-        }
-        assertEquals(firstOption.label, newFirstOption.label)
-        assertEquals(firstOption.statusCount, newFirstOption.statusCount)
-
-        // Get order status options from the database
-        val orderStatusOptionsDb = OrderSqlUtils.getOrderStatusOptionsForSite(siteModel)
-        assertEquals(8, orderStatusOptionsDb.size)
-    }
-
-    @Test
-    fun testDeleteOrderStatusOption() {
-        val siteModel = SiteModel().apply { id = 1 }
-        val optionsJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order_status_options.json")
-        val orderStatusOptions = OrderTestUtils.getOrderStatusOptionsFromJson(optionsJson, siteModel.id)
-        assertEquals(8, orderStatusOptions.size)
-
-        // Save the full list to the database
-        var rowsAffected = orderStatusOptions.sumBy { OrderSqlUtils.insertOrUpdateOrderStatusOption(it) }
-        assertEquals(8, rowsAffected)
-
-        // Delete the first option from the database
-        val firstOption = orderStatusOptions[0]
-        rowsAffected = OrderSqlUtils.deleteOrderStatusOption(firstOption)
-        assertEquals(1, rowsAffected)
-
-        // Fetch list and verify first option is not present
-        val allOptions = OrderSqlUtils.getOrderStatusOptionsForSite(siteModel)
-        assertEquals(7, allOptions.size)
-        assertFalse { allOptions.contains(firstOption) }
-    }
-
-    @Test
-    fun testGetOrderStatusOption() {
-        val siteModel = SiteModel().apply { id = 1 }
-        val optionsJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order_status_options.json")
-        val orderStatusOptions = OrderTestUtils.getOrderStatusOptionsFromJson(optionsJson, siteModel.id)
-        assertEquals(8, orderStatusOptions.size)
-
-        // Save the full list to the database
-        val rowsAffected = orderStatusOptions.sumBy { OrderSqlUtils.insertOrUpdateOrderStatusOption(it) }
-        assertEquals(8, rowsAffected)
-
-        // Get the first option from the database by the status key
-        val firstOption = OrderSqlUtils.getOrderStatusOptionForSiteByKey(siteModel, orderStatusOptions[0].statusKey)
-        assertNotNull(firstOption)
-        assertEquals(firstOption.label, orderStatusOptions[0].label)
-        assertEquals(firstOption.statusCount, orderStatusOptions[0].statusCount)
-    }
-
-    @Test
-    fun testGetOrderStatusOptions_Empty() {
-        val siteModel = SiteModel().apply { id = 1 }
-
-        // Attempt to fetch order status options from database.
-        // No options will be available.
-        val options = OrderSqlUtils.getOrderStatusOptionsForSite(siteModel)
-        assertNotNull(options)
-        assertEquals(0, options.size)
-    }
-
-    @Test
-    fun testGetOrderStatusOption_NotExists() {
-        val siteModel = SiteModel().apply { id = 1 }
-
-        // Get the first option from the database by the status key
-        val option = OrderSqlUtils.getOrderStatusOptionForSiteByKey(siteModel, "missing")
-        assertNull(option)
     }
 
     @Test

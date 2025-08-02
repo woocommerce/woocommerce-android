@@ -12,12 +12,10 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
-import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderNoteApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderShipmentTrackingApiResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderStatusApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderSummaryApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.toDataModel
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -68,19 +66,6 @@ object OrderTestUtils {
         val converted = Gson().fromJson(json, responseType) as? List<OrderNoteApiResponse> ?: emptyList()
         return converted.map {
             it.toDataModel(localSiteId = LocalId(localSiteId), orderId = RemoteId(orderId))
-        }
-    }
-
-    fun getOrderStatusOptionsFromJson(json: String, siteId: Int): List<WCOrderStatusModel> {
-        val responseType = object : TypeToken<List<OrderStatusApiResponse>>() {}.type
-        val converted = Gson().fromJson(json, responseType) as? List<OrderStatusApiResponse> ?: emptyList()
-        return converted.map {
-            WCOrderStatusModel().apply {
-                localSiteId = siteId
-                statusKey = it.slug ?: ""
-                label = it.name ?: ""
-                statusCount = it.total
-            }
         }
     }
 
