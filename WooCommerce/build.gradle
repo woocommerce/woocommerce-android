@@ -303,6 +303,8 @@ dependencies {
     implementation(libs.google.mlkit.text.recognition.chinese)
     implementation(libs.google.mlkit.text.recognition.korean)
 
+    implementation(libs.google.play.services.mlkit.subject.segmentation)
+
     implementation(libs.google.mlkit.barcode.scanning)
 
     implementation(libs.google.zxing.core)
