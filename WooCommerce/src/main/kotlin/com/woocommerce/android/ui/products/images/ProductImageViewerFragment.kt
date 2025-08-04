@@ -137,7 +137,9 @@ class ProductImageViewerFragment :
                 remoteMediaId = pagerAdapter.images[position].id
             }
         }
-        binding.viewPager.registerOnPageChangeCallback(pageChangeCallback!!)
+        pageChangeCallback?.let {
+            binding.viewPager.registerOnPageChangeCallback(it)
+        }
     }
 
     private fun resetAdapter() {
