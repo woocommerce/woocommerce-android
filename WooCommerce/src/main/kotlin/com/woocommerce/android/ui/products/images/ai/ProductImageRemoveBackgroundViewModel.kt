@@ -9,6 +9,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -50,9 +51,19 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
 
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(errorMessage))
                     triggerEvent(MultiLiveEvent.Event.Exit)
+                    trackError(error)
                 }
             )
         }
+    }
+
+    private fun CoroutineScope.trackError(error: Throwable) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_ERROR,
+            errorContext = this.javaClass.simpleName,
+            errorType = error.message,
+            errorDescription = error.message
+        )
     }
 
     fun onSaveImageTapped() {
