@@ -93,7 +93,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         )
     }
     private val variationSelectorRepository: VariationSelectorRepository = mock()
-    private val resourceProvider: ResourceProvider = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doReturn "Not supported"
+    }
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val productSelectorTracker: ProductSelectorTracker = ProductSelectorTracker(tracker)
     private val orderStore: WCOrderStore = mock()
@@ -1584,6 +1586,106 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         selectedVariationIds = emptySet(),
         selectionState = SelectionState.SELECTED
     )
+
+    @Test
+    fun `given subscription product, when displayed in list, then should have disabled selection state`() = testBlocking {
+        val subscriptionProduct = generateProduct(
+            productId = 123L,
+            productType = "subscription",
+            productName = "Test Subscription"
+        )
+
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        )
+
+        whenever(listHandler.productsFlow).thenReturn(flowOf(listOf(subscriptionProduct)))
+        whenever(resourceProvider.getString(any()))
+            .thenReturn("Not supported")
+
+        val sut = createViewModel(navArgs.toSavedStateHandle())
+
+        val viewState = sut.viewState.getOrAwaitValue()
+        val productItem = viewState.products.first() as ProductListItem
+
+        assertTrue(productItem.selectionState is SelectionState.DISABLED)
+        assertThat((productItem.selectionState as SelectionState.DISABLED).reason).isEqualTo("Not supported")
+    }
+
+    @Test
+    fun `given variable subscription product, when displayed in list, then should have disabled selection state`() = testBlocking {
+        val variableSubscriptionProduct = generateProduct(
+            productId = 124L,
+            productType = "variable-subscription",
+            productName = "Test Variable Subscription",
+            isVariable = true,
+            variationIds = "[1,2]"
+        )
+
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        )
+
+        whenever(listHandler.productsFlow).thenReturn(flowOf(listOf(variableSubscriptionProduct)))
+        whenever(resourceProvider.getString(any()))
+            .thenReturn("Not supported")
+
+        val sut = createViewModel(navArgs.toSavedStateHandle())
+
+        val viewState = sut.viewState.getOrAwaitValue()
+        val productItem = viewState.products.first() as ProductListItem
+
+        assertTrue(productItem.selectionState is SelectionState.DISABLED)
+        assertThat((productItem.selectionState as SelectionState.DISABLED).reason).isEqualTo("Not supported")
+    }
+
+    @Test
+    fun `given subscription product, when clicked, then should not trigger any action`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        )
+
+        val sut = createViewModel(navArgs.toSavedStateHandle())
+
+        val productItem = ProductListItem(
+            productId = 125L,
+            title = "Test Subscription",
+            type = ProductType.SUBSCRIPTION,
+            numVariations = 0,
+            selectionState = SelectionState.DISABLED("Not supported")
+        )
+
+        sut.onProductClick(productItem, ProductSourceForTracking.ALPHABETICAL)
+
+        // Verify no navigation event was triggered
+        assertThat(sut.event.value).isNull()
+    }
+
+    @Test
+    fun `given simple product, when displayed in list, then should have unselected selection state`() = testBlocking {
+        val simpleProduct = generateProduct(
+            productId = 126L,
+            productType = "simple",
+            productName = "Test Simple Product"
+        )
+
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        )
+
+        whenever(listHandler.productsFlow).thenReturn(flowOf(listOf(simpleProduct)))
+
+        val sut = createViewModel(navArgs.toSavedStateHandle())
+
+        val viewState = sut.viewState.getOrAwaitValue()
+        val productItem = viewState.products.first() as ProductListItem
+
+        assertThat(productItem.selectionState).isEqualTo(SelectionState.UNSELECTED)
+    }
 
     private fun createViewModel(navArgs: SavedStateHandle) =
         ProductSelectorViewModel(
