@@ -303,6 +303,8 @@ dependencies {
     implementation(libs.google.mlkit.text.recognition.chinese)
     implementation(libs.google.mlkit.text.recognition.korean)
 
+    implementation(libs.google.play.services.mlkit.subject.segmentation)
+
     implementation(libs.google.mlkit.barcode.scanning)
 
     implementation(libs.google.zxing.core)
@@ -356,10 +358,16 @@ dependencies {
         androidTestImplementation(libs.jetty.webapp) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
+        androidTestImplementation(libs.jetty.server) {
+            because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
+        }
         androidTestImplementation(libs.jackson.databind) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
         androidTestImplementation(libs.json.path) {
+            because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
+        }
+        androidTestImplementation(libs.json.smart) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
         androidTestImplementation(libs.commons.fileupload) {

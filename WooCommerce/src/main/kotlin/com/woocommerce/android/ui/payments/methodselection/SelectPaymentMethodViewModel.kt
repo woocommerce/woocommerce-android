@@ -430,9 +430,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private suspend fun getStatusModel(statusKey: String) = withContext(dispatchers.io) {
         orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), statusKey)
-            ?: WCOrderStatusModel(statusKey = statusKey).apply {
-                label = statusKey
-            }
+            ?: WCOrderStatusModel(statusKey = statusKey, label = statusKey)
     }
 
     private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit() {

@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,7 +17,9 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun EditGiftCardScreen(viewModel: OrderCreateEditGiftCardViewModel) {
@@ -58,14 +58,12 @@ fun EditGiftCardScreen(
             modifier = modifier.fillMaxWidth()
         )
 
-        Button(
-            modifier = modifier
-                .fillMaxWidth(),
+        WCColoredButton(
             onClick = onDoneClicked,
-            enabled = isValidCode
-        ) {
-            Text(stringResource(id = R.string.apply))
-        }
+            text = stringResource(id = R.string.apply),
+            enabled = isValidCode,
+            modifier = modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -73,5 +71,7 @@ fun EditGiftCardScreen(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun EditGiftCardScreenPreview() {
-    EditGiftCardScreen("XPTO-1234-ABCD-XPTO", true, {}, {})
+    WooThemeWithBackground {
+        EditGiftCardScreen("XPTO-1234-ABCD-XPTO", true, {}, {})
+    }
 }

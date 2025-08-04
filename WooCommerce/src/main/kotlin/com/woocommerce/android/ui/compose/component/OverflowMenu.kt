@@ -3,15 +3,15 @@ package com.woocommerce.android.ui.compose.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +33,7 @@ fun <T> WCOverflowMenu(
     modifier: Modifier = Modifier,
     mapper: @Composable (T) -> String = { it.toString() },
     itemColor: @Composable (T) -> Color = { LocalContentColor.current },
-    tint: Color = MaterialTheme.colors.primary
+    tint: Color = MaterialTheme.colorScheme.primary
 ) {
     var showMenu by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
@@ -54,16 +54,18 @@ fun <T> WCOverflowMenu(
         ) {
             items.forEachIndexed { index, item ->
                 DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = mapper(item),
+                            color = itemColor(item),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    },
                     onClick = {
                         showMenu = false
                         onSelected(item)
                     }
-                ) {
-                    Text(
-                        text = mapper(item),
-                        color = itemColor(item)
-                    )
-                }
+                )
                 if (index < items.size - 1) {
                     Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
                 }

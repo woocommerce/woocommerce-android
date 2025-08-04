@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -24,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -161,7 +161,7 @@ private fun PrintShippingLabelCard(
                 .fillMaxWidth()
                 .padding(top = 12.dp, bottom = 4.dp),
             colors = buttonColors(
-                backgroundColor = colorResource(id = R.color.woo_shipping_label_success),
+                containerColor = colorResource(id = R.color.woo_shipping_label_success),
                 contentColor = colorResource(id = R.color.woo_white)
             )
         )

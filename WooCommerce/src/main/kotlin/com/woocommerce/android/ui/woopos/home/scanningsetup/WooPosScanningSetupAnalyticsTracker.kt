@@ -118,6 +118,7 @@ class WooPosScanningSetupAnalyticsTracker @Inject constructor(
             is ScanningSetupStep.TestYourScanner -> "test_barcode"
             is ScanningSetupStep.TestYourScannerScanFailed -> "test_scan_failed"
             is ScanningSetupStep.TestYourScannerTimeout -> "test_scan_timed_out"
+            is ScanningSetupStep.SoftwareKeyboardSetup -> "software_keyboard_setup"
             is ScanningSetupStep.ScannerSetupSuccess -> "setup_complete"
         }
     }

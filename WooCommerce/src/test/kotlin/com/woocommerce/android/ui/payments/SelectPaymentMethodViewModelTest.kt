@@ -85,7 +85,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
     private val orderStore: WCOrderStore = mock {
         onBlocking { getOrderByIdAndSite(any(), any()) }.thenReturn(orderEntity)
-        on { getOrderStatusForSiteAndKey(any(), any()) }.thenReturn(mock())
+        onBlocking { getOrderStatusForSiteAndKey(any(), any()) }.thenReturn(mock())
         onBlocking { updateOrderStatus(any(), any(), any()) }.thenReturn(
             flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
         )

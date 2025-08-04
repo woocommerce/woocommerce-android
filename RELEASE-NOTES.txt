@@ -6,6 +6,10 @@
 -----
 - [*] Add search functionality to application log viewer [https://github.com/woocommerce/woocommerce-android/pull/14386]
 - [*] Edge to edge support to application log viewer [https://github.com/woocommerce/woocommerce-android/pull/14406]
+- [**] You can now access POS mode faster than ever with the new POS tab in the app’s bottom navigation bar—just one tap and you’re in. It’s fully available in the UK and US! [https://github.com/woocommerce/woocommerce-android/pull/14337]
+- [*] Add search functionality to application log viewer [https://github.com/woocommerce/woocommerce-android/pull/14386]
+- [*] POS: Extra step into the barcode scanner setup flow to explain how to setup software keyboard [https://github.com/woocommerce/woocommerce-android/pull/14395]
+- [Internal] Introduced Material 3 based theme and migrated some components to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/14401]
 
 22.9.1
 -----
