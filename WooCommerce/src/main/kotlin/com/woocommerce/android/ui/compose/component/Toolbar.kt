@@ -92,7 +92,6 @@ fun Toolbar(
                 Icon(
                     imageVector = actionButtonIcon,
                     contentDescription = actionIconContentDescription,
-                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
