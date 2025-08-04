@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIATION
@@ -265,6 +266,13 @@ class ProductSelectorViewModel @Inject constructor(
 
     private fun Product.getProductSelection(selectedItems: Collection<SelectedItem>): SelectionState {
         return when {
+            productType == SUBSCRIPTION ||
+                productType == VARIABLE_SUBSCRIPTION -> {
+                SelectionState.DISABLED(
+                    resourceProvider.getString(R.string.product_selector_subscription_not_supported)
+                )
+            }
+
             isVariable() && numVariations > 0 -> {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
@@ -304,7 +312,7 @@ class ProductSelectorViewModel @Inject constructor(
             imageUrl = firstImageUrl,
             sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,
-            selectionState = getProductSelection(selectedItems)
+            selectionState = getProductSelection(selectedItems),
         )
 
     private fun Product.createConfigurableListItem(stockAndPrice: String, selectedItems: Collection<SelectedItem>) =
@@ -315,7 +323,7 @@ class ProductSelectorViewModel @Inject constructor(
             imageUrl = firstImageUrl,
             sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,
-            selectionState = getProductSelection(selectedItems)
+            selectionState = getProductSelection(selectedItems),
         )
 
     private fun Product.createProductListItem(stockAndPrice: String, selectedItems: Collection<SelectedItem>) =
@@ -328,7 +336,7 @@ class ProductSelectorViewModel @Inject constructor(
             stockAndPrice = stockAndPrice,
             numVariations = numVariations,
             selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
-            selectionState = getProductSelection(selectedItems)
+            selectionState = getProductSelection(selectedItems),
         )
 
     private fun Product.toSimpleUiModel(selectedItems: Collection<SelectedItem>): ListItem {
@@ -344,7 +352,7 @@ class ProductSelectorViewModel @Inject constructor(
             sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,
             numVariations = 0,
-            selectionState = if (selectedItems.any { it.id == remoteId }) SELECTED else UNSELECTED
+            selectionState = getProductSelection(selectedItems),
         )
     }
 
@@ -635,9 +643,9 @@ class ProductSelectorViewModel @Inject constructor(
                 orderCurrency = navArgs.orderCurrency
             ).onFailure {
                 val message = if (query.isEmpty()) {
-                    string.product_selector_loading_failed
+                    R.string.product_selector_loading_failed
                 } else {
-                    string.product_selector_search_failed
+                    R.string.product_selector_search_failed
                 }
                 triggerEvent(ShowSnackbar(message))
             }
@@ -722,7 +730,7 @@ class ProductSelectorViewModel @Inject constructor(
         open val imageUrl: String? = null,
         open val stockAndPrice: String? = null,
         open val sku: String? = null,
-        open val selectionState: SelectionState = UNSELECTED
+        open val selectionState: SelectionState = UNSELECTED,
     ) {
         data class ProductListItem(
             val productId: Long,
@@ -733,7 +741,7 @@ class ProductSelectorViewModel @Inject constructor(
             override val imageUrl: String? = null,
             override val stockAndPrice: String? = null,
             override val sku: String? = null,
-            override val selectionState: SelectionState = UNSELECTED
+            override val selectionState: SelectionState = UNSELECTED,
         ) : ListItem(
             id = productId,
             title = title,
@@ -741,7 +749,7 @@ class ProductSelectorViewModel @Inject constructor(
             imageUrl = imageUrl,
             stockAndPrice = stockAndPrice,
             sku = sku,
-            selectionState = selectionState
+            selectionState = selectionState,
         )
 
         data class VariationListItem(
@@ -752,7 +760,7 @@ class ProductSelectorViewModel @Inject constructor(
             override val imageUrl: String? = null,
             override val stockAndPrice: String? = null,
             override val sku: String? = null,
-            override val selectionState: SelectionState = UNSELECTED
+            override val selectionState: SelectionState = UNSELECTED,
         ) : ListItem(
             id = variationId,
             title = title,
@@ -760,7 +768,7 @@ class ProductSelectorViewModel @Inject constructor(
             imageUrl = imageUrl,
             stockAndPrice = stockAndPrice,
             sku = sku,
-            selectionState = selectionState
+            selectionState = selectionState,
         )
 
         data class ConfigurableListItem(
@@ -770,7 +778,7 @@ class ProductSelectorViewModel @Inject constructor(
             override val imageUrl: String? = null,
             override val stockAndPrice: String? = null,
             override val sku: String? = null,
-            override val selectionState: SelectionState = UNSELECTED
+            override val selectionState: SelectionState = UNSELECTED,
         ) : ListItem(
             id = productId,
             title = title,
@@ -778,7 +786,7 @@ class ProductSelectorViewModel @Inject constructor(
             imageUrl = imageUrl,
             stockAndPrice = stockAndPrice,
             sku = sku,
-            selectionState = selectionState
+            selectionState = selectionState,
         )
     }
 

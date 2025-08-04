@@ -315,15 +315,15 @@ private fun displayProductsSection(
                 title = product.title,
                 imageUrl = product.imageUrl,
                 infoLine1 = product.getInformation(),
-                infoLine2 = product.sku?.let {
+                infoLine2 = product.disabledReason ?: product.sku?.let {
                     stringResource(string.product_selector_sku_value, it)
                 },
                 selectionState = product.selectionState,
-                isArrowVisible = product.hasVariations(),
+                isArrowVisible = product.hasVariations() && product.enabled,
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description),
                 isCogwheelVisible = product is ListItem.ConfigurableListItem,
-                enabled = state.selectionEnabled,
+                enabled = state.selectionEnabled && product.enabled,
                 onEditConfiguration = {
                     (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                 }
@@ -437,15 +437,15 @@ private fun ProductList(
                     title = product.title,
                     imageUrl = product.imageUrl,
                     infoLine1 = product.getInformation(),
-                    infoLine2 = product.sku?.let {
+                    infoLine2 = product.disabledReason ?: product.sku?.let {
                         stringResource(string.product_selector_sku_value, it)
                     },
                     selectionState = product.selectionState,
-                    isArrowVisible = product.hasVariations(),
+                    isArrowVisible = product.hasVariations() && product.enabled,
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = product is ListItem.ConfigurableListItem,
-                    enabled = state.selectionEnabled,
+                    enabled = state.selectionEnabled && product.enabled,
                     onEditConfiguration = {
                         (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                     }
@@ -512,6 +512,12 @@ private fun SelectionConfirmButton(
 
 private fun ListItem.hasVariations() =
     this is ListItem.ProductListItem && (type == VARIABLE || type == VARIABLE_SUBSCRIPTION) && numVariations > 0
+
+private val ListItem.enabled: Boolean
+    get() = selectionState !is SelectionState.DISABLED
+
+private val ListItem.disabledReason: String?
+    get() = (selectionState as? SelectionState.DISABLED)?.reason
 
 @Composable
 @Suppress("MagicNumber")
