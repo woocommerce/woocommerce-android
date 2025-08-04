@@ -57,7 +57,7 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
         }
     }
 
-    private fun CoroutineScope.trackError(error: Throwable) {
+    private fun trackError(error: Throwable) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_ERROR,
             errorContext = this.javaClass.simpleName,
