@@ -93,7 +93,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         )
     }
     private val variationSelectorRepository: VariationSelectorRepository = mock()
-    private val resourceProvider: ResourceProvider = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doReturn "Not supported"
+    }
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val productSelectorTracker: ProductSelectorTracker = ProductSelectorTracker(tracker)
     private val orderStore: WCOrderStore = mock()
