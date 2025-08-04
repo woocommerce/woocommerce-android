@@ -14,7 +14,6 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigation.NavigationBarView.OnItemReselectedListener
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
