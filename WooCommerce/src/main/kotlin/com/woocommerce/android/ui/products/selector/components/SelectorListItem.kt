@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
+import com.woocommerce.android.ui.products.selector.SelectionState.DISABLED
 
 @Composable
 fun SelectorListItem(
@@ -82,6 +83,7 @@ fun SelectorListItem(
             SELECTED -> drawable.ic_rounded_checkbox_checked
             UNSELECTED -> drawable.ic_rounded_checkbox_unchecked
             PARTIALLY_SELECTED -> drawable.ic_rounded_checkbox_partially_checked
+            is DISABLED -> drawable.ic_rounded_checkbox_unchecked
         }
         Crossfade(
             targetState = selectionDrawable,
