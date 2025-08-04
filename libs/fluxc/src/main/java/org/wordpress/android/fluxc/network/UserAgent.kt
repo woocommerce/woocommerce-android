@@ -2,6 +2,8 @@ package org.wordpress.android.fluxc.network
 
 import android.content.Context
 import android.webkit.WebSettings
+import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -14,7 +16,8 @@ import kotlin.time.Duration.Companion.seconds
 class UserAgent(
     private val appContext: Context,
     private val appName: String,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    bgDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
     private var defaultUserAgent: String = System.getProperty("http.agent") ?: ""
     private val appVersionName
@@ -29,10 +32,10 @@ class UserAgent(
      *    wp-android/4.7"
      */
     val userAgent: String
-        get() = "$defaultUserAgent $appVersionName"
+        get() = "$defaultUserAgent $appVersionName".trim()
 
     init {
-        coroutineScope.launch(Dispatchers.Default) {
+        coroutineScope.launch(bgDispatcher) {
             initUserAgent()
         }
     }
@@ -78,6 +81,7 @@ class UserAgent(
     override fun toString(): String = userAgent
 
     companion object {
-        private const val PREF_KEY = "user_agent"
+        @VisibleForTesting
+        internal const val PREF_KEY = "user_agent"
     }
 }
