@@ -59,7 +59,7 @@ fun Toolbar(
 ) {
     Toolbar(
         modifier = modifier,
-        title = { Text(title, style = MaterialTheme.typography.headlineSmall) },
+        title = { Text(title) },
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
@@ -82,7 +82,7 @@ fun Toolbar(
 ) {
     Toolbar(
         modifier = modifier,
-        title = { Text(title, style = MaterialTheme.typography.headlineSmall) },
+        title = { Text(title) },
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
@@ -112,7 +112,7 @@ fun Toolbar(
 ) {
     Toolbar(
         modifier = modifier,
-        title = { Text(title, style = MaterialTheme.typography.headlineSmall) },
+        title = { Text(title) },
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
@@ -135,7 +135,7 @@ fun Toolbar(
 ) {
     Toolbar(
         modifier = modifier,
-        title = { Text(title, style = MaterialTheme.typography.headlineSmall) },
+        title = { Text(title) },
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
