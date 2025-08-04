@@ -134,14 +134,12 @@ fun WooLogViewerScreen(
                             Icon(
                                 imageVector = Icons.Filled.ContentCopy,
                                 contentDescription = stringResource(id = R.string.copy),
-                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                         IconButton(onClick = { onShareButtonClick() }) {
                             Icon(
                                 imageVector = Icons.Filled.Share,
                                 contentDescription = stringResource(id = R.string.share),
-                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     }

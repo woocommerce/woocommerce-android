@@ -164,7 +164,7 @@ fun Toolbar(
             containerColor = colorResource(id = R.color.color_toolbar),
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-            actionIconContentColor = MaterialTheme.colorScheme.onSurface
+            actionIconContentColor = MaterialTheme.colorScheme.primary,
         ),
         title = title,
         navigationIcon = {
