@@ -83,6 +83,7 @@ jackson-databind = '2.12.7.1'
 java = '11'
 jetty = '9.4.57.v20241219'
 json-path = '2.9.0'
+json-smart = '2.5.2'
 junit = '4.13.2'
 lottie = '5.2.0'
 kotlin = '2.1.10'
@@ -246,6 +247,7 @@ jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-datab
 jetty-webapp = { group = "org.eclipse.jetty", name = "jetty-webapp", version.ref = "jetty" }
 jetty-server = { group = "org.eclipse.jetty", name = "jetty-server", version.ref = "jetty" }
 json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "json-path" }
+json-smart = { group = "net.minidev", name = "json-smart", version.ref = "json-smart" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
