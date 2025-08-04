@@ -43,7 +43,8 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
             selectedSite = selectedSite,
             wooCommerceStore = wooCommerceStore,
             isScreenSizeAllowed = isScreenSizeAllowed,
-            isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled
+            isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
+            wooPosLog = mock()
         )
     }
 
