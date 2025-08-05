@@ -592,7 +592,7 @@ private fun WooPosItemsEmptyListInternal(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                modifier = Modifier.size(104.dp),
+                modifier = Modifier.size(148.dp),
                 painter = icon,
                 contentDescription = contentDescription,
             )
