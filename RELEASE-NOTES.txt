@@ -9,6 +9,7 @@
 - [*] POS: Extra step into the barcode scanner setup flow to explain how to setup software keyboard [https://github.com/woocommerce/woocommerce-android/pull/14395]
 - [Internal] Introduced Material 3 based theme and migrated some components to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/14401]
 - [Internal] Added logging to POS tab visibility and eligibility checks [https://github.com/woocommerce/woocommerce-android/pull/14426]
+- [*] Shipping labels: Improved the error message for empty shipping rates list [https://github.com/woocommerce/woocommerce-android/pull/14433]
 
 22.9.1
 -----
