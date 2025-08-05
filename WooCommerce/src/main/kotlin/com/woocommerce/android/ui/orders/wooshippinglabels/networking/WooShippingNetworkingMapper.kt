@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodO
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
@@ -58,7 +59,7 @@ class WooShippingNetworkingMapper @Inject constructor(
                 canEditSettings = formMeta.canEditSettings,
                 storeOwnerName = formMeta.masterUserName,
                 storeOwnerUsername = formMeta.masterUserWpcomLogin,
-                paperSize = formData.paperSize,
+                paperSize = formData.paperSize ?: WooShippingLabelPaperSize.LABEL,
                 lastOrderCompleted = userMeta.lastOrderCompleted
             )
         }
