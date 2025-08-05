@@ -47,7 +47,7 @@ class UserAgentTest {
                 runCurrent()
 
                 // Verify the cached user agent is used
-                assertEquals("$CACHED_USER_AGENT $APP_NAME/$APP_VERSION", result.userAgent)
+                assertEquals("$CACHED_USER_AGENT $APP_NAME/$APP_VERSION", result.apiUserAgent)
             }
         }
     }
@@ -86,7 +86,7 @@ class UserAgentTest {
                     runCurrent()
 
                     // Verify the system user agent is used
-                    assertEquals("$SYSTEM_USER_AGENT $APP_NAME/$APP_VERSION", result.userAgent)
+                    assertEquals("$SYSTEM_USER_AGENT $APP_NAME/$APP_VERSION", result.apiUserAgent)
                 }
             }
         }
@@ -102,13 +102,13 @@ class UserAgentTest {
 
                     // Initially it should use the cached value
                     runCurrent()
-                    assertEquals("$CACHED_USER_AGENT $APP_NAME/$APP_VERSION", result.userAgent)
+                    assertEquals("$CACHED_USER_AGENT $APP_NAME/$APP_VERSION", result.apiUserAgent)
 
                     // After delay, it should update with the new value from WebSettings
                     advanceTimeBy(15000)
                     runCurrent()
 
-                    assertEquals("$USER_AGENT $APP_NAME/$APP_VERSION", result.userAgent)
+                    assertEquals("$USER_AGENT $APP_NAME/$APP_VERSION", result.apiUserAgent)
                     // Verify the user agent is saved to SharedPreferences
                     assertEquals(USER_AGENT, getFluxCPreferences(context).getString(UserAgent.PREF_KEY, null))
                 }

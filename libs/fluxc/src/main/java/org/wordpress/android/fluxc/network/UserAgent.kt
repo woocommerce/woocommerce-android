@@ -15,7 +15,7 @@ class UserAgent(
     /**
      * User-Agent string when making API requests.
      */
-    val userAgent: String by lazy {
+    val apiUserAgent: String by lazy {
         val systemUserAgent = System.getProperty("http.agent") ?: ""
         "$appVersionName $systemUserAgent".trim()
     }
@@ -28,5 +28,5 @@ class UserAgent(
         "$appVersionName $systemUserAgent".trim()
     }
 
-    override fun toString(): String = userAgent
+    override fun toString(): String = apiUserAgent
 }
