@@ -99,6 +99,19 @@ class WooPosHomeViewModel @Inject constructor(
                     isOrdersVisible = false
                 )
             }
+            
+            is WooPosHomeUIEvent.ShowOrderDetails -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.OrderDetailsDialog(event.order),
+                    isOrdersVisible = false
+                )
+            }
+            
+            WooPosHomeUIEvent.DismissOrderDetails -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+            }
 
             is WooPosHomeUIEvent.OnBarcodeEvent -> {
                 sendEventToChildren(ParentToChildrenEvent.BarcodeEvent(event.result))
@@ -112,6 +125,16 @@ class WooPosHomeViewModel @Inject constructor(
                 isOrdersVisible = false
             )
             return
+        }
+        
+        when (_state.value.dialogState) {
+            is DialogState.OrderDetailsDialog -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+                return
+            }
+            else -> {}
         }
         
         when (_state.value.screenPositionState) {

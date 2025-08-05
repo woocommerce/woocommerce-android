@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.orders
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
-    private val repository: WooPosOrdersRepository
+    private val repository: WooPosOrdersRepository,
+    val currencyFormatter: CurrencyFormatter
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(WooPosOrdersState())
@@ -67,4 +69,8 @@ data class WooPosOrdersState(
     val orders: List<Order> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
-)
+) {
+    fun formatPrice(order: Order, currencyFormatter: CurrencyFormatter): String {
+        return currencyFormatter.formatCurrency(order.total, order.currency)
+    }
+}

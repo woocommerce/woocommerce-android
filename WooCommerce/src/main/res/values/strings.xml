@@ -4344,6 +4344,15 @@
     <string name="woopos_orders_empty_list">No orders found</string>
     <string name="woopos_orders_history_icon_content_description">Orders history</string>
     <string name="woopos_orders_search_hint">Search orders</string>
+    <string name="woopos_order_details_dialog_content_description">Order details dialog</string>
+    <string name="woopos_order_details_title">Order #%s</string>
+    <string name="woopos_order_details_order_number">Order Number</string>
+    <string name="woopos_order_details_date">Date</string>
+    <string name="woopos_order_details_status">Status</string>
+    <string name="woopos_order_details_total">Total</string>
+    <string name="woopos_order_details_payment_method">Payment Method</string>
+    <string name="woopos_order_details_refund_button">Refund</string>
+    <string name="woopos_order_details_receipt_button">Receipt</string>
     <string name="woopos_items_in_cart">%d item</string>
     <string name="woopos_items_in_cart_multiple">%d items</string>
     <string name="woopos_remove_cart_item_content_description">Remove this item from the cart</string>

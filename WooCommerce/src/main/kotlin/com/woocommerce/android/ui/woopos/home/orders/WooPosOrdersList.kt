@@ -168,7 +168,7 @@ private fun OrderItem(
                 }
 
                 WooPosText(
-                    text = order.total.toString(),
+                    text = state.formatPrice(order, viewModel.currencyFormatter),
                     style = WooPosTypography.BodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,

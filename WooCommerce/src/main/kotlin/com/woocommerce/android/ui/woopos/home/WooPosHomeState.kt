@@ -60,6 +60,9 @@ data class WooPosHomeState(
         data object ScanningSetupDialog : DialogState()
 
         @Parcelize
+        data class OrderDetailsDialog(val order: com.woocommerce.android.model.Order) : DialogState()
+
+        @Parcelize
         data object ExitConfirmationDialog : DialogState() {
             @IgnoredOnParcel
             val title: Int = R.string.woopos_exit_dialog_confirmation_title

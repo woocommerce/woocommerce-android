@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosItemsScreenPreview
+import com.woocommerce.android.ui.woopos.home.orders.WooPosOrderDetailsDialog
 import com.woocommerce.android.ui.woopos.home.orders.WooPosOrdersScreen
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolbarStatusConnectedWithMenu
@@ -173,7 +174,8 @@ private fun WooPosHomeScreen(
         
         WooPosOrdersScreen(
             isVisible = state.isOrdersVisible,
-            onBackClick = { onHomeUIEvent(WooPosHomeUIEvent.CloseOrdersHistory) }
+            onBackClick = { onHomeUIEvent(WooPosHomeUIEvent.CloseOrdersHistory) },
+            onOrderClick = { order -> onHomeUIEvent(WooPosHomeUIEvent.ShowOrderDetails(order)) }
         )
     }
 }
@@ -205,6 +207,20 @@ private fun Dialogs(
         dismissButtonText = stringResource(id = WooPosHomeState.DialogState.ExitConfirmationDialog.confirmButton),
         onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
         onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
+    )
+    
+    WooPosOrderDetailsDialog(
+        isVisible = dialogState is WooPosHomeState.DialogState.OrderDetailsDialog,
+        order = (dialogState as? WooPosHomeState.DialogState.OrderDetailsDialog)?.order,
+        onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.DismissOrderDetails) },
+        onRefundClick = { order ->
+            // Handle refund click - for now just dismiss the dialog
+            onHomeUIEvent(WooPosHomeUIEvent.DismissOrderDetails)
+        },
+        onReceiptClick = { order ->
+            // Handle receipt click - for now just dismiss the dialog
+            onHomeUIEvent(WooPosHomeUIEvent.DismissOrderDetails)
+        }
     )
 }
 
