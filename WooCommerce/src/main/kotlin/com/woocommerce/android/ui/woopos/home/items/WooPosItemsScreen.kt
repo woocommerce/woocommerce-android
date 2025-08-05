@@ -84,6 +84,9 @@ private fun WooPosItemsScreen(
         onAddCouponEvent = {
             onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
         },
+        onOrdersHistoryClicked = {
+            onUIEvent(WooPosItemsUIEvent.OrdersHistoryClicked)
+        },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
         onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked) },
     )
@@ -100,6 +103,7 @@ private fun MainItemsList(
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onAddCouponEvent: () -> Unit,
     onBackClicked: () -> Unit,
+    onOrdersHistoryClicked: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -119,6 +123,7 @@ private fun MainItemsList(
                 onSearchEvent = onSearchEvent,
                 onBackClicked = onBackClicked,
                 onAddCouponEvent = onAddCouponEvent,
+                onOrdersHistoryClicked = onOrdersHistoryClicked,
             )
 
             val currentState = state.value

@@ -4340,6 +4340,10 @@
     <string name="woopos_dialog_exit_confirmation_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
+    <string name="woopos_orders_title">Orders</string>
+    <string name="woopos_orders_empty_list">No orders found</string>
+    <string name="woopos_orders_history_icon_content_description">Orders history</string>
+    <string name="woopos_orders_search_hint">Search orders</string>
     <string name="woopos_items_in_cart">%d item</string>
     <string name="woopos_items_in_cart_multiple">%d items</string>
     <string name="woopos_remove_cart_item_content_description">Remove this item from the cart</string>

@@ -71,6 +71,13 @@ class WooPosItemsViewModel @Inject constructor(
             }
 
             is WooPosItemsUIEvent.AddCouponIconClicked -> createAndAddCoupon()
+            WooPosItemsUIEvent.OrdersHistoryClicked -> onOrdersHistoryClicked()
+        }
+    }
+
+    private fun onOrdersHistoryClicked() {
+        viewModelScope.launch {
+            fromChildToParentEventSender.sendToParent(ChildToParentEvent.OrdersHistoryClicked)
         }
     }
 

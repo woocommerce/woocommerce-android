@@ -10,6 +10,7 @@ import kotlinx.parcelize.Parcelize
 data class WooPosHomeState(
     val screenPositionState: ScreenPositionState,
     val dialogState: DialogState = DialogState.Hidden,
+    val isOrdersVisible: Boolean = false,
 ) : Parcelable {
     @Parcelize
     sealed class ScreenPositionState : Parcelable {

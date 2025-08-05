@@ -93,6 +93,12 @@ class WooPosHomeViewModel @Inject constructor(
                     analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed)
                 }
             }
+            
+            WooPosHomeUIEvent.CloseOrdersHistory -> {
+                _state.value = _state.value.copy(
+                    isOrdersVisible = false
+                )
+            }
 
             is WooPosHomeUIEvent.OnBarcodeEvent -> {
                 sendEventToChildren(ParentToChildrenEvent.BarcodeEvent(event.result))
@@ -101,6 +107,13 @@ class WooPosHomeViewModel @Inject constructor(
     }
 
     private fun handleSystemBackClicked() {
+        if (_state.value.isOrdersVisible) {
+            _state.value = _state.value.copy(
+                isOrdersVisible = false
+            )
+            return
+        }
+        
         when (_state.value.screenPositionState) {
             ScreenPositionState.Checkout.CartWithTotals -> {
                 _state.value = _state.value.copy(
@@ -210,6 +223,12 @@ class WooPosHomeViewModel @Inject constructor(
                     ChildToParentEvent.BarcodeInfoMenuItemClicked -> {
                         _state.value = _state.value.copy(
                             dialogState = DialogState.ScanningSetupDialog
+                        )
+                    }
+                    
+                    ChildToParentEvent.OrdersHistoryClicked -> {
+                        _state.value = _state.value.copy(
+                            isOrdersVisible = true
                         )
                     }
 

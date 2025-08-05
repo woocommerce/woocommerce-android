@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ManageHistory
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +50,7 @@ fun WooPosItemsToolbar(
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onBackClicked: () -> Unit,
     onAddCouponEvent: () -> Unit,
+    onOrdersHistoryClicked: () -> Unit = {},
 ) {
     val isSearchOpen = (state.search as? SearchState.Visible)?.let {
         it.state is WooPosSearchInputState.Open
@@ -107,6 +109,20 @@ fun WooPosItemsToolbar(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+                    IconButton(
+                        onClick = onOrdersHistoryClicked,
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ManageHistory,
+                            contentDescription = stringResource(R.string.woopos_orders_history_icon_content_description),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
 
                     TabsRow(
                         tabs = state.tabs,
@@ -200,6 +216,7 @@ fun WooPosProductsToolbarPreview() {
             onSearchEvent = {},
             onAddCouponEvent = {},
             onBackClicked = {},
+            onOrdersHistoryClicked = {},
         )
     }
 }
@@ -228,6 +245,7 @@ fun WooPosCouponsToolbarPreview() {
             onSearchEvent = {},
             onAddCouponEvent = {},
             onBackClicked = {},
+            onOrdersHistoryClicked = {},
         )
     }
 }
@@ -264,6 +282,7 @@ fun WooPosItemsToolbarWithSearchPreview() {
             onSearchEvent = {},
             onAddCouponEvent = {},
             onBackClicked = {},
+            onOrdersHistoryClicked = {},
         )
     }
 }
@@ -292,6 +311,7 @@ fun WooPosItemsToolbarWithVariationsPreview() {
             onSearchEvent = {},
             onAddCouponEvent = {},
             onBackClicked = {},
+            onOrdersHistoryClicked = {},
         )
     }
 }
