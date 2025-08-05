@@ -31,7 +31,7 @@ fun ToolbarWithHelpButton(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    windowInsets: WindowInsets = WindowInsets(0),
     onHelpButtonClick: (() -> Unit)
 ) {
     Toolbar(
@@ -55,7 +55,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit),
     navigationIcon: ImageVector = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    windowInsets: WindowInsets = WindowInsets(0),
 ) {
     Toolbar(
         modifier = modifier,
@@ -75,7 +75,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    windowInsets: WindowInsets = WindowInsets(0),
     actionButtonIcon: ImageVector,
     onActionButtonClick: (() -> Unit),
     actionIconContentDescription: String
@@ -106,7 +106,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     Toolbar(
@@ -128,7 +128,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    windowInsets: WindowInsets = WindowInsets(0),
     onActionButtonClick: (() -> Unit),
     actionButtonText: String
 ) {
@@ -155,7 +155,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
