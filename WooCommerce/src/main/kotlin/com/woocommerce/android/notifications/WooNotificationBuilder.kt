@@ -1,10 +1,12 @@
 package com.woocommerce.android.notifications
 
+import android.Manifest
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.RemoteException
+import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -65,6 +67,7 @@ class WooNotificationBuilder @Inject constructor(
         }
     }
 
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun buildAndDisplayLocalNotification(
         notification: Notification,
         notificationTappedIntent: Intent,
