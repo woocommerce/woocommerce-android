@@ -1,6 +1,7 @@
 package com.woocommerce.android.notifications
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -183,7 +184,10 @@ class WooNotificationBuilder @Inject constructor(
                 flags
             )
             builder.setContentIntent(pendingIntent)
-            NotificationManagerCompat.from(context).notify(pushId, builder.build())
+            @SuppressLint("MissingPermission") // Lint won't detect we are checking the permission right below
+            if(isNotificationsEnabled()) {
+                NotificationManagerCompat.from(context).notify(pushId, builder.build())
+            }
         } catch (e: RemoteException) {
             // see https://github.com/woocommerce/woocommerce-android/issues/920
             WooLog.e(WooLog.T.NOTIFS, e)
