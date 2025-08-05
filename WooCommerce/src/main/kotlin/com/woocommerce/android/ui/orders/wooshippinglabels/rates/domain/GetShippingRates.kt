@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain
 
+import androidx.annotation.StringRes
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
@@ -51,3 +52,5 @@ class GetShippingRates @Inject constructor(
         }
     )
 }
+
+class NoAvailableRatesException(@StringRes val messageResId: Int) : Exception()
