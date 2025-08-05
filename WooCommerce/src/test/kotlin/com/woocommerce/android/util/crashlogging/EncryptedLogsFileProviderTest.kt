@@ -18,7 +18,7 @@ class EncryptedLogsFileProviderTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        sut = EncryptedLogsFileProvider(wooLog)
+        sut = EncryptedLogsFileProvider(wooLog, coroutinesTestRule.testDispatchers)
     }
 
     @Test
