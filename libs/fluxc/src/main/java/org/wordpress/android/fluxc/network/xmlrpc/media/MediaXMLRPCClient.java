@@ -191,7 +191,7 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
         Builder builder = new Request.Builder()
                 .url(url)
                 .post(requestBody)
-                .addHeader("User-Agent", mUserAgent.toString())
+                .addHeader("User-Agent", mUserAgent.getUserAgent())
                 .addHeader("Accept", "*/*");
 
         if (authString != null) {
