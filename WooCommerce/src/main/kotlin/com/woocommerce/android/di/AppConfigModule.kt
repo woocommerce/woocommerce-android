@@ -11,7 +11,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import java.util.Locale
@@ -29,10 +28,7 @@ class AppConfigModule {
 
     @Provides
     @Singleton
-    fun provideUserAgent(
-        appContext: Context,
-        @AppCoroutineScope coroutineScope: CoroutineScope
-    ) = UserAgent(appContext, USER_AGENT_APPNAME, coroutineScope)
+    fun provideUserAgent(appContext: Context) = UserAgent(appContext, USER_AGENT_APPNAME)
 
     @Provides
     fun provideDefaultLocale(): Locale = Locale.getDefault()
