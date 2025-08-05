@@ -171,7 +171,7 @@ private fun WooPosHomeScreen(
         )
 
         Dialogs(state.dialogState, onHomeUIEvent)
-        
+
         WooPosOrdersScreen(
             isVisible = state.isOrdersVisible,
             onBackClick = { onHomeUIEvent(WooPosHomeUIEvent.CloseOrdersHistory) },
@@ -208,7 +208,7 @@ private fun Dialogs(
         onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
         onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
     )
-    
+
     WooPosOrderDetailsDialog(
         isVisible = dialogState is WooPosHomeState.DialogState.OrderDetailsDialog,
         order = (dialogState as? WooPosHomeState.DialogState.OrderDetailsDialog)?.order,

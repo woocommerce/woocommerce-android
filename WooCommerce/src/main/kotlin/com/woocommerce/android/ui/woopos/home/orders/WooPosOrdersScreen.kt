@@ -36,6 +36,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -97,7 +98,7 @@ private fun OrdersSearchField() {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(WooPosCornerRadius.Small.value),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),

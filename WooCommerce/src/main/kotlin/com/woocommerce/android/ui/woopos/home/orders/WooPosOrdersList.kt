@@ -100,8 +100,8 @@ fun WooPosOrdersList(
                 ) {
                     items(state.orders.size) { index ->
                         OrderItem(
-                            order = state.orders[index],
-                            onClick = { onOrderClick(state.orders[index]) }
+                            orderDisplayModel = state.orders[index],
+                            onClick = { onOrderClick(state.orders[index].order) }
                         )
                     }
                 }
@@ -112,9 +112,10 @@ fun WooPosOrdersList(
 
 @Composable
 private fun OrderItem(
-    order: Order,
+    orderDisplayModel: OrderDisplayModel,
     onClick: () -> Unit
 ) {
+    val order = orderDisplayModel.order
     WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,7 +169,7 @@ private fun OrderItem(
                 }
 
                 WooPosText(
-                    text = state.formatPrice(order, viewModel.currencyFormatter),
+                    text = orderDisplayModel.formattedTotal,
                     style = WooPosTypography.BodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,
@@ -194,7 +195,7 @@ private fun PaymentMethodChip(order: Order) {
             )
             .padding(
                 horizontal = WooPosSpacing.XSmall.value.toAdaptivePadding(),
-                vertical = 2.dp
+                vertical = WooPosSpacing.XSmall.value.toAdaptivePadding()
             )
     ) {
         Icon(
@@ -204,7 +205,7 @@ private fun PaymentMethodChip(order: Order) {
             modifier = Modifier.size(12.dp)
         )
 
-        Spacer(modifier = Modifier.width(2.dp))
+        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
 
         WooPosText(
             text = text,

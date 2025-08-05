@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,10 +28,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -135,7 +134,7 @@ private fun OrderInfoSection(
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
             )
             .padding(WooPosSpacing.Large.value.toAdaptivePadding()),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value.toAdaptivePadding())
@@ -145,18 +144,18 @@ private fun OrderInfoSection(
             value = currencyFormatter.formatCurrency(order.total, order.currency),
             isAmount = true
         )
-        
+
         OrderInfoRow(
             label = stringResource(R.string.woopos_order_details_date),
             value = order.dateCreated?.let { formatDate(it) } ?: ""
         )
-        
+
         OrderInfoRow(
             label = stringResource(R.string.woopos_order_details_status),
             value = order.status.value.uppercase(),
             isStatus = true
         )
-        
+
         OrderInfoRow(
             label = stringResource(R.string.woopos_order_details_payment_method),
             value = if (order.isCashPayment) "CASH" else "CARD",
@@ -180,9 +179,9 @@ private fun OrderInfoRow(
             text = label,
             style = WooPosTypography.BodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 4.dp)
+            modifier = Modifier.padding(bottom = WooPosSpacing.XSmall.value.toAdaptivePadding())
         )
-        
+
         WooPosText(
             text = value,
             style = when {
@@ -242,7 +241,7 @@ fun WooPosOrderDetailsDialogPreview() {
     WooPosTheme {
         WooPosOrderDetailsDialog(
             isVisible = true,
-            order = null, // For preview purposes
+            order = null,
             onDismissRequest = {}
         )
     }

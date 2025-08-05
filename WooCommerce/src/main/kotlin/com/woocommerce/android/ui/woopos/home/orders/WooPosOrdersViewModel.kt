@@ -19,21 +19,21 @@ class WooPosOrdersViewModel @Inject constructor(
     private val repository: WooPosOrdersRepository,
     val currencyFormatter: CurrencyFormatter
 ) : ViewModel() {
-    
+
     private val _state = MutableStateFlow(WooPosOrdersState())
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
-    
+
     init {
         loadOrders()
     }
-    
+
     fun loadOrders() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            
+
             repository.fetchPosOrders()
                 .catch { error ->
-                    _state.update { 
+                    _state.update {
                         it.copy(
                             isLoading = false,
                             error = error.message
@@ -43,16 +43,22 @@ class WooPosOrdersViewModel @Inject constructor(
                 .collectLatest { result ->
                     result.fold(
                         onSuccess = { orders ->
-                            _state.update { 
+                            val displayModels = orders.map { order ->
+                                OrderDisplayModel(
+                                    order = order,
+                                    formattedTotal = currencyFormatter.formatCurrency(order.total, order.currency)
+                                )
+                            }
+                            _state.update {
                                 it.copy(
-                                    orders = orders,
+                                    orders = displayModels,
                                     isLoading = false,
                                     error = null
                                 )
                             }
                         },
                         onFailure = { error ->
-                            _state.update { 
+                            _state.update {
                                 it.copy(
                                     isLoading = false,
                                     error = error.message
@@ -66,11 +72,12 @@ class WooPosOrdersViewModel @Inject constructor(
 }
 
 data class WooPosOrdersState(
-    val orders: List<Order> = emptyList(),
+    val orders: List<OrderDisplayModel> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
-) {
-    fun formatPrice(order: Order, currencyFormatter: CurrencyFormatter): String {
-        return currencyFormatter.formatCurrency(order.total, order.currency)
-    }
-}
+)
+
+data class OrderDisplayModel(
+    val order: Order,
+    val formattedTotal: String
+)

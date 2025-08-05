@@ -116,7 +116,9 @@ fun WooPosItemsToolbar(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ManageHistory,
-                            contentDescription = stringResource(R.string.woopos_orders_history_icon_content_description),
+                            contentDescription = stringResource(
+                                R.string.woopos_orders_history_icon_content_description
+                            ),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(28.dp)
                         )

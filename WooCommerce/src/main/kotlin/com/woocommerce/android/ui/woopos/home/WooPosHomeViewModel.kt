@@ -93,20 +93,20 @@ class WooPosHomeViewModel @Inject constructor(
                     analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed)
                 }
             }
-            
+
             WooPosHomeUIEvent.CloseOrdersHistory -> {
                 _state.value = _state.value.copy(
                     isOrdersVisible = false
                 )
             }
-            
+
             is WooPosHomeUIEvent.ShowOrderDetails -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.OrderDetailsDialog(event.order),
                     isOrdersVisible = false
                 )
             }
-            
+
             WooPosHomeUIEvent.DismissOrderDetails -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
@@ -126,7 +126,7 @@ class WooPosHomeViewModel @Inject constructor(
             )
             return
         }
-        
+
         when (_state.value.dialogState) {
             is DialogState.OrderDetailsDialog -> {
                 _state.value = _state.value.copy(
@@ -136,7 +136,7 @@ class WooPosHomeViewModel @Inject constructor(
             }
             else -> {}
         }
-        
+
         when (_state.value.screenPositionState) {
             ScreenPositionState.Checkout.CartWithTotals -> {
                 _state.value = _state.value.copy(
@@ -248,7 +248,7 @@ class WooPosHomeViewModel @Inject constructor(
                             dialogState = DialogState.ScanningSetupDialog
                         )
                     }
-                    
+
                     ChildToParentEvent.OrdersHistoryClicked -> {
                         _state.value = _state.value.copy(
                             isOrdersVisible = true

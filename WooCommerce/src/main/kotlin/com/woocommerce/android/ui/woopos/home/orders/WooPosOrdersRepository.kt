@@ -17,29 +17,33 @@ class WooPosOrdersRepository @Inject constructor(
         val cachedOrders = orderStore.getOrdersForSite(selectedSite.get())
             .filter { it.status != "auto-draft" }
             .sortedByDescending { it.dateCreated }
-            .take(20)
+            .take(ORDERS_LIMIT)
             .map { orderMapper.toAppModel(it) }
-        
+
         if (cachedOrders.isNotEmpty()) {
             emit(Result.success(cachedOrders))
         }
-        
+
         val result = orderStore.fetchOrders(
             site = selectedSite.get(),
-            count = 20,
+            count = ORDERS_LIMIT,
             deleteOldData = false
         )
-        
+
         if (result.isError) {
             emit(Result.failure(Exception(result.error.message)))
         } else {
             val allOrders = orderStore.getOrdersForSite(selectedSite.get())
                 .filter { it.status != "auto-draft" }
                 .sortedByDescending { it.dateCreated }
-                .take(20)
+                .take(ORDERS_LIMIT)
                 .map { orderMapper.toAppModel(it) }
-            
+
             emit(Result.success(allOrders))
         }
+    }
+
+    companion object {
+        private const val ORDERS_LIMIT = 20
     }
 }
