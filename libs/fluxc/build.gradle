@@ -125,6 +125,8 @@ dependencyAnalysis {
         onUnusedDependencies {
             // This dependency is actually needed otherwise the app will crash with a runtime exception.
             exclude(libs.eventbus.android.get().module.toString())
+            // This dependency is actually needed otherwise UI tests will crash with a runtime exception.
+            exclude(libs.apache.http.client.android.get().module.toString())
         }
     }
 }
