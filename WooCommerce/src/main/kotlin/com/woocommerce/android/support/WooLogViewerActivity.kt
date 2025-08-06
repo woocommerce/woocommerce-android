@@ -2,21 +2,21 @@ package com.woocommerce.android.support
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils
 
-class WooLogViewerActivity : AppCompatActivity() {
+class WooLogViewerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            WooThemeWithBackground {
+            WooTheme {
                 WooLogViewerScreen(
                     WooLog.logEntries,
                     onBackPress = onBackPressedDispatcher::onBackPressed,
