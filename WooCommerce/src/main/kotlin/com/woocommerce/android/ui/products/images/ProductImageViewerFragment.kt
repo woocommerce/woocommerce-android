@@ -54,6 +54,7 @@ class ProductImageViewerFragment :
 
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter
+    private var pageChangeCallback: ViewPager2.OnPageChangeCallback? = null
 
     private var _binding: FragmentProductImageViewerBinding? = null
     private val binding get() = _binding!!
@@ -115,6 +116,9 @@ class ProductImageViewerFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
+        pageChangeCallback?.let { binding.viewPager.unregisterOnPageChangeCallback(it) }
+        binding.viewPager.adapter = null
+        pageChangeCallback = null
         _binding = null
     }
 
@@ -132,13 +136,14 @@ class ProductImageViewerFragment :
             MarginPageTransformer(resources.getDimensionPixelSize(R.dimen.major_75))
         )
 
-        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        pageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                // remember this image id so we can return to it upon rotation, and so
-                // we use the right image if the user requests to remove it
                 remoteMediaId = pagerAdapter.images[position].id
             }
-        })
+        }
+        pageChangeCallback?.let {
+            binding.viewPager.registerOnPageChangeCallback(it)
+        }
     }
 
     private fun resetAdapter() {

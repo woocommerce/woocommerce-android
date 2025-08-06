@@ -17,6 +17,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView.OnItemReselectedListener
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.windowWidthSizeClass
 import java.lang.ref.WeakReference
 
 class MainBottomNavigationView @JvmOverloads constructor(
@@ -45,6 +47,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         this.navController = navController
         this.listener = listener
 
+        setupLabelVisibilityMode()
         addTopDivider()
         createBadges()
 
@@ -70,6 +73,14 @@ class MainBottomNavigationView @JvmOverloads constructor(
                 }
             }
         )
+    }
+
+    private fun setupLabelVisibilityMode() {
+        labelVisibilityMode = when (context.windowWidthSizeClass) {
+            WindowSizeClass.Compact -> LABEL_VISIBILITY_AUTO
+            WindowSizeClass.Medium,
+            WindowSizeClass.ExpandedAndBigger -> LABEL_VISIBILITY_LABELED
+        }
     }
 
     private fun createBadges() {

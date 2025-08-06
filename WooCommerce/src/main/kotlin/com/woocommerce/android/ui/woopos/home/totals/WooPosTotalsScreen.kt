@@ -298,7 +298,7 @@ private fun ReaderDisconnected(
         verticalArrangement = Arrangement.SpaceEvenly,
     ) {
         Icon(
-            modifier = Modifier.size(122.dp),
+            modifier = Modifier.size(140.dp),
             painter = painterResource(id = R.drawable.img_card_reader_not_connected_v2),
             contentDescription = stringResource(id = R.string.woopos_reader_not_connected_description),
             tint = WooPosTheme.colors.unspecified,
