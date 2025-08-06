@@ -95,6 +95,7 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
+        const val SELECT_FIRST_ORDER_ID = Long.MIN_VALUE
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.4f
@@ -550,6 +551,13 @@ class OrderListFragment :
             updatePagedListData(it)
             if (requireContext().isTwoPanesShouldBeUsed) {
                 when {
+                    viewModel.orderId.value == SELECT_FIRST_ORDER_ID -> {
+                        handler.postDelayed({
+                            openFirstOrder(it)
+                        }, HANDLER_DELAY)
+                        clearSelectedOrderIdInViewModel()
+                    }
+
                     communicationViewModel.event.value is
                     OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded -> {
                         // Prevents unintended navigation issues when opening an order list/detail in tablets.
@@ -558,14 +566,6 @@ class OrderListFragment :
                         // However, if the above condition is not present, this navigation is undone,
                         // and only the order details screen is shown (skipping the Select Payment fragment).
                         // This no-op block ensures the app doesn't mistakenly re-trigger the order details screen.
-                    }
-
-                    // orderId = 0 is a special case indicating we should select the first order (from dashboard)
-                    viewModel.orderId.value == 0L -> {
-                        handler.postDelayed({
-                            openFirstOrder(it)
-                        }, HANDLER_DELAY)
-                        clearSelectedOrderIdInViewModel()
                     }
 
                     // A specific order is set to be opened

@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.View
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Loading
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.OrderItem
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
+import com.woocommerce.android.ui.orders.list.OrderListFragment.Companion.SELECT_FIRST_ORDER_ID
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
@@ -97,9 +98,8 @@ private fun HandleEvents(
     event: LiveData<Event>
 ) {
     fun NavController.navigateToOrders() {
-        // Pass orderId = 0 to indicate we want to select the first order on tablets
         val bundle = Bundle().apply {
-            putLong("orderId", 0L)
+            putLong("orderId", SELECT_FIRST_ORDER_ID)
         }
         navigateSafely(
             resId = R.id.orders,
