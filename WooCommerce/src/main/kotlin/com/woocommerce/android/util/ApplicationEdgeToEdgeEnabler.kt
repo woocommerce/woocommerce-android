@@ -56,7 +56,7 @@ class ApplicationEdgeToEdgeEnabler @Inject constructor(
     private fun isEdgeToEdgeSupported(activity: Activity) =
         activity::class.java.name.let { className ->
             !className.startsWith("leakcanary") &&
-                !className.startsWith("com.google.android.play.core.common.PlayCoreDialogWrapperActivity")
+                !className.startsWith("com.google.android.play.core")
         }
 
     override fun onActivityStarted(activity: Activity) {
