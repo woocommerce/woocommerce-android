@@ -568,9 +568,10 @@ class OrderListFragment :
                     // Open the first order when filtering is active, but only if no order is explicitly selected by
                     // the user. If a user enables filtering, selects an order, and then pulls to refresh, we should
                     // retain the selected order instead of automatically selecting the first order.
-                    viewModel.viewState.isFilteringActive &&
+                    viewModel.viewState.isFilteringActive && (
                         selectedOrder.selectedOrderId.value == null ||
-                        selectedOrder.selectedOrderId.value == -1L -> {
+                            selectedOrder.selectedOrderId.value == -1L
+                        ) -> {
                         handler.postDelayed({
                             openFirstOrder(it)
                         }, HANDLER_DELAY)
