@@ -57,7 +57,7 @@ import kotlinx.coroutines.launch
 import java.lang.String.format
 import java.util.Locale
 
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WooLogViewerScreen(
     entries: RollingLogEntries,
