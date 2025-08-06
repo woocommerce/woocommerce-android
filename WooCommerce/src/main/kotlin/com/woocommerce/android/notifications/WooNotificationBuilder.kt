@@ -185,7 +185,7 @@ class WooNotificationBuilder @Inject constructor(
             )
             builder.setContentIntent(pendingIntent)
             @SuppressLint("MissingPermission") // Lint won't detect we are checking the permission right below
-            if(isNotificationsEnabled()) {
+            if (isNotificationsEnabled()) {
                 NotificationManagerCompat.from(context).notify(pushId, builder.build())
             }
         } catch (e: RemoteException) {
