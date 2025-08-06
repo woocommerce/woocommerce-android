@@ -12,6 +12,7 @@
 - [Internal] Added logging to POS tab visibility and eligibility checks [https://github.com/woocommerce/woocommerce-android/pull/14426]
 - [*] Bottom navigation menu has now labels shown under icons on tablet devices [https://github.com/woocommerce/woocommerce-android/pull/14429]
 - [Internal] Suppress edge to edge for Google PlayCoreDialogWrapperActivity [https://github.com/woocommerce/woocommerce-android/pull/14435]
+- [*] [Shipping labels] Fix layout issue with address status indicator [https://github.com/woocommerce/woocommerce-android/pull/14437]
 
 22.9.1
 -----
