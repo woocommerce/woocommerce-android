@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockedStatic
@@ -60,7 +61,7 @@ class ProductImageRemoveBackgroundViewModelTest : BaseUnitTest() {
         (viewModel.state as MutableStateFlow).value = ViewState.Success(testBitmap)
     }
 
-    @org.junit.After
+    @After
     fun tearDown() {
         uriMockedStatic.close()
     }
