@@ -77,9 +77,9 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
@@ -101,7 +101,7 @@ class OrderListFragment :
         private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.4f
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
         private const val LAST_WINDOW_SIZE_WAS_LARGER_THAN_COMPACT = "last_window_size_was_larger_than_compact"
-        private const val HANDLER_DELAY = 200L
+        private const val HANDLER_DELAY = 300L
         private const val TOP_OFFSET_PROGRESS_WITH_ACTION_MODE = 200
     }
 
@@ -551,6 +551,7 @@ class OrderListFragment :
             updatePagedListData(it)
             if (requireContext().isTwoPanesShouldBeUsed) {
                 when {
+                    // Special case: SELECT_FIRST_ORDER_ID indicates we should select the first order (from dashboard)
                     viewModel.orderId.value == SELECT_FIRST_ORDER_ID -> {
                         handler.postDelayed({
                             openFirstOrder(it)
@@ -558,8 +559,9 @@ class OrderListFragment :
                         clearSelectedOrderIdInViewModel()
                     }
 
-                    communicationViewModel.event.value is
-                    OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded -> {
+                    // Prevent navigation issues from order creation → order details, but only when no specific order is requested
+                    communicationViewModel.event.value is OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded &&
+                        viewModel.orderId.value == -1L -> {
                         // Prevents unintended navigation issues when opening an order list/detail in tablets.
                         // When navigating from order creation to order details via the "Collect Payment" option,
                         // the app correctly opens the Select Payment fragment inside the order details flow.
