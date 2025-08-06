@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.orders
 
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -96,8 +97,13 @@ private fun HandleEvents(
     event: LiveData<Event>
 ) {
     fun NavController.navigateToOrders() {
+        // Pass orderId = 0 to indicate we want to select the first order on tablets
+        val bundle = Bundle().apply {
+            putLong("orderId", 0L)
+        }
         navigateSafely(
             resId = R.id.orders,
+            bundle = bundle,
             navOptions = navOptions {
                 popUpTo(graph.findStartDestination().id) {
                     saveState = true

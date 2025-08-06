@@ -560,6 +560,14 @@ class OrderListFragment :
                         // This no-op block ensures the app doesn't mistakenly re-trigger the order details screen.
                     }
 
+                    // orderId = 0 is a special case indicating we should select the first order (from dashboard)
+                    viewModel.orderId.value == 0L -> {
+                        handler.postDelayed({
+                            openFirstOrder(it)
+                        }, HANDLER_DELAY)
+                        clearSelectedOrderIdInViewModel()
+                    }
+
                     // A specific order is set to be opened
                     viewModel.orderId.value != -1L -> {
                         openSpecificOrder(viewModel.orderId.value)
@@ -568,10 +576,9 @@ class OrderListFragment :
                     // Open the first order when filtering is active, but only if no order is explicitly selected by
                     // the user. If a user enables filtering, selects an order, and then pulls to refresh, we should
                     // retain the selected order instead of automatically selecting the first order.
-                    viewModel.viewState.isFilteringActive && (
+                    viewModel.viewState.isFilteringActive &&
                         selectedOrder.selectedOrderId.value == null ||
-                            selectedOrder.selectedOrderId.value == -1L
-                        ) -> {
+                        selectedOrder.selectedOrderId.value == -1L -> {
                         handler.postDelayed({
                             openFirstOrder(it)
                         }, HANDLER_DELAY)
