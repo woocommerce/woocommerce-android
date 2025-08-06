@@ -550,7 +550,6 @@ class OrderListFragment :
             updatePagedListData(it)
             if (requireContext().isTwoPanesShouldBeUsed) {
                 when {
-                    // Prevent navigation issues from order creation → order details, but only when no specific order is requested
                     communicationViewModel.event.value is
                         OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded &&
                         viewModel.orderId.value == -1L -> {
