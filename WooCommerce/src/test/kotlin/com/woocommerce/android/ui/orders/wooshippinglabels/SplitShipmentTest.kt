@@ -5,7 +5,7 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShipmentItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.UpdateShipmentsResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -41,7 +41,7 @@ class SplitShipmentTest : BaseUnitTest() {
 
         sut.invoke(order.id, listOf(ShipmentUIModel(localId = "0", items = listOf(singleItem))))
 
-        val expectedShipmentMap = mapOf("0" to listOf(Item(singleItem.itemId, emptyList())))
+        val expectedShipmentMap = mapOf("0" to listOf(ShipmentItem(singleItem.itemId, emptyList())))
         verify(wooShippingLabelRepository).updateShipments(any(), eq(order.id), eq(expectedShipmentMap), any())
     }
 
@@ -55,7 +55,7 @@ class SplitShipmentTest : BaseUnitTest() {
         sut.invoke(order.id, listOf(ShipmentUIModel(localId = "0", items = listOf(multipleQuantityItem))))
 
         val expectedSubItems = listOf("1000-sub-0", "1000-sub-1", "1000-sub-2")
-        val expectedShipmentMap = mapOf("0" to listOf(Item(multipleQuantityItem.itemId, expectedSubItems)))
+        val expectedShipmentMap = mapOf("0" to listOf(ShipmentItem(multipleQuantityItem.itemId, expectedSubItems)))
         verify(wooShippingLabelRepository).updateShipments(any(), eq(order.id), eq(expectedShipmentMap), any())
     }
 

@@ -4,7 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShipmentItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShipmentMap
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import kotlinx.coroutines.flow.first
@@ -52,7 +52,7 @@ class SplitShipment @Inject constructor(
     }.associate { it.remoteId!! to it.localId.toInt() }
 
     private fun List<ShipmentUIModel>.toShipmentMap() = associate {
-        it.localId to it.items.map { item -> Item(id = item.itemId, subItems = item.subItems()) }
+        it.localId to it.items.map { item -> ShipmentItem(id = item.itemId, subItems = item.subItems()) }
     }
 
     /**

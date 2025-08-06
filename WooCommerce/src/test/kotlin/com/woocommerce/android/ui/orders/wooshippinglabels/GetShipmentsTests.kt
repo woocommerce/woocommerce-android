@@ -8,8 +8,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippin
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.LabelRefund
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShipmentItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDataDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.StoredDataDTO
@@ -159,7 +159,7 @@ class GetShipmentsTests : BaseUnitTest() {
         // When total order quantity is 10 and each shipment has 5 items
         val shipments = mapOf(
             "0" to listOf(
-                Item(
+                ShipmentItem(
                     id = item.itemId,
                     subItems = listOf(
                         "${item.itemId}-sub-0",
@@ -171,7 +171,7 @@ class GetShipmentsTests : BaseUnitTest() {
                 )
             ),
             "1" to listOf(
-                Item(
+                ShipmentItem(
                     id = item.itemId,
                     subItems = listOf(
                         "${item.itemId}-sub-0",
@@ -208,7 +208,7 @@ class GetShipmentsTests : BaseUnitTest() {
             ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
         }
 
-        val shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList())))
+        val shipments = mapOf(shipmentId to listOf(ShipmentItem(id = orderItem.itemId, subItems = emptyList())))
         val shippingLabel = ShippingLabelDTO(
             labelId = labelId,
             shipmentId = shipmentId,
@@ -239,7 +239,7 @@ class GetShipmentsTests : BaseUnitTest() {
             ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
         }
 
-        val shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList())))
+        val shipments = mapOf(shipmentId to listOf(ShipmentItem(id = orderItem.itemId, subItems = emptyList())))
         val shippingLabel = ShippingLabelDTO(
             labelId = labelId,
             shipmentId = shipmentId,
@@ -273,7 +273,7 @@ class GetShipmentsTests : BaseUnitTest() {
         val destinationAddressDTO = DestinationAddressDTO()
         val originAddressDTO = OriginAddressDTO()
         val configDTO = ConfigDTO(
-            shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList()))),
+            shipments = mapOf(shipmentId to listOf(ShipmentItem(id = orderItem.itemId, subItems = emptyList()))),
             shippingLabelData = ShippingLabelDataDTO(
                 currentOrderLabels = listOf(shippingLabel),
                 storedData = StoredDataDTO(
