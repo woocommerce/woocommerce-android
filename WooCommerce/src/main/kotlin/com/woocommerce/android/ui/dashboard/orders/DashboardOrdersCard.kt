@@ -98,7 +98,6 @@ private fun HandleEvents(
     event: LiveData<Event>
 ) {
     fun NavController.navigateToOrders() {
-        // Pass SELECT_FIRST_ORDER_ID to indicate we want to auto-select first order on tablets
         val bundle = Bundle().apply {
             putLong("orderId", SELECT_FIRST_ORDER_ID)
         }

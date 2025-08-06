@@ -95,7 +95,7 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
-        
+
         // Special orderId to indicate first order should be auto-selected (dashboard navigation)
         const val SELECT_FIRST_ORDER_ID = Long.MIN_VALUE
 
@@ -553,14 +553,6 @@ class OrderListFragment :
             updatePagedListData(it)
             if (requireContext().isTwoPanesShouldBeUsed) {
                 when {
-                    // Dashboard navigation: auto-select first order
-                    viewModel.orderId.value == SELECT_FIRST_ORDER_ID -> {
-                        handler.postDelayed({
-                            openFirstOrder(it)
-                        }, HANDLER_DELAY)
-                        clearSelectedOrderIdInViewModel()
-                    }
-                    
                     communicationViewModel.event.value is
                         OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded &&
                         viewModel.orderId.value == -1L -> {
@@ -574,15 +566,21 @@ class OrderListFragment :
 
                     // A specific order is set to be opened
                     viewModel.orderId.value != -1L -> {
-                        openSpecificOrder(viewModel.orderId.value)
-                        clearSelectedOrderIdInViewModel()
+                        handler.postDelayed({
+                            if (viewModel.orderId.value == SELECT_FIRST_ORDER_ID) {
+                                openFirstOrder(it)
+                            } else {
+                                openSpecificOrder(viewModel.orderId.value)
+                            }
+                            clearSelectedOrderIdInViewModel()
+                        }, HANDLER_DELAY)
                     }
                     // Open the first order when filtering is active, but only if no order is explicitly selected by
                     // the user. If a user enables filtering, selects an order, and then pulls to refresh, we should
                     // retain the selected order instead of automatically selecting the first order.
                     viewModel.viewState.isFilteringActive &&
-                        selectedOrder.selectedOrderId.value == null ||
-                        selectedOrder.selectedOrderId.value == -1L -> {
+                        (selectedOrder.selectedOrderId.value == null ||
+                            selectedOrder.selectedOrderId.value == -1L) -> {
                         handler.postDelayed({
                             openFirstOrder(it)
                         }, HANDLER_DELAY)
