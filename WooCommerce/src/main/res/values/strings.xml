@@ -4539,6 +4539,27 @@
     <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
     <string name="woopos_scanning_setup_device_other">Other</string>
 
+    <!-- WooPOS Refund Strings -->
+    <string name="woopos_refund_amount_title">Refund Amount</string>
+    <string name="woopos_refund_amount_description">Enter the amount to refund</string>
+    <string name="woopos_refund_original_amount">Original Amount</string>
+    <string name="woopos_refund_amount_label">Refund Amount</string>
+    <string name="woopos_refund_partial_refund_note">This is a partial refund</string>
+    <string name="woopos_continue">Continue</string>
+    <string name="woopos_refund_method_title">Select Refund Method</string>
+    <string name="woopos_refund_method_description">Choose how to process this refund</string>
+    <string name="woopos_refund_method_cash">Cash</string>
+    <string name="woopos_refund_method_cash_description">Issue cash refund</string>
+    <string name="woopos_refund_method_card">Card</string>
+    <string name="woopos_refund_method_card_description">Process card refund</string>
+    <string name="woopos_refund_method_label">Payment Method</string>
+    <string name="woopos_refund_confirmation_title">Confirm Refund</string>
+    <string name="woopos_order_number_label">Order Number</string>
+    <string name="woopos_refund_reason_label">Reason (Optional)</string>
+    <string name="woopos_refund_confirm">Process Refund</string>
+    <string name="woopos_refund_success_title">Refund Processed</string>
+    <string name="woopos_refund_success_message">Refund of %s has been successfully processed</string>
+
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
     <string name="customers_details_registration_section">Registration</string>

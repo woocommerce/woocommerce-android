@@ -213,10 +213,6 @@ private fun Dialogs(
         isVisible = dialogState is WooPosHomeState.DialogState.OrderDetailsDialog,
         order = (dialogState as? WooPosHomeState.DialogState.OrderDetailsDialog)?.order,
         onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.DismissOrderDetails) },
-        onRefundClick = { order ->
-            // Handle refund click - for now just dismiss the dialog
-            onHomeUIEvent(WooPosHomeUIEvent.DismissOrderDetails)
-        },
         onReceiptClick = { order ->
             // Handle receipt click - for now just dismiss the dialog
             onHomeUIEvent(WooPosHomeUIEvent.DismissOrderDetails)

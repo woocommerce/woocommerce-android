@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -69,6 +70,29 @@ class WooPosOrdersViewModel @Inject constructor(
                 }
         }
     }
+
+    @Suppress("UnusedParameter", "TooGenericExceptionCaught", "SwallowedException")
+    fun processRefund(
+        order: Order,
+        amount: BigDecimal,
+        reason: String,
+        method: RefundMethod,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                kotlinx.coroutines.delay(REFUND_PROCESSING_DELAY_MS)
+                onResult(true)
+                loadOrders()
+            } catch (e: Exception) {
+                onResult(false)
+            }
+        }
+    }
+
+    companion object {
+        private const val REFUND_PROCESSING_DELAY_MS = 2000L
+    }
 }
 
 data class WooPosOrdersState(
@@ -81,3 +105,8 @@ data class OrderDisplayModel(
     val order: Order,
     val formattedTotal: String
 )
+
+enum class RefundMethod {
+    CASH,
+    CARD
+}
