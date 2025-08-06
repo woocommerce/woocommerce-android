@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.dashboard.orders
 
-import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -51,7 +50,6 @@ import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.View
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Loading
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.OrderItem
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
-import com.woocommerce.android.ui.orders.list.OrderListFragment.Companion.SELECT_FIRST_ORDER_ID
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
@@ -98,12 +96,8 @@ private fun HandleEvents(
     event: LiveData<Event>
 ) {
     fun NavController.navigateToOrders() {
-        val bundle = Bundle().apply {
-            putLong("orderId", SELECT_FIRST_ORDER_ID)
-        }
         navigateSafely(
             resId = R.id.orders,
-            bundle = bundle,
             navOptions = navOptions {
                 popUpTo(graph.findStartDestination().id) {
                     saveState = true

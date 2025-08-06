@@ -77,9 +77,9 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
@@ -95,7 +95,6 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
-        const val SELECT_FIRST_ORDER_ID = Long.MIN_VALUE
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.4f
@@ -551,16 +550,9 @@ class OrderListFragment :
             updatePagedListData(it)
             if (requireContext().isTwoPanesShouldBeUsed) {
                 when {
-                    // Special case: SELECT_FIRST_ORDER_ID indicates we should select the first order (from dashboard)
-                    viewModel.orderId.value == SELECT_FIRST_ORDER_ID -> {
-                        handler.postDelayed({
-                            openFirstOrder(it)
-                        }, HANDLER_DELAY)
-                        clearSelectedOrderIdInViewModel()
-                    }
-
                     // Prevent navigation issues from order creation → order details, but only when no specific order is requested
-                    communicationViewModel.event.value is OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded &&
+                    communicationViewModel.event.value is
+                        OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded &&
                         viewModel.orderId.value == -1L -> {
                         // Prevents unintended navigation issues when opening an order list/detail in tablets.
                         // When navigating from order creation to order details via the "Collect Payment" option,
