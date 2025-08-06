@@ -10,6 +10,7 @@
 - [Internal] Introduced Material 3 based theme and migrated some components to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/14401]
 - [Internal] Added logging to POS tab visibility and eligibility checks [https://github.com/woocommerce/woocommerce-android/pull/14426]
 - [*] Bottom navigation menu has now labels shown under icons on tablet devices [https://github.com/woocommerce/woocommerce-android/pull/14429]
+- [Internal] Suppress edge to edge for Google PlayCoreDialogWrapperActivity [https://github.com/woocommerce/woocommerce-android/pull/14435]
 
 22.9.1
 -----
