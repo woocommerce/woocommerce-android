@@ -95,6 +95,9 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
+        
+        // Special orderId to indicate first order should be auto-selected (dashboard navigation)
+        const val SELECT_FIRST_ORDER_ID = Long.MIN_VALUE
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.4f
@@ -550,6 +553,14 @@ class OrderListFragment :
             updatePagedListData(it)
             if (requireContext().isTwoPanesShouldBeUsed) {
                 when {
+                    // Dashboard navigation: auto-select first order
+                    viewModel.orderId.value == SELECT_FIRST_ORDER_ID -> {
+                        handler.postDelayed({
+                            openFirstOrder(it)
+                        }, HANDLER_DELAY)
+                        clearSelectedOrderIdInViewModel()
+                    }
+                    
                     communicationViewModel.event.value is
                         OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded &&
                         viewModel.orderId.value == -1L -> {
