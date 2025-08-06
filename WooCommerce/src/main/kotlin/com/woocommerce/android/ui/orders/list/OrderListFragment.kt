@@ -77,9 +77,9 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
@@ -96,7 +96,6 @@ class OrderListFragment :
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
-        // Special orderId to indicate first order should be auto-selected (dashboard navigation)
         const val SELECT_FIRST_ORDER_ID = Long.MIN_VALUE
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
@@ -579,8 +578,10 @@ class OrderListFragment :
                     // the user. If a user enables filtering, selects an order, and then pulls to refresh, we should
                     // retain the selected order instead of automatically selecting the first order.
                     viewModel.viewState.isFilteringActive &&
-                        (selectedOrder.selectedOrderId.value == null ||
-                            selectedOrder.selectedOrderId.value == -1L) -> {
+                        (
+                            selectedOrder.selectedOrderId.value == null ||
+                                selectedOrder.selectedOrderId.value == -1L
+                            ) -> {
                         handler.postDelayed({
                             openFirstOrder(it)
                         }, HANDLER_DELAY)
