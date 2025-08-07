@@ -4353,6 +4353,7 @@
     <string name="woopos_order_details_payment_method">Payment Method</string>
     <string name="woopos_order_details_refund_button">Refund</string>
     <string name="woopos_order_details_receipt_button">Receipt</string>
+    <string name="woopos_order_details_products_title">Products</string>
     <string name="woopos_items_in_cart">%d item</string>
     <string name="woopos_items_in_cart_multiple">%d items</string>
     <string name="woopos_remove_cart_item_content_description">Remove this item from the cart</string>

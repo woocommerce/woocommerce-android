@@ -10,8 +10,7 @@ sealed class WooPosHomeUIEvent {
     data object OnPaymentCompletedViaCash : WooPosHomeUIEvent()
     data object ExitPosClicked : WooPosHomeUIEvent()
     data object CloseOrdersHistory : WooPosHomeUIEvent()
-    data class ShowOrderDetails(val order: com.woocommerce.android.model.Order) : WooPosHomeUIEvent()
-    data object DismissOrderDetails : WooPosHomeUIEvent()
+    data class NavigateToOrderDetails(val orderId: Long) : WooPosHomeUIEvent()
     data class OnBarcodeEvent(
         val result: BarcodeInputDetector.BarcodeResult
     ) : WooPosHomeUIEvent()

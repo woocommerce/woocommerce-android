@@ -59,8 +59,6 @@ data class WooPosHomeState(
         @Parcelize
         data object ScanningSetupDialog : DialogState()
 
-        @Parcelize
-        data class OrderDetailsDialog(val order: com.woocommerce.android.model.Order) : DialogState()
 
         @Parcelize
         data object ExitConfirmationDialog : DialogState() {

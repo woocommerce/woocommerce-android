@@ -13,7 +13,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ManageHistory
+import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -115,7 +115,7 @@ fun WooPosItemsToolbar(
                         modifier = Modifier.size(48.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ManageHistory,
+                            imageVector = Icons.Default.AllInbox,
                             contentDescription = stringResource(
                                 R.string.woopos_orders_history_icon_content_description
                             ),

@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.cashpayment.CASH_ROUTE
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.navigateToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.navigateToEligibilityScreen
+import com.woocommerce.android.ui.woopos.home.orders.navigateToOrderDetailsScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenAfterSuccessfulCashPayment
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenIfHomeScreenNotOpen
@@ -38,6 +39,7 @@ fun NavHostController.handleNavigationEvent(
             navigateToHomeScreenAfterSuccessfulCashPayment()
 
         is WooPosNavigationEvent.OpenEmailReceipt -> navigateToEmailReceipt(event.orderId)
+        is WooPosNavigationEvent.OpenOrderDetails -> navigateToOrderDetailsScreen(event.orderId)
         WooPosNavigationEvent.ReturnHomeFromCashPayment -> navigateToHomeScreenIfHomeScreenNotOpen()
 
         is WooPosNavigationEvent.OpenEligibilityScreenFromSplash ->
