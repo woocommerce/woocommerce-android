@@ -24,16 +24,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
@@ -61,7 +65,6 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymentFailedScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
-import com.woocommerce.android.ui.woopos.util.ext.announceForAccessibility
 
 @Composable
 fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
@@ -92,7 +95,7 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentSuccess) {
             if (state is WooPosTotalsViewState.PaymentSuccess) {
-                LocalContext.current.announceForAccessibility(stringResource(R.string.woopos_payment_successful_label))
+                AccessibilityAnnouncement(text = stringResource(R.string.woopos_payment_successful_label))
                 WooPosPaymentSuccessScreen(
                     state,
                     onReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked) },
@@ -109,7 +112,7 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.Error) {
             if (state is WooPosTotalsViewState.Error) {
-                LocalContext.current.announceForAccessibility(state.message)
+                AccessibilityAnnouncement(text = state.message)
                 TotalsErrorScreen(
                     errorMessage = state.message,
                     onUIEvent = onUIEvent
@@ -119,7 +122,7 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.InvalidCouponError) {
             if (state is WooPosTotalsViewState.InvalidCouponError) {
-                LocalContext.current.announceForAccessibility("${state.message}: ${state.reason}")
+                AccessibilityAnnouncement(text = "${state.message}: ${state.reason}")
                 TotalsInvalidCouponsErrorScreen(
                     errorMessage = state.message,
                     errorReason = state.reason,
@@ -130,14 +133,15 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentInProgress) {
             if (state is WooPosTotalsViewState.PaymentInProgress) {
-                LocalContext.current.announceForAccessibility(state.title)
+                AccessibilityAnnouncement(state.title)
+
                 WooPosPaymentInProgressScreen(state, onUIEvent)
             }
         }
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentFailed) {
             if (state is WooPosTotalsViewState.PaymentFailed) {
-                LocalContext.current.announceForAccessibility(state.title)
+                AccessibilityAnnouncement(state.title)
                 WooPosPaymentFailedScreen(
                     state = state,
                     onUIEvent = onUIEvent,
@@ -187,25 +191,25 @@ private fun TotalsLoaded(
                 when (val readerStatus = state.readerStatus) {
                     is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
                         ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
-                        LocalContext.current.announceForAccessibility(readerStatus.title)
+                        AccessibilityAnnouncement(text = readerStatus.title)
                     }
                     is WooPosTotalsViewState.ReaderStatus.Preparing -> {
                         PreparingReader(
                             title = readerStatus.title,
                             subtitle = readerStatus.subtitle
                         )
-                        LocalContext.current.announceForAccessibility(readerStatus.title)
+                        AccessibilityAnnouncement(text = readerStatus.title)
                     }
                     is WooPosTotalsViewState.ReaderStatus.CheckingOrder -> {
                         PreparingReader(
                             title = readerStatus.title,
                             subtitle = readerStatus.subtitle
                         )
-                        LocalContext.current.announceForAccessibility(readerStatus.title)
+                        AccessibilityAnnouncement(text = readerStatus.title)
                     }
                     is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> {
                         ReaderReadyForPayment(readerStatus)
-                        LocalContext.current.announceForAccessibility(readerStatus.title)
+                        AccessibilityAnnouncement(text = readerStatus.title)
                     }
                     WooPosTotalsViewState.ReaderStatus.Unavailable -> Unit
                 }
@@ -636,6 +640,27 @@ fun PreparingReaderPReview() {
                 title = "Getting ready",
                 subtitle = "Preparing reader for payment",
             )
+        }
+    }
+}
+
+/**
+ * Announces the given text to accessibility services using a live region.
+ * Ensures screen readers pick up the message even on repeated values.
+ */
+@Composable
+private fun AccessibilityAnnouncement(text: String) {
+    key(text + System.currentTimeMillis()) { // Forces recomposition
+        Box(
+            modifier = Modifier
+                .semantics {
+                    liveRegion = LiveRegionMode.Assertive
+                }
+        ) {
+            // Intentionally using Text instead of WooPosText to ensure accessibility announcements work reliably.
+            // WooPosText might change or wrap semantics in a way that breaks live region behavior.
+            @Suppress("WooPosDesignSystemTextUsageRule")
+            Text(text = text)
         }
     }
 }
