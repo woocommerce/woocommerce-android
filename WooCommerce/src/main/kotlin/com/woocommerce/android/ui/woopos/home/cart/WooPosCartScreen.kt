@@ -469,6 +469,7 @@ private fun ClearCartButton(
     Box(modifier = modifier) {
         WooPosIconButton(
             icon = Icons.Default.DeleteOutline,
+            enabled = !dropdownExpanded,
             onClick = { dropdownExpanded = true },
             contentDescription = stringResource(
                 id = R.string.woopos_cart_clear_all_button_content_description

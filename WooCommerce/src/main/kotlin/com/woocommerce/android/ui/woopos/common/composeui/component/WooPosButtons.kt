@@ -185,10 +185,12 @@ fun WooPosIconButton(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     contentDescription: String? = null,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     IconButton(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier,
     ) {
         Icon(
@@ -196,7 +198,11 @@ fun WooPosIconButton(
                 .size(32.dp),
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = MaterialTheme.colorScheme.onSurface,
+            tint = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+            },
         )
     }
 }
