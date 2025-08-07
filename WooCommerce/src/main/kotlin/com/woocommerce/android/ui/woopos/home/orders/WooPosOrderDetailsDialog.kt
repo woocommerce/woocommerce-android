@@ -53,6 +53,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,6 +82,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -1071,7 +1074,7 @@ private fun RefundConfirmationContent(
                 modifier = Modifier.weight(1f)
             )
 
-            AnimatedRestockCheckbox(
+            StaticRestockCheckbox(
                 isChecked = restockItems,
                 modifier = Modifier.size(48.dp)
             )
@@ -1171,22 +1174,24 @@ private fun RefundSuccessContent(
 
 @Composable
 private fun RefundSuccessCheckMarkIcon() {
-    var animateSize by remember { mutableStateOf(false) }
+    val savedAnimationStage = rememberSaveable { mutableStateOf(AnimationStage.INITIAL) }
+    val animationStateFlow = remember { MutableStateFlow(savedAnimationStage.value) }
+
     LaunchedEffect(Unit) {
-        animateSize = true
-    }
-    var animateIcon by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        delay(300)
-        animateIcon = true
+        if (animationStateFlow.value != AnimationStage.FINISHED) {
+            startRefundAnimations(animationStateFlow)
+        }
     }
 
+    val animationState = animationStateFlow.collectAsState().value
+    savedAnimationStage.value = animationState
+
     val size by animateDpAsState(
-        targetValue = if (animateSize) 166.dp else 0.dp,
+        targetValue = if (animationState >= AnimationStage.CIRCLE) 166.dp else 0.dp,
         label = "Circle Size"
     )
     val iconSize by animateDpAsState(
-        targetValue = if (animateIcon) 72.dp else 0.dp,
+        targetValue = if (animationState >= AnimationStage.ICON) 72.dp else 0.dp,
         label = "Icon Size"
     )
 
@@ -1212,32 +1217,13 @@ private fun RefundSuccessCheckMarkIcon() {
 }
 
 @Composable
-private fun AnimatedRestockCheckbox(
+private fun StaticRestockCheckbox(
     isChecked: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val backgroundSize by animateDpAsState(
-        targetValue = if (isChecked) 48.dp else 48.dp,
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        ),
-        label = "Background Size"
-    )
-
-    val iconSize by animateDpAsState(
-        targetValue = if (isChecked) 24.dp else 0.dp,
-        animationSpec = tween(
-            durationMillis = 300,
-            delayMillis = if (isChecked) 150 else 0,
-            easing = FastOutSlowInEasing
-        ),
-        label = "Icon Size"
-    )
-
     Box(
         modifier = modifier
-            .size(backgroundSize)
+            .size(48.dp)
             .background(
                 color = if (isChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(
                     alpha = 0.2f
@@ -1256,7 +1242,7 @@ private fun AnimatedRestockCheckbox(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(iconSize)
+                modifier = Modifier.size(24.dp)
             )
         }
     }
@@ -1274,6 +1260,24 @@ private fun isForwardTransition(from: RefundDialogState, to: RefundDialogState):
     val toIndex = stateOrder.indexOf(to)
 
     return toIndex > fromIndex
+}
+
+@Suppress("MagicNumber")
+private suspend fun startRefundAnimations(stateFlow: MutableStateFlow<AnimationStage>) {
+    stateFlow.update { AnimationStage.BUTTONS }
+    delay(300)
+    stateFlow.update { AnimationStage.CIRCLE }
+    delay(300)
+    stateFlow.update { AnimationStage.ICON }
+    stateFlow.update { AnimationStage.FINISHED }
+}
+
+private enum class AnimationStage {
+    INITIAL,
+    BUTTONS,
+    CIRCLE,
+    ICON,
+    FINISHED,
 }
 
 @Composable
