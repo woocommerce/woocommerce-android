@@ -51,8 +51,14 @@ class AddProductCategoryViewModel @Inject constructor(
             categoryName = navArgs.productCategory?.name ?: "",
             selectedParentId = navArgs.productCategory?.parentId,
             isEditingMode = navArgs.productCategory != null
-        )
+        ),
+        onChange = { old, new ->
+            if (old?.selectedParentId != new.selectedParentId) {
+                refreshParentCategoryName()
+            }
+        }
     )
+
     private var addProductCategoryViewState by addProductCategoryViewStateLiveData
 
     /**
@@ -209,6 +215,20 @@ class AddProductCategoryViewModel @Inject constructor(
         )
     }
 
+    private fun refreshParentCategoryName() {
+        launch {
+            val selectedParentId = addProductCategoryViewState.selectedParentId
+            val selectedParentName = if (selectedParentId != null && selectedParentId != 0L) {
+                productCategoriesRepository.getProductCategoryByRemoteId(selectedParentId)?.name
+            } else {
+                null
+            }
+            addProductCategoryViewState = addProductCategoryViewState.copy(
+                selectedParentName = selectedParentName
+            )
+        }
+    }
+
     fun fetchParentCategories() {
         loadParentCategories()
     }
@@ -219,9 +239,6 @@ class AddProductCategoryViewModel @Inject constructor(
     }
 
     fun getSelectedParentId() = addProductCategoryViewState.selectedParentId ?: 0L
-
-    suspend fun getSelectedParentCategoryName(): String? =
-        productCategoriesRepository.getProductCategoryByRemoteId(getSelectedParentId())?.name
 
     /**
      * Refreshes the list of categories by calling the [loadParentCategories] method
@@ -345,6 +362,7 @@ class AddProductCategoryViewModel @Inject constructor(
         val categoryNameErrorMessage: Int? = null,
         val categoryName: String = "",
         val selectedParentId: Long? = null,
+        val selectedParentName: String? = null,
         val shouldShowDiscardDialog: Boolean = true,
         val isEditingMode: Boolean = false
     ) : Parcelable
