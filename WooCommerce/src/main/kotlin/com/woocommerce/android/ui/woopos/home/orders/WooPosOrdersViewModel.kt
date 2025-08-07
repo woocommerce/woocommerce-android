@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.orders
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,7 +72,6 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    @Suppress("UnusedParameter", "TooGenericExceptionCaught", "SwallowedException")
     fun processRefund(
         order: Order,
         amount: BigDecimal,
@@ -80,18 +80,27 @@ class WooPosOrdersViewModel @Inject constructor(
         onResult: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
-            try {
-                kotlinx.coroutines.delay(REFUND_PROCESSING_DELAY_MS)
-                onResult(true)
-                loadOrders()
-            } catch (e: Exception) {
-                onResult(false)
-            }
+            val result = repository.processRefund(
+                orderId = order.id,
+                amount = amount,
+                reason = reason,
+                method = method
+            )
+
+            result.fold(
+                onSuccess = {
+                    onResult(true)
+                    loadOrders()
+                },
+                onFailure = {
+                    onResult(false)
+                }
+            )
         }
     }
 
-    companion object {
-        private const val REFUND_PROCESSING_DELAY_MS = 2000L
+    suspend fun getOrderRefunds(order: Order): Result<List<Refund>> {
+        return repository.fetchOrderRefunds(order.id)
     }
 }
 
