@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,8 @@ import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.LocalOffer
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +50,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -441,18 +445,58 @@ private fun CartToolbar(
         }
 
         if (toolbar.isClearAllButtonVisible) {
-            WooPosIconButton(
-                icon = Icons.Default.DeleteOutline,
+            ClearCartButton(
                 modifier = Modifier
                     .constrainAs(clearAllButton) {
                         end.linkTo(parent.end)
                         centerVerticallyTo(parent)
                     }
                     .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding()),
-                onClick = { onClearAllClicked() },
-                contentDescription = stringResource(
-                    id = R.string.woopos_cart_clear_all_button_content_description
-                ),
+                onClearCartClicked = onClearAllClicked
+            )
+        }
+    }
+}
+
+@Composable
+private fun ClearCartButton(
+    modifier: Modifier = Modifier,
+    onClearCartClicked: () -> Unit
+) {
+    var dropdownExpanded by remember { mutableStateOf(false) }
+    val clearCartButtonText = stringResource(R.string.woopos_clear_cart_button)
+
+    Box(modifier = modifier) {
+        WooPosIconButton(
+            icon = Icons.Default.DeleteOutline,
+            onClick = { dropdownExpanded = true },
+            contentDescription = stringResource(
+                id = R.string.woopos_cart_clear_all_button_content_description
+            ),
+        )
+
+        DropdownMenu(
+            expanded = dropdownExpanded,
+            onDismissRequest = { dropdownExpanded = false },
+            modifier = Modifier
+                .defaultMinSize(minWidth = 200.dp)
+                .background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
+        ) {
+            DropdownMenuItem(
+                text = {
+                    WooPosText(
+                        text = clearCartButtonText,
+                        style = WooPosTypography.BodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                onClick = {
+                    dropdownExpanded = false
+                    onClearCartClicked()
+                },
+                modifier = Modifier.semantics {
+                    contentDescription = clearCartButtonText
+                }
             )
         }
     }
@@ -536,7 +580,7 @@ private fun ProductItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding(),)
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
                     .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
