@@ -99,6 +99,33 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
+    fun processProductRefund(
+        order: Order,
+        productRefundItems: List<ProductRefundItem>,
+        reason: String,
+        method: RefundMethod,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            val result = repository.processProductRefund(
+                orderId = order.id,
+                productRefundItems = productRefundItems,
+                reason = reason,
+                method = method
+            )
+
+            result.fold(
+                onSuccess = {
+                    onResult(true)
+                    loadOrders()
+                },
+                onFailure = {
+                    onResult(false)
+                }
+            )
+        }
+    }
+
     suspend fun getOrderRefunds(order: Order): Result<List<Refund>> {
         return repository.fetchOrderRefunds(order.id)
     }

@@ -9,6 +9,7 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeoutOrNull
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
@@ -68,6 +69,55 @@ class WooPosOrdersRepository @Inject constructor(
                     amount = amount,
                     reason = reason,
                     autoRefund = autoRefund
+                )
+            }
+
+            when {
+                result == null -> Result.failure(
+                    Exception("Request timeout while processing refund")
+                )
+                result.isError -> Result.failure(
+                    Exception(result.error.message)
+                )
+                else -> Result.success(result.model!!.toAppModel())
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    suspend fun processProductRefund(
+        orderId: Long,
+        productRefundItems: List<ProductRefundItem>,
+        reason: String,
+        method: RefundMethod
+    ): Result<Refund> {
+        return try {
+            val site = selectedSite.get()
+            val autoRefund = method == RefundMethod.CARD
+            val totalAmount = productRefundItems.sumOf { it.refundSubtotal }
+
+            val refundRequestItems = productRefundItems
+                .filter { it.selectedQuantity > 0 }
+                .map { item ->
+                    RefundRequestItem(
+                        itemId = item.orderItem.itemId,
+                        quantity = item.selectedQuantity,
+                        refundTotal = item.refundSubtotal,
+                        refundTax = emptyList() // For now, handle tax separately if needed
+                    )
+                }
+
+            val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+                refundStore.createItemsRefund(
+                    site = site,
+                    orderId = orderId,
+                    amount = totalAmount,
+                    reason = reason,
+                    restockItems = true,
+                    autoRefund = autoRefund,
+                    items = refundRequestItems
                 )
             }
 

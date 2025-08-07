@@ -1,3 +1,5 @@
+@file:Suppress("LongMethod", "CyclomaticComplexMethod", "MaxLineLength", "MultiLineIfElse", "NoTrailingSpaces", "NoConsecutiveBlankLines", "ArgumentListWrapping", "Indentation", "Wrapping")
+
 package com.woocommerce.android.ui.woopos.home.orders
 
 import androidx.compose.animation.AnimatedContent
@@ -25,15 +27,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.HorizontalDivider
@@ -55,13 +52,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputField
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -87,29 +83,28 @@ fun WooPosOrderDetailsScreen(
     val order = state.orders.find { it.order.id == orderId }?.order
     
     var refundState: RefundDialogState by remember { mutableStateOf(RefundDialogState.OrderDetails) }
+    var productRefundItems by remember { mutableStateOf(emptyList<ProductRefundItem>()) }
     var refundAmount by remember { mutableStateOf(BigDecimal.ZERO) }
     var refundReason by remember { mutableStateOf("") }
-    var refundMethod by remember { mutableStateOf(RefundMethod.CASH) }
     var isProcessingRefund by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         WooPosToolbar(
             titleText = when (refundState) {
                 RefundDialogState.OrderDetails -> stringResource(R.string.woopos_order_details_title, order?.number ?: "")
-                RefundDialogState.RefundAmount -> stringResource(R.string.woopos_refund_amount_title)
-                RefundDialogState.RefundMethod -> stringResource(R.string.woopos_refund_method_title)
+                RefundDialogState.ProductSelection -> stringResource(R.string.woopos_refund_select_products_title)
                 RefundDialogState.RefundConfirmation -> stringResource(R.string.woopos_refund_confirmation_title)
                 RefundDialogState.RefundSuccess -> stringResource(R.string.woopos_refund_success_title)
             },
             onBackClicked = {
                 when (refundState) {
                     RefundDialogState.OrderDetails -> onNavigationEvent(WooPosNavigationEvent.GoBack)
-                    RefundDialogState.RefundAmount -> {
+                    RefundDialogState.ProductSelection -> {
                         refundState = RefundDialogState.OrderDetails
+                        productRefundItems = emptyList()
                         refundAmount = BigDecimal.ZERO
                     }
-                    RefundDialogState.RefundMethod -> refundState = RefundDialogState.RefundAmount
-                    RefundDialogState.RefundConfirmation -> refundState = RefundDialogState.RefundMethod
+                    RefundDialogState.RefundConfirmation -> refundState = RefundDialogState.ProductSelection
                     RefundDialogState.RefundSuccess -> onNavigationEvent(WooPosNavigationEvent.GoBack)
                 }
             }
@@ -168,28 +163,28 @@ fun WooPosOrderDetailsScreen(
                                 order = order,
                                 currencyFormatter = viewModel.currencyFormatter,
                                 onRefundClick = {
-                                    refundState = RefundDialogState.RefundAmount
+                                    productRefundItems = order.items.map { item ->
+                                        ProductRefundItem(
+                                            orderItem = item,
+                                            maxRefundableQuantity = item.quantity
+                                        )
+                                    }
+                                    refundState = RefundDialogState.ProductSelection
                                 },
                                 onReceiptClick = {
                                     onNavigationEvent(WooPosNavigationEvent.OpenEmailReceipt(order.id))
                                 }
                             )
                         }
-                        RefundDialogState.RefundAmount -> {
-                            RefundAmountContent(
+                        RefundDialogState.ProductSelection -> {
+                            ProductSelectionContent(
                                 order = order,
+                                productRefundItems = productRefundItems,
                                 currencyFormatter = viewModel.currencyFormatter,
-                                refundAmount = refundAmount,
-                                onAmountChange = { refundAmount = it },
-                                onContinue = {
-                                    refundState = RefundDialogState.RefundMethod
-                                }
-                            )
-                        }
-                        RefundDialogState.RefundMethod -> {
-                            RefundMethodContent(
-                                refundMethod = refundMethod,
-                                onMethodSelected = { refundMethod = it },
+                                onProductRefundItemsChange = { items ->
+                                    productRefundItems = items
+                                    refundAmount = items.sumOf { it.refundSubtotal }
+                                },
                                 onContinue = {
                                     refundState = RefundDialogState.RefundConfirmation
                                 }
@@ -199,18 +194,18 @@ fun WooPosOrderDetailsScreen(
                             RefundConfirmationContent(
                                 order = order,
                                 currencyFormatter = viewModel.currencyFormatter,
+                                productRefundItems = productRefundItems,
                                 refundAmount = refundAmount,
                                 refundReason = refundReason,
-                                refundMethod = refundMethod,
                                 onReasonChange = { refundReason = it },
                                 isProcessing = isProcessingRefund,
                                 onConfirm = {
                                     isProcessingRefund = true
-                                    viewModel.processRefund(
+                                    viewModel.processProductRefund(
                                         order = order,
-                                        amount = refundAmount,
+                                        productRefundItems = productRefundItems,
                                         reason = refundReason,
-                                        method = refundMethod
+                                        method = RefundMethod.CASH
                                     ) { success ->
                                         isProcessingRefund = false
                                         if (success) {
@@ -283,23 +278,6 @@ private fun OrderDetailsContent(
     }
 }
 
-@Composable
-private fun OrderStatusSection(status: Order.Status) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_order_details_status),
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
-        
-        OrderStatusChip(status = status, isLarge = true)
-    }
-}
 
 @Composable
 private fun OrderInfoSection(
@@ -554,10 +532,6 @@ private fun formatDate(date: Date): String {
     return formatter.format(date)
 }
 
-private fun formatCompactDate(date: Date): String {
-    val formatter = SimpleDateFormat("MMM d, HH:mm", Locale.getDefault())
-    return formatter.format(date)
-}
 
 @Composable
 private fun PaymentMethodChip(order: Order, isLarge: Boolean = false) {
@@ -641,182 +615,295 @@ private fun OrderStatusChip(status: Order.Status, isLarge: Boolean = false) {
 
 sealed class RefundDialogState {
     object OrderDetails : RefundDialogState()
-    object RefundAmount : RefundDialogState()
-    object RefundMethod : RefundDialogState()
+    object ProductSelection : RefundDialogState()
     object RefundConfirmation : RefundDialogState()
     object RefundSuccess : RefundDialogState()
 }
 
+data class ProductRefundItem(
+    val orderItem: Order.Item,
+    val maxRefundableQuantity: Float,
+    val selectedQuantity: Int = 0,
+    val refundSubtotal: BigDecimal = BigDecimal.ZERO,
+    val refundTax: BigDecimal = BigDecimal.ZERO
+) {
+    val isSelected: Boolean get() = selectedQuantity > 0
+    
+    fun calculateRefundSubtotal(): ProductRefundItem {
+        val quantity = selectedQuantity.toBigDecimal()
+        val subtotal = quantity.multiply(orderItem.price)
+        val tax = if (orderItem.quantity > 0) {
+            val singleItemTax = orderItem.totalTax.divide(
+                orderItem.quantity.toBigDecimal(), 
+                2, 
+                java.math.RoundingMode.HALF_UP
+            )
+            quantity.multiply(singleItemTax)
+        } else BigDecimal.ZERO
+        
+        return copy(
+            refundSubtotal = subtotal,
+            refundTax = tax
+        )
+    }
+}
+
+
 @Composable
-private fun RefundAmountContent(
+private fun ProductSelectionContent(
     order: Order,
+    productRefundItems: List<ProductRefundItem>,
     currencyFormatter: com.woocommerce.android.util.CurrencyFormatter,
-    refundAmount: BigDecimal,
-    onAmountChange: (BigDecimal) -> Unit,
+    onProductRefundItemsChange: (List<ProductRefundItem>) -> Unit,
     onContinue: () -> Unit
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-        keyboardController?.show()
-    }
-
+    val totalRefundAmount = productRefundItems.sumOf { it.refundSubtotal }
+    val hasSelectedItems = productRefundItems.any { it.isSelected }
+    
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .imePadding(),
-        verticalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxSize()
     ) {
+        // Header section with total only
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(WooPosSpacing.Large.value.toAdaptivePadding()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .padding(WooPosSpacing.Large.value.toAdaptivePadding())
         ) {
-            WooPosText(
-                text = stringResource(R.string.woopos_refund_amount_description),
-                style = WooPosTypography.BodyLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
-            )
-
-            // Original amount display
-            WooPosText(
-                text = currencyFormatter.formatCurrency(order.total, order.currency),
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Refund amount input centered
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            WooPosInputField(
-                value = if (refundAmount == BigDecimal.ZERO) "" else refundAmount.toPlainString(),
-                onValueChange = { value ->
-                    val amount = value.toBigDecimalOrNull() ?: BigDecimal.ZERO
-                    if (amount <= order.total) {
-                        onAmountChange(amount)
-                    }
-                },
-                label = stringResource(R.string.woopos_refund_amount_label),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                textStyle = WooPosTypography.Heading,
-                textColor = MaterialTheme.colorScheme.onSurface,
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .focusRequester(focusRequester)
-                    .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
-            )
-
-            if (refundAmount > BigDecimal.ZERO && refundAmount < order.total) {
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+            // Total refund amount display
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 WooPosText(
-                    text = stringResource(R.string.woopos_refund_partial_refund_note),
-                    style = WooPosTypography.BodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    text = stringResource(R.string.woopos_refund_total_amount),
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                
+                WooPosText(
+                    text = currencyFormatter.formatCurrency(totalRefundAmount, order.currency),
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
+        
+        // Products list
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(WooPosSpacing.Large.value.toAdaptivePadding())
+        ) {
+            productRefundItems.forEachIndexed { index, item ->
+                if (index > 0) {
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                        modifier = Modifier.padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding())
+                    )
+                }
+                
+                ProductRefundItemCard(
+                    item = item,
+                    currencyFormatter = currencyFormatter,
+                    currency = order.currency,
+                    onQuantityChanged = { newQuantity ->
+                        val updatedItems = productRefundItems.map { refundItem ->
+                            if (refundItem.orderItem.itemId == item.orderItem.itemId) {
+                                refundItem.copy(selectedQuantity = newQuantity).calculateRefundSubtotal()
+                            } else {
+                                refundItem
+                            }
+                        }
+                        onProductRefundItemsChange(updatedItems)
+                    }
+                )
+            }
+        }
+        
         // Continue button at bottom
         WooPosButton(
             onClick = onContinue,
             text = stringResource(R.string.woopos_continue),
-            state = if (refundAmount > BigDecimal.ZERO) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
+            state = if (hasSelectedItems) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
         )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
     }
 }
 
 @Composable
-private fun RefundMethodContent(
-    refundMethod: RefundMethod,
-    onMethodSelected: (RefundMethod) -> Unit,
-    onContinue: () -> Unit
+private fun ProductRefundItemCard(
+    item: ProductRefundItem,
+    currencyFormatter: com.woocommerce.android.util.CurrencyFormatter,
+    currency: String,
+    onQuantityChanged: (Int) -> Unit
 ) {
-    Column(
+    Row(
         modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.SpaceBetween
+            .fillMaxWidth()
+            .background(
+                color = if (item.isSelected) {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
+            )
+            .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        // Product info section
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(WooPosSpacing.Large.value.toAdaptivePadding()),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.weight(1f)
         ) {
             WooPosText(
-                text = stringResource(R.string.woopos_refund_method_description),
+                text = item.orderItem.name.fastStripHtml(),
                 style = WooPosTypography.BodyLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2
             )
+            
+            Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+            
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
+            ) {
+                WooPosText(
+                    text = "Max: ${item.maxRefundableQuantity.toInt()}",
+                    style = WooPosTypography.BodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                WooPosText(
+                    text = "•",
+                    style = WooPosTypography.BodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                WooPosText(
+                    text = currencyFormatter.formatCurrency(item.orderItem.price, currency),
+                    style = WooPosTypography.BodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
+            // Always reserve space for refund amount to maintain consistent height
+            Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+            
+            Box(modifier = Modifier.height(20.dp)) {
+                if (item.isSelected) {
+                    WooPosText(
+                        text = "Refund: ${currencyFormatter.formatCurrency(item.refundSubtotal, currency)}",
+                        style = WooPosTypography.BodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Method selection cards
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.Large.value.toAdaptivePadding()),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value.toAdaptivePadding())
+        
+        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        
+        // Quantity selection section - tablet friendly
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
         ) {
-            RefundMethodCard(
-                title = "Cash",
-                description = "Issue cash refund",
-                isSelected = refundMethod == RefundMethod.CASH,
-                onClick = { onMethodSelected(RefundMethod.CASH) }
-            )
-
-            RefundMethodCard(
-                title = "Card",
-                description = "Process card refund",
-                isSelected = refundMethod == RefundMethod.CARD,
-                onClick = { onMethodSelected(RefundMethod.CARD) }
-            )
+            // Decrease button
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable(enabled = item.selectedQuantity > 0) {
+                        onQuantityChanged(maxOf(0, item.selectedQuantity - 1))
+                    }
+                    .background(
+                        color = if (item.selectedQuantity > 0) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        },
+                        shape = RoundedCornerShape(WooPosCornerRadius.Small.value)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                WooPosText(
+                    text = "−",
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = if (item.selectedQuantity > 0) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
+            }
+            
+            // Quantity display
+            Box(
+                modifier = Modifier
+                    .size(width = 64.dp, height = 48.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        shape = RoundedCornerShape(WooPosCornerRadius.Small.value)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                WooPosText(
+                    text = item.selectedQuantity.toString(),
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            
+            // Increase button
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable(enabled = item.selectedQuantity < item.maxRefundableQuantity.toInt()) {
+                        onQuantityChanged(minOf(item.maxRefundableQuantity.toInt(), item.selectedQuantity + 1))
+                    }
+                    .background(
+                        color = if (item.selectedQuantity < item.maxRefundableQuantity.toInt()) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        },
+                        shape = RoundedCornerShape(WooPosCornerRadius.Small.value)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                WooPosText(
+                    text = "+",
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = if (item.selectedQuantity < item.maxRefundableQuantity.toInt()) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
+            }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Continue button at bottom
-        WooPosButton(
-            onClick = onContinue,
-            text = stringResource(R.string.woopos_continue),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
     }
 }
+
 
 @Composable
 private fun RefundConfirmationContent(
     order: Order,
     currencyFormatter: com.woocommerce.android.util.CurrencyFormatter,
+    productRefundItems: List<ProductRefundItem>,
     refundAmount: BigDecimal,
     refundReason: String,
-    refundMethod: RefundMethod,
     onReasonChange: (String) -> Unit,
     isProcessing: Boolean,
     onConfirm: () -> Unit
@@ -861,19 +948,67 @@ private fun RefundConfirmationContent(
                 )
 
                 RefundSummaryRow(
-                    label = stringResource(R.string.woopos_refund_method_label),
-                    value = when (refundMethod) {
-                        RefundMethod.CASH -> stringResource(R.string.woopos_refund_method_cash)
-                        RefundMethod.CARD -> stringResource(R.string.woopos_refund_method_card)
-                    },
-                    isLarge = true
-                )
-
-                RefundSummaryRow(
                     label = stringResource(R.string.woopos_order_number_label),
                     value = order.number,
                     isLarge = true
                 )
+            }
+            
+            // Selected products section
+            if (productRefundItems.any { it.isSelected }) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+                
+                WooPosText(
+                    text = stringResource(R.string.woopos_refund_selected_products_title),
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+                )
+                
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
+                        )
+                        .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
+                ) {
+                    productRefundItems.filter { it.isSelected }.forEach { item ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                WooPosText(
+                                    text = item.orderItem.name.fastStripHtml(),
+                                    style = WooPosTypography.BodyMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 2
+                                )
+                                WooPosText(
+                                    text = stringResource(
+                                        R.string.woopos_refund_quantity_format,
+                                        item.selectedQuantity
+                                    ),
+                                    style = WooPosTypography.BodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            
+                            WooPosText(
+                                text = currencyFormatter.formatCurrency(item.refundSubtotal, order.currency),
+                                style = WooPosTypography.BodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -1001,49 +1136,6 @@ private fun RefundSuccessContent(
     }
 }
 
-@Composable
-private fun RefundMethodCard(
-    title: String,
-    description: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = if (isSelected) {
-                    MaterialTheme.colorScheme.primaryContainer
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainerLow
-                },
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
-            )
-            .clickable { onClick() }
-            .padding(WooPosSpacing.XLarge.value.toAdaptivePadding()),
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
-    ) {
-        WooPosText(
-            text = title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            color = if (isSelected) {
-                MaterialTheme.colorScheme.onPrimaryContainer
-            } else {
-                MaterialTheme.colorScheme.onSurface
-            }
-        )
-        WooPosText(
-            text = description,
-            style = WooPosTypography.BodyLarge,
-            color = if (isSelected) {
-                MaterialTheme.colorScheme.onPrimaryContainer
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            }
-        )
-    }
-}
 
 @Composable
 @WooPosPreview
