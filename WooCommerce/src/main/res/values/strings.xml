@@ -4562,10 +4562,10 @@
     <string name="woopos_order_number_label">Order Number</string>
     <string name="woopos_refund_reason_label">Reason (Optional)</string>
     <string name="woopos_refund_restock_items_label">Restock items</string>
-    <string name="woopos_refund_confirm">Process Refund</string>
-    <string name="woopos_refund_success_title">Refund Processed</string>
-    <string name="woopos_refund_success_message">Successfully processed</string>
-    <string name="woopos_refund_selected_products_title">Selected Products</string>
+    <string name="woopos_refund_confirm">Process refund</string>
+    <string name="woopos_refund_success_title">Refund processed</string>
+    <string name="woopos_refund_success_message">Refund of %s has been processed</string>
+    <string name="woopos_refund_selected_products_title">Selected products</string>
     <string name="woopos_refund_quantity_format">Qty: %d</string>
 
     <string name="customers_details_customer_section">Customer</string>

@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,7 +50,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.material3.ExperimentalMaterial3Api
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WooPosOrdersList(
     modifier: Modifier = Modifier,
@@ -56,38 +60,48 @@ fun WooPosOrdersList(
     onOrderClick: (Order) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val pullToRefreshState = rememberPullToRefreshState()
 
-    Box(
+    PullToRefreshBox(
+        isRefreshing = state.isLoading,
+        onRefresh = { viewModel.loadOrders() },
+        state = pullToRefreshState,
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
         when {
-            state.isLoading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.primary
-                )
+            state.isLoading && state.orders.isEmpty() -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-            state.error != null -> {
-                WooPosText(
-                    text = state.error ?: "Error loading orders",
-                    style = WooPosTypography.BodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(WooPosSpacing.Large.value.toAdaptivePadding())
-                )
+            state.error != null && state.orders.isEmpty() -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    WooPosText(
+                        text = state.error ?: "Error loading orders",
+                        style = WooPosTypography.BodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(WooPosSpacing.Large.value.toAdaptivePadding())
+                    )
+                }
             }
             state.orders.isEmpty() -> {
-                WooPosText(
-                    text = stringResource(R.string.woopos_orders_empty_list),
-                    style = WooPosTypography.BodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(WooPosSpacing.Large.value.toAdaptivePadding())
-                )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_orders_empty_list),
+                        style = WooPosTypography.BodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(WooPosSpacing.Large.value.toAdaptivePadding())
+                    )
+                }
             }
             else -> {
                 WooPosLazyColumn(

@@ -1,4 +1,14 @@
-@file:Suppress("LongMethod", "CyclomaticComplexMethod", "MaxLineLength", "MultiLineIfElse", "NoTrailingSpaces", "NoConsecutiveBlankLines", "ArgumentListWrapping", "Indentation", "Wrapping")
+@file:Suppress(
+    "LongMethod",
+    "CyclomaticComplexMethod",
+    "MaxLineLength",
+    "MultiLineIfElse",
+    "NoTrailingSpaces",
+    "NoConsecutiveBlankLines",
+    "ArgumentListWrapping",
+    "Indentation",
+    "Wrapping"
+)
 
 package com.woocommerce.android.ui.woopos.home.orders
 
@@ -38,6 +48,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,6 +80,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import kotlinx.coroutines.delay
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -96,7 +108,11 @@ fun WooPosOrderDetailsScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         WooPosToolbar(
             titleText = when (refundState) {
-                RefundDialogState.OrderDetails -> stringResource(R.string.woopos_order_details_title, order?.number ?: "")
+                RefundDialogState.OrderDetails -> stringResource(
+                    R.string.woopos_order_details_title,
+                    order?.number ?: ""
+                )
+
                 RefundDialogState.ProductSelection -> stringResource(R.string.woopos_refund_select_products_title)
                 RefundDialogState.RefundConfirmation -> stringResource(R.string.woopos_refund_confirmation_title)
                 RefundDialogState.RefundSuccess -> stringResource(R.string.woopos_refund_success_title)
@@ -109,6 +125,7 @@ fun WooPosOrderDetailsScreen(
                         productRefundItems = emptyList()
                         refundAmount = BigDecimal.ZERO
                     }
+
                     RefundDialogState.RefundConfirmation -> refundState = RefundDialogState.ProductSelection
                     RefundDialogState.RefundSuccess -> onNavigationEvent(WooPosNavigationEvent.GoBack)
                 }
@@ -126,6 +143,7 @@ fun WooPosOrderDetailsScreen(
                     )
                 }
             }
+
             state.error != null -> {
                 Column(
                     modifier = Modifier
@@ -142,6 +160,7 @@ fun WooPosOrderDetailsScreen(
                     )
                 }
             }
+
             order != null -> {
                 AnimatedContent(
                     targetState = refundState,
@@ -193,6 +212,7 @@ fun WooPosOrderDetailsScreen(
                                 }
                             )
                         }
+
                         RefundDialogState.ProductSelection -> {
                             ProductSelectionContent(
                                 order = order,
@@ -207,6 +227,7 @@ fun WooPosOrderDetailsScreen(
                                 }
                             )
                         }
+
                         RefundDialogState.RefundConfirmation -> {
                             RefundConfirmationContent(
                                 order = order,
@@ -235,6 +256,7 @@ fun WooPosOrderDetailsScreen(
                                 }
                             )
                         }
+
                         RefundDialogState.RefundSuccess -> {
                             RefundSuccessContent(
                                 refundAmount = refundAmount,
@@ -246,6 +268,7 @@ fun WooPosOrderDetailsScreen(
                     }
                 }
             }
+
             else -> {
                 Column(
                     modifier = Modifier
@@ -568,9 +591,9 @@ private fun PaymentMethodChip(order: Order, isLarge: Boolean = false) {
             )
             .padding(
                 horizontal = if (isLarge) WooPosSpacing.Medium.value.toAdaptivePadding()
-                           else WooPosSpacing.XSmall.value.toAdaptivePadding(),
+                else WooPosSpacing.XSmall.value.toAdaptivePadding(),
                 vertical = if (isLarge) WooPosSpacing.Small.value.toAdaptivePadding()
-                          else WooPosSpacing.XSmall.value.toAdaptivePadding()
+                else WooPosSpacing.XSmall.value.toAdaptivePadding()
             )
     ) {
         Icon(
@@ -580,10 +603,12 @@ private fun PaymentMethodChip(order: Order, isLarge: Boolean = false) {
             modifier = Modifier.size(if (isLarge) 20.dp else 12.dp)
         )
 
-        Spacer(modifier = Modifier.width(
-            if (isLarge) WooPosSpacing.Small.value.toAdaptivePadding()
-            else WooPosSpacing.XSmall.value.toAdaptivePadding()
-        ))
+        Spacer(
+            modifier = Modifier.width(
+                if (isLarge) WooPosSpacing.Small.value.toAdaptivePadding()
+                else WooPosSpacing.XSmall.value.toAdaptivePadding()
+            )
+        )
 
         WooPosText(
             text = text,
@@ -618,9 +643,9 @@ private fun OrderStatusChip(status: Order.Status, isLarge: Boolean = false) {
             )
             .padding(
                 horizontal = if (isLarge) WooPosSpacing.Medium.value.toAdaptivePadding()
-                           else WooPosSpacing.XSmall.value.toAdaptivePadding(),
+                else WooPosSpacing.XSmall.value.toAdaptivePadding(),
                 vertical = if (isLarge) WooPosSpacing.Small.value.toAdaptivePadding()
-                          else WooPosSpacing.XSmall.value.toAdaptivePadding()
+                else WooPosSpacing.XSmall.value.toAdaptivePadding()
             )
     ) {
         WooPosText(
@@ -1118,22 +1143,15 @@ private fun RefundSuccessContent(
             Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
             WooPosText(
-                text = stringResource(R.string.woopos_refund_success_title),
+                text = stringResource(
+                    R.string.woopos_refund_success_message,
+                    currencyFormatter.formatCurrency(refundAmount, currencyCode)
+                ),
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
             )
-
-            WooPosText(
-                text = currencyFormatter.formatCurrency(refundAmount, currencyCode),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-            )
-
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -1153,10 +1171,29 @@ private fun RefundSuccessContent(
 
 @Composable
 private fun RefundSuccessCheckMarkIcon() {
+    var animateSize by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        animateSize = true
+    }
+    var animateIcon by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(300)
+        animateIcon = true
+    }
+
+    val size by animateDpAsState(
+        targetValue = if (animateSize) 166.dp else 0.dp,
+        label = "Circle Size"
+    )
+    val iconSize by animateDpAsState(
+        targetValue = if (animateIcon) 72.dp else 0.dp,
+        label = "Icon Size"
+    )
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .size(166.dp)
+            .size(size)
             .shadow(
                 elevation = WooPosElevation.Medium.value,
                 shape = CircleShape,
@@ -1169,7 +1206,7 @@ private fun RefundSuccessCheckMarkIcon() {
             tint = WooPosTheme.colors.onSuccess,
             contentDescription = stringResource(id = R.string.woopos_refund_success_title),
             modifier = Modifier
-                .size(72.dp)
+                .size(iconSize)
         )
     }
 }
@@ -1202,7 +1239,9 @@ private fun AnimatedRestockCheckbox(
         modifier = modifier
             .size(backgroundSize)
             .background(
-                color = if (isChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                color = if (isChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(
+                    alpha = 0.2f
+                ),
                 shape = RoundedCornerShape(8.dp)
             )
             .border(
