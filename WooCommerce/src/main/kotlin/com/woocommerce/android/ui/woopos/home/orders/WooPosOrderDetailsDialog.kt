@@ -4,9 +4,12 @@ package com.woocommerce.android.ui.woopos.home.orders
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,8 +33,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Payments
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -145,15 +146,27 @@ fun WooPosOrderDetailsScreen(
                 AnimatedContent(
                     targetState = refundState,
                     transitionSpec = {
-                        fadeIn(
+                        val isForward = isForwardTransition(initialState, targetState)
+                        slideInHorizontally(
                             animationSpec = tween(
-                                durationMillis = 250,
-                                delayMillis = 200,
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            ),
+                            initialOffsetX = { fullWidth -> if (isForward) fullWidth else -fullWidth }
+                        ) + fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 300,
                                 easing = FastOutSlowInEasing
                             )
-                        ) togetherWith fadeOut(
+                        ) togetherWith slideOutHorizontally(
                             animationSpec = tween(
-                                durationMillis = 200,
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            ),
+                            targetOffsetX = { fullWidth -> if (isForward) -fullWidth else fullWidth }
+                        ) + fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 300,
                                 easing = FastOutSlowInEasing
                             )
                         )
@@ -187,7 +200,7 @@ fun WooPosOrderDetailsScreen(
                                 currencyFormatter = viewModel.currencyFormatter,
                                 onProductRefundItemsChange = { items ->
                                     productRefundItems = items
-                                    refundAmount = items.sumOf { it.refundSubtotal }
+                                    refundAmount = items.sumOf { it.refundSubtotal + it.refundTax }
                                 },
                                 onContinue = {
                                     refundState = RefundDialogState.RefundConfirmation
@@ -664,7 +677,7 @@ private fun ProductSelectionContent(
     onProductRefundItemsChange: (List<ProductRefundItem>) -> Unit,
     onContinue: () -> Unit
 ) {
-    val totalRefundAmount = productRefundItems.sumOf { it.refundSubtotal }
+    val totalRefundAmount = productRefundItems.sumOf { it.refundSubtotal + it.refundTax }
     val hasSelectedItems = productRefundItems.any { it.isSelected }
 
     Column(
@@ -997,6 +1010,8 @@ private fun RefundConfirmationContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
         // Reason input
         WooPosInputField(
             value = refundReason,
@@ -1008,29 +1023,32 @@ private fun RefundConfirmationContent(
                 .padding(horizontal = WooPosSpacing.Large.value.toAdaptivePadding())
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
-        // Restock checkbox
+        // Restock checkbox - WooPos style
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = WooPosSpacing.Large.value.toAdaptivePadding())
-                .clickable { onRestockChange(!restockItems) },
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
+                )
+                .clickable { onRestockChange(!restockItems) }
+                .padding(WooPosSpacing.Large.value.toAdaptivePadding()),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(
-                checked = restockItems,
-                onCheckedChange = onRestockChange,
-                colors = CheckboxDefaults.colors(
-                    checkedColor = MaterialTheme.colorScheme.primary,
-                    uncheckedColor = MaterialTheme.colorScheme.outline
-                )
-            )
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
             WooPosText(
                 text = stringResource(R.string.woopos_refund_restock_items_label),
                 style = WooPosTypography.BodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f)
+            )
+
+            AnimatedRestockCheckbox(
+                isChecked = restockItems,
+                modifier = Modifier.size(48.dp)
             )
         }
 
@@ -1111,18 +1129,11 @@ private fun RefundSuccessContent(
                 text = currencyFormatter.formatCurrency(refundAmount, currencyCode),
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
-                color = WooPosTheme.colors.success,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
             )
 
-            WooPosText(
-                text = stringResource(R.string.woopos_refund_success_message),
-                style = WooPosTypography.BodyLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = WooPosSpacing.Large.value.toAdaptivePadding())
-            )
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -1161,6 +1172,69 @@ private fun RefundSuccessCheckMarkIcon() {
                 .size(72.dp)
         )
     }
+}
+
+@Composable
+private fun AnimatedRestockCheckbox(
+    isChecked: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val backgroundSize by animateDpAsState(
+        targetValue = if (isChecked) 48.dp else 48.dp,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = FastOutSlowInEasing
+        ),
+        label = "Background Size"
+    )
+
+    val iconSize by animateDpAsState(
+        targetValue = if (isChecked) 24.dp else 0.dp,
+        animationSpec = tween(
+            durationMillis = 300,
+            delayMillis = if (isChecked) 150 else 0,
+            easing = FastOutSlowInEasing
+        ),
+        label = "Icon Size"
+    )
+
+    Box(
+        modifier = modifier
+            .size(backgroundSize)
+            .background(
+                color = if (isChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .border(
+                width = if (isChecked) 0.dp else 1.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = RoundedCornerShape(8.dp)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isChecked) {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(iconSize)
+            )
+        }
+    }
+}
+
+private fun isForwardTransition(from: RefundDialogState, to: RefundDialogState): Boolean {
+    val stateOrder = listOf(
+        RefundDialogState.OrderDetails,
+        RefundDialogState.ProductSelection,
+        RefundDialogState.RefundConfirmation,
+        RefundDialogState.RefundSuccess
+    )
+
+    val fromIndex = stateOrder.indexOf(from)
+    val toIndex = stateOrder.indexOf(to)
+
+    return toIndex > fromIndex
 }
 
 @Composable

@@ -97,7 +97,7 @@ class WooPosOrdersRepository @Inject constructor(
         return try {
             val site = selectedSite.get()
             val autoRefund = method == RefundMethod.CARD
-            val totalAmount = productRefundItems.sumOf { it.refundSubtotal }
+            val totalAmount = productRefundItems.sumOf { it.refundSubtotal + it.refundTax }
 
             val refundRequestItems = productRefundItems
                 .filter { it.selectedQuantity > 0 }
@@ -105,7 +105,7 @@ class WooPosOrdersRepository @Inject constructor(
                     RefundRequestItem(
                         itemId = item.orderItem.itemId,
                         quantity = item.selectedQuantity,
-                        refundTotal = item.refundSubtotal,
+                        refundTotal = item.refundSubtotal + item.refundTax,
                         refundTax = emptyList() // For now, handle tax separately if needed
                     )
                 }
