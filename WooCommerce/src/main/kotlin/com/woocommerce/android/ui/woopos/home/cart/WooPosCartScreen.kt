@@ -475,29 +475,34 @@ private fun ClearCartButton(
             ),
         )
 
-        DropdownMenu(
-            expanded = dropdownExpanded,
-            onDismissRequest = { dropdownExpanded = false },
-            modifier = Modifier
-                .defaultMinSize(minWidth = 200.dp)
-                .background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
-        ) {
-            DropdownMenuItem(
-                text = {
-                    WooPosText(
-                        text = clearCartButtonText,
-                        style = WooPosTypography.BodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                },
-                onClick = {
-                    dropdownExpanded = false
-                    onClearCartClicked()
-                },
-                modifier = Modifier.semantics {
-                    contentDescription = clearCartButtonText
-                }
+        MaterialTheme(
+            shapes = MaterialTheme.shapes.copy(
+                extraSmall = RoundedCornerShape(WooPosCornerRadius.Medium.value)
             )
+        ) {
+            DropdownMenu(
+                expanded = dropdownExpanded,
+                onDismissRequest = { dropdownExpanded = false },
+                modifier = Modifier.defaultMinSize(minWidth = 200.dp)
+                    .background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        WooPosText(
+                            text = clearCartButtonText,
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    },
+                    onClick = {
+                        dropdownExpanded = false
+                        onClearCartClicked()
+                    },
+                    modifier = Modifier.semantics {
+                        contentDescription = clearCartButtonText
+                    }
+                )
+            }
         }
     }
 }
@@ -580,7 +585,7 @@ private fun ProductItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding(),)
                     .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
