@@ -91,6 +91,7 @@ class WooPosOrdersRepository @Inject constructor(
         orderId: Long,
         productRefundItems: List<ProductRefundItem>,
         reason: String,
+        restockItems: Boolean,
         method: RefundMethod
     ): Result<Refund> {
         return try {
@@ -115,7 +116,7 @@ class WooPosOrdersRepository @Inject constructor(
                     orderId = orderId,
                     amount = totalAmount,
                     reason = reason,
-                    restockItems = true,
+                    restockItems = restockItems,
                     autoRefund = autoRefund,
                     items = refundRequestItems
                 )

@@ -103,6 +103,7 @@ class WooPosOrdersViewModel @Inject constructor(
         order: Order,
         productRefundItems: List<ProductRefundItem>,
         reason: String,
+        restockItems: Boolean,
         method: RefundMethod,
         onResult: (Boolean) -> Unit
     ) {
@@ -111,6 +112,7 @@ class WooPosOrdersViewModel @Inject constructor(
                 orderId = order.id,
                 productRefundItems = productRefundItems,
                 reason = reason,
+                restockItems = restockItems,
                 method = method
             )
 

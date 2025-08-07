@@ -4546,8 +4546,8 @@
     <string name="woopos_refund_original_amount">Original Amount</string>
     <string name="woopos_refund_amount_label">Refund Amount</string>
     <string name="woopos_refund_partial_refund_note">This is a partial refund</string>
-    
-    <string name="woopos_refund_select_products_title">Select Products to Refund</string>
+
+    <string name="woopos_refund_select_products_title">Select Products</string>
     <string name="woopos_refund_select_products_instruction">Select products and quantities to refund</string>
     <string name="woopos_refund_total_amount">Total Refund</string>
     <string name="woopos_continue">Continue</string>
@@ -4561,9 +4561,10 @@
     <string name="woopos_refund_confirmation_title">Confirm Refund</string>
     <string name="woopos_order_number_label">Order Number</string>
     <string name="woopos_refund_reason_label">Reason (Optional)</string>
+    <string name="woopos_refund_restock_items_label">Restock items</string>
     <string name="woopos_refund_confirm">Process Refund</string>
     <string name="woopos_refund_success_title">Refund Processed</string>
-    <string name="woopos_refund_success_message">Refund of %s has been successfully processed</string>
+    <string name="woopos_refund_success_message">Successfully processed</string>
     <string name="woopos_refund_selected_products_title">Selected Products</string>
     <string name="woopos_refund_quantity_format">Qty: %d</string>
 
