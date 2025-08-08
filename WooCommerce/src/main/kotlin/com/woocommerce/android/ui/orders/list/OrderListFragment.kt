@@ -96,8 +96,6 @@ class OrderListFragment :
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
-        const val SELECT_FIRST_ORDER_ID = Long.MIN_VALUE
-
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.4f
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
@@ -566,11 +564,7 @@ class OrderListFragment :
                     // A specific order is set to be opened
                     viewModel.orderId.value != -1L -> {
                         handler.postDelayed({
-                            if (viewModel.orderId.value == SELECT_FIRST_ORDER_ID) {
-                                openFirstOrder(it)
-                            } else {
-                                openSpecificOrder(viewModel.orderId.value)
-                            }
+                            openSpecificOrder(viewModel.orderId.value)
                             clearSelectedOrderIdInViewModel()
                         }, HANDLER_DELAY)
                     }
