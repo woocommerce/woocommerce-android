@@ -4,7 +4,7 @@
 
 23.1
 -----
-
+- [*] You can now remove background from product images in the app. Just open the product image and click "Remove background" button. [https://github.com/woocommerce/woocommerce-android/pull/14445]
 
 23.0
 -----
