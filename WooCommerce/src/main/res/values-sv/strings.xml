@@ -1,11 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-16 13:54:04+0000
+Translation-Revision-Date: 2025-07-29 15:36:46+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">Vikt måste vara större än noll</string>
+    <string name="woo_shipping_labels_order_completion_error">Kunde inte markera beställningen som slutförd</string>
+    <string name="woo_shipping_address_use_as_entered">Använd adressen som angavs</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">Tariffnumret måste vara mellan sex och tolv siffror långt</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">Internationellt transaktionsnummer krävs för försändelser till destinationslandet.</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">Det krävs ett internationellt transaktionsnummer (ITN) för frakt av artiklar till ett värde som överstiger 2 500 USD per tariffnummer\nProdukter med tariffnummer %1$s uppgår till mer än 2 500 USD.</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_button_retry">Försök igen</string>
+    <string name="woopos_scanning_setup_button_back">Tillbaka</string>
+    <string name="woopos_scanning_setup_button_next">Nästa</string>
+    <string name="woopos_scanning_setup_device_other">Annan</string>
+    <string name="woopos_scanning_setup_button_done">Klar</string>
+    <string name="woopos_scanning_setup_scan_failed_message">Kontrollera skannerns handbok och återställ den till fabriksinställningarna. Kör sedan konfigurationsflödet igen.</string>
+    <string name="woopos_scanning_setup_scan_failed_title">Skanningsproblem hittades</string>
+    <string name="woopos_scanning_setup_timeout_message">Skanna streckkoden för att testa din skanner. Om problemet kvarstår, kontrollera Bluetooth-inställningarna och försök igen.</string>
+    <string name="woopos_scanning_setup_visit_documentation">besök dokumentationen</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">Hur man ställer in streckkoder på produkter</string>
+    <string name="woopos_scanning_setup_test_scanner_title">Testa din skanner</string>
+    <string name="woopos_scanning_setup_timeout_title">Inga skanningsdata hittade än</string>
+    <string name="woopos_scanning_setup_test_scanner_message">Skanna teststreckkoden för att verifiera att din skanner fungerar korrekt.</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">Lagerexempel för streckkodskonfiguration</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">Du kan konfigurera streckkoder i fältet \"GTIN, UPC, EAN, ISBN\" på produktens lagerflik. För mer information</string>
+    <string name="woopos_scanning_setup_info_text">Streckkodsskannern kan dölja tangentbordet. Tryck på tangentbordsikonen eller aktivera i OS-inställningarna under ”Fysiskt tangentbord”</string>
+    <string name="woopos_scanning_setup_info_bullet_3">Se till att sökfältet inte är aktiverat när du skannar streckkoder.</string>
+    <string name="woopos_scanning_setup_info_bullet_2">Skanna streckkoder när du är i artikellistan för att lägga till produkter i varukorgen.</string>
+    <string name="woopos_scanning_setup_info_bullet_1">Se din Bluetooth-streckkodsskanner i Bluetooth-inställningarna för systemet.</string>
+    <string name="woopos_scanning_setup_more_information">Hur man ställer in streckkoder på produkter</string>
+    <string name="woopos_scanning_setup_info_title">Skannerkonfiguration</string>
+    <string name="woopos_scanning_setup_success_message">Du är redo att börja skanna produkter.\nLäs mer om stöd för streckkods- och QR-kodsskanner.</string>
+    <string name="woopos_scanning_setup_device_selection_message">Välj en modell från listan:</string>
+    <string name="woopos_scanning_setup_success_title">Skanner konfigurerad!</string>
+    <string name="woopos_scanning_setup_go_to_settings">Gå till enhetens inställningar</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">Aktivera Bluetooth och välj din %s-skanner i OS-inställningarna.\nSkannern piper och dess LED-lampa lyser med ett fast sken när den är parkopplad.</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">Parkoppla din skanner</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">Använd din streckkodsskanner för att skanna koden nedan och gå in i parningsläge.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">Skannerkonfiguration</string>
+    <string name="woopos_scanning_setup_hid_message">Använd din streckkodsskanner för att skanna koden nedan och aktivera Bluetooth HID-läge.</string>
+    <string name="woopos_scanning_setup_hid_title">Skannerkonfiguration</string>
+    <string name="woopos_scanning_setup_device_selection_title">Konfigurera en streckkodsskanner</string>
+    <string name="woopos_scanning_setup_barcode_content_description">Streckkod</string>
+    <string name="woopos_scanning_setup_dialog_content_description">Dialogruta för skannerkonfiguration</string>
+    <string name="woopos_eligibility_screen_UK_country_name">Storbritannien</string>
+    <string name="woopos_eligibility_screen_unable_to_load">Hämtningen kunde inte genomföras</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS-systemet är inte tillgängligt för din butiks valuta. Kontrollera din butiks valutainställningar eller kontakta supporten för att få hjälp.</string>
+    <string name="woopos_eligibility_screen_US_country_name">Förenta staterna</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS-systemet är inte tillgängligt för din butiks valuta. I %1$s stöder den för närvarande endast %2$s. Kontrollera din butiks valutainställningar eller kontakta supporten för att få hjälp.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Försäljningsplats måste vara aktiverat för att fortsätta. Aktivera POS-funktionen från din WordPress-adminpanel under WooCommerce-inställningar &gt; Avancerat &gt; Funktioner.</string>
+    <string name="woopos_eligibility_reason_check_connection">Kontrollera din internetanslutning och prova att starta om appen. Om problemet kvarstår, kontakta supporten.</string>
+    <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Din WooCommerce-version stöds inte. POS-systemet kräver WooCommerce-version %1$s eller senare. Uppdatera till den senaste versionen av WooCommerce.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Se till att WooCommerce-tillägget installeras och aktiveras från din WordPress-adminpanel. Om du fortfarande upplever problem, kontakta supporten för att få hjälp.</string>
+    <string name="woopos_barcode_scanning_title">Konfigurera en streckkodsskanner</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">Försäljningsplats</string>
+    <string name="orderfilters_sales_channel_filter">Försäljningskanal</string>
+    <string name="barcode_ean13_content_description">Streckkod EAN13</string>
     <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
     <string name="woo_shipping_rate_extra_cost_format">+%1$s</string>
     <string name="woo_shipping_rate_option_signature_required">Signatur krävs</string>
@@ -17,7 +73,6 @@ Language: sv_SE
     <string name="woo_shipping_rate_option_saturday_delivery">Leverans på lördag</string>
     <string name="woo_shipping_rate_option_carbon_neutral">Kolneutral</string>
     <string name="woo_shipping_rate_option_adult_signature_required">Måste signeras av en vuxen</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Se instruktionerna för Bluetooth-streckkodsskannern för att ställa in HID-läge. Detta kräver vanligtvis skanning av en speciell streckkod i manualen.</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">Skannern skickade inte radslutstecken</string>
     <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (grundavgift)</string>
     <string name="shipping_label_paper_size_a4">A4 (210 x 297mm)</string>
@@ -53,25 +108,15 @@ Language: sv_SE
     <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;Belopp som är berättigat för återbetalning:&lt;/b&gt; %s</string>
     <string name="woopos_cart_searching_for_item">Söker</string>
     <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Köpdatum:&lt;/b&gt; %s</string>
-    <string name="woopos_dialog_barcode_info_button_label">OK</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">Rabattkod %1$s tillagd i varukorg</string>
     <string name="woopos_cart_product_added_to_cart_accessibility">Produkt %1$s tillagd i varukorg, pris %2$s</string>
     <string name="woo_shipping_refund_title">Begär en återbetalning för fraktetikett</string>
     <string name="woo_shipping_split_shipment_error">Vi kunde inte dela upp försändelserna. Försök igen.</string>
     <string name="woopos_cart_adding_item_to_cart_failed">Det gick inte att lägga till artikeln i varukorgen, %s.</string>
-    <string name="woopos_barcode_scanning_title">Streckkodsskanning</string>
-    <string name="woopos_dialog_barcode_info_background_content_description">Nedtonad bakgrund. Tryck för att avfärda dialogrutan.</string>
-    <string name="woopos_dialog_barcode_info_content_description">Informationsdialogruta för streckkodsskanning</string>
-    <string name="woopos_dialog_barcode_info_quinary_message">Skannern emulerar ett tangentbord, så ibland kommer det att förhindra programvaran tangentbordet från att visas, t.ex. i sökningar. Tryck på tangentbordsikonen för att få tillbaka tangentbordet.</string>
     <string name="woo_shipping_refund_duration_description">Begär en återbetalning för din oanvända fraktetikett. Återbetalningsprocessen för fraktetiketten startar omedelbart och är vanligtvis klar inom %d arbetsdagar.</string>
-    <string name="woopos_dialog_barcode_info_quaternary_message">• Skanna streckkoder när du är på artikellistan för att lägga till produkter i varukorgen.</string>
-    <string name="woopos_dialog_barcode_info_tertiary_message">• Anslut streckkodsskannern i Bluetooth-inställningarna för systemet.</string>
-    <string name="woopos_dialog_barcode_info_more_details_link">Mer detaljer</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• Ställ in streckkoder i fältet \"GTIN, UPC, EAN, ISBN\" i Produkter &gt; Produktinformation &gt; Lager. </string>
-    <string name="woopos_dialog_barcode_info_heading">Streckkodsskanning</string>
     <string name="woopos_cart_barcode_scan_result_network_error">Ingen internetanslutning</string>
-    <string name="woopos_dialog_barcode_info_intro_message">Du kan skanna streckkoder med hjälp av en extern skanner för att snabbt skapa en varukorg.</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Stöds ej – %s</string>
+    <string name="woopos_scanning_setup_info_message">Du kan skanna streckkoder med en extern skanner för att snabbt bygga en varukorg.</string>
     <string name="woopos_add_variable_product_to_cart_accessibility_label">Öppna lista med varianter</string>
     <string name="woopos_add_product_to_cart_accessibility_label">Lägg till produkt till varukorg</string>
     <string name="woopos_add_coupon_to_cart_accessibility_label">Lägg till rabattkod till varukorg</string>
@@ -164,10 +209,10 @@ Language: sv_SE
     <string name="woo_shipping_address_notification_origin_unverified">Ursprungsadress overifierad</string>
     <string name="woo_shipping_address_notification_destination_verified">Verifierad destinationsadress</string>
     <string name="woo_shipping_address_notification_destination_missing">Destinationsadressen saknas</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">För försändelser över 2 500 USD måste du hämta ett 14-siffrigt AES ITN för verifiering av amerikansk exportrapportering.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">Vi måste veta fraktvikten innan vi kan visa de tillgängliga fraktavgifterna.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">Lägg till fraktvikt för att få fraktavgifter</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">Vi måste veta vart det här paketet ska innan vi kan visa de tillgängliga fraktpriserna.</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">För försändelser över 2 500 USD måste du hämta ett 14-siffrigt AES ITN för verifiering av amerikansk exportrapportering.</string>
     <string name="woopos_search_recent_searches_title">Senaste sökningar</string>
     <string name="woopos_search_products">Sök produkter …</string>
     <string name="woopos_search_clear_content_description">Rensa</string>
@@ -200,7 +245,6 @@ Language: sv_SE
     <string name="woo_shipping_labels_customs_other_error_message">Typ får inte vara tomt</string>
     <string name="woo_shipping_verifying_address_failed">Adressverifieringen misslyckades. Försök igen.</string>
     <string name="woo_shipping_address_unsaved_changes">Ej sparade ändringar</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Tariffnummer saknas</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS-tariffnummer</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Vi kan inte ladda fraktavgifterna.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">Vi kan inte ladda sparade paket.</string>

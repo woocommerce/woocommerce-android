@@ -1,0 +1,2 @@
+22.9:
+WooCommerce deneyiminizi Satış Noktası iyileştirmeleriyle geliştirdik! Şimdi siparişleri POS satış kanalına göre filtreleyin, barkod okuyucularını sorunsuzca ayarlayın ve panonuzdaki yeni rozetlerle POS siparişlerini tespit edin. Sipariş ayrıntılarındaki yükleme sorunları ve ödeme ekranındaki çökmeler düzeltildi, arama işlevi geri yüklendi, gönderim etiketi adres doğrulaması iyileştirildi. Uygulama yeniden başladıktan sonra eklenti tespiti ve para birimi yönetimi iyileştirildi.
