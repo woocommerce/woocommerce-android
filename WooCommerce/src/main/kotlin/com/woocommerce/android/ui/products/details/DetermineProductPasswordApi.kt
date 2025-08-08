@@ -14,7 +14,7 @@ class DetermineProductPasswordApi @Inject constructor(
 ) {
     suspend operator fun invoke(): ProductPasswordApi {
         val wcVersion = withContext(Dispatchers.IO) {
-            wooCommerceStore.getSitePlugin(
+            wooCommerceStore.getActiveSitePlugin(
                 selectedSite.get(),
                 WooCommerceStore.WooPlugin.WOO_CORE
             )?.version
