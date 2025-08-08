@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.dashboard.orders
 
-import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
