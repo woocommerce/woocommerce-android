@@ -1,9 +1,1 @@
-- [*] Add search functionality to application log viewer [https://github.com/woocommerce/woocommerce-android/pull/14386]
-- [**] You can now access POS mode faster than ever with the new POS tab in the app’s bottom navigation bar—just one tap and you’re in. It’s fully available in the UK and US! [https://github.com/woocommerce/woocommerce-android/pull/14337]
-- [*] Add search functionality to application log viewer [https://github.com/woocommerce/woocommerce-android/pull/14386]
-- [*] POS: Extra step into the barcode scanner setup flow to explain how to setup software keyboard [https://github.com/woocommerce/woocommerce-android/pull/14395]
-- [Internal] Introduced Material 3 based theme and migrated some components to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/14401]
-- [Internal] Added logging to POS tab visibility and eligibility checks [https://github.com/woocommerce/woocommerce-android/pull/14426]
-- [*] Bottom navigation menu has now labels shown under icons on tablet devices [https://github.com/woocommerce/woocommerce-android/pull/14429]
-- [Internal] Suppress edge to edge for Google PlayCoreDialogWrapperActivity [https://github.com/woocommerce/woocommerce-android/pull/14435]
-- [*] POS: Replace clear cart button with delete icon and add confirmation dropdown menu [https://github.com/woocommerce/woocommerce-android/pull/14441]
+Psst... Excuse me, do you have a moment to talk about Woo Point of Sale? 💰 It now takes center stage with a shiny new POS tab in the main navigation—one tap and you’re selling in the UK and US, with improved external barcode scanner support 📦 for smoother checkouts. We’ve also refreshed the UI with sleek Material 3 touches ✨ and packed in small improvements and fixes you’ll want to explore.
