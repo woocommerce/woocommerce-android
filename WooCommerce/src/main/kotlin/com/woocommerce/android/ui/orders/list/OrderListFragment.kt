@@ -563,10 +563,8 @@ class OrderListFragment :
 
                     // A specific order is set to be opened
                     viewModel.orderId.value != -1L -> {
-                        handler.postDelayed({
-                            openSpecificOrder(viewModel.orderId.value)
-                            clearSelectedOrderIdInViewModel()
-                        }, HANDLER_DELAY)
+                        openSpecificOrder(viewModel.orderId.value)
+                        clearSelectedOrderIdInViewModel()
                     }
                     // Open the first order when filtering is active, but only if no order is explicitly selected by
                     // the user. If a user enables filtering, selects an order, and then pulls to refresh, we should
