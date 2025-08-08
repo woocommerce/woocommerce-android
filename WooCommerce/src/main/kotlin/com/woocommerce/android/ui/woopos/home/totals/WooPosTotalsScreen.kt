@@ -24,20 +24,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
@@ -49,6 +44,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.AccessibilityAnnouncement
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -640,27 +636,6 @@ fun PreparingReaderPReview() {
                 title = "Getting ready",
                 subtitle = "Preparing reader for payment",
             )
-        }
-    }
-}
-
-/**
- * Announces the given text to accessibility services using a live region.
- * Ensures screen readers pick up the message even on repeated values.
- */
-@Composable
-private fun AccessibilityAnnouncement(text: String) {
-    key(text + System.currentTimeMillis()) { // Forces recomposition
-        Box(
-            modifier = Modifier
-                .semantics {
-                    liveRegion = LiveRegionMode.Assertive
-                }
-        ) {
-            // Intentionally using Text instead of WooPosText to ensure accessibility announcements work reliably.
-            // WooPosText might change or wrap semantics in a way that breaks live region behavior.
-            @Suppress("WooPosDesignSystemTextUsageRule")
-            Text(text = text)
         }
     }
 }
