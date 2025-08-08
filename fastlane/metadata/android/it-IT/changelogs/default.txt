@@ -1,2 +1,0 @@
-22.9:
-Esperienza WooCommerce: grandi miglioramenti POS. Filtra ordini per canale di vendita, configura lettori di codici a barre e individua ordini con nuovi badge sulla bacheca. Abbiamo anche risolto i problemi di caricamento dei dettagli degli ordini, risolto arresti anomali della schermata di pagamento, ripristinato la funzionalità di ricerca e migliorato la convalida dell'indirizzo dell'etichetta di spedizione, la rilevazione dei plugin e la gestione della valuta dopo il riavvio dell'app.

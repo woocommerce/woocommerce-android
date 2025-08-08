@@ -1,2 +1,0 @@
-22.9:
-We hebben je WooCommerce-ervaring verbeterd met geweldige verbeteringen aan verkooppunten! Filter bestellingen nu op POS-verkoopkanalen, stel naadloos streepjescodelezers in en spot POS-bestellingen met nieuwe badges op je dashboard. We hebben ook problemen met het laden van bestelgegevens opgelost, betaalschermcrashes opgelost, zoekfuncties hersteld en de validatie van verzendlabels verbeterd. En betere plugindetectie en valutaverwerking nadat de app opnieuw is opgestart.

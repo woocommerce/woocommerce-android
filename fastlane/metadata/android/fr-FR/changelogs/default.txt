@@ -1,2 +1,0 @@
-22.9 :
-Point de vente s’améliore dans WooCommerce ! Filtrez les commandes par canal de vente PDV, configurez des lecteurs de codes-barres, repérez les commandes PDV avec des badges sur le tableau de bord. Fini les problèmes de chargement des détails de commande, les plantages de l’écran de paiement. Fonctionnalité de recherche rétablie et validation améliorée de l’adresse des étiquettes d’expédition. Détection des extensions et traitement des devises améliorés une fois l’application redémarrée.
