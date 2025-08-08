@@ -492,7 +492,7 @@ private fun ClearCartButton(
                         WooPosText(
                             text = clearCartButtonText,
                             style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.error
                         )
                     },
                     onClick = {
