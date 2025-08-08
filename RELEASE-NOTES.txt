@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+23.1
+-----
+- [*] - [*] Fixed bug when an order was not selected when navigating from my store screen [https://github.com/woocommerce/woocommerce-android/pull/14436]
+
 23.0
 -----
 - [*] Add search functionality to application log viewer [https://github.com/woocommerce/woocommerce-android/pull/14386]
@@ -11,7 +15,6 @@
 - [Internal] Introduced Material 3 based theme and migrated some components to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/14401]
 - [Internal] Added logging to POS tab visibility and eligibility checks [https://github.com/woocommerce/woocommerce-android/pull/14426]
 - [*] Bottom navigation menu has now labels shown under icons on tablet devices [https://github.com/woocommerce/woocommerce-android/pull/14429]
-- [*] Fixed bug when an order was not selected when navigating from my store screen [https://github.com/woocommerce/woocommerce-android/pull/14436]
 - [Internal] Suppress edge to edge for Google PlayCoreDialogWrapperActivity [https://github.com/woocommerce/woocommerce-android/pull/14435]
 
 22.9.1
