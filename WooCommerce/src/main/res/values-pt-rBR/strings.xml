@@ -1,11 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-14 17:54:04+0000
+Translation-Revision-Date: 2025-07-28 21:54:28+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_order_completion_error">Não foi possível marcar o pedido como concluído</string>
+    <string name="woo_shipping_address_use_as_entered">Usar o endereço conforme inserido</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">O peso deve ser maior que zero</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">O número da tarifa deve ter entre 6 e 12 dígitos</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">O número de transação internacional é obrigatório em envios para o país de destino.</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">É obrigatório um número de transação internacional (ITN) para enviar itens com valor superior a US$ 2.500 por código tarifário.\nProdutos com código tarifário %1$s somam mais de US$ 2.500.</string>
+    <string name="woopos_scanning_setup_device_other">Outro</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_button_done">Concluído</string>
+    <string name="woopos_scanning_setup_button_retry">Tentar novamente</string>
+    <string name="woopos_scanning_setup_button_back">Voltar</string>
+    <string name="woopos_scanning_setup_button_next">Avançar</string>
+    <string name="woopos_scanning_setup_scan_failed_message">Verifique o manual do scanner e restaure-o para as configurações de fábrica. Depois, tente o fluxo de configuração novamente.</string>
+    <string name="woopos_scanning_setup_scan_failed_title">Problema encontrado no escaneamento</string>
+    <string name="woopos_scanning_setup_timeout_message">Escaneie o código de barras para testar seu scanner. Se o problema persistir, verifique as configurações Bluetooth e tente novamente.</string>
+    <string name="woopos_scanning_setup_timeout_title">Nenhum dado de escaneamento encontrado</string>
+    <string name="woopos_scanning_setup_test_scanner_message">Escaneie este código de barras de teste para verificar se o scanner está funcionando corretamente.</string>
+    <string name="woopos_scanning_setup_test_scanner_title">Teste seu scanner</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">Exemplo de inventário de configuração do código de barras</string>
+    <string name="woopos_scanning_setup_visit_documentation">acesse a documentação</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">Configure códigos de barras no campo \"GTIN, UPC, EAN, ISBN\" na aba de inventário do produto. Para mais detalhes</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">Como configurar códigos de barras em produtos</string>
+    <string name="woopos_scanning_setup_info_text">O scanner de código de barras pode ocultar o teclado. Toque no ícone do teclado ou ative nas configurações do SO em \"Teclado físico\"</string>
+    <string name="woopos_scanning_setup_info_bullet_3">Desative o campo de busca ao escanear códigos de barra.</string>
+    <string name="woopos_scanning_setup_info_bullet_2">Escaneie códigos de barras enquanto estiver na lista de itens para adicionar produtos ao carrinho.</string>
+    <string name="woopos_scanning_setup_info_bullet_1">Confira o seu scanner de código de barras com Bluetooth nas configurações Bluetooth do sistema.</string>
+    <string name="woopos_scanning_setup_info_title">Configuração do scanner</string>
+    <string name="woopos_scanning_setup_more_information">Como configurar códigos de barras em produtos</string>
+    <string name="woopos_scanning_setup_success_message">Tudo pronto para começar a escanear produtos.\nLeia mais sobre o suporte ao scanner de código de barras e código QR.</string>
+    <string name="woopos_scanning_setup_success_title">Scanner configurado!</string>
+    <string name="woopos_scanning_setup_go_to_settings">Acesse as configurações do dispositivo</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">Ative o Bluetooth e selecione seu scanner %s nas configurações do SO.\nO scanner emitirá um bipe e o LED ficará aceso quando emparelhado.</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">Emparelhe seu scanner</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">Use o scanner de código de barras para digitalizar o código abaixo e entrar no modo de pareamento.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">Configuração do scanner</string>
+    <string name="woopos_scanning_setup_hid_message">Use seu scanner de código de barras para digitalizar o código abaixo para ativar o modo HID Bluetooth.</string>
+    <string name="woopos_scanning_setup_hid_title">Configuração do scanner</string>
+    <string name="woopos_scanning_setup_device_selection_message">Selecione um modelo na lista:</string>
+    <string name="woopos_scanning_setup_device_selection_title">Configurar um scanner de código de barras</string>
+    <string name="woopos_scanning_setup_barcode_content_description">Código de barras</string>
+    <string name="woopos_scanning_setup_dialog_content_description">Caixa de diálogo de configuração do scanner</string>
+    <string name="woopos_eligibility_screen_UK_country_name">Reino Unido</string>
+    <string name="woopos_eligibility_screen_US_country_name">Estados Unidos</string>
+    <string name="woopos_eligibility_screen_unable_to_load">Não foi possível carregar</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">O sistema PDV não está disponível para a moeda da sua loja. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">O sistema PDV não está disponível para a moeda da sua loja. No %1$s, ele só é compatível com %2$s. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">O ponto de venda deve estar ativado para prosseguir. Ative a funcionalidade de PDV pela administração do WordPress em Configurações do WooCommerce &gt; Avançado &gt; Funcionalidades.</string>
+    <string name="woopos_eligibility_reason_check_connection">Verifique sua conexão com a Internet e tente reiniciar o aplicativo. Se o problema persistir, entre em contato com o suporte.</string>
+    <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Sua versão do WooCommerce não é compatível. O sistema PDV requer o WooCommerce na versão %1$s ou posterior. Atualize o WooCommerce para a versão mais recente.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Instale e ative o plugin do WooCommerce pela administração do WordPress. Entre em contato com o suporte para obter ajuda.</string>
+    <string name="woopos_barcode_scanning_title">Configurar um scanner de código de barras</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">Ponto de venda</string>
+    <string name="orderfilters_sales_channel_filter">Canal de vendas</string>
+    <string name="barcode_ean13_content_description">Código de barras EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Manuseio extra</string>
     <string name="woo_shipping_rate_option_saturday_delivery">Entrega no sábado</string>
     <string name="woo_shipping_rate_option_carbon_neutral">Neutralidade de carbono</string>
@@ -17,7 +73,6 @@ Language: pt_BR
     <string name="woo_shipping_labels_package_removing_error">Não foi possível remover o pacote</string>
     <string name="woopos_eligibility_retry_check_label">Tentar novamente</string>
     <string name="woopos_eligibility_exit_pos_label">Sair do PDV</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Consulte as instruções do scanner de código de barras Bluetooth para definir o modo HID. Isso geralmente requer a leitura de um código de barras especial no manual.</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">O scanner não enviou caractere de fim de linha</string>
     <string name="woopos_cart_barcode_scan_result_too_short">O código de barras lido é muito curto</string>
     <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (taxa básica)</string>
@@ -59,17 +114,7 @@ Language: pt_BR
     <string name="woopos_cart_adding_item_to_cart_failed">Falha ao adicionar um item ao carrinho, %s.</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">Cupom %1$s adicionado ao carrinho</string>
     <string name="woopos_cart_product_added_to_cart_accessibility">Produto %1$s adicionado ao carrinho. Preço: %2$s</string>
-    <string name="woopos_barcode_scanning_title">Escaneamento de código de barras</string>
-    <string name="woopos_dialog_barcode_info_background_content_description">Plano de fundo esmaecido. Toque para ignorar a caixa de diálogo.</string>
-    <string name="woopos_dialog_barcode_info_content_description">Caixa de diálogo de informações sobre a leitura de código de barras</string>
-    <string name="woopos_dialog_barcode_info_button_label">OK</string>
-    <string name="woopos_dialog_barcode_info_quinary_message">O scanner simula um teclado, então algumas vezes ele impedirá que o software do teclado seja exibido, como na pesquisa. Para reabrir o teclado, toque no respectivo ícone.</string>
-    <string name="woopos_dialog_barcode_info_quaternary_message">• Escaneie códigos de barras enquanto estiver na lista de itens para adicionar produtos ao carrinho.</string>
-    <string name="woopos_dialog_barcode_info_tertiary_message">• Conecte seu scanner de código de barras nas configurações Bluetooth do sistema.</string>
-    <string name="woopos_dialog_barcode_info_more_details_link">Mais detalhes</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• Configure códigos de barras no campo \"GTIN, UPC, EAN, ISBN\" em Produtos &gt; Detalhes do produto &gt; Inventário. </string>
-    <string name="woopos_dialog_barcode_info_intro_message">Escaneie códigos de barra usando um scanner externo para criar rapidamente um carrinho.</string>
-    <string name="woopos_dialog_barcode_info_heading">Escaneamento de código de barras</string>
+    <string name="woopos_scanning_setup_info_message">Escaneie códigos de barra usando um scanner externo para criar rapidamente um carrinho.</string>
     <string name="woopos_cart_barcode_scan_result_network_error">Sem conexão com a Internet</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Item não compatível: %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Item escaneado desconhecido</string>
@@ -163,7 +208,7 @@ Language: pt_BR
     <string name="woo_shipping_address_notification_destination_missing">Endereço de destino ausente</string>
     <string name="woo_shipping_address_notification_origin_unverified">Endereço de origem não verificado</string>
     <string name="woo_shipping_address_notification_destination_unverified">Endereço de destino não verificado</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">Para envios acima de US$ 2.500, você precisa obter um número de 14 dígitos do AES chamado de ITN para a verificação dos relatórios de exportação dos EUA.</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">Para envios acima de US$ 2.500, você precisa obter um número de 14 dígitos do AES chamado de ITN para a verificação dos relatórios de exportação dos EUA.</string>
     <string name="woo_shipping_labels_customs_itn_required_error">O ITN é obrigatório</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">Precisamos saber o peso da remessa para mostrar as taxas de envio disponíveis.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">Adicione o peso da remessa para obter as taxas</string>
@@ -195,7 +240,6 @@ Language: pt_BR
     <string name="woo_shipping_labels_customs_product_details_value_required">Valor obrigatório</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Peso por unidade</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">Valor por unidade</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Código tarifário ausente</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">Código tarifário HS</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Descrição ausente</string>
     <string name="woo_shipping_labels_customs_product_details_description">Descrição</string>
