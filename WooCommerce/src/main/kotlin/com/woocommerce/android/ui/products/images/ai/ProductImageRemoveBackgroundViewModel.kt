@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products.images.ai
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -17,7 +19,8 @@ import javax.inject.Inject
 class ProductImageRemoveBackgroundViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val performBackgroundRemoval: PerformImageBackgroundRemoval,
-    private val saveProcessedImage: SaveProcessedImageToTheProduct
+    private val saveProcessedImage: SaveProcessedImageToTheProduct,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductImageRemoveBackgroundFragmentArgs by savedState.navArgs()
     private val remoteProductId: Long = navArgs.remoteProductId
@@ -47,12 +50,23 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
 
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(errorMessage))
                     triggerEvent(MultiLiveEvent.Event.Exit)
+                    trackBackgroundRemovalError(error)
                 }
             )
         }
     }
 
+    private fun trackBackgroundRemovalError(error: Throwable) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_ERROR,
+            errorContext = this.javaClass.simpleName,
+            errorType = error.message,
+            errorDescription = error.message
+        )
+    }
+
     fun onSaveImageTapped() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_SAVE_BUTTON_TAPPED)
         launch {
             val bitmap = when (val currentState = _state.value) {
                 is ViewState.Success -> currentState.bitmap
@@ -88,6 +102,12 @@ class ProductImageRemoveBackgroundViewModel @Inject constructor(
     }
 
     fun onBackDialogConfirmed() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_DISCARDED)
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    fun onCancelClicked() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_DISCARDED)
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 }

@@ -2423,6 +2423,15 @@
     <string name="product_image_service_busy">Please wait for the current operation to complete</string>
     <string name="product_image_capture_failed">Failed to capture image</string>
     <string name="product_image_remove_confirmation">Are you sure you want to remove this image?</string>
+    <string name="remove_background">Remove background with AI</string>
+    <string name="remove_background_title">Image scene cleaner ✨</string>
+    <string name="remove_background_image_load_error">Failed to load image</string>
+    <string name="remove_background_no_subject_detected">No clear subject detected. Try with a different image.</string>
+    <string name="save_processed_image_error">Failed to save image</string>
+    <string name="save_processed_image_success">Image saved successfully</string>
+    <string name="discard_changes_question">Discard changes?</string>
+    <string name="changes_not_saved_message">Your changes are not saved</string>
+    <string name="save_copy">Save copy</string>
     <string name="product_images_camera_error">Unable to access camera</string>
     <string name="product_images_uploading_single_notif_message">Uploading image…</string>
     <string name="product_images_uploading_multi_notif_message">Uploading images…%1$d of %2$d</string>
@@ -3107,6 +3116,7 @@
     <string name="product_selector_popular_products_heading">Popular</string>
     <string name="product_selector_recent_products_heading">Last Sold</string>
     <string name="product_selector_products_heading">Products</string>
+    <string name="product_selector_subscription_not_supported">Subscription products are not supported for order creation</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
@@ -4289,6 +4299,7 @@
     <string name="woopos_variable_product_item_content_description_v2">Variable Product %s</string>
     <string name="woopos_variation_item_content_description">Variation %s, Price %s</string>
     <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_cart_clear_all_button_content_description">Clear items in cart icon</string>
     <string name="woopos_cart_item_loading_content_description">Loading item %s</string>
     <string name="woopos_cart_item_error_content_description">Error loading item %s</string>
     <string name="woopos_coupon_item_content_description_v2">Coupon %s, %s</string>
@@ -4305,7 +4316,7 @@
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
     <string name="woopos_cart_barcode_scan_result_too_short">Scanned barcode is too short</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">Scanner did not send end-of-line character</string>
-    <string name="woopos_clear_cart_button">Clear</string>
+    <string name="woopos_clear_cart_button">Clear cart</string>
 
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
@@ -4321,7 +4332,7 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
-    <string name="woopos_barcode_scanning_title">Set up a barcode scanner</string>
+    <string name="woopos_barcode_scanning_title">Initial barcode scanner setup</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
@@ -4483,7 +4494,7 @@
     <string name="woopos_scanning_setup_pair_your_scanner_message">Enable Bluetooth and select your %s scanner in the OS settings.\nThe scanner will beep and show a solid LED when paired.</string>
     <string name="woopos_scanning_setup_go_to_settings">Go to your device settings</string>
     <string name="woopos_scanning_setup_success_title">Scanner set up!</string>
-    <string name="woopos_scanning_setup_success_message">You are ready to start scanning products.\nRead more about barcode and QR code scanner support.</string>
+    <string name="woopos_scanning_setup_success_message">You are ready to start scanning products. Next time you need to connect your scanner, just turn on the scanner and it\'ll reconnect automatically.</string>
     <string name="woopos_scanning_setup_more_information">How to set up barcodes on products</string>
     <string name="woopos_scanning_setup_info_title">Scanner setup</string>
     <string name="woopos_scanning_setup_info_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
@@ -4505,6 +4516,13 @@
     <string name="woopos_scanning_setup_button_back">Back</string>
     <string name="woopos_scanning_setup_button_retry">Retry</string>
     <string name="woopos_scanning_setup_button_done">Done</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">Show the On-Screen Keyboard</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android treats barcode scanners as physical keyboards, which may hide your on-screen keyboard. Let\'s check:</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">If the keyboard is not visible, try these options:</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">Tap here to test keyboard visibility</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">Look for a keyboard icon or toolbar on the screen.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Go to device settings, search \"keyboard\", then enable \"Show on-screen keyboard when physical keyboard connected\". This setting may be in your keyboard app settings.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">Still not working? Contact your device manufacturer\'s customer support.</string>
     <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
     <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>

@@ -31,7 +31,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -48,7 +47,8 @@ class AddProductCategoryFragment :
 
     private var progressDialog: CustomProgressDialog? = null
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var _binding: FragmentAddProductCategoryBinding? = null
     private val binding get() = _binding!!
@@ -112,7 +112,6 @@ class AddProductCategoryFragment :
         }
 
         with(binding.productCategoryParent) {
-            runBlocking { viewModel.getSelectedParentCategoryName()?.let { setText(it) } }
             setClickListener {
                 val action = AddProductCategoryFragmentDirections
                     .actionAddProductCategoryFragmentToParentCategoryListFragment(
@@ -163,10 +162,9 @@ class AddProductCategoryFragment :
                     binding.productCategoryName.text = it.parseAsHtml().toString()
                 }
             }
-            new.selectedParentId.takeIfNotEqualTo(old?.selectedParentId) {
-                val parentCategoryName = runBlocking { viewModel.getSelectedParentCategoryName() }
-                if (parentCategoryName != null) {
-                    binding.productCategoryParent.setHtmlText(parentCategoryName)
+            new.selectedParentName.takeIfNotEqualTo(old?.selectedParentName) {
+                if (it != null) {
+                    binding.productCategoryParent.setHtmlText(it)
                 } else {
                     binding.productCategoryParent.setHtmlText("")
                 }
