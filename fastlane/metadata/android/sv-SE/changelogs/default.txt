@@ -1,0 +1,2 @@
+22.9:
+Vi har förbättrat din WooCommerce-upplevelse med POS-förbättringar. Filtrera beställningar efter POS-försäljningskanal, konfigurera streckkodsläsare sömlöst och upptäcka POS-beställningar med nya märken på din adminpanel. Vi har också åtgärdat inläsningsproblem i beställningsinformationen, löst krascher på betalningsskärmen, återställt sökfunktionaliteten och förbättrat adressvalideringen för fraktetiketter. Plus bättre detektering av tillägg och valutahantering efter omstart av appen.

@@ -1,0 +1,2 @@
+22.9:
+Aprimoramos sua experiência com o WooCommerce com melhorias no PDV! Filtre pedidos por canal de vendas de PDV, configure leitores de código de barras de forma simples e identifique pedidos no PDV com novos selos no painel. Corrigimos problemas de carregamento nos detalhes do pedido e travamentos no pagamento, restauramos a busca e melhoramos a validação do endereço da etiqueta de envio, além de aprimorar a detecção de plugins e manipulação de moedas após o reinício do app.

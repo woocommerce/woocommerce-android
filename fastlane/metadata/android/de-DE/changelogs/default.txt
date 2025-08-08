@@ -1,0 +1,2 @@
+22.9:
+Dein WooCommerce-Erlebnis ist jetzt noch besser dank spannenden Verbesserungen am Verkaufsort (POS)! Filtere Bestellungen nach POS-Vertriebskanal, richte Barcode-Scanner ein und finde POS-Bestellungen leichter dank neuen Dashboard-Badges. Außerdem: Bestelldetails laden problemlos, Zahlungsbildschirm stürzt nicht mehr ab, die Suche funktioniert wieder und die Validierung der Versandetikettenadresse wurde verbessert. Plus: bessere Plugin-Erkennung und Währungshandhabung nach App-Neustarts.

@@ -1,0 +1,2 @@
+22.9:
+Pengalaman WooCommerce jadi lebih baik dengan berbagai pembaruan menarik di Point of Sale! Filter pesanan dengan kanal penjualan POS, siapkan pembaca barcode dengan mudah, dan lihat pesanan POS dengan lencana baru di dasbor Anda. Kami melakukan perbaikan isu pemuatan detail pesanan dan crash di layar pembayaran, pemulihan fungsi pencarian, dan peningkatan validasi alamat label pengiriman. Deteksi plugin dan penanganan mata uang kini lebih baik setelah aplikasi dimulai ulang.
