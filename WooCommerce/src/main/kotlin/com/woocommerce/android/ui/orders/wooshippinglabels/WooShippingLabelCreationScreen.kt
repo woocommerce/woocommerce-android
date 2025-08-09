@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -48,6 +49,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -363,46 +370,49 @@ private fun LabelCreationScreenWithBottomSheet(
                         }
                     }
                 } else if (shipmentUIList.size > 1) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        val fadingEdgeModifier = Modifier
-                            .weight(1f)
-                            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                            .drawWithContent {
-                                drawContent()
-                                drawRect(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(Color.White, Color.Transparent),
-                                        startX = size.width - 24.dp.toPx(),
-                                        endX = size.width
-                                    ),
-                                    blendMode = BlendMode.DstIn
-                                )
-                            }
+                    Column {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            val fadingEdgeModifier = Modifier
+                                .weight(1f)
+                                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                                .drawWithContent {
+                                    drawContent()
+                                    drawRect(
+                                        brush = Brush.horizontalGradient(
+                                            colors = listOf(Color.White, Color.Transparent),
+                                            startX = size.width - 24.dp.toPx(),
+                                            endX = size.width
+                                        ),
+                                        blendMode = BlendMode.DstIn
+                                    )
+                                }
 
-                        ShipmentsTabRow(
-                            shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
-                                ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
-                            },
-                            selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) {
-                                pagerState.currentPage
-                            } else {
-                                0
-                            },
-                            onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
-                            modifier = fadingEdgeModifier
-                        )
-                        if (shouldShowSplitShipmentButton) {
-                            IconButton(
-                                onClick = onSplitShipment,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Edit,
-                                    tint = colorResource(id = R.color.color_icon_menu),
-                                    contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
-                                )
+                            ShipmentsTabRow(
+                                shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
+                                    ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
+                                },
+                                selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) {
+                                    pagerState.currentPage
+                                } else {
+                                    0
+                                },
+                                onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
+                                modifier = fadingEdgeModifier
+                            )
+                            if (shouldShowSplitShipmentButton) {
+                                IconButton(
+                                    onClick = onSplitShipment,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Edit,
+                                        tint = colorResource(id = R.color.color_icon_menu),
+                                        contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
+                                    )
+                                }
                             }
                         }
+                        HorizontalDivider()
                     }
                 }
 
