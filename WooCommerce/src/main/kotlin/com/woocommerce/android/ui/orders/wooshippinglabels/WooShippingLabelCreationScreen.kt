@@ -364,6 +364,21 @@ private fun LabelCreationScreenWithBottomSheet(
                     }
                 } else if (shipmentUIList.size > 1) {
                     Row(modifier = Modifier.fillMaxWidth()) {
+                        val fadingEdgeModifier = Modifier
+                            .weight(1f)
+                            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                            .drawWithContent {
+                                drawContent()
+                                drawRect(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(Color.White, Color.Transparent),
+                                        startX = size.width - 24.dp.toPx(),
+                                        endX = size.width
+                                    ),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+
                         ShipmentsTabRow(
                             shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
                                 ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
@@ -374,7 +389,7 @@ private fun LabelCreationScreenWithBottomSheet(
                                 0
                             },
                             onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
-                            modifier = modifier.weight(1f)
+                            modifier = fadingEdgeModifier
                         )
                         if (shouldShowSplitShipmentButton) {
                             IconButton(
