@@ -1,11 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-16 11:54:04+0000
+Translation-Revision-Date: 2025-07-30 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_order_completion_error">无法将订单标记为完成</string>
+    <string name="woo_shipping_address_use_as_entered">使用输入的地址</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">重量必须大于零</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">关税编号长度必须在 6 到 12 位数之间</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">寄往目的地国家/地区的包裹需要国际交易编号 (ITN)。</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">如果要运输的某个关税编号下的商品总价值超过 2500 美元，则必须提供国际交易编号。\n关税编号为 %1$s 的产品总计超过 2500 美元。</string>
+    <string name="woopos_scanning_setup_device_other">其他</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_button_done">完成</string>
+    <string name="woopos_scanning_setup_button_retry">重试</string>
+    <string name="woopos_scanning_setup_button_back">返回</string>
+    <string name="woopos_scanning_setup_button_next">下一个</string>
+    <string name="woopos_scanning_setup_scan_failed_message">请查阅扫描仪的使用手册，将其恢复出厂设置后，重新尝试设置流程。</string>
+    <string name="woopos_scanning_setup_scan_failed_title">发现扫描问题</string>
+    <string name="woopos_scanning_setup_timeout_message">扫描条形码以测试您的扫描仪。 如果问题仍然存在，请检查蓝牙设置并重试。</string>
+    <string name="woopos_scanning_setup_timeout_title">尚未找到扫描数据</string>
+    <string name="woopos_scanning_setup_test_scanner_message">扫描此测试条形码，以验证您的扫描仪是否正常工作。</string>
+    <string name="woopos_scanning_setup_test_scanner_title">测试您的扫描仪</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">条形码设置库存示例</string>
+    <string name="woopos_scanning_setup_visit_documentation">请访问文档</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">您可以在产品库存选项卡的 GTIN、UPC、EAN、ISBN 字段中设置条形码。 如需了解更多详情</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">如何在产品上设置条形码</string>
+    <string name="woopos_scanning_setup_info_text">条形码扫描仪可能会隐藏键盘。 轻点键盘图标或在操作系统设置中的“物理键盘”下启用</string>
+    <string name="woopos_scanning_setup_info_bullet_3">确保扫描条形码时未启用搜索字段。</string>
+    <string name="woopos_scanning_setup_info_bullet_2">在商品列表上扫描条形码，将产品添加到购物车。</string>
+    <string name="woopos_scanning_setup_info_bullet_1">请参考系统蓝牙设置中的蓝牙条形码扫描仪。</string>
+    <string name="woopos_scanning_setup_info_title">扫描仪设置</string>
+    <string name="woopos_scanning_setup_more_information">如何在产品上设置条形码</string>
+    <string name="woopos_scanning_setup_success_message">您可以开始扫描产品了。\n详细了解条形码和二维码扫描仪支持。</string>
+    <string name="woopos_scanning_setup_success_title">扫描仪设置完毕！</string>
+    <string name="woopos_scanning_setup_go_to_settings">转到您的设备设置</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">在操作系统设置中启用蓝牙并选择您的 %s 扫描仪。\n配对成功后，扫描仪将发出蜂鸣音，同时 LED 指示灯变为常亮状态。</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">配对您的扫描仪</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">使用您的条形码扫描仪扫描下方的代码，进入配对模式。</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">扫描仪设置</string>
+    <string name="woopos_scanning_setup_hid_message">使用您的条形码扫描仪扫描下方的代码，启用蓝牙 HID 模式。</string>
+    <string name="woopos_scanning_setup_hid_title">扫描仪设置</string>
+    <string name="woopos_scanning_setup_device_selection_message">从列表中选择一个型号：</string>
+    <string name="woopos_scanning_setup_device_selection_title">设置条形码扫描仪</string>
+    <string name="woopos_scanning_setup_barcode_content_description">条形码</string>
+    <string name="woopos_scanning_setup_dialog_content_description">扫描仪设置对话框</string>
+    <string name="woopos_eligibility_screen_UK_country_name">英国</string>
+    <string name="woopos_eligibility_screen_US_country_name">美国</string>
+    <string name="woopos_eligibility_screen_unable_to_load">无法加载</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系统暂不支持您的商店所使用的货币。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系统暂不支持您的商店所使用的货币。 在 %1$s，它目前仅支持 %2$s。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">必须启用销售点才能继续。 请通过您的 WordPress 管理员在“WooCommerce 设置 &gt; 高级 &gt; 功能”下启用 POS 功能。</string>
+    <string name="woopos_eligibility_reason_check_connection">请检查您的互联网连接并尝试重新启动应用程序。如果问题仍然存在，请联系支持人员。</string>
+    <string name="woopos_eligibility_reason_unsupported_woocommerce_version">您的 WooCommerce 版本不受支持。 POS 系统需要 WooCommerce %1$s 或更高版本。 请将 WooCommerce 更新到最新版本。</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">请确保您的 WordPress 管理员已安装并激活 WooCommerce 插件。 如果问题仍然存在，请联系支持人员寻求帮助。</string>
+    <string name="woopos_barcode_scanning_title">设置条形码扫描仪</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">销售点</string>
+    <string name="orderfilters_sales_channel_filter">销售渠道</string>
+    <string name="barcode_ean13_content_description">条形码 EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">特殊处理</string>
     <string name="woo_shipping_rate_option_saturday_delivery">星期六配送</string>
     <string name="woo_shipping_rate_option_carbon_neutral">碳中和</string>
@@ -17,7 +73,6 @@ Language: zh_CN
     <string name="woo_shipping_labels_package_removing_error">无法删除此包裹</string>
     <string name="woopos_eligibility_retry_check_label">重试</string>
     <string name="woopos_eligibility_exit_pos_label">退出 POS</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• 参阅蓝牙条形码扫描仪的使用说明，设置 HID 模式。 这通常需要扫描手册中的专用条形码。</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">扫描仪未发送行尾字符</string>
     <string name="woopos_cart_barcode_scan_result_too_short">扫描的条形码过短</string>
     <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s（基本费用）</string>
@@ -59,17 +114,7 @@ Language: zh_CN
     <string name="woopos_cart_adding_item_to_cart_failed">将商品添加到购物车失败，%s。</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">优惠券 %1$s 已添加到购物车</string>
     <string name="woopos_cart_product_added_to_cart_accessibility">产品 %1$s 已添加到购物车，价格为 %2$s</string>
-    <string name="woopos_barcode_scanning_title">条形码扫描</string>
-    <string name="woopos_dialog_barcode_info_background_content_description">背景变暗。 轻点即可关闭对话框。</string>
-    <string name="woopos_dialog_barcode_info_content_description">条形码扫描信息对话框</string>
-    <string name="woopos_dialog_barcode_info_button_label">确定</string>
-    <string name="woopos_dialog_barcode_info_quinary_message">扫描程序使用模拟键盘，因此有时会导致软件键盘无法显示，如在搜索时。 轻点键盘图标，重新调用软件键盘。</string>
-    <string name="woopos_dialog_barcode_info_quaternary_message">• 在商品列表上扫描条形码，将产品添加到购物车。</string>
-    <string name="woopos_dialog_barcode_info_tertiary_message">• 在系统蓝牙设置中连接条形码扫描程序。</string>
-    <string name="woopos_dialog_barcode_info_more_details_link">更多详情</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• 在“产品 &gt; 产品详细信息 &gt; 库存”中的“GTIN、UPC、EAN、ISBN”字段中设置条形码。 </string>
-    <string name="woopos_dialog_barcode_info_intro_message">您可以使用外部扫描程序扫描条形码，快速创建购物车。</string>
-    <string name="woopos_dialog_barcode_info_heading">条形码扫描</string>
+    <string name="woopos_scanning_setup_info_message">您可以使用外部扫描仪扫描条形码，快速创建购物车。</string>
     <string name="woopos_cart_barcode_scan_result_network_error">未连接互联网</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">不受支持的商品 — %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">未知扫描商品</string>
@@ -163,7 +208,7 @@ Language: zh_CN
     <string name="woo_shipping_address_notification_destination_missing">目标地址缺失</string>
     <string name="woo_shipping_address_notification_origin_unverified">始发地址未验证</string>
     <string name="woo_shipping_address_notification_destination_unverified">目标地址未验证</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">对于价值超过 2500 美元的货物，您需要获得 14 位数的 AES ITN，才能进行美国出口申报验证。</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">对于价值超过 2500 美元的货物，您需要获得 14 位数的 AES ITN，才能进行美国出口申报验证。</string>
     <string name="woo_shipping_labels_customs_itn_required_error">ITN 为必填项</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">我们需要先了解此包裹的重量，然后才能显示可用的运费。</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">添加货物重量以获取运费</string>
@@ -194,7 +239,6 @@ Language: zh_CN
     <string name="woo_shipping_labels_customs_product_details_value_required">值不能为空</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">单位重量</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">单位价值</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">缺少关税编号</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS 关税编号</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">缺少描述</string>
     <string name="woo_shipping_labels_customs_product_details_description">描述</string>

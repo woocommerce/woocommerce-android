@@ -1,11 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-16 11:54:04+0000
+Translation-Revision-Date: 2025-07-28 13:54:05+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_order_completion_error">يتعذر علينا تحديد الطلب على أنه مكتمل</string>
+    <string name="woo_shipping_address_use_as_entered">استخدام العنوان كما أُدخِل</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">يجب أن يكون الوزن أكبر من صفر</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">يجب أن يتراوح طول رقم التعريفة بين 6 و12 رقمًا</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">رقم المعاملة الدولي مطلوب للشحنات المتجهة إلى بلد المقصِد</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">يلزم رقم المعاملة الدولي لشحن العناصر التي تزيد قيمتها على 2500 دولار لكل رقم تعريفة.\nالمنتجات ذات رقم التعريفة ⁦%1$s⁩ التي يتجاوز مجموعها 2500 دولارًا.</string>
+    <string name="woopos_scanning_setup_device_other">أخرى</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_button_done">تم</string>
+    <string name="woopos_scanning_setup_button_retry">إعادة المحاولة</string>
+    <string name="woopos_scanning_setup_button_back">الرجوع</string>
+    <string name="woopos_scanning_setup_button_next">التالي</string>
+    <string name="woopos_scanning_setup_scan_failed_message">يُرجى التحقق من دليل الماسح الضوئي وإعادة ضبطه إلى إعدادات المصنع، ثم إعادة محاولة ضبط إعدادات التدفق.</string>
+    <string name="woopos_scanning_setup_scan_failed_title">تم العثور على مشكلة في الفحص</string>
+    <string name="woopos_scanning_setup_timeout_message">امسح الرمز الشريطي ضوئيا لاختبار ماسحك الضوئي. إذا استمرت المشكلة، فيُرجى التحقق من إعدادات البلوتوث وإعادة المحاولة.</string>
+    <string name="woopos_scanning_setup_timeout_title">لم نعثر على بيانات الفحص حتى الآن</string>
+    <string name="woopos_scanning_setup_test_scanner_message">امسح هذا الرمز الشريطي للاختبار للتحقق من أن الماسح الضوئي الخاص بك يعمل بشكل صحيح.</string>
+    <string name="woopos_scanning_setup_test_scanner_title">اختبر ماسحك الضوئي</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">مثال على إعدادات الرمز الشريطي للمخزون</string>
+    <string name="woopos_scanning_setup_visit_documentation">تفضَّل بزيارة الوثائق</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">يمكنك إعداد الرموز الشريطية في حقول \"GTIN، UPC، EAN، ISBN\" من خلال علامة تبويب مخزون المنتج. للمزيد من التفاصيل</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">كيفية إعداد الرموز الشريطية للمنتجات</string>
+    <string name="woopos_scanning_setup_info_text">قد تخفي أداة الفحص بالرمز الشريطي لوحة المفاتيح. اضغط على أيقونة لوحة المفاتيح أو التمكين ضمن إعدادات نظام التشغيل في \"لوحة المفاتيح الفعلية\"</string>
+    <string name="woopos_scanning_setup_info_bullet_3">تأكد من أن حقل البحث غير مُمكن أثناء فحص الرموز الشريطية.</string>
+    <string name="woopos_scanning_setup_info_bullet_2">امسح الرموز الشريطية ضوئيًا أثناء وجودك في قائمة العناصر لإضافة المنتجات إلى عربة التسوق.</string>
+    <string name="woopos_scanning_setup_info_bullet_1">راجع ماسحك الضوئي بالبلوتوث في إعدادات البلوتوث بالنظام.</string>
+    <string name="woopos_scanning_setup_info_title">إعداد الماسح الضوئي</string>
+    <string name="woopos_scanning_setup_more_information">كيفية إعداد الرمز الشريطي للمنتجات</string>
+    <string name="woopos_scanning_setup_success_message">أنت مستعد لبدء المسح الضوئي للمنتجات.\nاقرأ المزيد حول دعم الماسح الضوئي للرمز الشريطي ورمز الاستجابة السريعة.</string>
+    <string name="woopos_scanning_setup_success_title">انتهى إعداد الماسح الضوئي!</string>
+    <string name="woopos_scanning_setup_go_to_settings">انتقل إلى إعدادات جهازك</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">مكّن البلوتوث وحدد ماسحك الضوئي%s في إعدادات نظام التشغيل.\nسيصفر الماسح الضوئي ويعرض مؤشر LED بإضاءة ثابته عند الاقتران.</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">إقران ماسحك الضوئي</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">أستخدم ماسحك الضوئي للرمز الشريطي لمسح الرمز أدناه لدخول وضع الاقتران.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">إعداد الماسح الضوئي</string>
+    <string name="woopos_scanning_setup_hid_message">أستخدم ماسحك الضوئي للرمز الشريطي لمسح الرمز أدناه لتمكين وضع بلوتوث HID.</string>
+    <string name="woopos_scanning_setup_hid_title">إعداد الماسح الضوئي</string>
+    <string name="woopos_scanning_setup_device_selection_message">تحديد نموذج من القائمة:</string>
+    <string name="woopos_scanning_setup_device_selection_title">إعداد الماسح الضوئي للرمز الشريطي</string>
+    <string name="woopos_scanning_setup_barcode_content_description">الرمز الشريطي</string>
+    <string name="woopos_scanning_setup_dialog_content_description">مربع حوار إعداد الماسح الضوئي</string>
+    <string name="woopos_eligibility_screen_UK_country_name">المملكة المتحدة</string>
+    <string name="woopos_eligibility_screen_US_country_name">الولايات المتحدة</string>
+    <string name="woopos_eligibility_screen_unable_to_load">يتعذر التحميل</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">لا يتوافر نظام نقطة البيع لعملة متجرك. ُيرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">لا يتوافر نظام نقطة البيع لعملة متجرك. في ⁦%1$s⁩، لا يدعم حاليًا سوى ⁦%2$s⁩. يُرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">يجب تمكين نقطة البيع للمتابعة. يُرجى تمكين ميزة نقطة البيع من مشرفك في WordPress ضمن إعدادات WooCommerce &gt; الإعدادات المتقدمة &gt; الميزات.</string>
+    <string name="woopos_eligibility_reason_check_connection">تحقق من اتصالك بالإنترنت وحاول إعادة تشغيل التطبيق. إذا استمرت المشكلة، فيرجى التواصل مع الدعم.</string>
+    <string name="woopos_eligibility_reason_unsupported_woocommerce_version">إصدارك من WooCommerce غير مدعوم. يتطلب نظام نقطة البيع الإصدار ⁦%1$s⁩ من WooCommerce أو إصدار أحدث. يُرجى التحديث إلى آخر إصدار من WooCommerce.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">يُرجى التأكد من تثبيت إضافة WooCommerce وتفعيلها من مشرفك في WordPress. يرجى التواصل مع الدعم للحصول على المساعدة.</string>
+    <string name="woopos_barcode_scanning_title">إعداد ماسح الرمز الشريطي</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">نقطة البيع</string>
+    <string name="orderfilters_sales_channel_filter">قناة المبيعات</string>
+    <string name="barcode_ean13_content_description">الرمز الشريطي EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">معالجة إضافية</string>
     <string name="woo_shipping_rate_option_saturday_delivery">التوصيل في يوم السبت</string>
     <string name="woo_shipping_rate_option_carbon_neutral">محايد الكربون</string>
@@ -17,7 +73,6 @@ Language: ar
     <string name="woo_shipping_labels_package_removing_error">تتعذر إزالة الطرد</string>
     <string name="woopos_eligibility_retry_check_label">إعادة المحاولة</string>
     <string name="woopos_eligibility_exit_pos_label">إنهاء POS</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• راجع تعليمات الماسح الضوئي للرمز الشريطي الخاص بك عبر تقنية البلوتوث لتعيين وضع HID. يتطلب ذلك عادةً مسح رمز شريطي خاص في الدليل.</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">لم ترسل أداة الفحص حرفا في نهاية السطر</string>
     <string name="woopos_cart_barcode_scan_result_too_short">الرمز الشريطي الممسوح ضوئيا قصير للغاية</string>
     <string name="shipping_label_shipment_details_shipment_cost_base_fee">⁦%1$s⁩ (رسوم أساسية)</string>
@@ -59,17 +114,7 @@ Language: ar
     <string name="woopos_cart_adding_item_to_cart_failed">فشلت إضافة العنصر إلى عربة التسوق، %s.</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">القسيمة ⁦%1$s⁩ مُضافة لعربة التسوق</string>
     <string name="woopos_cart_product_added_to_cart_accessibility">المنتج ⁦%1$s⁩ مُضاف لعربة التسوق، السعر⁦%2$s⁩</string>
-    <string name="woopos_barcode_scanning_title">مسح الرمز الشريطي</string>
-    <string name="woopos_dialog_barcode_info_background_content_description">خلفية خافتة. انقر لتجاهل مربع الحوار.</string>
-    <string name="woopos_dialog_barcode_info_content_description">مربع حوار معلومات مسح الرمز الشريطي</string>
-    <string name="woopos_dialog_barcode_info_button_label">موافق</string>
-    <string name="woopos_dialog_barcode_info_quinary_message">تُحاكي أداة الفحص لوحة المفاتيح، لذا ستمنع لوحة مفاتيح البرنامج من الظهور في بعض الأحيان، على سبيل المثال في البحث. انقر على أيقونة لوحة المفاتيح لعرض لوحة مفاتيح البرنامج مرة أخرى.</string>
-    <string name="woopos_dialog_barcode_info_quaternary_message">• امسح الرموز الشريطية ضوئيًا أثناء وجودك في قائمة العناصر لإضافة المنتجات إلى عربة التسوق.</string>
-    <string name="woopos_dialog_barcode_info_tertiary_message">• وصّل ماسحك الضوئي للرمز الشريطي في إعدادات البلوتوث بالنظام.</string>
-    <string name="woopos_dialog_barcode_info_more_details_link">المزيد من التفاصيل</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• جهّز الرموز الشريطية في حقول \"GTIN، UPC، EAN، ISBN\" في المنتجات &gt; تفاصيل المنتج &gt; المخزون. </string>
-    <string name="woopos_dialog_barcode_info_intro_message">يمكنك مسح الرموز الشريطية ضوئيًا باستخدام ماسح ضوئي خارجي لإعداد عربة التسوق سريعًا.</string>
-    <string name="woopos_dialog_barcode_info_heading">مسح الرمز الشريطي</string>
+    <string name="woopos_scanning_setup_info_message">يمكنك مسح الرموز الشريطية ضوئيًا باستخدام ماسح ضوئي خارجي لإعداد عربة التسوق سريعًا.</string>
     <string name="woopos_cart_barcode_scan_result_network_error">لا يوجد اتصال بالإنترنت</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">عنصر غير مدعوم – %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">عنصر ممسوح ضوئيًا غير معروف</string>
@@ -163,7 +208,7 @@ Language: ar
     <string name="woo_shipping_address_notification_destination_missing">عنوان الوجهة مفقود</string>
     <string name="woo_shipping_address_notification_origin_unverified">لم يتم التحقق من صحة العنوان الأصلي</string>
     <string name="woo_shipping_address_notification_destination_unverified">لم يتم التحقق من عنوان الوجهة</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">بالنسبة إلى الشحنات التي تزيد على 2500 دولار، يلزم الحصول على رقم المعاملة الدولي الخاص بنظام التصدير الآلي المكوَّن من 14 رقمًا للتحقق من إعداد تقارير التصدير في الولايات المتحدة.</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">بالنسبة إلى الشحنات التي تزيد قيمتها على 2500 دولار، يلزم الحصول على رقم المعاملة الدولي لنظام التصدير الآلي المكوَّن من 14 رقمًا للتحقق من إعداد تقارير التصدير في الولايات المتحدة.</string>
     <string name="woo_shipping_labels_customs_itn_required_error">رقم المعاملة الدولي مطلوب.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">يتعين علينا معرفة وزن الشحنة قبل أن نتمكن من عرض أسعار الشحن المتوفرة.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">إضافة وزن الشحنة للحصول على أسعار الشحن</string>
@@ -195,7 +240,6 @@ Language: ar
     <string name="woo_shipping_labels_customs_product_details_value_required">القيمة مطلوبة</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">الوزن لكل وحدة</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">القيمة لكل وحدة</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">رقم تعريفة مفقود</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">رقم تعريفة النظام المنسق</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">الوصف مفقود</string>
     <string name="woo_shipping_labels_customs_product_details_description">وصف</string>
