@@ -4,7 +4,7 @@
 
 23.1
 -----
-
+- [*] [Shipping labels] Updated shipments tab layout [https://github.com/woocommerce/woocommerce-android/pull/14448]
 
 23.0
 -----
