@@ -36,8 +36,6 @@ class LocalNotificationWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        if (!wooNotificationBuilder.isNotificationsEnabled()) return Result.failure()
-
         val type = inputData.getString(LOCAL_NOTIFICATION_TYPE)
         val notificationId = inputData.getInt(LOCAL_NOTIFICATION_ID, -1)
         val title = inputData.getString(LOCAL_NOTIFICATION_TITLE)
@@ -45,7 +43,7 @@ class LocalNotificationWorker @AssistedInject constructor(
         val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
         val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
 
-        @SuppressLint("MissingPermission")
+        @SuppressLint("MissingPermission") // We check for notification permission in PreconditionCheckWorker
         if (siteId != 0L && type != null && notificationId != -1 && title != null && description != null) {
             val notification = buildNotification(notificationId, siteId, type, title, description, data)
             wooNotificationBuilder.buildAndDisplayLocalNotification(
