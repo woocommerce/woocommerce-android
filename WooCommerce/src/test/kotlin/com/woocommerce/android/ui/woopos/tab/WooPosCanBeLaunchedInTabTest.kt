@@ -48,7 +48,8 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
             getWooCoreCachedVersion = getWooCoreVersion,
             fetchWooCoreVersion = fetchWooCoreVersion,
             wooCommerceStore = wooCommerceStore,
-            isRemotelyEnabled = isRemotelyEnabled
+            isRemotelyEnabled = isRemotelyEnabled,
+            wooPosLog = mock()
         )
     }
 

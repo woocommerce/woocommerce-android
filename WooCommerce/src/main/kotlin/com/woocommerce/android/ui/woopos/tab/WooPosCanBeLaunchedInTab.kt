@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.tab
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPOSIsRemotelyEnabled
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
@@ -22,12 +23,22 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     private val getWooCoreCachedVersion: GetWooCorePluginCachedVersion,
     private val fetchWooCoreVersion: FetchActiveWCPluginVersion,
     private val wooCommerceStore: WooCommerceStore,
-    private val isRemotelyEnabled: WooPOSIsRemotelyEnabled
+    private val isRemotelyEnabled: WooPOSIsRemotelyEnabled,
+    private val wooPosLog: WooPosLogWrapper,
 ) {
-    @Suppress("ReturnCount")
+
     suspend operator fun invoke(forceRefresh: Boolean = false): WooPosLaunchability = withContext(Dispatchers.IO) {
+        return@withContext checkLaunchability(forceRefresh).also {
+            if (it is WooPosLaunchability.NotLaunchable) {
+                wooPosLog.i("POS cannot be launched: $it")
+            }
+        }
+    }
+
+    @Suppress("ReturnCount")
+    private suspend fun checkLaunchability(forceRefresh: Boolean = false): WooPosLaunchability {
         val site = selectedSite.getOrNull()
-            ?: return@withContext WooPosLaunchability.NotLaunchable(
+            ?: return WooPosLaunchability.NotLaunchable(
                 WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected
             )
 
@@ -35,18 +46,18 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             fetchWooCoreVersion()
         } else {
             getWooCoreCachedVersion()
-        } ?: return@withContext WooPosLaunchability.NotLaunchable(
+        } ?: return WooPosLaunchability.NotLaunchable(
             WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound
         )
 
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion)) {
-            return@withContext WooPosLaunchability.NotLaunchable(
+            return WooPosLaunchability.NotLaunchable(
                 WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
             )
         }
 
         if (isFeatureSwitchSupported(wooCoreVersion) && !isRemotelyEnabled(forceRefresh)) {
-            return@withContext WooPosLaunchability.NotLaunchable(
+            return WooPosLaunchability.NotLaunchable(
                 WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
             )
         }
@@ -59,12 +70,12 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         }
 
         if (siteSettings == null) {
-            return@withContext WooPosLaunchability.NotLaunchable(
+            return WooPosLaunchability.NotLaunchable(
                 WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
             )
         }
 
-        return@withContext if (isCountryAndCurrencySupported(siteSettings.countryCode, siteSettings.currencyCode)) {
+        return if (isCountryAndCurrencySupported(siteSettings.countryCode, siteSettings.currencyCode)) {
             WooPosLaunchability.Launchable
         } else {
             WooPosLaunchability.NotLaunchable(

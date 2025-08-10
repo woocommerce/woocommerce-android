@@ -1,11 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-16 13:54:04+0000
+Translation-Revision-Date: 2025-07-29 15:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_order_completion_error">Sipariş tamamlandı olarak işaretlenemedi</string>
+    <string name="woo_shipping_address_use_as_entered">Adresi girildiği gibi kullan</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">Ağırlık sıfırdan büyük olmalıdır</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">Tarife numarası 6 ve 12 hane arasında olmalıdır</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">Hedef ülkeye olan gönderimler için Uluslararası İşlem Numarası gereklidir.</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">Tarife numarasına göre değeri 2.500 ABD Dolarının üzerindeki gönderiler için Uluslararası İşlem Numarası gereklidir.\n%1$s tarife numaralı ürünler 2.500 ABD Doların üzerindedir.</string>
+    <string name="woopos_scanning_setup_device_other">Diğer</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_button_done">Tamam</string>
+    <string name="woopos_scanning_setup_button_retry">Tekrar dene</string>
+    <string name="woopos_scanning_setup_button_back">Geri</string>
+    <string name="woopos_scanning_setup_button_next">Sonraki</string>
+    <string name="woopos_scanning_setup_scan_failed_message">Lütfen tarayıcının kılavuzunu kontrol edin ve fabrika ayarlarına sıfırlayın, ardından kurulum akışını yeniden deneyin.</string>
+    <string name="woopos_scanning_setup_scan_failed_title">Tarama sorunu bulundu</string>
+    <string name="woopos_scanning_setup_timeout_message">Tarayıcınızı test etmek için barkodu tarayın. Sorun devam ederse lütfen Bluetooth ayarlarını kontrol edip tekrar deneyin.</string>
+    <string name="woopos_scanning_setup_timeout_title">Henüz tarama verisi bulunamadı</string>
+    <string name="woopos_scanning_setup_test_scanner_message">Tarayıcınızın doğru şekilde çalıştığını doğrulamak için bu test barkodunu tarayın.</string>
+    <string name="woopos_scanning_setup_test_scanner_title">Tarayıcınızı test edin</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">Barkod kurulumu envanter örneği</string>
+    <string name="woopos_scanning_setup_visit_documentation">belgeleri ziyaret edin</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">Ürünün envanter sekmesinde GTIN, UPC, EAN, ISBN alanında barkodlar ayarlayabilirsiniz. Daha fazla ayrıntı için</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">Ürünlerde barkod nasıl ayarlanır?</string>
+    <string name="woopos_scanning_setup_info_text">Barkod tarayıcısı klavyeyi gizleyebilir. Klavye simgesine dokunun veya \"Fiziksel Klavye\" altındaki işletim sistemi ayarlarından etkinleştirin</string>
+    <string name="woopos_scanning_setup_info_bullet_3">Barkodlar taranırken arama alanının etkinleştirilmediğinden emin olun.</string>
+    <string name="woopos_scanning_setup_info_bullet_2">Sepete ürün eklemek için ürün listesindeyken barkodu tarayın.</string>
+    <string name="woopos_scanning_setup_info_bullet_1">Sistem Bluetooth ayarlarından bluetooth barkod tarayıcınıza başvurun.</string>
+    <string name="woopos_scanning_setup_info_title">Tarayıcı kurulumu</string>
+    <string name="woopos_scanning_setup_more_information">Ürünlerde barkod nasıl ayarlanır?</string>
+    <string name="woopos_scanning_setup_success_message">Ürün taramaya başlamaya hazırsınız.\nBarkod ve QR kodu tarayıcı desteği hakkında daha fazla bilgi edinin.</string>
+    <string name="woopos_scanning_setup_success_title">Tarayıcı hazır!</string>
+    <string name="woopos_scanning_setup_go_to_settings">Cihaz ayarlarınıza gidin</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">Bluetooth\'u etkinleştirin ve işletim sistemi ayarlarından %s tarayıcınızı seçin.\nTarayıcı bip sesi verecek ve eşlendiğinde sabit bir LED ışığı gösterecek.</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">Tarayıcınızı eşleştirin</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">Eşleştirme moduna girmek için aşağıdaki kodu taramak üzere barkod tarayıcınızı kullanın.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">Tarayıcı kurulumu</string>
+    <string name="woopos_scanning_setup_hid_message">Aşağıdaki kodu tarayarak Bluetooth HID modunu etkinleştirin.</string>
+    <string name="woopos_scanning_setup_hid_title">Tarayıcı kurulumu</string>
+    <string name="woopos_scanning_setup_device_selection_message">Listeden bir model seçin:</string>
+    <string name="woopos_scanning_setup_device_selection_title">Bir barkod tarayıcı ayarlama</string>
+    <string name="woopos_scanning_setup_barcode_content_description">Barkod</string>
+    <string name="woopos_scanning_setup_dialog_content_description">Tarayıcı kurulum iletişim kutusu</string>
+    <string name="woopos_eligibility_screen_UK_country_name">İngiltere</string>
+    <string name="woopos_eligibility_screen_unable_to_load">Yüklenemedi</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS sistemi, mağazanızın para biriminde kullanılamıyor. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS sistemi, mağazanızın para biriminde kullanılamıyor. Şurada yalnızca %2$s desteklenmektedir: %1$s. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Devam etmek için Satış Noktası\'nın etkinleştirilmesi gerekir. Lütfen WooCommerce ayarları &gt; Gelişmiş &gt; Özellikler bölümündeki WordPress yöneticinizden POS özelliğini etkinleştirin.</string>
+    <string name="woopos_eligibility_reason_check_connection">İnternet bağlantınızı kontrol edip uygulamayı yeniden başlatmayı deneyin. Sorun devam ederse lütfen destek ekibine başvurun.</string>
+    <string name="woopos_eligibility_reason_unsupported_woocommerce_version">WooCommerce sürümünüz desteklenmiyor. POS sistemi için WooCommerce %1$s sürümü veya üzeri gerekiyor. Lütfen WooCommerce\'ün en son sürümüne güncelleyin.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Lütfen WooCommerce eklentisinin kurulduğundan ve WordPress yöneticinizden etkinleştirildiğinden emin olun. Hâlâ bir sorun varsa lütfen yardım için destek birimine başvurun.</string>
+    <string name="woopos_barcode_scanning_title">Bir barkod tarayıcı ayarlama</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">Satış Noktası</string>
+    <string name="orderfilters_sales_channel_filter">Satış Kanalı</string>
+    <string name="barcode_ean13_content_description">Barkod EAN13</string>
     <string name="woo_shipping_rate_option_carbon_neutral">Karbon nötr</string>
     <string name="woo_shipping_rate_option_adult_signature_required">Yetişkin imzası gerekli</string>
     <string name="woo_shipping_rate_option_signature_required">İmza gerekli</string>
@@ -15,7 +70,6 @@ Language: tr
     <string name="woo_shipping_labels_package_removing_error">Paket kaldırılamıyor</string>
     <string name="woopos_eligibility_retry_check_label">Tekrar dene</string>
     <string name="woopos_eligibility_exit_pos_label">POS\'tan çık</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• HID modunu ayarlamak için Bluetooth barkod tarayıcınızın talimatlarına bakın. Bu genellikle el kitabındaki özel bir barkodun taranmasını gerektirir.</string>
     <string name="woo_shipping_rate_option_additional_handling">Ek işleme</string>
     <string name="woo_shipping_rate_option_saturday_delivery">Cumartesi teslimatı</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">Tarayıcı satır sonu karakterini göndermedi</string>
@@ -58,20 +112,10 @@ Language: tr
     <string name="woopos_cart_adding_item_to_cart_failed">Öğe sepete eklenemedi, %s.</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">%1$s kuponu sepete eklendi</string>
     <string name="woopos_cart_product_added_to_cart_accessibility">%1$s ürünü sepete eklendi, fiyatı %2$s</string>
-    <string name="woopos_barcode_scanning_title">Barkod taraması</string>
-    <string name="woopos_dialog_barcode_info_content_description">Barkod tarama bilgisi iletişim kutusu</string>
-    <string name="woopos_dialog_barcode_info_button_label">Tamam</string>
-    <string name="woopos_dialog_barcode_info_quinary_message">Tarayıcı bir klavyeyi taklit eder, bu nedenle bazen yazılım klavyesinin görünmesini engeller (ör. aramada). Yazılım klavyesini yeniden göstermek için klavye simgesine dokunun.</string>
-    <string name="woopos_dialog_barcode_info_background_content_description">Soluk arka plan. Pencereyi kapatmak için dokunun.</string>
     <string name="woo_shipping_refund_duration_description">Kullanılmayan gönderim etiketiniz için bir iade talep edin. Gönderim etiketinin iade işlemi hemen başlayacak ve genellikle %d iş gününde tamamlanır.</string>
-    <string name="woopos_dialog_barcode_info_quaternary_message">• Sepete ürün eklemek için ürün listesindeyken barkodu tarayın.</string>
-    <string name="woopos_dialog_barcode_info_tertiary_message">• Barkod tarayıcınızı Sistem Bluetooth ayarlarından bağlayın.</string>
-    <string name="woopos_dialog_barcode_info_more_details_link">Daha fazla ayrıntı</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• Ürünler &gt; Ürün Ayrıntıları &gt; Envanter bölümünde \"GTIN, UPC, EAN, ISBN\" alanında barkodlar ayarlayın. </string>
-    <string name="woopos_dialog_barcode_info_intro_message">Bir sepeti hızlıca oluşturmak için harici bir tarayıcı kullanarak barkodları tarayabilirsiniz.</string>
-    <string name="woopos_dialog_barcode_info_heading">Barkod taraması</string>
     <string name="woopos_cart_barcode_scan_result_network_error">İnternet bağlantısı yok</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Desteklenmeyen öğe – %s</string>
+    <string name="woopos_scanning_setup_info_message">Bir sepeti hızlıca oluşturmak için harici bir tarayıcı kullanarak barkodları tarayabilirsiniz.</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Bilinmeyen taranan öğe</string>
     <string name="woopos_add_coupon_to_cart_accessibility_label">Kuponu sepete ekle</string>
     <string name="woopos_add_variable_product_to_cart_accessibility_label">Varyasyon listesini aç</string>
@@ -163,11 +207,11 @@ Language: tr
     <string name="woo_shipping_address_notification_destination_missing">Hedef adresi yok</string>
     <string name="woo_shipping_address_notification_origin_unverified">Menşe adresi doğrulanmadı</string>
     <string name="woo_shipping_address_notification_destination_unverified">Hedef adresi doğrulanmadı</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">2.500 ABD Dolarının üzerindeki gönderimlerde ABD ihracat raporlaması doğrulaması için 14 haneli AES ITN almanız gerekir.</string>
     <string name="woo_shipping_labels_customs_itn_required_error">ITN zorunludur.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">Mevcut gönderim ücretlerini göstermeden önce gönderim ağırlığını bilmemiz gerekiyor.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">Gönderim ücretlerini almak için gönderim ağırlığı ekleyin</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">Mevcut gönderim ücretlerini göstermeden önce bu paketin nereye gittiğini bilmemiz gerekiyor.</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">2.500 ABD Dolarının üzerindeki gönderimlerde ABD ihracat raporlaması doğrulaması için 14 haneli AES ITN almanız gerekir.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">Gönderim ücretlerini almak için bir hedef adres ekleyin</string>
     <string name="woopos_search_recent_searches_title">Son aramalar</string>
     <string name="woopos_search_products">Ürün ara…</string>
@@ -195,7 +239,6 @@ Language: tr
     <string name="woo_shipping_labels_customs_product_details_value_required">Değer gerekli</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Birim başına ağırlık</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">Birim başına değer</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Eksik tarife numarası</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS tarife numarası</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Açıklama Eksik</string>
     <string name="woo_shipping_labels_customs_product_details_description">Açıklama</string>

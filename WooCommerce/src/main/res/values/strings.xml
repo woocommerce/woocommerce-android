@@ -3116,6 +3116,7 @@
     <string name="product_selector_popular_products_heading">Popular</string>
     <string name="product_selector_recent_products_heading">Last Sold</string>
     <string name="product_selector_products_heading">Products</string>
+    <string name="product_selector_subscription_not_supported">Subscription products are not supported for order creation</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
@@ -4298,6 +4299,7 @@
     <string name="woopos_variable_product_item_content_description_v2">Variable Product %s</string>
     <string name="woopos_variation_item_content_description">Variation %s, Price %s</string>
     <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_cart_clear_all_button_content_description">Clear items in cart icon</string>
     <string name="woopos_cart_item_loading_content_description">Loading item %s</string>
     <string name="woopos_cart_item_error_content_description">Error loading item %s</string>
     <string name="woopos_coupon_item_content_description_v2">Coupon %s, %s</string>
@@ -4314,7 +4316,7 @@
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
     <string name="woopos_cart_barcode_scan_result_too_short">Scanned barcode is too short</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">Scanner did not send end-of-line character</string>
-    <string name="woopos_clear_cart_button">Clear</string>
+    <string name="woopos_clear_cart_button">Clear cart</string>
 
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>

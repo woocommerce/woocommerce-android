@@ -15,7 +15,7 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
@@ -39,6 +39,9 @@ class ProductImageViewerFragment :
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
+    @Inject
+    lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+
     companion object {
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
     }
@@ -51,6 +54,7 @@ class ProductImageViewerFragment :
 
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter
+    private var pageChangeCallback: ViewPager2.OnPageChangeCallback? = null
 
     private var _binding: FragmentProductImageViewerBinding? = null
     private val binding get() = _binding!!
@@ -96,12 +100,13 @@ class ProductImageViewerFragment :
     private fun onMenuItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             R.id.menu_remove_background -> {
+                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_BUTTON_TAPPED)
                 navigateToRemoveBackground()
                 true
             }
 
             R.id.menu_delete_image -> {
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
+                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
                 confirmRemoveProductImage()
                 true
             }
@@ -111,6 +116,9 @@ class ProductImageViewerFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
+        pageChangeCallback?.let { binding.viewPager.unregisterOnPageChangeCallback(it) }
+        binding.viewPager.adapter = null
+        pageChangeCallback = null
         _binding = null
     }
 
@@ -128,13 +136,14 @@ class ProductImageViewerFragment :
             MarginPageTransformer(resources.getDimensionPixelSize(R.dimen.major_75))
         )
 
-        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        pageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                // remember this image id so we can return to it upon rotation, and so
-                // we use the right image if the user requests to remove it
                 remoteMediaId = pagerAdapter.images[position].id
             }
-        })
+        }
+        pageChangeCallback?.let {
+            binding.viewPager.registerOnPageChangeCallback(it)
+        }
     }
 
     private fun resetAdapter() {

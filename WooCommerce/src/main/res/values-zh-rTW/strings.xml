@@ -1,11 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-15 09:54:04+0000
+Translation-Revision-Date: 2025-07-29 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_order_completion_error">無法將訂單標記為已完成</string>
+    <string name="woo_shipping_address_use_as_entered">使用輸入的地址</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">重量必須大於零</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">稅則號別長度必須為 6 至 12 位數</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">若要運送至目的地國家/地區，請提供國際交易號碼。</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">在貨運項目中，若單一稅則號別下的總價值超過 2,500 美元，就必須填寫國際交易號碼。\n稅則號別「%1$s」下的商品價值合計超過 2,500 美元。</string>
+    <string name="woopos_scanning_setup_device_other">其他</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_button_done">完成</string>
+    <string name="woopos_scanning_setup_button_retry">重試</string>
+    <string name="woopos_scanning_setup_button_back">返回</string>
+    <string name="woopos_scanning_setup_button_next">下一個</string>
+    <string name="woopos_scanning_setup_scan_failed_message">請參閱掃描器的使用手冊，並將該裝置重設為原廠設定，然後重試設定流程。</string>
+    <string name="woopos_scanning_setup_scan_failed_title">發現掃描問題</string>
+    <string name="woopos_scanning_setup_timeout_message">掃描條碼以測試掃描器。 萬一問題持續發生，請檢查藍牙設定，然後再試一次。</string>
+    <string name="woopos_scanning_setup_timeout_title">尚未找到掃描資料</string>
+    <string name="woopos_scanning_setup_test_scanner_message">掃描此測試條碼，驗證掃描器是否正常運作。</string>
+    <string name="woopos_scanning_setup_test_scanner_title">測試掃描器</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">條碼設定庫存範例</string>
+    <string name="woopos_scanning_setup_visit_documentation">請參閱文件說明</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">你可以前往商品的「庫存」分頁，並在「GTIN、UPC、EAN、ISBN」欄位設定條碼。 查看更多詳細資料</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">如何設定商品條碼</string>
+    <string name="woopos_scanning_setup_info_text">條碼掃描器可能會隱藏鍵盤。 點選鍵盤圖示，或在「實體鍵盤」下方的作業系統設定中啟用鍵盤</string>
+    <string name="woopos_scanning_setup_info_bullet_3">確認掃描條碼時未啟用搜尋欄位。</string>
+    <string name="woopos_scanning_setup_info_bullet_2">在項目清單上掃描條碼，將商品加入購物車。</string>
+    <string name="woopos_scanning_setup_info_bullet_1">請於系統藍牙設定中，找到藍牙條碼掃描器。</string>
+    <string name="woopos_scanning_setup_info_title">掃描器設定</string>
+    <string name="woopos_scanning_setup_more_information">如何設定商品條碼</string>
+    <string name="woopos_scanning_setup_success_message">你可以開始掃描商品了。\n深入了解條碼和 QR 碼掃描器支援。</string>
+    <string name="woopos_scanning_setup_success_title">掃描器設定完畢！</string>
+    <string name="woopos_scanning_setup_go_to_settings">前往裝置設定</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">啟用藍牙，並在作業系統設定中選取「%s」掃描器。\n掃描器配對時會發出嗶聲，並且 LED 燈會保持恆亮。</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">替掃描器配對</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">使用條碼掃描器掃描下方條碼，進入配對模式。</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">掃描器設定</string>
+    <string name="woopos_scanning_setup_hid_message">使用條碼掃描器掃描下方條碼，啟用藍牙 HID 模式。</string>
+    <string name="woopos_scanning_setup_hid_title">掃描器設定</string>
+    <string name="woopos_scanning_setup_device_selection_message">從清單中選取型號：</string>
+    <string name="woopos_scanning_setup_device_selection_title">設定條碼掃描器</string>
+    <string name="woopos_scanning_setup_barcode_content_description">條碼</string>
+    <string name="woopos_scanning_setup_dialog_content_description">掃描器設定對話方塊</string>
+    <string name="woopos_eligibility_screen_UK_country_name">英國</string>
+    <string name="woopos_eligibility_screen_US_country_name">美國</string>
+    <string name="woopos_eligibility_screen_unable_to_load">無法載入</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系統不支援商店的幣別。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系統不支援商店的幣別。 「%1$s」地區目前僅支援：%2$s。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">必須啟用「銷售時點情報系統」才能繼續。 請依序前往「WooCommerce 設定」&gt;「進階」&gt;「功能」，然後從下方的 WordPress 管理員啟用 POS 功能。</string>
+    <string name="woopos_eligibility_reason_check_connection">請檢查網際網路連線，並嘗試重新啟動應用程式。萬一問題持續發生，請聯絡支援團隊。</string>
+    <string name="woopos_eligibility_reason_unsupported_woocommerce_version">系統不支援你的 WooCommerce 版本。 POS 系統僅適用於 WooCommerce %1$s 以上版本。 請更新至最新版本的 WooCommerce。</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">請確認是否安裝 WooCommerce 外掛程式，然後從 WordPress 管理員啟用程式。 萬一還是遇到問題，請聯絡支援團隊尋求協助。</string>
+    <string name="woopos_barcode_scanning_title">設定條碼掃描器</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">銷售時點情報系統</string>
+    <string name="orderfilters_sales_channel_filter">銷售通路</string>
+    <string name="barcode_ean13_content_description">條碼 EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">額外處理</string>
     <string name="woo_shipping_rate_option_saturday_delivery">星期六運送</string>
     <string name="woo_shipping_rate_option_carbon_neutral">碳中和</string>
@@ -17,7 +73,6 @@ Language: zh_TW
     <string name="woo_shipping_labels_package_removing_error">無法移除包裹</string>
     <string name="woopos_eligibility_retry_check_label">重試</string>
     <string name="woopos_eligibility_exit_pos_label">結束 POS</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• 請參閱藍牙條碼掃描器指示，設定 HID 模式。 這通常需要掃描手冊中的特殊條碼。</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">掃描器未傳送換行字元</string>
     <string name="woopos_cart_barcode_scan_result_too_short">掃描的條碼太短</string>
     <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (基本費用)</string>
@@ -59,17 +114,7 @@ Language: zh_TW
     <string name="woopos_cart_adding_item_to_cart_failed">新增商品至購物車失敗，%s。</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">折價券「%1$s」已新增至購物車</string>
     <string name="woopos_cart_product_added_to_cart_accessibility">商品「%1$s」已新增至購物車，價格為 %2$s</string>
-    <string name="woopos_barcode_scanning_title">掃瞄條碼</string>
-    <string name="woopos_dialog_barcode_info_background_content_description">背景已調暗。 點選以關閉對話方塊。</string>
-    <string name="woopos_dialog_barcode_info_content_description">條碼掃描資訊對話方塊</string>
-    <string name="woopos_dialog_barcode_info_button_label">確定</string>
-    <string name="woopos_dialog_barcode_info_quinary_message">掃描器會模擬鍵盤，因此有時會在搜尋等欄位阻擋螢幕鍵盤顯示。 只要點選鍵盤圖示，即可重新顯示螢幕鍵盤。</string>
-    <string name="woopos_dialog_barcode_info_quaternary_message">• 在商品清單上掃瞄條碼，將商品加入購物車。</string>
-    <string name="woopos_dialog_barcode_info_tertiary_message">• 請於系統藍牙設定中，連結條碼掃瞄器。</string>
-    <string name="woopos_dialog_barcode_info_more_details_link">更多資訊</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• 請依序點選「商品」&gt;「商品詳細資料」&gt;「庫存」，然後在「GTIN、UPC、EAN、ISBN」欄位設定條碼。 </string>
-    <string name="woopos_dialog_barcode_info_intro_message">你可以使用外部掃描器，掃描條碼後快速建立購物車。</string>
-    <string name="woopos_dialog_barcode_info_heading">掃瞄條碼</string>
+    <string name="woopos_scanning_setup_info_message">若要快速建立購物車，可以使用外部掃描器掃描條碼。</string>
     <string name="woopos_cart_barcode_scan_result_network_error">沒有網際網路連線</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">不支援：%s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">不明的掃描商品</string>
@@ -163,7 +208,7 @@ Language: zh_TW
     <string name="woo_shipping_address_notification_destination_missing">目的地地址未填</string>
     <string name="woo_shipping_address_notification_origin_unverified">寄件地址未通過驗證</string>
     <string name="woo_shipping_address_notification_destination_unverified">目的地地址未通過驗證</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">若貨件價值超過 2,500 美元，請先取得 14 位數的 AES 國際交易號碼，才可完成美國出口報告驗證。</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">若貨件價值超過 2,500 美元，請先取得 14 位數的 AES 國際交易號碼，才可完成美國出口報告驗證。</string>
     <string name="woo_shipping_labels_customs_itn_required_error">ITN 為必填欄位</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">請提供貨件重量資料，才能顯示適用的運費。</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">新增貨件重量以計算運費</string>
@@ -195,7 +240,6 @@ Language: zh_TW
     <string name="woo_shipping_labels_customs_product_details_value_required">金額 (必填)</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">重量 (每單位)</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">金額 (每單位)</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">未填關稅代碼</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS 關稅代碼</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">未填描述</string>
     <string name="woo_shipping_labels_customs_product_details_description">描述</string>

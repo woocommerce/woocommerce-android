@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -176,6 +177,33 @@ fun WooPosCircularIconButton(
                 tint = MaterialTheme.colorScheme.onSurface,
             )
         }
+    }
+}
+
+@Composable
+fun WooPosIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    contentDescription: String? = null,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier,
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(32.dp),
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+            },
+        )
     }
 }
 
@@ -338,6 +366,10 @@ fun WooPosSmallButtonsPreview() {
                 icon = Icons.Default.Search,
                 onClick = {}
             )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosIconButton(icon = Icons.Default.DeleteOutline) {}
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 

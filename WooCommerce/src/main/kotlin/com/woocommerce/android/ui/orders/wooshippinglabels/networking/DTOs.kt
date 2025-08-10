@@ -36,7 +36,7 @@ data class StoreOptionsDTO(
 data class FormDataDTO(
     @SerializedName("selected_payment_method_id") val selectedPaymentId: Long?,
     @SerializedName("email_receipts") val emailReceipts: Boolean = false,
-    @SerializedName("paper_size") val paperSize: WooShippingLabelPaperSize
+    @SerializedName("paper_size") val paperSize: WooShippingLabelPaperSize?
 )
 
 data class FormMetaDTO(
