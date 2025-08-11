@@ -149,6 +149,7 @@ private fun Collecting(
                 currencyPosition = state.currencyPosition,
                 decimalSeparator = state.decimalSeparator,
                 numberOfDecimals = state.numberOfDecimals,
+                preselectText = true,
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
