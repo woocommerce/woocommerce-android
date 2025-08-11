@@ -1,5 +1,7 @@
 package com.woocommerce.android.util.logs
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.testing.TestLifecycleOwner
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -8,7 +10,6 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import java.io.File
 
@@ -19,13 +20,17 @@ class WooFileLoggerTest : BaseUnitTest() {
     // Place the logs in a temporary directory for testing
     private val logsDirectory = File(System.getProperty("java.io.tmpdir", "."), "logs")
 
+    private lateinit var testLifecycleOwner: TestLifecycleOwner
+
     private lateinit var wooFileLogger: WooFileLogger
 
-    @Before
-    fun setup() {
+    fun setup(initialLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED) {
+        testLifecycleOwner = TestLifecycleOwner(initialState = initialLifecycleState)
+
         wooFileLogger = WooFileLogger(
             logsDirectory = logsDirectory,
             appCoroutineScope = testScope,
+            processLifecycleOwner = testLifecycleOwner,
             dispatchers = coroutinesTestRule.testDispatchers
         )
     }
@@ -37,6 +42,8 @@ class WooFileLoggerTest : BaseUnitTest() {
 
     @Test
     fun `when adding log entries, they should be buffered until flushed`() = testBlocking {
+        setup()
+
         // Create a test log entry
         val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message")
 
@@ -58,31 +65,71 @@ class WooFileLoggerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when adding log entries, they should be automatically flushed after delay`() = testBlocking {
-        // Add a few log entries (less than maxChunkSize)
-        for (i in 1..3) {
-            val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message $i")
-            wooFileLogger.addEntry(logEntry)
+    fun `given app is in background, when adding log entries, they should be automatically flushed after delay`() =
+        testBlocking {
+            setup()
+
+            // Add a few log entries (less than maxChunkSize)
+            for (i in 1..3) {
+                val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message $i")
+                wooFileLogger.addEntry(logEntry)
+            }
+
+            // Verify the log entries are not immediately processed
+            assertThat(wooFileLogger.getCurrentLogFileContent()).isEmpty()
+
+            // Wait for the automatic flush to complete (after the flush delay)
+            advanceTimeBy(WooFileLogger.BACKGROUND_FLUSH_PERIOD_MS + 100) // Wait for the flush delay plus a bit more
+            runCurrent()
+
+            // Verify the log entries are now processed
+            assertThat(wooFileLogger.getCurrentLogFileContent()).hasSize(3)
+
+            // Verify all log entries are in the processed batch
+            for (i in 1..3) {
+                assertThat(wooFileLogger.getCurrentLogFileContent().any { it.text == "Test log message $i" }).isTrue()
+            }
         }
 
-        // Verify the log entries are not immediately processed
-        assertThat(wooFileLogger.getCurrentLogFileContent()).isEmpty()
+    @Test
+    fun `given app is in foreground, when adding log entries, they should be automatically flushed after delay`() =
+        testBlocking {
+            // Simulate app being in foreground
+            setup(Lifecycle.State.STARTED)
 
-        // Wait for the automatic flush to complete (after the flush delay)
-        advanceTimeBy(WooFileLogger.BACKGROUND_FLUSH_PERIOD_MS + 100) // Wait for the flush delay plus a bit more
-        runCurrent()
+            // Add a few log entries
+            for (i in 1..3) {
+                val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message $i")
+                wooFileLogger.addEntry(logEntry)
+            }
 
-        // Verify the log entries are now processed
-        assertThat(wooFileLogger.getCurrentLogFileContent()).hasSize(3)
+            // Verify the log entries are not immediately processed
+            assertThat(wooFileLogger.getCurrentLogFileContent()).isEmpty()
 
-        // Verify all log entries are in the processed batch
-        for (i in 1..3) {
-            assertThat(wooFileLogger.getCurrentLogFileContent().any { it.text == "Test log message $i" }).isTrue()
+            // Confirm the logs are not flushed when the background flush delay is used
+            advanceTimeBy(WooFileLogger.BACKGROUND_FLUSH_PERIOD_MS + 100)
+            runCurrent()
+
+            // Verify the log entries are still not processed
+            assertThat(wooFileLogger.getCurrentLogFileContent()).isEmpty()
+
+            // Wait for the automatic flush to complete (after the foreground flush delay)
+            advanceTimeBy(WooFileLogger.FOREGROUND_FLUSH_PERIOD_MS + 100) // Wait for the flush delay plus a bit more
+            runCurrent()
+
+            // Verify the log entries are now processed
+            assertThat(wooFileLogger.getCurrentLogFileContent()).hasSize(3)
+
+            // Verify all log entries are in the processed batch
+            for (i in 1..3) {
+                assertThat(wooFileLogger.getCurrentLogFileContent().any { it.text == "Test log message $i" }).isTrue()
+            }
         }
-    }
 
     @Test
     fun `when force flushing, log entries should be immediately written to file`() = testBlocking {
+        setup()
+
         // Add a few log entries
         for (i in 1..3) {
             val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message $i")
@@ -109,6 +156,8 @@ class WooFileLoggerTest : BaseUnitTest() {
 
     @Test
     fun `when getting log files, then a list of log files should be returned`() = testBlocking {
+        setup()
+
         // Add and flush some log entries to create a log file
         val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message")
         wooFileLogger.addEntry(logEntry)
@@ -130,6 +179,8 @@ class WooFileLoggerTest : BaseUnitTest() {
 
     @Test
     fun `when getting current log file, then the current log file should be returned`() = testBlocking {
+        setup()
+
         // Add and flush some log entries to create a log file
         val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message")
         wooFileLogger.addEntry(logEntry)
@@ -150,27 +201,32 @@ class WooFileLoggerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when getting log file content for a specific file, then log entries from that file should be returned`() = testBlocking {
-        // Add and flush some log entries to create a log file
-        val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message")
-        wooFileLogger.addEntry(logEntry)
-        wooFileLogger.forceFlush()
-        advanceTimeBy(100)
+    fun `when getting log file content for a specific file, then log entries from that file should be returned`() =
+        testBlocking {
+            setup()
 
-        // Get current log file
-        val currentLogFile = wooFileLogger.getCurrentLogFile()
+            // Add and flush some log entries to create a log file
+            val logEntry = LogEntry(WooLog.T.UTILS, WooLog.LogLevel.i, "Test log message")
+            wooFileLogger.addEntry(logEntry)
+            wooFileLogger.forceFlush()
+            advanceTimeBy(100)
 
-        // Get log file content
-        val logFileContent = wooFileLogger.getLogFileContent(currentLogFile.name)
+            // Get current log file
+            val currentLogFile = wooFileLogger.getCurrentLogFile()
 
-        // Verify the log file content contains the log entry
-        assertThat(logFileContent).isNotNull()
-        assertThat(logFileContent).hasSize(1)
-        assertThat(logFileContent!!.first()).isEqualTo(logEntry)
-    }
+            // Get log file content
+            val logFileContent = wooFileLogger.getLogFileContent(currentLogFile.name)
+
+            // Verify the log file content contains the log entry
+            assertThat(logFileContent).isNotNull()
+            assertThat(logFileContent).hasSize(1)
+            assertThat(logFileContent!!.first()).isEqualTo(logEntry)
+        }
 
     @Test
     fun `when getting log file content for a non-existent file, then null should be returned`() = testBlocking {
+        setup()
+
         // Get log file content for a non-existent file
         val logFileContent = wooFileLogger.getLogFileContent("non_existent_file.txt")
 
@@ -180,6 +236,8 @@ class WooFileLoggerTest : BaseUnitTest() {
 
     @Test
     fun `when getting log file content for an empty file, then an empty list should be returned`() = testBlocking {
+        setup()
+
         // Create an empty log file
         val emptyLogFile = File(logsDirectory, "log_empty.txt")
         logsDirectory.mkdirs()

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.di.AppCoroutineScope
@@ -29,6 +30,7 @@ class WooFileLogger(
     private val logsDirectory: File,
     private val appCoroutineScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers,
+    private val processLifecycleOwner: LifecycleOwner,
     private val crashLogging: Provider<CrashLogging>? = null
 ) {
     @Inject
@@ -41,6 +43,7 @@ class WooFileLogger(
         logsDirectory = File(context.filesDir, LOG_FILE_DIRECTORY),
         appCoroutineScope = appCoroutineScope,
         dispatchers = dispatchers,
+        processLifecycleOwner = ProcessLifecycleOwner.get(),
         crashLogging = crashLogging
     )
 
@@ -53,7 +56,7 @@ class WooFileLogger(
     private val internalLogsBuffer = Channel<LogEntry>(Channel.UNLIMITED)
     private val writeTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val processLifecycle
-        get() = ProcessLifecycleOwner.get().lifecycle
+        get() = processLifecycleOwner.lifecycle
 
     init {
         appCoroutineScope.launch {
