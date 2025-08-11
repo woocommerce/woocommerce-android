@@ -8,6 +8,7 @@
 - [*] [Shipping labels] Display split shipment instructions only when necessary [https://github.com/woocommerce/woocommerce-android/pull/14450]
 - [*] Updated behavior on the POS cash payment screen [https://github.com/woocommerce/woocommerce-android/pull/14449]
 - [Internal] Added support for persisting log files in the app's internal storage [https://github.com/woocommerce/woocommerce-android/pull/14425]
+- [*] Shipping labels: Fix layout issue with address status indicator [https://github.com/woocommerce/woocommerce-android/pull/14437]
 
 23.0
 -----
