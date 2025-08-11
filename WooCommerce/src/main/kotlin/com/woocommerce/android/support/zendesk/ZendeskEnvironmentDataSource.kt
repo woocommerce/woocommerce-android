@@ -19,7 +19,6 @@ import javax.inject.Inject
 class ZendeskEnvironmentDataSource @Inject constructor() {
     val totalAvailableMemorySize: String get() = DeviceUtils.getTotalAvailableMemorySize()
     val deviceLanguage: String get() = Locale.getDefault().language
-    val deviceLogs get() = WooLog.toString().takeLast(maxLogfileLength)
 
     fun generateVersionName(context: Context) = PackageUtils.getVersionName(context)
 
@@ -48,6 +47,8 @@ class ZendeskEnvironmentDataSource @Inject constructor() {
         selectedSite?.let {
             "${selectedSite.hostURL} (${selectedSite.stateLogInformation})"
         } ?: unknownHostValue
+
+    suspend fun getDeviceLogs() = WooLog.getCurrentLogEntries().joinToString("\n").takeLast(maxLogfileLength)
 
     private val SiteModel.hostURL: String
         get() = UrlUtils.removeScheme(url)

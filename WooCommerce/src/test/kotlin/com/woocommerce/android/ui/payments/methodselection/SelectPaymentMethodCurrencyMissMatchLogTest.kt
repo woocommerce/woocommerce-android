@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.payments.methodselection
 
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -9,8 +8,8 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 
 class SelectPaymentMethodCurrencyMissMatchLogTest {
-    private val wooLogWrapper: WooLogWrapper = mock()
-    private val selectPaymentMethodCurrencyMissMatchLog = SelectPaymentMethodCurrencyMissMatchLog(wooLogWrapper)
+    private val wooLog: WooLog = mock()
+    private val selectPaymentMethodCurrencyMissMatchLog = SelectPaymentMethodCurrencyMissMatchLog(wooLog)
 
     @Test
     fun `given currencies do not match, when invoke is called, then logs warning`() {
@@ -25,7 +24,7 @@ class SelectPaymentMethodCurrencyMissMatchLogTest {
         val expectedMessage =
             "⚠️ Order currency: EUR differs from store's currency: " +
                 "USD which can lead to payment methods being unavailable"
-        verify(wooLogWrapper).w(WooLog.T.ORDERS, expectedMessage)
+        verify(wooLog).w(WooLog.T.ORDERS, expectedMessage)
     }
 
     @Test
@@ -38,6 +37,6 @@ class SelectPaymentMethodCurrencyMissMatchLogTest {
         selectPaymentMethodCurrencyMissMatchLog(storeCurrency, orderCurrency)
 
         // THEN
-        verify(wooLogWrapper, never()).w(any(), any())
+        verify(wooLog, never()).w(any(), any())
     }
 }

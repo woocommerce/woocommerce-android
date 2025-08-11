@@ -1,7 +1,13 @@
 package com.woocommerce.android.util
 
+import android.content.Context
 import android.util.Log
-import com.woocommerce.android.util.RollingLogEntries.LogEntry
+import com.woocommerce.android.util.logs.LogEntry
+import com.woocommerce.android.util.logs.WooFileLogger
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import java.io.PrintWriter
 import java.io.StringWriter
 import org.wordpress.android.util.AppLog as WordPressAppLog
@@ -52,14 +58,27 @@ object WooLog {
     enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
-    private const val MAX_ENTRIES = 999
-    val logEntries = RollingLogEntries(MAX_ENTRIES)
 
-    init {
+    private val tempListBeforeInit = mutableListOf<LogEntry>()
+
+    private lateinit var fileLogger: WooFileLogger
+
+    fun init(context: Context) {
         // add listener for WP app log so we can capture login & FluxC logs
         WordPressAppLog.addListener { tag, logLevel, message ->
             addWPLogEntry(tag, logLevel, message)
         }
+
+        fileLogger = EntryPoints.get(context, FileLoggerEntryPoint::class.java).fileLogger()
+        tempListBeforeInit.forEach { entry ->
+            fileLogger.addEntry(entry)
+        }
+        tempListBeforeInit.clear()
+    }
+
+    suspend fun getCurrentLogEntries(): List<LogEntry> {
+        fileLogger.forceFlush()
+        return fileLogger.getCurrentLogFileContent()
     }
 
     private fun addWPLogEntry(wpTag: WordPressAppLog.T, wpLogLevel: WordPressAppLog.LogLevel, wpMessage: String) {
@@ -176,9 +195,14 @@ object WooLog {
     }
 
     private fun addEntry(tag: T, level: LogLevel, text: String) {
-        // add to list of entries
         val entry = LogEntry(tag, level, text)
-        logEntries.add(entry)
+        if (::fileLogger.isInitialized) {
+            fileLogger.addEntry(entry)
+        } else {
+            // If WooLog is called before initialization, store the entry temporarily
+            // Can happen when invoking WooLog from ContentProviders
+            tempListBeforeInit.add(entry)
+        }
     }
 
     fun addDeviceInfoEntry(tag: T, level: LogLevel = LogLevel.i) {
@@ -192,6 +216,10 @@ object WooLog {
         throwable.printStackTrace(PrintWriter(errors))
         return errors.toString()
     }
+}
 
-    override fun toString() = logEntries.toString()
+@InstallIn(SingletonComponent::class)
+@EntryPoint
+private interface FileLoggerEntryPoint {
+    fun fileLogger(): WooFileLogger
 }

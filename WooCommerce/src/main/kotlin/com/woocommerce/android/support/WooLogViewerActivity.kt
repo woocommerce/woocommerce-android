@@ -4,11 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.logs.LogEntry
 import org.wordpress.android.util.ToastUtils
 
 class WooLogViewerActivity : ComponentActivity() {
@@ -17,8 +23,14 @@ class WooLogViewerActivity : ComponentActivity() {
 
         setContent {
             WooTheme {
+                var logEntries by remember { mutableStateOf<List<LogEntry>>(emptyList()) }
+
+                LaunchedEffect(Unit) {
+                    logEntries = WooLog.getCurrentLogEntries()
+                }
+
                 WooLogViewerScreen(
-                    WooLog.logEntries,
+                    logEntries,
                     onBackPress = onBackPressedDispatcher::onBackPressed,
                     onCopyButtonClick = ::copyAppLogToClipboard,
                     onShareButtonClick = ::shareAppLog

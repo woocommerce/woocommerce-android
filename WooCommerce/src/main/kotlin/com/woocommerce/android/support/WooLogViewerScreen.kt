@@ -51,8 +51,8 @@ import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.logs.LogEntry
 import kotlinx.coroutines.launch
 import java.lang.String.format
 import java.util.Locale
@@ -60,7 +60,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WooLogViewerScreen(
-    entries: RollingLogEntries,
+    entries: List<LogEntry>,
     onBackPress: () -> Unit,
     onCopyButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit
@@ -227,7 +227,7 @@ private fun SearchNavigationActions(
 
 @Composable
 private fun LogViewerEntries(
-    entries: List<RollingLogEntries.LogEntry>,
+    entries: List<LogEntry>,
     lazyListState: LazyListState,
     currentMatchIndex: Int,
     modifier: Modifier = Modifier
@@ -255,7 +255,7 @@ private fun LogViewerEntries(
 @Composable
 private fun LogViewerEntry(
     index: Int,
-    entry: RollingLogEntries.LogEntry,
+    entry: LogEntry,
     isCurrentMatch: Boolean
 ) {
     val backgroundColor = if (isCurrentMatch) {
@@ -304,26 +304,15 @@ private fun logLevelColorM3(level: WooLog.LogLevel): Color {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun WooLogViewerScreenPreview() {
-    val entries = RollingLogEntries(99).also {
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.ORDERS, WooLog.LogLevel.v, "Verbose")
-        )
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.PRODUCTS, WooLog.LogLevel.d, "Debug")
-        )
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.REVIEWS, WooLog.LogLevel.i, "Informational")
-        )
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.SUPPORT, WooLog.LogLevel.w, "Warning")
-        )
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.DASHBOARD, WooLog.LogLevel.e, "Error")
-        )
+    val entries = buildList {
+        add(LogEntry(WooLog.T.ORDERS, WooLog.LogLevel.v, "Verbose"))
+        add(LogEntry(WooLog.T.PRODUCTS, WooLog.LogLevel.d, "Debug"))
+        add(LogEntry(WooLog.T.REVIEWS, WooLog.LogLevel.i, "Informational"))
+        add(LogEntry(WooLog.T.SUPPORT, WooLog.LogLevel.w, "Warning"))
+        add(LogEntry(WooLog.T.DASHBOARD, WooLog.LogLevel.e, "Error"))
     }
     WooTheme {
         WooLogViewerScreen(
