@@ -4330,6 +4330,7 @@
     <string name="woopos_dialog_products_info_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
 
 
+    <string name="woopos_settings_title">Settings</string>
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_barcode_scanning_title">Initial barcode scanner setup</string>
