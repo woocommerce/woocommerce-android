@@ -22,7 +22,7 @@ class LogFileWriter(
 ) {
     private var lastUsedFile: File? = null
     private val dateFormatter
-        get() = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        get() = SimpleDateFormat(DATE_FORMAT_PATTERN, Locale.ROOT)
     private val mutex = Mutex()
 
     suspend fun writeLogs(logs: String) {
@@ -42,7 +42,7 @@ class LogFileWriter(
     suspend fun getLogFiles(): List<File> {
         ensureDirectoryExists()
         return withContext(dispatchers.io) {
-            logsDirectory.listFiles { file -> file.isFile && file.name.startsWith("log_") }
+            logsDirectory.listFiles { file -> file.isFile && file.name.startsWith(LOG_FILE_NAME_PREFIX) }
                 ?.sortedByDescending { it.lastModified() }
                 ?: emptyList()
         }
@@ -70,7 +70,7 @@ class LogFileWriter(
         }
 
         val today = dateFormatter.format(java.util.Date())
-        val logFileName = "log_$today.txt"
+        val logFileName = "$LOG_FILE_NAME_PREFIX$today.txt"
 
         lastUsedFile?.let {
             if (it.name == logFileName) {
@@ -90,7 +90,7 @@ class LogFileWriter(
 
     private suspend fun rotateLogFilesIfNeeded() {
         withContext(dispatchers.io) {
-            val logFiles = logsDirectory.listFiles { file -> file.isFile && file.name.startsWith("log_") }
+            val logFiles = logsDirectory.listFiles { file -> file.isFile && file.name.startsWith(LOG_FILE_NAME_PREFIX) }
                 ?.sortedByDescending { it.lastModified() } ?: return@withContext
 
             mutex.withLock {
@@ -101,5 +101,10 @@ class LogFileWriter(
                 }
             }
         }
+    }
+
+    companion object {
+        const val LOG_FILE_NAME_PREFIX = "log_"
+        const val DATE_FORMAT_PATTERN = "yyyy-MM-dd"
     }
 }
