@@ -66,6 +66,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
                     searchInCache()
                     remoteSearch(orderCurrency)
                 }
+
                 SearchType.SKU -> {
                     searchInCache()
                     remoteSearch(orderCurrency)
