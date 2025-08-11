@@ -78,7 +78,7 @@ internal class WCSettingsMapperTest {
     }
 
     @Test
-    fun `incorrect currency position maps to default`() {
+    fun `when currency position is incorrect, then it maps to default`() {
         // given
         val siteProductResponse = WCSettingsTestUtils.getMalformedCurrencyPosSiteSettingsResponse()
 
