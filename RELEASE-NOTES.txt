@@ -6,6 +6,7 @@
 - [*] You can now remove background from product images in the app. Just open the product image and click "Remove background" button. [https://github.com/woocommerce/woocommerce-android/pull/14445]
 - [*] Fixed bug when an order was not selected when navigating from my store screen [https://github.com/woocommerce/woocommerce-android/pull/14436]
 - [*] Updated behavior on the POS cash payment screen [https://github.com/woocommerce/woocommerce-android/pull/14449]
+- [*] Shipping labels: Add a message for purchased shipments to the Split Shipments screen [https://github.com/woocommerce/woocommerce-android/pull/14455]
 
 23.0
 -----
