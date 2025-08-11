@@ -4,10 +4,11 @@ import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.EventLevel.INFO
 import com.automattic.encryptedlogging.EncryptedLogging
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -15,8 +16,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.io.File
 
-@RunWith(MockitoJUnitRunner::class)
-class EnqueueSendingEncryptedLogsTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class EnqueueSendingEncryptedLogsTest : BaseUnitTest() {
     private lateinit var sut: EnqueueSendingEncryptedLogs
 
     private val encryptedLogging: EncryptedLogging = mock()
@@ -25,16 +26,17 @@ class EnqueueSendingEncryptedLogsTest {
     private val uuid = "uuid"
     private val tempFile = File("temp")
 
-    private val wooLogFileProvider: WooLogFileProvider = mock {
-        on { provide() } doReturn tempFile
+    private val encryptedLogsFileProvider: EncryptedLogsFileProvider = mock {
+        onBlocking { provide() } doReturn tempFile
     }
 
     @Before
     fun setUp() {
         sut = EnqueueSendingEncryptedLogs(
             encryptedLogging = encryptedLogging,
-            wooLogFileProvider = wooLogFileProvider,
-            networkStatus = networkStatus
+            encryptedLogsFileProvider = encryptedLogsFileProvider,
+            networkStatus = networkStatus,
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
         )
     }
 

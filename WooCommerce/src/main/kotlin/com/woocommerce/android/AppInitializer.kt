@@ -56,7 +56,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.android.util.WooLog.T.UTILS
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.Lazy
@@ -127,7 +126,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var blazeCampaignsObserver: BlazeCampaignsObserver
 
-    @Inject lateinit var wooLog: WooLogWrapper
+    @Inject lateinit var wooLog: WooLog
 
     @Inject lateinit var registerDevice: RegisterDevice
 
