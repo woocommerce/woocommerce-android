@@ -41,7 +41,7 @@ class WooFileLoggerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when adding log entries, they should be buffered until flushed`() = testBlocking {
+    fun `when adding log entries, then they should be buffered until flushed`() = testBlocking {
         setup()
 
         // Create a test log entry
@@ -65,7 +65,7 @@ class WooFileLoggerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given app is in background, when adding log entries, they should be automatically flushed after delay`() =
+    fun `given app is in background, when adding log entries, then they should be automatically flushed after delay`() =
         testBlocking {
             setup()
 
@@ -92,7 +92,7 @@ class WooFileLoggerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given app is in foreground, when adding log entries, they should be automatically flushed after delay`() =
+    fun `given app is in foreground, when adding log entries, then they should be automatically flushed after delay`() =
         testBlocking {
             // Simulate app being in foreground
             setup(Lifecycle.State.STARTED)
@@ -127,7 +127,7 @@ class WooFileLoggerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when force flushing, log entries should be immediately written to file`() = testBlocking {
+    fun `when force flushing, then log entries should be immediately written to file`() = testBlocking {
         setup()
 
         // Add a few log entries

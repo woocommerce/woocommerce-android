@@ -22,7 +22,7 @@ class EncryptedLogsFileProviderTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should provide a valid log file`() = testBlocking {
+    fun `when requesting log files, then it should provide a valid file`() = testBlocking {
         val testLog = LogEntry(WooLog.T.WP, WooLog.LogLevel.i, "Test log entry")
         whenever(wooLog.getCurrentLogEntries()).thenReturn(listOf(testLog))
 
