@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network
 
 import android.content.Context
 import android.webkit.WebSettings
+import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.PackageUtils
 
 class UserAgent(
@@ -24,7 +25,14 @@ class UserAgent(
      * User-Agent string to be used in WebView.
      */
     val webViewUserAgent: String by lazy {
-        val systemUserAgent = WebSettings.getDefaultUserAgent(appContext)
+        val systemUserAgent = runCatching {
+            WebSettings.getDefaultUserAgent(appContext)
+        }.onFailure {
+            // `getDefaultUserAgent()` can throw an Exception
+            // see: https://github.com/wordpress-mobile/WordPress-Android/issues/20147#issuecomment-1961238187
+            AppLog.e(AppLog.T.UTILS, "Error getting default user agent", it)
+        }.getOrNull().orEmpty()
+
         "$systemUserAgent $appVersionName".trim()
     }
 
