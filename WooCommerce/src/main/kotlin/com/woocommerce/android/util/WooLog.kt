@@ -59,6 +59,8 @@ object WooLog {
 
     const val TAG = "WooCommerce"
 
+    private val tempListBeforeInit = mutableListOf<LogEntry>()
+
     private lateinit var fileLogger: WooFileLogger
 
     fun init(context: Context) {
@@ -68,6 +70,10 @@ object WooLog {
         }
 
         fileLogger = EntryPoints.get(context, FileLoggerEntryPoint::class.java).fileLogger()
+        tempListBeforeInit.forEach { entry ->
+            fileLogger.addEntry(entry)
+        }
+        tempListBeforeInit.clear()
     }
 
     suspend fun getCurrentLogEntries(): List<LogEntry> {
@@ -190,7 +196,13 @@ object WooLog {
 
     private fun addEntry(tag: T, level: LogLevel, text: String) {
         val entry = LogEntry(tag, level, text)
-        fileLogger.addEntry(entry)
+        if (::fileLogger.isInitialized) {
+            fileLogger.addEntry(entry)
+        } else {
+            // If WooLog is called before initialization, store the entry temporarily
+            // Can happen when invoking WooLog from ContentProviders
+            tempListBeforeInit.add(entry)
+        }
     }
 
     fun addDeviceInfoEntry(tag: T, level: LogLevel = LogLevel.i) {
