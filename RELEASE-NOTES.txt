@@ -4,7 +4,8 @@
 
 23.1
 -----
-- [*] [Shipping labels] Updated shipments tab layout [https://github.com/woocommerce/woocommerce-android/pull/14448]
+- [*] Fixed bug when an order was not selected when navigating from my store screen [https://github.com/woocommerce/woocommerce-android/pull/14436]
+- [*] Shipping Labels: Updated shipments tab layout [https://github.com/woocommerce/woocommerce-android/pull/14448]
 
 23.0
 -----
