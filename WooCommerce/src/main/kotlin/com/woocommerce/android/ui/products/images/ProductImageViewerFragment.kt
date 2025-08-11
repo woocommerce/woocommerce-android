@@ -15,7 +15,7 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.ConfirmRemoveProductImageDialog
 import com.woocommerce.android.ui.products.ImageViewerFragment
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
@@ -38,6 +39,9 @@ class ProductImageViewerFragment :
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
+    @Inject
+    lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+
     companion object {
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
     }
@@ -50,6 +54,7 @@ class ProductImageViewerFragment :
 
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter
+    private var pageChangeCallback: ViewPager2.OnPageChangeCallback? = null
 
     private var _binding: FragmentProductImageViewerBinding? = null
     private val binding get() = _binding!!
@@ -86,14 +91,22 @@ class ProductImageViewerFragment :
         toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
-        toolbar.inflateMenu(R.menu.menu_product_delete_image)
+        toolbar.inflateMenu(R.menu.menu_product_image)
         toolbar.menu.findItem(R.id.menu_delete_image).isVisible = navArgs.isDeletingAllowed
+        toolbar.menu.findItem(R.id.menu_remove_background).isVisible =
+            FeatureFlag.AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL.isEnabled(context)
     }
 
     private fun onMenuItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
+            R.id.menu_remove_background -> {
+                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_BUTTON_TAPPED)
+                navigateToRemoveBackground()
+                true
+            }
+
             R.id.menu_delete_image -> {
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
+                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
                 confirmRemoveProductImage()
                 true
             }
@@ -103,6 +116,9 @@ class ProductImageViewerFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
+        pageChangeCallback?.let { binding.viewPager.unregisterOnPageChangeCallback(it) }
+        binding.viewPager.adapter = null
+        pageChangeCallback = null
         _binding = null
     }
 
@@ -120,13 +136,14 @@ class ProductImageViewerFragment :
             MarginPageTransformer(resources.getDimensionPixelSize(R.dimen.major_75))
         )
 
-        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        pageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                // remember this image id so we can return to it upon rotation, and so
-                // we use the right image if the user requests to remove it
                 remoteMediaId = pagerAdapter.images[position].id
             }
-        })
+        }
+        pageChangeCallback?.let {
+            binding.viewPager.registerOnPageChangeCallback(it)
+        }
     }
 
     private fun resetAdapter() {
@@ -193,6 +210,18 @@ class ProductImageViewerFragment :
             })
             start()
         }
+    }
+
+    private fun navigateToRemoveBackground() {
+        val currentPosition = binding.viewPager.currentItem
+        val currentImage = pagerAdapter.images[currentPosition]
+
+        val action = ProductImageViewerFragmentDirections
+            .actionProductImageViewerFragmentToProductImageRemoveBackgroundFragment(
+                image = currentImage,
+                remoteProductId = navArgs.remoteId
+            )
+        findNavController().navigate(action)
     }
 
     override fun onImageTapped() {

@@ -43,9 +43,10 @@ class WooPosCashPaymentRepository @Inject constructor(
         val statusModel = orderStore.getOrderStatusForSiteAndKey(
             selectedSite.get(),
             Order.Status.Completed.value
-        ) ?: WCOrderStatusModel(statusKey = Order.Status.Completed.value).apply {
-            label = statusKey
-        }
+        ) ?: WCOrderStatusModel(
+            statusKey = Order.Status.Completed.value,
+            label = Order.Status.Completed.value
+        )
 
         orderStore.updateOrderStatusAndPaymentDetails(
             orderId = orderId,

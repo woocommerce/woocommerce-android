@@ -65,12 +65,12 @@ object OrderTestUtils {
     @Suppress("WeakerAccess")
     fun generateOrderStatusOptions(): List<WCOrderStatusModel> {
         return CoreOrderStatus.values().map {
-            WCOrderStatusModel().apply {
-                localSiteId = 1
-                statusKey = it.value
-                label = it.value
-                statusCount = TEST_ORDER_STATUS_COUNT
-            }
+            WCOrderStatusModel(
+                siteId = LocalId(1),
+                statusKey = it.value,
+                label = it.value,
+                statusCount = TEST_ORDER_STATUS_COUNT,
+            )
         }
     }
 

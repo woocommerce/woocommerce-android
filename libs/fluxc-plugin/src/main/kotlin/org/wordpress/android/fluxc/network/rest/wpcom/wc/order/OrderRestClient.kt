@@ -401,8 +401,14 @@ class OrderRestClient @Inject constructor(
 
             when (response) {
                 is WPAPIResponse.Success -> {
-                    val orderStatusOptions = response.data?.map {
-                        orderStatusResponseToOrderStatusModel(it, site)
+                    val orderStatusOptions = response.data?.mapIndexed { index, dto ->
+                        WCOrderStatusModel(
+                            siteId = site.localId(),
+                            statusKey = dto.slug ?: "",
+                            label = dto.name ?: "",
+                            statusCount = dto.total,
+                            position = index
+                        )
                     }.orEmpty()
 
                     val payload = FetchOrderStatusOptionsResponsePayload(site, orderStatusOptions)
@@ -1213,18 +1219,6 @@ class OrderRestClient @Inject constructor(
             else -> OrderErrorType.fromString(wpAPINetworkError.errorCode.orEmpty())
         }
         return OrderError(orderErrorType, wpAPINetworkError.combinedErrorMessage)
-    }
-
-    private fun orderStatusResponseToOrderStatusModel(
-        response: OrderStatusApiResponse,
-        site: SiteModel
-    ): WCOrderStatusModel {
-        return WCOrderStatusModel().apply {
-            localSiteId = site.id
-            statusKey = response.slug ?: ""
-            label = response.name ?: ""
-            statusCount = response.total
-        }
     }
 
     private fun orderShipmentTrackingResponseToModel(

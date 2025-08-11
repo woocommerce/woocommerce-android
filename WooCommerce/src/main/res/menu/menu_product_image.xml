@@ -3,8 +3,14 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_remove_background"
+        android:title="@string/remove_background"
+        android:icon="@drawable/ic_remove_bg"
+        app:showAsAction="always"/>
+
+    <item
         android:id="@+id/menu_delete_image"
         android:title="@string/delete"
         android:icon="@drawable/ic_gridicons_trash_24dp"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 </menu>

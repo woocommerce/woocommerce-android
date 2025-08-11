@@ -1,11 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-16 15:54:04+0000
+Translation-Revision-Date: 2025-07-30 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_order_completion_error">לא ניתן היה לסמן את ההזמנה כ\'הושלמה\'</string>
+    <string name="woo_shipping_address_use_as_entered">להשתמש בכתובת כפי שהוזנה</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">המשקל חייב להיות מעל אפס (0)</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">מספר התעריף חייב להיות באורך של 6 עד 12 ספרות</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">במשלוחים למדינת היעד חובה לציין מספר עסקה בינלאומית (ITN ‏ – International Transaction Number).</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">יש לציין מספר עסקה בינלאומית (ITN) למשלוח פריטים שערכם גדול מ-2,500 $ לכל מספר תעריף.\nמוצרים עם מספר התעריף ⁦%1$s⁩ מסתכמים ביותר מ-2,500 $.</string>
+    <string name="woopos_scanning_setup_device_other">אחר</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_button_done">בוצע</string>
+    <string name="woopos_scanning_setup_button_retry">לנסות שוב</string>
+    <string name="woopos_scanning_setup_button_back">חזרה</string>
+    <string name="woopos_scanning_setup_button_next">הבא</string>
+    <string name="woopos_scanning_setup_scan_failed_message">עליך לבדוק את המדריך של הסורק ולאפס את הסורק להגדרות היצרן. לאחר מכן יש לנסות שוב את תהליך ההגדרה.</string>
+    <string name="woopos_scanning_setup_scan_failed_title">נמצאה בעיה בסריקה</string>
+    <string name="woopos_scanning_setup_timeout_message">יש לסרוק את הברקוד כדי לבדוק את הסורק שלך. אם הבעיה ממשיכה, יש לבדוק את הגדרות Bluetooth ולנסות שוב.</string>
+    <string name="woopos_scanning_setup_timeout_title">לא נמצאו עדיין נתוני סריקה</string>
+    <string name="woopos_scanning_setup_test_scanner_message">יש לסרוק את הברקוד לבדיקה כדי לוודא שהסורק עובד בצורה תקינה.</string>
+    <string name="woopos_scanning_setup_test_scanner_title">לבדוק את הסורק</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">דוגמה להגדרת מלאי של ברקוד</string>
+    <string name="woopos_scanning_setup_visit_documentation">אפשר לעיין בתיעוד</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">אפשר להגדיר ברקודים בשדה \'GTIN‏, UPC,‏ EAN,‏ ISBN\' שבלשונית של מלאי המוצר. לפרטים נוספים</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">איך להגדיר ברקוד על מוצרים</string>
+    <string name="woopos_scanning_setup_info_text">סורק הברקוד עשוי להסתיר את המקלדת. יש להקיש על סמל המקלדת או להפעיל אותה בהגדרות של מערכת ההפעלה, במקטע \'מקלדת פיזית\'</string>
+    <string name="woopos_scanning_setup_info_bullet_3">יש לוודא ששדה החיפוש לא מופעל במהלך סריקת הברקודים.</string>
+    <string name="woopos_scanning_setup_info_bullet_2">יש לסרוק את הברקוד כאשר נמצאים ברשימת הפריטים כדי להוסיף מוצרים לעגלת הקניות.</string>
+    <string name="woopos_scanning_setup_info_bullet_1">יש לחבר את סורק הברקוד באמצעות Bluetooth בהגדרות של Bluetooth במערכת.</string>
+    <string name="woopos_scanning_setup_info_title">הגדרת הסורק</string>
+    <string name="woopos_scanning_setup_more_information">איך להגדיר ברקוד על מוצרים</string>
+    <string name="woopos_scanning_setup_success_message">הכול מוכן, אפשר להתחיל לסרוק מוצרים.\nמידע נוסף על תמיכה בברקוד ובסורק של קודי QR.</string>
+    <string name="woopos_scanning_setup_success_title">הסורק הוגדר!</string>
+    <string name="woopos_scanning_setup_go_to_settings">לעבור להגדרות המכשיר</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">יש להפעיל את חיבור ה-Bluetooth ולבחור את הסורק של %s בהגדרות של מערכת ההפעלה.\nהסורק יצפצף ונורת LED תופיע ללא הבהובים כשהוא מקושר.</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">לחבר את הסורק</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">יש להשתמש בסורק הברקוד כדי לסרוק את הקוד שלמטה ולהיכנס למצב חיבור.</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">הגדרת הסורק</string>
+    <string name="woopos_scanning_setup_hid_message">יש להשתמש בסורק הברקודים כדי לסרוק את הקוד שלמטה ולהפעיל את מצב Bluetooth HID.</string>
+    <string name="woopos_scanning_setup_hid_title">הגדרת הסורק</string>
+    <string name="woopos_scanning_setup_device_selection_message">יש לבחור דגם מהרשימה:</string>
+    <string name="woopos_scanning_setup_device_selection_title">להגדיר סורק ברקוד</string>
+    <string name="woopos_scanning_setup_barcode_content_description">ברקוד</string>
+    <string name="woopos_scanning_setup_dialog_content_description">תיבת הדו-שיח להגדרת הסורק</string>
+    <string name="woopos_eligibility_screen_UK_country_name">בריטניה</string>
+    <string name="woopos_eligibility_screen_US_country_name">ארצות הברית</string>
+    <string name="woopos_eligibility_screen_unable_to_load">לא ניתן לטעון</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">מערכת POS לא זמינה במטבע של החנות שלך. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">מערכת POS לא זמינה במטבע של החנות שלך. ב-⁦%1$s⁩, כרגע המערכת תומכת רק ב-⁦%2$s⁩. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">כדי להמשיך, יש להפעיל את \'נקודת מכירה\'. יש להפעיל את האפשרות של POS ממנהל המערכת של WordPress במקטע \'הגדרות WooCommerce\' &gt; \'מתקדם\' &gt; \'אפשרויות\'.</string>
+    <string name="woopos_eligibility_reason_check_connection">יש לבדוק את החיבור לאינטרנט ולנסות להפעיל מחדש את האפליקציה. אם הבעיה נמשכת, ניתן ליצור קשר עם התמיכה.</string>
+    <string name="woopos_eligibility_reason_unsupported_woocommerce_version">הגרסה של WooCommerce שברשותך לא נתמכת. למערכת POS נדרשת גרסת WooCommerce של ⁦%1$s⁩ ומעלה. עליך לעדכן את WooCommerce לגרסה האחרונה.</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">יש לוודא שהתוסף של WooCommerce הותקן והופעל ממנהל המערכת של WordPress. אם עדיין קיימת בעיה, יש ליצור קשר עם התמיכה לעזרה.</string>
+    <string name="woopos_barcode_scanning_title">להגדיר סורק ברקוד</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">נקודת מכירה</string>
+    <string name="orderfilters_sales_channel_filter">ערוץ מכירות</string>
+    <string name="barcode_ean13_content_description">ברקוד של EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">טיפול נוסף</string>
     <string name="woo_shipping_rate_option_saturday_delivery">משלוח ביום שבת</string>
     <string name="woo_shipping_rate_option_carbon_neutral">ניטרליות פליטת פחמן</string>
@@ -17,7 +73,6 @@ Language: he_IL
     <string name="woo_shipping_labels_package_removing_error">אין אפשרות להסיר את החבילה</string>
     <string name="woopos_eligibility_retry_check_label">לנסות שוב</string>
     <string name="woopos_eligibility_exit_pos_label">לצאת מ-POS</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• יש לעיין בהוראות של סורק הברקודים של Bluetooth כדי להגדיר את מצב HID. בדרך כלל, יש לסרוק ברקוד מיוחד במדריך למשתמש.</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">הסורק לא שלח תו של סוף שורה</string>
     <string name="woopos_cart_barcode_scan_result_too_short">הקוד הסרוק קצר מדי</string>
     <string name="shipping_label_shipment_details_shipment_cost_base_fee">⁦%1$s⁩ (עמלה בסיסית)</string>
@@ -59,17 +114,7 @@ Language: he_IL
     <string name="woopos_cart_adding_item_to_cart_failed">נכשלה ההוספה של הפריט לעגלת הקניות, %s.</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">הקופון ⁦%1$s⁩ נוסף לעגלת הקניות</string>
     <string name="woopos_cart_product_added_to_cart_accessibility">המוצר ⁦%1$s⁩ נוסף לעגלת הקניות , מחיר ⁦%2$s⁩</string>
-    <string name="woopos_barcode_scanning_title">סריקת ברקוד</string>
-    <string name="woopos_dialog_barcode_info_background_content_description">רקע מעומעם. יש להקיש כדי לצאת מתיבת הדו-שיח.</string>
-    <string name="woopos_dialog_barcode_info_content_description">תיבת הדו-שיח של פרטי הסריקה של הברקוד</string>
-    <string name="woopos_dialog_barcode_info_button_label">אישור</string>
-    <string name="woopos_dialog_barcode_info_quinary_message">הסורק מדמה מקלדת, לכן לעיתים הוא מונע הצגה של מקלדת התוכנה, למשל בחיפוש. יש להקיש על סמל המקלדת כדי להציג שוב את מקלדת התוכנה.</string>
-    <string name="woopos_dialog_barcode_info_quaternary_message">• יש לסרוק את הברקוד כאשר נמצאים ברשימת הפריטים כדי להוסיף מוצרים לעגלת הקניות.</string>
-    <string name="woopos_dialog_barcode_info_tertiary_message">• יש לחבר את סורק הברקוד בהגדרות של Bluetooth במערכת.</string>
-    <string name="woopos_dialog_barcode_info_more_details_link">פרטים נוספים</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• יש להגדיר ברקודים בשדה \"GTIN, UPC, EAN, ISBN\" שבמקטע \'מוצרים\' &gt; \'פרטי המוצר\' &gt; \'מלאי\'. </string>
-    <string name="woopos_dialog_barcode_info_intro_message">אפשר לסרוק ברקוד באמצעות סורק חיצוני כדי לבנות עגלת קניות במהירות.</string>
-    <string name="woopos_dialog_barcode_info_heading">סריקת ברקוד</string>
+    <string name="woopos_scanning_setup_info_message">אפשר לסרוק ברקוד באמצעות סורק חיצוני כדי לבנות עגלת קניות במהירות.</string>
     <string name="woopos_cart_barcode_scan_result_network_error">אין חיבור אינטרנט</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">פריט לא נתמך – %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">הפריט שנסרק לא מוכר</string>
@@ -163,7 +208,7 @@ Language: he_IL
     <string name="woo_shipping_address_notification_destination_missing">כתובת היעד חסרה</string>
     <string name="woo_shipping_address_notification_origin_unverified">כתובת מוצא לא מאומתת</string>
     <string name="woo_shipping_address_notification_destination_unverified">כתובת היעד לא מאומתת</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">במשלוחים מעל 2,500 $, עליך לקבל מספר ITN של AES באורך 14 ספרות לצורך דיווח לרשויות הייצוא של ארה\"ב.</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">במשלוחים מעל 2,500 $, עליך לקבל מספר ITN של AES באורך 14 ספרות לצורך דיווח לרשויות הייצוא של ארה\"ב.</string>
     <string name="woo_shipping_labels_customs_itn_required_error">חובה להזין ITN</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">אנחנו צריכים לדעת את משקל המשלוח לפני שנוכל להציג את תעריפי המשלוח הזמינים.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">יש להוסיף משקל משלוח כדי לקבל תעריפי משלוח</string>
@@ -195,7 +240,6 @@ Language: he_IL
     <string name="woo_shipping_labels_customs_product_details_value_required">ערך נדרש</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">משקל ליחידה</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">ערך ליחידה</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">מספר תעריף חסר</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">מספר של תעריף HS</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">תיאור חסר</string>
     <string name="woo_shipping_labels_customs_product_details_description">תיאור</string>
