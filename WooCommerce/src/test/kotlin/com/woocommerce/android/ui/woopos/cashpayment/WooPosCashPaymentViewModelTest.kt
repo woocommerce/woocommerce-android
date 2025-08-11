@@ -95,6 +95,18 @@ class WooPosCashPaymentViewModelTest {
     }
 
     @Test
+    fun `when ViewModel initializes, then entered amount prefilled with total value and button is enabled`() = runTest {
+        // WHEN
+        val state = viewModel.state.first()
+
+        // THEN
+        assertThat(state).isInstanceOf(WooPosCashPaymentState.Collecting::class.java)
+        val collectingState = state as WooPosCashPaymentState.Collecting
+        assertThat(collectingState.enteredAmount).isEqualTo(BigDecimal("100.00"))
+        assertThat(collectingState.button.status).isEqualTo(WooPosCashPaymentState.Collecting.Button.Status.ENABLED)
+    }
+
+    @Test
     fun `given valid amount,when onUIEvent AmountChanged , then button is enabled and changeDue is updated`() = runTest {
         // GIVEN
         val enteredAmount = BigDecimal("120.00")

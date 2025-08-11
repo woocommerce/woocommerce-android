@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.ConfirmRemoveProductImageDialog
 import com.woocommerce.android.ui.products.ImageViewerFragment
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
@@ -93,8 +92,6 @@ class ProductImageViewerFragment :
         }
         toolbar.inflateMenu(R.menu.menu_product_image)
         toolbar.menu.findItem(R.id.menu_delete_image).isVisible = navArgs.isDeletingAllowed
-        toolbar.menu.findItem(R.id.menu_remove_background).isVisible =
-            FeatureFlag.AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL.isEnabled(context)
     }
 
     private fun onMenuItemSelected(item: MenuItem): Boolean =

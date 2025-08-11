@@ -44,7 +44,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
 
             val order = repository.getOrderById(orderId)!!
             _state.value = WooPosCashPaymentState.Collecting(
-                enteredAmount = null,
+                enteredAmount = order.total,
                 changeDueText = "",
                 changeDue = null,
                 total = order.total,
@@ -59,7 +59,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
                 numberOfDecimals = repository.getNumberOfDecimals(),
                 button = WooPosCashPaymentState.Collecting.Button(
                     text = resourceProvider.getString(R.string.woopos_complete_cash_order_button),
-                    status = WooPosCashPaymentState.Collecting.Button.Status.DISABLED
+                    status = WooPosCashPaymentState.Collecting.Button.Status.ENABLED
                 )
             )
         }
