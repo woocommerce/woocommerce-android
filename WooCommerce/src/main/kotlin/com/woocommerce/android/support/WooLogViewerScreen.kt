@@ -2,10 +2,6 @@ package com.woocommerce.android.support
 
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -72,33 +68,17 @@ import java.util.Locale
 fun WooLogViewerScreen(
     viewerViewModel: WooLogViewerViewModel
 ) {
-    viewerViewModel.uiState.observeAsState().value?.let {
-        AnimatedContent(
-            targetState = it,
-            transitionSpec = {
-                slideInHorizontally { width ->
-                    if (targetState is WooLogViewerViewModel.UiState.LogFileContent) {
-                        width
-                    } else {
-                        -width
-                    }
-                } togetherWith slideOutHorizontally { width ->
-                    if (targetState is WooLogViewerViewModel.UiState.LogFileContent) {
-                        -width
-                    } else {
-                        width
-                    }
-                }
+    viewerViewModel.uiState.observeAsState().value?.let { state ->
+        // TODO animate transitions between states
+        //  For now, I had to remove the AnimatedContent as it caused a very noticeable delay
+        //  when navigating to the LogFileContent state when the log file is large (> 1000 entries).
+        when (state) {
+            is WooLogViewerViewModel.UiState.LogFilesList -> {
+                LogFilesListScreen(state)
             }
-        ) { targetState ->
-            when (targetState) {
-                is WooLogViewerViewModel.UiState.LogFilesList -> {
-                    LogFilesListScreen(targetState)
-                }
 
-                is WooLogViewerViewModel.UiState.LogFileContent -> {
-                    LogFileContent(targetState)
-                }
+            is WooLogViewerViewModel.UiState.LogFileContent -> {
+                LogFileContent(state)
             }
         }
     }
