@@ -56,6 +56,7 @@ fun WooPosMoneyInputField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     contentAlignment: Alignment = Alignment.CenterStart,
+    preselectText: Boolean = false,
 ) {
     val visualTransformation = remember {
         CurrencyVisualTransformation(
@@ -84,7 +85,12 @@ fun WooPosMoneyInputField(
         stateSaver = TextFieldValue.Saver,
     ) {
         currentValue = value
-        mutableStateOf(TextFieldValue(valueMapper.printValue(value), TextRange(0, value.toString().length)))
+        mutableStateOf(
+            TextFieldValue(
+                text = valueMapper.printValue(value),
+                selection = if (preselectText) TextRange(0, value.toString().length) else TextRange.Zero
+            )
+        )
     }
 
     var labelWidth by remember { mutableIntStateOf(0) }
