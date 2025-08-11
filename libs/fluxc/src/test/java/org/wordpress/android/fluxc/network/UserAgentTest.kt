@@ -1,13 +1,6 @@
 package org.wordpress.android.fluxc.network
 
 import android.webkit.WebSettings
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineScheduler
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,23 +8,17 @@ import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import org.wordpress.android.fluxc.utils.PreferenceUtils.getFluxCPreferences
 import org.wordpress.android.util.PackageUtils
 import kotlin.test.assertEquals
 
 private const val APP_NAME = "App Name"
 private const val USER_AGENT = "Default User Agent"
 private const val SYSTEM_USER_AGENT = "System User Agent"
-private const val CACHED_USER_AGENT = "Cached User Agent"
 private const val APP_VERSION = "1.0"
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class UserAgentTest {
     private val context = RuntimeEnvironment.getApplication().applicationContext
-    private val scheduler = TestCoroutineScheduler()
-    private val testDispatcher = StandardTestDispatcher(scheduler)
-    private val testScope = TestScope(testDispatcher)
 
     @Before
     fun setup() {
@@ -39,79 +26,47 @@ class UserAgentTest {
     }
 
     @Test
-    fun `when cached user agent exists, then it should be loaded from SharedPreferences`() = runTest(testDispatcher) {
+    fun `when UserAgent is created, then apiUserAgent should use system property with app version`() {
         withMockedPackageUtils {
-            withCachedValue(cachedUserAgent = CACHED_USER_AGENT) {
-                val result = UserAgent(context, APP_NAME, testScope.backgroundScope, testDispatcher)
+            val userAgent = UserAgent(context, APP_NAME)
 
-                runCurrent()
+            assertEquals("$SYSTEM_USER_AGENT $APP_NAME/$APP_VERSION", userAgent.apiUserAgent)
+        }
+    }
 
-                // Verify the cached user agent is used
-                assertEquals("$CACHED_USER_AGENT $APP_NAME/$APP_VERSION", result.apiUserAgent)
+    @Test
+    fun `when UserAgent is created, then webViewUserAgent should use WebSettings with app version`() {
+        withMockedPackageUtils {
+            mockStatic(WebSettings::class.java).use {
+                whenever(WebSettings.getDefaultUserAgent(context)).thenReturn(USER_AGENT)
+
+                val userAgent = UserAgent(context, APP_NAME)
+
+                assertEquals("$USER_AGENT $APP_NAME/$APP_VERSION", userAgent.webViewUserAgent)
             }
         }
     }
 
     @Test
-    fun `when WebSettings returns user agent, then it should be saved to SharedPreferences`() = runTest(testDispatcher) {
+    fun `when system property is null, then apiUserAgent should use empty string with app version`() {
+        System.clearProperty("http.agent")
+
         withMockedPackageUtils {
-            withCachedValue {
-                mockStatic(WebSettings::class.java).use {
-                    whenever(WebSettings.getDefaultUserAgent(context)).thenReturn(USER_AGENT)
+            val userAgent = UserAgent(context, APP_NAME)
 
-                    UserAgent(context, APP_NAME, testScope.backgroundScope, testDispatcher)
-
-                    // Advance time to read the WebView user agent
-                    advanceTimeBy(100)
-                    runCurrent()
-
-                    // Verify the user agent is saved to SharedPreferences
-                    assertEquals(USER_AGENT, getFluxCPreferences(context).getString(UserAgent.PREF_KEY, null))
-                }
-            }
+            assertEquals("$APP_NAME/$APP_VERSION", userAgent.apiUserAgent)
         }
     }
 
     @Test
-    fun `when no cached user agent and WebSettings fails, then it should use system property`() = runTest(testDispatcher) {
+    fun `when WebSettings throws exception, then webViewUserAgent should throw exception`() {
         withMockedPackageUtils {
-            withCachedValue {
-                mockStatic(WebSettings::class.java).use {
-                    whenever(WebSettings.getDefaultUserAgent(context)).thenThrow(RuntimeException(""))
+            mockStatic(WebSettings::class.java).use {
+                whenever(WebSettings.getDefaultUserAgent(context)).thenThrow(RuntimeException("WebView not available"))
 
-                    val result = UserAgent(context, APP_NAME, testScope.backgroundScope, testDispatcher)
+                val userAgent = UserAgent(context, APP_NAME)
 
-                    // Advance time to read the WebView user agent
-                    advanceTimeBy(100)
-                    runCurrent()
-
-                    // Verify the system user agent is used
-                    assertEquals("$SYSTEM_USER_AGENT $APP_NAME/$APP_VERSION", result.apiUserAgent)
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `when cached user agent exists, then WebSettings should still be called after delay`() = runTest(testDispatcher) {
-        withMockedPackageUtils {
-            withCachedValue(cachedUserAgent = CACHED_USER_AGENT) {
-                mockStatic(WebSettings::class.java).use {
-                    whenever(WebSettings.getDefaultUserAgent(context)).thenReturn(USER_AGENT)
-                    val result = UserAgent(context, APP_NAME, testScope.backgroundScope, testDispatcher)
-
-                    // Initially it should use the cached value
-                    runCurrent()
-                    assertEquals("$CACHED_USER_AGENT $APP_NAME/$APP_VERSION", result.apiUserAgent)
-
-                    // After delay, it should update with the new value from WebSettings
-                    advanceTimeBy(15000)
-                    runCurrent()
-
-                    assertEquals("$USER_AGENT $APP_NAME/$APP_VERSION", result.apiUserAgent)
-                    // Verify the user agent is saved to SharedPreferences
-                    assertEquals(USER_AGENT, getFluxCPreferences(context).getString(UserAgent.PREF_KEY, null))
-                }
+                assertEquals("$APP_NAME/$APP_VERSION", userAgent.webViewUserAgent)
             }
         }
     }
@@ -121,21 +76,5 @@ class UserAgentTest {
             whenever(PackageUtils.getVersionName(context)).thenReturn(APP_VERSION)
             test()
         }
-    }
-
-    private fun withCachedValue(
-        cachedUserAgent: String? = null,
-        test: () -> Unit
-    ) {
-        getFluxCPreferences(context).edit()
-            .apply {
-                if (cachedUserAgent != null) {
-                    putString(UserAgent.PREF_KEY, cachedUserAgent)
-                } else {
-                    remove(UserAgent.PREF_KEY)
-                }
-            }
-            .apply()
-        test()
     }
 }
