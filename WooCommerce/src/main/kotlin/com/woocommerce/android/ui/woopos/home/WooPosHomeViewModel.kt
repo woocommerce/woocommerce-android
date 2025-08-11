@@ -213,7 +213,6 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-
                     is ChildToParentEvent.ToastMessageDisplayed -> {
                         viewModelScope.launch {
                             _toastEvent.emit(event.message)

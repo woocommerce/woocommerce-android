@@ -43,7 +43,6 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenEligibilityScreenFromSplash ->
             navigateToEligibilityScreen(event.reason)
-        
         is WooPosNavigationEvent.OpenSettings -> navigateToSettingsScreen()
     }
 }
