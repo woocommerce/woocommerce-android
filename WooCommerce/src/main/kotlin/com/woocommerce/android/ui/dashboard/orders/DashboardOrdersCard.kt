@@ -102,6 +102,7 @@ private fun HandleEvents(
                 popUpTo(graph.findStartDestination().id) {
                     saveState = true
                 }
+                restoreState = true
             }
         )
     }

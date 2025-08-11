@@ -4,6 +4,7 @@
 
 23.1
 -----
+- [*] Fixed bug when an order was not selected when navigating from my store screen [https://github.com/woocommerce/woocommerce-android/pull/14436]
 
 
 23.0
