@@ -10,12 +10,14 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
 import kotlin.test.Test
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
@@ -448,6 +450,22 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
             assertThat(currentShipments.values.toList()[1].totalItemQuantity).isEqualTo(expectedItemQuantity)
         }
+
+    @Test
+    fun `when there are more than 1 shipment, then do not display the instructions message`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = twoShipments
+        )
+        createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
+        advanceUntilIdle()
+
+        val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
+        assertNull(state.splitMessage)
+    }
 
     private val defaultShipments = listOf(
         ShipmentUIModel(
