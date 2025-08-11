@@ -40,7 +40,6 @@ sealed class ChildToParentEvent {
     data object ExitPosClicked : ChildToParentEvent()
     data object SimpleProductExplanationMenuItemClicked : ChildToParentEvent()
     data object BarcodeInfoMenuItemClicked : ChildToParentEvent()
-    data object SettingsMenuItemClicked : ChildToParentEvent()
     data object CouponsValidationFailed : ChildToParentEvent()
     data object RemoveCouponsClicked : ChildToParentEvent()
     data class CouponsRemoved(
@@ -55,6 +54,7 @@ sealed class ChildToParentEvent {
         data class ToEmailReceipt(val orderId: Long) : NavigationEvent()
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitPos : NavigationEvent()
+        data object ToSettings : NavigationEvent()
     }
 
     sealed class SearchEvent : ChildToParentEvent() {
