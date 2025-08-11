@@ -2,6 +2,9 @@ package com.woocommerce.android.util.logs
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -15,7 +18,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
@@ -50,13 +52,20 @@ class WooFileLogger(
 
     private val internalLogsBuffer = Channel<LogEntry>(Channel.UNLIMITED)
     private val writeTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val processLifecycle
+        get() = ProcessLifecycleOwner.get().lifecycle
 
     init {
         appCoroutineScope.launch {
             internalLogsBuffer.bufferUntil(
                 trigger = merge(
                     flow {
-                        delay(FLUSH_PERIOD_MS)
+                        val flushPeriod = if (processLifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                            FOREGROUND_FLUSH_PERIOD_MS
+                        } else {
+                            BACKGROUND_FLUSH_PERIOD_MS
+                        }
+                        delay(flushPeriod)
                         emit(Unit)
                     }, // periodic flush
                     writeTrigger // flush on demand
@@ -65,10 +74,14 @@ class WooFileLogger(
                 .collect { processLogs(it) }
         }
 
-        // trigger writing logs to file when VM is closed
-        Runtime.getRuntime().addShutdownHook(
-            Thread {
-                runBlocking { writeTrigger.emit(Unit) }
+        // Flush logs when app goes to the background
+        processLifecycle.addObserver(
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_STOP) {
+                    appCoroutineScope.launch {
+                        forceFlush()
+                    }
+                }
             }
         )
     }
@@ -117,8 +130,16 @@ class WooFileLogger(
     }
 
     companion object Companion {
+        // Flush logs every 5 seconds when the app is in the foreground
         @VisibleForTesting
-        const val FLUSH_PERIOD_MS = 500L
+        const val FOREGROUND_FLUSH_PERIOD_MS = 5000L
+
+        // Flush logs every 500 milliseconds when the app is in the background
+        // We use a shorter period to ensure logs are flushed more frequently and to avoid losing logs as the chances
+        // of the app being killed in the background are higher.
+        @VisibleForTesting
+        const val BACKGROUND_FLUSH_PERIOD_MS = 500L
+
         private const val LOG_FILE_DIRECTORY = "logs"
         private const val MAX_LOG_FILES = 7
         private const val LOG_ENTRY_PREFIX = "--"

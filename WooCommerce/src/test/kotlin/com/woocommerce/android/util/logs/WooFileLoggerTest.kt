@@ -69,7 +69,7 @@ class WooFileLoggerTest : BaseUnitTest() {
         assertThat(wooFileLogger.getCurrentLogFileContent()).isEmpty()
 
         // Wait for the automatic flush to complete (after the flush delay)
-        advanceTimeBy(WooFileLogger.FLUSH_PERIOD_MS + 100) // Wait for the flush delay plus a bit more
+        advanceTimeBy(WooFileLogger.BACKGROUND_FLUSH_PERIOD_MS + 100) // Wait for the flush delay plus a bit more
         runCurrent()
 
         // Verify the log entries are now processed
