@@ -84,7 +84,7 @@ fun WooPosMoneyInputField(
         stateSaver = TextFieldValue.Saver,
     ) {
         currentValue = value
-        mutableStateOf(TextFieldValue(valueMapper.printValue(value)))
+        mutableStateOf(TextFieldValue(valueMapper.printValue(value), TextRange(0, value.toString().length)))
     }
 
     var labelWidth by remember { mutableIntStateOf(0) }

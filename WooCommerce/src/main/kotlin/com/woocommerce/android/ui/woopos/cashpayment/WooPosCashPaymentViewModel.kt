@@ -44,7 +44,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
 
             val order = repository.getOrderById(orderId)!!
             _state.value = WooPosCashPaymentState.Collecting(
-                enteredAmount = null,
+                enteredAmount = order.total,
                 changeDueText = "",
                 changeDue = null,
                 total = order.total,
