@@ -1,17 +1,21 @@
 package com.woocommerce.android.ui.woopos.settings.details
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -25,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -89,40 +95,61 @@ fun WooPosSettingsDetailPaneScreen(
 @Composable
 private fun DetailPaneToolbar(
     canGoBack: Boolean,
-    @androidx.annotation.StringRes title: Int,
+    @StringRes title: Int,
     onBack: () -> Unit
 ) {
-    Row(
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
+            .height(56.dp)
             .padding(
                 top = WooPosSpacing.Small.value,
                 bottom = WooPosSpacing.Medium.value
-            ),
-        verticalAlignment = Alignment.CenterVertically
+            )
     ) {
-        Box(
-            modifier = Modifier.size(48.dp),
-            contentAlignment = Alignment.Center
+        val (backButton, titleText) = createRefs()
+
+        AnimatedVisibility(
+            visible = canGoBack,
+            enter = scaleIn() + fadeIn(),
+            exit = scaleOut() + fadeOut(),
+            modifier = Modifier.constrainAs(backButton) {
+                start.linkTo(parent.start)
+                centerVerticallyTo(parent)
+            }
         ) {
-            if (canGoBack) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.woopos_settings_back_content_description),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(28.dp)
+                )
             }
         }
 
-        WooPosText(
-            text = stringResource(title),
-            style = WooPosTypography.BodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(start = WooPosSpacing.XSmall.value)
-        )
+        AnimatedContent(
+            targetState = title,
+            transitionSpec = {
+                fadeIn() togetherWith fadeOut()
+            },
+            label = "title_text_animation",
+            modifier = Modifier.constrainAs(titleText) {
+                start.linkTo(
+                    if (canGoBack) backButton.end else parent.start,
+                    margin = if (canGoBack) WooPosSpacing.XSmall.value else 0.dp
+                )
+                end.linkTo(parent.end)
+                centerVerticallyTo(parent)
+                width = Dimension.fillToConstraints
+            }
+        ) { currentTitle ->
+            WooPosText(
+                text = stringResource(currentTitle),
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 
