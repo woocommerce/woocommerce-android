@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.settings.details
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -42,13 +42,15 @@ fun WooPosSettingsDetailPaneScreen(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier = modifier.fillMaxSize()
+            .padding(WooPosSpacing.Medium.value)
+            .statusBarsPadding()
     ) {
-        if (state.canGoBack) {
-            DetailPaneToolbar(onBack = onBack)
-        }
+        DetailPaneToolbar(
+            canGoBack = state.canGoBack,
+            title = state.currentDestination.titleRes,
+            onBack = onBack
+        )
 
         AnimatedContent(
             targetState = currentDestination,
@@ -70,21 +72,39 @@ fun WooPosSettingsDetailPaneScreen(
 }
 
 @Composable
-private fun DetailPaneToolbar(onBack: () -> Unit) {
+private fun DetailPaneToolbar(
+    canGoBack: Boolean,
+    @androidx.annotation.StringRes title: Int,
+    onBack: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.Small.value),
+            .padding(
+                top = WooPosSpacing.Small.value,
+                bottom = WooPosSpacing.Medium.value
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = onBack) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.woopos_settings_back_content_description),
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(24.dp)
-            )
+        if (canGoBack) {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.woopos_settings_back_content_description),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
+
+        WooPosText(
+            text = stringResource(title),
+            style = WooPosTypography.BodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(
+                start = if (canGoBack) WooPosSpacing.XSmall.value else WooPosSpacing.Medium.value
+            )
+        )
     }
 }
 
