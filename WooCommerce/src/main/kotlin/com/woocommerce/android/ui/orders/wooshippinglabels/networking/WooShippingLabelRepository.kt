@@ -92,9 +92,11 @@ class WooShippingLabelRepository @Inject constructor(
                 response.model
                     ?.takeIf { !response.isError }
                     ?.let { model ->
-                        val shipments = model.config.shipments ?: emptyMap()
                         wooShippingDao.replaceShipments(
-                            mapper(shipments, site, orderId)
+                            mapper(model.config.shipments ?: emptyMap(), site, orderId)
+                        )
+                        wooShippingDao.replaceLabels(
+                            mapper(model.config.shippingLabelData, site, orderId)
                         )
                         configDataStore.saveConfig(orderId, model.config)
                     }
