@@ -2,6 +2,11 @@ package com.woocommerce.android.ui.woopos.settings.details
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,6 +59,16 @@ fun WooPosSettingsDetailPaneScreen(
 
         AnimatedContent(
             targetState = currentDestination,
+            transitionSpec = {
+                val isNavigatingForward = targetState.parentDestination == initialState
+                if (isNavigatingForward) {
+                    (slideInHorizontally(initialOffsetX = { it }) + fadeIn()) togetherWith
+                        (slideOutHorizontally(targetOffsetX = { -it }) + fadeOut())
+                } else {
+                    (slideInHorizontally(initialOffsetX = { -it }) + fadeIn()) togetherWith
+                        (slideOutHorizontally(targetOffsetX = { it }) + fadeOut())
+                }
+            },
             label = "settings_detail_animation"
         ) { destination ->
             when (destination) {
@@ -86,14 +101,19 @@ private fun DetailPaneToolbar(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (canGoBack) {
-            IconButton(onClick = onBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.woopos_settings_back_content_description),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp)
-                )
+        Box(
+            modifier = Modifier.size(48.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (canGoBack) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.woopos_settings_back_content_description),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
 
@@ -101,9 +121,7 @@ private fun DetailPaneToolbar(
             text = stringResource(title),
             style = WooPosTypography.BodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(
-                start = if (canGoBack) WooPosSpacing.XSmall.value else WooPosSpacing.Medium.value
-            )
+            modifier = Modifier.padding(start = WooPosSpacing.XSmall.value)
         )
     }
 }
