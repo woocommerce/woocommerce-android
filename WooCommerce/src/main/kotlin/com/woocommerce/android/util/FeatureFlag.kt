@@ -13,7 +13,9 @@ enum class FeatureFlag {
     NEW_SHIPPING_SUPPORT,
     REVAMP_WOO_SHIPPING,
     BULK_UPDATE_ORDERS_STATUS,
-    HIDE_SITES_FROM_SITE_PICKER;
+    WOO_POS_SETTINGS,
+    HIDE_SITES_FROM_SITE_PICKER,
+    AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -21,9 +23,11 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
+            WOO_POS_SETTINGS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE,
+            AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             BULK_UPDATE_ORDERS_STATUS,
