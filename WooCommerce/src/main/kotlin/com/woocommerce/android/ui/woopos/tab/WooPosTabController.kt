@@ -71,12 +71,13 @@ class WooPosTabController @Inject constructor(
             result.onSuccess { tabShouldBeVisible ->
                 setPOSTabVisibility(tabShouldBeVisible)
                 appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), tabShouldBeVisible)
-                analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(tabShouldBeVisible))
             }
 
             result.onFailure { error ->
                 wooPosLog.i("POS Tab Visibility Value cannot be determined")
             }
+
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(result))
         }
     }
 
