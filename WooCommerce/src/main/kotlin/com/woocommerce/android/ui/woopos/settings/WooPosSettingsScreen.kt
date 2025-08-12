@@ -19,8 +19,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPane
-import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPane
+import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
+import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 
 @Composable
 fun WooPosSettingsScreen(
@@ -47,7 +47,7 @@ fun WooPosSettingsScreen(
         Row(
             modifier = Modifier.fillMaxSize()
         ) {
-            WooPosSettingsCategoriesPane(
+            WooPosSettingsCategoriesPaneScreen(
                 selectedCategory = navigationState.selectedCategory,
                 onCategorySelected = containerViewModel::onCategorySelected,
                 modifier = Modifier.weight(0.3f)
@@ -57,10 +57,10 @@ fun WooPosSettingsScreen(
                 color = MaterialTheme.colorScheme.outlineVariant
             )
 
-            WooPosSettingsDetailPane(
+            WooPosSettingsDetailPaneScreen(
                 state = navigationState,
                 onNavigate = containerViewModel::navigateToDetail,
-                onBack = containerViewModel::popDetailBackStack,
+                onBack = containerViewModel::navigateBack,
                 modifier = Modifier.weight(0.7f)
             )
         }

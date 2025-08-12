@@ -18,7 +18,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosSettingsCategoriesPane(
+fun WooPosSettingsCategoriesPaneScreen(
     selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
     modifier: Modifier = Modifier,

@@ -29,16 +29,15 @@ import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
 
 @Composable
-fun WooPosSettingsDetailPane(
+fun WooPosSettingsDetailPaneScreen(
     state: WooPosSettingsState,
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val currentDestination = state.detailBackStack.lastOrNull()
-    val canGoBack = state.detailBackStack.size > 1
+    val currentDestination = state.currentDestination
 
-    BackHandler(enabled = canGoBack) {
+    BackHandler(enabled = state.canGoBack) {
         onBack()
     }
 
@@ -47,7 +46,7 @@ fun WooPosSettingsDetailPane(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        if (canGoBack) {
+        if (state.canGoBack) {
             DetailPaneToolbar(onBack = onBack)
         }
 
@@ -56,17 +55,14 @@ fun WooPosSettingsDetailPane(
             label = "settings_detail_animation"
         ) { destination ->
             when (destination) {
-                is WooPosSettingsDetailDestination.HardwareOverview -> {
+                is WooPosSettingsDetailDestination.Hardware.Overview -> {
                     WooPosHardwareSettingsScreen(onNavigate = onNavigate)
                 }
-                is WooPosSettingsDetailDestination.BarcodeScanners -> {
+                is WooPosSettingsDetailDestination.Hardware.BarcodeScanners -> {
                     BarcodeScannerDetailScreen()
                 }
-                is WooPosSettingsDetailDestination.CardReaders -> {
+                is WooPosSettingsDetailDestination.Hardware.CardReaders -> {
                     CardReadersDetailScreen()
-                }
-                null -> {
-                    Box(modifier = Modifier.fillMaxSize())
                 }
             }
         }

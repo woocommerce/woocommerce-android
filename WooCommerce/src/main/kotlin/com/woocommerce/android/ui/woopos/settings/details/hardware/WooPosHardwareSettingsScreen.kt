@@ -47,10 +47,10 @@ fun WooPosHardwareSettingsScreen(
                 onClick = {
                     when (item.titleRes) {
                         R.string.woopos_settings_hardware_barcode_scanners ->
-                            onNavigate(WooPosSettingsDetailDestination.BarcodeScanners)
+                            onNavigate(WooPosSettingsDetailDestination.Hardware.BarcodeScanners)
 
                         R.string.woopos_settings_hardware_card_readers ->
-                            onNavigate(WooPosSettingsDetailDestination.CardReaders)
+                            onNavigate(WooPosSettingsDetailDestination.Hardware.CardReaders)
                     }
                 }
             )
