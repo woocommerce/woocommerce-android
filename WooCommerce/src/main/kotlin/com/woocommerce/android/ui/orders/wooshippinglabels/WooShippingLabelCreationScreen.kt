@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -363,31 +364,34 @@ private fun LabelCreationScreenWithBottomSheet(
                         }
                     }
                 } else if (shipmentUIList.size > 1) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        ShipmentsTabRow(
-                            shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
-                                ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
-                            },
-                            selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) {
-                                pagerState.currentPage
-                            } else {
-                                0
-                            },
-                            onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
-                            modifier = modifier.weight(1f)
-                        )
-                        if (shouldShowSplitShipmentButton) {
-                            IconButton(
-                                onClick = onSplitShipment,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Edit,
-                                    tint = colorResource(id = R.color.color_icon_menu),
-                                    contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
-                                )
+                    Column {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            ShipmentsTabRow(
+                                shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
+                                    ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
+                                },
+                                selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) {
+                                    pagerState.currentPage
+                                } else {
+                                    0
+                                },
+                                onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
+                                modifier = Modifier.weight(1f)
+                            )
+                            if (shouldShowSplitShipmentButton) {
+                                IconButton(
+                                    onClick = onSplitShipment,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Edit,
+                                        tint = colorResource(id = R.color.color_icon_menu),
+                                        contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
+                                    )
+                                }
                             }
                         }
+                        HorizontalDivider()
                     }
                 }
 
