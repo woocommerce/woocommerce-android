@@ -1,19 +1,15 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShipmentItem
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShipmentMap
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class SplitShipment @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val wooShippingLabelRepository: WooShippingLabelRepository,
-    private val configDataStore: WooShippingConfigDataStore,
+    private val wooShippingLabelRepository: WooShippingLabelRepository
 ) {
 
     suspend operator fun invoke(orderId: Long, shipments: List<ShipmentUIModel>): Result<List<ShipmentUIModel>> {
@@ -30,7 +26,6 @@ class SplitShipment @Inject constructor(
             if (response.isError || result == null) {
                 Result.failure(Exception("Split shipment failed"))
             } else {
-                updateCachedShipments(orderId, result.data)
                 // Update remote ids
                 val newShipments = shipments.map { it.copy(remoteId = it.localId) }
                 Result.success(newShipments)
@@ -64,11 +59,5 @@ class SplitShipment @Inject constructor(
         List(quantity.toInt()) { index -> "$itemId-sub-$index" }
     } else {
         emptyList()
-    }
-
-    private suspend fun updateCachedShipments(orderId: Long, newShipments: ShipmentMap) {
-        configDataStore.observeConfig(orderId).first()?.let {
-            configDataStore.saveConfig(orderId, it.copy(shipments = newShipments))
-        }
     }
 }
