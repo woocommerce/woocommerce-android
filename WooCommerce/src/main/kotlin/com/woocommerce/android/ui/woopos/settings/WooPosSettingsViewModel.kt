@@ -14,10 +14,10 @@ class WooPosSettingsViewModel @Inject constructor() : ViewModel() {
     private val _navigationState = MutableStateFlow(WooPosSettingsState())
     val navigationState: StateFlow<WooPosSettingsState> = _navigationState.asStateFlow()
 
-    fun onCategorySelected(category: SettingsCategory) {
+    fun onCategorySelected(category: WooPosSettingsCategory) {
         _navigationState.update { currentState ->
             val newDetailDestination = when (category) {
-                SettingsCategory.HARDWARE -> SettingsDetailDestination.HardwareOverview
+                WooPosSettingsCategory.HARDWARE -> WooPosSettingsDetailDestination.HardwareOverview
             }
             currentState.copy(
                 selectedCategory = category,
@@ -26,7 +26,7 @@ class WooPosSettingsViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun navigateToDetail(destination: SettingsDetailDestination) {
+    fun navigateToDetail(destination: WooPosSettingsDetailDestination) {
         _navigationState.update { currentState ->
             currentState.copy(
                 detailBackStack = currentState.detailBackStack + destination

@@ -21,15 +21,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.settings.SettingsDetailDestination
+import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 
 @Composable
 fun WooPosHardwareSettingsScreen(
-    onNavigate: (SettingsDetailDestination) -> Unit,
+    onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     viewModel: WooPosHardwareSettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,15 +40,17 @@ fun WooPosHardwareSettingsScreen(
             style = WooPosTypography.Heading,
             modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
         )
-        
+
         state.items.forEach { item ->
             HardwareSettingsMenuItem(
                 item = item,
                 onClick = {
-                    viewModel.onItemClicked(item.id)
-                    when (item.id) {
-                        "barcode_scanners" -> onNavigate(SettingsDetailDestination.BarcodeScanners)
-                        "card_readers" -> onNavigate(SettingsDetailDestination.CardReaders)
+                    when (item.titleRes) {
+                        R.string.woopos_settings_hardware_barcode_scanners ->
+                            onNavigate(WooPosSettingsDetailDestination.BarcodeScanners)
+
+                        R.string.woopos_settings_hardware_card_readers ->
+                            onNavigate(WooPosSettingsDetailDestination.CardReaders)
                     }
                 }
             )

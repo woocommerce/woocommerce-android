@@ -24,24 +24,24 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
-import com.woocommerce.android.ui.woopos.settings.SettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
 
 @Composable
 fun WooPosSettingsDetailPane(
     state: WooPosSettingsState,
-    onNavigate: (SettingsDetailDestination) -> Unit,
+    onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentDestination = state.detailBackStack.lastOrNull()
     val canGoBack = state.detailBackStack.size > 1
-    
+
     BackHandler(enabled = canGoBack) {
         onBack()
     }
-    
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -50,19 +50,19 @@ fun WooPosSettingsDetailPane(
         if (canGoBack) {
             DetailPaneToolbar(onBack = onBack)
         }
-        
+
         AnimatedContent(
             targetState = currentDestination,
             label = "settings_detail_animation"
         ) { destination ->
             when (destination) {
-                is SettingsDetailDestination.HardwareOverview -> {
+                is WooPosSettingsDetailDestination.HardwareOverview -> {
                     WooPosHardwareSettingsScreen(onNavigate = onNavigate)
                 }
-                is SettingsDetailDestination.BarcodeScanners -> {
+                is WooPosSettingsDetailDestination.BarcodeScanners -> {
                     BarcodeScannerDetailScreen()
                 }
-                is SettingsDetailDestination.CardReaders -> {
+                is WooPosSettingsDetailDestination.CardReaders -> {
                     CardReadersDetailScreen()
                 }
                 null -> {

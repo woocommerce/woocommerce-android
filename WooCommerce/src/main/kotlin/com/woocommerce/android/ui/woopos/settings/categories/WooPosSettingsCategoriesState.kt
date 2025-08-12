@@ -1,19 +1,7 @@
 package com.woocommerce.android.ui.woopos.settings.categories
 
-import androidx.annotation.StringRes
-import com.woocommerce.android.ui.woopos.settings.SettingsCategory
-
-data class SettingsCategoryItem(
-    val category: SettingsCategory,
-    @StringRes val titleRes: Int,
-    val isEnabled: Boolean = true
-)
+import com.woocommerce.android.ui.woopos.settings.WooPosSettingsCategory
 
 data class WooPosSettingsCategoriesState(
-    val categories: List<SettingsCategoryItem> = listOf(
-        SettingsCategoryItem(
-            category = SettingsCategory.HARDWARE,
-            titleRes = SettingsCategory.HARDWARE.titleRes
-        )
-    )
+    val categories: List<WooPosSettingsCategory> = WooPosSettingsCategory.entries
 )

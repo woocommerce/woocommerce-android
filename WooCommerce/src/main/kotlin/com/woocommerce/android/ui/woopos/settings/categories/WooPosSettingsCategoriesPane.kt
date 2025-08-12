@@ -16,17 +16,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.settings.SettingsCategory
+import com.woocommerce.android.ui.woopos.settings.WooPosSettingsCategory
 
 @Composable
 fun WooPosSettingsCategoriesPane(
-    selectedCategory: SettingsCategory,
-    onCategorySelected: (SettingsCategory) -> Unit,
+    selectedCategory: WooPosSettingsCategory,
+    onCategorySelected: (WooPosSettingsCategory) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WooPosSettingsCategoriesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -36,11 +36,9 @@ fun WooPosSettingsCategoriesPane(
         state.categories.forEach { item ->
             CategoryItem(
                 item = item,
-                isSelected = item.category == selectedCategory,
-                onClick = { 
-                    if (item.isEnabled) {
-                        onCategorySelected(item.category)
-                    }
+                isSelected = item == selectedCategory,
+                onClick = {
+                    onCategorySelected(item)
                 }
             )
         }
@@ -49,7 +47,7 @@ fun WooPosSettingsCategoriesPane(
 
 @Composable
 private fun CategoryItem(
-    item: SettingsCategoryItem,
+    item: WooPosSettingsCategory,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -58,13 +56,12 @@ private fun CategoryItem(
     } else {
         MaterialTheme.colorScheme.surface
     }
-    
+
     val textColor = when {
-        !item.isEnabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
         isSelected -> MaterialTheme.colorScheme.onPrimaryContainer
         else -> MaterialTheme.colorScheme.onSurface
     }
-    
+
     WooPosText(
         text = stringResource(item.titleRes),
         style = WooPosTypography.BodyLarge,
@@ -72,7 +69,7 @@ private fun CategoryItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(backgroundColor)
-            .clickable(enabled = item.isEnabled) { onClick() }
+            .clickable { onClick() }
             .padding(WooPosSpacing.Medium.value)
     )
 }

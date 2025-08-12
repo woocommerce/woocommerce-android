@@ -11,9 +11,4 @@ import javax.inject.Inject
 class WooPosHardwareSettingsViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(WooPosHardwareSettingsState())
     val state: StateFlow<WooPosHardwareSettingsState> = _state.asStateFlow()
-
-    fun onItemClicked(itemId: String) {
-        // Handle item clicks - in real implementation this would trigger navigation
-        // For now, navigation is handled by the container
-    }
 }

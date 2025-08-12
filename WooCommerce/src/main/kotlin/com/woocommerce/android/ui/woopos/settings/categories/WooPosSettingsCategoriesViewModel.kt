@@ -9,16 +9,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosSettingsCategoriesViewModel @Inject constructor() : ViewModel() {
-    
     private val _state = MutableStateFlow(WooPosSettingsCategoriesState())
     val state: StateFlow<WooPosSettingsCategoriesState> = _state.asStateFlow()
-    
-    init {
-        loadCategories()
-    }
-    
-    private fun loadCategories() {
-        // In the future, this could load categories based on feature flags,
-        // user permissions, or other business logic
-    }
 }
