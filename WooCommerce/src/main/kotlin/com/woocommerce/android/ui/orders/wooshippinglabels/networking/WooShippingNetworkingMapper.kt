@@ -130,7 +130,10 @@ class WooShippingNetworkingMapper @Inject constructor(
             expiryDate = shippingLabelDTO.expiryDate ?: 0,
             usedDate = shippingLabelDTO.usedDate,
             refund = shippingLabelDTO.refund?.let { refund ->
-                WooShippingLabelEntity.Refund(status = refund.status, requestDate = refund.requestDate?.let { Date(it) })
+                WooShippingLabelEntity.Refund(
+                    status = refund.status,
+                    requestDate = refund.requestDate?.let { Date(it) }
+                )
             },
             originAddress = null,
             destinationAddress = null,
@@ -180,6 +183,51 @@ class WooShippingNetworkingMapper @Inject constructor(
                 destinationAddress = destinationAddress
             )
         }.orEmpty()
+    }
+
+    operator fun invoke(
+        purchasedShippingLabelResponseDTO: PurchasedShippingLabelResponseDTO,
+        site: SiteModel,
+        orderId: Long
+    ): List<WooShippingLabelEntity> {
+        fun key(shipmentId: String) = "shipment_$shipmentId"
+
+        return purchasedShippingLabelResponseDTO.labels.map { shippingLabelDTO ->
+            val shipmentKey = shippingLabelDTO.shipmentId?.let { key(it) }
+            val originAddress = purchasedShippingLabelResponseDTO.selectedOrigin[shipmentKey]?.let {
+                WooShippingLabelEntity.Address(
+                    company = it.company,
+                    name = it.name,
+                    phone = it.phone,
+                    countryCode = it.country,
+                    state = it.state,
+                    address1 = it.address,
+                    address2 = it.address2,
+                    city = it.city,
+                    postcode = it.postcode,
+                    email = ""
+                )
+            }
+            val destinationAddress = purchasedShippingLabelResponseDTO.selectedDestination[shipmentKey]?.let {
+                WooShippingLabelEntity.Address(
+                    company = it.company,
+                    name = it.name,
+                    phone = it.phone,
+                    countryCode = it.country,
+                    state = it.state,
+                    address1 = it.address,
+                    address2 = it.address2,
+                    city = it.city,
+                    postcode = it.postcode,
+                    email = "" // We set the email later from the order details
+                )
+            }
+
+            invoke(shippingLabelDTO, site, orderId).copy(
+                originAddress = originAddress,
+                destinationAddress = destinationAddress
+            )
+        }
     }
 
     operator fun invoke(originAddressDTO: OriginAddressDTO): Address {

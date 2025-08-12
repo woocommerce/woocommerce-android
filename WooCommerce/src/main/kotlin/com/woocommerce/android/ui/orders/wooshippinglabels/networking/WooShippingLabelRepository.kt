@@ -163,7 +163,13 @@ class WooShippingLabelRepository @Inject constructor(
             customs = customsData?.let { mapper.toCustomsDTO(it) },
             hazmat = mapper.toHazmatDTO(hazmatSelection),
             lastOrderCompleted = lastOrderCompleted
-        ).asWooResult { mapper(it) }
+        ).also {
+            it.result?.let { purchaseResultDTO ->
+                wooShippingDao.insertLabels(
+                    mapper.invoke(purchaseResultDTO, site, orderId)
+                )
+            }
+        }.asWooResult { mapper(it) }
     }
 
     suspend fun fetchOriginAddresses(
