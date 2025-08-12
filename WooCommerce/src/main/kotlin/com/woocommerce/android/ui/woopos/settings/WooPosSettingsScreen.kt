@@ -20,14 +20,13 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPane
-import com.woocommerce.android.ui.woopos.settings.container.WooPosSettingsContainerViewModel
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPane
 
 @Composable
 fun WooPosSettingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
-    val containerViewModel: WooPosSettingsContainerViewModel = hiltViewModel()
+    val containerViewModel: WooPosSettingsViewModel = hiltViewModel()
     val navigationState by containerViewModel.navigationState.collectAsState()
 
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
