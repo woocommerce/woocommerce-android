@@ -14,7 +14,6 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.channels.awaitClose
@@ -35,7 +34,7 @@ class ZendeskTicketRepository @Inject constructor(
     private val envDataSource: ZendeskEnvironmentDataSource,
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers,
-    private val wooLogWrapper: WooLogWrapper,
+    private val wooLog: WooLog,
     private val ssrFetcher: WCSSRModelCachingFetcher
 ) {
     /**
@@ -103,12 +102,12 @@ class ZendeskTicketRepository @Inject constructor(
     }.flowOn(dispatchers.io)
 
     private suspend fun fetchSSR(selectedSite: SiteModel): String? {
-        wooLogWrapper.i(WooLog.T.SUPPORT, "Fetching SSR")
+        wooLog.i(WooLog.T.SUPPORT, "Fetching SSR")
         val result = ssrFetcher.load(selectedSite)
         if (result.isError) {
-            wooLogWrapper.e(WooLog.T.SUPPORT, "Error fetching SSR")
+            wooLog.e(WooLog.T.SUPPORT, "Error fetching SSR")
         } else {
-            wooLogWrapper.i(WooLog.T.SUPPORT, "SSR fetched successfully")
+            wooLog.i(WooLog.T.SUPPORT, "SSR fetched successfully")
         }
         return result.model?.formatResult()
     }
@@ -117,12 +116,12 @@ class ZendeskTicketRepository @Inject constructor(
      * This is a helper function which builds a list of `CustomField`s which will be used during ticket creation. They
      * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
      */
-    private fun buildZendeskCustomFields(params: ZendeskCustomFieldsParams): List<CustomField> {
+    private suspend fun buildZendeskCustomFields(params: ZendeskCustomFieldsParams): List<CustomField> {
         return listOf(
             CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(params.context)),
             CustomField(TicketCustomField.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
             CustomField(TicketCustomField.networkInformation, envDataSource.generateNetworkInformation(params.context)),
-            CustomField(TicketCustomField.logs, envDataSource.deviceLogs),
+            CustomField(TicketCustomField.logs, envDataSource.getDeviceLogs()),
             CustomField(TicketCustomField.ssr, params.ssr),
             CustomField(TicketCustomField.currentSite, envDataSource.generateHostData(params.selectedSite)),
             CustomField(TicketCustomField.sourcePlatform, ZendeskEnvironmentDataSource.sourcePlatform),

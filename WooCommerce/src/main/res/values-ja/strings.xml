@@ -1,11 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-15 11:54:04+0000
+Translation-Revision-Date: 2025-07-29 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_order_completion_error">注文を完了としてマークできませんでした</string>
+    <string name="woo_shipping_address_use_as_entered">入力した住所を使用</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_invalid">重量はゼロよりも大きくする必要があります</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_invalid">6～12桁の HS コードが必要です</string>
+    <string name="woo_shipping_labels_customs_itn_required_destination_country">宛先の国への配送には国際取引番号が必要です。</string>
+    <string name="woo_shipping_labels_customs_itn_required_hs_tariff_value">出荷アイテムの価値が HS コードあたり $2,500を超える荷物の出荷には国際取引番号が必要です。\nHS コード%1$sの商品の合計額が $2,500を超えています。</string>
+    <string name="woopos_scanning_setup_device_other">その他</string>
+    <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
+    <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
+    <string name="woopos_scanning_setup_device_tera_1200">Tera 1200</string>
+    <string name="woopos_scanning_setup_button_done">完了</string>
+    <string name="woopos_scanning_setup_button_retry">再試行</string>
+    <string name="woopos_scanning_setup_button_back">戻る</string>
+    <string name="woopos_scanning_setup_button_next">次</string>
+    <string name="woopos_scanning_setup_scan_failed_message">スキャナーのマニュアルを確認し、工場出荷時の設定にリセットしてから、設定フローを再試行してください。</string>
+    <string name="woopos_scanning_setup_scan_failed_title">スキャンの問題が見つかりました</string>
+    <string name="woopos_scanning_setup_timeout_message">バーコードをスキャンしてスキャナーをテストします。 問題が解決しない場合は、Bluetooth 設定を確認してもう一度お試しください。</string>
+    <string name="woopos_scanning_setup_timeout_title">スキャンデータが見つかりません</string>
+    <string name="woopos_scanning_setup_test_scanner_message">このテストバーコードをスキャンして、スキャナーが正常に動作していることを確認します。</string>
+    <string name="woopos_scanning_setup_test_scanner_title">スキャナーをテスト</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_image_description">バーコード設定の在庫例</string>
+    <string name="woopos_scanning_setup_visit_documentation">ドキュメントに移動</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_message">商品の在庫タブの「GTIN、UPC、EAN、ISBN」フィールドでバーコードを設定できます。 詳細情報</string>
+    <string name="woopos_scanning_setup_barcodes_on_products_title">商品にバーコードを設定する方法</string>
+    <string name="woopos_scanning_setup_info_text">バーコードスキャナーがキーボードを隠す場合があります。 「物理キーボード」の OS 設定でキーボードアイコンをタップまたは有効化</string>
+    <string name="woopos_scanning_setup_info_bullet_3">バーコードのスキャン中に検索フィールドが有効になっていないことを確認します。</string>
+    <string name="woopos_scanning_setup_info_bullet_2">アイテムリストでバーコードをスキャンして、商品をお買い物カゴに追加します。</string>
+    <string name="woopos_scanning_setup_info_bullet_1">システム Bluetooth 設定で Bluetooth バーコードスキャナーを参照します。</string>
+    <string name="woopos_scanning_setup_info_title">スキャナーの設定</string>
+    <string name="woopos_scanning_setup_more_information">商品にバーコードを設定する方法</string>
+    <string name="woopos_scanning_setup_success_message">商品のスキャンを開始する準備ができました。\nバーコードと QR コードスキャナーのサポートについての詳細は、こちらをお読みください。</string>
+    <string name="woopos_scanning_setup_success_title">スキャナーが設定されました !</string>
+    <string name="woopos_scanning_setup_go_to_settings">端末設定に移動</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_message">Bluetooth を有効にして、OS 設定で %s スキャナーを選択します。\nスキャナーがペアリングされると、ビープ音が鳴り、LED が点灯状態になります。</string>
+    <string name="woopos_scanning_setup_pair_your_scanner_title">スキャナーをペアリング</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_message">バーコードスキャナーを使用して下のコードをスキャンし、ペアリングモードに入ります。</string>
+    <string name="woopos_scanning_setup_scanner_pair_mode_title">スキャナーの設定</string>
+    <string name="woopos_scanning_setup_hid_message">バーコードスキャナーを使用して下のコードをスキャンし、Bluetooth HID モードを有効化します。</string>
+    <string name="woopos_scanning_setup_hid_title">スキャナーの設定</string>
+    <string name="woopos_scanning_setup_device_selection_message">リストからモデルを選択します:</string>
+    <string name="woopos_scanning_setup_device_selection_title">バーコードスキャナーを設定</string>
+    <string name="woopos_scanning_setup_barcode_content_description">バーコード</string>
+    <string name="woopos_scanning_setup_dialog_content_description">スキャナー設定ダイアログ</string>
+    <string name="woopos_eligibility_screen_UK_country_name">イギリス</string>
+    <string name="woopos_eligibility_screen_US_country_name">米国</string>
+    <string name="woopos_eligibility_screen_unable_to_load">読み込めません</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS システムはストアの通貨では利用できません。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS システムはストアの通貨では利用できません。 %1$s では、現在、 %2$s のみをサポートしています。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">続行するには POS を有効にする必要があります。 「WooCommerce 設定」&gt;「高度な設定」&gt;「機能」の WordPress 管理画面から POS 機能を有効にしてください。</string>
+    <string name="woopos_eligibility_reason_check_connection">インターネット接続を確認してアプリを再起動してください。問題が解消されない場合はサポートにご連絡ください。</string>
+    <string name="woopos_eligibility_reason_unsupported_woocommerce_version">お使いの WooCommerce バージョンはサポートされていません。 POS システムには WooCommerce バージョン %1$s以上が必要です。 最新バージョンの WooCommerce に更新してください。</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">WordPress 管理画面から WooCommerce プラグインをインストールおよび有効化してください。 問題が解決しない場合は、サポートにご連絡ください。</string>
+    <string name="woopos_barcode_scanning_title">バーコードスキャナーを設定</string>
+    <string name="orderfilters_sales_channel_filter_point_of_sale">販売時点管理</string>
+    <string name="orderfilters_sales_channel_filter">販売経路</string>
+    <string name="barcode_ean13_content_description">バーコード EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">追加の処理</string>
     <string name="woo_shipping_rate_option_saturday_delivery">土曜日の配達</string>
     <string name="woo_shipping_rate_option_carbon_neutral">カーボンニュートラル</string>
@@ -17,7 +73,6 @@ Language: ja_JP
     <string name="woo_shipping_labels_package_removing_error">荷物を削除できません</string>
     <string name="woopos_eligibility_retry_check_label">再試行</string>
     <string name="woopos_eligibility_exit_pos_label">POS を終了</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Bluetooth バーコードスキャナーの手順を参照して HID モードを設定します。 これは通常、マニュアルの特別なバーコードをスキャンする必要があります。</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">スキャナーから改行コードが送信されませんでした</string>
     <string name="woopos_cart_barcode_scan_result_too_short">スキャンしたバーコードが短すぎます</string>
     <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (基本料金)</string>
@@ -59,17 +114,7 @@ Language: ja_JP
     <string name="woopos_cart_adding_item_to_cart_failed">お買い物カゴへのアイテムの追加に失敗しました: %s。</string>
     <string name="woopos_cart_coupon_added_to_cart_accessibility">クーポン %1$s がお買い物カゴに追加されました</string>
     <string name="woopos_cart_product_added_to_cart_accessibility">商品 %1$s がお買い物カゴに追加されました (価格%2$s)</string>
-    <string name="woopos_barcode_scanning_title">バーコードスキャン</string>
-    <string name="woopos_dialog_barcode_info_background_content_description">背景を暗くしました。 タップしてダイアログを閉じます。</string>
-    <string name="woopos_dialog_barcode_info_content_description">バーコードスキャン情報ダイアログ</string>
-    <string name="woopos_dialog_barcode_info_button_label">OK</string>
-    <string name="woopos_dialog_barcode_info_quinary_message">スキャナーはキーボードをエミュレートするため、ソフトウェアのキーボードが表示されない場合があります (検索内など)。 キーボードのアイコンをタップすると、ソフトウェアのキーボードが再び表示されます。</string>
-    <string name="woopos_dialog_barcode_info_quaternary_message">• アイテムリストでバーコードをスキャンすると、商品がお買い物カゴに追加されます。</string>
-    <string name="woopos_dialog_barcode_info_tertiary_message">• システム Bluetooth 設定でバーコードスキャナーを接続します。</string>
-    <string name="woopos_dialog_barcode_info_more_details_link">詳細情報</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• 「商品」&gt;「商品情報」&gt;「在庫」の「GTIN、UPC、EAN、ISBN」フィールドでバーコードを設定します。 </string>
-    <string name="woopos_dialog_barcode_info_intro_message">外部スキャナーを使用してバーコードをスキャンし、お買い物カゴをすばやく作成できます。</string>
-    <string name="woopos_dialog_barcode_info_heading">バーコードスキャン</string>
+    <string name="woopos_scanning_setup_info_message">外部スキャナーを使用してバーコードをスキャンし、お買い物カゴをすばやく作成できます。</string>
     <string name="woopos_cart_barcode_scan_result_network_error">インターネットに接続していません</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">サポートされていないアイテム  – %s</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">不明なスキャン済みアイテム</string>
@@ -163,7 +208,7 @@ Language: ja_JP
     <string name="woo_shipping_address_notification_destination_missing">配送先住所がありません</string>
     <string name="woo_shipping_address_notification_origin_unverified">配送元住所が確認されていません</string>
     <string name="woo_shipping_address_notification_destination_unverified">配送先住所が確認されていません</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">$2,500を超える荷物の出荷には、米国の輸出申告確認用に14桁の AES ITN が必要です。</string>
+    <string name="woo_shipping_labels_customs_itn_required_total_value">$2,500を超える荷物の出荷には、米国の輸出申告確認用に14桁の AES ITN が必要です。</string>
     <string name="woo_shipping_labels_customs_itn_required_error">ITN は必須項目です</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">利用可能な配送料金を表示するには、配送重量を入力する必要があります。</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">配送重量を追加して配送料金を取得</string>
@@ -195,7 +240,6 @@ Language: ja_JP
     <string name="woo_shipping_labels_customs_product_details_value_required">必須の値</string>
     <string name="woo_shipping_labels_customs_product_details_weight_per_unit">重量 / 個</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">価値 / 個</string>
-    <string name="woo_shipping_labels_customs_product_details_tariff_missing">コード番号なし</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS コード番号</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">説明なし</string>
     <string name="woo_shipping_labels_customs_product_details_description">説明</string>

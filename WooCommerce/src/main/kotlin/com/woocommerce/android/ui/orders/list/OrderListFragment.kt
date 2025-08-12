@@ -551,7 +551,8 @@ class OrderListFragment :
             if (requireContext().isTwoPanesShouldBeUsed) {
                 when {
                     communicationViewModel.event.value is
-                    OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded -> {
+                        OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded &&
+                        viewModel.orderId.value == -1L -> {
                         // Prevents unintended navigation issues when opening an order list/detail in tablets.
                         // When navigating from order creation to order details via the "Collect Payment" option,
                         // the app correctly opens the Select Payment fragment inside the order details flow.
@@ -569,8 +570,10 @@ class OrderListFragment :
                     // the user. If a user enables filtering, selects an order, and then pulls to refresh, we should
                     // retain the selected order instead of automatically selecting the first order.
                     viewModel.viewState.isFilteringActive &&
-                        selectedOrder.selectedOrderId.value == null ||
-                        selectedOrder.selectedOrderId.value == -1L -> {
+                        (
+                            selectedOrder.selectedOrderId.value == null ||
+                                selectedOrder.selectedOrderId.value == -1L
+                            ) -> {
                         handler.postDelayed({
                             openFirstOrder(it)
                         }, HANDLER_DELAY)

@@ -13,7 +13,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,7 +52,7 @@ class NotificationMessageHandlerTest {
     }
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
-    private val wooLogWrapper: WooLogWrapper = mock()
+    private val wooLog: WooLog = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock ->
@@ -91,7 +90,7 @@ class NotificationMessageHandlerTest {
     fun setUp() {
         notificationMessageHandler = NotificationMessageHandler(
             accountStore = accountStore,
-            wooLogWrapper = wooLogWrapper,
+            wooLog = wooLog,
             dispatcher = dispatcher,
             resourceProvider = resourceProvider,
             notificationBuilder = notificationBuilder,
@@ -112,7 +111,7 @@ class NotificationMessageHandlerTest {
 
         notificationMessageHandler.onNewMessageReceived(emptyMap())
         verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(wooLogWrapper, only()).e(eq(WooLog.T.NOTIFS), eq("User is not logged in!"))
+        verify(wooLog, only()).e(eq(WooLog.T.NOTIFS), eq("User is not logged in!"))
     }
 
     @Test
@@ -129,7 +128,7 @@ class NotificationMessageHandlerTest {
     fun `when the notification payload data is empty, then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(emptyMap())
         verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(wooLogWrapper, only()).e(
+        verify(wooLog, only()).e(
             eq(WooLog.T.NOTIFS),
             eq("Push notification received without a valid Bundle!")
         )
@@ -139,7 +138,7 @@ class NotificationMessageHandlerTest {
     fun `when the user id does not match, then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"))
         verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(wooLogWrapper, only()).e(
+        verify(wooLog, only()).e(
             eq(WooLog.T.NOTIFS),
             eq("WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
         )
@@ -154,7 +153,7 @@ class NotificationMessageHandlerTest {
             )
         )
 
-        verify(wooLogWrapper, only()).e(eq(WooLog.T.NOTIFS), eq("Notification data is empty!"))
+        verify(wooLog, only()).e(eq(WooLog.T.NOTIFS), eq("Notification data is empty!"))
     }
 
     @Test

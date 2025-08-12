@@ -39,7 +39,7 @@ class ProductImageRemoveBackgroundFragment : BaseFragment() {
                         onBackPressed = { viewModel.onBackPressed() },
                         onBackDialogDismissed = { viewModel.onBackDialogDismissed() },
                         onBackDialogConfirmed = { viewModel.onBackDialogConfirmed() },
-                        onCancelClicked = { findNavController().navigateUp() },
+                        onCancelClicked = { viewModel.onCancelClicked() },
                         onSaveClicked = { handleSaveClicked() }
                     )
                 }

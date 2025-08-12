@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material.icons.filled.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls.WOO_POS_DOCUMENTATION_URL
@@ -15,6 +16,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.MenuItemClicked
@@ -46,6 +48,7 @@ class WooPosToolbarViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val wooPosPosSettingsEnabled: WooPosPosSettingsEnabled,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosToolbarState(
@@ -96,6 +99,11 @@ class WooPosToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
+            R.string.woopos_settings_title -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.SettingsMenuItemClicked)
+                }
+            }
             R.string.woopos_barcode_scanning_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.BarcodeInfoMenuItemClicked)
@@ -161,28 +169,41 @@ class WooPosToolbarViewModel @Inject constructor(
         }
     }
 
-    private companion object {
-        val toolbarMenuItems = listOf(
-            WooPosToolbarState.Menu.MenuItem(
-                title = R.string.woopos_barcode_scanning_title,
-                icon = Icons.Default.DocumentScanner,
-            ),
-            WooPosToolbarState.Menu.MenuItem(
-                title = R.string.woopos_product_limitations_title,
-                icon = Icons.Default.SearchOff,
-            ),
-            WooPosToolbarState.Menu.MenuItem(
-                title = R.string.woopos_documentation_title,
-                icon = Icons.Default.Description,
-            ),
-            WooPosToolbarState.Menu.MenuItem(
-                title = R.string.woopos_get_support_title,
-                icon = Icons.AutoMirrored.Filled.Help,
-            ),
-            WooPosToolbarState.Menu.MenuItem(
-                title = R.string.woopos_exit_confirmation_title,
-                icon = Icons.AutoMirrored.Filled.ExitToApp,
-            ),
-        )
+    private val toolbarMenuItems by lazy {
+        buildList {
+            if (wooPosPosSettingsEnabled()) {
+                add(
+                    WooPosToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_settings_title,
+                        icon = Icons.Default.Settings,
+                    )
+                )
+            }
+
+            addAll(
+                listOf(
+                    WooPosToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_barcode_scanning_title,
+                        icon = Icons.Default.DocumentScanner,
+                    ),
+                    WooPosToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_product_limitations_title,
+                        icon = Icons.Default.SearchOff,
+                    ),
+                    WooPosToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_documentation_title,
+                        icon = Icons.Default.Description,
+                    ),
+                    WooPosToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_get_support_title,
+                        icon = Icons.AutoMirrored.Filled.Help,
+                    ),
+                    WooPosToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_exit_confirmation_title,
+                        icon = Icons.AutoMirrored.Filled.ExitToApp,
+                    ),
+                )
+            )
+        }
     }
 }

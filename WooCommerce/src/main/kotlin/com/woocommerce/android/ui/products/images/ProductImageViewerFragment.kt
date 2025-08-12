@@ -15,7 +15,7 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.ConfirmRemoveProductImageDialog
 import com.woocommerce.android.ui.products.ImageViewerFragment
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
@@ -38,6 +37,9 @@ class ProductImageViewerFragment :
     MainActivity.Companion.BackPressListener {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
 
     companion object {
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
@@ -90,19 +92,18 @@ class ProductImageViewerFragment :
         }
         toolbar.inflateMenu(R.menu.menu_product_image)
         toolbar.menu.findItem(R.id.menu_delete_image).isVisible = navArgs.isDeletingAllowed
-        toolbar.menu.findItem(R.id.menu_remove_background).isVisible =
-            FeatureFlag.AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL.isEnabled(context)
     }
 
     private fun onMenuItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             R.id.menu_remove_background -> {
+                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_BUTTON_TAPPED)
                 navigateToRemoveBackground()
                 true
             }
 
             R.id.menu_delete_image -> {
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
+                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
                 confirmRemoveProductImage()
                 true
             }

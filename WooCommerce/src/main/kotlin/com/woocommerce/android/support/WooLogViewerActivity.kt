@@ -2,36 +2,42 @@ package com.woocommerce.android.support
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 
-class WooLogViewerActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class WooLogViewerActivity : ComponentActivity() {
+    private val viewModel: WooLogViewerViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            WooThemeWithBackground {
-                WooLogViewerScreen(
-                    WooLog.logEntries,
-                    onBackPress = onBackPressedDispatcher::onBackPressed,
-                    onCopyButtonClick = ::copyAppLogToClipboard,
-                    onShareButtonClick = ::shareAppLog
-                )
+            WooTheme {
+                WooLogViewerScreen(viewModel)
+            }
+        }
+
+        viewModel.event.observe(this) { event ->
+            when (event) {
+                is WooLogViewerViewModel.ShareLogs -> shareAppLog(event.logs)
+                is WooLogViewerViewModel.CopyLogs -> copyAppLogToClipboard(event.logs)
             }
         }
     }
 
-    private fun shareAppLog() {
-        WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
+    private fun shareAppLog(logs: String) {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_TEXT, WooLog.toString())
+        intent.putExtra(Intent.EXTRA_TEXT, logs)
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " " + title)
         try {
             startActivity(Intent.createChooser(intent, getString(R.string.share)))
@@ -40,10 +46,9 @@ class WooLogViewerActivity : AppCompatActivity() {
         }
     }
 
-    private fun copyAppLogToClipboard() {
+    private fun copyAppLogToClipboard(logs: String) {
         try {
-            WooLog.addDeviceInfoEntry(T.DEVICE, WooLog.LogLevel.w)
-            copyToClipboard("AppLog", WooLog.toString())
+            copyToClipboard("AppLog", logs)
             ToastUtils.showToast(this, R.string.logviewer_copied_to_clipboard)
         } catch (e: Exception) {
             WooLog.e(T.UTILS, e)
