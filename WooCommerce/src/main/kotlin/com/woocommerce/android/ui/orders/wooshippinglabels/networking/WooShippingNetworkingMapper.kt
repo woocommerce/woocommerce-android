@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodM
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -22,7 +23,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooS
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
 import com.woocommerce.android.util.StringUtils.combineStrings
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -230,22 +230,53 @@ class WooShippingNetworkingMapper @Inject constructor(
         }
     }
 
-    operator fun invoke(originAddressDTO: OriginAddressDTO): Address {
-        val (firstName, lastName) = parseFullName(originAddressDTO.name)
+    operator fun invoke(labelEntity: WooShippingLabelEntity): ShippingLabelModel {
+        return ShippingLabelModel(
+            labelId = labelEntity.labelId,
+            tracking = labelEntity.tracking,
+            refundableAmount = labelEntity.refundableAmount,
+            status = ShippingLabelStatus.valueOf(labelEntity.status),
+            created = labelEntity.created,
+            carrierId = labelEntity.carrierId,
+            serviceName = labelEntity.serviceName,
+            commercialInvoiceUrl = labelEntity.commercialInvoiceUrl,
+            isCommercialInvoiceSubmittedElectronically = labelEntity.isCommercialInvoiceSubmittedElectronically,
+            packageName = labelEntity.packageName,
+            isLetter = labelEntity.isLetter,
+            productNames = labelEntity.productNames,
+            productIds = labelEntity.productIds,
+            shipmentId = labelEntity.shipmentId,
+            receiptItemId = labelEntity.receiptItemId,
+            createdDate = labelEntity.createdDate,
+            mainReceiptId = labelEntity.mainReceiptId,
+            rate = labelEntity.rate,
+            currency = labelEntity.currency,
+            expiryDate = labelEntity.expiryDate,
+            usedDate = labelEntity.usedDate,
+            refund = labelEntity.refund?.let { refund ->
+                ShippingLabelModel.Refund(status = refund.status, requestDate = refund.requestDate)
+            },
+            originAddress = labelEntity.originAddress?.let { invoke(it) },
+            destinationAddress = labelEntity.destinationAddress?.let { invoke(it) }
+        )
+    }
+
+    operator fun invoke(entityAddress: WooShippingLabelEntity.Address): Address {
+        val (firstName, lastName) = parseFullName(entityAddress.name)
         return Address(
-            company = originAddressDTO.company.orEmpty(),
+            company = entityAddress.company.orEmpty(),
             firstName = firstName,
             lastName = lastName,
-            phone = originAddressDTO.phone.orEmpty(),
+            phone = entityAddress.phone.orEmpty(),
             country = Location(
-                name = originAddressDTO.country.orEmpty(),
-                code = originAddressDTO.country.orEmpty()
+                name = entityAddress.countryCode.orEmpty(),
+                code = entityAddress.countryCode.orEmpty()
             ),
-            state = AmbiguousLocation.Raw(originAddressDTO.state.orEmpty()),
-            address1 = originAddressDTO.address.orEmpty(),
-            address2 = originAddressDTO.address2.orEmpty(),
-            city = originAddressDTO.city.orEmpty(),
-            postcode = originAddressDTO.postcode.orEmpty(),
+            state = AmbiguousLocation.Raw(entityAddress.state.orEmpty()),
+            address1 = entityAddress.address1.orEmpty(),
+            address2 = entityAddress.address2.orEmpty(),
+            city = entityAddress.city.orEmpty(),
+            postcode = entityAddress.postcode.orEmpty(),
             email = ""
         )
     }

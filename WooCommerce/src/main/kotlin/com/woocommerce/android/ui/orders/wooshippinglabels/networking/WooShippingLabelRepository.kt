@@ -106,6 +106,13 @@ class WooShippingLabelRepository @Inject constructor(
         return mapper(wooShippingDao.getShipments(selectedSite.get().localId(), LocalOrRemoteId.RemoteId(orderId)))
     }
 
+    suspend fun getLabels(
+        orderId: Long
+    ) = wooShippingDao.getLabels(
+        selectedSite.get().localId(),
+        LocalOrRemoteId.RemoteId(orderId)
+    ).map { mapper(it) }
+
     suspend fun fetchPurchasedShippingLabels(
         site: SiteModel,
         orderId: Long,
