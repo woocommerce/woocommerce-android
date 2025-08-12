@@ -31,6 +31,7 @@ class ObserveShippingLabelStatus @Inject constructor(
                     orderId = orderId,
                     labelId = labelId
                 ).takeIf { it.isError.not() }?.model
+                
                 val newsStatus = response?.status ?: UNKNOWN
                 if (latestStatus != newsStatus) {
                     updateConfig(orderId, response)

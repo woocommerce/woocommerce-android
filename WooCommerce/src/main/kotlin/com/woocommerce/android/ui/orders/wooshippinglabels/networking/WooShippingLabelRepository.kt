@@ -120,7 +120,13 @@ class WooShippingLabelRepository @Inject constructor(
         site = site,
         orderId = orderId,
         labelId = labelId,
-    ).asWooResult { response -> response.shippingLabel?.let { mapper(it) } }
+    ).also {
+        it.result?.shippingLabel?.let { labelDTO ->
+            wooShippingDao.upsertLabel(mapper(labelDTO, site, orderId))
+        }
+    }.asWooResult { response ->
+        response.shippingLabel?.let { mapper(it) }
+    }
 
     @Suppress("LongParameterList")
     suspend fun purchaseShippingLabel(

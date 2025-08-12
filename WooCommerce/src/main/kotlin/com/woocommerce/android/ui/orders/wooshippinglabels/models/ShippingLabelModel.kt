@@ -93,7 +93,13 @@ enum class ShippingLabelStatus {
     PURCHASE_ERROR,
 
     @SerializedName("ANONYMIZED")
-    ANONYMIZED
+    ANONYMIZED;
+
+    companion object {
+        fun fromString(value: String): ShippingLabelStatus {
+            return entries.first { it.name == value }
+        }
+    }
 }
 
 /**
