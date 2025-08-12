@@ -330,6 +330,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
     }
+    testImplementation(libs.androidx.lifecycle.runtime.testing)
 
     // Dependencies for Espresso UI tests
     androidTestImplementation(libs.androidx.test.ext.junit)

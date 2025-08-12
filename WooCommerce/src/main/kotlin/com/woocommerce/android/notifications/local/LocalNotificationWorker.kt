@@ -19,8 +19,8 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Co
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TITLE
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.WooLogWrapper
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -31,7 +31,7 @@ class LocalNotificationWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val wooNotificationBuilder: WooNotificationBuilder,
     private val appsPrefsWrapper: AppPrefsWrapper,
-    private val wooLogWrapper: WooLogWrapper
+    private val wooLog: WooLog
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -59,7 +59,7 @@ class LocalNotificationWorker @AssistedInject constructor(
                 )
             )
         } else {
-            wooLogWrapper.e(T.NOTIFICATIONS, "Scheduled local notification data is invalid")
+            wooLog.e(T.NOTIFICATIONS, "Scheduled local notification data is invalid")
         }
         return Result.success()
     }
