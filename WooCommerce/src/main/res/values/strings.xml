@@ -4339,6 +4339,14 @@
 
 
     <string name="woopos_settings_title">Settings</string>
+    <string name="woopos_settings_hardware_category">Hardware</string>
+    <string name="woopos_settings_hardware_barcode_scanners">Barcode scanners</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
+    <string name="woopos_settings_hardware_card_readers">Card Readers</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">Barcode Scanner Settings</string>
+    <string name="woopos_settings_card_reader_detail_title">Card Reader Settings</string>
+    <string name="woopos_settings_back_content_description">Back</string>
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_barcode_scanning_title">Initial barcode scanner setup</string>
