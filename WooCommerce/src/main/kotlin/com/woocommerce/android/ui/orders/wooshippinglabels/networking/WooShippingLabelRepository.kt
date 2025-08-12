@@ -124,7 +124,18 @@ class WooShippingLabelRepository @Inject constructor(
         labelId = labelId,
     ).also {
         it.result?.shippingLabel?.let { labelDTO ->
-            wooShippingDao.upsertLabel(mapper(labelDTO, site, orderId))
+            // The API doesn't return the origin and destination addresses,
+            // we get it from the already cached labels in the database after the purchase request
+            val currentLabel = wooShippingDao.getLabel(
+                selectedSite.get().localId(),
+                LocalOrRemoteId.RemoteId(orderId),
+                labelId
+            )
+            val updatedLabel = mapper(labelDTO, site, orderId).copy(
+                originAddress = currentLabel?.originAddress,
+                destinationAddress = currentLabel?.destinationAddress
+            )
+            wooShippingDao.insertLabel(updatedLabel)
         }
     }.asWooResult { response ->
         response.shippingLabel?.let { mapper(it) }
