@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAccountSettingsDataStore
@@ -13,18 +14,22 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
 import javax.inject.Inject
 
 class WooShippingLabelRepository @Inject constructor(
+    private val selectedSite: SelectedSite,
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
     private val eligibilityDataStore: WooShippingEligibilityDataStore,
     private val configDataStore: WooShippingConfigDataStore,
+    private val wooShippingDao: WooShippingDao,
     private val accountSettingsDataStore: WooShippingAccountSettingsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
@@ -86,8 +91,18 @@ class WooShippingLabelRepository @Inject constructor(
             .also { response ->
                 response.model
                     ?.takeIf { !response.isError }
-                    ?.let { configDataStore.saveConfig(orderId, it.config) }
+                    ?.let { model ->
+                        val shipments = model.config.shipments ?: emptyMap()
+                        wooShippingDao.replaceShipments(
+                            mapper(shipments, site, orderId)
+                        )
+                        configDataStore.saveConfig(orderId, model.config)
+                    }
             }
+
+    suspend fun getShipments(orderId: Long): ShipmentMap {
+        return mapper(wooShippingDao.getShipments(selectedSite.get().localId(), LocalOrRemoteId.RemoteId(orderId)))
+    }
 
     suspend fun fetchPurchasedShippingLabels(
         site: SiteModel,
@@ -274,7 +289,13 @@ class WooShippingLabelRepository @Inject constructor(
         orderId = orderId,
         shipments = shipments,
         shipmentIdsToUpdate = shipmentIdsToUpdate
-    ).asWooResult()
+    ).asWooResult().also {
+        it.model?.data?.let { updatedShipments ->
+            wooShippingDao.replaceShipments(
+                mapper(updatedShipments, site, orderId)
+            )
+        }
+    }
 
     suspend fun refundLabel(
         site: SiteModel,

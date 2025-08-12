@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class GetShipments @Inject constructor(
+    private val wooShippingLabelRepository: WooShippingLabelRepository,
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val configDataStore: WooShippingConfigDataStore,
@@ -48,9 +50,9 @@ class GetShipments @Inject constructor(
 
         val config = configDataStore.observeConfig(order.id).first()
 
-        val shipments = config?.shipments
+        val shipments = wooShippingLabelRepository.getShipments(order.id)
 
-        var shipmentUIModelList = if (shipments.isNullOrEmpty()) {
+        var shipmentUIModelList = if (shipments.isEmpty()) {
             listOf(ShipmentUIModel(localId = "0", items = orderItems))
         } else {
             shipments.map { (shipmentId, shipmentItems) ->

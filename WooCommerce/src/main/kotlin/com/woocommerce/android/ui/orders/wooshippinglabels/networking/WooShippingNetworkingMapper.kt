@@ -25,6 +25,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.Dest
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
 import com.woocommerce.android.util.StringUtils.combineStrings
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -226,6 +229,38 @@ class WooShippingNetworkingMapper @Inject constructor(
             normalizedAddress = invoke(normalizationResponseDTO.normalizedAddress),
             isTrivial = normalizationResponseDTO.isTrivialNormalization
         )
+    }
+
+    operator fun invoke(
+        shipments: ShipmentMap,
+        site: SiteModel,
+        orderId: Long,
+    ): List<WooShippingShipmentEntity> {
+        return shipments.map { (shipmentId, items) ->
+            WooShippingShipmentEntity(
+                localSiteId = site.localId(),
+                orderId = LocalOrRemoteId.RemoteId(orderId),
+                shipmentId = shipmentId,
+                items = items.map { item ->
+                    WooShippingShipmentEntity.Item(
+                        id = item.id,
+                        subItems = item.subItems
+                    )
+                }
+            )
+        }
+    }
+
+    operator fun invoke(shipmentEntities: List<WooShippingShipmentEntity>): ShipmentMap {
+        return shipmentEntities.associate { entity ->
+            val items = entity.items.map {
+                ShipmentItem(
+                    id = it.id,
+                    subItems = it.subItems
+                )
+            }
+            entity.shipmentId to items
+        }
     }
 
     fun toOriginAddressPurchaseDTO(address: OriginShippingAddress): OriginAddressPurchaseDTO {
