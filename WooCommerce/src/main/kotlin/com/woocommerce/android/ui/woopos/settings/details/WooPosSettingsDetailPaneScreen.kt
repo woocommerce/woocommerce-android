@@ -135,12 +135,7 @@ private fun DetailPaneToolbar(
             }
         }
 
-        AnimatedContent(
-            targetState = title,
-            transitionSpec = {
-                fadeIn() togetherWith fadeOut()
-            },
-            label = "title_text_animation",
+        Box(
             modifier = Modifier.constrainAs(titleText) {
                 start.linkTo(
                     if (canGoBack) backButton.end else parent.start,
@@ -150,9 +145,9 @@ private fun DetailPaneToolbar(
                 centerVerticallyTo(parent)
                 width = Dimension.fillToConstraints
             }
-        ) { currentTitle ->
+        ) {
             WooPosText(
-                text = stringResource(currentTitle),
+                text = stringResource(title),
                 style = WooPosTypography.BodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
