@@ -1183,10 +1183,10 @@ object AppPrefs {
         return getInt(PrefKeyString(channel.name), 0).takeIf { it != 0 }
     }
 
-    fun setPOSTabVisibilityForSite(siteId: Int, visible: Boolean) {
+    fun setPOSTabVisibilityForSite(siteId: Int) {
         setBoolean(
             key = PrefKeyString("${UndeletablePrefKey.POS_TAB_VISIBILITY}:$siteId"),
-            value = visible
+            value = true
         )
     }
 
