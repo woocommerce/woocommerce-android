@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHa
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAccountSettingsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
@@ -29,7 +28,6 @@ class WooShippingLabelRepository @Inject constructor(
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
     private val eligibilityDataStore: WooShippingEligibilityDataStore,
-    private val configDataStore: WooShippingConfigDataStore,
     private val wooShippingDao: WooShippingDao,
     private val accountSettingsDataStore: WooShippingAccountSettingsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
@@ -99,7 +97,6 @@ class WooShippingLabelRepository @Inject constructor(
                         wooShippingDao.replaceLabels(
                             mapper(model.config.shippingLabelData, site, orderId)
                         )
-                        configDataStore.saveConfig(orderId, model.config)
                     }
             }
 
