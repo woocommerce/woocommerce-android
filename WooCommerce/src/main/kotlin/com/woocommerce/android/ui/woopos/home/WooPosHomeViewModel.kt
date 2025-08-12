@@ -213,6 +213,12 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
+                    ChildToParentEvent.SettingsMenuItemClicked -> {
+                        viewModelScope.launch {
+                            _toastEvent.emit("Settings feature coming soon")
+                        }
+                    }
+
                     is ChildToParentEvent.ToastMessageDisplayed -> {
                         viewModelScope.launch {
                             _toastEvent.emit(event.message)

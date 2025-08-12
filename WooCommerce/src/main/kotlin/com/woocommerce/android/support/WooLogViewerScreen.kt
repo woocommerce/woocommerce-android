@@ -1,11 +1,15 @@
 package com.woocommerce.android.support
 
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
@@ -18,7 +22,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Share
@@ -33,6 +36,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,27 +47,107 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.logs.LogEntry
 import kotlinx.coroutines.launch
 import java.lang.String.format
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WooLogViewerScreen(
-    entries: RollingLogEntries,
-    onBackPress: () -> Unit,
-    onCopyButtonClick: () -> Unit,
-    onShareButtonClick: () -> Unit
+    viewerViewModel: WooLogViewerViewModel
+) {
+    viewerViewModel.uiState.observeAsState().value?.let { state ->
+        // TODO animate transitions between states
+        //  For now, I had to remove the AnimatedContent as it caused a very noticeable delay
+        //  when navigating to the LogFileContent state when the log file is large (> 1000 entries).
+        when (state) {
+            is WooLogViewerViewModel.UiState.LogFilesList -> {
+                LogFilesListScreen(state)
+            }
+
+            is WooLogViewerViewModel.UiState.LogFileContent -> {
+                LogFileContent(state)
+            }
+        }
+    }
+}
+
+@Composable
+private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList) {
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current
+
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = stringResource(id = R.string.logviewer_activity_title),
+                onNavigationButtonClick = { backDispatcher?.onBackPressedDispatcher?.onBackPressed() }
+            )
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.color_toolbar))
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
+            contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+        ) {
+            item {
+                Text(
+                    text = stringResource(R.string.logviewer_log_files_list_header),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+
+            itemsIndexed(state.logFiles) { index, logFile ->
+                if (index == 0) {
+                    HorizontalDivider()
+                }
+                Text(
+                    text = logFile.displayName.getText(),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .clickable(onClick = { state.onLogFileSelected(logFile) })
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 16.dp
+                        ),
+                )
+                HorizontalDivider()
+            }
+
+            item {
+                Text(
+                    text = stringResource(R.string.logviewer_log_files_list_footer),
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LogFileContent(
+    state: WooLogViewerViewModel.UiState.LogFileContent
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var currentMatchIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -71,13 +155,11 @@ fun WooLogViewerScreen(
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    val allEntries = remember(entries) { entries.toList() }
-
-    val searchMatches = remember(allEntries, searchQuery) {
+    val searchMatches = remember(state.logEntries, searchQuery) {
         if (searchQuery.isBlank()) {
             emptyList()
         } else {
-            allEntries.mapIndexedNotNull { index, entry ->
+            state.logEntries.mapIndexedNotNull { index, entry ->
                 if (entry.toString().contains(searchQuery, ignoreCase = true)) {
                     index
                 } else {
@@ -119,11 +201,14 @@ fun WooLogViewerScreen(
             currentMatchIndex--
         }
     }
+
+    BackHandler(onBack = state.onBackPressed)
+
     Scaffold(
         topBar = {
             Toolbar(
-                title = stringResource(id = R.string.logviewer_activity_title),
-                onNavigationButtonClick = onBackPress,
+                title = state.logFile.displayName.getText(),
+                onNavigationButtonClick = state.onBackPressed,
                 windowInsets = TopAppBarDefaults.windowInsets,
                 actions = {
                     SearchNavigationActions(
@@ -134,16 +219,18 @@ fun WooLogViewerScreen(
                         onNextClick = goToNextMatch
                     )
                     if (searchQuery.isBlank()) {
-                        IconButton(onClick = { onCopyButtonClick() }) {
+                        IconButton(onClick = state.onCopyClicked) {
                             Icon(
-                                imageVector = Icons.Filled.ContentCopy,
+                                painter = painterResource(R.drawable.ic_copy_white_24dp),
                                 contentDescription = stringResource(id = R.string.copy),
+                                tint = colorResource(id = R.color.color_icon_menu)
                             )
                         }
-                        IconButton(onClick = { onShareButtonClick() }) {
+                        IconButton(onClick = state.onShareClicked) {
                             Icon(
-                                imageVector = Icons.Filled.Share,
+                                Icons.Filled.Share,
                                 contentDescription = stringResource(id = R.string.share),
+                                tint = colorResource(id = R.color.color_icon_menu)
                             )
                         }
                     }
@@ -170,7 +257,7 @@ fun WooLogViewerScreen(
                 onSearchTypeSelected = { }
             )
             LogViewerEntries(
-                entries = allEntries,
+                entries = state.logEntries,
                 lazyListState = lazyListState,
                 currentMatchIndex = if (hasMatches) searchMatches[currentMatchIndex] else -1,
                 modifier = Modifier.weight(1f)
@@ -227,7 +314,7 @@ private fun SearchNavigationActions(
 
 @Composable
 private fun LogViewerEntries(
-    entries: List<RollingLogEntries.LogEntry>,
+    entries: List<LogEntry>,
     lazyListState: LazyListState,
     currentMatchIndex: Int,
     modifier: Modifier = Modifier
@@ -255,7 +342,7 @@ private fun LogViewerEntries(
 @Composable
 private fun LogViewerEntry(
     index: Int,
-    entry: RollingLogEntries.LogEntry,
+    entry: LogEntry,
     isCurrentMatch: Boolean
 ) {
     val backgroundColor = if (isCurrentMatch) {
@@ -304,33 +391,45 @@ private fun logLevelColorM3(level: WooLog.LogLevel): Color {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun WooLogViewerScreenPreview() {
-    val entries = RollingLogEntries(99).also {
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.ORDERS, WooLog.LogLevel.v, "Verbose")
-        )
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.PRODUCTS, WooLog.LogLevel.d, "Debug")
-        )
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.REVIEWS, WooLog.LogLevel.i, "Informational")
-        )
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.SUPPORT, WooLog.LogLevel.w, "Warning")
-        )
-        it.add(
-            RollingLogEntries.LogEntry(WooLog.T.DASHBOARD, WooLog.LogLevel.e, "Error")
-        )
+private fun LogFilesListPreview() {
+    val logFiles = listOf(
+        WooLogViewerViewModel.LogFile("log1.txt", UiString.UiStringText("Log File 1")),
+        WooLogViewerViewModel.LogFile("log2.txt", UiString.UiStringText("Log File 2")),
+        WooLogViewerViewModel.LogFile("log3.txt", UiString.UiStringText("Log File 3"))
+    )
+    val state = WooLogViewerViewModel.UiState.LogFilesList(
+        logFiles = logFiles,
+        onLogFileSelected = {}
+    )
+    WooTheme {
+        LogFilesListScreen(state)
+    }
+}
+
+@Preview
+@Composable
+private fun LogFileContentPreview() {
+    val entries = buildList {
+        add(LogEntry(WooLog.T.ORDERS, WooLog.LogLevel.v, "Verbose"))
+        add(LogEntry(WooLog.T.PRODUCTS, WooLog.LogLevel.d, "Debug"))
+        add(LogEntry(WooLog.T.REVIEWS, WooLog.LogLevel.i, "Informational"))
+        add(LogEntry(WooLog.T.SUPPORT, WooLog.LogLevel.w, "Warning"))
+        add(LogEntry(WooLog.T.DASHBOARD, WooLog.LogLevel.e, "Error"))
     }
     WooTheme {
-        WooLogViewerScreen(
-            entries,
-            onBackPress = {},
-            onShareButtonClick = {},
-            onCopyButtonClick = {}
+        LogFileContent(
+            state = WooLogViewerViewModel.UiState.LogFileContent(
+                logFile = WooLogViewerViewModel.LogFile(
+                    "log_example.txt",
+                    UiString.UiStringText("Example Log File")
+                ),
+                logEntries = entries,
+                onBackPressed = {},
+                onShareClicked = {},
+                onCopyClicked = {}
+            )
         )
     }
 }

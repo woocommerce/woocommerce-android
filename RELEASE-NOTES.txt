@@ -1,10 +1,14 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
-
 23.1
 -----
+- [*] You can now remove background from product images in the app. Just open the product image and click "Remove background" button. [https://github.com/woocommerce/woocommerce-android/pull/14445]
 - [*] Fixed bug when an order was not selected when navigating from my store screen [https://github.com/woocommerce/woocommerce-android/pull/14436]
+- [*] [Shipping Labels] Display split shipment instructions only when necessary [https://github.com/woocommerce/woocommerce-android/pull/14450]
+- [*] Updated behavior on the POS cash payment screen [https://github.com/woocommerce/woocommerce-android/pull/14449]
+- [Internal] Added support for persisting log files in the app's internal storage [https://github.com/woocommerce/woocommerce-android/pull/14425]
+- [*] Shipping Labels: Fix layout issue with address status indicator [https://github.com/woocommerce/woocommerce-android/pull/14437]
 - [*] Shipping Labels: Updated shipments tab layout [https://github.com/woocommerce/woocommerce-android/pull/14448]
 
 23.0
