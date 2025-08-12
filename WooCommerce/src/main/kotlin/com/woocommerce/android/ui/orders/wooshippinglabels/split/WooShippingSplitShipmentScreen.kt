@@ -534,6 +534,7 @@ fun SelectableProductsSection(
                             price = shippableItem.shippableItem.formattedPrice,
                             quantity = shippableItem.shippableItem.quantity,
                             imageUrl = shippableItem.shippableItem.imageUrl,
+                            selectable = !shipment.purchased,
                             isSelected = shippableItem.isSelected,
                             onSelectionChange = if (shipment.purchased) {
                                 null
@@ -553,6 +554,7 @@ fun SelectableProductsSection(
                             price = shippableItem.shippableItem.formattedPrice,
                             quantity = shippableItem.shippableItem.quantity,
                             imageUrl = shippableItem.shippableItem.imageUrl,
+                            selectable = !shipment.purchased,
                             isSelected = shippableItem.isSelected,
                             onSelectionChange = if (shipment.purchased) {
                                 null
