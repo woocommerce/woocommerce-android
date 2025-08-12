@@ -10,6 +10,8 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
+class CouldNotDetermineValueException : Exception()
+
 class WooPosTabShouldBeVisible @Inject constructor(
     private val selectedSite: SelectedSite,
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
@@ -17,33 +19,34 @@ class WooPosTabShouldBeVisible @Inject constructor(
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
     private val wooPosLog: WooPosLogWrapper,
 ) {
-    suspend operator fun invoke(): Boolean = withContext(Dispatchers.IO) {
-        val selectedSite = selectedSite.getOrNull() ?: return@withContext false
+    suspend operator fun invoke(): Result<Boolean> = withContext(Dispatchers.IO) {
+        val selectedSite = selectedSite.getOrNull()
+            ?: return@withContext Result.failure(CouldNotDetermineValueException())
 
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) {
-            return@withContext false.also {
+            return@withContext Result.success(true).also {
                 wooPosLog.i("POS Tab Not visible reason: Remote feature flag is disabled")
             }
         }
 
         if (!isScreenSizeAllowed()) {
-            return@withContext false.also {
+            return@withContext Result.success(false).also {
                 wooPosLog.i("POS Tab Not visible reason: Screen size is not allowed")
             }
         }
 
-        val siteSettings = wooCommerceStore.fetchSiteGeneralSettings(selectedSite).model
-            ?: return@withContext false.also {
-                wooPosLog.i("POS Tab Not visible reason: Site settings are not available")
-            }
+        val siteSettings = wooCommerceStore
+            .fetchSiteGeneralSettings(selectedSite)
+            .model
+            ?: return@withContext Result.failure(CouldNotDetermineValueException())
 
-        return@withContext isCountrySupported(
-            countryCode = siteSettings.countryCode
-        ).also { isSupported ->
-            if (!isSupported) {
-                wooPosLog.i("POS Tab Not visible reason: Country ${siteSettings.countryCode} is not supported")
+        return@withContext Result.success(
+            isCountrySupported(countryCode = siteSettings.countryCode).also { isSupported ->
+                if (!isSupported) {
+                    wooPosLog.i("POS Tab Not visible reason: Country ${siteSettings.countryCode} is not supported")
+                }
             }
-        }
+        )
     }
 
     private fun isCountrySupported(countryCode: String) = SUPPORTED_COUNTRIES.contains(countryCode.lowercase())
