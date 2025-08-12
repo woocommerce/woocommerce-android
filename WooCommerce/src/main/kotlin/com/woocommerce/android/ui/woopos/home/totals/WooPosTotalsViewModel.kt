@@ -158,7 +158,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnStartReceiptFlowClicked -> handleEmailReceiptClicked()
 
-            WooPosTotalsUIEvent.OnCashPaymentClicked -> informParentAboutNavigatingToCashPayment()
+            WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
 
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment -> handleGoBackToCheckoutClickedWhenPaymentFailed()
 
@@ -183,7 +183,8 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private fun informParentAboutNavigatingToCashPayment() = viewModelScope.launch {
+    private fun handleCashPaymentClicked() = viewModelScope.launch {
+        totalsAnalyticsTracker.trackCashPaymentTapped()
         childrenToParentEventSender.sendToParent(
             ToCashPayment(dataState.value.orderId)
         )

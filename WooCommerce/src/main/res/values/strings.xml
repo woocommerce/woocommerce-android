@@ -2654,14 +2654,22 @@
     <string name="support_contact_email_not_set">Not set</string>
     <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_push_notification_message">New message from \'Help &amp; Support\'</string>
-    <string name="logviewer_activity_title">Application log</string>
-    <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
-    <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
-    <string name="logviewer_share_error">Unable to share log</string>
     <string name="about_appname">WooCommerce for Android</string>
     <string name="about_tos">Terms of Service</string>
     <string name="about_version">Version %s</string>
     <string name="about_copyright" translatable="false">© %1$d WooCommerce, Inc and WooCommerce Ireland Ltd</string>
+
+    <!--
+        Log Viewer
+    -->
+    <string name="logviewer_activity_title">Application log</string>
+    <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
+    <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
+    <string name="logviewer_share_error">Unable to share log</string>
+    <string name="logviewer_log_files_list_header">Log files by created date</string>
+    <string name="logviewer_log_files_list_footer">Up to seven day\'s worth of logs are stored.</string>
+    <string name="logviewer_current_log_file">Current</string>
+
     <!--
         Login Library Imported Strings
     -->
