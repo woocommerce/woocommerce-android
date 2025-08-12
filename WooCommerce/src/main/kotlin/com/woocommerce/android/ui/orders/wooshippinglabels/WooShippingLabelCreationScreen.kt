@@ -49,12 +49,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -372,21 +366,6 @@ private fun LabelCreationScreenWithBottomSheet(
                 } else if (shipmentUIList.size > 1) {
                     Column {
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            val fadingEdgeModifier = Modifier
-                                .weight(1f)
-                                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                                .drawWithContent {
-                                    drawContent()
-                                    drawRect(
-                                        brush = Brush.horizontalGradient(
-                                            colors = listOf(Color.White, Color.Transparent),
-                                            startX = size.width - 24.dp.toPx(),
-                                            endX = size.width
-                                        ),
-                                        blendMode = BlendMode.DstIn
-                                    )
-                                }
-
                             ShipmentsTabRow(
                                 shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
                                     ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
@@ -397,7 +376,7 @@ private fun LabelCreationScreenWithBottomSheet(
                                     0
                                 },
                                 onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
-                                modifier = fadingEdgeModifier
+                                modifier = Modifier.weight(1f)
                             )
                             if (shouldShowSplitShipmentButton) {
                                 IconButton(
