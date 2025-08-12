@@ -67,7 +67,11 @@ fun WooPosSettingsDetailPaneScreen(
             targetState = currentDestination,
             transitionSpec = {
                 val isNavigatingForward = targetState.parentDestination == initialState
-                if (isNavigatingForward) {
+                val isCategorySwitch = initialState.parentDestination == null && targetState.parentDestination == null
+
+                if (isCategorySwitch) {
+                    fadeIn() togetherWith fadeOut()
+                } else if (isNavigatingForward) {
                     (slideInHorizontally(initialOffsetX = { it }) + fadeIn()) togetherWith
                         (slideOutHorizontally(targetOffsetX = { -it }) + fadeOut())
                 } else {
@@ -86,6 +90,9 @@ fun WooPosSettingsDetailPaneScreen(
                 }
                 is WooPosSettingsDetailDestination.Hardware.CardReaders -> {
                     CardReadersDetailScreen()
+                }
+                is WooPosSettingsDetailDestination.Store.Overview -> {
+                    StoreDetailScreen()
                 }
             }
         }
@@ -178,6 +185,21 @@ private fun CardReadersDetailScreen() {
     ) {
         WooPosText(
             text = stringResource(R.string.woopos_settings_card_reader_detail_title),
+            style = WooPosTypography.Heading
+        )
+    }
+}
+
+@Composable
+private fun StoreDetailScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(WooPosSpacing.Medium.value),
+        contentAlignment = Alignment.Center
+    ) {
+        WooPosText(
+            text = stringResource(R.string.woopos_settings_store_category),
             style = WooPosTypography.Heading
         )
     }

@@ -48,6 +48,7 @@ fun WooPosSettingsScreen(
             )
 
             WooPosSettingsCategoriesPaneScreen(
+                selectedCategory = navigationState.selectedCategory,
                 onCategorySelected = containerViewModel::onCategorySelected,
                 modifier = Modifier.fillMaxSize()
             )

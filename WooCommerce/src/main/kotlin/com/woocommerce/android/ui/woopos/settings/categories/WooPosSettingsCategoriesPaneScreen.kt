@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.categories
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -17,15 +19,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
 fun WooPosSettingsCategoriesPaneScreen(
+    selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WooPosSettingsCategoriesViewModel = hiltViewModel()
@@ -40,9 +45,11 @@ fun WooPosSettingsCategoriesPaneScreen(
         state.categories.forEach { item ->
             CategoryItem(
                 item = item,
+                isSelected = item == selectedCategory,
                 onClick = {
                     onCategorySelected(item)
-                }
+                },
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
             )
         }
     }
@@ -51,17 +58,25 @@ fun WooPosSettingsCategoriesPaneScreen(
 @Composable
 private fun CategoryItem(
     item: WooPosSettingsCategory,
-    onClick: () -> Unit
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val textColor = MaterialTheme.colorScheme.onSurface
-    val iconTint = MaterialTheme.colorScheme.onSurfaceVariant
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(WooPosCornerRadius.Large.value))
+            .background(
+                if (isSelected) {
+                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                } else {
+                    MaterialTheme.colorScheme.surface
+                }
+            )
             .clickable { onClick() }
             .padding(
                 horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Small.value
+                vertical = WooPosSpacing.Medium.value
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
@@ -69,8 +84,8 @@ private fun CategoryItem(
         Icon(
             imageVector = item.icon,
             contentDescription = null,
-            tint = iconTint,
-            modifier = Modifier.size(24.dp)
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.size(28.dp)
         )
 
         Column(
@@ -79,12 +94,12 @@ private fun CategoryItem(
             WooPosText(
                 text = stringResource(item.titleRes),
                 style = WooPosTypography.BodyLarge,
-                color = textColor
+                color = MaterialTheme.colorScheme.onSurface
             )
             WooPosText(
                 text = stringResource(item.subtitleRes),
                 style = WooPosTypography.BodySmall,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = WooPosSpacing.XSmall.value)
             )
         }

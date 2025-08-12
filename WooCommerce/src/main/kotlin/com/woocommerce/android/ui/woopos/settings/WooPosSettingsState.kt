@@ -37,4 +37,12 @@ sealed class WooPosSettingsDetailDestination {
             override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
         }
     }
+
+    sealed class Store : WooPosSettingsDetailDestination() {
+        data object Overview : Store() {
+            override val titleRes: Int = R.string.woopos_settings_store_category
+            override val parentDestination: WooPosSettingsDetailDestination? = null
+            override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
+        }
+    }
 }

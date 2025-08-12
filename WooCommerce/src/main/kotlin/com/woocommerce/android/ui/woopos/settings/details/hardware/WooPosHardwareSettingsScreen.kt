@@ -74,8 +74,8 @@ private fun HardwareSettingsMenuItem(
         Icon(
             imageVector = item.icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp)
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.size(28.dp)
         )
 
         Column(
