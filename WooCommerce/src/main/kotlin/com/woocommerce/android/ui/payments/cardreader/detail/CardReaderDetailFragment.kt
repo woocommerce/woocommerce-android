@@ -82,11 +82,13 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                                     EXTERNAL,
                                 )
                         )
+
                 is CardReaderUpdateScreen ->
                     findNavController().navigateSafely(
                         CardReaderDetailFragmentDirections
                             .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(requiredUpdate = false)
                     )
+
                 is ShowSnackbar -> {
                     Snackbar.make(
                         binding.root,
@@ -94,20 +96,23 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         BaseTransientBottomBar.LENGTH_LONG
                     ).show()
                 }
+
                 is CopyReadersNameToClipboard -> requireContext().copyToClipboard(
                     event.readersName,
                     event.readersName
                 )
+
                 is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected ->
-                    binding.readerDisconnectedState.cardReaderDetailConnectBtn.announceForAccessibility(
+                    binding.cardReaderConnectionState.contentDescription =
                         getString(event.accessibilityDisconnectedText)
-                    )
+
                 is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected ->
-                    binding.readerConnectedState.primaryActionBtn.announceForAccessibility(
+                    binding.cardReaderConnectionState.contentDescription =
                         getString(event.accessibilityConnectedText)
-                    )
+
                 is NavigateToUrlInGenericWebView ->
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url, ThreeQuarters)
+
                 else -> event.isHandled = false
             }
         }
@@ -149,6 +154,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         }
                     }
                 }
+
                 is NotConnectedState -> {
                     with(binding.readerDisconnectedState) {
                         UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
@@ -171,6 +177,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         }
                     }
                 }
+
                 Loading -> {
                 }
             }
