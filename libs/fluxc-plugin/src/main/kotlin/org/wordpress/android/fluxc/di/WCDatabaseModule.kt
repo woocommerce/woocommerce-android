@@ -110,6 +110,8 @@ interface WCDatabaseModule {
         @Provides internal fun provideOrderSummaryDao(database: WCAndroidDatabase) = database.orderSummaryDao
 
         @Provides internal fun provideOrderStatusDao(database: WCAndroidDatabase) = database.orderStatusDao
+
+        @Provides internal fun provideWooShippingDao(database: WCAndroidDatabase) = database.wooShippingDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }

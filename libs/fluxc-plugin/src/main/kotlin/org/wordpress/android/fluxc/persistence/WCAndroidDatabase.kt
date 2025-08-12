@@ -58,6 +58,7 @@ import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
 import org.wordpress.android.fluxc.persistence.dao.UserDao
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.dao.WooPaymentsDepositsOverviewDao
+import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
@@ -78,6 +79,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsBalanceEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
+import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration13to14
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration14to15
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration16to17
@@ -105,7 +107,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 55
+const val WC_DATABASE_VERSION = 56
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -145,7 +147,8 @@ const val WC_DATABASE_VERSION = 55
         WCTaxClassModel::class,
         WCSettingsModel::class,
         WCOrderSummaryModel::class,
-        WCOrderStatusModel::class
+        WCOrderStatusModel::class,
+        WooShippingShipmentEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -184,6 +187,7 @@ const val WC_DATABASE_VERSION = 55
         AutoMigration(from = 52, to = 53),
         AutoMigration(from = 53, to = 54),
         AutoMigration(from = 54, to = 55),
+        AutoMigration(from = 55, to = 56),
     ]
 )
 @TypeConverters(
@@ -226,6 +230,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val refundDao: RefundDao
     internal abstract val orderSummaryDao: OrderSummaryDao
     internal abstract val orderStatusDao: OrderStatusDao
+    abstract val wooShippingDao: WooShippingDao
 
     companion object {
         fun buildDb(
