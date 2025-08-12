@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
+import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
@@ -101,17 +102,6 @@ class WooShippingLabelRepository @Inject constructor(
                         configDataStore.saveConfig(orderId, model.config)
                     }
             }
-
-    suspend fun getShipments(orderId: Long): ShipmentMap {
-        return mapper(wooShippingDao.getShipments(selectedSite.get().localId(), LocalOrRemoteId.RemoteId(orderId)))
-    }
-
-    suspend fun getLabels(
-        orderId: Long
-    ) = wooShippingDao.getLabels(
-        selectedSite.get().localId(),
-        LocalOrRemoteId.RemoteId(orderId)
-    ).map { mapper(it) }
 
     suspend fun fetchPurchasedShippingLabels(
         site: SiteModel,
@@ -334,4 +324,24 @@ class WooShippingLabelRepository @Inject constructor(
         orderId: Long,
         labelId: Long
     ): WooResult<RefundLabelResponseDTO> = restClient.refundShippingLabel(orderId, labelId, site).asWooResult()
+
+    suspend fun getShipments(orderId: Long): ShipmentMap {
+        return mapper(wooShippingDao.getShipments(selectedSite.get().localId(), LocalOrRemoteId.RemoteId(orderId)))
+    }
+
+    suspend fun getLabels(
+        orderId: Long
+    ) = wooShippingDao.getLabels(
+        selectedSite.get().localId(),
+        LocalOrRemoteId.RemoteId(orderId)
+    ).map { mapper(it) }
+
+    fun observeLabel(
+        orderId: Long,
+        labelId: Long
+    ) = wooShippingDao.observeLabel(
+        selectedSite.get().localId(),
+        LocalOrRemoteId.RemoteId(orderId),
+        labelId
+    ).map { entity -> entity?.let { mapper(it) } }
 }
