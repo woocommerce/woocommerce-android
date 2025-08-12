@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.settings
 
 import androidx.lifecycle.ViewModel
+import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,36 +11,29 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosSettingsViewModel @Inject constructor() : ViewModel() {
-
     private val _navigationState = MutableStateFlow(WooPosSettingsState())
     val navigationState: StateFlow<WooPosSettingsState> = _navigationState.asStateFlow()
 
     fun onCategorySelected(category: WooPosSettingsCategory) {
         _navigationState.update { currentState ->
-            val newDetailDestination = when (category) {
-                WooPosSettingsCategory.HARDWARE -> WooPosSettingsDetailDestination.HardwareOverview
-            }
             currentState.copy(
                 selectedCategory = category,
-                detailBackStack = listOf(newDetailDestination)
+                currentDestination = category.rootDestination
             )
         }
     }
 
     fun navigateToDetail(destination: WooPosSettingsDetailDestination) {
         _navigationState.update { currentState ->
-            currentState.copy(
-                detailBackStack = currentState.detailBackStack + destination
-            )
+            currentState.copy(currentDestination = destination)
         }
     }
 
-    fun popDetailBackStack() {
+    fun navigateBack() {
         _navigationState.update { currentState ->
-            if (currentState.detailBackStack.size > 1) {
-                currentState.copy(
-                    detailBackStack = currentState.detailBackStack.dropLast(1)
-                )
+            val parentDestination = currentState.currentDestination.parentDestination
+            if (parentDestination != null) {
+                currentState.copy(currentDestination = parentDestination)
             } else {
                 currentState
             }
