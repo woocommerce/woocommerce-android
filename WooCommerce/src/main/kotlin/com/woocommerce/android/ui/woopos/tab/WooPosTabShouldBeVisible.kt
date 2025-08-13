@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.tab
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
+import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
@@ -9,8 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-
-class CouldNotDetermineValueException : Exception()
 
 class WooPosTabShouldBeVisible @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -21,7 +20,7 @@ class WooPosTabShouldBeVisible @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<Boolean> = withContext(Dispatchers.IO) {
         val selectedSite = selectedSite.getOrNull()
-            ?: return@withContext Result.failure(CouldNotDetermineValueException())
+            ?: return@withContext Result.failure(WooPosCouldNotDetermineValueException())
 
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) {
             return@withContext Result.success(true).also {
@@ -38,7 +37,7 @@ class WooPosTabShouldBeVisible @Inject constructor(
         val siteSettings = wooCommerceStore
             .fetchSiteGeneralSettings(selectedSite)
             .model
-            ?: return@withContext Result.failure(CouldNotDetermineValueException())
+            ?: return@withContext Result.failure(WooPosCouldNotDetermineValueException())
 
         return@withContext Result.success(
             isCountrySupported(countryCode = siteSettings.countryCode).also { isSupported ->
