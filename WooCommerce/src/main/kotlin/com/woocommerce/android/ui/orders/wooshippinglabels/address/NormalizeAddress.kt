@@ -26,7 +26,12 @@ class NormalizeAddress @Inject constructor(
     }
 }
 
-class NormalizeAddressException(val error: String) : Exception(error) {
+class NormalizeAddressException(val errors: Map<String, String>) : Exception() {
+    val generalError: String?
+        get() = errors[ERROR_GENERAL]
+    val addressError: String?
+        get() = errors[ERROR_ADDRESS]
+
     companion object {
         const val ERROR_GENERAL = "general"
         const val ERROR_ADDRESS = "address"
