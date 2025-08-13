@@ -366,51 +366,56 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
     private fun getErrorState(
         countriesState: LocationState,
-        addressSelection: AddressValidationState,
+        addressValidation: AddressValidationState,
         editableAddress: EditableAddress
-    ): EditAddressError? = when {
-        countriesState is LocationState.Error -> {
-            EditAddressError(
+    ): EditAddressError? {
+        if (countriesState is LocationState.Error) {
+            return EditAddressError(
                 resourceProvider.getString(R.string.woo_shipping_fetching_countries_and_states_failed)
             ) { onRefreshCountries() }
         }
 
-        addressSelection is AddressValidationState.VerificationFailed -> {
-            if (editableAddress == addressSelection.editableAddress) {
-                EditAddressError(
-                    message = resourceProvider.getString(R.string.woo_shipping_verifying_address_failed),
-                    isIndefinite = navArgs.flow is EditAddressFlow.EditOriginAddress,
-                ) {
-                    onNormalizeAddress(addressSelection.editableAddress)
+        val error = when (addressValidation) {
+            is AddressValidationState.VerificationFailed -> {
+                val hasUserChangedAddress = editableAddress.toAddress() != addressValidation.editableAddress.toAddress()
+                if (hasUserChangedAddress) {
+                    addressValidationState.value = AddressValidationState.NotStarted
+                    null
+                } else if (addressValidation.exception != null) {
+                    // This error is shown at the field level, so we don't need a general error here.
+                    null
+                } else {
+                    EditAddressError(
+                        message = resourceProvider.getString(R.string.woo_shipping_verifying_address_failed),
+                        isIndefinite = navArgs.flow is EditAddressFlow.EditOriginAddress,
+                    ) {
+                        onNormalizeAddress(addressValidation.editableAddress)
+                    }
                 }
-            } else {
-                addressValidationState.value = AddressValidationState.NotStarted
-                null
             }
-        }
-
-        addressSelection is AddressValidationState.AddressUpdateFailed -> {
-            if (editableAddress == addressSelection.editableAddress) {
+            is AddressValidationState.AddressUpdateFailed -> {
+                val hasUserChangedAddress = editableAddress != addressValidation.editableAddress
+                if (hasUserChangedAddress) {
+                    addressValidationState.value = AddressValidationState.NotStarted
+                    null
+                } else {
+                    EditAddressError(
+                        resourceProvider.getString(R.string.woo_shipping_updating_address_failed)
+                    ) {
+                        onUpdateAddress(addressValidation.editableAddress)
+                    }
+                }
+            }
+            is AddressValidationState.NormalizedAddressUpdateFailed -> {
                 EditAddressError(
                     resourceProvider.getString(R.string.woo_shipping_updating_address_failed)
                 ) {
-                    onUpdateAddress(addressSelection.editableAddress)
+                    onUpdateNormalizedOriginAddress(addressValidation.selection)
                 }
-            } else {
-                addressValidationState.value = AddressValidationState.NotStarted
-                null
             }
+            else -> null
         }
-
-        addressSelection is AddressValidationState.NormalizedAddressUpdateFailed -> {
-            EditAddressError(
-                resourceProvider.getString(R.string.woo_shipping_updating_address_failed)
-            ) {
-                onUpdateNormalizedOriginAddress(addressSelection.selection)
-            }
-        }
-
-        else -> null
+        return error
     }
 
     private fun getLoadingState(
