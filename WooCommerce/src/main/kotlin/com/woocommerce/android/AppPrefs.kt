@@ -210,6 +210,8 @@ object AppPrefs {
         APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE,
 
         POS_TAB_VISIBILITY,
+
+        POS_LAUNCHABLE
     }
 
     fun init(context: Context) {
@@ -1193,6 +1195,20 @@ object AppPrefs {
     fun isPOSTabVisibleForSite(siteId: Int): Boolean {
         return getBoolean(
             key = PrefKeyString("${UndeletablePrefKey.POS_TAB_VISIBILITY}:$siteId"),
+            default = false
+        )
+    }
+
+    fun setPOSLaunchableForSite(siteId: Int) {
+        setBoolean(
+            key = PrefKeyString("${UndeletablePrefKey.POS_LAUNCHABLE}:$siteId"),
+            value = true
+        )
+    }
+
+    fun isPOSLaunchableForSite(siteId: Int): Boolean {
+        return getBoolean(
+            key = PrefKeyString("${UndeletablePrefKey.POS_LAUNCHABLE}:$siteId"),
             default = false
         )
     }
