@@ -18,6 +18,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -781,7 +783,13 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         sut.onNormalizeAddress(sut.viewState.value.editableAddress)
 
-        verify(analyticsTracker, times(2)).track(eq(AnalyticsEvent.WCS_EDITING_ADDRESS_STEP), any())
+        verify(analyticsTracker, atLeastOnce()).track(
+            eq(AnalyticsEvent.WCS_EDITING_ADDRESS_STEP),
+            any(),
+            any(),
+            any(),
+            anyOrNull()
+        )
     }
 
     @Test

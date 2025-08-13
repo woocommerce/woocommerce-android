@@ -8,7 +8,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
@@ -19,6 +18,9 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.NormalizeAddressException.Companion.ERROR_ADDRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.NormalizeAddressException.Companion.ERROR_GENERAL
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.NormalizeAddressException.Companion.UNKNOWN_ERROR
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.UpdateDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.GetAcceptedOriginCountries
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.UpdateOriginAddress
@@ -548,8 +550,8 @@ class WooShippingEditAddressViewModel @Inject constructor(
     fun onNormalizeAddress(editableAddress: EditableAddress) {
         addressValidationState.value = AddressValidationState.VerifyingAddress
         launch {
-            val address = editableAddress.toAddress()
-            normalizeAddress(address).fold(
+            val enteredAddress = editableAddress.toAddress()
+            normalizeAddress(enteredAddress).fold(
                 onSuccess = {
                     addressValidationState.value =
                         AddressValidationState.AddressSelection(it, it.normalizedAddress)
@@ -562,15 +564,30 @@ class WooShippingEditAddressViewModel @Inject constructor(
                     )
                 },
                 onFailure = {
+                    val normalizeAddressException = it as? NormalizeAddressException
+                    val errorType = when {
+                        normalizeAddressException?.errors?.contains(ERROR_ADDRESS) == true -> ERROR_ADDRESS
+                        normalizeAddressException?.errors?.contains(ERROR_GENERAL) == true -> ERROR_GENERAL
+                        else -> UNKNOWN_ERROR
+                    }
                     analyticsTracker.track(
-                        AnalyticsEvent.WCS_EDITING_ADDRESS_STEP,
-                        mapOf(
+                        stat = AnalyticsEvent.WCS_EDITING_ADDRESS_STEP,
+                        properties = mapOf(
                             KEY_TYPE to getAnalyticsType(),
                             KEY_STATE to getAnalyticsVerificationValue(false),
-                            KEY_ERROR to it.message
-                        )
+                        ),
+                        errorContext = WooShippingEditAddressViewModel::class.simpleName,
+                        errorType = errorType,
+                        errorDescription = normalizeAddressException?.addressError
+                            ?: normalizeAddressException?.generalError
                     )
-                    addressValidationState.value = AddressValidationState.VerificationFailed(editableAddress)
+
+                    addressValidationState.value = AddressValidationState.VerificationFailed(
+                        editableAddress.copy(
+                            address = editableAddress.address.copy(error = normalizeAddressException?.addressError)
+                        ),
+                        normalizeAddressException
+                    )
                 }
             )
         }
@@ -782,7 +799,8 @@ sealed class AddressValidationState {
     data object NotStarted : AddressValidationState()
     data object VerifyingAddress : AddressValidationState()
     data class VerificationFailed(
-        val editableAddress: EditableAddress
+        val editableAddress: EditableAddress,
+        val exception: NormalizeAddressException? = null,
     ) : AddressValidationState()
 
     data class AddressSelection(
