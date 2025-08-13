@@ -31,7 +31,7 @@ class WooPOSIsRemotelyEnabledTest {
     }
 
     @Test
-    fun `given feature enabled remotely when invoked then returns success true`() = runTest {
+    fun `given feature enabled remotely, when invoked, then returns success true`() = runTest {
         val jsonSettings = """{"enabled_features": ["point_of_sale", "other_feature"]}"""
         whenever(ssrModel.settings).thenReturn(jsonSettings)
         whenever(cacheResult.isError).thenReturn(false)
@@ -45,7 +45,7 @@ class WooPOSIsRemotelyEnabledTest {
     }
 
     @Test
-    fun `given feature not in list when invoked then returns success false`() = runTest {
+    fun `given feature not in list, when invoked, then returns success false`() = runTest {
         val jsonSettings = """{"enabled_features": ["something_else"]}"""
         whenever(ssrModel.settings).thenReturn(jsonSettings)
         whenever(cacheResult.isError).thenReturn(false)
@@ -59,7 +59,7 @@ class WooPOSIsRemotelyEnabledTest {
     }
 
     @Test
-    fun `given empty feature list when invoked then returns success false`() = runTest {
+    fun `given empty feature list, when invoked, then returns success false`() = runTest {
         val jsonSettings = """{"enabled_features": []}"""
         whenever(ssrModel.settings).thenReturn(jsonSettings)
         whenever(cacheResult.isError).thenReturn(false)
@@ -73,7 +73,7 @@ class WooPOSIsRemotelyEnabledTest {
     }
 
     @Test
-    fun `given null result when invoked then returns failure unknown`() = runTest {
+    fun `given null result, when invoked, then returns failure unknown`() = runTest {
         whenever(cacheResult.isError).thenReturn(false)
         whenever(cacheResult.model).thenReturn(null)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
@@ -85,7 +85,7 @@ class WooPOSIsRemotelyEnabledTest {
     }
 
     @Test
-    fun `given error result when invoked then returns failure unknown`() = runTest {
+    fun `given error result, when invoked, then returns failure unknown`() = runTest {
         whenever(cacheResult.isError).thenReturn(true)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
