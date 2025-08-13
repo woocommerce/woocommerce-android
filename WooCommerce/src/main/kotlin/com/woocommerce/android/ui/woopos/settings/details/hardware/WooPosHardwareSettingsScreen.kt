@@ -70,10 +70,7 @@ private fun HardwareSettingsMenuItem(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple()
             ) { onClick() }
-            .padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Medium.value
-            ),
+            .padding(WooPosSpacing.Medium.value),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {

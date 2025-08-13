@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,10 +40,14 @@ fun WooPosSettingsDetailPaneScreen(
 
     Column(
         modifier = modifier.fillMaxSize()
-            .padding(WooPosSpacing.Medium.value)
-            .statusBarsPadding()
     ) {
         WooPosToolbar(
+            modifier = Modifier
+                .padding(
+                    top = WooPosSpacing.Medium.value,
+                    start = WooPosSpacing.Medium.value,
+                    end = WooPosSpacing.Medium.value,
+                ),
             titleText = stringResource(state.currentDestination.titleRes),
             onBackClicked = if (state.canGoBack) onBack else null,
             titleStyle = WooPosTypography.BodyLarge,
@@ -73,12 +76,15 @@ fun WooPosSettingsDetailPaneScreen(
                 is WooPosSettingsDetailDestination.Hardware.Overview -> {
                     WooPosHardwareSettingsScreen(onNavigate = onNavigate)
                 }
+
                 is WooPosSettingsDetailDestination.Hardware.BarcodeScanners -> {
                     BarcodeScannerDetailScreen()
                 }
+
                 is WooPosSettingsDetailDestination.Hardware.CardReaders -> {
                     CardReadersDetailScreen()
                 }
+
                 is WooPosSettingsDetailDestination.Store.Overview -> {
                     StoreDetailScreen()
                 }

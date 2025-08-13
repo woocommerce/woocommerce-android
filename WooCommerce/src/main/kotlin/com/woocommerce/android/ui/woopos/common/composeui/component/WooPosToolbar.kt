@@ -32,13 +32,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 
 @Composable
 fun WooPosToolbar(
+    modifier: Modifier = Modifier,
     titleText: String,
     onBackClicked: (() -> Unit)? = null,
     titleStyle: WooPosTypography = WooPosTypography.Heading,
     titleFontWeight: FontWeight = FontWeight.Bold
 ) {
     ConstraintLayout(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
             .height(56.dp),
