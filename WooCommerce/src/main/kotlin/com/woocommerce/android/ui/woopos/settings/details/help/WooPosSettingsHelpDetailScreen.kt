@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -17,12 +19,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsMenuItem
+import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun WooPosHelpDetailScreen(
+    onShowProductInfoDialog: () -> Unit,
     viewModel: WooPosSettingsHelpDetailViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -38,21 +41,21 @@ fun WooPosHelpDetailScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        WooPosSettingsMenuItem(
+        WooPosSettingsDetailsMenuItem(
             icon = Icons.Default.SearchOff,
             title = stringResource(R.string.woopos_product_limitations_title),
             subtitle = stringResource(R.string.woopos_settings_help_product_limitations_subtitle),
-            onClick = { viewModel.onProductLimitationsClicked() }
+            onClick = { onShowProductInfoDialog() }
         )
 
-        WooPosSettingsMenuItem(
+        WooPosSettingsDetailsMenuItem(
             icon = Icons.Default.Description,
             title = stringResource(R.string.woopos_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_help_documentation_subtitle),
             onClick = { viewModel.onDocumentationClicked() }
         )
 
-        WooPosSettingsMenuItem(
+        WooPosSettingsDetailsMenuItem(
             icon = Icons.AutoMirrored.Filled.Help,
             title = stringResource(R.string.woopos_get_support_title),
             subtitle = stringResource(R.string.woopos_settings_help_get_support_subtitle),
@@ -68,21 +71,21 @@ fun WooPosHelpDetailScreenPreview() {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            WooPosSettingsMenuItem(
+            WooPosSettingsDetailsMenuItem(
                 icon = Icons.Default.SearchOff,
                 title = "Where are my products?",
                 subtitle = "Learn about which products are supported in POS",
                 onClick = { }
             )
 
-            WooPosSettingsMenuItem(
+            WooPosSettingsDetailsMenuItem(
                 icon = Icons.Default.Description,
                 title = "Documentation",
                 subtitle = "View guides and tutorials",
                 onClick = { }
             )
 
-            WooPosSettingsMenuItem(
+            WooPosSettingsDetailsMenuItem(
                 icon = Icons.AutoMirrored.Filled.Help,
                 title = "Get Support",
                 subtitle = "Contact our support team",

@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
-import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsMenuItem
+import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
 
 @Composable
 fun WooPosHardwareSettingsScreen(
@@ -27,7 +27,7 @@ fun WooPosHardwareSettingsScreen(
             .verticalScroll(rememberScrollState())
     ) {
         state.items.forEach { item ->
-            WooPosSettingsMenuItem(
+            WooPosSettingsDetailsMenuItem(
                 icon = item.icon,
                 title = stringResource(item.titleRes),
                 subtitle = stringResource(item.subtitleRes),

@@ -31,6 +31,7 @@ fun WooPosSettingsDetailPaneScreen(
     state: WooPosSettingsState,
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
+    onShowProductInfoDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentDestination = state.currentDestination
@@ -91,7 +92,7 @@ fun WooPosSettingsDetailPaneScreen(
                 }
 
                 is WooPosSettingsDetailDestination.Help.Overview -> {
-                    WooPosHelpDetailScreen()
+                    WooPosHelpDetailScreen(onShowProductInfoDialog = onShowProductInfoDialog)
                 }
             }
         }

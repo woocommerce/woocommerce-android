@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.woopos.settings
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 
 data class WooPosSettingsState(
     val selectedCategory: WooPosSettingsCategory = WooPosSettingsCategory.HARDWARE,
-    val currentDestination: WooPosSettingsDetailDestination = selectedCategory.rootDestination
+    val currentDestination: WooPosSettingsDetailDestination = selectedCategory.rootDestination,
+    val dialogState: WooPosHomeState.DialogState = WooPosHomeState.DialogState.Hidden
 ) {
     val canGoBack: Boolean
         get() = currentDestination.parentDestination != null

@@ -22,7 +22,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosSettingsMenuItem(
+fun WooPosSettingsDetailsMenuItem(
     icon: ImageVector,
     title: String,
     subtitle: String,
