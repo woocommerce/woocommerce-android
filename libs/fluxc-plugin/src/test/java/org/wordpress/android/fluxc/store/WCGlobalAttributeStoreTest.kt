@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.wc.attributes
+package org.wordpress.android.fluxc.store
 
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
@@ -19,7 +19,6 @@ import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.attributes.ProductAttributeRestClient
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
-import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.attributes.WCProductAttributesTestFixtures.attributesFullListResponse
@@ -42,7 +41,7 @@ class WCGlobalAttributeStoreTest {
                 SiteModel::class.java,
                 WCGlobalAttributeModel::class.java
             ),
-            WellSqlConfig.ADDON_WOOCOMMERCE
+            WellSqlConfig.Companion.ADDON_WOOCOMMERCE
         )
         WellSql.init(config)
         config.reset()
