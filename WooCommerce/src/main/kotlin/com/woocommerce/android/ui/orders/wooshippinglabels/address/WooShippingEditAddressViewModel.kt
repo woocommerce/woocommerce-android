@@ -123,7 +123,11 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
     private val addressValidatedFlow = snapshotFlow { address }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+            if (inputValue.error == null) {
+                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+            } else {
+                inputValue
+            }
         }
 
     private val cityValidatedFlow = snapshotFlow { city }
@@ -581,6 +585,10 @@ class WooShippingEditAddressViewModel @Inject constructor(
                         errorDescription = normalizeAddressException?.addressError
                             ?: normalizeAddressException?.generalError
                     )
+
+                    normalizeAddressException?.let { exception ->
+                        address = address.copy(error = exception.addressError)
+                    }
 
                     addressValidationState.value = AddressValidationState.VerificationFailed(
                         editableAddress.copy(
