@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos
 
 import com.google.gson.Gson
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
 import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -30,65 +31,67 @@ class WooPOSIsRemotelyEnabledTest {
     }
 
     @Test
-    fun `given feature enabled remotely when invoked then returns true`() = runTest {
-        // GIVEN
+    fun `given feature enabled remotely when invoked then returns success true`() = runTest {
         val jsonSettings = """{"enabled_features": ["point_of_sale", "other_feature"]}"""
         whenever(ssrModel.settings).thenReturn(jsonSettings)
         whenever(cacheResult.isError).thenReturn(false)
         whenever(cacheResult.model).thenReturn(ssrModel)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
-        // WHEN
         val result = sut.invoke()
 
-        // THEN
-        assertTrue(result)
+        assertTrue(result.isSuccess)
+        assertTrue(result.getOrThrow())
     }
 
     @Test
-    fun `given feature not in list when invoked then returns false`() = runTest {
+    fun `given feature not in list when invoked then returns success false`() = runTest {
         val jsonSettings = """{"enabled_features": ["something_else"]}"""
         whenever(ssrModel.settings).thenReturn(jsonSettings)
         whenever(cacheResult.isError).thenReturn(false)
         whenever(cacheResult.model).thenReturn(ssrModel)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
-        val result = sut.invoke()
+        val r = sut.invoke()
 
-        assertFalse(result)
+        assertTrue(r.isSuccess)
+        assertFalse(r.getOrThrow())
     }
 
     @Test
-    fun `given empty feature list when invoked then returns false`() = runTest {
+    fun `given empty feature list when invoked then returns success false`() = runTest {
         val jsonSettings = """{"enabled_features": []}"""
         whenever(ssrModel.settings).thenReturn(jsonSettings)
         whenever(cacheResult.isError).thenReturn(false)
         whenever(cacheResult.model).thenReturn(ssrModel)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
-        val result = sut.invoke()
+        val r = sut.invoke()
 
-        assertFalse(result)
+        assertTrue(r.isSuccess)
+        assertFalse(r.getOrThrow())
     }
 
     @Test
-    fun `given null result when invoked then returns false`() = runTest {
+    fun `given null result when invoked then returns failure unknown`() = runTest {
         whenever(cacheResult.isError).thenReturn(false)
         whenever(cacheResult.model).thenReturn(null)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
-        val result = sut.invoke()
+        val r = sut.invoke()
 
-        assertFalse(result)
+        assertTrue(r.isFailure)
+        assertTrue(r.exceptionOrNull() is WooPosCouldNotDetermineValueException)
     }
 
     @Test
-    fun `given error result when invoked then returns false`() = runTest {
+    fun `given error result when invoked then returns failure unknown`() = runTest {
         whenever(cacheResult.isError).thenReturn(true)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
-        val result = sut.invoke()
+        val r = sut.invoke()
 
-        assertFalse(result)
+        assertTrue(r.isFailure)
+        assertTrue(r.exceptionOrNull() is WooPosCouldNotDetermineValueException)
     }
 }
