@@ -10,12 +10,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 
 class WooPosTabController @Inject constructor(
     private val appPrefs: AppPrefs,
