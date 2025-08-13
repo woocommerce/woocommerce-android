@@ -12,17 +12,18 @@ class NormalizeAddress @Inject constructor(
     private val site: SelectedSite,
 ) {
     suspend operator fun invoke(address: Address): Result<AddressNormalizationModel> {
-        return site.getOrNull()?.let {
-            val response = repository.normalizeAddress(it, address)
-            val result = response.model
-            when {
-                response.isError || result == null -> {
-                    Result.failure(NormalizeAddressException(response.error.message ?: GENERAL_ERROR))
-                }
-
-                else -> Result.success(result)
+        val response = repository.normalizeAddress(site.get(), address)
+        val result = response.model
+        return when {
+            response.isError || result == null -> {
+                val message =
+                    response.error.message ?: if (result == null) "Empty response" else UNKNOWN_ERROR
+                Result.failure(Exception(message))
             }
-        } ?: Result.failure(NormalizeAddressException(GENERAL_ERROR))
+
+            result.errors != null -> Result.failure(NormalizeAddressException(errors = result.errors))
+            else -> Result.success(result)
+        }
     }
 }
 
