@@ -223,8 +223,10 @@ class WooShippingNetworkingMapper @Inject constructor(
     operator fun invoke(normalizationResponseDTO: NormalizationResponseDTO): AddressNormalizationModel {
         return AddressNormalizationModel(
             address = invoke(normalizationResponseDTO.address),
-            normalizedAddress = invoke(normalizationResponseDTO.normalizedAddress),
-            isTrivial = normalizationResponseDTO.isTrivialNormalization
+            normalizedAddress = normalizationResponseDTO.normalizedAddress?.let {
+                invoke(normalizationResponseDTO.normalizedAddress)
+            } ?: Address.EMPTY,
+            isTrivial = normalizationResponseDTO.isTrivialNormalization,
         )
     }
 

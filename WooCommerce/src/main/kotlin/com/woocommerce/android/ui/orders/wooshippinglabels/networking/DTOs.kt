@@ -195,10 +195,10 @@ data class AddressDTO(
 
 data class NormalizationResponseDTO(
     val success: Boolean,
-    val normalizedAddress: AddressDTO,
+    val normalizedAddress: AddressDTO?,
     val address: AddressDTO,
     val isTrivialNormalization: Boolean,
-    val errors: Map<String, String>
+    val errors: Map<String, String>?
 )
 
 data class UpdateAddressResponseDTO(
