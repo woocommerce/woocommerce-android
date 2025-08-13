@@ -15,7 +15,6 @@ data class WCGlobalAttributeModel(
     @Column var type: String = "",
     @Column var orderBy: String = "",
     @Column var hasArchives: Boolean = false,
-    @Column var termsId: String = "",
     @Column var remoteId: Int = 0
 ) : Identifiable {
     override fun setId(id: Int) {

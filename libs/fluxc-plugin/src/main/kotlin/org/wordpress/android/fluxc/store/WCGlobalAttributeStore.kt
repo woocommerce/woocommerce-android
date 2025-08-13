@@ -14,7 +14,6 @@ import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.getCurr
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.insertFromScratchCompleteAttributesList
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.insertOrUpdateSingleAttribute
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.insertSingleAttribute
-import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.updateSingleAttributeTermsMapping
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.updateSingleStoredAttribute
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
@@ -58,15 +57,6 @@ class WCGlobalAttributeStore @Inject constructor(
         pageSize: Int = DEFAULT_PAGE_SIZE
     ) = restClient.fetchAllAttributeTerms(site, attributeID, page, pageSize)
             .result?.map { mapper.responseToAttributeTermModel(it, attributeID.toInt(), site) }
-            ?.apply {
-                map { it.remoteId.toString() }
-                        .takeIf { it.isNotEmpty() }
-                        ?.reduce { total, new -> "$total;$new" }
-                        ?.let { termsId ->
-                            updateSingleAttributeTermsMapping(attributeID.toInt(), termsId, site.id)
-                                    ?: handleMissingAttribute(site, attributeID, termsId)
-                        }
-            }
             ?.let { WooResult(it) }
 
     suspend fun fetchAttribute(
@@ -182,16 +172,6 @@ class WCGlobalAttributeStore @Inject constructor(
                         ?.let { fetchAttribute(site, attributeID) }
                         ?: WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
-
-    private suspend fun handleMissingAttribute(
-        site: SiteModel,
-        attributeID: Long,
-        termsId: String
-    ) {
-        fetchAttribute(site, attributeID)
-                .model
-                ?.let { updateSingleAttributeTermsMapping(attributeID.toInt(), termsId, site.id) }
-    }
 
     companion object {
         const val DEFAULT_PAGE_SIZE = 100

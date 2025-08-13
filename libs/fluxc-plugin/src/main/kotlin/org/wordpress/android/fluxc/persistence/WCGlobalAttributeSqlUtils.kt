@@ -63,13 +63,6 @@ object WCGlobalAttributeSqlUtils {
                     }
                     ?: insertSingleAttribute(attribute)
 
-    fun updateSingleAttributeTermsMapping(attributeID: Int, termsMapping: String, siteID: Int) =
-        fetchSingleStoredAttribute(attributeID, siteID)
-                ?.let {
-                    it.termsId = termsMapping
-                    updateSingleStoredAttribute(it, siteID)
-                }
-
     private fun deleteCompleteAttributesList(siteID: Int) =
             WellSql.delete(WCGlobalAttributeModel::class.java)
                     .where().beginGroup()

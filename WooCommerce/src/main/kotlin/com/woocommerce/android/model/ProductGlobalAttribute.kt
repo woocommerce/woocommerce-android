@@ -16,7 +16,6 @@ data class ProductGlobalAttribute(
     val type: String,
     val orderBy: String,
     val hasArchives: Boolean,
-    val termsId: String,
     val remoteId: Long
 ) : Parcelable {
     fun toDataModel(cachedAttribute: WCGlobalAttributeModel? = null): WCGlobalAttributeModel {
@@ -28,7 +27,6 @@ data class ProductGlobalAttribute(
             it.type = type
             it.orderBy = orderBy
             it.hasArchives = hasArchives
-            it.termsId = termsId
             it.remoteId = remoteId.toInt()
         }
     }
@@ -58,6 +56,5 @@ fun WCGlobalAttributeModel.toAppModel(): ProductGlobalAttribute {
         type = this.type,
         orderBy = this.orderBy,
         hasArchives = this.hasArchives,
-        termsId = this.termsId
     )
 }
