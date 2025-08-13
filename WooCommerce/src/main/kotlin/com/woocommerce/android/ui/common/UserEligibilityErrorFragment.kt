@@ -144,14 +144,12 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
     private fun showView(user: User) {
         binding.textDisplayname.text = user.getUserNameForDisplay()
         if (user.roles.any { it == UserRole.Other("null") }) {
-            binding.textErrorMessage.text = getString(
-                R.string.user_role_access_error_user_roles_null,
-                user.getUserNameForDisplay()
-            )
+            binding.textErrorMessage.text = getString(R.string.user_role_access_error_user_roles_null)
+            binding.textUserRoles.text = user.username
         } else {
+            binding.textUserRoles.text = user.roles.joinToString(", ") { it.value }
             binding.textErrorMessage.text = getString(R.string.user_role_access_error_msg)
         }
-        binding.textUserRoles.text = user.roles.joinToString(", ") { it.value }
     }
 
     private fun showProgressDialog(show: Boolean) {
