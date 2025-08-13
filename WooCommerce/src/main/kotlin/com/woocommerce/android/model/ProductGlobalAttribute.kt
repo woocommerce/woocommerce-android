@@ -2,6 +2,8 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 
 /**
@@ -9,7 +11,6 @@ import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
  */
 @Parcelize
 data class ProductGlobalAttribute(
-    val id: Int,
     val localSiteId: Int,
     val name: String,
     val slug: String,
@@ -19,16 +20,15 @@ data class ProductGlobalAttribute(
     val remoteId: Long
 ) : Parcelable {
     fun toDataModel(cachedAttribute: WCGlobalAttributeModel? = null): WCGlobalAttributeModel {
-        return (cachedAttribute ?: WCGlobalAttributeModel()).also {
-            it.id = id
-            it.localSiteId = localSiteId
-            it.name = name
-            it.slug = slug
-            it.type = type
-            it.orderBy = orderBy
-            it.hasArchives = hasArchives
-            it.remoteId = remoteId.toInt()
-        }
+        return cachedAttribute ?: WCGlobalAttributeModel(
+            siteId = LocalId(localSiteId),
+            name = name,
+            slug = slug,
+            type = type,
+            orderBy = orderBy,
+            hasArchives = hasArchives,
+            remoteId = RemoteId(remoteId),
+        )
     }
 
     /**
@@ -48,9 +48,8 @@ data class ProductGlobalAttribute(
 
 fun WCGlobalAttributeModel.toAppModel(): ProductGlobalAttribute {
     return ProductGlobalAttribute(
-        id = this.id,
-        remoteId = this.remoteId.toLong(),
-        localSiteId = this.localSiteId,
+        remoteId = this.remoteId.value,
+        localSiteId = this.siteId.value,
         name = this.name,
         slug = this.slug,
         type = this.type,

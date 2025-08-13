@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.wc.attributes
 
 import org.wordpress.android.fluxc.JsonLoaderUtils.jsonFileAs
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.attributes.AttributeApiResponse
@@ -21,22 +22,22 @@ object WCProductAttributesTestFixtures {
     val parsedAttributesList by lazy {
         listOf(
             WCGlobalAttributeModel(
-                1,
-                stubSite.id,
-                "Color",
-                "pa_color",
-                "select",
-                "menu_order",
-                true
+                siteId = stubSite.localId(),
+                remoteId = RemoteId(1),
+                name = "Color",
+                slug = "pa_color",
+                type = "select",
+                orderBy = "menu_order",
+                hasArchives = true
             ),
             WCGlobalAttributeModel(
-                2,
-                stubSite.id,
-                "Size",
-                "pa_size",
-                "select",
-                "menu_order",
-                false
+                siteId = stubSite.localId(),
+                remoteId = RemoteId(2),
+                name = "Size",
+                slug = "pa_size",
+                type = "select",
+                orderBy = "menu_order",
+                hasArchives = false
             )
         )
     }

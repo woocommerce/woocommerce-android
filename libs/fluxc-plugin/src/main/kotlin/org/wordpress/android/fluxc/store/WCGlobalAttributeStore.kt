@@ -8,16 +8,16 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.attributes.ProductAttributeRestClient
-import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.getCurrentAttributes
-import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.insertFromScratchCompleteAttributesList
+import org.wordpress.android.fluxc.persistence.dao.GlobalAttributesDao
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WCGlobalAttributeStore @Inject constructor(
+class WCGlobalAttributeStore @Inject internal constructor(
     private val restClient: ProductAttributeRestClient,
+    private val globalAttributesDao: GlobalAttributesDao,
     private val mapper: WCGlobalAttributeMapper,
     private val coroutineEngine: CoroutineEngine
 ) {
@@ -30,12 +30,10 @@ class WCGlobalAttributeStore @Inject constructor(
                         .model
                         ?.takeIf { it.isNotEmpty() }
                         ?.let { mapper.responseToAttributeModelList(it, site) }
-                        ?.let {
-                            insertFromScratchCompleteAttributesList(it, site.id)
-                            getCurrentAttributes(site.id)
-                        }
+                        ?.also { globalAttributesDao.replaceAllForSite(site.localId(), it) }
+                        ?.let { globalAttributesDao.getAttributesForSite(site.localId()) }
                         ?.let { WooResult(it) }
-                        ?: getCurrentAttributes(site.id)
+                        ?: globalAttributesDao.getAttributesForSite(site.localId())
                                 .takeIf { it.isNotEmpty() }
                                 ?.let { WooResult(it) }
                         ?: WooResult(WooError(GENERIC_ERROR, UNKNOWN))
@@ -43,7 +41,7 @@ class WCGlobalAttributeStore @Inject constructor(
 
     suspend fun loadCachedStoreAttributes(
         site: SiteModel
-    ) = WooResult(getCurrentAttributes(site.id))
+    ) = WooResult(globalAttributesDao.getAttributesForSite(site.localId()))
 
     suspend fun fetchAttributeTerms(
         site: SiteModel,

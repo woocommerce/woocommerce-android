@@ -1,25 +1,19 @@
 package org.wordpress.android.fluxc.model.attribute
 
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import androidx.room.Entity
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
+@Entity(
+    tableName = "GlobalAttributeEntity",
+    primaryKeys = ["siteId", "remoteId"]
+)
 data class WCGlobalAttributeModel(
-    @PrimaryKey @Column private var id: Int = 0,
-    @Column var localSiteId: Int = 0,
-    @Column var name: String = "",
-    @Column var slug: String = "",
-    @Column var type: String = "",
-    @Column var orderBy: String = "",
-    @Column var hasArchives: Boolean = false,
-    @Column var remoteId: Int = 0
-) : Identifiable {
-    override fun setId(id: Int) {
-        this.id = id
-    }
-
-    override fun getId() = id
-}
+    val siteId: LocalId = LocalId(0),
+    val remoteId: RemoteId = RemoteId(0),
+    var name: String = "",
+    var slug: String = "",
+    var type: String = "",
+    var orderBy: String = "",
+    var hasArchives: Boolean = false,
+)

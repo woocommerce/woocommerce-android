@@ -6,6 +6,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeMapper
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.wc.attributes.WCProductAttributesTestFixtures.attributeCreateResponse
@@ -53,7 +54,7 @@ class WCGlobalAttributeMapperTest {
         mapperUnderTest.responseToAttributeModel(attributeCreateResponse!!, stubSite)
             .let { result ->
                 assertThat(result).isNotNull
-                assertThat(result.remoteId).isEqualTo(1)
+                assertThat(result.remoteId).isEqualTo(RemoteId(1))
                 assertThat(result.name).isEqualTo("Color")
                 assertThat(result.slug).isEqualTo("pa_color")
                 assertThat(result.type).isEqualTo("select")
