@@ -44,7 +44,6 @@ import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
@@ -132,8 +131,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val shippingLabelRepository: WooShippingLabelRepository = mock()
     private val shippingEligibilityDataStore: WooShippingEligibilityDataStore = mock()
 
-    private val configDataStore: WooShippingConfigDataStore = mock()
-
     private val savedState = OrderDetailFragmentArgs(
         orderId = ORDER_ID,
         allOrderIds = arrayOf(ORDER_ID).toLongArray()
@@ -215,7 +212,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 shippingLabelOnboardingRepository,
                 shippingLabelRepository,
                 shippingEligibilityDataStore,
-                configDataStore,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
@@ -642,8 +638,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
             doReturn(flowOf(true))
                 .whenever(shippingEligibilityDataStore).observeEligibility(any())
-            doReturn(flowOf(OrderTestUtils.generateShippingLabelModels(2)))
-                .whenever(configDataStore).getPurchasedLabels(any())
+            doReturn(OrderTestUtils.generateShippingLabelModels(2))
+                .whenever(shippingLabelRepository).getLabels(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -945,8 +941,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `show shipping label creation if the order is eligible`() = testBlocking {
         doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
             .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
-        doReturn(flowOf(OrderTestUtils.generateShippingLabelModels(2)))
-            .whenever(configDataStore).getPurchasedLabels(any())
+        doReturn(OrderTestUtils.generateShippingLabelModels(2))
+            .whenever(shippingLabelRepository).getLabels(any())
         doReturn(flowOf(true))
             .whenever(shippingEligibilityDataStore).observeEligibility(any())
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())

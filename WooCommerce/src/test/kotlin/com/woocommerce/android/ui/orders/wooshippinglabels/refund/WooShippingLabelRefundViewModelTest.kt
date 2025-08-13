@@ -45,7 +45,6 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
             ).toSavedStateHandle(),
             selectedSite = selectedSite,
             repository = repository,
-            configDataStore = mock(),
             networkStatus = networkStatus,
             currencyFormatter = mock(),
             tracker = tracker
@@ -55,7 +54,7 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
     @Test
     fun `when refund is successful, show success message and exit`() = testBlocking {
         // Given
-        var capturedEvents = mutableListOf<Event>()
+        val capturedEvents = mutableListOf<Event>()
         viewModel.event.observeForever { capturedEvents.add(it) }
         whenever(
             repository.refundLabel(site = mockSite, orderId = mockOrderId, labelId = mockLabelId)
