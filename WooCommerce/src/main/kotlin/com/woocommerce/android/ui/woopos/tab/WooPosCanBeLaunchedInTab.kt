@@ -55,10 +55,11 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         val siteSettings = resolveSiteSettings(site, forceRefresh)
             ?: return fallbackUnknownOrCache(cachedPositive)
 
-        return if (isCountryAndCurrencySupported(siteSettings.countryCode, siteSettings.currencyCode)) {
-            WooPosLaunchability.Launchable
+        if (isCountryAndCurrencySupported(siteSettings.countryCode, siteSettings.currencyCode)) {
+            appPrefs.setPOSLaunchableForSite(site.id)
+            return WooPosLaunchability.Launchable
         } else {
-            WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
+            return WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
         }
     }
 

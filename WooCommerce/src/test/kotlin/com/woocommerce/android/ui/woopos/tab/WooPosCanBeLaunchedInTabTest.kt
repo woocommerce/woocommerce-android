@@ -14,6 +14,8 @@ import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -197,6 +199,22 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
 
         val result = sut(forceRefresh = true)
         assertEquals(Launchable, result)
+    }
+
+    @Test
+    fun `given supported country and currency from cache, when invoked, then sets POS launchable for site`() = testBlocking {
+        val result = sut()
+        assertEquals(Launchable, result)
+
+        verify(appPrefs, times(1)).setPOSLaunchableForSite(eq(siteModel.id))
+    }
+
+    @Test
+    fun `given forceRefresh true with valid data, when invoked, then sets POS launchable for site`() = testBlocking {
+        val result = sut(forceRefresh = true)
+        assertEquals(Launchable, result)
+
+        verify(appPrefs, times(1)).setPOSLaunchableForSite(eq(siteModel.id))
     }
 
     private fun buildSiteSettings(
