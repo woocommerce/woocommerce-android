@@ -290,6 +290,7 @@
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
     <string name="login_no_wpcom_account_found">Your email isn\'t used with a WordPress.com account.</string>
+    <string name="user_role_access_error_user_roles_null">This app supports only Administrator and Shop Manager user roles. We were unable to fetch user roles for your account. Please contact support.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
@@ -2654,14 +2655,22 @@
     <string name="support_contact_email_not_set">Not set</string>
     <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_push_notification_message">New message from \'Help &amp; Support\'</string>
-    <string name="logviewer_activity_title">Application log</string>
-    <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
-    <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
-    <string name="logviewer_share_error">Unable to share log</string>
     <string name="about_appname">WooCommerce for Android</string>
     <string name="about_tos">Terms of Service</string>
     <string name="about_version">Version %s</string>
     <string name="about_copyright" translatable="false">© %1$d WooCommerce, Inc and WooCommerce Ireland Ltd</string>
+
+    <!--
+        Log Viewer
+    -->
+    <string name="logviewer_activity_title">Application log</string>
+    <string name="logviewer_copied_to_clipboard">Log copied to clipboard</string>
+    <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
+    <string name="logviewer_share_error">Unable to share log</string>
+    <string name="logviewer_log_files_list_header">Log files by created date</string>
+    <string name="logviewer_log_files_list_footer">Up to seven day\'s worth of logs are stored.</string>
+    <string name="logviewer_current_log_file">Current</string>
+
     <!--
         Login Library Imported Strings
     -->
@@ -4299,6 +4308,7 @@
     <string name="woopos_variable_product_item_content_description_v2">Variable Product %s</string>
     <string name="woopos_variation_item_content_description">Variation %s, Price %s</string>
     <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_cart_clear_all_button_content_description">Clear items in cart icon</string>
     <string name="woopos_cart_item_loading_content_description">Loading item %s</string>
     <string name="woopos_cart_item_error_content_description">Error loading item %s</string>
     <string name="woopos_coupon_item_content_description_v2">Coupon %s, %s</string>
@@ -4315,7 +4325,7 @@
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
     <string name="woopos_cart_barcode_scan_result_too_short">Scanned barcode is too short</string>
     <string name="woopos_cart_barcode_scan_result_no_terminator">Scanner did not send end-of-line character</string>
-    <string name="woopos_clear_cart_button">Clear</string>
+    <string name="woopos_clear_cart_button">Clear cart</string>
 
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
@@ -4329,6 +4339,7 @@
     <string name="woopos_dialog_products_info_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
 
 
+    <string name="woopos_settings_title">Settings</string>
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_barcode_scanning_title">Initial barcode scanner setup</string>

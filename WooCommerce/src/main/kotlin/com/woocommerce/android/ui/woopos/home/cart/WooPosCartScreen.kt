@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,9 +34,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.LocalOffer
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +50,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -79,8 +84,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -321,6 +326,7 @@ private fun AnnounceCartItemChangesForAccessibility(
                     localView.context.getString(R.string.woopos_cart_searching_for_item)
             }
 
+            @Suppress("DEPRECATION")
             localView.announceForAccessibility(message)
         }
         previousItems.value = items
@@ -440,16 +446,65 @@ private fun CartToolbar(
         }
 
         if (toolbar.isClearAllButtonVisible) {
-            WooPosOutlinedButtonSmall(
-                onClick = { onClearAllClicked() },
+            ClearCartButton(
                 modifier = Modifier
                     .constrainAs(clearAllButton) {
                         end.linkTo(parent.end)
                         centerVerticallyTo(parent)
                     }
                     .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding()),
-                text = stringResource(R.string.woopos_clear_cart_button)
+                onClearCartClicked = onClearAllClicked
             )
+        }
+    }
+}
+
+@Composable
+private fun ClearCartButton(
+    modifier: Modifier = Modifier,
+    onClearCartClicked: () -> Unit
+) {
+    var dropdownExpanded by remember { mutableStateOf(false) }
+    val clearCartButtonText = stringResource(R.string.woopos_clear_cart_button)
+
+    Box(modifier = modifier) {
+        WooPosIconButton(
+            icon = Icons.Default.DeleteOutline,
+            enabled = !dropdownExpanded,
+            onClick = { dropdownExpanded = true },
+            contentDescription = stringResource(
+                id = R.string.woopos_cart_clear_all_button_content_description
+            ),
+        )
+
+        MaterialTheme(
+            shapes = MaterialTheme.shapes.copy(
+                extraSmall = RoundedCornerShape(WooPosCornerRadius.Medium.value)
+            )
+        ) {
+            DropdownMenu(
+                expanded = dropdownExpanded,
+                onDismissRequest = { dropdownExpanded = false },
+                modifier = Modifier.defaultMinSize(minWidth = 200.dp)
+                    .background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        WooPosText(
+                            text = clearCartButtonText,
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    },
+                    onClick = {
+                        dropdownExpanded = false
+                        onClearCartClicked()
+                    },
+                    modifier = Modifier.semantics {
+                        contentDescription = clearCartButtonText
+                    }
+                )
+            }
         }
     }
 }

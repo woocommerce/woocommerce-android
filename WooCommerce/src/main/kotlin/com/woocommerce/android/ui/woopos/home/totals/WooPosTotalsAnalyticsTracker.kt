@@ -95,4 +95,8 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
     suspend fun trackCreateNewOrderTapped() {
         analyticsTracker.track(CreateNewOrderTapped)
     }
+
+    suspend fun trackCashPaymentTapped() {
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.CheckoutCashPaymentTapped)
+    }
 }

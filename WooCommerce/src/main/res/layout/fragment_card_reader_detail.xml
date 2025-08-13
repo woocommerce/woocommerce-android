@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
         android:elevation="@dimen/appbar_elevation"
         app:layout_collapseMode="pin"
-        style="@style/Widget.Woo.Toolbar"
-        tools:title="@string/app_name"/>
+        tools:title="@string/app_name" />
 
     <View style="@style/Woo.Divider" />
 
@@ -38,5 +38,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
     </FrameLayout>
+
+    <!-- Invisible text view for better talkback support -->
+    <TextView
+        android:id="@+id/card_reader_connection_state"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:accessibilityLiveRegion="polite"
+        android:importantForAccessibility="yes" />
 
 </LinearLayout>

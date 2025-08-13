@@ -14,10 +14,10 @@ import com.woocommerce.android.databinding.CardReaderUpdateDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
-import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateAboutToStart
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateProgress
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.announceAccessibilityChange
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -57,9 +57,6 @@ class CardReaderUpdateDialogFragment : PaymentsBaseDialogFragment(R.layout.card_
                 is SoftwareUpdateProgress ->
                     announceSoftwareUpdateProgress(event.progress, binding)
 
-                is SoftwareUpdateAboutToStart ->
-                    binding.root.announceForAccessibility(getString(event.accessibilityText))
-
                 else -> event.isHandled = false
             }
         }
@@ -87,7 +84,7 @@ class CardReaderUpdateDialogFragment : PaymentsBaseDialogFragment(R.layout.card_
         binding: CardReaderUpdateDialogBinding
     ) {
         val progress = UiHelpers.getTextOfUiString(requireActivity(), progressText)
-        binding.progressTextView.announceForAccessibility(progress)
+        binding.progressTextView.announceAccessibilityChange(progress)
     }
 
     override fun onResume() {

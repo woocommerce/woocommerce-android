@@ -38,6 +38,11 @@ object WCSettingsTestUtils {
             .jsonFileAs(Array<SiteSettingsResponse>::class.java)
             ?.toList()
 
+    fun getMalformedCurrencyPosSiteSettingsResponse() =
+        "wc/site-settings-malformed-currency-pos.json"
+            .jsonFileAs(Array<SiteSettingsResponse>::class.java)
+            ?.toList()
+
     fun getSiteProductSettingsResponse() =
         "wc/product-settings-response.json"
             .jsonFileAs(Array<SiteSettingsResponse>::class.java)

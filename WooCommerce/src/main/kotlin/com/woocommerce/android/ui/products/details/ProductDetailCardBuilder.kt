@@ -85,7 +85,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 
 @Suppress("LargeClass", "LongParameterList")
@@ -474,7 +473,7 @@ class ProductDetailCardBuilder(
     }
 
     @Suppress("LongMethod")
-    private fun ProductAggregate.shipping(): ProductProperty? {
+    private suspend fun ProductAggregate.shipping(): ProductProperty? {
         val currentProduct = this.product
         return if (!currentProduct.isVirtual && hasShipping) {
             val weightWithUnits = product.getWeightWithUnits(parameters.weightUnit)
@@ -484,7 +483,7 @@ class ProductDetailCardBuilder(
                 put(resources.getString(string.product_dimensions), sizeWithUnits)
                 put(
                     resources.getString(string.product_shipping_class),
-                    runBlocking { viewModel.getShippingClassByRemoteShippingClassId(currentProduct.shippingClassId) }
+                    viewModel.getShippingClassByRemoteShippingClassId(currentProduct.shippingClassId)
                 )
 
                 // Only add "One time shipping" info if product is Subscription types
@@ -494,6 +493,25 @@ class ProductDetailCardBuilder(
                         buildOneTimeShippingDescription(subscription)
                     )
                 }
+            }
+
+            val subscriptionShippingData = if (product.productType == SUBSCRIPTION ||
+                product.productType == VARIABLE_SUBSCRIPTION
+            ) {
+                ShippingData.SubscriptionShippingData(
+                    oneTimeShipping = subscription?.oneTimeShipping ?: false,
+                    canEnableOneTimeShipping = if (product.productType == SUBSCRIPTION) {
+                        subscription?.supportsOneTimeShipping ?: false
+                    } else {
+                        // For variable subscription products, we need to check against the variations
+                        variationRepository.getProductVariationList(product.remoteId).all {
+                            (it as? SubscriptionProductVariation)?.subscriptionDetails
+                                ?.supportsOneTimeShipping ?: false
+                        }
+                    }
+                )
+            } else {
+                null
             }
 
             PropertyGroup(
@@ -510,26 +528,7 @@ class ProductDetailCardBuilder(
                             height = product.height,
                             shippingClassSlug = product.shippingClass,
                             shippingClassId = product.shippingClassId,
-                            subscriptionShippingData = if (product.productType == SUBSCRIPTION ||
-                                product.productType == VARIABLE_SUBSCRIPTION
-                            ) {
-                                ShippingData.SubscriptionShippingData(
-                                    oneTimeShipping = subscription?.oneTimeShipping ?: false,
-                                    canEnableOneTimeShipping = if (product.productType == SUBSCRIPTION) {
-                                        subscription?.supportsOneTimeShipping ?: false
-                                    } else {
-                                        // For variable subscription products, we need to check against the variations
-                                        runBlocking {
-                                            variationRepository.getProductVariationList(product.remoteId).all {
-                                                (it as? SubscriptionProductVariation)?.subscriptionDetails
-                                                    ?.supportsOneTimeShipping ?: false
-                                            }
-                                        }
-                                    }
-                                )
-                            } else {
-                                null
-                            }
+                            subscriptionShippingData = subscriptionShippingData
                         )
                     ),
                     AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED

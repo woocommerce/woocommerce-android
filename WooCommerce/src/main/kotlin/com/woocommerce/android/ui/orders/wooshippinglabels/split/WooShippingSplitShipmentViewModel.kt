@@ -46,8 +46,10 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
     init {
         launch {
-            delay(TOOLTIP_DELAY)
-            splitMessage.value = SplitShipmentMessage.Instructions
+            if (currentShipments.value.size == 1) {
+                delay(TOOLTIP_DELAY)
+                splitMessage.value = SplitShipmentMessage.Instructions
+            }
         }
         launch {
             currentShipments.collectLatest { shipments ->
