@@ -17,6 +17,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.POS
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import okhttp3.CacheControl
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -40,11 +41,13 @@ class WooPosCatalogDownloadWorker @AssistedInject constructor(
         WooLog.i(POS, "Starting WooPOS catalog download from $POS_CATALOG_URL")
 
         val client = OkHttpClient.Builder()
+            .cache(null)
             .retryOnConnectionFailure(true)
             .build()
 
         val request = Request.Builder()
             .url(POS_CATALOG_URL)
+            .cacheControl(CacheControl.Builder().noStore().build())
             .get()
             .build()
 
