@@ -80,9 +80,11 @@ internal fun AddressSectionPortrait(
                 Modifier
                     .padding(start = dimensionResource(R.dimen.major_100))
                     .constrainAs(destinationAddressStatus) {
-                        top.linkTo(divider.bottom)
                         start.linkTo(barrier)
+                        top.linkTo(divider.bottom)
+                        end.linkTo(endBarrier)
                         bottom.linkTo(parent.bottom)
+                        width = Dimension.fillToConstraints
                     }
             } else {
                 Modifier
@@ -91,8 +93,10 @@ internal fun AddressSectionPortrait(
                         start = dimensionResource(R.dimen.major_100)
                     )
                     .constrainAs(destinationAddressStatus) {
-                        top.linkTo(shipToValue.bottom)
                         start.linkTo(shipToValue.start)
+                        top.linkTo(shipToValue.bottom)
+                        end.linkTo(shipToValue.end)
+                        width = Dimension.fillToConstraints
                     }
             }
 

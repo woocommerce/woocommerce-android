@@ -3,12 +3,13 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 23.1
 -----
-- [*] Updated behavior on the POS cash payment screen [https://github.com/woocommerce/woocommerce-android/pull/14449]
-
-23.1
------
+- [*] You can now remove background from product images in the app. Just open the product image and click "Remove background" button. [https://github.com/woocommerce/woocommerce-android/pull/14445]
 - [*] Fixed bug when an order was not selected when navigating from my store screen [https://github.com/woocommerce/woocommerce-android/pull/14436]
-
+- [*] [Shipping Labels] Display split shipment instructions only when necessary [https://github.com/woocommerce/woocommerce-android/pull/14450]
+- [*] Updated behavior on the POS cash payment screen [https://github.com/woocommerce/woocommerce-android/pull/14449]
+- [Internal] Added support for persisting log files in the app's internal storage [https://github.com/woocommerce/woocommerce-android/pull/14425]
+- [*] Shipping Labels: Fix layout issue with address status indicator [https://github.com/woocommerce/woocommerce-android/pull/14437]
+- [*] Shipping Labels: Updated shipments tab layout [https://github.com/woocommerce/woocommerce-android/pull/14448]
 
 23.0
 -----
@@ -21,13 +22,13 @@
 - [*] Bottom navigation menu has now labels shown under icons on tablet devices [https://github.com/woocommerce/woocommerce-android/pull/14429]
 - [Internal] Suppress edge to edge for Google PlayCoreDialogWrapperActivity [https://github.com/woocommerce/woocommerce-android/pull/14435]
 - [*] POS: Replace clear cart button with delete icon and add confirmation dropdown menu [https://github.com/woocommerce/woocommerce-android/pull/14441]
+- [*] Fix `No enum constant` on `CurrencyPosition` [https://github.com/woocommerce/woocommerce-android/pull/14423]
 
 22.9.1
 -----
 - [*] POS: Barcode scanning on the order success screen now opens the cart and adds an item to the cart [https://github.com/woocommerce/woocommerce-android/pull/14382]
 - [*] POS: Fixes an issue with the Barcode Scanner Setup flow that could result in an inconsistent UI state on the Checkout and Payment Success Screens [https://github.com/woocommerce/woocommerce-android/pull/14396]
 - [**] You can now access POS mode faster than ever with the new POS tab in the app’s bottom navigation bar—just one tap and you’re in! If you spotted this feature mentioned a couple releases ago… well, let’s just say we got a little too excited. 😅 It’s finally here for real, and fully available in the UK and US! [https://github.com/woocommerce/woocommerce-android/pull/14337]
-
 
 22.9
 -----

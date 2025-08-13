@@ -1,5 +1,6 @@
 package com.woocommerce.android.notifications.local
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.hilt.work.HiltWorker
@@ -19,8 +20,8 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Co
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TITLE
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.WooLogWrapper
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -31,7 +32,7 @@ class LocalNotificationWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val wooNotificationBuilder: WooNotificationBuilder,
     private val appsPrefsWrapper: AppPrefsWrapper,
-    private val wooLogWrapper: WooLogWrapper
+    private val wooLog: WooLog
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -42,6 +43,7 @@ class LocalNotificationWorker @AssistedInject constructor(
         val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
         val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
 
+        @SuppressLint("MissingPermission") // We check for notification permission in PreconditionCheckWorker
         if (siteId != 0L && type != null && notificationId != -1 && title != null && description != null) {
             val notification = buildNotification(notificationId, siteId, type, title, description, data)
             wooNotificationBuilder.buildAndDisplayLocalNotification(
@@ -59,7 +61,7 @@ class LocalNotificationWorker @AssistedInject constructor(
                 )
             )
         } else {
-            wooLogWrapper.e(T.NOTIFICATIONS, "Scheduled local notification data is invalid")
+            wooLog.e(T.NOTIFICATIONS, "Scheduled local notification data is invalid")
         }
         return Result.success()
     }

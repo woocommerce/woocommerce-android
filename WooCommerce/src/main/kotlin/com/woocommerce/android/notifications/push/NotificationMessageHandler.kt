@@ -16,8 +16,8 @@ import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType.NewOrder
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFS
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
@@ -35,7 +35,7 @@ class NotificationMessageHandler @Inject constructor(
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
-    private val wooLogWrapper: WooLogWrapper,
+    private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
@@ -69,37 +69,37 @@ class NotificationMessageHandler @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod")
     fun onNewMessageReceived(messageData: Map<String, String>) {
         if (!accountStore.hasAccessToken()) {
-            wooLogWrapper.e(NOTIFS, "User is not logged in!")
+            wooLog.e(NOTIFS, "User is not logged in!")
             return
         }
 
         if (!selectedSite.exists()) {
-            wooLogWrapper.e(NOTIFS, "User has no site selected!")
+            wooLog.e(NOTIFS, "User has no site selected!")
             return
         }
 
         if (messageData.isEmpty()) {
-            wooLogWrapper.e(NOTIFS, "Push notification received without a valid Bundle!")
+            wooLog.e(NOTIFS, "Push notification received without a valid Bundle!")
             return
         }
 
         val pushUserId = messageData[PUSH_ARG_USER]
         // pushUserId is always set server side, but better to double check it here.
         if (accountStore.account.userId.toString() != pushUserId) {
-            wooLogWrapper.e(NOTIFS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
+            wooLog.e(NOTIFS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
             return
         }
 
         val notificationModel = notificationsParser.buildNotificationModelFromPayloadMap(messageData)
         if (notificationModel == null) {
-            wooLogWrapper.e(NOTIFS, "Notification data is empty!")
+            wooLog.e(NOTIFS, "Notification data is empty!")
             return
         }
 
         val notification = notificationModel.toAppModel(resourceProvider)
         if (notification.remoteNoteId == 0L) {
             // At this point 'note_id' is always available in the notification bundle.
-            wooLogWrapper.e(NOTIFS, "Push notification received without a valid note_id in the payload!")
+            wooLog.e(NOTIFS, "Push notification received without a valid note_id in the payload!")
             return
         }
 

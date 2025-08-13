@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.toolbar
 
-data class ToolbarAccessibilityLabels(
+data class WooPosToolbarAccessibilityLabels(
     val cardReaderStatusContentDescription: String,
     val floatingToolbarPopUpMenuStateDescription: String,
     val floatingToolbarMenuOverlayContentDescription: String,
