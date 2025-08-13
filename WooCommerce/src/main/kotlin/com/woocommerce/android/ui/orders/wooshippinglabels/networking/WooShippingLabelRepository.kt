@@ -164,14 +164,14 @@ class WooShippingLabelRepository @Inject constructor(
             address = mapper.toAddressDTO(address)
         )
 
-        return if (normalizedAddress.result?.success == true) {
+        return if (normalizedAddress.result?.success == true || normalizedAddress.result?.errors != null) {
             normalizedAddress.asWooResult { mapper(it) }
         } else {
             WooResult(
                 WooError(
                     type = WooErrorType.API_ERROR,
                     original = GenericErrorType.INVALID_RESPONSE,
-                    message = normalizedAddress.result?.errors?.keys?.first()
+                    message = "Address normalization failed"
                 )
             )
         }
