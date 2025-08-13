@@ -9,11 +9,11 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
     primaryKeys = ["siteId", "remoteId"]
 )
 data class WCGlobalAttributeModel(
-    val siteId: LocalId = LocalId(0),
-    val remoteId: RemoteId = RemoteId(0),
-    var name: String = "",
-    var slug: String = "",
-    var type: String = "",
-    var orderBy: String = "",
-    var hasArchives: Boolean = false,
+    val siteId: LocalId,
+    val remoteId: RemoteId,
+    var name: String,
+    var slug: String,
+    var type: String,
+    var orderBy: String,
+    var hasArchives: Boolean,
 )

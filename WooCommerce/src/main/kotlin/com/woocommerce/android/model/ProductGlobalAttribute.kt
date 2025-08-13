@@ -22,12 +22,12 @@ data class ProductGlobalAttribute(
     fun toDataModel(cachedAttribute: WCGlobalAttributeModel? = null): WCGlobalAttributeModel {
         return cachedAttribute ?: WCGlobalAttributeModel(
             siteId = LocalId(localSiteId),
+            remoteId = RemoteId(remoteId),
             name = name,
             slug = slug,
             type = type,
             orderBy = orderBy,
             hasArchives = hasArchives,
-            remoteId = RemoteId(remoteId),
         )
     }
 
