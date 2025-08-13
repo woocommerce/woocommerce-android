@@ -23,7 +23,7 @@ class WooPosTabShouldBeVisible @Inject constructor(
             ?: return@withContext Result.failure(WooPosCouldNotDetermineValueException())
 
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) {
-            return@withContext Result.success(true).also {
+            return@withContext Result.success(false).also {
                 wooPosLog.i("POS Tab Not visible reason: Remote feature flag is disabled")
             }
         }
