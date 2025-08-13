@@ -41,7 +41,7 @@ class WCGlobalAttributeStore @Inject constructor(
                         ?: WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
 
-    fun loadCachedStoreAttributes(
+    suspend fun loadCachedStoreAttributes(
         site: SiteModel
     ) = WooResult(getCurrentAttributes(site.id))
 
