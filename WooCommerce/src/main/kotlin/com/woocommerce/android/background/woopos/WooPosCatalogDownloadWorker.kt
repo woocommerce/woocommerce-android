@@ -11,6 +11,8 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.google.gson.Gson
+import com.google.gson.stream.JsonReader
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.POS
 import dagger.assisted.Assisted
@@ -69,6 +71,12 @@ class WooPosCatalogDownloadWorker @AssistedInject constructor(
                 }
 
                 WooLog.i(POS, "WooPOS catalog download finished successfully")
+                // Attempt to deserialize and print next products from the saved file (streaming)
+                try {
+                    parseAndLogProducts(outputFile)
+                } catch (t: Throwable) {
+                    WooLog.e(POS, "Failed to parse products from saved catalog", t)
+                }
                 Result.success()
             }
         } catch (io: IOException) {
@@ -144,6 +152,35 @@ internal fun streamToLogAndFile(
         }
     }
     fileSink.flush()
+}
+
+private data class CatalogProduct(
+    val id: Long?,
+    val name: String?
+)
+
+private fun parseAndLogProducts(file: File) {
+    file.inputStream().buffered().reader(Charsets.UTF_8).use { isr ->
+        val reader = JsonReader(isr)
+        val gson = Gson()
+        reader.beginObject()
+        while (reader.hasNext()) {
+            val name = reader.nextName()
+            if (name == "products") {
+                reader.beginArray()
+                while (reader.hasNext()) {
+                    val product = gson.fromJson<CatalogProduct>(reader, CatalogProduct::class.java)
+                    WooLog.i(POS, "Product: id=${product.id}, name=${product.name}")
+                }
+                // We don't need to read the rest for this POC
+                break
+            } else {
+                reader.skipValue()
+            }
+        }
+        // Close reader to stop further parsing
+        reader.close()
+    }
 }
 
 
