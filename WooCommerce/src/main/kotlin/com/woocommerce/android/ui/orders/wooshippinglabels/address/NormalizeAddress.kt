@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.address
 
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.NormalizeAddressException.Companion.GENERAL_ERROR
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.NormalizeAddressException.Companion.UNKNOWN_ERROR
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import javax.inject.Inject
@@ -28,6 +28,8 @@ class NormalizeAddress @Inject constructor(
 
 class NormalizeAddressException(val error: String) : Exception(error) {
     companion object {
-        const val GENERAL_ERROR = "general"
+        const val ERROR_GENERAL = "general"
+        const val ERROR_ADDRESS = "address"
+        const val UNKNOWN_ERROR = "Unknown error"
     }
 }
