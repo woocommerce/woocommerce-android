@@ -504,7 +504,8 @@ fun SelectableProductsSection(
                 Text(
                     text = stringResource(R.string.woo_shipping_split_shipment_purchased_message_title),
                     color = colorResource(R.color.woo_shipping_label_success),
-                    style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.SemiBold)
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = stringResource(R.string.woo_shipping_split_shipment_purchased_message_desc),
