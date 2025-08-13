@@ -35,14 +35,14 @@ class WCGlobalAttributeStoreTest {
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
+        val appContext = RuntimeEnvironment.getApplication().applicationContext
         val config = SingleStoreWellSqlConfigForTests(
-                appContext,
-                listOf(
-                        SiteModel::class.java,
-                        WCGlobalAttributeModel::class.java
-                ),
-                WellSqlConfig.ADDON_WOOCOMMERCE
+            appContext,
+            listOf(
+                SiteModel::class.java,
+                WCGlobalAttributeModel::class.java
+            ),
+            WellSqlConfig.ADDON_WOOCOMMERCE
         )
         WellSql.init(config)
         config.reset()
@@ -53,7 +53,7 @@ class WCGlobalAttributeStoreTest {
     @Test
     fun `fetch attributes with empty result should return WooError`() = test {
         whenever(restClient.fetchProductFullAttributesList(stubSite))
-                .thenReturn(WooPayload(emptyArray()))
+            .thenReturn(WooPayload(emptyArray()))
         val result = storeUnderTest.fetchStoreAttributes(stubSite)
         assertThat(result.model).isNull()
         assertThat(result.error).isNotNull
@@ -64,7 +64,7 @@ class WCGlobalAttributeStoreTest {
         mapper = spy()
         createStoreUnderTest()
         whenever(restClient.fetchProductFullAttributesList(stubSite))
-                .thenReturn(WooPayload(attributesFullListResponse))
+            .thenReturn(WooPayload(attributesFullListResponse))
 
         storeUnderTest.fetchStoreAttributes(stubSite)
         verify(mapper).responseToAttributeModelList(attributesFullListResponse!!, stubSite)
@@ -73,10 +73,10 @@ class WCGlobalAttributeStoreTest {
     @Test
     fun `fetch attributes should return WooResult correctly`() = test {
         whenever(restClient.fetchProductFullAttributesList(stubSite))
-                .thenReturn(WooPayload(attributesFullListResponse))
+            .thenReturn(WooPayload(attributesFullListResponse))
 
         whenever(mapper.responseToAttributeModelList(attributesFullListResponse!!, stubSite))
-                .thenReturn(parsedAttributesList)
+            .thenReturn(parsedAttributesList)
 
         storeUnderTest.fetchStoreAttributes(stubSite).let { result ->
             assertThat(result.model).isNotNull
@@ -91,9 +91,9 @@ class WCGlobalAttributeStoreTest {
     }
 
     private fun createStoreUnderTest() =
-            WCGlobalAttributeStore(
-                    restClient,
-                    mapper,
-                    initCoroutineEngine()
-            ).apply { storeUnderTest = this }
+        WCGlobalAttributeStore(
+            restClient,
+            mapper,
+            initCoroutineEngine()
+        ).apply { storeUnderTest = this }
 }
