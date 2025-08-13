@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosHardwareSettingsViewModel @Inject constructor() : ViewModel() {
+class WooPosSettingsHardwareViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(WooPosHardwareSettingsState())
     val state: StateFlow<WooPosHardwareSettingsState> = _state.asStateFlow()
 }

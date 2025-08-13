@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestinatio
 @Composable
 fun WooPosHardwareSettingsScreen(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
-    viewModel: WooPosHardwareSettingsViewModel = hiltViewModel()
+    viewModel: WooPosSettingsHardwareViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
