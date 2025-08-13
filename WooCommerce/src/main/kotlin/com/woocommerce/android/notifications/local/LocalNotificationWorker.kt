@@ -1,5 +1,6 @@
 package com.woocommerce.android.notifications.local
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.hilt.work.HiltWorker
@@ -42,6 +43,7 @@ class LocalNotificationWorker @AssistedInject constructor(
         val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
         val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
 
+        @SuppressLint("MissingPermission") // We check for notification permission in PreconditionCheckWorker
         if (siteId != 0L && type != null && notificationId != -1 && title != null && description != null) {
             val notification = buildNotification(notificationId, siteId, type, title, description, data)
             wooNotificationBuilder.buildAndDisplayLocalNotification(

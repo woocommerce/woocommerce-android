@@ -326,6 +326,7 @@ private fun AnnounceCartItemChangesForAccessibility(
                     localView.context.getString(R.string.woopos_cart_searching_for_item)
             }
 
+            @Suppress("DEPRECATION")
             localView.announceForAccessibility(message)
         }
         previousItems.value = items
