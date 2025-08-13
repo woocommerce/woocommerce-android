@@ -680,10 +680,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val destinationStatus = when {
                 addressValidationHelper.isMissingDestinationAddress(
                     addresses[uiState.selectedIndex].shipTo.address
-                ) -> AddressStatus.MISSING_ADDRESS
+                ) -> AddressStatus.MissingAddress
 
-                addresses[uiState.selectedIndex].shipTo.isVerified -> AddressStatus.VERIFIED
-                else -> AddressStatus.UNVERIFIED
+                addresses[uiState.selectedIndex].shipTo.isVerified -> AddressStatus.Verified
+                else -> AddressStatus.Unverified
             }
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)

@@ -184,7 +184,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
             loading = LoadingState.Hidden,
             error = null,
             shouldUseStatesInput = false,
-            addressStatus = AddressStatus.UNVERIFIED,
+            addressStatus = AddressStatus.Unverified,
             addressValidationState = AddressValidationState.NotStarted
         )
     )
@@ -332,13 +332,13 @@ class WooShippingEditAddressViewModel @Inject constructor(
             val error = getErrorState(countriesState, addressValidation, address)
 
             val addressStatus = when {
-                hasIncorrectOrMissingData(address) -> AddressStatus.MISSING_INFO
-                hasOnlyNoAddressChanges(address, currentAddress) -> AddressStatus.SAVE_CHANGES
-                isSameAddress(address, currentAddress) && isVerified.value -> AddressStatus.VERIFIED
+                hasIncorrectOrMissingData(address) -> AddressStatus.MissingInfo
+                hasOnlyNoAddressChanges(address, currentAddress) -> AddressStatus.SaveChanges
+                isSameAddress(address, currentAddress) && isVerified.value -> AddressStatus.Verified
                 navArgs.flow is EditAddressFlow.EditDestinationAddress &&
-                    addressValidation is AddressValidationState.VerificationFailed -> AddressStatus.VERIFY_FAILED
+                    addressValidation is AddressValidationState.VerificationFailed -> AddressStatus.VerifyFailed()
 
-                else -> AddressStatus.UNVERIFIED
+                else -> AddressStatus.Unverified
             }
 
             ViewState(
@@ -806,7 +806,14 @@ sealed class EditAddressFlow : Parcelable {
     data class EditDestinationAddress(val address: DestinationShippingAddress, val orderId: Long) : EditAddressFlow()
 }
 
-enum class AddressStatus { VERIFIED, UNVERIFIED, MISSING_ADDRESS, MISSING_INFO, SAVE_CHANGES, VERIFY_FAILED }
+sealed class AddressStatus {
+    data object Verified : AddressStatus()
+    data object Unverified : AddressStatus()
+    data object MissingAddress : AddressStatus()
+    data object MissingInfo : AddressStatus()
+    data object SaveChanges : AddressStatus()
+    data class VerifyFailed(val exception: NormalizeAddressException? = null) : AddressStatus()
+}
 
 data class InputValue(val value: String, val error: String? = null, val isRequired: Boolean = false) {
     companion object {

@@ -468,32 +468,33 @@ internal fun AddressStatusSection(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val buttonText = when (addressStatus) {
-            AddressStatus.VERIFIED -> stringResource(id = R.string.close)
-            AddressStatus.VERIFY_FAILED -> stringResource(id = R.string.woo_shipping_address_use_as_entered)
-            AddressStatus.UNVERIFIED -> stringResource(id = R.string.woo_shipping_address_validate_and_save)
-            AddressStatus.MISSING_INFO -> stringResource(id = R.string.woo_shipping_address_missing_info_hint)
-            AddressStatus.SAVE_CHANGES -> stringResource(id = R.string.woo_shipping_address_save_changes)
-            AddressStatus.MISSING_ADDRESS -> ""
+            AddressStatus.Verified -> stringResource(id = R.string.close)
+            is AddressStatus.VerifyFailed -> stringResource(id = R.string.woo_shipping_address_use_as_entered)
+            AddressStatus.Unverified -> stringResource(id = R.string.woo_shipping_address_validate_and_save)
+            AddressStatus.MissingInfo -> stringResource(id = R.string.woo_shipping_address_missing_info_hint)
+            AddressStatus.SaveChanges -> stringResource(id = R.string.woo_shipping_address_save_changes)
+            AddressStatus.MissingAddress -> ""
         }
 
         val buttonAction: () -> Unit = when (addressStatus) {
-            AddressStatus.VERIFIED -> {
+            AddressStatus.Verified -> {
                 { onClose() }
             }
 
-            AddressStatus.UNVERIFIED -> {
+            AddressStatus.Unverified -> {
                 { onNormalizeAddress(editableAddress) }
             }
 
-            AddressStatus.MISSING_INFO -> {
+            AddressStatus.MissingInfo -> {
                 {}
             }
 
-            AddressStatus.SAVE_CHANGES, AddressStatus.VERIFY_FAILED -> {
+            AddressStatus.SaveChanges,
+            is AddressStatus.VerifyFailed -> {
                 { onUpdateAddress(editableAddress) }
             }
 
-            AddressStatus.MISSING_ADDRESS -> {
+            AddressStatus.MissingAddress -> {
                 {}
             }
         }
@@ -503,7 +504,7 @@ internal fun AddressStatusSection(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        if (addressStatus == AddressStatus.VERIFY_FAILED) {
+        if (addressStatus is AddressStatus.VerifyFailed) {
             WCOutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = buttonText,
@@ -513,7 +514,7 @@ internal fun AddressStatusSection(
         } else {
             WCColoredButton(
                 onClick = buttonAction,
-                enabled = addressStatus != AddressStatus.MISSING_INFO,
+                enabled = addressStatus != AddressStatus.MissingInfo,
                 text = buttonText,
                 modifier = Modifier.fillMaxWidth()
             )

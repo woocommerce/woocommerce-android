@@ -881,7 +881,7 @@ private fun WooShippingLabelCreationScreenPreview() {
             ),
             onEditCustomsClick = {},
             onEditDestinationAddress = {},
-            destinationStatus = AddressStatus.VERIFIED,
+            destinationStatus = AddressStatus.Verified,
             onLabelPaperSizeOptionSelected = {},
             onPrintShippingLabelClicked = {},
             onTrackShipmentClicked = {},

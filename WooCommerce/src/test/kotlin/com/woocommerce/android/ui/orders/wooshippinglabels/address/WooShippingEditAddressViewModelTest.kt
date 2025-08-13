@@ -560,7 +560,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
 
-        assertThat(result.addressStatus).isEqualTo(AddressStatus.VERIFIED)
+        assertThat(result.addressStatus).isEqualTo(AddressStatus.Verified)
     }
 
     @Test
@@ -593,7 +593,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
 
-        assertThat(result.addressStatus).isEqualTo(AddressStatus.UNVERIFIED)
+        assertThat(result.addressStatus).isEqualTo(AddressStatus.Unverified)
     }
 
     @Test
@@ -626,7 +626,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
 
-        assertThat(result.addressStatus).isEqualTo(AddressStatus.SAVE_CHANGES)
+        assertThat(result.addressStatus).isEqualTo(AddressStatus.SaveChanges)
     }
 
     @Test
@@ -659,7 +659,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
             assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
 
-            assertThat(result.addressStatus).isEqualTo(AddressStatus.UNVERIFIED)
+            assertThat(result.addressStatus).isEqualTo(AddressStatus.Unverified)
         }
 
     @Test
@@ -691,7 +691,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
 
-        assertThat(result.addressStatus).isEqualTo(AddressStatus.MISSING_INFO)
+        assertThat(result.addressStatus).isEqualTo(AddressStatus.MissingInfo)
     }
 
     @Test
