@@ -7,10 +7,10 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditableAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.InputValue
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragmentArgs
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressViewModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressViewModelTest
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.toAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
@@ -244,7 +244,7 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.phone.error).isNotEmpty
     }
@@ -263,7 +263,7 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.email.error).isNotEmpty()
     }
@@ -282,7 +282,7 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.email.error).isNull()
     }

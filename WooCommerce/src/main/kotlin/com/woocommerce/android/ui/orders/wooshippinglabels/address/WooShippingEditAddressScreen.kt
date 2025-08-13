@@ -129,8 +129,8 @@ fun WooShippingEditAddressScreen(
 fun WooShippingEditAddressScreen(
     screenTitle: String,
     editableAddress: EditableAddress,
-    loading: WooShippingEditAddressViewModel.LoadingState,
-    error: WooShippingEditAddressViewModel.EditAddressError?,
+    loading: LoadingState,
+    error: EditAddressError?,
     shouldUseStatesInput: Boolean,
     isCompanyExpanded: Boolean,
     addressStatus: AddressStatus,
@@ -422,7 +422,7 @@ fun WooShippingEditAddressScreen(
             ErrorSnackbar(snackbarHostState, error)
         }
     }
-    if (loading is WooShippingEditAddressViewModel.LoadingState.DisplayLoading) {
+    if (loading is LoadingState.DisplayLoading) {
         LoadingModal(
             title = loading.title,
             description = loading.message
@@ -431,10 +431,7 @@ fun WooShippingEditAddressScreen(
 }
 
 @Composable
-private fun ErrorSnackbar(
-    snackbarHostState: SnackbarHostState,
-    error: WooShippingEditAddressViewModel.EditAddressError?,
-) {
+private fun ErrorSnackbar(snackbarHostState: SnackbarHostState, error: EditAddressError?) {
     val retry = stringResource(id = R.string.retry)
     LaunchedEffect(error) {
         if (error != null) {
@@ -670,7 +667,7 @@ private fun SelectAddressWithCustomSnackBar(
     onAddressSelectionChange: (AddressValidationState.AddressSelection) -> Unit,
     onUpdateNormalizedAddress: (selection: AddressValidationState.AddressSelection) -> Unit,
     onCloseAddressSelection: () -> Unit,
-    error: WooShippingEditAddressViewModel.EditAddressError?,
+    error: EditAddressError?,
     isBottomSheetSnackBarVisible: Boolean,
     modalSheetState: SheetState,
     modifier: Modifier = Modifier

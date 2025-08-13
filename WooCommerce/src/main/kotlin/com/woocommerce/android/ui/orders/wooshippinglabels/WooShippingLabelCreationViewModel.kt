@@ -41,7 +41,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.ObserveShippi
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.VerifyDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.FetchOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.toAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
@@ -60,6 +59,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemM
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.toAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
