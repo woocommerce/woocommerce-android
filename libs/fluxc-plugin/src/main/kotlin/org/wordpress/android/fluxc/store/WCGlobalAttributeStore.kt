@@ -25,18 +25,19 @@ class WCGlobalAttributeStore @Inject internal constructor(
         site: SiteModel
     ): WooResult<List<WCGlobalAttributeModel>> =
             coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchStoreAttributes") {
-                restClient.fetchProductFullAttributesList(site)
-                        .asWooResult()
-                        .model
-                        ?.takeIf { it.isNotEmpty() }
-                        ?.let { mapper.responseToAttributeModelList(it, site) }
-                        ?.also { globalAttributesDao.replaceAllForSite(site.localId(), it) }
-                        ?.let { globalAttributesDao.getAttributesForSite(site.localId()) }
-                        ?.let { WooResult(it) }
-                        ?: globalAttributesDao.getAttributesForSite(site.localId())
-                                .takeIf { it.isNotEmpty() }
-                                ?.let { WooResult(it) }
-                        ?: WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                val model = restClient.fetchProductFullAttributesList(site).asWooResult().model
+                if (!model.isNullOrEmpty()) {
+                    val attributes = mapper.responseToAttributeModelList(model, site)
+                    globalAttributesDao.replaceAllForSite(site.localId(), attributes)
+                    WooResult(attributes)
+                } else {
+                    val cachedAttributes = globalAttributesDao.getAttributesForSite(site.localId())
+                    if (cachedAttributes.isNotEmpty()) {
+                        WooResult(cachedAttributes)
+                    } else {
+                        WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                    }
+                }
             }
 
     suspend fun loadCachedStoreAttributes(
