@@ -61,22 +61,25 @@ class WooPosCatalogDownloadWorker @AssistedInject constructor(
                     return Result.retry()
                 }
 
-                val outputFile = File(appContext.filesDir, "pos-catalog-poc-${System.currentTimeMillis()}")
+				val timestamp = System.currentTimeMillis()
+				val outputFile = File(appContext.filesDir, "pos-catalog-poc-${timestamp}")
                 body.source().use { source: BufferedSource ->
                     outputFile.sink().buffer().use { fileSink ->
-                        streamToLogAndFile(source, CHUNK_SIZE_BYTES, fileSink) { chunk ->
-                            WooLog.i(POS, chunk)
+                        streamToFile(source, CHUNK_SIZE_BYTES, fileSink) { chunk ->
+                            // WooLog.i(POS, chunk)
                         }
                     }
                 }
 
                 WooLog.i(POS, "WooPOS catalog download finished successfully")
-                // Attempt to deserialize and print next products from the saved file (streaming)
-                try {
-                    parseAndLogProducts(outputFile)
-                } catch (t: Throwable) {
-                    WooLog.e(POS, "Failed to parse products from saved catalog", t)
-                }
+				try {
+					WooLog.i(POS, "Starting WooPOS products extraction to file")
+					val productsOutFile = File(appContext.filesDir, "pos-catalog-products-${timestamp}.txt")
+					deserializeAndStore(outputFile, productsOutFile)
+					WooLog.i(POS, "Finished WooPOS products extraction to file: ${'$'}productsOutFile")
+				} catch (t: Throwable) {
+					WooLog.e(POS, "Failed to parse/write products from saved catalog", t)
+				}
                 Result.success()
             }
         } catch (io: IOException) {
@@ -132,7 +135,7 @@ class WooPosCatalogDownloadWorker @AssistedInject constructor(
  * Streams data from the given [source] in fixed-size chunks and delivers each chunk to [onChunk].
  * This avoids loading the entire content in memory.
  */
-internal fun streamToLogAndFile(
+internal fun streamToFile(
     source: BufferedSource,
     chunkSizeBytes: Int,
     fileSink: okio.BufferedSink,
@@ -159,28 +162,31 @@ private data class CatalogProduct(
     val name: String?
 )
 
-private fun parseAndLogProducts(file: File) {
-    file.inputStream().buffered().reader(Charsets.UTF_8).use { isr ->
-        val reader = JsonReader(isr)
-        val gson = Gson()
-        reader.beginObject()
-        while (reader.hasNext()) {
-            val name = reader.nextName()
-            if (name == "products") {
-                reader.beginArray()
-                while (reader.hasNext()) {
-                    val product = gson.fromJson<CatalogProduct>(reader, CatalogProduct::class.java)
-                    WooLog.i(POS, "Product: id=${product.id}, name=${product.name}")
+private fun deserializeAndStore(sourceFile: File, outFile: File) {
+    sourceFile.inputStream().buffered().reader(Charsets.UTF_8).use { isr ->
+        outFile.sink().buffer().use { sink ->
+            val reader = JsonReader(isr)
+            val gson = Gson()
+            sink.writeUtf8("id\tname\n")
+            reader.beginObject()
+            while (reader.hasNext()) {
+                val name = reader.nextName()
+                if (name == "products") {
+                    reader.beginArray()
+                    while (reader.hasNext()) {
+                        val product = gson.fromJson<CatalogProduct>(reader, CatalogProduct::class.java)
+                        if (product.id != null) {
+                            val safeName = product.name?.replace("\n", " ") ?: ""
+                            sink.writeUtf8("${product.id}\t$safeName\n")
+                        }
+                    }
+                    break
+                } else {
+                    reader.skipValue()
                 }
-                // We don't need to read the rest for this POC
-                break
-            } else {
-                reader.skipValue()
             }
+            reader.close()
+            sink.flush()
         }
-        // Close reader to stop further parsing
-        reader.close()
     }
 }
-
-
