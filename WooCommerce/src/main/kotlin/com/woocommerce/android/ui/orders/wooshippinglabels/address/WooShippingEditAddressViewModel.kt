@@ -336,8 +336,13 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
             val loading = getLoadingState(countriesState, statesState, addressValidation)
             val error = getErrorState(countriesState, addressValidation, address)
+            val validationException = (addressValidation as? AddressValidationState.VerificationFailed)?.exception
 
             val addressStatus = when {
+                validationException != null && navArgs.flow is EditAddressFlow.EditDestinationAddress -> {
+                    AddressStatus.VerifyFailed(addressValidation.exception)
+                }
+
                 hasIncorrectOrMissingData(address) -> AddressStatus.MissingInfo
                 hasOnlyNoAddressChanges(address, currentAddress) -> AddressStatus.SaveChanges
                 isSameAddress(address, currentAddress) && isVerified.value -> AddressStatus.Verified
