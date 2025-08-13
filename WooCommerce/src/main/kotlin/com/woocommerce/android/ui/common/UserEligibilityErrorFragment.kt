@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentUserEligibilityErrorBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.User
+import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin.USER_ELIGIBILITY_ERROR
 import com.woocommerce.android.ui.base.BaseFragment
@@ -119,9 +120,11 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
                 is ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
                 }
+
                 is Exit -> {
                     findNavController().navigateUp()
                 }
+
                 is Logout -> {
                     requireActivity().apply {
                         setResult(Activity.RESULT_CANCELED)
@@ -132,6 +135,7 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
                         finish()
                     }
                 }
+
                 else -> event.isHandled = false
             }
         }
@@ -139,7 +143,13 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
 
     private fun showView(user: User) {
         binding.textDisplayname.text = user.getUserNameForDisplay()
-        binding.textUserRoles.text = user.roles.joinToString(", ") { it.value }
+        if (user.roles.any { it == UserRole.Other("null") }) {
+            binding.textErrorMessage.text = getString(R.string.user_role_access_error_user_roles_null)
+            binding.textUserRoles.text = user.username
+        } else {
+            binding.textUserRoles.text = user.roles.joinToString(", ") { it.value }
+            binding.textErrorMessage.text = getString(R.string.user_role_access_error_msg)
+        }
     }
 
     private fun showProgressDialog(show: Boolean) {
