@@ -37,6 +37,7 @@ import com.woocommerce.android.tools.SiteConnectionType.ApplicationPasswords
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.tracker.TrackStoreSnapshot
+import com.woocommerce.android.background.woopos.WooPosCatalogDownloadWorker
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -238,6 +239,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         // Schedule worker to refresh FCM token periodically
         FCMRefreshWorker.schedule(application)
+
+        WooPosCatalogDownloadWorker.schedule(application)
+        WooPosCatalogDownloadWorker.runNow(application)
     }
 
     @Suppress("DEPRECATION")
