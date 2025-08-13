@@ -791,7 +791,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = Address.EMPTY,
             normalizedAddress = Address.EMPTY,
-            isTrivial = true
+            isTrivial = true,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -822,7 +823,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = Address.EMPTY,
             normalizedAddress = Address.EMPTY,
-            isTrivial = true
+            isTrivial = true,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -852,7 +854,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -885,7 +888,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -925,7 +929,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -964,7 +969,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)

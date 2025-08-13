@@ -86,7 +86,8 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -163,7 +164,8 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -197,7 +199,8 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)

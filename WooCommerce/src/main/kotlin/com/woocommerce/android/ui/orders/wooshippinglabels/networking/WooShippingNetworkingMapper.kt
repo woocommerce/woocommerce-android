@@ -227,6 +227,7 @@ class WooShippingNetworkingMapper @Inject constructor(
                 invoke(normalizationResponseDTO.normalizedAddress)
             } ?: Address.EMPTY,
             isTrivial = normalizationResponseDTO.isTrivialNormalization,
+            errors = normalizationResponseDTO.errors
         )
     }
 

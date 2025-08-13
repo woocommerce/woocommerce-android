@@ -29,7 +29,8 @@ class NormalizeAddressTest : BaseUnitTest() {
     private val defaultNormalizeAddressResponse = AddressNormalizationModel(
         address = Address.EMPTY.copy(postcode = "1001"),
         normalizedAddress = Address.EMPTY.copy(postcode = "1001-900"),
-        isTrivial = false
+        isTrivial = false,
+        errors = null
     )
 
     @Test
