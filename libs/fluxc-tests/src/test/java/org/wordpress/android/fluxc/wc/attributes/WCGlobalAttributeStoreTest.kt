@@ -16,7 +16,6 @@ import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeMapper
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
-import org.wordpress.android.fluxc.model.attribute.terms.WCAttributeTermModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.attributes.ProductAttributeRestClient
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
@@ -47,8 +46,7 @@ class WCGlobalAttributeStoreTest {
                 appContext,
                 listOf(
                         SiteModel::class.java,
-                        WCGlobalAttributeModel::class.java,
-                        WCAttributeTermModel::class.java
+                        WCGlobalAttributeModel::class.java
                 ),
                 WellSqlConfig.ADDON_WOOCOMMERCE
         )

@@ -148,7 +148,7 @@ val Material3Typography = Typography(
         fontFamily = robotoFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
-        lineHeight = 24.sp
+        lineHeight = 20.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = robotoFamily,

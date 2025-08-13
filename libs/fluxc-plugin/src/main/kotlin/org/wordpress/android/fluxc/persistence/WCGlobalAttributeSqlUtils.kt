@@ -1,10 +1,8 @@
 package org.wordpress.android.fluxc.persistence
 
-import com.wellsql.generated.WCAttributeTermModelTable
 import com.wellsql.generated.WCGlobalAttributeModelTable
 import com.yarolegovich.wellsql.WellSql
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
-import org.wordpress.android.fluxc.model.attribute.terms.WCAttributeTermModel
 
 object WCGlobalAttributeSqlUtils {
     fun getCurrentAttributes(siteID: Int) =
@@ -72,39 +70,10 @@ object WCGlobalAttributeSqlUtils {
                     updateSingleStoredAttribute(it, siteID)
                 }
 
-    fun getTerm(siteID: Int, termID: Int) =
-            WellSql.select(WCAttributeTermModel::class.java)
-                    .where().beginGroup()
-                    .equals(WCAttributeTermModelTable.REMOTE_ID, termID)
-                    .equals(WCAttributeTermModelTable.LOCAL_SITE_ID, siteID)
-                    .endGroup().endWhere()
-                    .asModel
-                    ?.toList()
-                    ?.firstOrNull()
-
-    fun insertAttributeTermsFromScratch(
-        attributeID: Int,
-        siteID: Int,
-        terms: List<WCAttributeTermModel>
-    ) {
-        deleteAllTermsFromSingleAttribute(attributeID, siteID)
-        WellSql.insert(terms)
-                .asSingleTransaction(true)
-                .execute()
-    }
-
     private fun deleteCompleteAttributesList(siteID: Int) =
             WellSql.delete(WCGlobalAttributeModel::class.java)
                     .where().beginGroup()
                     .equals(WCGlobalAttributeModelTable.LOCAL_SITE_ID, siteID)
-                    .endGroup().endWhere()
-                    .execute()
-
-    private fun deleteAllTermsFromSingleAttribute(attributeID: Int, siteID: Int) =
-            WellSql.delete(WCAttributeTermModel::class.java)
-                    .where().beginGroup()
-                    .equals(WCAttributeTermModelTable.LOCAL_SITE_ID, siteID)
-                    .equals(WCAttributeTermModelTable.ATTRIBUTE_ID, attributeID)
                     .endGroup().endWhere()
                     .execute()
 }

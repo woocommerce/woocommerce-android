@@ -3,19 +3,26 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScrollableTabRow
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import kotlinx.coroutines.launch
 
@@ -29,15 +36,27 @@ fun ShipmentsTabRow(
     val scope = rememberCoroutineScope()
     ScrollableTabRow(
         selectedTabIndex = selectedTabIndex,
-        backgroundColor = MaterialTheme.colors.surface,
-        contentColor = MaterialTheme.colors.primary,
-        divider = {},
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.primary,
         edgePadding = 0.dp,
+        divider = {},
         modifier = modifier
+            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+            .drawWithContent {
+                drawContent()
+                drawRect(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(Color.White, Color.Transparent),
+                        startX = size.width - 24.dp.toPx(),
+                        endX = size.width
+                    ),
+                    blendMode = BlendMode.DstIn
+                )
+            }
     ) {
         shipmentTabs.forEachIndexed { index, tabData ->
             val textColor = if (index == selectedTabIndex) {
-                MaterialTheme.colors.primary
+                MaterialTheme.colorScheme.primary
             } else {
                 colorResource(id = R.color.color_on_surface_medium)
             }
@@ -50,7 +69,8 @@ fun ShipmentsTabRow(
                                 tabData.shipmentIndex // Use 1-based indexing for the shipments
                             ),
                             color = textColor,
-                            style = MaterialTheme.typography.subtitle1,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                         if (tabData.isPurchased) {

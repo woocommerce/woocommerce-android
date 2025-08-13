@@ -2,7 +2,6 @@ package com.woocommerce.android.util
 
 import java.util.Locale
 
-// TODO: soon to be deprecated
 object AddressUtils {
     /**
      * Translates a two-character country code into a human
@@ -11,7 +10,10 @@ object AddressUtils {
      * Example: US -> United States
      */
     fun getCountryLabelByCountryCode(countryCode: String): String {
-        val locale = Locale(Locale.getDefault().language, countryCode)
+        val locale = Locale.Builder()
+            .setLanguage(Locale.getDefault().language)
+            .setRegion(countryCode)
+            .build()
         return locale.displayCountry
     }
 }
