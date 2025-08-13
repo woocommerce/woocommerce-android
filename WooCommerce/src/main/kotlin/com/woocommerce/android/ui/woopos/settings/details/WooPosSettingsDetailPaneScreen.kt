@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
+import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailScreen
 
 @Composable
 fun WooPosSettingsDetailPaneScreen(
@@ -87,6 +88,10 @@ fun WooPosSettingsDetailPaneScreen(
 
                 is WooPosSettingsDetailDestination.Store.Overview -> {
                     StoreDetailScreen()
+                }
+
+                is WooPosSettingsDetailDestination.Help.Overview -> {
+                    WooPosHelpDetailScreen()
                 }
             }
         }

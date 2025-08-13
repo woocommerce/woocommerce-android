@@ -45,4 +45,12 @@ sealed class WooPosSettingsDetailDestination {
             override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
         }
     }
+
+    sealed class Help : WooPosSettingsDetailDestination() {
+        data object Overview : Help() {
+            override val titleRes: Int = R.string.woopos_get_support_title
+            override val parentDestination: WooPosSettingsDetailDestination? = null
+            override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
+        }
+    }
 }
