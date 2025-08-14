@@ -67,8 +67,8 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                     val itnValue = it.itnValue.currentInput
                     it.copy(
                         itnValue = when (validationResult) {
-                            WooShippingCustomsValidator.ValidationResult.Valid -> InputValue.Data(itnValue)
-                            is WooShippingCustomsValidator.ValidationResult.Invalid ->
+                            WooShippingCustomsValidator.FieldValidationResult.Valid -> InputValue.Data(itnValue)
+                            is WooShippingCustomsValidator.FieldValidationResult.Invalid ->
                                 InputValue.Error(itnValue, validationResult.errorMessage)
                         }
                     )
@@ -279,12 +279,12 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     private fun validateAsInputValue(
         input: String,
-        validate: (String) -> WooShippingCustomsValidator.ValidationResult
+        validate: (String) -> WooShippingCustomsValidator.FieldValidationResult
     ): InputValue = when (val validationResult = validate(input)) {
-        is WooShippingCustomsValidator.ValidationResult.Invalid ->
+        is WooShippingCustomsValidator.FieldValidationResult.Invalid ->
             InputValue.Error(input, validationResult.errorMessage)
 
-        WooShippingCustomsValidator.ValidationResult.Valid ->
+        WooShippingCustomsValidator.FieldValidationResult.Valid ->
             InputValue.Data(input)
     }
 

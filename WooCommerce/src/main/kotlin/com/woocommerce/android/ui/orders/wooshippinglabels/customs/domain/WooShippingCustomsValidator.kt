@@ -13,9 +13,17 @@ class WooShippingCustomsValidator @Inject constructor(
     private val validateHSTariffNumber: ValidateHSTariffNumber,
     private val validateITN: ValidateITN
 ) {
-    fun validate(customsData: CustomsData, destinationCountryCode: String): ValidationResult {
-        val isValid = validateITN(customsData, destinationCountryCode).isValid &&
-            validateContentType(customsData.contentType, customsData.contentDescription).isValid &&
+    fun validate(customsData: CustomsData, destinationCountryCode: String): FormValidationResult {
+        val itnValidationResult = validateITN.invoke(customsData, destinationCountryCode)
+        if (itnValidationResult !is ValidateITN.ITNValidationResult.Valid) {
+            return if (itnValidationResult is ValidateITN.ITNValidationResult.Missing) {
+                FormValidationResult.ItnMissing
+            } else {
+                FormValidationResult.Invalid
+            }
+        }
+
+        val isValid = validateContentType(customsData.contentType, customsData.contentDescription).isValid &&
             validateRestrictionType(customsData.restrictionType, customsData.restrictionDescription).isValid &&
             customsData.items.all {
                 validateHSTariffNumber(it.hsTariffNumber, destinationCountryCode).isValid &&
@@ -25,15 +33,13 @@ class WooShippingCustomsValidator @Inject constructor(
             }
 
         return if (isValid) {
-            ValidationResult.Valid
+            FormValidationResult.Valid
         } else {
-            ValidationResult.Invalid(
-                errorMessage = UiString.UiStringText("") // This is not used
-            )
+            FormValidationResult.Invalid
         }
     }
 
-    fun validateITN(customsData: CustomsData, destinationCountryCode: String): ValidationResult {
+    fun validateITN(customsData: CustomsData, destinationCountryCode: String): FieldValidationResult {
         fun ValidateITN.ITNMissingCause.errorMessage() = when (this) {
             ValidateITN.ITNMissingCause.TotalValue ->
                 UiString.UiStringRes(R.string.woo_shipping_labels_customs_itn_required_total_value)
@@ -50,96 +56,100 @@ class WooShippingCustomsValidator @Inject constructor(
 
         return validateITN.invoke(customsData, destinationCountryCode).let {
             when (it) {
-                ValidateITN.ITNValidationResult.Valid -> ValidationResult.Valid
-                is ValidateITN.ITNValidationResult.Missing -> ValidationResult.Invalid(
+                ValidateITN.ITNValidationResult.Valid -> FieldValidationResult.Valid
+                is ValidateITN.ITNValidationResult.Missing -> FieldValidationResult.Invalid(
                     errorMessage = it.cause.errorMessage()
                 )
 
-                ValidateITN.ITNValidationResult.InvalidFormat -> ValidationResult.Invalid(
+                ValidateITN.ITNValidationResult.InvalidFormat -> FieldValidationResult.Invalid(
                     errorMessageId = R.string.woo_shipping_labels_customs_itn_error_message
                 )
             }
         }
     }
 
-    fun validateContentType(contentType: ContentType, contentDescription: String): ValidationResult {
+    fun validateContentType(contentType: ContentType, contentDescription: String): FieldValidationResult {
         return when (contentType) {
             ContentType.OTHER -> when (contentDescription.isBlank()) {
-                false -> ValidationResult.Valid
-                true -> ValidationResult.Invalid(
+                false -> FieldValidationResult.Valid
+                true -> FieldValidationResult.Invalid(
                     errorMessageId = R.string.woo_shipping_labels_customs_other_error_message
                 )
             }
 
-            else -> ValidationResult.Valid
+            else -> FieldValidationResult.Valid
         }
     }
 
     fun validateRestrictionType(
         restrictionType: RestrictionType,
         restrictionDescription: String
-    ): ValidationResult {
+    ): FieldValidationResult {
         return when (restrictionType) {
             RestrictionType.OTHER -> when (restrictionDescription.isBlank()) {
-                false -> ValidationResult.Valid
-                true -> ValidationResult.Invalid(
+                false -> FieldValidationResult.Valid
+                true -> FieldValidationResult.Invalid(
                     errorMessageId = R.string.woo_shipping_labels_customs_other_error_message
                 )
             }
 
-            else -> ValidationResult.Valid
+            else -> FieldValidationResult.Valid
         }
     }
 
-    fun validateHSTariffNumber(tariffNumber: String, destinationCountryCode: String): ValidationResult {
+    fun validateHSTariffNumber(tariffNumber: String, destinationCountryCode: String): FieldValidationResult {
         return validateHSTariffNumber.invoke(
             tariffNumber = tariffNumber,
             destinationCountryCode = destinationCountryCode
         ).let { inputValue ->
             when (inputValue) {
-                is WooShippingCustomsFormViewModel.InputValue.Error -> ValidationResult.Invalid(
+                is WooShippingCustomsFormViewModel.InputValue.Error -> FieldValidationResult.Invalid(
                     errorMessage = inputValue.errorMessageId
                 )
 
-                else -> ValidationResult.Valid
+                else -> FieldValidationResult.Valid
             }
         }
     }
 
     fun validateProductDescription(description: String) = when (description.isBlank()) {
-        false -> ValidationResult.Valid
-        true -> ValidationResult.Invalid(
+        false -> FieldValidationResult.Valid
+        true -> FieldValidationResult.Invalid(
             errorMessageId = R.string.woo_shipping_labels_customs_product_details_description_missing
         )
     }
 
     fun validateProductValue(value: String) = when (value.isBlank()) {
-        false -> ValidationResult.Valid
-        true -> ValidationResult.Invalid(
+        false -> FieldValidationResult.Valid
+        true -> FieldValidationResult.Invalid(
             errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
         )
     }
 
     fun validateProductWeight(weight: String) = when {
-        weight.isBlank() -> ValidationResult.Invalid(
+        weight.isBlank() -> FieldValidationResult.Invalid(
             errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
         )
 
-        weight.toFloatOrNull() == null || weight.toFloat() == 0f -> ValidationResult.Invalid(
+        weight.toFloatOrNull() == null || weight.toFloat() == 0f -> FieldValidationResult.Invalid(
             errorMessageId = R.string.woo_shipping_labels_customs_product_details_weight_invalid
         )
 
-        else -> ValidationResult.Valid
+        else -> FieldValidationResult.Valid
     }
 
-    sealed interface ValidationResult {
+    enum class FormValidationResult {
+        Valid, ItnMissing, Invalid
+    }
+
+    sealed interface FieldValidationResult {
         val isValid: Boolean
             get() = this is Valid
 
-        data class Invalid(val errorMessage: UiString) : ValidationResult {
+        data class Invalid(val errorMessage: UiString) : FieldValidationResult {
             constructor(@StringRes errorMessageId: Int) : this(UiString.UiStringRes(errorMessageId))
         }
 
-        data object Valid : ValidationResult
+        data object Valid : FieldValidationResult
     }
 }
