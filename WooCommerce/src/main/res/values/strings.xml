@@ -4340,6 +4340,16 @@
 
 
     <string name="woopos_settings_title">Settings</string>
+    <string name="woopos_settings_hardware_category">Hardware</string>
+    <string name="woopos_settings_hardware_category_subtitle">Manage hardware connections</string>
+    <string name="woopos_settings_store_category">Store</string>
+    <string name="woopos_settings_store_category_subtitle">Store configuration and settings</string>
+    <string name="woopos_settings_hardware_barcode_scanners">Barcode scanners</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
+    <string name="woopos_settings_hardware_card_readers">Card Readers</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">Barcode Scanner Settings</string>
+    <string name="woopos_settings_card_reader_detail_title">Card Reader Settings</string>
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_barcode_scanning_title">Initial barcode scanner setup</string>
@@ -4733,6 +4743,8 @@
     <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
 
     <string name="woo_shipping_split_shipment">Split shipment</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">You purchased a label for this shipment.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_desc">You can’t move products in to or out of it.</string>
     <string name="woo_shipping_split_shipment_instructions"><![CDATA[To split, select the items, and tap <b>move to new shipment</b> when the toolbar appears.]]></string>
     <string name="woo_shipping_split_shipment_moved_notice_one">Moved %1$d item to Shipment %2$d</string>
     <string name="woo_shipping_split_shipment_moved_notice_plural">Moved %1$d items to Shipment %2$d</string>

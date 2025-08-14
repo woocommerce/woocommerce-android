@@ -1,5 +1,10 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,46 +32,60 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 
 @Composable
 fun WooPosToolbar(
+    modifier: Modifier = Modifier,
     titleText: String,
-    onBackClicked: () -> Unit
+    onBackClicked: (() -> Unit)? = null,
+    titleStyle: WooPosTypography = WooPosTypography.Heading,
+    titleFontWeight: FontWeight = FontWeight.Bold
 ) {
     ConstraintLayout(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
             .height(56.dp),
     ) {
         val (backButton, title) = createRefs()
-        IconButton(
-            onClick = { onBackClicked() },
-            modifier = Modifier
-                .constrainAs(backButton) {
-                    start.linkTo(parent.start)
-                    bottom.linkTo(parent.bottom)
-                    top.linkTo(parent.top)
-                }
-                .size(48.dp)
-                .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
+
+        AnimatedVisibility(
+            visible = onBackClicked != null,
+            enter = scaleIn() + fadeIn(),
+            exit = scaleOut() + fadeOut(),
+            modifier = Modifier.constrainAs(backButton) {
+                start.linkTo(parent.start)
+                bottom.linkTo(parent.bottom)
+                top.linkTo(parent.top)
+            }
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
-                tint = MaterialTheme.colorScheme.onSurface,
+            IconButton(
+                onClick = { onBackClicked?.invoke() },
                 modifier = Modifier
-                    .size(28.dp)
-            )
+                    .size(48.dp)
+                    .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .size(28.dp)
+                )
+            }
         }
 
-        val iconTitlePadding = WooPosSpacing.Small.value.toAdaptivePadding()
+        val startPadding = WooPosSpacing.Small.value.toAdaptivePadding()
         WooPosText(
             text = titleText,
-            style = WooPosTypography.Heading,
-            color = MaterialTheme.colorScheme.onBackground,
-            fontWeight = FontWeight.Bold,
+            style = titleStyle,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = titleFontWeight,
             maxLines = 1,
             modifier = Modifier
                 .constrainAs(title) {
-                    start.linkTo(backButton.end, margin = iconTitlePadding)
+                    if (onBackClicked != null) {
+                        start.linkTo(backButton.end, margin = startPadding)
+                    } else {
+                        start.linkTo(parent.start, margin = startPadding)
+                    }
                     bottom.linkTo(parent.bottom)
                     top.linkTo(parent.top)
                 }

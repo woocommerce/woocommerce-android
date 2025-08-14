@@ -379,7 +379,7 @@ class WooPosToolbarViewModelTest {
     }
 
     @Test
-    fun `when Settings MenuItemClicked, then SettingsMenuItemClicked event should be sent`() = runTest {
+    fun `when Settings MenuItemClicked, then ToSettings navigation event should be sent`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
@@ -391,7 +391,7 @@ class WooPosToolbarViewModelTest {
         viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
 
         // THEN
-        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.SettingsMenuItemClicked)
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
     }
 
