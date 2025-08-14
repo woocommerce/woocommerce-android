@@ -170,23 +170,40 @@ class WooPosScannerDetectionUtil @Inject constructor(
     private fun InputDevice.isExternalUsbDevice(): Boolean {
         val deviceName = name.lowercase()
 
-        val internalDeviceKeywords = listOf(
-            "virtual",
-            "built-in",
-            "internal",
-            "qwerty",
-            "touchscreen",
-            "touch",
-            "trackpad",
-            "mouse",
-            "synaptics",
-            "elan",
-            "alps"
+        val scannerNamePatterns = listOf(
+            "scanner", "barcode", "symbol", "zebra", "honeywell", "datalogic",
+            "code", "socket", "unitech", "newland", "inateck", "tera"
         )
+        val hasScannerName = scannerNamePatterns.any { deviceName.contains(it) }
 
-        val isNotInternal = internalDeviceKeywords.none { deviceName.contains(it) }
+        val internalDeviceKeywords = listOf(
+            "virtual", "built-in", "internal", "qwerty", "touchscreen", "touch",
+            "trackpad", "mouse", "synaptics", "elan", "alps", "uinput", "fpc",
+            "fingerprint", "sensor", "camera", "mic", "audio", "volume", "power",
+            "gpio", "i2c", "spi", "uart", "pwm", "adc", "platform", "soc"
+        )
+        val isInternalDevice = internalDeviceKeywords.any { deviceName.contains(it) }
 
-        return isNotInternal && vendorId > MIN_EXTERNAL_USB_VENDOR_ID
+        return !isInternalDevice &&
+               vendorId > MIN_EXTERNAL_USB_VENDOR_ID &&
+               (hasScannerName || isKnownScannerVendor())
+    }
+
+    private fun InputDevice.isKnownScannerVendor(): Boolean {
+        // Common barcode scanner vendor IDs (hexadecimal)
+        val knownScannerVendorIds = setOf(
+            0x05e0, // Symbol Technologies (now Zebra)
+            0x0536, // Hand Held Products (Honeywell)
+            0x1504, // Microscan
+            0x0c2e, // Metrologic (now Honeywell)
+            0x04b4, // Cypress (some scanner chips)
+            0x05f9, // PSC (now Honeywell)
+            0x1900, // Socket Mobile
+            0x0461, // Primax
+            0x04d9, // Holtek (some scanner controllers)
+            0x1a86, // QinHeng Electronics (some scanner chips)
+        )
+        return vendorId in knownScannerVendorIds
     }
 
     private fun isScannerByDeviceClass(deviceClass: Int): Boolean {
