@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.converters.ISO8601DateConverter
+import org.wordpress.android.fluxc.utils.asStringOrNull
 import java.math.BigDecimal
 import java.util.Date
 
@@ -77,7 +78,7 @@ internal class WooShippingLabelConverters {
         return value?.let { json ->
             JsonParser.parseString(json).asJsonObject.let { jsonObject ->
                 WooShippingLabelEntity.Refund(
-                    status = jsonObject.get("status")?.asString,
+                    status = jsonObject.get("status")?.asStringOrNull,
                     requestDate = jsonObject.get("requestDate")?.asLong?.let { Date(it) }
                 )
             }
@@ -107,16 +108,16 @@ internal class WooShippingLabelConverters {
         return value?.let { json ->
             JsonParser.parseString(json).asJsonObject.let { jsonObject ->
                 WooShippingLabelEntity.Address(
-                    company = jsonObject.get("company")?.asString,
-                    name = jsonObject.get("name")?.asString,
-                    phone = jsonObject.get("phone")?.asString,
-                    countryCode = jsonObject.get("countryCode")?.asString,
-                    state = jsonObject.get("state")?.asString,
-                    address1 = jsonObject.get("address1")?.asString,
-                    address2 = jsonObject.get("address2")?.asString,
-                    city = jsonObject.get("city")?.asString,
-                    postcode = jsonObject.get("postcode")?.asString,
-                    email = jsonObject.get("email")?.asString
+                    company = jsonObject.get("company")?.asStringOrNull,
+                    name = jsonObject.get("name")?.asStringOrNull,
+                    phone = jsonObject.get("phone")?.asStringOrNull,
+                    countryCode = jsonObject.get("countryCode")?.asStringOrNull,
+                    state = jsonObject.get("state")?.asStringOrNull,
+                    address1 = jsonObject.get("address1")?.asStringOrNull,
+                    address2 = jsonObject.get("address2")?.asStringOrNull,
+                    city = jsonObject.get("city")?.asStringOrNull,
+                    postcode = jsonObject.get("postcode")?.asStringOrNull,
+                    email = jsonObject.get("email")?.asStringOrNull
                 )
             }
         }

@@ -7,6 +7,8 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.utils.asLongOrNull
+import org.wordpress.android.fluxc.utils.asStringOrNull
 
 @Entity(
     primaryKeys = ["localSiteId", "orderId", "shipmentId"],
@@ -45,8 +47,8 @@ internal class WooShippingShipmentItemListConverter {
         value?.let {
             JsonParser.parseString(it).asJsonArray.mapNotNull { jsonElement ->
                 val jsonObject = jsonElement as? JsonObject ?: return@mapNotNull null
-                val id = jsonObject.get("id")?.asLong
-                val subItems = jsonObject.get("sub_items")?.asString?.split(",")
+                val id = jsonObject.get("id")?.asLongOrNull
+                val subItems = jsonObject.get("sub_items")?.asStringOrNull?.split(",")
                 WooShippingShipmentEntity.Item(id, subItems)
             }
         }
