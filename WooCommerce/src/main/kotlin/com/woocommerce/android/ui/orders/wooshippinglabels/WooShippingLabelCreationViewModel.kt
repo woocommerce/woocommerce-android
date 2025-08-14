@@ -46,7 +46,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBann
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.createDefaultCustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CreateDefaultCustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.domain.DownloadAndPrintInvoiceUseCase
@@ -125,6 +125,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val addressValidationHelper: AddressValidationHelper,
     private val verifyDestinationAddress: VerifyDestinationAddress,
     private val observeShippingLabelNotice: ObserveShippingLabelNotice,
+    private val createDefaultCustomsData: CreateDefaultCustomsData,
     private val shouldRequireCustoms: ShouldRequireCustomsForm,
     private val validateITN: ValidateITN,
     private val fetchShippingLabelFile: FetchShippingLabelFile,
@@ -519,12 +520,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             customsFormDataFlow.filter { it.isNotEmpty() }
         ) { addresses, customsData ->
             customsData.mapIndexed { index, currentItemCustomsData ->
-                val shipment = shipments.value.getOrNull(index)
                 val selectedAddress = addresses.getOrNull(index)
                 val customsRequired = selectedAddress != null && shouldRequireCustoms(selectedAddress)
 
                 val destinationCountryCode = selectedAddress?.shipTo?.address?.country?.code.orEmpty()
-                val itnMissing = (currentItemCustomsData ?: shipment?.items?.createDefaultCustomsData())?.let {
+
+                val itnMissing = (currentItemCustomsData ?: getDefaultCustomsData(index)).let {
                     validateITN(
                         customsData = it,
                         destinationCountry = destinationCountryCode
@@ -539,6 +540,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 }
             }
         }.collectLatest { customsStatesFlow.value = it }
+    }
+
+    private suspend fun getDefaultCustomsData(
+        index: Int
+    ): CustomsData {
+        return createDefaultCustomsData(
+            items = shipments.value.getOrNull(index)?.items.orEmpty(),
+            originAddress = shippingAddresses.value.getOrNull(index)?.shipFrom ?: OriginShippingAddress.EMPTY
+        )
     }
 
     private suspend fun getShippingAddresses() {
@@ -1029,7 +1039,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val event = NavigateToCustomsFormEdit(
                 destinationCountryCode = destinationCountryCode,
                 customData = customsFormDataFlow.value[selectedShipmentIndex]
-                    ?: shipments.value[selectedShipmentIndex].items.createDefaultCustomsData(),
+                    ?: getDefaultCustomsData(selectedShipmentIndex),
                 storeOptions = accountSettings.first()?.storeOptions ?: StoreOptionsModel.EMPTY
             )
             triggerEvent(event)
