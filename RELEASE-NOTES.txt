@@ -11,6 +11,7 @@
 - [*] Shipping Labels: Fix layout issue with address status indicator [https://github.com/woocommerce/woocommerce-android/pull/14437]
 - [*] Shipping Labels: Updated shipments tab layout [https://github.com/woocommerce/woocommerce-android/pull/14448]
 - [*] Shipping Labels: Add a message for purchased shipments to the Split Shipments screen [https://github.com/woocommerce/woocommerce-android/pull/14455]
+- [*] Shipping Labels: Autofill the country field in the customs form and improve the form validation [https://github.com/woocommerce/woocommerce-android/pull/14469]
 
 23.0
 -----
