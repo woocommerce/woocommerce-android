@@ -36,7 +36,6 @@ fun WooPosSettingsCategoriesPaneScreen(
     viewModel: WooPosSettingsCategoriesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    
     val scrollableCategories = state.categories.filter { it != WooPosSettingsCategory.HELP }
     val helpCategory = WooPosSettingsCategory.HELP
 
@@ -59,7 +58,7 @@ fun WooPosSettingsCategoriesPaneScreen(
                 )
             }
         }
-        
+
         CategoryItem(
             item = helpCategory,
             isSelected = helpCategory == selectedCategory,
