@@ -13,8 +13,24 @@ class WooShippingCustomsValidator @Inject constructor(
     private val validateHSTariffNumber: ValidateHSTariffNumber,
     private val validateITN: ValidateITN
 ) {
-    fun validate(customsData: CustomsData): ValidationResult {
-        TODO()
+    fun validate(customsData: CustomsData, destinationCountryCode: String): ValidationResult {
+        val isValid = validateITN(customsData, destinationCountryCode).isValid &&
+            validateContentType(customsData.contentType, customsData.contentDescription).isValid &&
+            validateRestrictionType(customsData.restrictionType, customsData.restrictionDescription).isValid &&
+            customsData.items.all {
+                validateHSTariffNumber(it.hsTariffNumber, destinationCountryCode).isValid &&
+                    validateProductDescription(it.description).isValid &&
+                    validateProductValue(it.value.toString()).isValid &&
+                    validateProductWeight(it.weight.toString()).isValid
+            }
+
+        return if (isValid) {
+            ValidationResult.Valid
+        } else {
+            ValidationResult.Invalid(
+                errorMessage = UiString.UiStringText("") // This is not used
+            )
+        }
     }
 
     fun validateITN(customsData: CustomsData, destinationCountryCode: String): ValidationResult {
@@ -118,14 +134,12 @@ class WooShippingCustomsValidator @Inject constructor(
 
     sealed interface ValidationResult {
         val isValid: Boolean
-            get() = this is ValidationResult.Valid
+            get() = this is Valid
 
-        data class Invalid(val errorMessage: UiString) :
-            ValidationResult {
+        data class Invalid(val errorMessage: UiString) : ValidationResult {
             constructor(@StringRes errorMessageId: Int) : this(UiString.UiStringRes(errorMessageId))
         }
 
-        data object Valid :
-            ValidationResult
+        data object Valid : ValidationResult
     }
 }
