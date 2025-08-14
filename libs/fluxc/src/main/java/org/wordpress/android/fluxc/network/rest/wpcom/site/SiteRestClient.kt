@@ -19,9 +19,11 @@ import org.wordpress.android.fluxc.model.JetpackCapability
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Error
@@ -67,6 +69,7 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.INVALID_SITE
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.UNAUTHORIZED
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.UNKNOWN_SITE
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.BLOCK_SEARCH_ENGINE
@@ -84,6 +87,7 @@ import org.wordpress.android.util.UrlUtils
 import java.io.UnsupportedEncodingException
 import java.net.URI
 import java.net.URLEncoder
+import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -504,7 +508,13 @@ class SiteRestClient @Inject constructor(
             is Error -> {
                 val siteErrorType = when (response.error.apiError) {
                     "connection_disabled" -> SiteErrorType.WPCOM_SITE_SUSPENDED
-                    else -> INVALID_SITE
+                    else -> {
+                        if (isWordPressComConnectivityIssue(response.error)) {
+                            WORDPRESS_COM_CONNECTIVITY_ERROR
+                        } else {
+                            INVALID_SITE
+                        }
+                    }
                 }
 
                 ConnectSiteInfoPayload(siteUrl, SiteError(siteErrorType))
@@ -512,6 +522,30 @@ class SiteRestClient @Inject constructor(
             is Success -> {
                 response.data.toConnectSiteInfoPayload(siteUrl)
             }
+        }
+    }
+
+    /**
+     * Determines if a network error indicates a WordPress.com connectivity issue
+     * rather than an invalid site URL.
+     */
+    private fun isWordPressComConnectivityIssue(error: WPComGsonNetworkError): Boolean {
+        return when (error.type) {
+            GenericErrorType.NO_CONNECTION,
+            GenericErrorType.NETWORK_ERROR,
+            GenericErrorType.TIMEOUT -> {
+                error.volleyError?.cause?.let { cause ->
+                    when (cause) {
+                        is UnknownHostException -> {
+                            cause.message?.contains("public-api.wordpress.com", ignoreCase = true) == true
+                        }
+                        else -> {
+                            error.volleyError.message?.contains("public-api.wordpress.com", ignoreCase = true) == true
+                        }
+                    }
+                } ?: false
+            }
+            else -> false
         }
     }
 
