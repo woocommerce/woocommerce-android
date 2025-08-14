@@ -149,7 +149,7 @@ class OrderCreateEditCustomerAddFragment :
 
     private fun inflateLayout(view: View) {
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
-            setAccessibilityHeaders(R.string.details, R.string.order_detail_billing_address_section)
+            setAccessibilityHeaders(R.string.order_detail_billing_address_section)
 
             countrySpinner.setClickListener {
                 addressViewModel.onCountrySpinnerClicked(BILLING)
@@ -160,7 +160,7 @@ class OrderCreateEditCustomerAddFragment :
         }
 
         shippingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
-            setAccessibilityHeaders(R.string.details, R.string.order_detail_shipping_address_section)
+            setAccessibilityHeaders(R.string.order_detail_shipping_address_section)
 
             email.visibility = View.GONE
             countrySpinner.setClickListener {
@@ -203,12 +203,9 @@ class OrderCreateEditCustomerAddFragment :
         )
     }
 
-    private fun LayoutAddressFormBinding.setAccessibilityHeaders(detailsHeading: Int, addressHeading: Int) {
-        detailsHeaderContainer.announceForAccessibility(detailsHeading.toString())
+    private fun LayoutAddressFormBinding.setAccessibilityHeaders(addressHeadingTextRes: Int) {
+        addressSectionHeader.setText(addressHeadingTextRes)
         ViewCompat.setAccessibilityHeading(detailsHeaderContainer, true)
-
-        addressHeaderContainer.announceForAccessibility(addressHeading.toString())
-        addressSectionHeader.setText(addressHeading)
         ViewCompat.setAccessibilityHeading(addressHeaderContainer, true)
     }
 

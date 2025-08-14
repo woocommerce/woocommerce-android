@@ -183,7 +183,7 @@ gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source
 gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
 
 gradle.ext {
-    compileSdkVersion = 35
+    compileSdkVersion = 36
     targetSdkVersion = 35
     minSdkVersion = 26
 }

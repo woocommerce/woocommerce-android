@@ -1,7 +1,6 @@
 package com.woocommerce.android.util
 
 import android.content.Context
-import android.content.res.Configuration
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
 import android.util.Patterns
@@ -16,7 +15,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.FormatUtils
 import java.io.IOException
-import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.abs
 
@@ -249,44 +247,6 @@ object StringUtils {
         HtmlCompat.fromHtml(htmlStr, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
             .replace("\n", " ")
             .replace("  ", " ")
-
-    /**
-     * Returns a string for the specified locale.
-     *
-     * @param context The active context
-     * @param id The id of the string (ex. R.string.my_string)
-     * @param locale The two-character locale to fetch the string for (ex. "en")
-     * @return A string matching the [id] for the [locale] requested, or null if none found
-     */
-    fun getStringByLocale(context: Context, id: Int, locale: String): String? {
-        val configuration = Configuration(context.resources.configuration)
-        configuration.setLocale(Locale(locale))
-        return try {
-            context.createConfigurationContext(configuration).resources.getString(id)
-        } catch (e: NotFoundException) {
-            WooLog.w(UTILS, "No resource found for id $id in locale $locale")
-            null
-        }
-    }
-
-    /**
-     * Returns a string array for the specified locale.
-     *
-     * @param context The active context
-     * @param id The id of the string (ex. R.string.my_string)
-     * @param locale The two-character locale to fetch the string for (ex. "en")
-     * @return A list of strings matching the [id] for the [locale] requested, or null if none found
-     */
-    fun getStringArrayByLocale(context: Context, id: Int, locale: String): List<String>? {
-        val configuration = Configuration(context.resources.configuration)
-        configuration.setLocale(Locale(locale))
-        return try {
-            context.createConfigurationContext(configuration).resources.getStringArray(id).asList()
-        } catch (e: NotFoundException) {
-            WooLog.w(UTILS, "No string array resource found for id $id in locale $locale")
-            null
-        }
-    }
 
     /**
      * Combines a variable number of strings into a single string, separated by spaces.
