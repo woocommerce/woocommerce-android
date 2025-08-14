@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +23,6 @@ import androidx.compose.material.icons.filled.Battery5Bar
 import androidx.compose.material.icons.filled.Battery6Bar
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.Bluetooth
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Usb
@@ -102,12 +100,10 @@ fun WooPosSettingsHardwareBarcodeScannerContent(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(WooPosSpacing.Medium.value)
     ) {
         when (scannerInfo) {
             is ScannerInfo.Connected -> {
                 ConnectedScannerSection(scannerInfo = scannerInfo)
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             }
             else -> {}
         }
@@ -133,37 +129,19 @@ private fun ConnectedScannerSection(scannerInfo: ScannerInfo.Connected) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(WooPosSpacing.Medium.value)
             .background(
-                color = WooPosTheme.colors.success.copy(alpha = 0.1f),
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
-            )
-            .border(
-                width = 1.dp,
-                color = WooPosTheme.colors.success,
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
             )
             .padding(WooPosSpacing.Large.value)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
-        ) {
-            Icon(
-                imageVector = Icons.Default.CheckCircle,
-                contentDescription = null,
-                tint = WooPosTheme.colors.success,
-                modifier = Modifier.size(24.dp)
-            )
-            WooPosText(
-                text = stringResource(R.string.woopos_settings_barcode_scanner_connected),
-                style = WooPosTypography.BodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = WooPosTheme.colors.success
-            )
-        }
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        WooPosText(
+            text = stringResource(R.string.woopos_settings_barcode_scanner_connected),
+            style = WooPosTypography.BodyLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
+        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
