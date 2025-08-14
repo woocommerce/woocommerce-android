@@ -639,7 +639,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(flowOf(true))
                 .whenever(shippingEligibilityDataStore).observeEligibility(any())
             doReturn(OrderTestUtils.generateShippingLabelModels(2))
-                .whenever(shippingLabelRepository).getLabels(any())
+                .whenever(shippingLabelRepository).getPurchasedLabels(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -942,7 +942,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
             .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(OrderTestUtils.generateShippingLabelModels(2))
-            .whenever(shippingLabelRepository).getLabels(any())
+            .whenever(shippingLabelRepository).getPurchasedLabels(any())
         doReturn(flowOf(true))
             .whenever(shippingEligibilityDataStore).observeEligibility(any())
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())

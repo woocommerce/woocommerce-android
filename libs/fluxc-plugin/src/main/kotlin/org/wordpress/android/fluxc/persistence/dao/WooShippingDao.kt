@@ -23,8 +23,21 @@ abstract class WooShippingDao {
         orderId: LocalOrRemoteId.RemoteId
     )
 
-    @Query("SELECT * FROM WooShippingLabelEntity WHERE localSiteId = :localSiteId AND orderId = :orderId")
+    @Query(
+        """SELECT * FROM WooShippingLabelEntity WHERE localSiteId = :localSiteId AND orderId = :orderId
+                ORDER BY createdDate DESC
+                """
+    )
     abstract suspend fun getLabels(
+        localSiteId: LocalOrRemoteId.LocalId,
+        orderId: LocalOrRemoteId.RemoteId
+    ): List<WooShippingLabelEntity>
+
+    @Query(
+        """SELECT * FROM WooShippingLabelEntity WHERE localSiteId = :localSiteId AND orderId = :orderId
+                AND status = 'PURCHASED' ORDER BY createdDate DESC"""
+    )
+    abstract suspend fun getPurchasedLabels(
         localSiteId: LocalOrRemoteId.LocalId,
         orderId: LocalOrRemoteId.RemoteId
     ): List<WooShippingLabelEntity>
