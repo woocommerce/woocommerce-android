@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Usb
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,12 +44,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -81,39 +80,52 @@ fun WooPosSettingsHardwareBarcodeScannerScreen(
         }
     }
 
+    WooPosSettingsHardwareBarcodeScannerContent(
+        scannerInfo = state.scannerInfo,
+        onSetupScannerClicked = { viewModel.onSetupScannerClicked() },
+        onDocumentationClicked = { viewModel.onDocumentationClicked() }
+    )
+
+    WooPosScanningSetupDialog(
+        isVisible = showScanningSetupDialog,
+        onDismissRequest = { showScanningSetupDialog = false }
+    )
+}
+
+@Composable
+fun WooPosSettingsHardwareBarcodeScannerContent(
+    scannerInfo: ScannerInfo,
+    onSetupScannerClicked: () -> Unit,
+    onDocumentationClicked: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(WooPosSpacing.Medium.value)
     ) {
-        val scannerInfo = state.scannerInfo
         when (scannerInfo) {
             is ScannerInfo.Connected -> {
                 ConnectedScannerSection(scannerInfo = scannerInfo)
-                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             }
-            else -> {
-                NoScannerSection()
-                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-            }
+            else -> {}
         }
 
-        SetupSection(
-            onSetupScannerClicked = { viewModel.onSetupScannerClicked() }
+        WooPosSettingsDetailsMenuItem(
+            icon = Icons.Default.Settings,
+            title = stringResource(R.string.woopos_settings_barcode_scanner_setup_title),
+            subtitle = stringResource(R.string.woopos_settings_barcode_scanner_setup_subtitle),
+            onClick = onSetupScannerClicked
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-        DocumentationSection(
-            onDocumentationClicked = { viewModel.onDocumentationClicked() }
+        WooPosSettingsDetailsMenuItem(
+            icon = Icons.Default.Description,
+            title = stringResource(R.string.woopos_settings_barcode_scanner_documentation_title),
+            subtitle = stringResource(R.string.woopos_settings_barcode_scanner_documentation_subtitle),
+            onClick = onDocumentationClicked
         )
     }
-
-    WooPosScanningSetupDialog(
-        isVisible = showScanningSetupDialog,
-        onDismissRequest = { showScanningSetupDialog = false }
-    )
 }
 
 @Composable
@@ -204,68 +216,6 @@ private fun ConnectedScannerSection(scannerInfo: ScannerInfo.Connected) {
     }
 }
 
-@Composable
-private fun NoScannerSection() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
-            )
-            .padding(WooPosSpacing.Large.value),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_barcode_scanner_no_scanner),
-            style = WooPosTypography.BodyLarge,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_barcode_scanner_no_scanner_subtitle),
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-private fun SetupSection(onSetupScannerClicked: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_barcode_scanner_setup_title),
-            style = WooPosTypography.BodyLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Small.value)
-        )
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_barcode_scanner_setup_subtitle),
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
-        )
-        WooPosButton(
-            onClick = onSetupScannerClicked,
-            text = stringResource(R.string.woopos_settings_barcode_scanner_setup_button),
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun DocumentationSection(onDocumentationClicked: () -> Unit) {
-    WooPosSettingsDetailsMenuItem(
-        icon = Icons.Default.Description,
-        title = stringResource(R.string.woopos_settings_barcode_scanner_documentation_title),
-        subtitle = stringResource(R.string.woopos_settings_barcode_scanner_documentation_subtitle),
-        onClick = onDocumentationClicked
-    )
-}
 
 @Composable
 private fun getBatteryIcon(batteryLevel: Int): ImageVector {
@@ -287,5 +237,49 @@ private fun getBatteryColor(batteryLevel: Int): Color {
         batteryLevel <= 20 -> Color(0xFFD32F2F)
         batteryLevel <= 40 -> Color(0xFFF57C00)
         else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsHardwareBarcodeScannerScreenWithConnectedScannerPreview() {
+    WooPosTheme {
+        WooPosSettingsHardwareBarcodeScannerContent(
+            scannerInfo = ScannerInfo.Connected(
+                name = "Socket Mobile S700",
+                type = ScannerType.BLUETOOTH,
+                batteryLevel = 85
+            ),
+            onSetupScannerClicked = { },
+            onDocumentationClicked = { }
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsHardwareBarcodeScannerScreenWithoutScannerPreview() {
+    WooPosTheme {
+        WooPosSettingsHardwareBarcodeScannerContent(
+            scannerInfo = ScannerInfo.NoScannerDetected,
+            onSetupScannerClicked = { },
+            onDocumentationClicked = { }
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsHardwareBarcodeScannerScreenWithLowBatteryPreview() {
+    WooPosTheme {
+        WooPosSettingsHardwareBarcodeScannerContent(
+            scannerInfo = ScannerInfo.Connected(
+                name = "Zebra LI3608-ER",
+                type = ScannerType.BLUETOOTH,
+                batteryLevel = 15
+            ),
+            onSetupScannerClicked = { },
+            onDocumentationClicked = { }
+        )
     }
 }
