@@ -27,6 +27,8 @@ class WCDataStore @Inject internal constructor(
     fun getCountries(): List<WCLocationModel> =
             runBlocking { locationsDao.getCountries() }
 
+    suspend fun getCountry(countryCode: String): WCLocationModel? = locationsDao.getCountry(countryCode)
+
     /**
      * Returns a list of states
      */
