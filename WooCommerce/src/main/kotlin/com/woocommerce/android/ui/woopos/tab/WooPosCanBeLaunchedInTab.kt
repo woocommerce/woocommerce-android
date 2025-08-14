@@ -87,15 +87,27 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     ): WooPosLaunchability? {
         if (!isFeatureSwitchSupported(wooCoreVersion)) return null
         val remote = isRemotelyEnabled(forceRefresh)
-        return when {
-            remote.isSuccess && !remote.getOrThrow() ->
-                WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled)
-            remote.isFailure && cachedPositive ->
-                WooPosLaunchability.Launchable
-            remote.isFailure && !cachedPositive ->
-                WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache)
-            else -> null
-        }
+
+        return remote.fold(
+            onSuccess = { enabled ->
+                if (enabled) {
+                    null
+                } else {
+                    WooPosLaunchability.NotLaunchable(
+                        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+                    )
+                }
+            },
+            onFailure = {
+                if (cachedPositive) {
+                    WooPosLaunchability.Launchable
+                } else {
+                    WooPosLaunchability.NotLaunchable(
+                        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache
+                    )
+                }
+            }
+        )
     }
 
     private suspend fun resolveSiteSettings(site: SiteModel, forceRefresh: Boolean): Settings? =
