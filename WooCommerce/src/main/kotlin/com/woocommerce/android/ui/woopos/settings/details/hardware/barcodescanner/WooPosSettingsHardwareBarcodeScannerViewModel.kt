@@ -63,7 +63,3 @@ class WooPosSettingsHardwareBarcodeScannerViewModel @Inject constructor(
         private const val SCANNER_DETECTION_INTERVAL_MS = 2000L
     }
 }
-
-data class WooPosSettingsHardwareBarcodeScannerState(
-    val scannerInfo: ScannerInfo = ScannerInfo.NoScannerDetected
-)
