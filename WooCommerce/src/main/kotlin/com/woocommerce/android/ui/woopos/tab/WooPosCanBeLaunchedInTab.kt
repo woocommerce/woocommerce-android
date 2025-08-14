@@ -46,11 +46,12 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
         val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
 
-        val wooCoreVersion = resolveWooCoreVersion(forceRefresh)
-            ?: return fallbackForMissingWooCore(cachedPositive)
-
-        validateWooCoreVersion(wooCoreVersion)?.let { return it }
-        evaluateFeatureSwitch(wooCoreVersion, forceRefresh, cachedPositive)?.let { return it }
+        getWooCoreVersion(forceRefresh)?.let {
+            getNonLaunchabilityReasonFromWooCoreVersion(it)?.let { return WooPosLaunchability.NotLaunchable(it) }
+            getNonLaunchabilityReasonFromFeatureSwitch(it, forceRefresh, cachedPositive)?.let {
+                return WooPosLaunchability.NotLaunchable(it)
+            }
+        }
 
         val siteSettings = resolveSiteSettings(site, forceRefresh)
             ?: return fallbackUnknownOrCache(cachedPositive)
@@ -59,55 +60,50 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             appPrefs.setPOSLaunchableForSite(site.id)
             return WooPosLaunchability.Launchable
         } else {
+            appPrefs.clearPOSLaunchableForSite(site.id)
             return WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
         }
     }
 
-    private suspend fun resolveWooCoreVersion(forceRefresh: Boolean): String? =
+    private suspend fun getWooCoreVersion(forceRefresh: Boolean): String? =
         if (forceRefresh) fetchWooCoreVersion() else getWooCoreCachedVersion()
 
-    private fun fallbackForMissingWooCore(cachedPositive: Boolean): WooPosLaunchability =
-        if (cachedPositive) {
-            WooPosLaunchability.Launchable
-        } else {
-            WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound)
-        }
-
-    private fun validateWooCoreVersion(wooCoreVersion: String): WooPosLaunchability? =
+    /**
+     * Checks the WooCommerce core version to see if it prevents POS from being launchable.
+     * Returns the NonLaunchabilityReason if it does, or null if the version is supported.
+     */
+    private fun getNonLaunchabilityReasonFromWooCoreVersion(
+        wooCoreVersion: String
+    ): WooPosLaunchability.NonLaunchabilityReason? =
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion)) {
-            WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion)
+            WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
         } else {
             null
         }
 
-    private suspend fun evaluateFeatureSwitch(
+    /**
+     * Checks the feature switch to see if it prevents POS from being launchable.
+     * Returns the NonLaunchabilityReason if it does, or null if POS might still be launchable.
+     */
+    private suspend fun getNonLaunchabilityReasonFromFeatureSwitch(
         wooCoreVersion: String,
-        forceRefresh: Boolean,
-        cachedPositive: Boolean
-    ): WooPosLaunchability? {
-        if (!isFeatureSwitchSupported(wooCoreVersion)) return null
-        val remote = isRemotelyEnabled(forceRefresh)
-
-        return remote.fold(
-            onSuccess = { enabled ->
-                if (enabled) {
-                    null
-                } else {
-                    WooPosLaunchability.NotLaunchable(
-                        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
-                    )
-                }
-            },
-            onFailure = {
-                if (cachedPositive) {
-                    WooPosLaunchability.Launchable
-                } else {
-                    WooPosLaunchability.NotLaunchable(
-                        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache
-                    )
+        forceRemoteRefresh: Boolean,
+        hasCachedLaunchableState: Boolean
+    ): WooPosLaunchability.NonLaunchabilityReason? {
+        val result =
+            if (!isFeatureSwitchSupported(wooCoreVersion)) {
+                null
+            } else {
+                val enabled = isRemotelyEnabled(forceRemoteRefresh).getOrNull()
+                when {
+                    enabled == true -> null
+                    enabled == false -> WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+                    hasCachedLaunchableState -> null
+                    else -> WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache
                 }
             }
-        )
+
+        return result
     }
 
     private suspend fun resolveSiteSettings(site: SiteModel, forceRefresh: Boolean): Settings? =
