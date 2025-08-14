@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescann
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
-import com.woocommerce.android.ui.woopos.common.util.ScannerInfo
 import com.woocommerce.android.ui.woopos.common.util.WooPosScannerDetectionUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

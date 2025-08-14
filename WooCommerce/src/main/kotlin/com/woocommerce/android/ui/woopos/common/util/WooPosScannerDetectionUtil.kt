@@ -94,7 +94,6 @@ class WooPosScannerDetectionUtil @Inject constructor(
         )
     }
 
-
     @SuppressLint("MissingPermission")
     @Suppress("TooGenericExceptionCaught")
     private fun detectUsbHidScanner(context: Context): ScannerInfo.Connected? {

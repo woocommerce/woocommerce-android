@@ -155,8 +155,6 @@ private fun ConnectedScannerSection(scannerInfo: ScannerInfo.Connected) {
     }
 }
 
-
-
 @WooPosPreview
 @Composable
 fun WooPosSettingsHardwareBarcodeScannerScreenWithConnectedScannerPreview() {
