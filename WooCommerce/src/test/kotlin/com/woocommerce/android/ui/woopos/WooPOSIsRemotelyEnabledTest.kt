@@ -52,10 +52,10 @@ class WooPOSIsRemotelyEnabledTest {
         whenever(cacheResult.model).thenReturn(ssrModel)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
-        val r = sut.invoke()
+        val result = sut.invoke()
 
-        assertTrue(r.isSuccess)
-        assertFalse(r.getOrThrow())
+        assertTrue(result.isSuccess)
+        assertFalse(result.getOrThrow())
     }
 
     @Test
@@ -66,10 +66,10 @@ class WooPOSIsRemotelyEnabledTest {
         whenever(cacheResult.model).thenReturn(ssrModel)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
-        val r = sut.invoke()
+        val result = sut.invoke()
 
-        assertTrue(r.isSuccess)
-        assertFalse(r.getOrThrow())
+        assertTrue(result.isSuccess)
+        assertFalse(result.getOrThrow())
     }
 
     @Test
@@ -78,10 +78,10 @@ class WooPOSIsRemotelyEnabledTest {
         whenever(cacheResult.model).thenReturn(null)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
-        val r = sut.invoke()
+        val result = sut.invoke()
 
-        assertTrue(r.isFailure)
-        assertTrue(r.exceptionOrNull() is WooPosCouldNotDetermineValueException)
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is WooPosCouldNotDetermineValueException)
     }
 
     @Test
@@ -89,9 +89,9 @@ class WooPOSIsRemotelyEnabledTest {
         whenever(cacheResult.isError).thenReturn(true)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
-        val r = sut.invoke()
+        val result = sut.invoke()
 
-        assertTrue(r.isFailure)
-        assertTrue(r.exceptionOrNull() is WooPosCouldNotDetermineValueException)
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is WooPosCouldNotDetermineValueException)
     }
 }
