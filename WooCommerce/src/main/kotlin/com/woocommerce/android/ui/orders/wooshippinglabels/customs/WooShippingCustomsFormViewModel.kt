@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.UiString
@@ -92,9 +91,13 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     ): ViewState {
         return ViewState(
             contentType = customData.contentType,
-            otherContentInput = InputValue.Data(customData.contentDescription),
+            otherContentInput = validateAsInputValue(customData.contentDescription) {
+                customsValidator.validateContentType(customData.contentType, it)
+            },
             restrictionType = customData.restrictionType,
-            otherRestrictionInput = InputValue.Data(customData.restrictionDescription),
+            otherRestrictionInput = validateAsInputValue(customData.restrictionDescription) {
+                customsValidator.validateRestrictionType(customData.restrictionType, it)
+            },
             itnValue = InputValue.Data(customData.itn),
             returnToSenderChecked = customData.isReturnToSender,
             shippingProducts = customData.items.map { item ->
@@ -152,12 +155,8 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     }
 
     fun onOtherContentInputChanged(newValue: String) {
-        val input = when (newValue.isBlank()) {
-            false -> InputValue.Data(newValue)
-            true -> InputValue.Error(
-                input = newValue,
-                errorMessageId = R.string.woo_shipping_labels_customs_other_error_message
-            )
+        val input = validateAsInputValue(newValue) {
+            customsValidator.validateContentType(_viewState.value.contentType, it)
         }
         _viewState.update {
             it.copy(otherContentInput = input)
@@ -165,12 +164,8 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     }
 
     fun onRestrictionDetailsInputChanged(newValue: String) {
-        val input = when (newValue.isBlank()) {
-            false -> InputValue.Data(newValue)
-            true -> InputValue.Error(
-                input = newValue,
-                errorMessageId = R.string.woo_shipping_labels_customs_other_error_message
-            )
+        val input = validateAsInputValue(newValue) {
+            customsValidator.validateRestrictionType(_viewState.value.restrictionType, it)
         }
         _viewState.update {
             it.copy(otherRestrictionInput = input)
@@ -319,9 +314,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             get() = restrictionType == RestrictionType.OTHER
 
         val isAddCustomsButtonEnabled: Boolean
-            get() = itnValue is InputValue.Data &&
-                (contentType != ContentType.OTHER || otherContentInput is InputValue.Data) &&
-                (restrictionType != RestrictionType.OTHER || otherRestrictionInput is InputValue.Data) &&
+            get() = itnValue.isValid &&
+                (contentType != ContentType.OTHER || otherContentInput.isValid) &&
+                (restrictionType != RestrictionType.OTHER || otherRestrictionInput.isValid) &&
                 shippingProducts.all { it.isValid }
 
         val asCustomData: CustomsData

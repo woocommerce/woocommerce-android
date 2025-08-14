@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel
 
 class CustomsValidator(
@@ -41,6 +43,35 @@ class CustomsValidator(
                     errorMessageId = R.string.woo_shipping_labels_customs_itn_error_message
                 )
             }
+        }
+    }
+
+    fun validateContentType(contentType: ContentType, contentDescription: String): ValidationResult {
+        return when (contentType) {
+            ContentType.OTHER -> when (contentDescription.isBlank()) {
+                false -> ValidationResult.Valid
+                true -> ValidationResult.Invalid(
+                    errorMessageId = R.string.woo_shipping_labels_customs_other_error_message
+                )
+            }
+
+            else -> ValidationResult.Valid
+        }
+    }
+
+    fun validateRestrictionType(
+        restrictionType: RestrictionType,
+        restrictionDescription: String
+    ): ValidationResult {
+        return when (restrictionType) {
+            RestrictionType.OTHER -> when (restrictionDescription.isBlank()) {
+                false -> ValidationResult.Valid
+                true -> ValidationResult.Invalid(
+                    errorMessageId = R.string.woo_shipping_labels_customs_other_error_message
+                )
+            }
+
+            else -> ValidationResult.Valid
         }
     }
 
