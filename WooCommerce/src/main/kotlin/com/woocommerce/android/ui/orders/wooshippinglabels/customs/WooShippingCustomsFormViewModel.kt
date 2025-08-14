@@ -8,7 +8,7 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CustomsValidator
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.WooShippingCustomsValidator
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -29,7 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooShippingCustomsFormViewModel @Inject constructor(
     private val getAllCountries: GetAllCountries,
-    private val customsValidator: CustomsValidator,
+    private val customsValidator: WooShippingCustomsValidator,
     private val dispatchers: CoroutineDispatchers,
     private val currencyFormatter: CurrencyFormatter,
     savedState: SavedStateHandle
@@ -67,8 +67,8 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                     val itnValue = it.itnValue.currentInput
                     it.copy(
                         itnValue = when (validationResult) {
-                            CustomsValidator.ValidationResult.Valid -> InputValue.Data(itnValue)
-                            is CustomsValidator.ValidationResult.Invalid ->
+                            WooShippingCustomsValidator.ValidationResult.Valid -> InputValue.Data(itnValue)
+                            is WooShippingCustomsValidator.ValidationResult.Invalid ->
                                 InputValue.Error(itnValue, validationResult.errorMessage)
                         }
                     )
@@ -279,12 +279,12 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     private fun validateAsInputValue(
         input: String,
-        validate: (String) -> CustomsValidator.ValidationResult
+        validate: (String) -> WooShippingCustomsValidator.ValidationResult
     ): InputValue = when (val validationResult = validate(input)) {
-        is CustomsValidator.ValidationResult.Invalid ->
+        is WooShippingCustomsValidator.ValidationResult.Invalid ->
             InputValue.Error(input, validationResult.errorMessage)
 
-        CustomsValidator.ValidationResult.Valid ->
+        WooShippingCustomsValidator.ValidationResult.Valid ->
             InputValue.Data(input)
     }
 

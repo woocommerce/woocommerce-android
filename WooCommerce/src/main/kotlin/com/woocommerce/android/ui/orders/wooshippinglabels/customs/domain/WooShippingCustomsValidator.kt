@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionTy
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel
 import javax.inject.Inject
 
-class CustomsValidator @Inject constructor(
+class WooShippingCustomsValidator @Inject constructor(
     private val validateHSTariffNumber: ValidateHSTariffNumber,
     private val validateITN: ValidateITN
 ) {
@@ -118,12 +118,14 @@ class CustomsValidator @Inject constructor(
 
     sealed interface ValidationResult {
         val isValid: Boolean
-            get() = this is Valid
+            get() = this is ValidationResult.Valid
 
-        data class Invalid(val errorMessage: UiString) : ValidationResult {
+        data class Invalid(val errorMessage: UiString) :
+            ValidationResult {
             constructor(@StringRes errorMessageId: Int) : this(UiString.UiStringRes(errorMessageId))
         }
 
-        data object Valid : ValidationResult
+        data object Valid :
+            ValidationResult
     }
 }
