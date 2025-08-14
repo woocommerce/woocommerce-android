@@ -185,12 +185,13 @@ class WooPosScannerDetectionUtil @Inject constructor(
         val isInternalDevice = internalDeviceKeywords.any { deviceName.contains(it) }
 
         return !isInternalDevice &&
-               vendorId > MIN_EXTERNAL_USB_VENDOR_ID &&
-               (hasScannerName || isKnownScannerVendor())
+            vendorId > MIN_EXTERNAL_USB_VENDOR_ID &&
+            (hasScannerName || isKnownScannerVendor())
     }
 
     private fun InputDevice.isKnownScannerVendor(): Boolean {
         // Common barcode scanner vendor IDs (hexadecimal)
+        @Suppress("MagicNumber")
         val knownScannerVendorIds = setOf(
             0x05e0, // Symbol Technologies (now Zebra)
             0x0536, // Hand Held Products (Honeywell)
