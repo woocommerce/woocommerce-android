@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.home.navigateToEligibilityScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenAfterSuccessfulCashPayment
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenIfHomeScreenNotOpen
+import com.woocommerce.android.ui.woopos.settings.navigateToSettingsScreen
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromCash
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.CoroutineScope
@@ -42,5 +43,6 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenEligibilityScreenFromSplash ->
             navigateToEligibilityScreen(event.reason)
+        is WooPosNavigationEvent.OpenSettings -> navigateToSettingsScreen()
     }
 }
