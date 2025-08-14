@@ -70,22 +70,16 @@ fun WooPosSettingsScreen(
     }
 
     val dialogState = state.dialogState
-    when (dialogState) {
-        is WooPosHomeState.DialogState.ProductsInfoDialog -> {
-            WooPosProductInfoDialog(
-                state = dialogState,
-                isVisible = true,
-                onDismissRequest = { containerViewModel.hideDialog() }
-            )
-        }
-        is WooPosHomeState.DialogState.ScanningSetupDialog -> {
-            WooPosScanningSetupDialog(
-                isVisible = true,
-                onDismissRequest = { containerViewModel.hideDialog() }
-            )
-        }
-        else -> {}
-    }
+    WooPosProductInfoDialog(
+        state = WooPosHomeState.DialogState.ProductsInfoDialog,
+        isVisible = dialogState is WooPosHomeState.DialogState.ProductsInfoDialog,
+        onDismissRequest = { containerViewModel.hideDialog() }
+    )
+
+    WooPosScanningSetupDialog(
+        isVisible = dialogState is WooPosHomeState.DialogState.ScanningSetupDialog,
+        onDismissRequest = { containerViewModel.hideDialog() }
+    )
 }
 
 @Composable
