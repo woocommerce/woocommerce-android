@@ -25,9 +25,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShipmentTrackingUrls
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.ItnMissing
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.NotRequired
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.Unavailable
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState.Declared
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState.NoSelection
@@ -48,7 +45,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLa
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CreateDefaultCustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.WooShippingCustomsValidator
 import com.woocommerce.android.ui.orders.wooshippinglabels.domain.DownloadAndPrintInvoiceUseCase
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -127,7 +124,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val observeShippingLabelNotice: ObserveShippingLabelNotice,
     private val createDefaultCustomsData: CreateDefaultCustomsData,
     private val shouldRequireCustoms: ShouldRequireCustomsForm,
-    private val validateITN: ValidateITN,
+    private val customsValidator: WooShippingCustomsValidator,
     private val fetchShippingLabelFile: FetchShippingLabelFile,
     private val observeShippingLabelStatus: ObserveShippingLabelStatus,
     private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase,
@@ -201,6 +198,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { observePackageChanges() }
         launch { observeShippingRates() }
         launch { observeShippingRatesState() }
+        launch { observeShippingAddresses() }
         launch { observeCustomsDataChanges() }
         launch { observeNotices() }
     }
@@ -384,7 +382,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             refreshShippingRates.onStart { emit(Unit) },
         ) { accountSettings, selectedPackages, addresses, packageWeight, customState, hazmatStates, _ ->
             val customsFulfilled = customState[selectedShipmentIndex] is CustomsState.DataAvailable ||
-                customState[selectedShipmentIndex] is NotRequired
+                customState[selectedShipmentIndex] is CustomsState.NotRequired
             val selectedPackage = selectedPackages[selectedShipmentIndex]
             val selectedAddress = addresses[selectedShipmentIndex]
             if (selectedPackage != null && customsFulfilled) {
@@ -403,6 +401,27 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
         }.debounce(MULTIPLE_CALLS_DELAY)
             .collectLatest { updateShippingRates(selectedShipmentIndex, it) }
+    }
+
+    private suspend fun observeShippingAddresses() {
+        shippingAddresses.collect { shippingAddressesList ->
+            customsFormDataFlow.update {
+                val customsDataList = it.toMutableList()
+                customsDataList.forEachIndexed { index, customsData ->
+                    val addresses = shippingAddressesList.getOrNull(index) ?: return@forEachIndexed
+                    val shipment = shipments.value.getOrNull(index) ?: return@forEachIndexed
+                    if (customsData == null && shouldRequireCustoms(addresses)) {
+                        customsDataList[index] = createDefaultCustomsData(
+                            shipment = shipment,
+                            shippingAddresses = addresses
+                        )
+                    } else if (customsData != null && !shouldRequireCustoms(addresses)) {
+                        customsDataList[index] = null
+                    }
+                }
+                customsDataList
+            }
+        }
     }
 
     private suspend fun observeShippingRatesState() {
@@ -521,34 +540,39 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) { addresses, customsData ->
             customsData.mapIndexed { index, currentItemCustomsData ->
                 val selectedAddress = addresses.getOrNull(index)
-                val customsRequired = selectedAddress != null && shouldRequireCustoms(selectedAddress)
-
                 val destinationCountryCode = selectedAddress?.shipTo?.address?.country?.code.orEmpty()
+                val customsFormValidationResult = currentItemCustomsData?.let {
+                    customsValidator.validate(it, destinationCountryCode)
+                }
 
-                val itnMissing = (currentItemCustomsData ?: getDefaultCustomsData(index)).let {
-                    validateITN(
-                        customsData = it,
-                        destinationCountry = destinationCountryCode
-                    )
-                } is ValidateITN.ITNValidationResult.Missing
+                when (customsFormValidationResult) {
+                    WooShippingCustomsValidator.FormValidationResult.Valid ->
+                        CustomsState.DataAvailable(customsData = currentItemCustomsData)
 
-                when {
-                    customsRequired && itnMissing -> ItnMissing
-                    currentItemCustomsData != null -> CustomsState.DataAvailable(currentItemCustomsData)
-                    customsRequired -> Unavailable
-                    else -> NotRequired
+                    WooShippingCustomsValidator.FormValidationResult.ItnMissing ->
+                        CustomsState.ItnMissing
+
+                    WooShippingCustomsValidator.FormValidationResult.Invalid ->
+                        CustomsState.Unavailable
+
+                    null -> CustomsState.NotRequired
                 }
             }
         }.collectLatest { customsStatesFlow.value = it }
     }
 
-    private suspend fun getDefaultCustomsData(
-        index: Int
-    ): CustomsData {
-        return createDefaultCustomsData(
-            items = shipments.value.getOrNull(index)?.items.orEmpty(),
-            originAddress = shippingAddresses.value.getOrNull(index)?.shipFrom ?: OriginShippingAddress.EMPTY
-        )
+    private suspend fun createDefaultCustomsData(
+        shipment: ShipmentUIModel,
+        shippingAddresses: WooShippingAddresses,
+    ): CustomsData? {
+        return if (shouldRequireCustoms(shippingAddresses)) {
+            createDefaultCustomsData(
+                items = shipment.items,
+                originAddress = shippingAddresses.shipFrom
+            )
+        } else {
+            null
+        }
     }
 
     private suspend fun getShippingAddresses() {
@@ -685,7 +709,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
 
             shipmentItems.value = shipments.map { it.items }
-            adjustFlowSizesToShipmentCount(shipments.size)
+            adjustFlowSizesToShipmentCount(shipments)
 
             val destinationStatus = when {
                 addressValidationHelper.isMissingDestinationAddress(
@@ -739,37 +763,42 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    private fun adjustFlowSizesToShipmentCount(shipmentSize: Int) {
-        fun <T> MutableStateFlow<List<T>>.updateSize(defaultValue: T) = this.update { currentList ->
-            if (currentList.size <= shipmentSize) {
-                currentList + List(shipmentSize - currentList.size) { defaultValue }
-            } else {
-                List(shipmentSize) { defaultValue }
+    private suspend fun adjustFlowSizesToShipmentCount(shipments: List<ShipmentUIModel>) {
+        suspend fun <T> MutableStateFlow<List<T>>.updateSize(defaultValue: suspend (Int) -> T) =
+            this.update { currentList ->
+                if (currentList.size <= shipments.size) {
+                    currentList + List(shipments.size - currentList.size) { index ->
+                        defaultValue(currentList.size + index)
+                    }
+                } else {
+                    List(shipments.size) { defaultValue(it) }
+                }
             }
-        }
 
         val originAddresses = shippingAddresses.value.first().originAddresses
-        shippingAddresses.updateSize(
+        shippingAddresses.updateSize {
             WooShippingAddresses.EMPTY.copy(
                 originAddresses = originAddresses,
                 shipFrom = originAddresses.firstOrNull() ?: WooShippingAddresses.EMPTY.shipFrom
             )
-        )
-        selectedPackagesFlow.updateSize(null)
-        customsFormDataFlow.updateSize(null)
-        packageWeightsFlow.updateSize(null)
-        packageSelectionsFlow.updateSize(NotSelected)
-        customsStatesFlow.updateSize(NotRequired)
-        hazmatStatesFlow.updateSize(NoSelection)
-        selectedRatesSortOrdersFlow.updateSize(ShippingSortOption.FASTEST)
-        selectedRatesFlow.updateSize(null)
-        shippingRatesListFlow.updateSize(emptyMap())
-        shippingRatesStatesFlow.updateSize(ShippingRatesState.NoAvailable)
+        }
+        selectedPackagesFlow.updateSize { null }
+        customsFormDataFlow.updateSize { index ->
+            createDefaultCustomsData(shipments[index], shippingAddresses.value[index])
+        }
+        packageWeightsFlow.updateSize { null }
+        packageSelectionsFlow.updateSize { NotSelected }
+        customsStatesFlow.updateSize { CustomsState.NotRequired }
+        hazmatStatesFlow.updateSize { NoSelection }
+        selectedRatesSortOrdersFlow.updateSize { ShippingSortOption.FASTEST }
+        selectedRatesFlow.updateSize { null }
+        shippingRatesListFlow.updateSize { emptyMap() }
+        shippingRatesStatesFlow.updateSize { ShippingRatesState.NoAvailable }
 
-        customWeight = if (customWeight.size <= shipmentSize) {
-            customWeight + List(shipmentSize - customWeight.size) { "" }
+        customWeight = if (customWeight.size <= shipments.size) {
+            customWeight + List(shipments.size - customWeight.size) { "" }
         } else {
-            List(shipmentSize) { "" }
+            List(shipments.size) { "" }
         }
     }
 
@@ -1038,8 +1067,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch {
             val event = NavigateToCustomsFormEdit(
                 destinationCountryCode = destinationCountryCode,
-                customData = customsFormDataFlow.value[selectedShipmentIndex]
-                    ?: getDefaultCustomsData(selectedShipmentIndex),
+                customData = requireNotNull(customsFormDataFlow.value[selectedShipmentIndex]),
                 storeOptions = accountSettings.first()?.storeOptions ?: StoreOptionsModel.EMPTY
             )
             triggerEvent(event)
