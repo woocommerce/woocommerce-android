@@ -9,8 +9,6 @@ import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.CustomsValidator
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateHSTariffNumber
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ValidateITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -31,18 +29,13 @@ import javax.inject.Inject
 @HiltViewModel
 class WooShippingCustomsFormViewModel @Inject constructor(
     private val getAllCountries: GetAllCountries,
-    validateITN: ValidateITN,
-    validateHSTariffNumber: ValidateHSTariffNumber,
+    private val customsValidator: CustomsValidator,
     private val dispatchers: CoroutineDispatchers,
     private val currencyFormatter: CurrencyFormatter,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingCustomsFormFragmentArgs by savedState.navArgs()
-    private val customsValidator = CustomsValidator(
-        validateHSTariffNumber = validateHSTariffNumber,
-        validateITN = validateITN,
-        destinationCountryCode = navArgs.destinationCountryCode
-    )
+    private val destinationCountryCode = navArgs.destinationCountryCode
     private val storeOptions = navArgs.storeOptions
 
     private val _viewState = savedState.getStateFlow(
@@ -66,7 +59,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     private fun monitorITNValidationStatus() {
         _viewState.map { it.asCustomData }
             .map { customsData ->
-                customsValidator.validateITN(customsData)
+                customsValidator.validateITN(customsData, destinationCountryCode)
             }
             .flowOn(dispatchers.computation)
             .onEach { validationResult ->
@@ -105,7 +98,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                     productId = item.productID,
                     name = item.description,
                     description = validateAsInputValue(item.description, customsValidator::validateProductDescription),
-                    tariffNumber = validateAsInputValue(item.hsTariffNumber, customsValidator::validateHSTariffNumber),
+                    tariffNumber = validateAsInputValue(item.hsTariffNumber) {
+                        customsValidator.validateHSTariffNumber(it, destinationCountryCode)
+                    },
                     valuePerUnit = validateAsInputValue(item.value.toString(), customsValidator::validateProductValue),
                     weightPerUnit = validateAsInputValue(
                         item.weight.takeIf { it != 0f }?.toString() ?: "",
@@ -196,7 +191,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     fun onShippableProductTariffNumberChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
             item.copy(
-                tariffNumber = validateAsInputValue(newValue, customsValidator::validateHSTariffNumber)
+                tariffNumber = validateAsInputValue(newValue) {
+                    customsValidator.validateHSTariffNumber(it, destinationCountryCode)
+                }
             )
         }
     }

@@ -7,17 +7,17 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel
+import javax.inject.Inject
 
-class CustomsValidator(
+class CustomsValidator @Inject constructor(
     private val validateHSTariffNumber: ValidateHSTariffNumber,
-    private val validateITN: ValidateITN,
-    private val destinationCountryCode: String
+    private val validateITN: ValidateITN
 ) {
     fun validate(customsData: CustomsData): ValidationResult {
         TODO()
     }
 
-    fun validateITN(customsData: CustomsData): ValidationResult {
+    fun validateITN(customsData: CustomsData, destinationCountryCode: String): ValidationResult {
         fun ValidateITN.ITNMissingCause.errorMessage() = when (this) {
             ValidateITN.ITNMissingCause.TotalValue ->
                 UiString.UiStringRes(R.string.woo_shipping_labels_customs_itn_required_total_value)
@@ -32,7 +32,7 @@ class CustomsValidator(
                 UiString.UiStringRes(R.string.woo_shipping_labels_customs_itn_required_destination_country)
         }
 
-        return validateITN(customsData, destinationCountryCode).let {
+        return validateITN.invoke(customsData, destinationCountryCode).let {
             when (it) {
                 ValidateITN.ITNValidationResult.Valid -> ValidationResult.Valid
                 is ValidateITN.ITNValidationResult.Missing -> ValidationResult.Invalid(
@@ -75,8 +75,8 @@ class CustomsValidator(
         }
     }
 
-    fun validateHSTariffNumber(tariffNumber: String): ValidationResult {
-        return validateHSTariffNumber(
+    fun validateHSTariffNumber(tariffNumber: String, destinationCountryCode: String): ValidationResult {
+        return validateHSTariffNumber.invoke(
             tariffNumber = tariffNumber,
             destinationCountryCode = destinationCountryCode
         ).let { inputValue ->
