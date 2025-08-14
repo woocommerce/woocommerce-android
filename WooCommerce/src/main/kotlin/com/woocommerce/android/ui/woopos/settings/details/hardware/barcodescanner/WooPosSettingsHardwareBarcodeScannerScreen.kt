@@ -4,10 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -32,9 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,22 +48,21 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.util.ScannerInfo
 import com.woocommerce.android.ui.woopos.common.util.ScannerType
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun WooPosSettingsHardwareBarcodeScannerScreen(
+    onShowScanningSetupDialog: () -> Unit,
     viewModel: WooPosSettingsHardwareBarcodeScannerViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
-    var showScanningSetupDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.showScanningSetupDialog.collectLatest {
-            showScanningSetupDialog = true
+            onShowScanningSetupDialog()
         }
     }
 
@@ -82,11 +76,6 @@ fun WooPosSettingsHardwareBarcodeScannerScreen(
         scannerInfo = state.scannerInfo,
         onSetupScannerClicked = { viewModel.onSetupScannerClicked() },
         onDocumentationClicked = { viewModel.onDocumentationClicked() }
-    )
-
-    WooPosScanningSetupDialog(
-        isVisible = showScanningSetupDialog,
-        onDismissRequest = { showScanningSetupDialog = false }
     )
 }
 

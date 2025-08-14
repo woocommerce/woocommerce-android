@@ -33,6 +33,7 @@ fun WooPosSettingsDetailPaneScreen(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
+    onShowScanningSetupDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentDestination = state.currentDestination
@@ -81,7 +82,9 @@ fun WooPosSettingsDetailPaneScreen(
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.BarcodeScanners -> {
-                    WooPosSettingsHardwareBarcodeScannerScreen()
+                    WooPosSettingsHardwareBarcodeScannerScreen(
+                        onShowScanningSetupDialog = onShowScanningSetupDialog
+                    )
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.CardReaders -> {
