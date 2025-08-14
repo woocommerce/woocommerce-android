@@ -12,14 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Battery0Bar
-import androidx.compose.material.icons.filled.Battery1Bar
-import androidx.compose.material.icons.filled.Battery2Bar
-import androidx.compose.material.icons.filled.Battery3Bar
-import androidx.compose.material.icons.filled.Battery4Bar
-import androidx.compose.material.icons.filled.Battery5Bar
-import androidx.compose.material.icons.filled.Battery6Bar
-import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Settings
@@ -32,8 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -146,7 +136,7 @@ private fun ConnectedScannerSection(scannerInfo: ScannerInfo.Connected) {
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
-            Column(modifier = Modifier.weight(1f)) {
+            Column {
                 WooPosText(
                     text = scannerInfo.name,
                     style = WooPosTypography.BodyMedium,
@@ -161,51 +151,11 @@ private fun ConnectedScannerSection(scannerInfo: ScannerInfo.Connected) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            scannerInfo.batteryLevel?.let { batteryLevel ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        imageVector = getBatteryIcon(batteryLevel),
-                        contentDescription = null,
-                        tint = getBatteryColor(batteryLevel),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    WooPosText(
-                        text = "$batteryLevel%",
-                        style = WooPosTypography.Caption,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
         }
     }
 }
 
 
-@Composable
-private fun getBatteryIcon(batteryLevel: Int): ImageVector {
-    return when {
-        batteryLevel >= 95 -> Icons.Default.BatteryFull
-        batteryLevel >= 85 -> Icons.Default.Battery6Bar
-        batteryLevel >= 70 -> Icons.Default.Battery5Bar
-        batteryLevel >= 55 -> Icons.Default.Battery4Bar
-        batteryLevel >= 40 -> Icons.Default.Battery3Bar
-        batteryLevel >= 25 -> Icons.Default.Battery2Bar
-        batteryLevel >= 10 -> Icons.Default.Battery1Bar
-        else -> Icons.Default.Battery0Bar
-    }
-}
-
-@Composable
-private fun getBatteryColor(batteryLevel: Int): Color {
-    return when {
-        batteryLevel <= 20 -> Color(0xFFD32F2F)
-        batteryLevel <= 40 -> Color(0xFFF57C00)
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
-    }
-}
 
 @WooPosPreview
 @Composable
@@ -214,8 +164,7 @@ fun WooPosSettingsHardwareBarcodeScannerScreenWithConnectedScannerPreview() {
         WooPosSettingsHardwareBarcodeScannerContent(
             scannerInfo = ScannerInfo.Connected(
                 name = "Socket Mobile S700",
-                type = ScannerType.BLUETOOTH,
-                batteryLevel = 85
+                type = ScannerType.BLUETOOTH
             ),
             onSetupScannerClicked = { },
             onDocumentationClicked = { }
@@ -237,13 +186,12 @@ fun WooPosSettingsHardwareBarcodeScannerScreenWithoutScannerPreview() {
 
 @WooPosPreview
 @Composable
-fun WooPosSettingsHardwareBarcodeScannerScreenWithLowBatteryPreview() {
+fun WooPosSettingsHardwareBarcodeScannerScreenWithUsbScannerPreview() {
     WooPosTheme {
         WooPosSettingsHardwareBarcodeScannerContent(
             scannerInfo = ScannerInfo.Connected(
                 name = "Zebra LI3608-ER",
-                type = ScannerType.BLUETOOTH,
-                batteryLevel = 15
+                type = ScannerType.USB_HID
             ),
             onSetupScannerClicked = { },
             onDocumentationClicked = { }

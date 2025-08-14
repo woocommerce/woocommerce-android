@@ -88,26 +88,12 @@ class WooPosScannerDetectionUtil @Inject constructor(
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun createBluetoothScannerInfo(device: BluetoothDevice): ScannerInfo {
-        val batteryLevel = getBatteryLevel(device)
         return ScannerInfo.Connected(
             name = device.name ?: "Unknown Bluetooth Scanner",
-            type = ScannerType.BLUETOOTH,
-            batteryLevel = batteryLevel
+            type = ScannerType.BLUETOOTH
         )
     }
 
-    @SuppressLint("MissingPermission")
-    @Suppress("TooGenericExceptionCaught")
-    private fun getBatteryLevel(device: BluetoothDevice): Int? {
-        return try {
-            val method = device.javaClass.getMethod("getBatteryLevel")
-            val level = method.invoke(device) as? Int
-            if (level != null && level != -1) level else null
-        } catch (e: Exception) {
-            wooPosLogWrapper.d("Failed to get battery level: ${e.message}")
-            null
-        }
-    }
 
     @SuppressLint("MissingPermission")
     @Suppress("TooGenericExceptionCaught")
@@ -230,7 +216,6 @@ sealed class ScannerInfo {
     data class Connected(
         val name: String,
         val type: ScannerType,
-        val batteryLevel: Int? = null,
     ) : ScannerInfo()
 
     data object NoScannerDetected : ScannerInfo()
