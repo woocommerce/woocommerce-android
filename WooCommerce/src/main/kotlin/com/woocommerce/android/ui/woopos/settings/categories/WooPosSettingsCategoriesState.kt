@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.settings.categories
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Hardware
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,6 +26,12 @@ enum class WooPosSettingsCategory(
         R.string.woopos_settings_store_category_subtitle,
         Icons.Default.Store,
         WooPosSettingsDetailDestination.Store.Overview
+    ),
+    HELP(
+        R.string.woopos_get_support_title,
+        R.string.woopos_settings_help_category_subtitle,
+        Icons.AutoMirrored.Filled.Help,
+        WooPosSettingsDetailDestination.Help.Overview
     )
 }
 
