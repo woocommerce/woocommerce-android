@@ -70,7 +70,11 @@ class WooPosTabController @Inject constructor(
 
             result.onSuccess { tabShouldBeVisible ->
                 setPOSTabVisibility(tabShouldBeVisible)
-                if (tabShouldBeVisible) appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId())
+                if (tabShouldBeVisible) {
+                    appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId())
+                } else {
+                    appPrefs.clearPOSTabVisibilityForSite(selectedSite.getSelectedSiteId())
+                }
             }
 
             result.onFailure { error ->

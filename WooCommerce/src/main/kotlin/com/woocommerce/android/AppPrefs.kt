@@ -1199,6 +1199,10 @@ object AppPrefs {
         )
     }
 
+    fun clearPOSTabVisibilityForSite(siteId: Int) {
+        remove(PrefKeyString("${UndeletablePrefKey.POS_TAB_VISIBILITY}:$siteId"))
+    }
+
     fun setPOSLaunchableForSite(siteId: Int) {
         setBoolean(
             key = PrefKeyString("${UndeletablePrefKey.POS_LAUNCHABLE}:$siteId"),
@@ -1211,6 +1215,10 @@ object AppPrefs {
             key = PrefKeyString("${UndeletablePrefKey.POS_LAUNCHABLE}:$siteId"),
             default = false
         )
+    }
+
+    fun clearPOSLaunchableForSite(siteId: Int) {
+        remove(PrefKeyString("${UndeletablePrefKey.POS_LAUNCHABLE}:$siteId"))
     }
 
     /**
