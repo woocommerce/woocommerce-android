@@ -73,7 +73,7 @@ private fun SectionTitle(title: String) {
         style = WooPosTypography.BodyXLarge,
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(start = WooPosSpacing.Medium.value)
+        modifier = Modifier.padding(start = WooPosSpacing.Large.value)
     )
 }
 
