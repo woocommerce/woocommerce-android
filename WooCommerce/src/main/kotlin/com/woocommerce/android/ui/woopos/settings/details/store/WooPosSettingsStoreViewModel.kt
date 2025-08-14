@@ -33,7 +33,7 @@ class WooPosSettingsStoreViewModel @Inject constructor(
                 }
                 is WooPosStoreDataResult.NotAvailable,
                 is WooPosStoreDataResult.Error -> {
-                    val emptyStoreInfo = StoreInfo("", "", "", "")
+                    val emptyStoreInfo = WooPosSettingsStoreState.StoreInfo("", "", "", "")
                     _state.value = WooPosSettingsStoreState.Loaded(
                         storeInfo = emptyStoreInfo,
                         receiptInfo = null

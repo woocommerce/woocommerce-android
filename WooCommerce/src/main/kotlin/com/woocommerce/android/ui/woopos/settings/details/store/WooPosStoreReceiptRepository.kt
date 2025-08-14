@@ -22,7 +22,7 @@ class WooPosStoreReceiptRepository @Inject constructor(
                 val settings = wooCommerceStore.getSiteSettings(site)
                 val storeAddress = buildStoreAddress(settings)
 
-                val storeInfo = StoreInfo(
+                val storeInfo = WooPosSettingsStoreState.StoreInfo(
                     storeName = site.name ?: "",
                     address = storeAddress,
                     phone = "",
@@ -30,7 +30,7 @@ class WooPosStoreReceiptRepository @Inject constructor(
                 )
 
                 val receiptInfo = if (isWooCommerceVersionAtLeast10()) {
-                    ReceiptInfo(
+                    WooPosSettingsStoreState.ReceiptInfo(
                         storeName = site.name ?: "",
                         address = storeAddress,
                         phone = "",
@@ -70,8 +70,8 @@ class WooPosStoreReceiptRepository @Inject constructor(
 
 sealed class WooPosStoreDataResult {
     data class Success(
-        val storeInfo: StoreInfo,
-        val receiptInfo: ReceiptInfo? = null
+        val storeInfo: WooPosSettingsStoreState.StoreInfo,
+        val receiptInfo: WooPosSettingsStoreState.ReceiptInfo? = null
     ) : WooPosStoreDataResult()
 
     data object NotAvailable : WooPosStoreDataResult()

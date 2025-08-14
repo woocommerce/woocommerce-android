@@ -22,4 +22,3 @@ sealed class WooPosSettingsStoreState {
         val refundPolicy: String
     )
 }
-
