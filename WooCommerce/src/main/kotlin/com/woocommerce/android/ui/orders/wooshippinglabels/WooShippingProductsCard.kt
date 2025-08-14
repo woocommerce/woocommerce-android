@@ -475,6 +475,7 @@ fun SelectableShippingProduct(
     weight: String,
     price: String,
     quantity: Float,
+    selectable: Boolean,
     isSelected: Boolean,
     onSelectionChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
@@ -497,6 +498,7 @@ fun SelectableShippingProduct(
             weight = weight,
             price = price,
             quantity = quantity,
+            selectable = selectable,
             isSelected = isSelected,
             onSelectionChange = onSelectionChange,
             imageUrl = imageUrl
@@ -511,6 +513,7 @@ fun ExpandableSelectableShippingProduct(
     weight: String,
     price: String,
     quantity: Float,
+    selectable: Boolean,
     isSelected: Boolean,
     onSelectionChange: ((Boolean) -> Unit)?,
     onInnerSelectionChange: ((Boolean, Int) -> Unit)?,
@@ -536,13 +539,15 @@ fun ExpandableSelectableShippingProduct(
                     .height(IntrinsicSize.Min)
                     .padding(start = 8.dp)
             ) {
-                SelectionCheck(
-                    isSelected = isSelected,
-                    onSelectionChange = onSelectionChange,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(8.dp)
-                )
+                if (selectable) {
+                    SelectionCheck(
+                        isSelected = isSelected,
+                        onSelectionChange = onSelectionChange,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(8.dp)
+                    )
+                }
                 ShippingProductDetails(
                     title = title,
                     description = description,
@@ -593,6 +598,7 @@ fun ExpandableSelectableShippingProduct(
                         weight = singleWeight,
                         price = singlePrice,
                         quantity = quantity,
+                        selectable = selectable,
                         isSelected = isInnerItemSelected,
                         onSelectionChange = {
                             onInnerSelectionChange?.invoke(isInnerItemSelected, index)
@@ -620,6 +626,7 @@ fun SelectableShippingProductDetails(
     weight: String,
     price: String,
     quantity: Float,
+    selectable: Boolean,
     isSelected: Boolean,
     onSelectionChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
@@ -628,13 +635,15 @@ fun SelectableShippingProductDetails(
     displayQuantity: Boolean = true
 ) {
     Row(modifier) {
-        SelectionCheck(
-            isSelected = isSelected,
-            onSelectionChange = onSelectionChange,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(8.dp)
-        )
+        if (selectable) {
+            SelectionCheck(
+                isSelected = isSelected,
+                onSelectionChange = onSelectionChange,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(8.dp)
+            )
+        }
         ShippingProductDetails(
             title = title,
             description = description,
@@ -668,6 +677,7 @@ fun SelectableShippingProductPreview() {
                 weight = "0.6kg",
                 quantity = 1f,
                 price = "$12.99",
+                selectable = true,
                 isSelected = true,
                 onSelectionChange = {}
             )
@@ -686,6 +696,7 @@ fun ExpandableSelectableShippingProductPreview(@PreviewParameter(IsExpandedProvi
                 weight = "0.6kg",
                 quantity = 3f,
                 price = "$12.99",
+                selectable = true,
                 isSelected = true,
                 onSelectionChange = {},
                 isExpanded = isExpanded,
