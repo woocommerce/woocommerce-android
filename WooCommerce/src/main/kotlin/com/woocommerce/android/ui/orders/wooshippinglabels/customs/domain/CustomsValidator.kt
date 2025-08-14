@@ -1,0 +1,98 @@
+package com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain
+
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel
+
+class CustomsValidator(
+    private val validateHSTariffNumber: ValidateHSTariffNumber,
+    private val validateITN: ValidateITN,
+    private val destinationCountryCode: String
+) {
+    fun validate(customsData: CustomsData): ValidationResult {
+        TODO()
+    }
+
+    fun validateITN(customsData: CustomsData): ValidationResult {
+        fun ValidateITN.ITNMissingCause.errorMessage() = when (this) {
+            ValidateITN.ITNMissingCause.TotalValue ->
+                UiString.UiStringRes(R.string.woo_shipping_labels_customs_itn_required_total_value)
+
+            is ValidateITN.ITNMissingCause.HSTariffValue ->
+                UiString.UiStringRes(
+                    stringRes = R.string.woo_shipping_labels_customs_itn_required_hs_tariff_value,
+                    params = listOf(UiString.UiStringText(this.hsTariffNumber))
+                )
+
+            ValidateITN.ITNMissingCause.DestinationCountry ->
+                UiString.UiStringRes(R.string.woo_shipping_labels_customs_itn_required_destination_country)
+        }
+
+        return validateITN(customsData, destinationCountryCode).let {
+            when (it) {
+                ValidateITN.ITNValidationResult.Valid -> ValidationResult.Valid
+                is ValidateITN.ITNValidationResult.Missing -> ValidationResult.Invalid(
+                    errorMessage = it.cause.errorMessage()
+                )
+
+                ValidateITN.ITNValidationResult.InvalidFormat -> ValidationResult.Invalid(
+                    errorMessageId = R.string.woo_shipping_labels_customs_itn_error_message
+                )
+            }
+        }
+    }
+
+    fun validateHSTariffNumber(tariffNumber: String): ValidationResult {
+        return validateHSTariffNumber(
+            tariffNumber = tariffNumber,
+            destinationCountryCode = destinationCountryCode
+        ).let { inputValue ->
+            when (inputValue) {
+                is WooShippingCustomsFormViewModel.InputValue.Error -> ValidationResult.Invalid(
+                    errorMessage = inputValue.errorMessageId
+                )
+
+                else -> ValidationResult.Valid
+            }
+        }
+    }
+
+    fun validateProductDescription(description: String) = when (description.isBlank()) {
+        false -> ValidationResult.Valid
+        true -> ValidationResult.Invalid(
+            errorMessageId = R.string.woo_shipping_labels_customs_product_details_description_missing
+        )
+    }
+
+    fun validateProductValue(value: String) = when (value.isBlank()) {
+        false -> ValidationResult.Valid
+        true -> ValidationResult.Invalid(
+            errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
+        )
+    }
+
+    fun validateProductWeight(weight: String) = when {
+        weight.isBlank() -> ValidationResult.Invalid(
+            errorMessageId = R.string.woo_shipping_labels_customs_product_details_value_required
+        )
+
+        weight.toFloatOrNull() == null || weight.toFloat() == 0f -> ValidationResult.Invalid(
+            errorMessageId = R.string.woo_shipping_labels_customs_product_details_weight_invalid
+        )
+
+        else -> ValidationResult.Valid
+    }
+
+    sealed interface ValidationResult {
+        val isValid: Boolean
+            get() = this is Valid
+
+        data class Invalid(val errorMessage: UiString) : ValidationResult {
+            constructor(@StringRes errorMessageId: Int) : this(UiString.UiStringRes(errorMessageId))
+        }
+
+        data object Valid : ValidationResult
+    }
+}
