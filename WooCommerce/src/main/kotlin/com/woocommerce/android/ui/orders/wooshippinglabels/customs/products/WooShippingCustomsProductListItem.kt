@@ -9,9 +9,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +21,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Error
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -35,8 +40,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.RoundedBorderDropDownWithLabel
@@ -194,7 +201,7 @@ fun WooShippingCustomsProductExpandedListItem(
     Column(modifier = modifier.fillMaxWidth()) {
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column {
             WCOutlinedTextField(
                 value = itemData.description.currentInput,
                 onValueChange = onDescriptionChanged,
@@ -205,6 +212,8 @@ fun WooShippingCustomsProductExpandedListItem(
                 modifier = Modifier.fillMaxWidth(),
                 helperText = itemData.description.errorMessageOrNull?.getText()
             )
+
+            Spacer(Modifier.height(16.dp))
 
             WCOutlinedTextField(
                 value = itemData.tariffNumber.currentInput,
@@ -219,6 +228,20 @@ fun WooShippingCustomsProductExpandedListItem(
                 modifier = Modifier.fillMaxWidth(),
                 helperText = itemData.tariffNumber.errorMessageOrNull?.getText()
             )
+
+            val uriHandler = LocalUriHandler.current
+            WCTextButton(
+                text = stringResource(id = R.string.woo_shipping_labels_customs_hs_tariff_info_button),
+                onClick = { uriHandler.openUri(AppUrls.SHIPPING_LABEL_CUSTOMS_HS_TARIFF_NUMBER) },
+                icon = Icons.Outlined.Info,
+                allCaps = false,
+                contentPadding = PaddingValues(
+                    horizontal = 4.dp,
+                    vertical = ButtonDefaults.TextButtonContentPadding.calculateTopPadding()
+                )
+            )
+
+            Spacer(Modifier.height(16.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 WCOutlinedTextField(
@@ -260,6 +283,8 @@ fun WooShippingCustomsProductExpandedListItem(
                     helperText = itemData.weightPerUnit.errorMessageOrNull?.getText()
                 )
             }
+
+            Spacer(Modifier.height(16.dp))
 
             RoundedBorderDropDownWithLabel(
                 label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_origin_country),
