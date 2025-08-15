@@ -109,22 +109,19 @@ private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInf
     WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Store,
         title = stringResource(R.string.woopos_settings_store_name_label),
-        subtitle = storeInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
-        onClick = { }
+        subtitle = storeInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
     )
 
     WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Home,
         title = stringResource(R.string.woopos_settings_store_address_label),
-        subtitle = storeInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
-        onClick = { }
+        subtitle = storeInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
     )
 
     WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Email,
         title = stringResource(R.string.woopos_settings_store_email_label),
-        subtitle = storeInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
-        onClick = { }
+        subtitle = storeInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
     )
 }
 
@@ -183,36 +180,31 @@ private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.Rece
     WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Store,
         title = stringResource(R.string.woopos_settings_store_name_label),
-        subtitle = receiptInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
-        onClick = { }
+        subtitle = receiptInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
     )
 
     WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Home,
         title = stringResource(R.string.woopos_settings_store_address_label),
-        subtitle = receiptInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
-        onClick = { }
+        subtitle = receiptInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
     )
 
     WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Phone,
         title = stringResource(R.string.woopos_settings_store_phone_label),
-        subtitle = receiptInfo.phone.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
-        onClick = { }
+        subtitle = receiptInfo.phone.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
     )
 
     WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Email,
         title = stringResource(R.string.woopos_settings_store_email_label),
-        subtitle = receiptInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
-        onClick = { }
+        subtitle = receiptInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
     )
 
     WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Receipt,
         title = stringResource(R.string.woopos_settings_refund_policy_label),
-        subtitle = receiptInfo.refundPolicy.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
-        onClick = { }
+        subtitle = receiptInfo.refundPolicy.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
     )
 }
 
