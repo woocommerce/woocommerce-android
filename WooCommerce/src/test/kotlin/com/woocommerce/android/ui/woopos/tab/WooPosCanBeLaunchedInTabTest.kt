@@ -166,12 +166,12 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given forceRefresh true and fetchWooCoreVersion returns null with no cached positive, when invoked, then NotLaunchable WooCommercePluginNotFound`() = testBlocking {
+    fun `given forceRefresh true and fetchWooCoreVersion returns null with no cached positive, when invoked, then NotLaunchable UnknownNoPositiveCache`() = testBlocking {
         whenever(fetchWooCoreVersion()).thenReturn(null)
         whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(false)
 
         val result = sut(forceRefresh = true)
-        assertEquals(NotLaunchable(NonLaunchabilityReason.WooCommercePluginNotFound), result)
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnknownNoPositiveCache), result)
     }
 
     @Test

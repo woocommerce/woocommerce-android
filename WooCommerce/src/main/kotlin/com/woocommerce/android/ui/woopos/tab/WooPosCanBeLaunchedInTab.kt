@@ -46,11 +46,18 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
         val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
 
-        getWooCoreVersion(forceRefresh)?.let {
-            getNonLaunchabilityReasonFromWooCoreVersion(it)?.let { return WooPosLaunchability.NotLaunchable(it) }
-            getNonLaunchabilityReasonFromFeatureSwitch(it, forceRefresh, cachedPositive)?.let {
+        val wooCoreVersion = getWooCoreVersion(forceRefresh)
+        if (wooCoreVersion != null) {
+            getNonLaunchabilityReasonFromWooCoreVersion(wooCoreVersion)?.let {
                 return WooPosLaunchability.NotLaunchable(it)
             }
+            getNonLaunchabilityReasonFromFeatureSwitch(wooCoreVersion, forceRefresh, cachedPositive)?.let {
+                return WooPosLaunchability.NotLaunchable(it)
+            }
+        } else if (!cachedPositive) {
+            return WooPosLaunchability.NotLaunchable(
+                WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache
+            )
         }
 
         val siteSettings = resolveSiteSettings(site, forceRefresh)
