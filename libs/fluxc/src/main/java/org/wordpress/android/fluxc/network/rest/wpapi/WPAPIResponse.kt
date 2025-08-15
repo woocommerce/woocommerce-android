@@ -1,8 +1,11 @@
 package org.wordpress.android.fluxc.network.rest.wpapi
 
+import com.android.volley.NetworkResponse
+
 sealed class WPAPIResponse<T> {
     data class Success<T>(
         val data: T?,
+        val networkResponse: NetworkResponse,
         val networkingMode: WPAPINetworkingMode? = null,
     ) : WPAPIResponse<T>()
 

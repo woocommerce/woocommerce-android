@@ -8,6 +8,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wordpress.android.fluxc.network.rest.GsonRequest;
+import org.wordpress.android.fluxc.network.rest.GsonResponseWrapper;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticateErrorPayload;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError;
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 public class WPAPIGsonRequest<T> extends GsonRequest<T> {
     public WPAPIGsonRequest(int method, String url, Map<String, String> params, Map<String, Object> body,
-                             Class<T> clazz, Listener<T> listener, OnWPAPIErrorListener errorListener) {
+                            Class<T> clazz, Listener<GsonResponseWrapper<T>> listener, OnWPAPIErrorListener errorListener) {
         super(method, params, body, url, clazz, null, listener, new WPAPIErrorListenerWrapper(errorListener));
         // If it's a GET request, add the parameters to the URL
         if (method == Method.GET) {
@@ -27,7 +28,7 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
         }
     }
     public WPAPIGsonRequest(int method, String url, Map<String, String> params, Map<String, Object> body,
-                            Type type, Listener<T> listener, OnWPAPIErrorListener errorListener) {
+                            Type type, Listener<GsonResponseWrapper<T>> listener, OnWPAPIErrorListener errorListener) {
         super(method, params, body, url, null, type, listener, new WPAPIErrorListenerWrapper(errorListener));
         // If it's a GET request, add the parameters to the URL
         if (method == Method.GET) {
