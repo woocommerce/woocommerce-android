@@ -25,7 +25,7 @@ class WooPosSettingsStoreViewModel @Inject constructor(
     private fun loadStoreData() {
         viewModelScope.launch {
             val storeInfo = storeRepository.getStoreInfo()
-            _state.value = WooPosSettingsStoreState(
+            _state.value = _state.value.copy(
                 storeInfoState = WooPosSettingsStoreState.StoreState.Loaded(storeInfo)
             )
         }
@@ -33,7 +33,6 @@ class WooPosSettingsStoreViewModel @Inject constructor(
 
     private fun loadReceiptData() {
         viewModelScope.launch {
-            val currentState = _state.value
             val receiptResult = receiptRepository.getReceiptInfo()
             val newReceiptState = when (receiptResult) {
                 is WooPosReceiptDataResult.Success -> {
@@ -49,7 +48,7 @@ class WooPosSettingsStoreViewModel @Inject constructor(
                 }
             }
 
-            _state.value = currentState.copy(receiptState = newReceiptState)
+            _state.value = _state.value.copy(receiptState = newReceiptState)
         }
     }
 }

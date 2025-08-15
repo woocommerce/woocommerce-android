@@ -7,7 +7,6 @@ data class WooPosSettingsStoreState(
     data class StoreInfo(
         val storeName: String,
         val address: String,
-        val phone: String,
         val email: String
     )
 

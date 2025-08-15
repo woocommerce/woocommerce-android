@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -18,14 +18,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -39,40 +39,35 @@ fun WooPosSettingsStoreScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    when (val currentState = state) {
-        is WooPosSettingsStoreState.Loading -> {
-            Box(
-                modifier = modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                WooPosCircularLoadingIndicator()
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = WooPosSpacing.Medium.value)
+    ) {
+        when (val storeState = state.storeInfoState) {
+            is WooPosSettingsStoreState.StoreState.Loading -> {
+                StoreInformationLoadingSection()
+            }
+
+            is WooPosSettingsStoreState.StoreState.Loaded -> {
+                StoreInformationSection(storeState.storeInfo)
             }
         }
-        is WooPosSettingsStoreState.Loaded -> {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(bottom = WooPosSpacing.Medium.value)
-            ) {
-                StoreInformationSection(currentState.storeInfoState)
 
-                when (currentState.receiptState) {
-                    is WooPosSettingsStoreState.ReceiptState.NotSupported -> {
-                        // Don't show receipt section
-                    }
-                    is WooPosSettingsStoreState.ReceiptState.Loading -> {
-                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                        ReceiptLoadingSection()
-                    }
-                    is WooPosSettingsStoreState.ReceiptState.Success -> {
-                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                        ReceiptInformationSection(currentState.receiptState.receiptInfo)
-                    }
-                    is WooPosSettingsStoreState.ReceiptState.Error -> {
-                        // Could show error state or just omit the section
-                    }
-                }
+        when (val receiptState = state.receiptState) {
+            is WooPosSettingsStoreState.ReceiptState.NotSupported,
+            is WooPosSettingsStoreState.ReceiptState.Error -> {
+            }
+
+            is WooPosSettingsStoreState.ReceiptState.Loading -> {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                ReceiptLoadingSection()
+            }
+
+            is WooPosSettingsStoreState.ReceiptState.Success -> {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                ReceiptInformationSection(receiptState.receiptInfo)
             }
         }
     }
@@ -87,6 +82,23 @@ private fun SectionTitle(title: String) {
         color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier.padding(start = WooPosSpacing.Large.value)
     )
+}
+
+@Composable
+private fun StoreInformationLoadingSection() {
+    SectionTitle(stringResource(R.string.woopos_settings_store_information_title))
+
+    repeat(4) {
+        WooPosShimmerBox(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(
+                    horizontal = WooPosSpacing.Medium.value,
+                    vertical = WooPosSpacing.Small.value
+                )
+        )
+    }
 }
 
 @Composable
@@ -108,13 +120,6 @@ private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInf
     )
 
     WooPosSettingsDetailsMenuItem(
-        icon = Icons.Default.Phone,
-        title = stringResource(R.string.woopos_settings_store_phone_label),
-        subtitle = storeInfo.phone.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
-        onClick = { }
-    )
-
-    WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Email,
         title = stringResource(R.string.woopos_settings_store_email_label),
         subtitle = storeInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
@@ -126,13 +131,16 @@ private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInf
 private fun ReceiptLoadingSection() {
     SectionTitle(stringResource(R.string.woopos_settings_receipt_information_title))
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WooPosSpacing.Large.value),
-        contentAlignment = Alignment.Center
-    ) {
-        WooPosCircularLoadingIndicator()
+    repeat(5) {
+        WooPosShimmerBox(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(
+                    horizontal = WooPosSpacing.Medium.value,
+                    vertical = WooPosSpacing.Small.value
+                )
+        )
     }
 }
 
@@ -183,7 +191,6 @@ fun WooPosSettingsStoreScreenPreview() {
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "My WooCommerce Store",
             address = "123 Main Street, City, State 12345, US",
-            phone = "+1 555 1234 1234",
             email = "myemail@something.com"
         )
 
