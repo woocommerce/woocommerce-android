@@ -288,13 +288,10 @@ fun WooShippingCustomsProductExpandedListItem(
 
             Spacer(Modifier.height(16.dp))
 
-            RoundedBorderDropDownWithLabel(
-                label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_origin_country),
+            OriginCountrySelector(
+                value = itemData.originCountry,
                 onClick = onCountrySelectorClick,
-                modifier = Modifier.fillMaxWidth(),
-                text = itemData.originCountry
-                    .takeIf { it.isNotBlank() }
-                    ?: stringResource(R.string.woo_shipping_labels_customs_product_details_origin_country_selection)
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
@@ -349,6 +346,55 @@ private fun DescriptionField(
                 )
             },
             dismissButton = {
+                WCTextButton(
+                    text = stringResource(id = android.R.string.ok),
+                    onClick = { isDialogOpen = false }
+                )
+            },
+            onDismissRequest = { isDialogOpen = false }
+        )
+    }
+}
+
+@Composable
+private fun OriginCountrySelector(
+    value: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var isDialogOpen by rememberSaveable { mutableStateOf(false) }
+
+    RoundedBorderDropDownWithLabel(
+        label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_origin_country),
+        onClick = onClick,
+        text = value
+            .takeIf { it.isNotBlank() }
+            ?: stringResource(R.string.woo_shipping_labels_customs_product_details_origin_country_selection),
+        icon = {
+            IconButton(
+                onClick = { isDialogOpen = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    tint = MaterialTheme.colors.primary,
+                    contentDescription = stringResource(R.string.woo_shipping_labels_customs_origin_country_info_button)
+                )
+            }
+        },
+        modifier = modifier
+    )
+
+    if (isDialogOpen) {
+        AlertDialog(
+            title = {
+                Text(text = stringResource(id = R.string.woo_shipping_labels_customs_product_details_origin_country))
+            },
+            text = {
+                Text(
+                    text = stringResource(id = R.string.woo_shipping_labels_customs_origin_country_info)
+                )
+            },
+            confirmButton = {
                 WCTextButton(
                     text = stringResource(id = android.R.string.ok),
                     onClick = { isDialogOpen = false }
