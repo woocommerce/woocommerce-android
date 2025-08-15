@@ -201,7 +201,7 @@ class WooPosSettingsStoreRepositoryTest {
         val result = repository.getStoreInfo()
 
         // THEN
-        assertThat(result.address).isEqualTo(", London, UK")
+        assertThat(result.address).isEqualTo("London, UK")
     }
 
     @Test
