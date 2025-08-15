@@ -1,12 +1,9 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
-sealed class WooPosSettingsStoreState {
-    data object Loading : WooPosSettingsStoreState()
-    data class Loaded(
-        val storeInfo: StoreInfo,
-        val receiptState: ReceiptState = ReceiptState.NotSupported
-    ) : WooPosSettingsStoreState()
-
+data class WooPosSettingsStoreState(
+    val storeInfoState: StoreState = StoreState.Loading,
+    val receiptState: ReceiptState = ReceiptState.Loading
+) {
     data class StoreInfo(
         val storeName: String,
         val address: String,
@@ -27,5 +24,10 @@ sealed class WooPosSettingsStoreState {
         data object Loading : ReceiptState()
         data class Success(val receiptInfo: ReceiptInfo) : ReceiptState()
         data object Error : ReceiptState()
+    }
+
+    sealed class StoreState {
+        data object Loading : StoreState()
+        data class Loaded(val storeInfo: StoreInfo) : StoreState()
     }
 }

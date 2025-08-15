@@ -55,7 +55,7 @@ fun WooPosSettingsStoreScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = WooPosSpacing.Medium.value)
             ) {
-                StoreInformationSection(currentState.storeInfo)
+                StoreInformationSection(currentState.storeInfoState)
 
                 when (currentState.receiptState) {
                     is WooPosSettingsStoreState.ReceiptState.NotSupported -> {

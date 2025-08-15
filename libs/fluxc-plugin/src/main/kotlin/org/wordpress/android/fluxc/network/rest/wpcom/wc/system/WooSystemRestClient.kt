@@ -106,7 +106,7 @@ class WooSystemRestClient @Inject constructor(private val wooNetwork: WooNetwork
     }
 
     suspend fun fetchPosSettings(site: SiteModel): WooPayload<List<PosSettingResponse>> {
-        val url = "${WOOCOMMERCE.settings.pathV3}/point-of-sale"
+        val url = WOOCOMMERCE.settings.point_of_sale.pathV3
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
