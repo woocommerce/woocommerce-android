@@ -640,11 +640,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         val errorMessage = if (exception is NoAvailableRatesException) {
                             exception.messageResId
                         } else {
-                            trackShippingRatesLoading(isSuccess = false, error = exception.message)
                             R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error
                         }
 
                         updateState(ShippingRatesState.Error(errorMessage))
+                        trackShippingRatesLoading(isSuccess = false, error = exception.message)
                     }
                 )
                 selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(index, null) }

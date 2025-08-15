@@ -60,4 +60,4 @@ class GetShippingRates @Inject constructor(
     )
 }
 
-class NoAvailableRatesException(@StringRes val messageResId: Int) : Exception()
+class NoAvailableRatesException(@StringRes val messageResId: Int) : Exception("No available rates")
