@@ -33,6 +33,6 @@ class WCUserRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
         @SerializedName("first_name") val firstName: String?,
         @SerializedName("last_name") val lastName: String?,
         val email: String?,
-        val roles: JsonElement
+        val roles: JsonElement?
     )
 }

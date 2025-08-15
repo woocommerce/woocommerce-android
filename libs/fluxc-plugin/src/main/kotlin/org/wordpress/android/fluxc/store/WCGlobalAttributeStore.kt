@@ -11,7 +11,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.attributes.Prod
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.deleteSingleStoredAttribute
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.fetchSingleStoredAttribute
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.getCurrentAttributes
-import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.insertAttributeTermsFromScratch
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.insertFromScratchCompleteAttributesList
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.insertOrUpdateSingleAttribute
 import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils.insertSingleAttribute
@@ -60,7 +59,6 @@ class WCGlobalAttributeStore @Inject constructor(
     ) = restClient.fetchAllAttributeTerms(site, attributeID, page, pageSize)
             .result?.map { mapper.responseToAttributeTermModel(it, attributeID.toInt(), site) }
             ?.apply {
-                insertAttributeTermsFromScratch(attributeID.toInt(), site.id, this)
                 map { it.remoteId.toString() }
                         .takeIf { it.isNotEmpty() }
                         ?.reduce { total, new -> "$total;$new" }

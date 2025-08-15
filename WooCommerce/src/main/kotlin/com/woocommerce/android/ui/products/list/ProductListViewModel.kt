@@ -746,11 +746,11 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun isSquarePluginActive(): Boolean {
-        val plugin = wooCommerceStore.getSitePlugin(
+        val plugin = wooCommerceStore.getActiveSitePlugin(
             site = selectedSite.get(),
             plugin = WooCommerceStore.WooPlugin.WOO_SQUARE
         )
-        return plugin != null && plugin.isActive
+        return plugin != null
     }
 
     object OnProductSortingChanged

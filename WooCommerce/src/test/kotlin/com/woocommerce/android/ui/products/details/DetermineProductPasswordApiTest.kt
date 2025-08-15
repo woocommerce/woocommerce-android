@@ -26,7 +26,7 @@ class DetermineProductPasswordApiTest : BaseUnitTest() {
 
     @Test
     fun `when site has WooCommerce higher than 8_1, then use CORE API`() = testBlocking {
-        whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
+        whenever(wooCommerceStore.getActiveSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
             .thenReturn(SitePluginModel().apply { version = "8.1.0" })
 
         val result = sut()
@@ -37,7 +37,7 @@ class DetermineProductPasswordApiTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack connection, when site has WooCommerce lower than 8_1, then use WPCOM API`() = testBlocking {
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
-        whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
+        whenever(wooCommerceStore.getActiveSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
             .thenReturn(SitePluginModel().apply { version = "8.0.0" })
 
         val result = sut()
@@ -48,7 +48,7 @@ class DetermineProductPasswordApiTest : BaseUnitTest() {
     @Test
     fun `given a JetpackCP connection, when site has WooCommerce lower than 8_1, then use WPCOM API`() = testBlocking {
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.JetpackConnectionPackage)
-        whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
+        whenever(wooCommerceStore.getActiveSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
             .thenReturn(SitePluginModel().apply { version = "8.0.0" })
 
         val result = sut()
@@ -60,7 +60,7 @@ class DetermineProductPasswordApiTest : BaseUnitTest() {
     fun `given an ApplicationPasswords connection, when site has WooCommerce lower than 8_1, then API is not supported`() =
         testBlocking {
             whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
-            whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
+            whenever(wooCommerceStore.getActiveSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
                 .thenReturn(SitePluginModel().apply { version = "8.0.0" })
 
             val result = sut()
