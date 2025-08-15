@@ -4,14 +4,20 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
@@ -21,15 +27,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
@@ -106,8 +115,7 @@ fun WooShippingCustomsFormScreen(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             WCOutlinedSpinner(
                 onClick = onContentTypeClick,
@@ -117,18 +125,24 @@ fun WooShippingCustomsFormScreen(
                     .fillMaxWidth()
             )
 
+            Spacer(Modifier.height(16.dp))
+
             AnimatedVisibility(shouldDisplayContentTypeInput) {
-                WCOutlinedTextField(
-                    value = otherContentDetailsInput.currentInput,
-                    onValueChange = onOtherContentDetailsInputChanged,
-                    label = stringResource(id = R.string.woo_shipping_labels_customs_content_details_label),
-                    singleLine = true,
-                    isError = otherContentDetailsInput is InputValue.Error,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    modifier = Modifier.fillMaxWidth(),
-                    helperText = otherContentDetailsInput.errorMessageOrNull?.getText()
-                        ?: stringResource(R.string.woo_shipping_labels_customs_content_details_description)
-                )
+                Column {
+                    WCOutlinedTextField(
+                        value = otherContentDetailsInput.currentInput,
+                        onValueChange = onOtherContentDetailsInputChanged,
+                        label = stringResource(id = R.string.woo_shipping_labels_customs_content_details_label),
+                        singleLine = true,
+                        isError = otherContentDetailsInput is InputValue.Error,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        helperText = otherContentDetailsInput.errorMessageOrNull?.getText()
+                            ?: stringResource(R.string.woo_shipping_labels_customs_content_details_description)
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
             }
 
             WCOutlinedSpinner(
@@ -139,18 +153,25 @@ fun WooShippingCustomsFormScreen(
                     .fillMaxWidth()
             )
 
+            Spacer(Modifier.height(16.dp))
+
             AnimatedVisibility(shouldDisplayRestrictionTypeInput) {
-                WCOutlinedTextField(
-                    value = otherRestrictionDetailsInput.currentInput,
-                    onValueChange = onOtherRestrictionDetailsInputChanged,
-                    label = stringResource(id = R.string.woo_shipping_labels_customs_restriction_details_label),
-                    singleLine = true,
-                    isError = otherRestrictionDetailsInput is InputValue.Error,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    modifier = Modifier.fillMaxWidth(),
-                    helperText = otherRestrictionDetailsInput.errorMessageOrNull?.getText()
-                        ?: stringResource(R.string.woo_shipping_labels_customs_restriction_details_description)
-                )
+                Column {
+                    WCOutlinedTextField(
+                        value = otherRestrictionDetailsInput.currentInput,
+                        onValueChange = onOtherRestrictionDetailsInputChanged,
+                        label = stringResource(id = R.string.woo_shipping_labels_customs_restriction_details_label),
+                        singleLine = true,
+                        isError = otherRestrictionDetailsInput is InputValue.Error,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        helperText = otherRestrictionDetailsInput.errorMessageOrNull?.getText()
+                            ?: stringResource(R.string.woo_shipping_labels_customs_restriction_details_description)
+                    )
+
+                    Spacer(Modifier.height(16.dp))
+                }
             }
 
             WCOutlinedTextField(
@@ -165,14 +186,28 @@ fun WooShippingCustomsFormScreen(
                 helperText = itnValue.errorMessageOrNull?.getText()
             )
 
+            val uriHandler = LocalUriHandler.current
+            WCTextButton(
+                text = stringResource(id = R.string.woo_shipping_labels_customs_itn_info_button),
+                onClick = { uriHandler.openUri(AppUrls.SHIPPING_LABEL_CUSTOMS_ITN) },
+                icon = Icons.Outlined.Info,
+                allCaps = false,
+                contentPadding = PaddingValues(
+                    horizontal = 4.dp,
+                    vertical = ButtonDefaults.TextButtonContentPadding.calculateTopPadding()
+                )
+            )
+
+            Spacer(Modifier.height(16.dp))
+
             Row(
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = modifier.fillMaxWidth()
             ) {
                 Text(
                     text = stringResource(id = R.string.woo_shipping_labels_customs_return_to_sender_label),
                     color = colorResource(id = R.color.color_on_surface),
-                    modifier = Modifier
+                    modifier = modifier
                         .align(Alignment.CenterVertically)
                         .weight(1f)
                 )
@@ -186,15 +221,19 @@ fun WooShippingCustomsFormScreen(
                 )
             }
 
+            Spacer(Modifier.height(16.dp))
+
             Text(
                 text = stringResource(R.string.woo_shipping_labels_customs_product_details_title),
                 color = colorResource(id = R.color.color_on_surface),
                 style = MaterialTheme.typography.titleMedium
             )
 
+            Spacer(Modifier.height(16.dp))
+
             shippingProducts.forEachIndexed { index, product ->
                 WooShippingCustomsProductListItem(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = modifier.fillMaxWidth(),
                     itemData = product,
                     currencySymbol = currencySymbol,
                     weightUnit = weightUnit,
@@ -205,10 +244,12 @@ fun WooShippingCustomsFormScreen(
                     onWeightPerUnitChanged = { onWeightPerUnitChanged(index, it) },
                     onCountrySelectorClick = { onCountrySelectorClick(index) }
                 )
+                Spacer(Modifier.height(16.dp))
             }
         }
+
         WCColoredButton(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             enabled = isAddCustomsButtonEnabled,
             onClick = onAddCustomsDataClick,
             text = stringResource(id = R.string.woo_shipping_labels_customs_add_missing_information)
