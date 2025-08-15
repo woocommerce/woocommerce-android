@@ -104,7 +104,7 @@ fun WooShippingCustomsFormScreen(
             .padding(16.dp)
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -113,7 +113,8 @@ fun WooShippingCustomsFormScreen(
                 onClick = onContentTypeClick,
                 value = stringResource(id = contentType.resourceId),
                 label = stringResource(id = R.string.woo_shipping_labels_customs_content_type_label),
-                modifier = modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
             )
 
             AnimatedVisibility(shouldDisplayContentTypeInput) {
@@ -124,7 +125,7 @@ fun WooShippingCustomsFormScreen(
                     singleLine = true,
                     isError = otherContentDetailsInput is InputValue.Error,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     helperText = otherContentDetailsInput.errorMessageOrNull?.getText()
                         ?: stringResource(R.string.woo_shipping_labels_customs_content_details_description)
                 )
@@ -134,7 +135,8 @@ fun WooShippingCustomsFormScreen(
                 onClick = onRestrictionTypeClick,
                 value = stringResource(id = restrictionType.resourceId),
                 label = stringResource(id = R.string.woo_shipping_labels_customs_restriction_type_label),
-                modifier = modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
             )
 
             AnimatedVisibility(shouldDisplayRestrictionTypeInput) {
@@ -145,7 +147,7 @@ fun WooShippingCustomsFormScreen(
                     singleLine = true,
                     isError = otherRestrictionDetailsInput is InputValue.Error,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     helperText = otherRestrictionDetailsInput.errorMessageOrNull?.getText()
                         ?: stringResource(R.string.woo_shipping_labels_customs_restriction_details_description)
                 )
@@ -158,18 +160,19 @@ fun WooShippingCustomsFormScreen(
                 singleLine = true,
                 isError = itnValue is InputValue.Error,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 helperText = itnValue.errorMessageOrNull?.getText()
             )
 
             Row(
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-                modifier = modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = stringResource(id = R.string.woo_shipping_labels_customs_return_to_sender_label),
                     color = colorResource(id = R.color.color_on_surface),
-                    modifier = modifier
+                    modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .weight(1f)
                 )
@@ -191,7 +194,7 @@ fun WooShippingCustomsFormScreen(
 
             shippingProducts.forEachIndexed { index, product ->
                 WooShippingCustomsProductListItem(
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     itemData = product,
                     currencySymbol = currencySymbol,
                     weightUnit = weightUnit,
@@ -205,7 +208,7 @@ fun WooShippingCustomsFormScreen(
             }
         }
         WCColoredButton(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             enabled = isAddCustomsButtonEnabled,
             onClick = onAddCustomsDataClick,
             text = stringResource(id = R.string.woo_shipping_labels_customs_add_missing_information)
