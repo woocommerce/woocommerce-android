@@ -281,8 +281,8 @@ private fun ShipmentDetailsPortrait(
         Divider()
         if (!shipmentPurchased) {
             PaymentSection(paymentsSectionUI = paymentsSectionUI)
+            Divider()
         }
-        Divider()
         ShipmentCostSection(shipmentCostUI = shipmentCostUI)
     }
 }

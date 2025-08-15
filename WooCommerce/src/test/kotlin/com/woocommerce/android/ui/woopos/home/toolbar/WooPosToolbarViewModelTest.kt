@@ -8,10 +8,10 @@ import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.Settings
 import app.cash.turbine.test
-import com.woocommerce.android.AppUrls.WOO_POS_DOCUMENTATION_URL
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_DOCUMENTATION_URL
 import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -379,7 +379,7 @@ class WooPosToolbarViewModelTest {
     }
 
     @Test
-    fun `when Settings MenuItemClicked, then SettingsMenuItemClicked event should be sent`() = runTest {
+    fun `when Settings MenuItemClicked, then ToSettings navigation event should be sent`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
@@ -391,7 +391,7 @@ class WooPosToolbarViewModelTest {
         viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
 
         // THEN
-        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.SettingsMenuItemClicked)
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
     }
 

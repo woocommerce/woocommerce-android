@@ -5,11 +5,12 @@
 -----
 - [*] You can now remove background from product images in the app. Just open the product image and click "Remove background" button. [https://github.com/woocommerce/woocommerce-android/pull/14445]
 - [*] Fixed bug when an order was not selected when navigating from my store screen [https://github.com/woocommerce/woocommerce-android/pull/14436]
-- [*] [Shipping Labels] Display split shipment instructions only when necessary [https://github.com/woocommerce/woocommerce-android/pull/14450]
+- [*] Shipping Labels: Display split shipment instructions only when necessary [https://github.com/woocommerce/woocommerce-android/pull/14450]
 - [*] Updated behavior on the POS cash payment screen [https://github.com/woocommerce/woocommerce-android/pull/14449]
 - [Internal] Added support for persisting log files in the app's internal storage [https://github.com/woocommerce/woocommerce-android/pull/14425]
 - [*] Shipping Labels: Fix layout issue with address status indicator [https://github.com/woocommerce/woocommerce-android/pull/14437]
 - [*] Shipping Labels: Updated shipments tab layout [https://github.com/woocommerce/woocommerce-android/pull/14448]
+- [*] Shipping Labels: Add a message for purchased shipments to the Split Shipments screen [https://github.com/woocommerce/woocommerce-android/pull/14455]
 - [*] Shipping Labels: Improved the error message for empty shipping rates list [https://github.com/woocommerce/woocommerce-android/pull/14433]
 
 23.0

@@ -14,4 +14,5 @@ sealed class WooPosNavigationEvent {
     data class OpenEligibilityScreenFromSplash(
         val reason: WooPosLaunchability.NonLaunchabilityReason
     ) : WooPosNavigationEvent()
+    data object OpenSettings : WooPosNavigationEvent()
 }
