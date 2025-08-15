@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -176,11 +177,12 @@ fun WooShippingEditAddressScreen(
     ) { padding ->
         Column(modifier = modifier.fillMaxSize()) {
             Column(
-                Modifier
+                modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .padding(padding)
                     .padding(16.dp)
-                    .weight(1f)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 val companyFocusRequester = remember { FocusRequester() }
                 val addressFocusRequester = remember { FocusRequester() }
@@ -213,7 +215,9 @@ fun WooShippingEditAddressScreen(
                     isExpanded = isCompanyExpanded,
                     label = stringResource(id = R.string.woo_shipping_label_company),
                     onExpand = onExpandCompany,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 32.dp)
                 ) {
                     RoundedBorderTextFieldWithLabel(
                         label = stringResource(id = R.string.woo_shipping_label_company),
@@ -226,7 +230,6 @@ fun WooShippingEditAddressScreen(
                                 addressFocusRequester.requestFocus()
                             }
                         ),
-                        modifier = Modifier.padding(top = 8.dp),
                         focusRequester = companyFocusRequester
                     )
                 }
@@ -234,7 +237,6 @@ fun WooShippingEditAddressScreen(
                 RoundedBorderDropDownWithLabel(
                     label = "${stringResource(id = R.string.woo_shipping_label_country)} *",
                     text = editableAddress.country.name,
-                    modifier = Modifier.padding(top = 24.dp),
                     onClick = onCountryChange
                 )
                 RoundedBorderTextFieldWithLabel(
@@ -250,7 +252,6 @@ fun WooShippingEditAddressScreen(
                         }
                     ),
                     focusRequester = addressFocusRequester,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
                 RoundedBorderTextFieldWithLabel(
                     label = stringResource(id = R.string.woo_shipping_label_city),
@@ -269,7 +270,6 @@ fun WooShippingEditAddressScreen(
                         }
                     ),
                     focusRequester = cityFocusRequester,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
 
                 Row {
@@ -288,17 +288,13 @@ fun WooShippingEditAddressScreen(
                             ),
                             focusRequester = stateFocusRequester,
                             onTextChange = onRawStateChange,
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                                .weight(1f)
+                            modifier = Modifier.weight(1f)
                         )
                     } else {
                         RoundedBorderDropDownWithLabel(
                             label = stringResource(id = R.string.woo_shipping_label_state),
                             text = editableAddress.state.name,
-                            modifier = Modifier
-                                .padding(top = 4.dp)
-                                .weight(1f),
+                            modifier = Modifier.weight(1f),
                             onClick = onStateChange
                         )
                     }
@@ -319,9 +315,7 @@ fun WooShippingEditAddressScreen(
                         ),
                         focusRequester = postalCodeFocusRequester,
                         onTextChange = onPostalCodeChange,
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .weight(1f)
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
@@ -340,8 +334,7 @@ fun WooShippingEditAddressScreen(
                             phoneFocusRequester.requestFocus()
                         }
                     ),
-                    focusRequester = emailFocusRequester,
-                    modifier = Modifier.padding(top = 32.dp)
+                    focusRequester = emailFocusRequester
                 )
                 RoundedBorderTextFieldWithLabel(
                     label = stringResource(id = R.string.woo_shipping_label_phone),
@@ -360,7 +353,6 @@ fun WooShippingEditAddressScreen(
                     ),
                     focusRequester = phoneFocusRequester,
                     onTextChange = onPhoneChange,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
             Surface(shadowElevation = 8.dp) {
