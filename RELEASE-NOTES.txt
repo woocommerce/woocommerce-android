@@ -11,7 +11,7 @@
 - [*] Shipping Labels: Fix layout issue with address status indicator [https://github.com/woocommerce/woocommerce-android/pull/14437]
 - [*] Shipping Labels: Updated shipments tab layout [https://github.com/woocommerce/woocommerce-android/pull/14448]
 - [*] Shipping Labels: Add a message for purchased shipments to the Split Shipments screen [https://github.com/woocommerce/woocommerce-android/pull/14455]
-- [Internal] Migrate the cache of the `/config` endpoint to Room instead of DataStore [https://github.com/woocommerce/woocommerce-android/pull/14469]
+- [Internal] Migrate the cache of the `/config` endpoint to Room instead of DataStore [https://github.com/woocommerce/woocommerce-android/pull/14462]
 
 23.0
 -----
