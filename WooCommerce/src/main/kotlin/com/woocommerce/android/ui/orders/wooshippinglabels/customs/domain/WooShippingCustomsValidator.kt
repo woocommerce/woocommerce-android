@@ -6,7 +6,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel
 import javax.inject.Inject
 
 class WooShippingCustomsValidator @Inject constructor(
@@ -101,15 +100,7 @@ class WooShippingCustomsValidator @Inject constructor(
         return validateHSTariffNumber.invoke(
             tariffNumber = tariffNumber,
             destinationCountryCode = destinationCountryCode
-        ).let { inputValue ->
-            when (inputValue) {
-                is WooShippingCustomsFormViewModel.InputValue.Error -> FieldValidationResult.Invalid(
-                    errorMessage = inputValue.errorMessageId
-                )
-
-                else -> FieldValidationResult.Valid
-            }
-        }
+        )
     }
 
     fun validateProductDescription(description: String) = when (description.isBlank()) {

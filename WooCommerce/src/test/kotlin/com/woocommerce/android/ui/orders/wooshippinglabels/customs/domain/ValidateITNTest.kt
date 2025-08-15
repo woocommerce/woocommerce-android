@@ -4,7 +4,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -19,7 +18,7 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 class ValidateITNTest : BaseUnitTest() {
     private val validateHSTariffNumber: ValidateHSTariffNumber = mock {
-        on { invoke(any(), anyOrNull()) } doReturn WooShippingCustomsFormViewModel.InputValue.Data("123456")
+        on { invoke(any(), anyOrNull()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
     }
     private val validateITN = ValidateITN(validateHSTariffNumber)
 

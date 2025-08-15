@@ -6,13 +6,12 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -20,10 +19,17 @@ import java.math.BigDecimal
 @ExperimentalCoroutinesApi
 class WooShippingCustomsValidatorTest : BaseUnitTest() {
 
-    private val validateHSTariffNumber: ValidateHSTariffNumber = mock()
-    private val validateITN: ValidateITN = mock()
+    private val validateHSTariffNumber: ValidateHSTariffNumber = mock {
+        on { invoke(any(), any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
+    }
+    private val validateITN: ValidateITN = mock {
+        on { invoke(any(), any()) } doReturn ValidateITN.ITNValidationResult.Valid
+    }
 
-    private lateinit var validator: WooShippingCustomsValidator
+    private val validator: WooShippingCustomsValidator = WooShippingCustomsValidator(
+        validateHSTariffNumber = validateHSTariffNumber,
+        validateITN = validateITN
+    )
 
     private val defaultCustomsData = CustomsData(
         contentType = ContentType.MERCHANDISE,
@@ -45,20 +51,6 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
             )
         )
     )
-
-    @Before
-    fun setup() {
-        validator = WooShippingCustomsValidator(
-            validateHSTariffNumber = validateHSTariffNumber,
-            validateITN = validateITN
-        )
-
-        // Default mock responses
-        whenever(validateITN.invoke(any(), any())).thenReturn(ValidateITN.ITNValidationResult.Valid)
-        whenever(validateHSTariffNumber.invoke(any(), any())).thenReturn(
-            WooShippingCustomsFormViewModel.InputValue.Data("123456")
-        )
-    }
 
     @Test
     fun `given valid customs data, when validating form, then should return Valid`() = testBlocking {
@@ -217,7 +209,7 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
     @Test
     fun `given valid HS tariff number, when validating HS tariff, then should return Valid`() = testBlocking {
         whenever(validateHSTariffNumber.invoke("123456", "CA")).thenReturn(
-            WooShippingCustomsFormViewModel.InputValue.Data("123456")
+            WooShippingCustomsValidator.FieldValidationResult.Valid
         )
 
         val result = validator.validateHSTariffNumber("123456", "CA")
@@ -229,7 +221,7 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
     fun `given invalid HS tariff number, when validating HS tariff, then should return Invalid`() = testBlocking {
         val errorMessage = UiString.UiStringText("Invalid HS tariff number")
         whenever(validateHSTariffNumber.invoke("invalid", "CA")).thenReturn(
-            WooShippingCustomsFormViewModel.InputValue.Error("invalid", errorMessage)
+            WooShippingCustomsValidator.FieldValidationResult.Invalid(errorMessage)
         )
 
         val result = validator.validateHSTariffNumber("invalid", "CA")
