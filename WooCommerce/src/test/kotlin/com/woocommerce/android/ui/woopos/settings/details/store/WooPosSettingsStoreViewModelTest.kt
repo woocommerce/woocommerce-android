@@ -18,7 +18,7 @@ class WooPosSettingsStoreViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule()
 
     private val storeRepository: WooPosSettingsStoreRepository = mock()
-    private val receiptRepository: WooPosReceiptRepository = mock()
+    private val receiptRepository: WooPosSettingsReceiptRepository = mock()
 
     @Test
     fun `given init, when repositories return data, then state is updated with loaded store and successful receipt`() = runTest {

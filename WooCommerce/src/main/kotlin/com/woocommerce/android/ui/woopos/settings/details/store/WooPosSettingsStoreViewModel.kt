@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosSettingsStoreViewModel @Inject constructor(
     private val storeRepository: WooPosSettingsStoreRepository,
-    private val receiptRepository: WooPosReceiptRepository
+    private val receiptRepository: WooPosSettingsReceiptRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsStoreState())
     val state: StateFlow<WooPosSettingsStoreState> = _state.asStateFlow()

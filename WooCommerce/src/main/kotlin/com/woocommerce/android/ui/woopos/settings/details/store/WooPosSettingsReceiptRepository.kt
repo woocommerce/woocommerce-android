@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class WooPosReceiptRepository @Inject constructor(
+class WooPosSettingsReceiptRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion
