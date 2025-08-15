@@ -11,34 +11,48 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosSettingsStoreViewModel @Inject constructor(
-    private val storeRepository: WooPosStoreReceiptRepository
+    private val storeRepository: WooPosStoreRepository,
+    private val receiptRepository: WooPosReceiptRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSettingsStoreState>(WooPosSettingsStoreState.Loading)
     val state: StateFlow<WooPosSettingsStoreState> = _state.asStateFlow()
 
     init {
-        loadStoreData()
+        loadData()
     }
 
-    private fun loadStoreData() {
+    private fun loadData() {
         viewModelScope.launch {
             _state.value = WooPosSettingsStoreState.Loading
 
-            when (val result = storeRepository.getStoreData()) {
-                is WooPosStoreDataResult.Success -> {
-                    _state.value = WooPosSettingsStoreState.Loaded(
-                        storeInfo = result.storeInfo,
-                        receiptInfo = result.receiptInfo
-                    )
+            val storeInfo = storeRepository.getStoreInfo()
+            _state.value = WooPosSettingsStoreState.Loaded(
+                storeInfo = storeInfo,
+                receiptState = WooPosSettingsStoreState.ReceiptState.Loading
+            )
+
+            loadReceiptData()
+        }
+    }
+
+    private fun loadReceiptData() {
+        viewModelScope.launch {
+            val currentState = _state.value
+            if (currentState is WooPosSettingsStoreState.Loaded) {
+                val receiptResult = receiptRepository.getReceiptInfo()
+                val newReceiptState = when (receiptResult) {
+                    is WooPosReceiptDataResult.Success -> {
+                        WooPosSettingsStoreState.ReceiptState.Success(receiptResult.receiptInfo)
+                    }
+                    is WooPosReceiptDataResult.NotAvailable -> {
+                        WooPosSettingsStoreState.ReceiptState.NotSupported
+                    }
+                    is WooPosReceiptDataResult.Error -> {
+                        WooPosSettingsStoreState.ReceiptState.Error
+                    }
                 }
-                is WooPosStoreDataResult.NotAvailable,
-                is WooPosStoreDataResult.Error -> {
-                    val emptyStoreInfo = WooPosSettingsStoreState.StoreInfo("", "", "", "")
-                    _state.value = WooPosSettingsStoreState.Loaded(
-                        storeInfo = emptyStoreInfo,
-                        receiptInfo = null
-                    )
-                }
+
+                _state.value = currentState.copy(receiptState = newReceiptState)
             }
         }
     }

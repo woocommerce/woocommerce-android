@@ -57,9 +57,21 @@ fun WooPosSettingsStoreScreen(
             ) {
                 StoreInformationSection(currentState.storeInfo)
 
-                currentState.receiptInfo?.let { receiptInfo ->
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                    ReceiptInformationSection(receiptInfo)
+                when (currentState.receiptState) {
+                    is WooPosSettingsStoreState.ReceiptState.NotSupported -> {
+                        // Don't show receipt section
+                    }
+                    is WooPosSettingsStoreState.ReceiptState.Loading -> {
+                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                        ReceiptLoadingSection()
+                    }
+                    is WooPosSettingsStoreState.ReceiptState.Success -> {
+                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                        ReceiptInformationSection(currentState.receiptState.receiptInfo)
+                    }
+                    is WooPosSettingsStoreState.ReceiptState.Error -> {
+                        // Could show error state or just omit the section
+                    }
                 }
             }
         }
@@ -108,6 +120,20 @@ private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInf
         subtitle = storeInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) },
         onClick = { }
     )
+}
+
+@Composable
+private fun ReceiptLoadingSection() {
+    SectionTitle(stringResource(R.string.woopos_settings_receipt_information_title))
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(WooPosSpacing.Large.value),
+        contentAlignment = Alignment.Center
+    ) {
+        WooPosCircularLoadingIndicator()
+    }
 }
 
 @Composable

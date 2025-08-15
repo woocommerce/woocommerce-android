@@ -105,8 +105,29 @@ class WooSystemRestClient @Inject constructor(private val wooNetwork: WooNetwork
         return response.toWooPayload()
     }
 
+    suspend fun fetchPosSettings(site: SiteModel): WooPayload<List<PosSettingResponse>> {
+        val url = "${WOOCOMMERCE.settings.pathV3}/point-of-sale"
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = Array<PosSettingResponse>::class.java
+        )
+
+        return response.toWooPayload { it.toList() }
+    }
+
     data class SaveSiteTitleResponse(
         @SerializedName("title") val title: String? = null
+    )
+
+    data class PosSettingResponse(
+        @SerializedName("id") val id: String,
+        @SerializedName("label") val label: String,
+        @SerializedName("description") val description: String? = null,
+        @SerializedName("type") val type: String,
+        @SerializedName("default") val default: String? = null,
+        @SerializedName("value") val value: String? = null
     )
 
     data class SSRResponse(
