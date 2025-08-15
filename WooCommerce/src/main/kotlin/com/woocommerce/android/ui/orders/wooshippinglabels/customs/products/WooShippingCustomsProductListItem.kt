@@ -192,7 +192,7 @@ fun WooShippingCustomsProductExpandedListItem(
     onCountrySelectorClick: () -> Unit
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        HorizontalDivider(modifier.padding(vertical = 8.dp))
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             WCOutlinedTextField(
@@ -202,7 +202,7 @@ fun WooShippingCustomsProductExpandedListItem(
                 singleLine = true,
                 isError = itemData.description is InputValue.Error,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 helperText = itemData.description.errorMessageOrNull?.getText()
             )
 
@@ -216,7 +216,7 @@ fun WooShippingCustomsProductExpandedListItem(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Number
                 ),
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 helperText = itemData.tariffNumber.errorMessageOrNull?.getText()
             )
 
@@ -238,7 +238,7 @@ fun WooShippingCustomsProductExpandedListItem(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Number
                     ),
-                    modifier = modifier.weight(1f),
+                    modifier = Modifier.weight(1f),
                     helperText = itemData.valuePerUnit.errorMessageOrNull?.getText()
                 )
 
@@ -256,7 +256,7 @@ fun WooShippingCustomsProductExpandedListItem(
                     singleLine = true,
                     isError = itemData.weightPerUnit is InputValue.Error,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-                    modifier = modifier.weight(1f),
+                    modifier = Modifier.weight(1f),
                     helperText = itemData.weightPerUnit.errorMessageOrNull?.getText()
                 )
             }
@@ -264,7 +264,7 @@ fun WooShippingCustomsProductExpandedListItem(
             RoundedBorderDropDownWithLabel(
                 label = stringResource(id = R.string.woo_shipping_labels_customs_product_details_origin_country),
                 onClick = onCountrySelectorClick,
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 text = itemData.originCountry
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(R.string.woo_shipping_labels_customs_product_details_origin_country_selection)
