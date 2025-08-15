@@ -42,35 +42,67 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     @Suppress("ReturnCount")
     private suspend fun checkLaunchability(forceRefresh: Boolean = false): WooPosLaunchability {
         val site = selectedSite.getOrNull()
-            ?: return WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected)
+            ?: return WooPosLaunchability.NotLaunchable(
+                reason = WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected
+            )
 
         val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
 
-        val wooCoreVersion = getWooCoreVersion(forceRefresh)
-        if (wooCoreVersion != null) {
-            getNonLaunchabilityReasonFromWooCoreVersion(wooCoreVersion)?.let {
-                return WooPosLaunchability.NotLaunchable(it)
-            }
-            getNonLaunchabilityReasonFromFeatureSwitch(wooCoreVersion, forceRefresh, cachedPositive)?.let {
-                return WooPosLaunchability.NotLaunchable(it)
-            }
-        } else if (!cachedPositive) {
-            return WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache
-            )
+        getNonLaunchabilityReasonFromVersionAndFeatureSwitch(forceRefresh, cachedPositive)?.let {
+            return prepareNotLaunchableStateWithCacheUpdate(site.id, it)
         }
 
-        val siteSettings = resolveSiteSettings(site, forceRefresh)
-            ?: return fallbackUnknownOrCache(cachedPositive)
+        getNonLaunchabilityReasonFromSiteSettingsAndCurrency(site, forceRefresh, cachedPositive)?.let {
+            return prepareNotLaunchableStateWithCacheUpdate(site.id, it)
+        }
 
-        if (isCountryAndCurrencySupported(siteSettings.countryCode, siteSettings.currencyCode)) {
-            appPrefs.setPOSLaunchableForSite(site.id)
-            return WooPosLaunchability.Launchable
+        appPrefs.setPOSLaunchableForSite(site.id)
+        return WooPosLaunchability.Launchable
+    }
+
+    private fun prepareNotLaunchableStateWithCacheUpdate(
+        siteId: Int,
+        reason: WooPosLaunchability.NonLaunchabilityReason
+    ): WooPosLaunchability.NotLaunchable {
+        if (reason != WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache) {
+            appPrefs.clearPOSLaunchableForSite(siteId)
+        }
+
+        return WooPosLaunchability.NotLaunchable(reason)
+    }
+
+    private suspend fun getNonLaunchabilityReasonFromVersionAndFeatureSwitch(
+        forceRefresh: Boolean,
+        cachedPositive: Boolean
+    ): WooPosLaunchability.NonLaunchabilityReason? {
+        val wooCoreVersion = getWooCoreVersion(forceRefresh)
+            ?: return reasonIfNoPositiveCache(cachedPositive)
+
+        return getNonLaunchabilityReasonFromWooCoreVersion(wooCoreVersion)
+            ?: getNonLaunchabilityReasonFromFeatureSwitch(wooCoreVersion, forceRefresh, cachedPositive)
+    }
+
+    private suspend fun getNonLaunchabilityReasonFromSiteSettingsAndCurrency(
+        site: SiteModel,
+        forceRefresh: Boolean,
+        cachedPositive: Boolean
+    ): WooPosLaunchability.NonLaunchabilityReason? {
+        val siteSettings = resolveSiteSettings(site, forceRefresh)
+            ?: return reasonIfNoPositiveCache(cachedPositive)
+
+        return if (!isCountryAndCurrencySupported(siteSettings.countryCode, siteSettings.currencyCode)) {
+            WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
         } else {
-            appPrefs.clearPOSLaunchableForSite(site.id)
-            return WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
+            null
         }
     }
+
+    private fun reasonIfNoPositiveCache(hasCachedPositive: Boolean): WooPosLaunchability.NonLaunchabilityReason? =
+        if (hasCachedPositive) {
+            null
+        } else {
+            WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache
+        }
 
     private suspend fun getWooCoreVersion(forceRefresh: Boolean): String? =
         if (forceRefresh) fetchWooCoreVersion() else getWooCoreCachedVersion()
@@ -118,13 +150,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             wooCommerceStore.fetchSiteGeneralSettings(site).model
         } else {
             wooCommerceStore.getSiteSettings(site) ?: wooCommerceStore.fetchSiteGeneralSettings(site).model
-        }
-
-    private fun fallbackUnknownOrCache(cachedPositive: Boolean): WooPosLaunchability =
-        if (cachedPositive) {
-            WooPosLaunchability.Launchable
-        } else {
-            WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache)
         }
 
     private fun isCountryAndCurrencySupported(countryCode: String, currency: String) =
