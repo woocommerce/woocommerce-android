@@ -333,11 +333,11 @@ class WooShippingCustomsFormViewModel @Inject constructor(
         data class Data(val input: String) : InputValue()
         data class Error(
             val input: String,
-            val errorMessageId: UiString
+            val errorMessage: UiString
         ) : InputValue() {
             constructor(input: String, errorMessageId: Int) : this(
                 input = input,
-                errorMessageId = UiString.UiStringRes(errorMessageId)
+                errorMessage = UiString.UiStringRes(errorMessageId)
             )
         }
 
@@ -354,7 +354,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
             }
 
         val errorMessageOrNull: UiString?
-            get() = run { this as? Error }?.errorMessageId
+            get() = run { this as? Error }?.errorMessage
     }
 
     data class ShowContentTypeDialog(val currentSelection: ContentType) : MultiLiveEvent.Event()
