@@ -24,29 +24,40 @@ class WooPosSettingsStoreRepository @Inject constructor(
             )
         }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun buildStoreAddress(settings: Settings?): String {
         return buildString {
             settings?.address?.let { if (it.isNotBlank()) append(it) }
-            settings?.address2?.let { if (it.isNotBlank()) {
-                if (isNotEmpty()) append(", ")
-                append(it)
-            } }
-            settings?.city?.let { if (it.isNotBlank()) {
-                if (isNotEmpty()) append(", ")
-                append(it)
-            } }
-            settings?.stateCode?.let { if (it.isNotBlank()) {
-                if (isNotEmpty()) append(", ")
-                append(it)
-            } }
-            settings?.postalCode?.let { if (it.isNotBlank()) {
-                if (isNotEmpty()) append(" ")
-                append(it)
-            } }
-            settings?.countryCode?.let { if (it.isNotBlank()) {
-                if (isNotEmpty()) append(", ")
-                append(it)
-            } }
+            settings?.address2?.let {
+                if (it.isNotBlank()) {
+                    if (isNotEmpty()) append(", ")
+                    append(it)
+                }
+            }
+            settings?.city?.let {
+                if (it.isNotBlank()) {
+                    if (isNotEmpty()) append(", ")
+                    append(it)
+                }
+            }
+            settings?.stateCode?.let {
+                if (it.isNotBlank()) {
+                    if (isNotEmpty()) append(", ")
+                    append(it)
+                }
+            }
+            settings?.postalCode?.let {
+                if (it.isNotBlank()) {
+                    if (isNotEmpty()) append(" ")
+                    append(it)
+                }
+            }
+            settings?.countryCode?.let {
+                if (it.isNotBlank()) {
+                    if (isNotEmpty()) append(", ")
+                    append(it)
+                }
+            }
         }.ifBlank { "" }
     }
 }
