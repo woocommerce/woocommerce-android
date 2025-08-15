@@ -17,6 +17,9 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.POS
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import okhttp3.CacheControl
 import java.io.File
 import java.io.IOException
@@ -37,8 +40,9 @@ class WooPosCatalogDownloadWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result {
-        WooLog.i(POS, "Starting WooPOS catalog download from $POS_CATALOG_URL")
+    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        delay(5000)
+        WooLog.i(POS, "Starting WooPOS catalog download from $POS_CATALOG_URL2")
 
         val client = OkHttpClient.Builder()
             .cache(null)
@@ -46,22 +50,22 @@ class WooPosCatalogDownloadWorker @AssistedInject constructor(
             .build()
 
         val request = Request.Builder()
-            .url(POS_CATALOG_URL)
+            .url(POS_CATALOG_URL2)
             .cacheControl(CacheControl.Builder().noStore().build())
             .get()
             .build()
 
-        return try {
+        return@withContext try {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
                     WooLog.e(POS, "HTTP ${'$'}{response.code} while downloading catalog")
-                    return Result.retry()
+                    return@withContext Result.retry()
                 }
 
                 val body: ResponseBody? = response.body
                 if (body == null) {
                     WooLog.w(POS, "Empty response body for catalog download")
-                    return Result.retry()
+                    return@withContext Result.retry()
                 }
 
 				val timestamp = System.currentTimeMillis()
@@ -99,6 +103,7 @@ class WooPosCatalogDownloadWorker @AssistedInject constructor(
         private const val ONE_TIME_WORK_NAME = "WooPosCatalogDownloadWorkOnce"
         private const val CHUNK_SIZE_BYTES = 8 * 1024 // 8 KiB
         private const val POS_CATALOG_URL = "https://poslarge.mystagingwebsite.com/wp-content/uploads/pos-catalog.json"
+        private const val POS_CATALOG_URL2 = "https://github.com/szalony9szymek/large/releases/download/free/large"
 
         fun schedule(applicationContext: Context) {
             val constraints = Constraints.Builder()
