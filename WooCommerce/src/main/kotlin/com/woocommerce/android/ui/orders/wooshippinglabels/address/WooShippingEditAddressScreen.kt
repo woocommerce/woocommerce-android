@@ -646,9 +646,7 @@ private fun CollapsedField(
             content()
         } else {
             Row(
-                modifier = modifier
-                    .clickable { onExpand() }
-                    .padding(vertical = 16.dp, horizontal = 8.dp),
+                modifier = modifier.clickable { onExpand() }
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
