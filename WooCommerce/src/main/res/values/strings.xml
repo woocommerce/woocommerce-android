@@ -4349,9 +4349,6 @@
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>
     <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
     <string name="woopos_settings_barcode_scanner_detail_title">Barcode Scanner Settings</string>
-    <string name="woopos_settings_barcode_scanner_connected">Scanner Connected</string>
-    <string name="woopos_settings_barcode_scanner_bluetooth">Bluetooth</string>
-    <string name="woopos_settings_barcode_scanner_usb">USB</string>
     <string name="woopos_settings_barcode_scanner_setup_title">Scanner Setup</string>
     <string name="woopos_settings_barcode_scanner_setup_subtitle">Configure and test your barcode scanner</string>
     <string name="woopos_settings_barcode_scanner_documentation_title">Documentation</string>
