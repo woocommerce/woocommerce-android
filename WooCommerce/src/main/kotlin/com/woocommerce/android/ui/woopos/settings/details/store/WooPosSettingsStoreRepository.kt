@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class WooPosStoreRepository @Inject constructor(
+class WooPosSettingsStoreRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
