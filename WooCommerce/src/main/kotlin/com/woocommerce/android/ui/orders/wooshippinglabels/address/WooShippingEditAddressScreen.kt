@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.address
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -687,27 +689,12 @@ private fun SelectAddressWithCustomSnackBar(
         )
 
         if (error != null) {
-            androidx.compose.animation.AnimatedVisibility(
+            AnimatedVisibility(
                 visible = isBottomSheetSnackBarVisible,
-                enter = fadeIn(
-                    animationSpec = androidx.compose.animation.core.tween(
-                        durationMillis = 180
-                    )
-                ) + scaleIn(
-                    animationSpec = androidx.compose.animation.core.tween(
-                        durationMillis = 180
-                    )
-                ),
-                exit = fadeOut(
-                    animationSpec = androidx.compose.animation.core.tween(
-                        durationMillis = 90
-                    )
-                ) + scaleOut(
-                    animationSpec = androidx.compose.animation.core.tween(
-                        durationMillis = 90
-                    )
-
-                )
+                enter = fadeIn(animationSpec = tween(durationMillis = 180)) +
+                    scaleIn(animationSpec = tween(durationMillis = 180)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 90)) +
+                    scaleOut(animationSpec = tween(durationMillis = 90))
             ) {
                 Box(modifier = Modifier.padding(bottom = 120.dp)) {
                     Snackbar(
