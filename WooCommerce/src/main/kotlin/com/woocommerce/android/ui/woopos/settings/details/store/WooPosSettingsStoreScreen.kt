@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -18,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,7 +41,17 @@ fun WooPosSettingsStoreScreen(
     viewModel: WooPosSettingsStoreViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    WooPosSettingsStoreScreen(
+        state = state,
+        modifier = modifier
+    )
+}
 
+@Composable
+private fun WooPosSettingsStoreScreen(
+    state: WooPosSettingsStoreState,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -86,19 +99,7 @@ private fun SectionTitle(title: String) {
 
 @Composable
 private fun StoreInformationLoadingSection() {
-    SectionTitle(stringResource(R.string.woopos_settings_store_information_title))
-
-    repeat(4) {
-        WooPosShimmerBox(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
-                .padding(
-                    horizontal = WooPosSpacing.Medium.value,
-                    vertical = WooPosSpacing.Small.value
-                )
-        )
-    }
+    // Store info loads so fast from cache that we can just show empty state briefly
 }
 
 @Composable
@@ -129,18 +130,49 @@ private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInf
 
 @Composable
 private fun ReceiptLoadingSection() {
-    SectionTitle(stringResource(R.string.woopos_settings_receipt_information_title))
+    WooPosShimmerBox(
+        modifier = Modifier
+            .fillMaxWidth(0.3f)
+            .height(32.dp)
+            .padding(start = WooPosSpacing.Large.value, bottom = WooPosSpacing.Small.value)
+    )
 
     repeat(5) {
+        ReceiptMenuItemShimmer()
+    }
+}
+
+@Composable
+private fun ReceiptMenuItemShimmer() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(WooPosSpacing.Large.value),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         WooPosShimmerBox(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
-                .padding(
-                    horizontal = WooPosSpacing.Medium.value,
-                    vertical = WooPosSpacing.Small.value
-                )
+            modifier = Modifier.size(28.dp)
         )
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = WooPosSpacing.Medium.value)
+        ) {
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .height(24.dp)
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(14.dp)
+            )
+        }
     }
 }
 
@@ -188,26 +220,44 @@ private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.Rece
 @Composable
 fun WooPosSettingsStoreScreenPreview() {
     WooPosTheme {
-        val storeInfo = WooPosSettingsStoreState.StoreInfo(
-            storeName = "My WooCommerce Store",
-            address = "123 Main Street, City, State 12345, US",
-            email = "myemail@something.com"
+        val state = WooPosSettingsStoreState(
+            storeInfoState = WooPosSettingsStoreState.StoreState.Loaded(
+                WooPosSettingsStoreState.StoreInfo(
+                    storeName = "My WooCommerce Store",
+                    address = "123 Main Street, City, State 12345, US",
+                    email = "myemail@something.com"
+                )
+            ),
+            receiptState = WooPosSettingsStoreState.ReceiptState.Success(
+                WooPosSettingsStoreState.ReceiptInfo(
+                    storeName = "My WooCommerce Store",
+                    address = "123 Main Street, City, State 12345, US",
+                    phone = "+1 555 1234 1234",
+                    email = "myemail@something.com",
+                    refundPolicy = "Returns accepted within 30 days"
+                )
+            )
         )
 
-        val receiptInfo = WooPosSettingsStoreState.ReceiptInfo(
-            storeName = "My WooCommerce Store",
-            address = "123 Main Street, City, State 12345, US",
-            phone = "+1 555 1234 1234",
-            email = "myemail@something.com",
-            refundPolicy = "Returns accepted within 30 days"
+        WooPosSettingsStoreScreen(state = state)
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsStoreScreenLoadingPreview() {
+    WooPosTheme {
+        val state = WooPosSettingsStoreState(
+            storeInfoState = WooPosSettingsStoreState.StoreState.Loaded(
+                WooPosSettingsStoreState.StoreInfo(
+                    storeName = "My WooCommerce Store",
+                    address = "123 Main Street, City, State 12345, US",
+                    email = "myemail@something.com"
+                )
+            ),
+            receiptState = WooPosSettingsStoreState.ReceiptState.Loading
         )
 
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            StoreInformationSection(storeInfo)
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-            ReceiptInformationSection(receiptInfo)
-        }
+        WooPosSettingsStoreScreen(state = state)
     }
 }
