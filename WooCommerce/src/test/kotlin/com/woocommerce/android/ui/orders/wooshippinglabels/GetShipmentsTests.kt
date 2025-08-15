@@ -1,27 +1,17 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
-import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.LabelRefund
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDataDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.StoredDataDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShipmentItem
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -32,20 +22,21 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetShipmentsTests : BaseUnitTest() {
+    private val wooShippingLabelRepository: WooShippingLabelRepository = mock {
+        onBlocking { getLabels(any()) } doReturn emptyList()
+        onBlocking { getShipments(any()) } doReturn emptyMap()
+    }
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
-    private val configDataStore: WooShippingConfigDataStore = mock {
-        doReturn(flowOf(null)).whenever(it).observeConfig(any())
-    }
-    private val mapper: WooShippingNetworkingMapper = mock()
 
-    private val sut = GetShipments(orderDetailRepository, productDetailRepository, configDataStore, mapper)
+    private val sut = GetShipments(wooShippingLabelRepository, orderDetailRepository, productDetailRepository)
 
     @Test
     fun `when order only contains refunded products then should return empty list`() = testBlocking {
@@ -159,7 +150,7 @@ class GetShipmentsTests : BaseUnitTest() {
         // When total order quantity is 10 and each shipment has 5 items
         val shipments = mapOf(
             "0" to listOf(
-                Item(
+                ShipmentItem(
                     id = item.itemId,
                     subItems = listOf(
                         "${item.itemId}-sub-0",
@@ -171,7 +162,7 @@ class GetShipmentsTests : BaseUnitTest() {
                 )
             ),
             "1" to listOf(
-                Item(
+                ShipmentItem(
                     id = item.itemId,
                     subItems = listOf(
                         "${item.itemId}-sub-0",
@@ -183,9 +174,7 @@ class GetShipmentsTests : BaseUnitTest() {
                 )
             )
         )
-        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(
-            ConfigDTO(shipments = shipments, shippingLabelData = ShippingLabelDataDTO(null, null))
-        )
+        whenever(wooShippingLabelRepository.getShipments(eq(order.id))) doReturn shipments
 
         val result = sut.invoke(order)
         val shipment1 = result.first()
@@ -208,88 +197,8 @@ class GetShipmentsTests : BaseUnitTest() {
             ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
         }
 
-        val shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList())))
-        val shippingLabel = ShippingLabelDTO(
-            labelId = labelId,
-            shipmentId = shipmentId,
-            refund = LabelRefund(status = "") // Mark as refunded
-        )
-        val configDTO = ConfigDTO(
-            shipments = shipments,
-            shippingLabelData = ShippingLabelDataDTO(currentOrderLabels = listOf(shippingLabel), null)
-        )
-        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(configDTO)
-
-        val result = sut.invoke(order)
-        val shipmentUIModel = result.first()
-
-        assertFalse(shipmentUIModel.purchased)
-    }
-
-    @Test
-    fun `when label is failed, then purchased should be false`() = testBlocking {
-        val orderItem = OrderTestUtils.generateTestOrderItems(count = 1).first()
-        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
-        val shipmentId = "0"
-        val labelId = 123L
-
-        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
-            val productId = invocation.arguments[0] as Long
-            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
-        }
-
-        val shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList())))
-        val shippingLabel = ShippingLabelDTO(
-            labelId = labelId,
-            shipmentId = shipmentId,
-            status = ShippingLabelStatus.PURCHASE_ERROR
-        )
-        val configDTO = ConfigDTO(
-            shipments = shipments,
-            shippingLabelData = ShippingLabelDataDTO(currentOrderLabels = listOf(shippingLabel), storedData = null)
-        )
-        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(configDTO)
-
-        val result = sut.invoke(order)
-        val shipmentUIModel = result.first()
-
-        assertFalse(shipmentUIModel.purchased)
-    }
-
-    @Suppress("LongMethod")
-    @Test
-    fun `when there are stored address in config, result should contain label with address`() = testBlocking {
-        val orderItem = OrderTestUtils.generateTestOrderItems(count = 1).first()
-        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
-        val shipmentId = "0"
-        val labelId = 12L
-
-        val shippingLabel = ShippingLabelDTO(
-            labelId = labelId,
-            shipmentId = shipmentId,
-            status = ShippingLabelStatus.PURCHASED
-        )
-        val destinationAddressDTO = DestinationAddressDTO()
-        val originAddressDTO = OriginAddressDTO()
-        val configDTO = ConfigDTO(
-            shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList()))),
-            shippingLabelData = ShippingLabelDataDTO(
-                currentOrderLabels = listOf(shippingLabel),
-                storedData = StoredDataDTO(
-                    selectedOrigin = mapOf("shipment_$shipmentId" to originAddressDTO),
-                    selectedDestination = mapOf("shipment_$shipmentId" to destinationAddressDTO)
-                )
-            )
-        )
-
-        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
-            val productId = invocation.arguments[0] as Long
-            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
-        }
-        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(configDTO)
-        whenever(mapper.invoke(shippingLabel)) doReturn ShippingLabelModel(
+        val shipments = mapOf(shipmentId to listOf(ShipmentItem(id = orderItem.itemId, subItems = emptyList())))
+        val shippingLabel = ShippingLabelModel(
             labelId = labelId,
             tracking = "",
             refundableAmount = BigDecimal.ZERO,
@@ -310,18 +219,110 @@ class GetShipmentsTests : BaseUnitTest() {
             rate = BigDecimal.ZERO,
             currency = "",
             expiryDate = 0L,
-            usedDate = 0L,
-            refund = null,
+            usedDate = null,
+            refund = ShippingLabelModel.Refund(status = "", requestDate = Date()) // Mark as refunded
         )
-        whenever(mapper.invoke(destinationAddressDTO)) doReturn Address.EMPTY.copy(
-            firstName = "Test",
-            lastName = "Shipping"
-        )
+        whenever(wooShippingLabelRepository.getShipments(eq(order.id))) doReturn shipments
+        whenever(wooShippingLabelRepository.getLabels(eq(order.id))) doReturn listOf(shippingLabel)
 
         val result = sut.invoke(order)
         val shipmentUIModel = result.first()
 
+        assertFalse(shipmentUIModel.purchased)
+    }
+
+    @Test
+    fun `when label is failed, then purchased should be false`() = testBlocking {
+        val orderItem = OrderTestUtils.generateTestOrderItems(count = 1).first()
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
+        val shipmentId = "0"
+        val labelId = 123L
+
+        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
+        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+            val productId = invocation.arguments[0] as Long
+            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
+        }
+
+        val shipments = mapOf(shipmentId to listOf(ShipmentItem(id = orderItem.itemId, subItems = emptyList())))
+        val shippingLabel = ShippingLabelModel(
+            labelId = labelId,
+            tracking = "",
+            refundableAmount = BigDecimal.ZERO,
+            status = ShippingLabelStatus.PURCHASE_ERROR,
+            created = null,
+            carrierId = "",
+            serviceName = "",
+            commercialInvoiceUrl = "",
+            isCommercialInvoiceSubmittedElectronically = false,
+            packageName = "",
+            isLetter = false,
+            productNames = emptyList(),
+            productIds = emptyList(),
+            shipmentId = shipmentId,
+            receiptItemId = 0L,
+            createdDate = null,
+            mainReceiptId = 0L,
+            rate = BigDecimal.ZERO,
+            currency = "",
+            expiryDate = 0L,
+            usedDate = null,
+            refund = null
+        )
+        whenever(wooShippingLabelRepository.getShipments(eq(order.id))) doReturn shipments
+        whenever(wooShippingLabelRepository.getLabels(eq(order.id))) doReturn listOf(shippingLabel)
+
+        val result = sut.invoke(order)
+        val shipmentUIModel = result.first()
+
+        assertFalse(shipmentUIModel.purchased)
+    }
+
+    @Test
+    fun `when there is a purchased label, then shipment should be marked as purchased`() = testBlocking {
+        val orderItem = OrderTestUtils.generateTestOrderItems(count = 1).first()
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
+        val shipmentId = "0"
+        val labelId = 12L
+
+        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
+        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+            val productId = invocation.arguments[0] as Long
+            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
+        }
+
+        val shipments = mapOf(shipmentId to listOf(ShipmentItem(id = orderItem.itemId, subItems = emptyList())))
+        val shippingLabel = ShippingLabelModel(
+            labelId = labelId,
+            tracking = "",
+            refundableAmount = BigDecimal.ZERO,
+            status = ShippingLabelStatus.PURCHASED,
+            created = null,
+            carrierId = "",
+            serviceName = "",
+            commercialInvoiceUrl = "",
+            isCommercialInvoiceSubmittedElectronically = false,
+            packageName = "",
+            isLetter = false,
+            productNames = emptyList(),
+            productIds = emptyList(),
+            shipmentId = shipmentId,
+            receiptItemId = 0L,
+            createdDate = null,
+            mainReceiptId = 0L,
+            rate = BigDecimal.ZERO,
+            currency = "",
+            expiryDate = 0L,
+            usedDate = null,
+            refund = null
+        )
+        whenever(wooShippingLabelRepository.getShipments(eq(order.id))) doReturn shipments
+        whenever(wooShippingLabelRepository.getLabels(eq(order.id))) doReturn listOf(shippingLabel)
+
+        val result = sut.invoke(order)
+        val shipmentUIModel = result.first()
+
+        assertTrue(shipmentUIModel.purchased)
         assertNotNull(shipmentUIModel.label)
-        assertNotNull(shipmentUIModel.label!!.destinationAddress)
     }
 }

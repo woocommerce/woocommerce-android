@@ -15,3 +15,21 @@ fun JsonElement?.isElementNullOrEmpty(): Boolean {
         }
     } ?: true
 }
+
+val JsonElement.asStringOrNull: String?
+    get() {
+        return if (this.isJsonPrimitive && this.asJsonPrimitive.isString) {
+            this.asString
+        } else {
+            null
+        }
+    }
+
+val JsonElement.asLongOrNull: Long?
+    get() {
+        return if (this.isJsonPrimitive && this.asJsonPrimitive.isNumber) {
+            this.asLong
+        } else {
+            null
+        }
+    }
