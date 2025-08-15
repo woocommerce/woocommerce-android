@@ -10,6 +10,7 @@
 - [Internal] Added support for persisting log files in the app's internal storage [https://github.com/woocommerce/woocommerce-android/pull/14425]
 - [*] Shipping Labels: Fix layout issue with address status indicator [https://github.com/woocommerce/woocommerce-android/pull/14437]
 - [*] Shipping Labels: Updated shipments tab layout [https://github.com/woocommerce/woocommerce-android/pull/14448]
+- [Internal] Migrate the cache of the `/config` endpoint to Room instead of DataStore [https://github.com/woocommerce/woocommerce-android/pull/14469]
 
 23.0
 -----
