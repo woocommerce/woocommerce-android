@@ -220,7 +220,20 @@ object ShippingLabelSampleData {
                 weight = 0f,
                 title = "Sample Product",
                 imageUrl = "",
-                quantity = 0f,
+                quantity = 1f,
+                price = BigDecimal.TEN,
+                currency = "USD"
+            ),
+            ShippableItemModel(
+                itemId = 0,
+                productId = 0,
+                height = 0f,
+                width = 0f,
+                length = 0f,
+                weight = 0f,
+                title = "Sample Product 2",
+                imageUrl = "",
+                quantity = 2f,
                 price = BigDecimal.TEN,
                 currency = "USD"
             )
