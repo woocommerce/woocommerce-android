@@ -58,11 +58,11 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given feature flag disabled, when invoked, then return success true (tab visible anyway)`() = testBlocking {
+    fun `given feature flag disabled, when invoked, then return success false`() = testBlocking {
         whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(false)
         val r = sut()
         assertTrue(r.isSuccess)
-        assertTrue(r.getOrThrow())
+        assertFalse(r.getOrThrow())
     }
 
     @Test
