@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -18,10 +19,18 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.parcelable
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
 
 @AndroidEntryPoint
 class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_card_reader) {
+
+    @Parcelize
+    enum class FlowType : Parcelable {
+        CONNECTION,
+        UPDATE
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +41,8 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             R.id.woopos_card_reader_nav_host_fragment
         ) as NavHostFragment
 
-        setupNavGraph(navHostFragment)
+        val flowType = intent.parcelable<FlowType>(FLOW_TYPE_KEY)!!
+        setupNavGraph(navHostFragment, flowType)
         observeResult(navHostFragment)
     }
 
@@ -84,18 +94,26 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         }
     }
 
-    private fun setupNavGraph(navHostFragment: NavHostFragment) {
+    private fun setupNavGraph(navHostFragment: NavHostFragment, flowType: FlowType) {
         val navController = navHostFragment.navController
-        val graph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow).apply {
-            setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)
+        val graph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow)
+
+        when (flowType) {
+            FlowType.CONNECTION -> {
+                graph.setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)
+                navController.setGraph(
+                    graph,
+                    CardReaderStatusCheckerDialogFragmentArgs(
+                        cardReaderFlowParam = CardReaderFlowParam.WooPosConnection,
+                        cardReaderType = CardReaderType.EXTERNAL,
+                    ).toBundle()
+                )
+            }
+            FlowType.UPDATE -> {
+                graph.setStartDestination(R.id.cardReaderUpdateDialogFragment)
+                navController.setGraph(graph, null)
+            }
         }
-        navController.setGraph(
-            graph,
-            CardReaderStatusCheckerDialogFragmentArgs(
-                cardReaderFlowParam = CardReaderFlowParam.WooPosConnection,
-                cardReaderType = CardReaderType.EXTERNAL,
-            ).toBundle()
-        )
     }
 
     private fun logResultListenerError(requestKey: String) {
@@ -106,8 +124,16 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
     companion object {
         const val WOO_POS_CARD_PAYMENT_REQUEST_KEY = "woo_pos_card_payment_request"
+        const val FLOW_TYPE_KEY = "flow_type"
 
         fun buildIntentForCardReaderConnection(context: Context) =
-            Intent(context, WooPosCardReaderActivity::class.java)
+            Intent(context, WooPosCardReaderActivity::class.java).apply {
+                putExtra(FLOW_TYPE_KEY, FlowType.CONNECTION as Parcelable)
+            }
+
+        fun buildIntentForCardReaderUpdate(context: Context) =
+            Intent(context, WooPosCardReaderActivity::class.java).apply {
+                putExtra(FLOW_TYPE_KEY, FlowType.UPDATE as Parcelable)
+            }
     }
 }

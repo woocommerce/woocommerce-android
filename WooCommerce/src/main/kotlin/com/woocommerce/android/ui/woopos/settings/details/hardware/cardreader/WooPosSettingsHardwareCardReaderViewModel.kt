@@ -73,7 +73,7 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     }
 
     fun onUpdateClick() {
-
+        cardReaderFacade.updateReader()
     }
 
     private fun listenForSoftwareUpdateAvailability() {
