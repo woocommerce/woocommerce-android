@@ -36,8 +36,6 @@ fun WooPosSettingsCategoriesPaneScreen(
     viewModel: WooPosSettingsCategoriesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val scrollableCategories = state.categories.filter { it != WooPosSettingsCategory.HELP }
-    val helpCategory = WooPosSettingsCategory.HELP
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -47,7 +45,7 @@ fun WooPosSettingsCategoriesPaneScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            scrollableCategories.forEach { item ->
+            state.scrollableCategories.forEach { item ->
                 CategoryItem(
                     item = item,
                     isSelected = item == selectedCategory,
@@ -59,17 +57,19 @@ fun WooPosSettingsCategoriesPaneScreen(
             }
         }
 
-        CategoryItem(
-            item = helpCategory,
-            isSelected = helpCategory == selectedCategory,
-            onClick = {
-                onCategorySelected(helpCategory)
-            },
-            modifier = Modifier.padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Medium.value
+        state.fixedCategories.forEach { item ->
+            CategoryItem(
+                item = item,
+                isSelected = item == selectedCategory,
+                onClick = {
+                    onCategorySelected(item)
+                },
+                modifier = Modifier.padding(
+                    horizontal = WooPosSpacing.Medium.value,
+                    vertical = WooPosSpacing.Medium.value
+                )
             )
-        )
+        }
     }
 }
 

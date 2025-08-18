@@ -4553,6 +4553,15 @@
     <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
     <string name="woopos_scanning_setup_device_other">Other</string>
 
+    <string name="woopos_settings_store_information_title">Store information</string>
+    <string name="woopos_settings_receipt_information_title">Receipt information</string>
+    <string name="woopos_settings_store_name_label">Store name</string>
+    <string name="woopos_settings_store_address_label">Address</string>
+    <string name="woopos_settings_store_phone_label">Phone</string>
+    <string name="woopos_settings_store_email_label">Email</string>
+    <string name="woopos_settings_refund_policy_label">Refund &amp; Returns Policy</string>
+    <string name="woopos_settings_store_not_set">Not set</string>
+
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
     <string name="customers_details_registration_section">Registration</string>
