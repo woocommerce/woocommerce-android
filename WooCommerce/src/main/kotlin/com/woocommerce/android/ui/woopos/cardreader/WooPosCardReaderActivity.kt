@@ -103,7 +103,6 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
     private fun observeUpdateResult(navHostFragment: NavHostFragment) {
         val navController = navHostFragment.navController
-        
         // Observe the result from CardReaderUpdateDialogFragment
         // The dialog will set the result on its previous back stack entry
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Any>(
@@ -134,7 +133,6 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                 // has something to return result to
                 graph.setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)
                 navController.setGraph(graph, null)
-                
                 // Then immediately navigate to the update dialog
                 navController.navigate(R.id.cardReaderUpdateDialogFragment)
             }
