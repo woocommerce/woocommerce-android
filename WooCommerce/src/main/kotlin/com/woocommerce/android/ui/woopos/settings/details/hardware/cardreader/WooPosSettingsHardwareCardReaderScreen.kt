@@ -77,7 +77,9 @@ private fun WooPosSettingsHardwareCardReaderContent(
                 ConnectedContent(
                     readerName = uiState.readerName,
                     batteryLevel = uiState.batteryLevel,
-                    firmwareVersion = uiState.firmwareVersion ?: "Unknown",
+                    firmwareVersion = uiState.firmwareVersion ?: stringResource(
+                        R.string.woopos_settings_card_reader_unknown_firmware
+                    ),
                     isSoftwareUpdateAvailable = uiState.isSoftwareUpdateAvailable,
                     onDisconnectClicked = onDisconnectClicked
                 )
@@ -98,7 +100,7 @@ private fun ConnectingContent() {
     ) {
         CircularProgressIndicator()
         WooPosText(
-            text = "Connecting to card reader...",
+            text = stringResource(R.string.woopos_settings_card_reader_connecting),
             style = WooPosTypography.BodyLarge
         )
     }
@@ -142,7 +144,7 @@ private fun ConnectedContent(
     if (batteryLevel != null) {
         WooPosSettingsDetailsMenuItem(
             icon = getBatteryIcon(batteryLevel),
-            title = "Battery",
+            title = stringResource(R.string.woopos_settings_card_reader_battery_title),
             subtitle = stringResource(
                 R.string.card_reader_detail_connected_battery_percentage,
                 (batteryLevel * 100).toInt()
@@ -152,7 +154,7 @@ private fun ConnectedContent(
 
     WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.SystemUpdate,
-        title = "Firmware",
+        title = stringResource(R.string.woopos_settings_card_reader_firmware_title),
         subtitle = stringResource(R.string.card_reader_detail_connected_firmware_version, firmwareVersion)
     )
 
@@ -232,8 +234,8 @@ private fun NotConnectedContent(
 
         WooPosSettingsDetailsMenuItem(
             icon = Icons.Default.Bluetooth,
-            title = "Card Reader Status",
-            subtitle = "Not connected"
+            title = stringResource(R.string.woopos_settings_card_reader_status_title),
+            subtitle = stringResource(R.string.woopos_settings_card_reader_not_connected)
         )
 
         WooPosButton(
