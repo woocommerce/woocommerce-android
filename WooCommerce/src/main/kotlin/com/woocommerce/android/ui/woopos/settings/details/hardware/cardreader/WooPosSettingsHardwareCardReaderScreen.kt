@@ -128,7 +128,7 @@ private fun ConnectedContent(
         modifier = Modifier.fillMaxWidth()
             .padding(horizontal = WooPosSpacing.Medium.value),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         )
     ) {
         Column(
@@ -138,15 +138,15 @@ private fun ConnectedContent(
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)
         ) {
             WooPosText(
-                text = stringResource(R.string.card_reader_detail_connected_header),
+                text = stringResource(R.string.woopos_settings_card_reader_connected_reader),
                 style = WooPosTypography.BodyXLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             WooPosText(
                 text = readerName,
-                style = WooPosTypography.BodyLarge,
+                style = WooPosTypography.BodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
             )
@@ -187,20 +187,11 @@ private fun NotConnectedContent(
     isConnecting: Boolean = false
 ) {
     Column {
-        WooPosSettingsDetailsMenuItem(
-            icon = Icons.Default.Description,
-            title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
-            subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
-            onClick = onDocumentationClicked
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
         Card(
             modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = WooPosSpacing.Medium.value),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             )
         ) {
             Column(
@@ -213,7 +204,7 @@ private fun NotConnectedContent(
                     text = stringResource(R.string.card_reader_detail_not_connected_header),
                     style = WooPosTypography.BodyXLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Column(
@@ -234,6 +225,15 @@ private fun NotConnectedContent(
             text = stringResource(R.string.card_reader_details_not_connected_connect_button_label),
             state = if (isConnecting) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
             onClick = onConnectClicked
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+
+        WooPosSettingsDetailsMenuItem(
+            icon = Icons.Default.Description,
+            title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
+            subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
+            onClick = onDocumentationClicked
         )
     }
 }
