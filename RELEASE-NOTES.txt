@@ -17,13 +17,13 @@
 - [*] Bottom navigation menu has now labels shown under icons on tablet devices [https://github.com/woocommerce/woocommerce-android/pull/14429]
 - [Internal] Suppress edge to edge for Google PlayCoreDialogWrapperActivity [https://github.com/woocommerce/woocommerce-android/pull/14435]
 - [*] POS: Replace clear cart button with delete icon and add confirmation dropdown menu [https://github.com/woocommerce/woocommerce-android/pull/14441]
+- [*] Fix `No enum constant` on `CurrencyPosition` [https://github.com/woocommerce/woocommerce-android/pull/14423]
 
 22.9.1
 -----
 - [*] POS: Barcode scanning on the order success screen now opens the cart and adds an item to the cart [https://github.com/woocommerce/woocommerce-android/pull/14382]
 - [*] POS: Fixes an issue with the Barcode Scanner Setup flow that could result in an inconsistent UI state on the Checkout and Payment Success Screens [https://github.com/woocommerce/woocommerce-android/pull/14396]
 - [**] You can now access POS mode faster than ever with the new POS tab in the app’s bottom navigation bar—just one tap and you’re in! If you spotted this feature mentioned a couple releases ago… well, let’s just say we got a little too excited. 😅 It’s finally here for real, and fully available in the UK and US! [https://github.com/woocommerce/woocommerce-android/pull/14337]
-
 
 22.9
 -----

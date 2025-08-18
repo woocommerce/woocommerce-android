@@ -1,2 +1,0 @@
-22.9:
-Una mejor experiencia de WooCommerce con las mejoras de Point of Sale. Filtra pedidos por canal de ventas, configura lectores de códigos y detecta los pedidos de POS con las nuevas insignias en tu escritorio. Hemos solucionado problemas de carga en los detalles de pedidos y errores en la pantalla de pago, restaurado la búsqueda y mejorado la validación de la dirección de la etiqueta de envío. Se ha mejorado la detección de plugins y la gestión de monedas tras el reinicio de la aplicación.

@@ -47,7 +47,7 @@ class WCSettingsMapper
     }
 
     private fun String?.toCurrencyPositionOrDefault(): CurrencyPosition = this?.let {
-        CurrencyPosition.valueOf(it.uppercase())
+        CurrencyPosition.entries.find { entry -> entry.name.equals(it, ignoreCase = true) }
     } ?: CurrencyPosition.LEFT
 
     fun mapProductSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCProductSettingsModel {
