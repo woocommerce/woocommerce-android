@@ -106,7 +106,6 @@ private fun WooPosSettingsHardwareCardReaderContent(
     }
 }
 
-
 @Composable
 private fun ConnectedContent(
     readerName: String,
@@ -211,7 +210,7 @@ private fun NotConnectedContent(
 
         WooPosButton(
             modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = WooPosSpacing.Medium.value),
+                .padding(horizontal = WooPosSpacing.Medium.value),
             text = stringResource(R.string.card_reader_details_not_connected_connect_button_label),
             onClick = onConnectClicked
         )
