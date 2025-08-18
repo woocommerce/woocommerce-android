@@ -2774,6 +2774,7 @@
     <string name="username_or_password_incorrect">The username or password you entered is incorrect</string>
     <string name="cannot_add_duplicate_site">This site already exists in the app, you can\'t add it.</string>
     <string name="duplicate_site_detected">A duplicate site has been detected.</string>
+    <string name="error_wordpress_com_connectivity">We\'re having trouble reaching WordPress.com. Please check your internet connection settings or try switching networks.</string>
     <string name="error_fetch_my_profile">Couldn\'t retrieve your profile</string>
     <string name="error_disabled_apis">Could not fetch settings: Some APIs are unavailable for this OAuth app ID + account combination.</string>
     <string name="login_to_to_connect_jetpack">Log in to the WordPress.com account you used to connect Jetpack.</string>
@@ -4340,11 +4341,25 @@
 
 
     <string name="woopos_settings_title">Settings</string>
+    <string name="woopos_settings_hardware_category">Hardware</string>
+    <string name="woopos_settings_hardware_category_subtitle">Manage hardware connections</string>
+    <string name="woopos_settings_store_category">Store</string>
+    <string name="woopos_settings_store_category_subtitle">Store configuration and settings</string>
+    <string name="woopos_settings_hardware_barcode_scanners">Barcode scanners</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
+    <string name="woopos_settings_hardware_card_readers">Card Readers</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">Barcode Scanner Settings</string>
+    <string name="woopos_settings_card_reader_detail_title">Card Reader Settings</string>
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_barcode_scanning_title">Initial barcode scanner setup</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
+    <string name="woopos_settings_help_category_subtitle">Get help and support</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">Learn about which products are supported in POS</string>
+    <string name="woopos_settings_help_documentation_subtitle">View guides and tutorials</string>
+    <string name="woopos_settings_help_get_support_subtitle">Contact our support team</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
@@ -4537,6 +4552,15 @@
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
     <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
     <string name="woopos_scanning_setup_device_other">Other</string>
+
+    <string name="woopos_settings_store_information_title">Store information</string>
+    <string name="woopos_settings_receipt_information_title">Receipt information</string>
+    <string name="woopos_settings_store_name_label">Store name</string>
+    <string name="woopos_settings_store_address_label">Address</string>
+    <string name="woopos_settings_store_phone_label">Phone</string>
+    <string name="woopos_settings_store_email_label">Email</string>
+    <string name="woopos_settings_refund_policy_label">Refund &amp; Returns Policy</string>
+    <string name="woopos_settings_store_not_set">Not set</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4733,6 +4757,8 @@
     <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
 
     <string name="woo_shipping_split_shipment">Split shipment</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">You purchased a label for this shipment.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_desc">You can’t move products in to or out of it.</string>
     <string name="woo_shipping_split_shipment_instructions"><![CDATA[To split, select the items, and tap <b>move to new shipment</b> when the toolbar appears.]]></string>
     <string name="woo_shipping_split_shipment_moved_notice_one">Moved %1$d item to Shipment %2$d</string>
     <string name="woo_shipping_split_shipment_moved_notice_plural">Moved %1$d items to Shipment %2$d</string>

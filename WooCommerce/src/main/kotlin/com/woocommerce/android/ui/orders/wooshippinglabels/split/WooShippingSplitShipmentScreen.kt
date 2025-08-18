@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -490,6 +492,32 @@ fun SelectableProductsSection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
+        if (shipment.purchased) {
+            Column(
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .fillMaxWidth()
+                    .background(
+                        color = colorResource(R.color.woo_shipping_label_success_surface),
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.woo_shipping_split_shipment_purchased_message_title),
+                    color = colorResource(R.color.woo_shipping_label_success),
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = stringResource(R.string.woo_shipping_split_shipment_purchased_message_desc),
+                    color = colorResource(R.color.woo_shipping_label_success),
+                    style = MaterialTheme.typography.body2
+                )
+            }
+        }
+
         ProductsSummary(
             totalItems = shipment.totalItemQuantity,
             totalWeight = shipment.formattedTotalWeight,
@@ -510,6 +538,7 @@ fun SelectableProductsSection(
                             price = shippableItem.shippableItem.formattedPrice,
                             quantity = shippableItem.shippableItem.quantity,
                             imageUrl = shippableItem.shippableItem.imageUrl,
+                            selectable = !shipment.purchased,
                             isSelected = shippableItem.isSelected,
                             onSelectionChange = if (shipment.purchased) {
                                 null
@@ -529,6 +558,7 @@ fun SelectableProductsSection(
                             price = shippableItem.shippableItem.formattedPrice,
                             quantity = shippableItem.shippableItem.quantity,
                             imageUrl = shippableItem.shippableItem.imageUrl,
+                            selectable = !shipment.purchased,
                             isSelected = shippableItem.isSelected,
                             onSelectionChange = if (shipment.purchased) {
                                 null

@@ -1,0 +1,55 @@
+package com.woocommerce.android.ui.woopos.settings
+
+import androidx.lifecycle.ViewModel
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState
+import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+
+@HiltViewModel
+class WooPosSettingsViewModel @Inject constructor() : ViewModel() {
+    private val _state = MutableStateFlow(WooPosSettingsState())
+    val state: StateFlow<WooPosSettingsState> = _state.asStateFlow()
+
+    fun onCategorySelected(category: WooPosSettingsCategory) {
+        _state.update { currentState ->
+            currentState.copy(
+                selectedCategory = category,
+                currentDestination = category.rootDestination
+            )
+        }
+    }
+
+    fun navigateToDetail(destination: WooPosSettingsDetailDestination) {
+        _state.update { currentState ->
+            currentState.copy(currentDestination = destination)
+        }
+    }
+
+    fun navigateBack() {
+        _state.update { currentState ->
+            val parentDestination = currentState.currentDestination.parentDestination
+            if (parentDestination != null) {
+                currentState.copy(currentDestination = parentDestination)
+            } else {
+                currentState
+            }
+        }
+    }
+
+    fun showProductInfoDialog() {
+        _state.update { currentState ->
+            currentState.copy(dialogState = WooPosHomeState.DialogState.ProductsInfoDialog)
+        }
+    }
+
+    fun hideDialog() {
+        _state.update { currentState ->
+            currentState.copy(dialogState = WooPosHomeState.DialogState.Hidden)
+        }
+    }
+}

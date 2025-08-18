@@ -2,15 +2,13 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShipmentItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.UpdateShipmentsResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -26,11 +24,8 @@ import java.math.BigDecimal
 class SplitShipmentTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock { doReturn(SiteModel().apply { id = 1 }).whenever(it).getOrNull() }
     private val wooShippingLabelRepository: WooShippingLabelRepository = mock()
-    private val configDataStore: WooShippingConfigDataStore = mock {
-        doReturn(flowOf(null)).whenever(it).observeConfig(any())
-    }
 
-    private val sut = SplitShipment(selectedSite, wooShippingLabelRepository, configDataStore)
+    private val sut = SplitShipment(selectedSite, wooShippingLabelRepository)
 
     @Test
     fun `when shipment has single quantity, endpoint should be called with empty subItems`() = testBlocking {
@@ -41,7 +36,7 @@ class SplitShipmentTest : BaseUnitTest() {
 
         sut.invoke(order.id, listOf(ShipmentUIModel(localId = "0", items = listOf(singleItem))))
 
-        val expectedShipmentMap = mapOf("0" to listOf(Item(singleItem.itemId, emptyList())))
+        val expectedShipmentMap = mapOf("0" to listOf(ShipmentItem(singleItem.itemId, emptyList())))
         verify(wooShippingLabelRepository).updateShipments(any(), eq(order.id), eq(expectedShipmentMap), any())
     }
 
@@ -55,7 +50,7 @@ class SplitShipmentTest : BaseUnitTest() {
         sut.invoke(order.id, listOf(ShipmentUIModel(localId = "0", items = listOf(multipleQuantityItem))))
 
         val expectedSubItems = listOf("1000-sub-0", "1000-sub-1", "1000-sub-2")
-        val expectedShipmentMap = mapOf("0" to listOf(Item(multipleQuantityItem.itemId, expectedSubItems)))
+        val expectedShipmentMap = mapOf("0" to listOf(ShipmentItem(multipleQuantityItem.itemId, expectedSubItems)))
         verify(wooShippingLabelRepository).updateShipments(any(), eq(order.id), eq(expectedShipmentMap), any())
     }
 

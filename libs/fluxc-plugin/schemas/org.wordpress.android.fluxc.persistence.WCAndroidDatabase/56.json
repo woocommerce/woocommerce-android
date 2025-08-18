@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 56,
-    "identityHash": "99b187e249f7456a0a186d3167d4497d",
+    "identityHash": "53e10a9d7803311c078bd388c1c48274",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3406,57 +3406,212 @@
         "foreignKeys": []
       },
       {
-        "tableName": "GlobalAttributeEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `slug` TEXT NOT NULL, `type` TEXT NOT NULL, `orderBy` TEXT NOT NULL, `hasArchives` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `remoteId`))",
+        "tableName": "WooShippingLabelEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `labelId` INTEGER NOT NULL, `tracking` TEXT NOT NULL, `refundableAmount` TEXT NOT NULL, `status` TEXT NOT NULL, `created` TEXT, `carrierId` TEXT NOT NULL, `serviceName` TEXT NOT NULL, `commercialInvoiceUrl` TEXT, `isCommercialInvoiceSubmittedElectronically` INTEGER NOT NULL, `packageName` TEXT NOT NULL, `isLetter` INTEGER NOT NULL, `productNames` TEXT NOT NULL, `productIds` TEXT, `shipmentId` TEXT, `receiptItemId` INTEGER NOT NULL, `createdDate` TEXT, `mainReceiptId` INTEGER NOT NULL, `rate` TEXT NOT NULL, `currency` TEXT NOT NULL, `expiryDate` INTEGER NOT NULL, `usedDate` INTEGER, `refund` TEXT, `originAddress` TEXT, `destinationAddress` TEXT, PRIMARY KEY(`localSiteId`, `orderId`, `labelId`))",
         "fields": [
           {
-            "fieldPath": "siteId",
-            "columnName": "siteId",
+            "fieldPath": "localSiteId",
+            "columnName": "localSiteId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "remoteId",
-            "columnName": "remoteId",
+            "fieldPath": "orderId",
+            "columnName": "orderId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "slug",
-            "columnName": "slug",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "type",
-            "columnName": "type",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "orderBy",
-            "columnName": "orderBy",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "hasArchives",
-            "columnName": "hasArchives",
+            "fieldPath": "labelId",
+            "columnName": "labelId",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tracking",
+            "columnName": "tracking",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "refundableAmount",
+            "columnName": "refundableAmount",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "created",
+            "columnName": "created",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "carrierId",
+            "columnName": "carrierId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serviceName",
+            "columnName": "serviceName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "commercialInvoiceUrl",
+            "columnName": "commercialInvoiceUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isCommercialInvoiceSubmittedElectronically",
+            "columnName": "isCommercialInvoiceSubmittedElectronically",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isLetter",
+            "columnName": "isLetter",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productNames",
+            "columnName": "productNames",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productIds",
+            "columnName": "productIds",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "shipmentId",
+            "columnName": "shipmentId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "receiptItemId",
+            "columnName": "receiptItemId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "createdDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mainReceiptId",
+            "columnName": "mainReceiptId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rate",
+            "columnName": "rate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "currency",
+            "columnName": "currency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expiryDate",
+            "columnName": "expiryDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usedDate",
+            "columnName": "usedDate",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "refund",
+            "columnName": "refund",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "originAddress",
+            "columnName": "originAddress",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "destinationAddress",
+            "columnName": "destinationAddress",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "localSiteId",
+            "orderId",
+            "labelId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "WooShippingShipmentEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `shipmentId` TEXT NOT NULL, `items` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `orderId`, `shipmentId`))",
+        "fields": [
+          {
+            "fieldPath": "localSiteId",
+            "columnName": "localSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderId",
+            "columnName": "orderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shipmentId",
+            "columnName": "shipmentId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "items",
+            "columnName": "items",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "siteId",
-            "remoteId"
+            "localSiteId",
+            "orderId",
+            "shipmentId"
           ]
         },
         "indices": [],
@@ -3466,7 +3621,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '99b187e249f7456a0a186d3167d4497d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '53e10a9d7803311c078bd388c1c48274')"
     ]
   }
 }

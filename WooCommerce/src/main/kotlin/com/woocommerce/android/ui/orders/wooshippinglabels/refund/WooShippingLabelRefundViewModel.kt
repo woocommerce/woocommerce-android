@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.util.CurrencyFormatter
@@ -34,15 +33,13 @@ class WooShippingLabelRefundViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val repository: WooShippingLabelRepository,
-    configDataStore: WooShippingConfigDataStore,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
     private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val arguments: WooShippingLabelRefundFragmentArgs by savedState.navArgs()
 
-    // Finding the shipping label from cached config data
-    private val shippingLabelFlow = configDataStore.getShippingLabel(arguments.orderId, arguments.labelId)
+    private val shippingLabelFlow = repository.observeLabel(arguments.orderId, arguments.labelId)
         .shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val isLoadingFlow = MutableStateFlow(false)
