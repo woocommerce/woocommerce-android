@@ -268,7 +268,7 @@ private fun LabelTrackingRow(
         }
         Spacer(Modifier.weight(1f))
         WCOverflowMenu(
-            items = TrackingMenuItem.entries,
+            items = if (label.trackingLink.isNotEmpty()) TrackingMenuItem.entries else listOf(TrackingMenuItem.COPY),
             onSelected = {
                 when (it) {
                     TrackingMenuItem.COPY -> OrderShipmentTrackingHelper.copyTrackingNumber(context, label.tracking)
