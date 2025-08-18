@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.model.attribute
 
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.attribute.terms.WCAttributeTermModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.attributes.AttributeApiResponse
@@ -12,8 +13,8 @@ class WCGlobalAttributeMapper @Inject constructor() {
         site: SiteModel
     ) = response.run {
         WCGlobalAttributeModel(
-                remoteId = id?.toIntOrNull() ?: 0,
-                localSiteId = site.id,
+                remoteId = RemoteId(id?.toLongOrNull() ?: 0),
+                siteId = site.localId(),
                 name = name.orEmpty(),
                 slug = slug.orEmpty(),
                 type = type.orEmpty(),
