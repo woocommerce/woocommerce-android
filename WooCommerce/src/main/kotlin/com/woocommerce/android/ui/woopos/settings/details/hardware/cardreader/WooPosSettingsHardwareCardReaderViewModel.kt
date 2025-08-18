@@ -40,17 +40,11 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     val openUrl = _openUrl.asSharedFlow()
 
     private lateinit var softwareUpdateAvailabilityJob: Job
+    private var currentSoftwareUpdateAvailable = false
 
     init {
+        listenForSoftwareUpdateAvailability()
         observeCardReaderStatus()
-    }
-
-    private fun listenForSoftwareUpdateAvailability() {
-        softwareUpdateAvailabilityJob = viewModelScope.launch {
-            cardReaderFacade.softwareUpdateAvailability.collect { updateAvailability ->
-                handleSoftwareUpdateAvailability(updateAvailability)
-            }
-        }
     }
 
     fun onConnectClicked() {
@@ -78,18 +72,22 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
         }
     }
 
-    private fun handleSoftwareUpdateAvailability(updateStatus: SoftwareUpdateAvailability) {
-        val currentState = _uiState.value
-        if (currentState is WooPosSettingsHardwareCardReaderUiState.Connected) {
-            _uiState.value = currentState.copy(
-                isSoftwareUpdateAvailable = updateStatus is SoftwareUpdateAvailability.Available
-            )
+    private fun listenForSoftwareUpdateAvailability() {
+        softwareUpdateAvailabilityJob = viewModelScope.launch {
+            cardReaderFacade.softwareUpdateAvailability.collect { updateAvailability ->
+                handleSoftwareUpdateAvailability(updateAvailability)
+            }
         }
     }
 
-    private fun cancelSoftwareUpdateJob() {
-        if (::softwareUpdateAvailabilityJob.isInitialized) {
-            softwareUpdateAvailabilityJob.cancel()
+    private fun handleSoftwareUpdateAvailability(updateStatus: SoftwareUpdateAvailability) {
+        currentSoftwareUpdateAvailable = updateStatus is SoftwareUpdateAvailability.Available
+
+        val currentState = _uiState.value
+        if (currentState is WooPosSettingsHardwareCardReaderUiState.Connected) {
+            _uiState.value = currentState.copy(
+                isSoftwareUpdateAvailable = currentSoftwareUpdateAvailable
+            )
         }
     }
 
@@ -98,20 +96,19 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
             cardReaderFacade.readerStatus.collect { status ->
                 _uiState.value = when (status) {
                     is CardReaderStatus.Connected -> {
-                        listenForSoftwareUpdateAvailability()
                         WooPosSettingsHardwareCardReaderUiState.Connected(
                             readerName = status.cardReader.id ?: resourceProvider.getString(
                                 R.string.woopos_settings_card_reader_unknown_reader
                             ),
                             batteryLevel = status.cardReader.currentBatteryLevel,
                             firmwareVersion = status.cardReader.firmwareVersion,
-                            isSoftwareUpdateAvailable = false
+                            isSoftwareUpdateAvailable = true
                         )
                     }
 
                     is CardReaderStatus.Connecting,
                     is CardReaderStatus.NotConnected -> {
-                        cancelSoftwareUpdateJob()
+                        currentSoftwareUpdateAvailable = false
                         WooPosSettingsHardwareCardReaderUiState.Disconnected
                     }
                 }
