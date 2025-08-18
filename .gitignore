@@ -122,4 +122,3 @@ google-upload-credentials.json
 /CLAUDE.md
 *.mp4
 .claude/
-.gitignore-check
