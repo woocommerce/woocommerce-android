@@ -17,7 +17,6 @@ import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
-import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.parcelable
@@ -44,8 +43,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
         val flowType = intent.parcelable<FlowType>(FLOW_TYPE_KEY)!!
         setupNavGraph(navHostFragment, flowType)
-        observeConnectionResult(navHostFragment)
-        observeUpdateResult(navHostFragment)
+        observeResult(navHostFragment, flowType)
     }
 
     private fun setupTopAndBottomInsets() {
@@ -81,6 +79,13 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         )
     }
 
+    private fun observeResult(navHostFragment: NavHostFragment, flowType: FlowType) {
+        when (flowType) {
+            FlowType.CONNECTION -> observeConnectionResult(navHostFragment)
+            FlowType.UPDATE -> observeUpdateResult(navHostFragment)
+        }
+    }
+
     private fun observeConnectionResult(navHostFragment: NavHostFragment) {
         navHostFragment.childFragmentManager.setFragmentResultListener(
             WOO_POS_CARD_PAYMENT_REQUEST_KEY,
@@ -98,8 +103,11 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
     private fun observeUpdateResult(navHostFragment: NavHostFragment) {
         val navController = navHostFragment.navController
+        
+        // Observe the result from CardReaderUpdateDialogFragment
+        // The dialog will set the result on its previous back stack entry
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Any>(
-            CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT
+            "key_reader_update_result"
         )?.observe(this) { _ ->
             finish()
         }
@@ -120,9 +128,15 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                     ).toBundle()
                 )
             }
+
             FlowType.UPDATE -> {
-                graph.setStartDestination(R.id.cardReaderUpdateDialogFragment)
+                // Set a dummy start destination first so that CardReaderUpdateDialogFragment
+                // has something to return result to
+                graph.setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)
                 navController.setGraph(graph, null)
+                
+                // Then immediately navigate to the update dialog
+                navController.navigate(R.id.cardReaderUpdateDialogFragment)
             }
         }
     }
