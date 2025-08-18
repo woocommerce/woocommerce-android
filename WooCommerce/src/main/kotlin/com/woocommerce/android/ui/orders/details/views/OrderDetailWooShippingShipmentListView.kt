@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,6 +44,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -239,11 +241,14 @@ private fun LabelTrackingRow(
     label: ShippingLabelModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .padding(16.dp)
+            .padding(vertical = 16.dp)
+            .padding(start = 16.dp)
     ) {
         Icon(
             imageVector = Icons.Default.LocationOn,
@@ -264,10 +269,13 @@ private fun LabelTrackingRow(
         Spacer(Modifier.weight(1f))
         WCOverflowMenu(
             items = TrackingMenuItem.entries,
-            onSelected = { TODO() },
-            mapper = {
-                stringResource(it.title)
-            }
+            onSelected = {
+                when (it) {
+                    TrackingMenuItem.COPY -> OrderShipmentTrackingHelper.copyTrackingNumber(context, label.tracking)
+                    TrackingMenuItem.TRACK -> OrderShipmentTrackingHelper.trackShipment(context, label.trackingLink)
+                }
+            },
+            mapper = { stringResource(it.title) }
         )
     }
 }
