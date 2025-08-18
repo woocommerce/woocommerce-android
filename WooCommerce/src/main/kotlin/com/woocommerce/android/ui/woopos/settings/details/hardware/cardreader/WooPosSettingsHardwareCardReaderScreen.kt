@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.woopos.settings.details.hardware.cardreader
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,28 +83,37 @@ private fun WooPosSettingsHardwareCardReaderContent(
     onDisconnectClicked: () -> Unit,
     onDocumentationClicked: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-    ) {
-        when (uiState) {
-            is WooPosSettingsHardwareCardReaderUiState.Connected -> {
-                ConnectedContent(
-                    readerName = uiState.readerName,
-                    batteryLevel = uiState.batteryLevel,
-                    firmwareVersion = uiState.firmwareVersion ?: stringResource(
-                        R.string.woopos_settings_card_reader_unknown_firmware
-                    ),
-                    isSoftwareUpdateAvailable = uiState.isSoftwareUpdateAvailable,
-                    onDisconnectClicked = onDisconnectClicked
-                )
-            }
-            is WooPosSettingsHardwareCardReaderUiState.Disconnected -> {
-                NotConnectedContent(
-                    onConnectClicked = onConnectClicked,
-                    onDocumentationClicked = onDocumentationClicked,
-                )
+    AnimatedContent(
+        targetState = uiState,
+        transitionSpec = {
+            fadeIn() togetherWith fadeOut()
+        },
+        label = "card_reader_state_animation"
+    ) { state ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+        ) {
+            when (state) {
+                is WooPosSettingsHardwareCardReaderUiState.Connected -> {
+                    ConnectedContent(
+                        readerName = state.readerName,
+                        batteryLevel = state.batteryLevel,
+                        firmwareVersion = state.firmwareVersion ?: stringResource(
+                            R.string.woopos_settings_card_reader_unknown_firmware
+                        ),
+                        isSoftwareUpdateAvailable = state.isSoftwareUpdateAvailable,
+                        onDisconnectClicked = onDisconnectClicked
+                    )
+                }
+
+                is WooPosSettingsHardwareCardReaderUiState.Disconnected -> {
+                    NotConnectedContent(
+                        onConnectClicked = onConnectClicked,
+                        onDocumentationClicked = onDocumentationClicked,
+                    )
+                }
             }
         }
     }
@@ -115,7 +128,8 @@ private fun ConnectedContent(
     onDisconnectClicked: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = WooPosSpacing.Medium.value),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -163,7 +177,8 @@ private fun ConnectedContent(
     Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
     WooPosOutlinedButton(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = WooPosSpacing.Medium.value),
         text = stringResource(R.string.card_reader_detail_connected_disconnect_reader),
         onClick = onDisconnectClicked
@@ -177,7 +192,8 @@ private fun NotConnectedContent(
 ) {
     Column {
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = WooPosSpacing.Medium.value),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -209,7 +225,8 @@ private fun NotConnectedContent(
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         WooPosButton(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = WooPosSpacing.Medium.value),
             text = stringResource(R.string.card_reader_details_not_connected_connect_button_label),
             onClick = onConnectClicked
