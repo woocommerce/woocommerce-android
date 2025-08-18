@@ -1903,7 +1903,7 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun loadGlobalAttributes(): List<ProductGlobalAttribute> =
+    suspend fun loadGlobalAttributes(): List<ProductGlobalAttribute> =
         productRepository.getGlobalAttributes()
 
     /**

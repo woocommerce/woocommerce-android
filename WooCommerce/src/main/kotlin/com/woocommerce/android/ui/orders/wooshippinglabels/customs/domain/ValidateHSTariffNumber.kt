@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel
 import javax.inject.Inject
 
 class ValidateHSTariffNumber @Inject constructor() {
@@ -11,10 +10,10 @@ class ValidateHSTariffNumber @Inject constructor() {
     operator fun invoke(
         tariffNumber: String,
         destinationCountryCode: String? = null
-    ): WooShippingCustomsFormViewModel.InputValue {
+    ): WooShippingCustomsValidator.FieldValidationResult {
         val shouldValidateHSTariffNumber = shouldRequireHSTariffNumber(destinationCountryCode) ||
             tariffNumber.isNotEmpty()
-        if (!shouldValidateHSTariffNumber) return WooShippingCustomsFormViewModel.InputValue.Data(tariffNumber)
+        if (!shouldValidateHSTariffNumber) return WooShippingCustomsValidator.FieldValidationResult.Valid
 
         val digits = tariffNumber.replace(Regex("""\D"""), "")
 
@@ -28,8 +27,8 @@ class ValidateHSTariffNumber @Inject constructor() {
         }
 
         return errorCode?.let {
-            WooShippingCustomsFormViewModel.InputValue.Error(tariffNumber, it)
-        } ?: WooShippingCustomsFormViewModel.InputValue.Data(tariffNumber)
+            WooShippingCustomsValidator.FieldValidationResult.Invalid(it)
+        } ?: WooShippingCustomsValidator.FieldValidationResult.Valid
     }
 
     private fun shouldRequireHSTariffNumber(destinationCountryCode: String?) =
