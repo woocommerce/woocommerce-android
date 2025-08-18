@@ -936,9 +936,7 @@ class OrderDetailViewModel @Inject constructor(
 
         _wooShippingShipments.value = wooShippingShipments.let { if (it.isVisible) it.list else emptyList() }
 
-        if (shippingLabels.isVisible) {
-            _shippingLabels.value = shippingLabels.list
-        }
+        _shippingLabels.value = shippingLabels.let { if (it.isVisible) it.list else emptyList() }
 
         if (orderProducts.isVisible) {
             _productList.value = orderProducts.list
@@ -974,7 +972,6 @@ class OrderDetailViewModel @Inject constructor(
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
-            areShippingLabelsVisible = shippingLabels.isVisible,
             wcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
                 awaitOrder(),
                 orderEligibleForInPersonPayments
