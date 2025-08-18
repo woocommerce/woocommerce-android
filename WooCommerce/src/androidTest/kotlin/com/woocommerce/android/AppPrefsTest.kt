@@ -531,7 +531,7 @@ class AppPrefsTest {
         val siteId = 123
 
         // WHEN
-        AppPrefs.setPOSTabVisibilityForSite(siteId, true)
+        AppPrefs.setPOSTabVisibilityForSite(siteId)
         val result = AppPrefs.isPOSTabVisibleForSite(siteId)
 
         // THEN
@@ -548,5 +548,48 @@ class AppPrefsTest {
 
         // THEN
         assertThat(result).isFalse
+    }
+
+    @Test
+    fun givenPOSTabVisibilitySetWhenClearedThenGetterReturnsFalse() {
+        // GIVEN
+        val siteId = 789
+        AppPrefs.setPOSTabVisibilityForSite(siteId)
+        assertThat(AppPrefs.isPOSTabVisibleForSite(siteId)).isTrue
+
+        // WHEN
+        AppPrefs.clearPOSTabVisibilityForSite(siteId)
+
+        // THEN
+        assertThat(AppPrefs.isPOSTabVisibleForSite(siteId)).isFalse
+    }
+
+    @Test
+    fun givenPOSLaunchableNotSetWhenIsPOSLaunchableForSiteThenReturnFalseByDefault() {
+        val siteId = 111
+
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteId)).isFalse
+    }
+
+    @Test
+    fun givenSetPOSLaunchableForSiteWhenIsPOSLaunchableForSiteThenReturnTrueOnlyForThatSite() {
+        val siteA = 222
+        val siteB = 333
+
+        AppPrefs.setPOSLaunchableForSite(siteA)
+
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteA)).isTrue
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteB)).isFalse
+    }
+
+    @Test
+    fun givenSetPOSLaunchableForSiteWhenClearPOSLaunchableForSiteThenReturnFalse() {
+        val siteId = 444
+        AppPrefs.setPOSLaunchableForSite(siteId)
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteId)).isTrue
+
+        AppPrefs.clearPOSLaunchableForSite(siteId)
+
+        assertThat(AppPrefs.isPOSLaunchableForSite(siteId)).isFalse
     }
 }
