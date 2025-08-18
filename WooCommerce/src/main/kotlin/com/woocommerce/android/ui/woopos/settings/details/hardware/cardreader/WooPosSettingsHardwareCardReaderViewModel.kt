@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.woopos.common.data.WOO_POS_LEARN_MORE_ABOUT_PA
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_STRIPE_LEARN_MORE_ABOUT_PAYMENTS
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,25 +39,16 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     private val _openUrl = MutableSharedFlow<String>()
     val openUrl = _openUrl.asSharedFlow()
 
+    private lateinit var softwareUpdateAvailabilityJob: Job
+
     init {
         observeCardReaderStatus()
     }
 
-    private fun observeCardReaderStatus() {
-        viewModelScope.launch {
-            cardReaderFacade.readerStatus.collect { status ->
-                _uiState.value = when (status) {
-                    is CardReaderStatus.Connected -> WooPosSettingsHardwareCardReaderUiState.Connected(
-                        readerName = status.cardReader.id ?: resourceProvider.getString(
-                            R.string.woopos_settings_card_reader_unknown_reader
-                        ),
-                        batteryLevel = status.cardReader.currentBatteryLevel,
-                        firmwareVersion = status.cardReader.firmwareVersion
-                    )
-
-                    is CardReaderStatus.Connecting,
-                    is CardReaderStatus.NotConnected -> WooPosSettingsHardwareCardReaderUiState.Disconnected
-                }
+    private fun listenForSoftwareUpdateAvailability() {
+        softwareUpdateAvailabilityJob = viewModelScope.launch {
+            cardReaderFacade.softwareUpdateAvailability.collect { updateAvailability ->
+                handleSoftwareUpdateAvailability(updateAvailability)
             }
         }
     }
@@ -82,6 +75,47 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
                 WOOCOMMERCE_PAYMENTS, null -> WOO_POS_LEARN_MORE_ABOUT_PAYMENTS
             }
             _openUrl.emit(learnMoreUrl)
+        }
+    }
+
+    private fun handleSoftwareUpdateAvailability(updateStatus: SoftwareUpdateAvailability) {
+        val currentState = _uiState.value
+        if (currentState is WooPosSettingsHardwareCardReaderUiState.Connected) {
+            _uiState.value = currentState.copy(
+                isSoftwareUpdateAvailable = updateStatus is SoftwareUpdateAvailability.Available
+            )
+        }
+    }
+
+    private fun cancelSoftwareUpdateJob() {
+        if (::softwareUpdateAvailabilityJob.isInitialized) {
+            softwareUpdateAvailabilityJob.cancel()
+        }
+    }
+
+    private fun observeCardReaderStatus() {
+        viewModelScope.launch {
+            cardReaderFacade.readerStatus.collect { status ->
+                _uiState.value = when (status) {
+                    is CardReaderStatus.Connected -> {
+                        listenForSoftwareUpdateAvailability()
+                        WooPosSettingsHardwareCardReaderUiState.Connected(
+                            readerName = status.cardReader.id ?: resourceProvider.getString(
+                                R.string.woopos_settings_card_reader_unknown_reader
+                            ),
+                            batteryLevel = status.cardReader.currentBatteryLevel,
+                            firmwareVersion = status.cardReader.firmwareVersion,
+                            isSoftwareUpdateAvailable = false
+                        )
+                    }
+
+                    is CardReaderStatus.Connecting,
+                    is CardReaderStatus.NotConnected -> {
+                        cancelSoftwareUpdateJob()
+                        WooPosSettingsHardwareCardReaderUiState.Disconnected
+                    }
+                }
+            }
         }
     }
 }
