@@ -404,7 +404,9 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
                 );
             } else {
                 AppLog.e(T.API, "onFetchedConnectSiteInfo has error: " + event.error.message);
-                if (NetworkUtils.isNetworkAvailable(requireContext())) {
+                if (event.error.type == SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR) {
+                    showError(R.string.error_wordpress_com_connectivity);
+                } else if (NetworkUtils.isNetworkAvailable(requireContext())) {
                     showError(R.string.invalid_site_url_message);
                 } else {
                     showError(R.string.error_generic_network);

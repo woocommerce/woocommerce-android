@@ -543,6 +543,30 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
+    suspend fun fetchPosSettings(site: SiteModel): WooResult<Map<String, String>> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchPosSettings") {
+            val response = systemRestClient.fetchPosSettings(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(
+                        T.API,
+                        "Failed to fetch POS settings for site ${site.siteId}"
+                    )
+                    WooResult(response.error)
+                }
+                response.result != null -> {
+                    val settingsMap = response.result.associate { setting ->
+                        setting.id to (setting.value ?: setting.default ?: "")
+                    }
+                    WooResult(settingsMap)
+                }
+                else -> {
+                    WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                }
+            }
+        }
+    }
+
     /**
      * Formats currency amounts for display based on the site's settings and the device locale.
      *

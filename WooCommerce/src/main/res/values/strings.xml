@@ -2774,6 +2774,7 @@
     <string name="username_or_password_incorrect">The username or password you entered is incorrect</string>
     <string name="cannot_add_duplicate_site">This site already exists in the app, you can\'t add it.</string>
     <string name="duplicate_site_detected">A duplicate site has been detected.</string>
+    <string name="error_wordpress_com_connectivity">We\'re having trouble reaching WordPress.com. Please check your internet connection settings or try switching networks.</string>
     <string name="error_fetch_my_profile">Couldn\'t retrieve your profile</string>
     <string name="error_disabled_apis">Could not fetch settings: Some APIs are unavailable for this OAuth app ID + account combination.</string>
     <string name="login_to_to_connect_jetpack">Log in to the WordPress.com account you used to connect Jetpack.</string>
@@ -4555,6 +4556,15 @@
     <string name="woopos_scanning_setup_device_star_bsh_20b">Star BSH-20B</string>
     <string name="woopos_scanning_setup_device_netum_1228bc">Netum 1228BC</string>
     <string name="woopos_scanning_setup_device_other">Other</string>
+
+    <string name="woopos_settings_store_information_title">Store information</string>
+    <string name="woopos_settings_receipt_information_title">Receipt information</string>
+    <string name="woopos_settings_store_name_label">Store name</string>
+    <string name="woopos_settings_store_address_label">Address</string>
+    <string name="woopos_settings_store_phone_label">Phone</string>
+    <string name="woopos_settings_store_email_label">Email</string>
+    <string name="woopos_settings_refund_policy_label">Refund &amp; Returns Policy</string>
+    <string name="woopos_settings_store_not_set">Not set</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>

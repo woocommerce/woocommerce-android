@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
 import com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner.WooPosSettingsHardwareBarcodeScannerScreen
 import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailScreen
+import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
 @Composable
 fun WooPosSettingsDetailPaneScreen(
@@ -92,7 +93,7 @@ fun WooPosSettingsDetailPaneScreen(
                 }
 
                 is WooPosSettingsDetailDestination.Store.Overview -> {
-                    StoreDetailScreen()
+                    WooPosSettingsStoreScreen()
                 }
 
                 is WooPosSettingsDetailDestination.Help.Overview -> {
@@ -113,21 +114,6 @@ private fun CardReadersDetailScreen() {
     ) {
         WooPosText(
             text = stringResource(R.string.woopos_settings_card_reader_detail_title),
-            style = WooPosTypography.Heading
-        )
-    }
-}
-
-@Composable
-private fun StoreDetailScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WooPosSpacing.Medium.value),
-        contentAlignment = Alignment.Center
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_store_category),
             style = WooPosTypography.Heading
         )
     }
