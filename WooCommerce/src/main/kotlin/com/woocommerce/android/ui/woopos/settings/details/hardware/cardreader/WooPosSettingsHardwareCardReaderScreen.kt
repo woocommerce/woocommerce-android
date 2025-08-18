@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.BluetoothSearching
 import androidx.compose.material.icons.filled.Battery0Bar
 import androidx.compose.material.icons.filled.Battery1Bar
 import androidx.compose.material.icons.filled.Battery2Bar
@@ -21,18 +20,20 @@ import androidx.compose.material.icons.filled.Battery4Bar
 import androidx.compose.material.icons.filled.Battery5Bar
 import androidx.compose.material.icons.filled.Battery6Bar
 import androidx.compose.material.icons.filled.BatteryFull
-import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,17 +49,27 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun WooPosSettingsHardwareCardReaderScreen(
     viewModel: WooPosSettingsHardwareCardReaderViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.openUrl.collectLatest { url ->
+            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
+        }
+    }
 
     WooPosSettingsHardwareCardReaderContent(
         uiState = uiState,
         onConnectClicked = viewModel::onConnectClicked,
-        onDisconnectClicked = viewModel::onDisconnectClicked
+        onDisconnectClicked = viewModel::onDisconnectClicked,
+        onDocumentationClicked = viewModel::onDocumentationClicked
     )
 }
 
@@ -66,7 +77,8 @@ fun WooPosSettingsHardwareCardReaderScreen(
 private fun WooPosSettingsHardwareCardReaderContent(
     uiState: WooPosSettingsHardwareCardReaderUiState,
     onConnectClicked: () -> Unit,
-    onDisconnectClicked: () -> Unit
+    onDisconnectClicked: () -> Unit,
+    onDocumentationClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -79,6 +91,7 @@ private fun WooPosSettingsHardwareCardReaderContent(
             is WooPosSettingsHardwareCardReaderUiState.Connecting -> {
                 NotConnectedContent(
                     onConnectClicked = onConnectClicked,
+                    onDocumentationClicked = onDocumentationClicked,
                     isConnecting = true
                 )
             }
@@ -96,6 +109,7 @@ private fun WooPosSettingsHardwareCardReaderContent(
             is WooPosSettingsHardwareCardReaderUiState.Disconnected -> {
                 NotConnectedContent(
                     onConnectClicked = onConnectClicked,
+                    onDocumentationClicked = onDocumentationClicked,
                     isConnecting = false
                 )
             }
@@ -169,11 +183,19 @@ private fun ConnectedContent(
 @Composable
 private fun NotConnectedContent(
     onConnectClicked: () -> Unit,
+    onDocumentationClicked: () -> Unit,
     isConnecting: Boolean = false
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
-    ) {
+    Column {
+        WooPosSettingsDetailsMenuItem(
+            icon = Icons.Default.Description,
+            title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
+            subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
+            onClick = onDocumentationClicked
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -203,15 +225,7 @@ private fun NotConnectedContent(
             }
         }
 
-        WooPosSettingsDetailsMenuItem(
-            icon = if (isConnecting) Icons.AutoMirrored.Default.BluetoothSearching else Icons.Default.Bluetooth,
-            title = stringResource(R.string.woopos_settings_card_reader_status_title),
-            subtitle = if (isConnecting) {
-                stringResource(R.string.woopos_settings_card_reader_connecting)
-            } else {
-                stringResource(R.string.woopos_settings_card_reader_not_connected)
-            }
-        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         WooPosButton(
             modifier = Modifier.fillMaxWidth(),
@@ -271,7 +285,7 @@ private fun FirmwareMenuItem(
                 )
                 if (isSoftwareUpdateAvailable) {
                     WooPosText(
-                        text = "• Update available",
+                        text = stringResource(R.string.woopos_settings_card_reader_update_available),
                         style = WooPosTypography.BodySmall,
                         color = MaterialTheme.colorScheme.error,
                         fontWeight = FontWeight.Medium,
@@ -320,7 +334,8 @@ fun WooPosSettingsHardwareCardReaderScreenNotConnectedPreview() {
         WooPosSettingsHardwareCardReaderContent(
             uiState = WooPosSettingsHardwareCardReaderUiState.Disconnected,
             onConnectClicked = { },
-            onDisconnectClicked = { }
+            onDisconnectClicked = { },
+            onDocumentationClicked = { }
         )
     }
 }
@@ -337,7 +352,8 @@ fun WooPosSettingsHardwareCardReaderScreenConnectedPreview() {
                 isSoftwareUpdateAvailable = true
             ),
             onConnectClicked = { },
-            onDisconnectClicked = { }
+            onDisconnectClicked = { },
+            onDocumentationClicked = { }
         )
     }
 }
@@ -349,7 +365,8 @@ fun WooPosSettingsHardwareCardReaderScreenConnectingPreview() {
         WooPosSettingsHardwareCardReaderContent(
             uiState = WooPosSettingsHardwareCardReaderUiState.Connecting,
             onConnectClicked = { },
-            onDisconnectClicked = { }
+            onDisconnectClicked = { },
+            onDocumentationClicked = { }
         )
     }
 }
