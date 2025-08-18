@@ -4356,7 +4356,6 @@
     <string name="woopos_settings_card_reader_detail_title">Card Reader Settings</string>
     <string name="woopos_settings_card_reader_battery_title">Battery</string>
     <string name="woopos_settings_card_reader_firmware_title">Firmware</string>
-    <string name="woopos_settings_card_reader_status_title">Card Reader Status</string>
     <string name="woopos_settings_card_reader_unknown_reader">Unknown Reader</string>
     <string name="woopos_settings_card_reader_unknown_firmware">Unknown</string>
     <string name="woopos_settings_card_reader_update_button">Update</string>
