@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
+import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.parcelable
@@ -43,7 +44,8 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
         val flowType = intent.parcelable<FlowType>(FLOW_TYPE_KEY)!!
         setupNavGraph(navHostFragment, flowType)
-        observeResult(navHostFragment)
+        observeConnectionResult(navHostFragment)
+        observeUpdateResult(navHostFragment)
     }
 
     private fun setupTopAndBottomInsets() {
@@ -79,7 +81,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         )
     }
 
-    private fun observeResult(navHostFragment: NavHostFragment) {
+    private fun observeConnectionResult(navHostFragment: NavHostFragment) {
         navHostFragment.childFragmentManager.setFragmentResultListener(
             WOO_POS_CARD_PAYMENT_REQUEST_KEY,
             this
@@ -91,6 +93,15 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
                 else -> logResultListenerError(requestKey)
             }
+        }
+    }
+
+    private fun observeUpdateResult(navHostFragment: NavHostFragment) {
+        val navController = navHostFragment.navController
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Any>(
+            CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT
+        )?.observe(this) { _ ->
+            finish()
         }
     }
 
