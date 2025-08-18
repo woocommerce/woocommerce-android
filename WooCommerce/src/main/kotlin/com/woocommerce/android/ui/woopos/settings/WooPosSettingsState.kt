@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.woopos.settings
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 
 data class WooPosSettingsState(
-    val selectedCategory: WooPosSettingsCategory = WooPosSettingsCategory.HARDWARE,
-    val currentDestination: WooPosSettingsDetailDestination = selectedCategory.rootDestination
+    val selectedCategory: WooPosSettingsCategory = WooPosSettingsCategory.STORE,
+    val currentDestination: WooPosSettingsDetailDestination = selectedCategory.rootDestination,
+    val dialogState: WooPosHomeState.DialogState = WooPosHomeState.DialogState.Hidden
 ) {
     val canGoBack: Boolean
         get() = currentDestination.parentDestination != null
@@ -41,6 +43,14 @@ sealed class WooPosSettingsDetailDestination {
     sealed class Store : WooPosSettingsDetailDestination() {
         data object Overview : Store() {
             override val titleRes: Int = R.string.woopos_settings_store_category
+            override val parentDestination: WooPosSettingsDetailDestination? = null
+            override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
+        }
+    }
+
+    sealed class Help : WooPosSettingsDetailDestination() {
+        data object Overview : Help() {
+            override val titleRes: Int = R.string.woopos_get_support_title
             override val parentDestination: WooPosSettingsDetailDestination? = null
             override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
         }

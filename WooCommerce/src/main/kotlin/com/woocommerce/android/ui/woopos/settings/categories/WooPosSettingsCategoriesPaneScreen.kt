@@ -38,18 +38,36 @@ fun WooPosSettingsCategoriesPaneScreen(
     val state by viewModel.state.collectAsState()
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+        modifier = modifier.fillMaxSize()
     ) {
-        state.categories.forEach { item ->
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
+            state.scrollableCategories.forEach { item ->
+                CategoryItem(
+                    item = item,
+                    isSelected = item == selectedCategory,
+                    onClick = {
+                        onCategorySelected(item)
+                    },
+                    modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
+                )
+            }
+        }
+
+        state.fixedCategories.forEach { item ->
             CategoryItem(
                 item = item,
                 isSelected = item == selectedCategory,
                 onClick = {
                     onCategorySelected(item)
                 },
-                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
+                modifier = Modifier.padding(
+                    horizontal = WooPosSpacing.Medium.value,
+                    vertical = WooPosSpacing.Medium.value
+                )
             )
         }
     }

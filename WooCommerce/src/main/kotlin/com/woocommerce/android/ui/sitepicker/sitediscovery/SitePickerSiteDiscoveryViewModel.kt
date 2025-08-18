@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
@@ -192,8 +193,14 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                     else -> navigateBackToSitePicker()
                 }
             },
-            onFailure = {
-                inlineErrorFlow.value = R.string.invalid_site_url_message
+            onFailure = { exception ->
+                val errorMessage = when {
+                    exception is SitePickerRepository.FetchSiteInfoException &&
+                        exception.type == SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR ->
+                        R.string.error_wordpress_com_connectivity
+                    else -> R.string.invalid_site_url_message
+                }
+                inlineErrorFlow.value = errorMessage
             }
         )
     }

@@ -80,7 +80,7 @@ data class UpdateShipmentsResponse(
 /**
  * Alias for a mapping of shipment id (as String) to the list of items contained in each shipment.
  */
-typealias ShipmentMap = Map<String, List<Item>>
+typealias ShipmentMap = Map<String, List<ShipmentItem>>
 
 data class ConfigDTO(
     @SerializedName("shipments")
@@ -103,7 +103,7 @@ data class StoredDataDTO(
     val selectedDestination: Map<String, DestinationAddressDTO>,
 )
 
-data class Item(@SerializedName("id") val id: Long?, @SerializedName("subItems") val subItems: List<String>?)
+data class ShipmentItem(@SerializedName("id") val id: Long?, @SerializedName("subItems") val subItems: List<String>?)
 
 data class GetShippingLabelResponse(
     @SerializedName("success") val success: Boolean? = null,

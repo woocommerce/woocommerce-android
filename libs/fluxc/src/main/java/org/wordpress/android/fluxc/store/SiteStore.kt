@@ -766,7 +766,8 @@ open class SiteStore @Inject constructor(
         UNAUTHORIZED,
         NOT_AUTHENTICATED,
         GENERIC_ERROR,
-        WPCOM_SITE_SUSPENDED
+        WPCOM_SITE_SUSPENDED,
+        WORDPRESS_COM_CONNECTIVITY_ERROR
     }
 
     enum class AllDomainsErrorType {
