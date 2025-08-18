@@ -78,12 +78,14 @@ import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabe
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
+import com.woocommerce.android.ui.orders.details.views.OrderDetailWooShippingShipmentListView
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
@@ -450,6 +452,9 @@ class OrderDetailFragment :
         viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
             showShipmentTrackings(it)
         }
+        viewModel.wooShippingShipments.observe(viewLifecycleOwner) {
+            updateWooShippingShipments(it)
+        }
         viewModel.shippingLabels.observe(viewLifecycleOwner) {
             lifecycleScope.launch {
                 showShippingLabels(it, viewModel.awaitOrder().currency, viewModel.isRevampWooShippingEnabled)
@@ -806,6 +811,21 @@ class OrderDetailFragment :
                 viewModel.onDeleteShipmentTrackingClicked(it)
             }
         )
+    }
+
+    private fun updateWooShippingShipments(
+        shipments: List<ShipmentUIModel>
+    ) {
+        with(binding.orderDetailWooShippingShipmentList) {
+            isVisible = shipments.isNotEmpty()
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                WooThemeWithBackground {
+                    OrderDetailWooShippingShipmentListView(shipments)
+                }
+            }
+        }
     }
 
     private fun showShippingLabels(
