@@ -120,3 +120,6 @@ google-upload-credentials.json
 # Junie AI Assistant
 .junie/
 /CLAUDE.md
+*.mp4
+.claude/
+.gitignore-check
