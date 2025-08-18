@@ -57,7 +57,9 @@ import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWit
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.GetShipments
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.fillProducts
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
@@ -113,6 +115,7 @@ class OrderDetailViewModel @Inject constructor(
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val shippingLabelRepository: WooShippingLabelRepository,
     private val eligibilityDataStore: WooShippingEligibilityDataStore,
+    private val getWooShippingShipments: GetShipments,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
     private val giftCardRepository: GiftCardRepository,
@@ -154,6 +157,10 @@ class OrderDetailViewModel @Inject constructor(
     private val _shipmentTrackings = MutableLiveData<List<OrderShipmentTracking>>()
     val shipmentTrackings: LiveData<List<OrderShipmentTracking>> = _shipmentTrackings
 
+    private val _wooShippingShipments = MutableLiveData<List<ShipmentUIModel>>()
+    val wooShippingShipments: LiveData<List<ShipmentUIModel>> = _wooShippingShipments
+
+    // Legacy Woo Tax shipping labels
     private val _shippingLabels = MutableLiveData<List<ShippingLabelModel>>()
     val shippingLabels: LiveData<List<ShippingLabelModel>> = _shippingLabels
 
@@ -904,22 +911,30 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onGiftCardsFetched()
     }
 
+    private suspend fun loadWooShippingShipments(): ListInfo<ShipmentUIModel> {
+        if (!isRevampWooShippingEnabled) return ListInfo(isVisible = false)
+
+        return ListInfo(isVisible = true, list = getWooShippingShipments(awaitOrder()))
+    }
+
     private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabelModel> {
-        if (isRevampWooShippingEnabled) {
-            shippingLabelRepository.getPurchasedLabels(navArgs.orderId)
-        } else {
-            orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
-                .map { it.toShippingLabelModel() }
-        }.fillProducts(awaitOrder().items)
+        if (isRevampWooShippingEnabled)  return ListInfo(isVisible = false)
+        orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
+            .map { it.toShippingLabelModel() }
+            .fillProducts(awaitOrder().items)
             .whenNotNullNorEmpty { return ListInfo(list = it) }
+
         return ListInfo(isVisible = false)
     }
 
     private suspend fun displayProductAndShippingDetails() {
+        val wooShippingShipments = loadWooShippingShipments()
         val shippingLabels = loadOrderShippingLabels()
         val shipmentTracking = loadShipmentTracking(shippingLabels)
         val orderRefunds = loadOrderRefunds()
         val orderProducts = loadOrderProducts(orderRefunds)
+
+        _wooShippingShipments.value = wooShippingShipments.let { if (it.isVisible) it.list else emptyList() }
 
         if (shippingLabels.isVisible) {
             _shippingLabels.value = shippingLabels.list
