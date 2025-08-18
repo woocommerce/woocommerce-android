@@ -243,7 +243,7 @@ object ShippingLabelSampleData {
         label = if (purchased) {
             ShippingLabelModel(
                 labelId = 0L,
-                tracking = "",
+                tracking = "TrackingNumber123",
                 refundableAmount = BigDecimal.ZERO,
                 status = ShippingLabelStatus.PURCHASED,
                 created = null,

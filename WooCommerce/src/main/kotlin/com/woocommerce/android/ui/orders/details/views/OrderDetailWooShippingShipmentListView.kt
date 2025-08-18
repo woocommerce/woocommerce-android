@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details.views
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -44,6 +46,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 
 @Composable
 fun OrderDetailWooShippingShipmentListView(
@@ -125,11 +128,18 @@ private fun ShipmentItem(
         HorizontalDivider(Modifier.padding(start = 16.dp))
 
         shipment.items.takeIf { it.isNotEmpty() }?.let {
-            ShipmentItems(it)
+            ShipmentItemsRow(
+                items = it,
+                modifier = Modifier.fillMaxWidth()
+            )
             HorizontalDivider(Modifier.padding(start = 16.dp))
         }
 
         if (shipment.purchased && shipment.label != null) {
+            LabelTrackingRow(shipment.label)
+
+            HorizontalDivider(Modifier.padding(start = 16.dp))
+
             WCOutlinedButton(
                 text = stringResource(R.string.orderdetail_shipping_label_item_view_purchased_shipping_label),
                 onClick = { TODO() },
@@ -150,7 +160,7 @@ private fun ShipmentItem(
 }
 
 @Composable
-fun ShipmentItems(
+private fun ShipmentItemsRow(
     items: List<ShippableItemModel>,
     modifier: Modifier = Modifier
 ) {
@@ -159,7 +169,6 @@ fun ShipmentItems(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
-            .fillMaxWidth()
             .clickable(onClick = { isDialogShown = true })
             .padding(16.dp)
     ) {
@@ -223,6 +232,49 @@ fun ShipmentItems(
             }
         }
     }
+}
+
+@Composable
+private fun LabelTrackingRow(
+    label: ShippingLabelModel,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .padding(16.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.LocationOn,
+            tint = MaterialTheme.colorScheme.primary,
+            contentDescription = null
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = stringResource(R.string.order_shipment_tracking_number),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = label.tracking,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Light
+            )
+        }
+        Spacer(Modifier.weight(1f))
+        WCOverflowMenu(
+            items = TrackingMenuItem.entries,
+            onSelected = { TODO() },
+            mapper = {
+                stringResource(it.title)
+            }
+        )
+    }
+}
+
+private enum class TrackingMenuItem(@StringRes val title: Int) {
+    COPY(R.string.orderdetail_copy_tracking_number),
+    TRACK(R.string.orderdetail_track_shipment)
 }
 
 @LightDarkThemePreviews
