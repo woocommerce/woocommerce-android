@@ -42,7 +42,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -86,13 +85,6 @@ private fun WooPosSettingsHardwareCardReaderContent(
             .verticalScroll(rememberScrollState()),
     ) {
         when (uiState) {
-            is WooPosSettingsHardwareCardReaderUiState.Connecting -> {
-                NotConnectedContent(
-                    onConnectClicked = onConnectClicked,
-                    onDocumentationClicked = onDocumentationClicked,
-                    isConnecting = true
-                )
-            }
             is WooPosSettingsHardwareCardReaderUiState.Connected -> {
                 ConnectedContent(
                     readerName = uiState.readerName,
@@ -108,7 +100,6 @@ private fun WooPosSettingsHardwareCardReaderContent(
                 NotConnectedContent(
                     onConnectClicked = onConnectClicked,
                     onDocumentationClicked = onDocumentationClicked,
-                    isConnecting = false
                 )
             }
         }
@@ -184,7 +175,6 @@ private fun ConnectedContent(
 private fun NotConnectedContent(
     onConnectClicked: () -> Unit,
     onDocumentationClicked: () -> Unit,
-    isConnecting: Boolean = false
 ) {
     Column {
         Card(
@@ -223,7 +213,6 @@ private fun NotConnectedContent(
             modifier = Modifier.fillMaxWidth()
             .padding(horizontal = WooPosSpacing.Medium.value),
             text = stringResource(R.string.card_reader_details_not_connected_connect_button_label),
-            state = if (isConnecting) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
             onClick = onConnectClicked
         )
 
@@ -353,19 +342,6 @@ fun WooPosSettingsHardwareCardReaderScreenConnectedPreview() {
                 firmwareVersion = "1.2.3",
                 isSoftwareUpdateAvailable = true
             ),
-            onConnectClicked = { },
-            onDisconnectClicked = { },
-            onDocumentationClicked = { }
-        )
-    }
-}
-
-@WooPosPreview
-@Composable
-fun WooPosSettingsHardwareCardReaderScreenConnectingPreview() {
-    WooPosTheme {
-        WooPosSettingsHardwareCardReaderContent(
-            uiState = WooPosSettingsHardwareCardReaderUiState.Connecting,
             onConnectClicked = { },
             onDisconnectClicked = { },
             onDocumentationClicked = { }

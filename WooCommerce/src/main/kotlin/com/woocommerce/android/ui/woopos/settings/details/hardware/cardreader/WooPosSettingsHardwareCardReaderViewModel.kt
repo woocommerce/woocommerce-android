@@ -52,7 +52,8 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
                         batteryLevel = status.cardReader.currentBatteryLevel,
                         firmwareVersion = status.cardReader.firmwareVersion
                     )
-                    is CardReaderStatus.Connecting -> WooPosSettingsHardwareCardReaderUiState.Connecting
+
+                    is CardReaderStatus.Connecting,
                     is CardReaderStatus.NotConnected -> WooPosSettingsHardwareCardReaderUiState.Disconnected
                 }
             }
