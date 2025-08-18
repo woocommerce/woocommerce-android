@@ -13,28 +13,35 @@ enum class WooPosSettingsCategory(
     @StringRes val titleRes: Int,
     @StringRes val subtitleRes: Int,
     val icon: ImageVector,
-    val rootDestination: WooPosSettingsDetailDestination
+    val rootDestination: WooPosSettingsDetailDestination,
+    val isFixedAtBottom: Boolean = false
 ) {
-    HARDWARE(
-        R.string.woopos_settings_hardware_category,
-        R.string.woopos_settings_hardware_category_subtitle,
-        Icons.Default.Hardware,
-        WooPosSettingsDetailDestination.Hardware.Overview
-    ),
     STORE(
         R.string.woopos_settings_store_category,
         R.string.woopos_settings_store_category_subtitle,
         Icons.Default.Store,
         WooPosSettingsDetailDestination.Store.Overview
     ),
+    HARDWARE(
+        R.string.woopos_settings_hardware_category,
+        R.string.woopos_settings_hardware_category_subtitle,
+        Icons.Default.Hardware,
+        WooPosSettingsDetailDestination.Hardware.Overview
+    ),
     HELP(
         R.string.woopos_get_support_title,
         R.string.woopos_settings_help_category_subtitle,
         Icons.AutoMirrored.Filled.Help,
-        WooPosSettingsDetailDestination.Help.Overview
+        WooPosSettingsDetailDestination.Help.Overview,
+        isFixedAtBottom = true
     )
 }
 
 data class WooPosSettingsCategoriesState(
     val categories: List<WooPosSettingsCategory> = WooPosSettingsCategory.entries
-)
+) {
+    val scrollableCategories: List<WooPosSettingsCategory>
+        get() = categories.filter { !it.isFixedAtBottom }
+    val fixedCategories: List<WooPosSettingsCategory>
+        get() = categories.filter { it.isFixedAtBottom }
+}

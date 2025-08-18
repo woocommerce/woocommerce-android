@@ -26,16 +26,22 @@ fun WooPosSettingsDetailsMenuItem(
     icon: ImageVector,
     title: String,
     subtitle: String,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = ripple()
-            ) { onClick() }
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = ripple()
+                    ) { onClick() }
+                } else {
+                    Modifier
+                }
+            )
             .padding(WooPosSpacing.Medium.value),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
