@@ -31,8 +31,12 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
 
-    private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
-    private val softwareUpdateFlow = MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
+    private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(
+        CardReaderStatus.NotConnected()
+    )
+    private val softwareUpdateFlow = MutableStateFlow<SoftwareUpdateAvailability>(
+        SoftwareUpdateAvailability.NotAvailable
+    )
 
     @Test
     fun `given disconnected reader, when init, then shows disconnected state`() = runTest {
@@ -46,7 +50,9 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.uiState.value).isInstanceOf(WooPosSettingsHardwareCardReaderUiState.Disconnected::class.java)
+        assertThat(viewModel.uiState.value).isInstanceOf(
+            WooPosSettingsHardwareCardReaderUiState.Disconnected::class.java
+        )
     }
 
     @Test
@@ -59,7 +65,6 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         }
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
-        
         // WHEN
         val viewModel = createViewModel()
         readerStatusFlow.value = CardReaderStatus.Connected(mockReader)
