@@ -83,9 +83,7 @@ private fun WooPosSettingsHardwareCardReaderContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(WooPosSpacing.Medium.value),
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+            .verticalScroll(rememberScrollState()),
     ) {
         when (uiState) {
             is WooPosSettingsHardwareCardReaderUiState.Connecting -> {
@@ -127,7 +125,8 @@ private fun ConnectedContent(
     onDisconnectClicked: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = WooPosSpacing.Medium.value),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
@@ -174,7 +173,8 @@ private fun ConnectedContent(
     Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
     WooPosOutlinedButton(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = WooPosSpacing.Medium.value),
         text = stringResource(R.string.card_reader_detail_connected_disconnect_reader),
         onClick = onDisconnectClicked
     )
@@ -197,7 +197,8 @@ private fun NotConnectedContent(
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = WooPosSpacing.Medium.value),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             )
@@ -228,7 +229,8 @@ private fun NotConnectedContent(
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         WooPosButton(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = WooPosSpacing.Medium.value),
             text = stringResource(R.string.card_reader_details_not_connected_connect_button_label),
             state = if (isConnecting) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
             onClick = onConnectClicked
