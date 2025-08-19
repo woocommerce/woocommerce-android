@@ -55,6 +55,7 @@ fun OrderDetailWooShippingShipmentListView(
     shipments: List<ShipmentUIModel>,
     onCreateShippingLabelClicked: (shipmentId: Int?) -> Unit,
     onViewShippingLabelClicked: (ShippingLabelModel) -> Unit,
+    onRequestRefundClicked: (labelId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -71,6 +72,7 @@ fun OrderDetailWooShippingShipmentListView(
                 shipments = shipments,
                 onCreateShippingLabelClicked = onCreateShippingLabelClicked,
                 onViewShippingLabelClicked = onViewShippingLabelClicked,
+                onRequestRefundClicked = onRequestRefundClicked,
             )
         }
     }
@@ -81,6 +83,7 @@ private fun ShipmentList(
     shipments: List<ShipmentUIModel>,
     onCreateShippingLabelClicked: (shipmentId: Int?) -> Unit,
     onViewShippingLabelClicked: (ShippingLabelModel) -> Unit,
+    onRequestRefundClicked: (labelId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -92,6 +95,7 @@ private fun ShipmentList(
                 shipmentsSize = shipments.size,
                 onCreateShippingLabelClicked = onCreateShippingLabelClicked,
                 onViewShippingLabelClicked = onViewShippingLabelClicked,
+                onRequestRefundClicked = onRequestRefundClicked,
             )
             HorizontalDivider()
         }
@@ -104,6 +108,7 @@ private fun ShipmentItem(
     shipmentsSize: Int,
     onCreateShippingLabelClicked: (shipmentId: Int?) -> Unit,
     onViewShippingLabelClicked: (ShippingLabelModel) -> Unit,
+    onRequestRefundClicked: (labelId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -123,7 +128,7 @@ private fun ShipmentItem(
                 fontWeight = FontWeight.SemiBold
             )
 
-            if (shipment.purchased) {
+            if (shipment.purchased && shipment.label != null) {
                 Icon(
                     modifier = Modifier.size(16.dp),
                     painter = painterResource(R.drawable.ic_progress_circle_complete),
@@ -134,8 +139,8 @@ private fun ShipmentItem(
                 Spacer(Modifier.weight(1f))
 
                 WCOverflowMenu(
-                    items = emptyList<String>(),
-                    onSelected = {}
+                    items = listOf(stringResource(R.string.orderdetail_shipping_label_request_refund)),
+                    onSelected = { onRequestRefundClicked(shipment.label.labelId) },
                 )
             }
         }
@@ -314,6 +319,7 @@ private fun OrderDetailWooShippingShipmentListViewPreview() {
             shipments = shipments,
             onCreateShippingLabelClicked = {},
             onViewShippingLabelClicked = {},
+            onRequestRefundClicked = {}
         )
     }
 }

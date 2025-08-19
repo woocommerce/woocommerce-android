@@ -826,6 +826,7 @@ class OrderDetailFragment :
                         shipments = shipments,
                         onCreateShippingLabelClicked = viewModel::onCreateShippingLabelButtonTapped,
                         onViewShippingLabelClicked = viewModel::onViewShippingLabelClicked,
+                        onRequestRefundClicked = viewModel::onRefundShippingLabelClick
                     )
                 }
             }
