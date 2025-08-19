@@ -822,7 +822,11 @@ class OrderDetailFragment :
 
             setContent {
                 WooThemeWithBackground {
-                    OrderDetailWooShippingShipmentListView(shipments)
+                    OrderDetailWooShippingShipmentListView(
+                        shipments = shipments,
+                        onCreateShippingLabelClicked = viewModel::onCreateShippingLabelButtonTapped,
+                        onViewShippingLabelClicked = viewModel::onViewShippingLabelClicked,
+                    )
                 }
             }
         }

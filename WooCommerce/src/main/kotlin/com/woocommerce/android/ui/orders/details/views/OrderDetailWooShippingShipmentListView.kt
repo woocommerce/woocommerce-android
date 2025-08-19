@@ -53,6 +53,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelM
 @Composable
 fun OrderDetailWooShippingShipmentListView(
     shipments: List<ShipmentUIModel>,
+    onCreateShippingLabelClicked: (shipmentId: Int?) -> Unit,
+    onViewShippingLabelClicked: (ShippingLabelModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -65,7 +67,11 @@ fun OrderDetailWooShippingShipmentListView(
         Card(
             shape = RectangleShape
         ) {
-            ShipmentList(shipments = shipments)
+            ShipmentList(
+                shipments = shipments,
+                onCreateShippingLabelClicked = onCreateShippingLabelClicked,
+                onViewShippingLabelClicked = onViewShippingLabelClicked,
+            )
         }
     }
 }
@@ -73,6 +79,8 @@ fun OrderDetailWooShippingShipmentListView(
 @Composable
 private fun ShipmentList(
     shipments: List<ShipmentUIModel>,
+    onCreateShippingLabelClicked: (shipmentId: Int?) -> Unit,
+    onViewShippingLabelClicked: (ShippingLabelModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -82,6 +90,8 @@ private fun ShipmentList(
             ShipmentItem(
                 shipment = shipment,
                 shipmentsSize = shipments.size,
+                onCreateShippingLabelClicked = onCreateShippingLabelClicked,
+                onViewShippingLabelClicked = onViewShippingLabelClicked,
             )
             HorizontalDivider()
         }
@@ -92,6 +102,8 @@ private fun ShipmentList(
 private fun ShipmentItem(
     shipment: ShipmentUIModel,
     shipmentsSize: Int,
+    onCreateShippingLabelClicked: (shipmentId: Int?) -> Unit,
+    onViewShippingLabelClicked: (ShippingLabelModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -144,7 +156,7 @@ private fun ShipmentItem(
 
             WCOutlinedButton(
                 text = stringResource(R.string.orderdetail_shipping_label_item_view_purchased_shipping_label),
-                onClick = { TODO() },
+                onClick = { onViewShippingLabelClicked(shipment.label) },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
@@ -152,7 +164,7 @@ private fun ShipmentItem(
         } else {
             WCColoredButton(
                 text = stringResource(R.string.orderdetail_shipping_label_create_shipping_label),
-                onClick = { TODO() },
+                onClick = { onCreateShippingLabelClicked(shipment.localId.toIntOrNull()) },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
@@ -296,6 +308,10 @@ private fun OrderDetailWooShippingShipmentListViewPreview() {
     }
 
     WooThemeWithBackground {
-        OrderDetailWooShippingShipmentListView(shipments = shipments)
+        OrderDetailWooShippingShipmentListView(
+            shipments = shipments,
+            onCreateShippingLabelClicked = {},
+            onViewShippingLabelClicked = {},
+        )
     }
 }
