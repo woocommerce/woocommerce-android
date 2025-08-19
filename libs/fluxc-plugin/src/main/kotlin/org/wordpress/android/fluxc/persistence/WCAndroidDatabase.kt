@@ -228,7 +228,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
     internal abstract val customerDao: CustomerDao
     internal abstract val productsDao: ProductsDao
-    abstract val posProductsDao: PosProductsDao
+    internal abstract val posProductsDao: PosProductsDao
     internal abstract val productVariationsDao: ProductVariationsDao
     internal abstract val productCategoriesDao: ProductCategoriesDao
     internal abstract val productTagsDao: ProductTagsDao
