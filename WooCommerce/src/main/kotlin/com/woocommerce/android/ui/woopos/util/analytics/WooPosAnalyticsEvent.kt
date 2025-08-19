@@ -104,15 +104,16 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data class TabVisibilityChecked(val isVisible: Boolean) : Event() {
+        data class TabVisibilityChecked(val isVisible: Result<Boolean>) : Event() {
             override val name: String = "tab_visibility_checked"
 
             init {
-                addProperties(
-                    mapOf(
-                        "is_visible" to isVisible.toString()
-                    )
+                val value: String = isVisible.fold(
+                    onSuccess = { it.toString() },
+                    onFailure = { "unknown" }
                 )
+
+                addProperties(mapOf("is_visible" to value))
             }
         }
 
@@ -823,6 +824,7 @@ internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): Str
         WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> "feature_switch_disabled"
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> "store_currency"
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
+        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
     }
 }
