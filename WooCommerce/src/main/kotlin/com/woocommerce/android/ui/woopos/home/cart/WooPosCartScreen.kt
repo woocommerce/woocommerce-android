@@ -249,7 +249,7 @@ private fun EmptyStateSection(
         Spacer(
             modifier = Modifier.height(
                 if (action != null) {
-                    WooPosSpacing.Medium.value.toAdaptivePadding()
+                    WooPosSpacing.Small.value.toAdaptivePadding()
                 } else {
                     WooPosSpacing.XLarge.value.toAdaptivePadding()
                 }
@@ -258,7 +258,7 @@ private fun EmptyStateSection(
 
         WooPosText(
             text = text,
-            style = WooPosTypography.Body,
+            style = WooPosTypography.BodyMedium,
             color = WooPosTheme.colors.onSurfaceVariantLowest,
             textAlign = TextAlign.Center
         )

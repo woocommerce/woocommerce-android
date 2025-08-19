@@ -117,7 +117,9 @@ private fun SettingsCategoriesToolbar(
     )
 }
 
-private fun buildNavigationPath(targetDestination: WooPosSettingsDetailDestination): List<WooPosSettingsDetailDestination> {
+private fun buildNavigationPath(
+    targetDestination: WooPosSettingsDetailDestination
+): List<WooPosSettingsDetailDestination> {
     val path = mutableListOf<WooPosSettingsDetailDestination>()
     var current: WooPosSettingsDetailDestination? = targetDestination
 
