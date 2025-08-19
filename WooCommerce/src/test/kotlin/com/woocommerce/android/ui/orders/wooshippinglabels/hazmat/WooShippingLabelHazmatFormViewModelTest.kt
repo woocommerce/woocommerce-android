@@ -190,4 +190,43 @@ class WooShippingLabelHazmatFormViewModelTest : BaseUnitTest() {
             // Then
             assertThat(capturedEvent?.selectedCategory).isNull()
         }
+
+    @Test
+    fun `when contains hazmat is checked and no category selected, then select category button is visible`() =
+        testBlocking {
+            // Given
+            var capturedViewState: WooShippingLabelHazmatFormViewModel.ViewState? = null
+            viewModel.viewState.observeForever {
+                capturedViewState = it
+            }
+
+            // When
+            viewModel.onContainsHazmatChanged(true)
+
+            // Then
+            assertThat(capturedViewState?.isSelectCategoryButtonVisible).isTrue()
+        }
+
+    @Test
+    fun `when contains hazmat is not checked or a category is selected, then select category button is not visible`() =
+        testBlocking {
+            // Given
+            var capturedViewState: WooShippingLabelHazmatFormViewModel.ViewState? = null
+            viewModel.viewState.observeForever {
+                capturedViewState = it
+            }
+
+            // When
+            viewModel.onContainsHazmatChanged(false)
+
+            // Then
+            assertThat(capturedViewState?.isSelectCategoryButtonVisible).isFalse()
+
+            // When
+            viewModel.onContainsHazmatChanged(true)
+            viewModel.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_1)
+
+            // Then
+            assertThat(capturedViewState?.isSelectCategoryButtonVisible).isFalse()
+        }
 }
