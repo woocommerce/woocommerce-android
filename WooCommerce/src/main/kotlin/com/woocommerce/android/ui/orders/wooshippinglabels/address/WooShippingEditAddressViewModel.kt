@@ -18,8 +18,6 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.NormalizeAddressException.Companion.ERROR_ADDRESS
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.NormalizeAddressException.Companion.ERROR_GENERAL
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.NormalizeAddressException.Companion.UNKNOWN_ERROR
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.UpdateDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.GetAcceptedOriginCountries
@@ -106,11 +104,15 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private val nameValidatedFlow = snapshotFlow { name }.combine(snapshotFlow { company }) { name, company ->
         Pair(name, company)
     }.transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValues ->
-        inputValues.copy(
-            first = inputValues.first.copy(
-                error = addressValidator.validateAtLeastOneOf(inputValues.first.value, inputValues.second.value)
+        if (inputValues.first.error == null) {
+            inputValues.copy(
+                first = inputValues.first.copy(
+                    error = addressValidator.validateAtLeastOneOf(inputValues.first.value, inputValues.second.value)
+                )
             )
-        )
+        } else {
+            inputValues
+        }
     }
 
     private val addressValidatedFlow = snapshotFlow { address }
@@ -124,17 +126,25 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
     private val cityValidatedFlow = snapshotFlow { city }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+            if (inputValue.error == null) {
+                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+            } else {
+                inputValue
+            }
         }
 
     private val postalCodeValidatedFlow = snapshotFlow { postalCode }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+            if (inputValue.error == null) {
+                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+            } else {
+                inputValue
+            }
         }
 
     private val emailValidatedFlow = snapshotFlow { email }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            if (inputValue.isRequired) {
+            if (inputValue.isRequired && inputValue.error == null) {
                 inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
             } else {
                 inputValue
@@ -143,7 +153,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
     private val phoneValidatedFlow = snapshotFlow { phone }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            if (inputValue.isRequired) {
+            if (inputValue.isRequired && inputValue.error == null) {
                 inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
             } else {
                 inputValue
@@ -539,11 +549,6 @@ class WooShippingEditAddressViewModel @Inject constructor(
                 },
                 onFailure = {
                     val normalizeAddressException = it as? NormalizeAddressException
-                    val errorType = when {
-                        normalizeAddressException?.errors?.contains(ERROR_ADDRESS) == true -> ERROR_ADDRESS
-                        normalizeAddressException?.errors?.contains(ERROR_GENERAL) == true -> ERROR_GENERAL
-                        else -> UNKNOWN_ERROR
-                    }
                     analyticsTracker.track(
                         stat = AnalyticsEvent.WCS_EDITING_ADDRESS_STEP,
                         properties = mapOf(
@@ -551,18 +556,31 @@ class WooShippingEditAddressViewModel @Inject constructor(
                             KEY_STATE to getAnalyticsVerificationValue(false),
                         ),
                         errorContext = WooShippingEditAddressViewModel::class.simpleName,
-                        errorType = errorType,
-                        errorDescription = normalizeAddressException?.addressError
-                            ?: normalizeAddressException?.generalError
+                        errorType = normalizeAddressException?.errors?.keys?.first() ?: UNKNOWN_ERROR,
+                        errorDescription = normalizeAddressException?.errors?.values?.first()
                     )
 
                     normalizeAddressException?.let { exception ->
+                        name = name.copy(error = exception.nameError)
+                        company = company.copy(error = exception.companyError)
                         address = address.copy(error = exception.addressError)
+                        city = city.copy(error = exception.cityError)
+                        postalCode = postalCode.copy(error = exception.postcodeError)
+                        email = email.copy(error = exception.emailError)
+                        phone = phone.copy(error = exception.phoneError)
                     }
 
                     addressValidationState.value = AddressValidationState.VerificationFailed(
                         editableAddress.copy(
-                            address = editableAddress.address.copy(error = normalizeAddressException?.addressError)
+                            name = editableAddress.name.copy(error = normalizeAddressException?.nameError),
+                            company = editableAddress.company.copy(error = normalizeAddressException?.companyError),
+                            address = editableAddress.address.copy(error = normalizeAddressException?.addressError),
+                            city = editableAddress.city.copy(error = normalizeAddressException?.cityError),
+                            postalCode = editableAddress.postalCode.copy(
+                                error = normalizeAddressException?.postcodeError
+                            ),
+                            email = editableAddress.email.copy(error = normalizeAddressException?.emailError),
+                            phone = editableAddress.phone.copy(error = normalizeAddressException?.phoneError)
                         ),
                         normalizeAddressException
                     )
