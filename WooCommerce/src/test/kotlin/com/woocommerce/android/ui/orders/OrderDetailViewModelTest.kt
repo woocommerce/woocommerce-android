@@ -606,7 +606,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
 
-
             val shippingLabels = ArrayList<ShippingLabelModel>()
             viewModel.shippingLabels.observeForever { shippingLabelModelList ->
                 shippingLabelModelList?.let { shippingLabels.addAll(it) }
@@ -632,7 +631,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-
 
             val shippingLabels = ArrayList<ShippingLabelModel>()
             viewModel.shippingLabels.observeForever { shippingLabelModelList ->
@@ -899,12 +897,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given using legacy shipping labels plugin, when order is eligible, then show shipping label creation button`() =
         testBlocking {
-            whenever(shippingLabelOnboardingRepository.shippingPluginSupport).doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            whenever(orderDetailRepository.getOrderShippingLabels(any())).doReturn(
-                OrderTestUtils.generateShippingLabels(
-                    2
-                )
-            )
+            whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
+                .doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+            whenever(orderDetailRepository.getOrderShippingLabels(any()))
+                .doReturn(OrderTestUtils.generateShippingLabels(2))
             whenever(orderDetailRepository.isOrderEligibleForSLCreation(any())).doReturn(true)
 
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())

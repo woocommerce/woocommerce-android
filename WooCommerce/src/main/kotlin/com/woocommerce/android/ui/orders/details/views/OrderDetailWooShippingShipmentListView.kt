@@ -89,7 +89,7 @@ private fun ShipmentList(
     Column(
         modifier = modifier
     ) {
-        shipments.forEachIndexed { index,  shipment ->
+        shipments.forEachIndexed { index, shipment ->
             ShipmentItem(
                 shipment = shipment,
                 index = index,

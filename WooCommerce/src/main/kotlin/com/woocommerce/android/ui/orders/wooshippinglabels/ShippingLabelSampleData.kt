@@ -207,6 +207,7 @@ object ShippingLabelSampleData {
         isCustomsFormAvailable = true
     )
 
+    @Suppress("LongMethod")
     fun getShippingLabelUIModel(purchased: Boolean = false) = ShipmentUIModel(
         localId = "1",
         remoteId = "1",

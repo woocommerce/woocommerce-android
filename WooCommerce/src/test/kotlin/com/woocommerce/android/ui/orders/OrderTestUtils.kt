@@ -233,16 +233,15 @@ object OrderTestUtils {
             lineItems = lineItems,
             refundTotal = -BigDecimal.TEN,
             feeLines = lineItems,
-            shippingLines =
-                "[{" +
-                    "\"id\":119,\n" +
-                    "   \"method_title\":\"Shipping\",\n" +
-                    "   \"method_id\":\"free_shipping\",\n" +
-                    "   \"instance_id\":\"0\",\n" +
-                    "   \"total\":\"30.00\",\n" +
-                    "   \"total_tax\":\"0.00\",\n" +
-                    "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
-                    "   \"meta_data\":[]}]",
+            shippingLines = "[{" +
+                "\"id\":119,\n" +
+                "   \"method_title\":\"Shipping\",\n" +
+                "   \"method_id\":\"free_shipping\",\n" +
+                "   \"instance_id\":\"0\",\n" +
+                "   \"total\":\"30.00\",\n" +
+                "   \"total_tax\":\"0.00\",\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
+                "   \"meta_data\":[]}]",
         )
     }
 
@@ -311,26 +310,25 @@ object OrderTestUtils {
                 "    \"price\":10\n" +
                 "  }]",
             refundTotal = -BigDecimal.TEN,
-            shippingLines =
-                "[{" +
-                    "\"id\":119,\n" +
-                    "   \"method_title\":\"Shipping\",\n" +
-                    "   \"method_id\":\"free_shipping\",\n" +
-                    "   \"instance_id\":\"0\",\n" +
-                    "   \"total\":\"30.00\",\n" +
-                    "   \"total_tax\":\"0.00\",\n" +
-                    "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
-                    "   \"meta_data\":[]},\n" +
-                    "{  " +
-                    "\"id\":120,\n" +
-                    "   \"method_title\":\"Shipping Two\",\n" +
-                    "   \"method_id\":\"\",\n" +
-                    "   \"instance_id\":\"0\",\n" +
-                    "   \"total\":\"20.00\",\n" +
-                    "   \"total_tax\":\"0.00\",\n" +
-                    "   \"taxes\":[{\"id\":1, \"total\":3}, {\"id\":2, \"total\":4}],\n" +
-                    "   \"meta_data\":[]\n" +
-                    "}]",
+            shippingLines = "[{" +
+                "\"id\":119,\n" +
+                "   \"method_title\":\"Shipping\",\n" +
+                "   \"method_id\":\"free_shipping\",\n" +
+                "   \"instance_id\":\"0\",\n" +
+                "   \"total\":\"30.00\",\n" +
+                "   \"total_tax\":\"0.00\",\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
+                "   \"meta_data\":[]},\n" +
+                "{  " +
+                "\"id\":120,\n" +
+                "   \"method_title\":\"Shipping Two\",\n" +
+                "   \"method_id\":\"\",\n" +
+                "   \"instance_id\":\"0\",\n" +
+                "   \"total\":\"20.00\",\n" +
+                "   \"total_tax\":\"0.00\",\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":3}, {\"id\":2, \"total\":4}],\n" +
+                "   \"meta_data\":[]\n" +
+                "}]",
         )
     }
 
