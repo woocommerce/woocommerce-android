@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -22,11 +24,19 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowCountrySelector
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowRestrictionTypeDialog
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class WooShippingCustomsFormFragment : BaseFragment() {
     private val viewModel: WooShippingCustomsFormViewModel by viewModels()
+    private val chromeTabUriHandler by lazy {
+        object : androidx.compose.ui.platform.UriHandler {
+            override fun openUri(uri: String) {
+                ChromeCustomTabUtils.launchUrl(requireContext(), uri)
+            }
+        }
+    }
 
     override fun getFragmentTitle() = getString(R.string.shipping_label_create_customs)
 
@@ -34,9 +44,11 @@ class WooShippingCustomsFormFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
-                    Surface {
-                        WooShippingCustomsFormScreen(viewModel = viewModel)
+                CompositionLocalProvider(LocalUriHandler provides chromeTabUriHandler) {
+                    WooThemeWithBackground {
+                        Surface {
+                            WooShippingCustomsFormScreen(viewModel = viewModel)
+                        }
                     }
                 }
             }

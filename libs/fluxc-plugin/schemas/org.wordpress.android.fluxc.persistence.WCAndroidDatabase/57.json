@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 57,
-    "identityHash": "da4b41517f758bf3c8d6ba9d61a7b986",
+    "identityHash": "921eb6a21bdb197e3c7a376b22a76d62",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -2302,171 +2302,6 @@
         "foreignKeys": []
       },
       {
-        "tableName": "PosProductEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `sku` TEXT NOT NULL, `globalUniqueId` TEXT NOT NULL, `type` TEXT NOT NULL, `price` TEXT NOT NULL, `downloadable` INTEGER NOT NULL, `images` TEXT NOT NULL, `attributes` TEXT NOT NULL, `parentId` INTEGER NOT NULL, `status` TEXT NOT NULL, `regularPrice` TEXT NOT NULL, `salePrice` TEXT NOT NULL, `onSale` INTEGER NOT NULL, `description` TEXT NOT NULL, `shortDescription` TEXT NOT NULL, `manageStock` INTEGER NOT NULL, `stockQuantity` REAL NOT NULL, `stockStatus` TEXT NOT NULL, `backordersAllowed` INTEGER NOT NULL, `backordered` INTEGER NOT NULL, `categories` TEXT NOT NULL, `tags` TEXT NOT NULL, `dateModified` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteId`))",
-        "fields": [
-          {
-            "fieldPath": "localSiteId",
-            "columnName": "localSiteId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "remoteId",
-            "columnName": "remoteId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "sku",
-            "columnName": "sku",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "globalUniqueId",
-            "columnName": "globalUniqueId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "type",
-            "columnName": "type",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "price",
-            "columnName": "price",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "downloadable",
-            "columnName": "downloadable",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "images",
-            "columnName": "images",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "attributes",
-            "columnName": "attributes",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "parentId",
-            "columnName": "parentId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "status",
-            "columnName": "status",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "regularPrice",
-            "columnName": "regularPrice",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "salePrice",
-            "columnName": "salePrice",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "onSale",
-            "columnName": "onSale",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "description",
-            "columnName": "description",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "shortDescription",
-            "columnName": "shortDescription",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "manageStock",
-            "columnName": "manageStock",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "stockQuantity",
-            "columnName": "stockQuantity",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "stockStatus",
-            "columnName": "stockStatus",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "backordersAllowed",
-            "columnName": "backordersAllowed",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "backordered",
-            "columnName": "backordered",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "categories",
-            "columnName": "categories",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "tags",
-            "columnName": "tags",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dateModified",
-            "columnName": "dateModified",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "localSiteId",
-            "remoteId"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
         "tableName": "ProductCategoryEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteCategoryId` INTEGER NOT NULL, `name` TEXT NOT NULL, `slug` TEXT NOT NULL, `parent` INTEGER NOT NULL, PRIMARY KEY(`localSiteId`, `remoteCategoryId`))",
         "fields": [
@@ -3781,12 +3616,69 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "GlobalAttributeEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `slug` TEXT NOT NULL, `type` TEXT NOT NULL, `orderBy` TEXT NOT NULL, `hasArchives` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `remoteId`))",
+        "fields": [
+          {
+            "fieldPath": "siteId",
+            "columnName": "siteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remoteId",
+            "columnName": "remoteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "slug",
+            "columnName": "slug",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderBy",
+            "columnName": "orderBy",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasArchives",
+            "columnName": "hasArchives",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "siteId",
+            "remoteId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'da4b41517f758bf3c8d6ba9d61a7b986')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '921eb6a21bdb197e3c7a376b22a76d62')"
     ]
   }
 }

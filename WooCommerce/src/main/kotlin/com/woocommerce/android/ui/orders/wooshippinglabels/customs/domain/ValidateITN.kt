@@ -23,7 +23,7 @@ class ValidateITN @Inject constructor(
     }
 
     private val List<CustomsItem>.totalValue: BigDecimal
-        get() = this.sumOf { it.value * it.quantity.toBigDecimal() }
+        get() = this.sumOf { it.totalValue }
 
     private val CustomsData.classesAbove2500: Map<String, List<CustomsItem>>
         get() = this.items.filter {

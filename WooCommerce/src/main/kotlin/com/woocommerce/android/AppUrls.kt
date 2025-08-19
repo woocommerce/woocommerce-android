@@ -60,7 +60,7 @@ object AppUrls {
         "https://woocommerce.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"
     const val SHIPPING_LABEL_CUSTOMS_ITN = "https://pe.usps.com/text/imm/immc5_010.htm"
     const val SHIPPING_LABEL_CUSTOMS_HS_TARIFF_NUMBER =
-        "https://woocommerce.com/document/woocommerce-shipping-and-tax/woocommerce-shipping/#section-29"
+        "https://woocommerce.com/document/woocommerce-shipping-and-tax/woocommerce-shipping/#section-35"
 
     const val WPCOM_ADD_PAYMENT_METHOD = "https://wordpress.com/me/purchases/add-payment-method"
     const val FETCH_PAYMENT_METHOD_URL_PATH = "me/payment-methods"
