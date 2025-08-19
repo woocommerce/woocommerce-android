@@ -228,32 +228,24 @@ private fun EmptyStateSection(
     icon: ImageVector,
     iconContentDescription: String? = null,
     text: String,
-    action: (@Composable () -> Unit)? = null
+    action: (() -> Unit)? = null
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
             imageVector = icon,
             contentDescription = iconContentDescription,
             modifier = Modifier
-                .size(66.dp)
+                .size(56.dp)
                 .let { modifier ->
                     iconContentDescription?.let {
                         modifier.semantics { contentDescription = it }
                     } ?: modifier
                 },
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3F)
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4F)
         )
 
         Spacer(
-            modifier = Modifier.height(
-                if (action != null) {
-                    WooPosSpacing.Small.value.toAdaptivePadding()
-                } else {
-                    WooPosSpacing.XLarge.value.toAdaptivePadding()
-                }
-            )
+            modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding())
         )
 
         WooPosText(
@@ -265,7 +257,10 @@ private fun EmptyStateSection(
 
         action?.let {
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
-            it()
+            WooPosButtonSmall(
+                text = stringResource(R.string.woopos_cart_empty_setup_scanner),
+                onClick = it
+            )
         }
     }
 }
@@ -311,12 +306,7 @@ private fun EmptyCartScanningSection(
     EmptyStateSection(
         icon = Icons.Outlined.DocumentScanner,
         text = stringResource(R.string.woopos_cart_empty_scan_products),
-        action = {
-            WooPosButtonSmall(
-                text = stringResource(R.string.woopos_cart_empty_setup_scanner),
-                onClick = onBarcodeSetupClicked
-            )
-        }
+        action = onBarcodeSetupClicked
     )
 }
 
@@ -587,7 +577,8 @@ private fun ClearCartButton(
             DropdownMenu(
                 expanded = dropdownExpanded,
                 onDismissRequest = { dropdownExpanded = false },
-                modifier = Modifier.defaultMinSize(minWidth = 200.dp)
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 200.dp)
                     .background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
             ) {
                 DropdownMenuItem(
