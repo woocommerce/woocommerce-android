@@ -10,6 +10,7 @@ import androidx.room.withTransaction
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
+import org.wordpress.android.fluxc.model.WCPosProductModel
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
@@ -41,6 +42,7 @@ import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrderStatusDao
 import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
+import org.wordpress.android.fluxc.persistence.dao.PosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductCategoriesDao
 import org.wordpress.android.fluxc.persistence.dao.ProductReviewsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
@@ -108,7 +110,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 56
+const val WC_DATABASE_VERSION = 57
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -135,6 +137,7 @@ const val WC_DATABASE_VERSION = 56
         ShippingMethodEntity::class,
         CustomerFromAnalyticsEntity::class,
         WCProductModel::class,
+        WCPosProductModel::class,
         WCProductCategoryModel::class,
         WCProductVariationModel::class,
         WCProductTagModel::class,
@@ -190,6 +193,7 @@ const val WC_DATABASE_VERSION = 56
         AutoMigration(from = 53, to = 54),
         AutoMigration(from = 54, to = 55),
         AutoMigration(from = 55, to = 56),
+        AutoMigration(from = 56, to = 57),
     ]
 )
 @TypeConverters(
@@ -220,6 +224,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
     internal abstract val customerDao: CustomerDao
     internal abstract val productsDao: ProductsDao
+    abstract val posProductsDao: PosProductsDao
     internal abstract val productVariationsDao: ProductVariationsDao
     internal abstract val productCategoriesDao: ProductCategoriesDao
     internal abstract val productTagsDao: ProductTagsDao
