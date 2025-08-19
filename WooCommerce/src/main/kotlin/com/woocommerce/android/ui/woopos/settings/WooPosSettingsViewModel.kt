@@ -47,6 +47,12 @@ class WooPosSettingsViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun showScanningSetupDialog() {
+        _state.update { currentState ->
+            currentState.copy(dialogState = WooPosHomeState.DialogState.ScanningSetupDialog)
+        }
+    }
+
     fun hideDialog() {
         _state.update { currentState ->
             currentState.copy(dialogState = WooPosHomeState.DialogState.Hidden)
