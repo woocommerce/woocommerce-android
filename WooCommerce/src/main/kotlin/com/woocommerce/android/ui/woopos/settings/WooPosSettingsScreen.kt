@@ -42,7 +42,7 @@ fun WooPosSettingsScreen(
 
     LaunchedEffect(initial) {
         if (initial?.first != null) {
-            delay(100)
+            delay(300)
             containerViewModel.onCategorySelected(initial.first)
             val navigationPath = buildNavigationPath(initial.second)
 
