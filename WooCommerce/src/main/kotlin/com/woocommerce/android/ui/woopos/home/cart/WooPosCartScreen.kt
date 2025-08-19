@@ -258,7 +258,7 @@ private fun EmptyStateSection(
 
         WooPosText(
             text = text,
-            style = WooPosTypography.BodyLarge,
+            style = WooPosTypography.Body,
             color = WooPosTheme.colors.onSurfaceVariantLowest,
             textAlign = TextAlign.Center
         )
