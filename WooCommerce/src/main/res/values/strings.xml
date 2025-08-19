@@ -4689,6 +4689,12 @@
     <string name="woo_shipping_labels_customs_product_details_origin_country">Origin country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Missing country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Select a country</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">More info about ITN</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">More info about HS tariff</string>
+    <string name="woo_shipping_labels_customs_description_info_button">More info about product description</string>
+    <string name="woo_shipping_labels_customs_description_info">When shipping to countries that follow European Union (EU) customs rules, you must provide a clear, specific description on every item. For example, if you are sending clothing, you must indicate what type of clothing (e.g. men\'s shirts, girl\'s vest, boy\'s jacket) for the description to be acceptable. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">More info about product origin country</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">Country where the product was manufactured or assembled.</string>
     <string name="woo_shipping_labels_hazmat_info_title">Are you shipping dangerous goods or hazardous materials?</string>
     <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Contains hazardous materials</string>
     <string name="woo_shipping_labels_hazmat_info_full_description">Potentially hazardous material includes items such as batteries, dry ice, flammable liquids, aerosols, ammunition, fireworks, nail polish, perfume, paint, solvents, and more. Hazardous items must ship in separate packages.</string>
