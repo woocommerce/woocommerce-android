@@ -66,9 +66,7 @@ class WooShippingLabelHazmatFormViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
-        _viewState.value.currentHazmatSelection
-            .let { OnHazmatCategorySelected(it) }
-            .let { triggerEvent(it) }
+        triggerEvent(Event.Exit)
     }
 
     @Parcelize

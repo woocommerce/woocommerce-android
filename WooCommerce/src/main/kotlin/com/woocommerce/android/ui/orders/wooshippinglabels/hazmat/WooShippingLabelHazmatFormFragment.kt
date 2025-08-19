@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLab
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormViewModel.OnUrlSelected
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -75,6 +76,8 @@ class WooShippingLabelHazmatFormFragment : BaseFragment(), BackPressListener {
                     key = HAZMAT_CATEGORY_RESULT,
                     result = event.selectedCategory?.name.orEmpty()
                 )
+
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }
     }
