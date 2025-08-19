@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
+import com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner.WooPosSettingsHardwareBarcodeScannerScreen
 import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailScreen
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
@@ -33,6 +34,7 @@ fun WooPosSettingsDetailPaneScreen(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
+    onShowScanningSetupDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentDestination = state.currentDestination
@@ -81,7 +83,9 @@ fun WooPosSettingsDetailPaneScreen(
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.BarcodeScanners -> {
-                    BarcodeScannerDetailScreen()
+                    WooPosSettingsHardwareBarcodeScannerScreen(
+                        onShowScanningSetupDialog = onShowScanningSetupDialog
+                    )
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.CardReaders -> {
@@ -97,21 +101,6 @@ fun WooPosSettingsDetailPaneScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun BarcodeScannerDetailScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WooPosSpacing.Medium.value),
-        contentAlignment = Alignment.Center
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_barcode_scanner_detail_title),
-            style = WooPosTypography.Heading
-        )
     }
 }
 
