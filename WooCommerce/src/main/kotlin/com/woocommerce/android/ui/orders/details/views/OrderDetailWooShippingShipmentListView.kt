@@ -89,9 +89,10 @@ private fun ShipmentList(
     Column(
         modifier = modifier
     ) {
-        shipments.forEach { shipment ->
+        shipments.forEachIndexed { index,  shipment ->
             ShipmentItem(
                 shipment = shipment,
+                index = index,
                 shipmentsSize = shipments.size,
                 onCreateShippingLabelClicked = onCreateShippingLabelClicked,
                 onViewShippingLabelClicked = onViewShippingLabelClicked,
@@ -105,6 +106,7 @@ private fun ShipmentList(
 @Composable
 private fun ShipmentItem(
     shipment: ShipmentUIModel,
+    index: Int,
     shipmentsSize: Int,
     onCreateShippingLabelClicked: (shipmentId: Int?) -> Unit,
     onViewShippingLabelClicked: (ShippingLabelModel) -> Unit,
@@ -122,7 +124,7 @@ private fun ShipmentItem(
             Text(
                 text = stringResource(
                     id = R.string.orderdetail_shipping_label_shipment_header,
-                    "${shipment.localId}/$shipmentsSize"
+                    "${index + 1}/$shipmentsSize"
                 ),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
