@@ -44,6 +44,8 @@ import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
+import com.woocommerce.android.ui.orders.wooshippinglabels.GetShipments
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
@@ -130,6 +132,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
     private val shippingLabelRepository: WooShippingLabelRepository = mock()
     private val shippingEligibilityDataStore: WooShippingEligibilityDataStore = mock()
+    private val getWooShippingShipments: GetShipments = mock()
 
     private val savedState = OrderDetailFragmentArgs(
         orderId = ORDER_ID,
@@ -170,7 +173,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isShipmentTrackingAvailable = true,
         isCreateShippingLabelButtonVisible = false,
         isProductListVisible = true,
-        areShippingLabelsVisible = false,
         isProductListMenuVisible = false,
         wcShippingBannerVisible = false,
         isRefreshing = false,
@@ -212,6 +214,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 shippingLabelOnboardingRepository,
                 shippingLabelRepository,
                 shippingEligibilityDataStore,
+                getWooShippingShipments,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
@@ -598,48 +601,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Display product list when shipping labels are available`() =
+    fun `given the legacy shipping labels, when shipping labels are available, then show products menu`() =
         testBlocking {
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
+                .doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+            whenever(orderDetailRepository.getOrderShippingLabels(any()))
+                .doReturn(OrderTestUtils.generateShippingLabels(2))
+            whenever(orderDetailRepository.isOrderEligibleForSLCreation(any())).doReturn(true)
 
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
-
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-
-            doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-
-            val shippingLabels = ArrayList<ShippingLabelModel>()
-            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
-                shippingLabelModelList?.let { shippingLabels.addAll(it) }
-            }
-
-            var areProductsVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                areProductsVisible = new.isProductListVisible
-            }
-
-            viewModel.start()
-
-            assertThat(shippingLabels).isNotEmpty
-            assertThat(areProductsVisible).isTrue()
-        }
-
-    @Test
-    fun `Show Products area menu when shipping labels are available`() =
-        testBlocking {
-            doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
-                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
-            doReturn(flowOf(true))
-                .whenever(shippingEligibilityDataStore).observeEligibility(any())
-            doReturn(OrderTestUtils.generateShippingLabelModels(2))
-                .whenever(shippingLabelRepository).getPurchasedLabels(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -661,8 +630,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Hide Products area menu when no shipping labels are available`() =
+    fun `given the legacy shipping labels, when no shipping labels are available, then hide products menu`() =
         testBlocking {
+            whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
+                .doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+            whenever(orderDetailRepository.isOrderEligibleForSLCreation(any())).doReturn(true)
+            whenever(orderDetailRepository.getOrderShippingLabels(any())).doReturn(emptyList())
+
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -938,13 +912,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `show shipping label creation if the order is eligible`() = testBlocking {
-        doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
-            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
-        doReturn(OrderTestUtils.generateShippingLabelModels(2))
-            .whenever(shippingLabelRepository).getPurchasedLabels(any())
-        doReturn(flowOf(true))
-            .whenever(shippingEligibilityDataStore).observeEligibility(any())
+    fun `given using legacy shipping labels plugin, when order is eligible, then show shipping label creation button`() = testBlocking {
+        whenever(shippingLabelOnboardingRepository.shippingPluginSupport).doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+        whenever(orderDetailRepository.getOrderShippingLabels(any())).doReturn(OrderTestUtils.generateShippingLabels(2))
+        whenever(orderDetailRepository.isOrderEligibleForSLCreation(any())).doReturn(true)
+
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
@@ -963,6 +935,29 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         assertThat(isCreateShippingLabelButtonVisible).isTrue()
+    }
+
+    @Test
+    fun `given using new Woo Shipping plugin, when order is eligible, then show shipments section`() = testBlocking {
+        whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
+            .doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
+        whenever(getWooShippingShipments.invoke(any()))
+            .doReturn(listOf(ShippingLabelSampleData.getShippingLabelUIModel()))
+        whenever(shippingEligibilityDataStore.observeEligibility(any())).doReturn(flowOf(true))
+        whenever(orderDetailRepository.getOrderById(any())).doReturn(order)
+        whenever(orderDetailRepository.fetchOrderById(any())).doReturn(order)
+        whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+        var isCreateShippingLabelButtonVisible: Boolean? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+        }
+        val shipments = viewModel.shippingLabels.captureValues()
+
+        viewModel.start()
+
+        assertThat(isCreateShippingLabelButtonVisible).isFalse
+        assertThat(shipments).isNotEmpty
     }
 
     @Test
