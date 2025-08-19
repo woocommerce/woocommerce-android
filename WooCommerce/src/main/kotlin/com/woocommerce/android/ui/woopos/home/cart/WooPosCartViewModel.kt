@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSe
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
@@ -68,11 +69,12 @@ class WooPosCartViewModel @Inject constructor(
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
     private val barcodeEventTracker: WooPosBarcodeEventTracker,
+    private val posSettingsEnabled: WooPosPosSettingsEnabled,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = WooPosCartState(),
+        initialValue = WooPosCartState(isPosSettingsFeatureEnabled = posSettingsEnabled()),
         key = "cartViewState"
     )
 
@@ -130,6 +132,10 @@ class WooPosCartViewModel @Inject constructor(
 
             is WooPosCartUIEvent.OnBarcodeEvent -> {
                 onBarcodeEvent(event.result)
+            }
+
+            WooPosCartUIEvent.BarcodeSetupClicked -> {
+                sendEventToParent(ChildToParentEvent.NavigationEvent.ToSettings.BarcodeScanners)
             }
         }
     }

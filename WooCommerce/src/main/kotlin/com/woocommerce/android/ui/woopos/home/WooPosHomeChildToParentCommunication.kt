@@ -54,7 +54,10 @@ sealed class ChildToParentEvent {
         data class ToEmailReceipt(val orderId: Long) : NavigationEvent()
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitPos : NavigationEvent()
-        data object ToSettings : NavigationEvent()
+        sealed class ToSettings : NavigationEvent() {
+            data object Root : ToSettings()
+            data object BarcodeScanners : ToSettings()
+        }
     }
 
     sealed class SearchEvent : ChildToParentEvent() {

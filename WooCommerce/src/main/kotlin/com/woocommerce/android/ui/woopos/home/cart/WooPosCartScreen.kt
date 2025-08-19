@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -140,7 +141,9 @@ private fun WooPosCartScreen(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         height = Dimension.fillToConstraints
-                    }
+                    },
+                    onBarcodeSetupClicked = { onUIEvent(WooPosCartUIEvent.BarcodeSetupClicked) },
+                    isPosSettingsFeatureEnabled = state.isPosSettingsFeatureEnabled
                 )
             }
 
@@ -192,7 +195,11 @@ private fun WooPosCartScreen(
 }
 
 @Composable
-fun CartBodyEmpty(modifier: Modifier = Modifier) {
+fun CartBodyEmpty(
+    modifier: Modifier = Modifier,
+    onBarcodeSetupClicked: () -> Unit = {},
+    isPosSettingsFeatureEnabled: Boolean,
+) {
     Column(
         modifier = modifier
             .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
@@ -215,6 +222,22 @@ fun CartBodyEmpty(modifier: Modifier = Modifier) {
             color = WooPosTheme.colors.onSurfaceVariantLowest,
             textAlign = TextAlign.Center
         )
+        if (isPosSettingsFeatureEnabled) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+            val setupLabel = stringResource(R.string.woopos_cart_empty_barcode_setup_label)
+            WooPosText(
+                text = setupLabel,
+                style = WooPosTypography.BodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                    .clickable { onBarcodeSetupClicked() }
+                    .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .semantics { contentDescription = setupLabel }
+            )
+        }
     }
 }
 
@@ -587,7 +610,7 @@ private fun ProductItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding(),)
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
                     .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
