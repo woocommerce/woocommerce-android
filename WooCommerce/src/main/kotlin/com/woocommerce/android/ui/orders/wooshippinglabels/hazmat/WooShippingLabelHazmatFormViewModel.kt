@@ -43,7 +43,8 @@ class WooShippingLabelHazmatFormViewModel @Inject constructor(
         _viewState.update { viewState ->
             viewState.copy(
                 containsHazmatChecked = containsHazmatChecked,
-                currentHazmatSelection = viewState.currentHazmatSelection.takeIf { containsHazmatChecked }
+                currentHazmatSelection = viewState.currentHazmatSelection.takeIf { containsHazmatChecked },
+                isSaveButtonVisible = navArgs.selectedCategoryName != null && !containsHazmatChecked
             )
         }
     }
@@ -78,7 +79,8 @@ class WooShippingLabelHazmatFormViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val containsHazmatChecked: Boolean = false,
-        val currentHazmatSelection: ShippingLabelHazmatCategory? = null
+        val currentHazmatSelection: ShippingLabelHazmatCategory? = null,
+        val isSaveButtonVisible: Boolean = false
     ) : Parcelable
 
     data object OnSelectCategoryClicked : Event()
