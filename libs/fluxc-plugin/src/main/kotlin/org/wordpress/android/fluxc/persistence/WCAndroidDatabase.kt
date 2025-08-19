@@ -10,7 +10,6 @@ import androidx.room.withTransaction
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
-import org.wordpress.android.fluxc.model.WCPosProductModel
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
@@ -42,7 +41,6 @@ import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrderStatusDao
 import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
-import org.wordpress.android.fluxc.persistence.dao.PosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductCategoriesDao
 import org.wordpress.android.fluxc.persistence.dao.ProductReviewsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
@@ -61,6 +59,7 @@ import org.wordpress.android.fluxc.persistence.dao.UserDao
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.dao.WooPaymentsDepositsOverviewDao
 import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
+import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
@@ -83,6 +82,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOvervie
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration13to14
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration14to15
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration16to17

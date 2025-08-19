@@ -1,10 +1,10 @@
-package org.wordpress.android.fluxc.persistence.dao
+package org.wordpress.android.fluxc.persistence.dao.pos
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
-import org.wordpress.android.fluxc.model.WCPosProductModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 
 @Dao
 abstract class PosProductsDao {

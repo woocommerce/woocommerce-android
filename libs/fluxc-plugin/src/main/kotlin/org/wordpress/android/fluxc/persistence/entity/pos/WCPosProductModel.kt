@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.model
+package org.wordpress.android.fluxc.persistence.entity.pos
 
 import androidx.room.Entity
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
