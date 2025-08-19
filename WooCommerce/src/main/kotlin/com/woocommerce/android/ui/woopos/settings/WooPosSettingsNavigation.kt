@@ -46,7 +46,7 @@ fun NavGraphBuilder.settingsScreen(
             onNavigationEvent = onNavigationEvent,
         )
     }
-    
+
     composable(
         route = BARCODE_SCANNER_SETTINGS_ROUTE,
         enterTransition = {
@@ -67,8 +67,7 @@ fun NavGraphBuilder.settingsScreen(
     ) {
         WooPosSettingsScreen(
             onNavigationEvent = onNavigationEvent,
-            initialCategory = WooPosSettingsCategory.HARDWARE,
-            initialDestination = WooPosSettingsDetailDestination.Hardware.BarcodeScanners
+            initial = WooPosSettingsCategory.HARDWARE to WooPosSettingsDetailDestination.Hardware.BarcodeScanners
         )
     }
 }

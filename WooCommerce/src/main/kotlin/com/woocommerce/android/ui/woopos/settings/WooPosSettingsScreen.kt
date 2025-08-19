@@ -30,22 +30,25 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
+import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosSettingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    initialCategory: WooPosSettingsCategory? = null,
-    initialDestination: WooPosSettingsDetailDestination? = null
+    initial: Pair<WooPosSettingsCategory, WooPosSettingsDetailDestination>? = null,
 ) {
     val containerViewModel: WooPosSettingsViewModel = hiltViewModel()
     val state by containerViewModel.state.collectAsState()
 
-    LaunchedEffect(initialCategory, initialDestination) {
-        if (initialCategory != null) {
-            containerViewModel.onCategorySelected(initialCategory)
-        }
-        if (initialDestination != null) {
-            containerViewModel.navigateToDetail(initialDestination)
+    LaunchedEffect(initial) {
+        if (initial?.first != null) {
+            containerViewModel.onCategorySelected(initial.first)
+            val navigationPath = buildNavigationPath(initial.second)
+
+            for (destination in navigationPath) {
+                delay(300) // Delay to ensure smooth UI animations
+                containerViewModel.navigateToDetail(destination)
+            }
         }
     }
 
@@ -112,6 +115,18 @@ private fun SettingsCategoriesToolbar(
                 vertical = WooPosSpacing.Medium.value
             )
     )
+}
+
+private fun buildNavigationPath(targetDestination: WooPosSettingsDetailDestination): List<WooPosSettingsDetailDestination> {
+    val path = mutableListOf<WooPosSettingsDetailDestination>()
+    var current: WooPosSettingsDetailDestination? = targetDestination
+
+    while (current != null) {
+        path.add(0, current)
+        current = current.parentDestination
+    }
+
+    return path
 }
 
 @WooPosPreview
