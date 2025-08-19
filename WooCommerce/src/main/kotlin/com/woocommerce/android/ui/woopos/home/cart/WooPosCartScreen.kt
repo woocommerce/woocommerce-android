@@ -225,18 +225,26 @@ fun CartBodyEmpty(
         if (isPosSettingsFeatureEnabled) {
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
             val setupLabel = stringResource(R.string.woopos_cart_empty_barcode_setup_label)
-            WooPosText(
-                text = setupLabel,
-                style = WooPosTypography.BodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
+            WooPosCard(
                 modifier = Modifier
-                    .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                    .padding(horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding())
                     .clickable { onBarcodeSetupClicked() }
-                    .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
-                    .semantics { contentDescription = setupLabel }
-            )
+                    .semantics { contentDescription = setupLabel },
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                elevation = WooPosElevation.Medium,
+                shadowType = ShadowType.Soft,
+                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+            ) {
+                WooPosText(
+                    text = setupLabel,
+                    style = WooPosTypography.BodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+                )
+            }
         }
     }
 }
@@ -1092,7 +1100,8 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 ),
                 body = WooPosCartState.Body.Empty,
                 areItemsRemovable = false,
-                checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
+                checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible,
+                isPosSettingsFeatureEnabled = true
             )
         ) {}
     }
@@ -1118,7 +1127,7 @@ fun WooPosCartScreenErrorLoadingPreview(modifier: Modifier = Modifier) {
                         ),
                         WooPosCartItemViewState.Loading(
                             itemNumber = 2,
-                            name = "ADAXS1313XDVZX"
+                            name = "nADAXS1313XDVZX"
                         ),
                         WooPosCartItemViewState.Error(
                             itemNumber = 3,

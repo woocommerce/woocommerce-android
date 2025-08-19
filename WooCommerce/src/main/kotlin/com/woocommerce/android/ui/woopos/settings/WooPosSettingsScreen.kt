@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,14 +28,26 @@ import com.woocommerce.android.ui.woopos.home.WooPosProductInfoDialog
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
+import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 
 @Composable
 fun WooPosSettingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    initialCategory: WooPosSettingsCategory? = null,
+    initialDestination: WooPosSettingsDetailDestination? = null
 ) {
     val containerViewModel: WooPosSettingsViewModel = hiltViewModel()
     val state by containerViewModel.state.collectAsState()
+
+    LaunchedEffect(initialCategory, initialDestination) {
+        if (initialCategory != null) {
+            containerViewModel.onCategorySelected(initialCategory)
+        }
+        if (initialDestination != null) {
+            containerViewModel.navigateToDetail(initialDestination)
+        }
+    }
 
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 

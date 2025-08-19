@@ -28,7 +28,8 @@ fun WooPosRootHost(
                 is NavigationEvent.ToEmailReceipt -> onNavigationEvent(OpenEmailReceipt(it.orderId))
                 NavigationEvent.ExitPos -> onNavigationEvent(ExitPosClicked)
                 NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted -> onNavigationEvent(ReturnHomeFromCashPayment)
-                is NavigationEvent.ToSettings -> onNavigationEvent(OpenSettings)
+                is NavigationEvent.ToSettings.Root -> onNavigationEvent(OpenSettings.Root)
+                is NavigationEvent.ToSettings.BarcodeScanners -> onNavigationEvent(OpenSettings.BarcodeScanners)
             }
         }
     }
