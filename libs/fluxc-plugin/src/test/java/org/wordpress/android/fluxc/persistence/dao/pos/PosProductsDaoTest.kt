@@ -41,7 +41,7 @@ class PosProductsDaoTest {
         sut.upsertProducts(listOf(product))
 
         // THEN
-        val storedProduct = sut.getProduct(product.localSiteId.value, product.remoteId.value)
+        val storedProduct = sut.getProduct(product.localSiteId, product.remoteId)
         assertNotNull(storedProduct)
         assertEquals(product.name, storedProduct.name)
         assertEquals(product.sku, storedProduct.sku)
@@ -63,7 +63,7 @@ class PosProductsDaoTest {
         sut.upsertProducts(listOf(updatedProduct))
 
         // THEN
-        val storedProduct = sut.getProduct(product.localSiteId.value, product.remoteId.value)
+        val storedProduct = sut.getProduct(product.localSiteId, product.remoteId)
         assertNotNull(storedProduct)
         assertEquals("Updated Product", storedProduct.name)
         assertEquals("29.99", storedProduct.price)
@@ -83,7 +83,7 @@ class PosProductsDaoTest {
         sut.upsertProducts(products)
 
         // THEN
-        val storedProducts = sut.observeAllProducts(products.first().localSiteId.value).first()
+        val storedProducts = sut.observeAllProducts(products.first().localSiteId).first()
         assertEquals(3, storedProducts.size)
         assertTrue(storedProducts.any { it.remoteId.value == 100L })
         assertTrue(storedProducts.any { it.remoteId.value == 101L })
@@ -104,8 +104,8 @@ class PosProductsDaoTest {
         sut.upsertProducts(site1Products + site2Products)
 
         // WHEN
-        val site1Results = sut.observeAllProducts(1).first()
-        val site2Results = sut.observeAllProducts(2).first()
+        val site1Results = sut.observeAllProducts(LocalId(1)).first()
+        val site2Results = sut.observeAllProducts(LocalId(2)).first()
 
         // THEN
         assertEquals(2, site1Results.size)
@@ -117,7 +117,7 @@ class PosProductsDaoTest {
     @Test
     fun `when getting non-existent product, then null is returned`() = runTest {
         // WHEN
-        val result = sut.getProduct(1, 999L)
+        val result = sut.getProduct(LocalId(1), RemoteId(999L))
 
         // THEN
         assertNull(result)
@@ -130,7 +130,7 @@ class PosProductsDaoTest {
         sut.upsertProducts(listOf(product))
 
         // WHEN
-        val result = sut.getProduct(product.localSiteId.value, product.remoteId.value)
+        val result = sut.getProduct(product.localSiteId, product.remoteId)
 
         // THEN
         assertNotNull(result)
@@ -146,10 +146,10 @@ class PosProductsDaoTest {
         sut.upsertProducts(listOf(product))
 
         // WHEN
-        sut.deleteProduct(product.localSiteId.value, product.remoteId.value)
+        sut.deleteProduct(product.localSiteId, product.remoteId)
 
         // THEN
-        val result = sut.getProduct(product.localSiteId.value, product.remoteId.value)
+        val result = sut.getProduct(product.localSiteId, product.remoteId)
         assertNull(result)
     }
 
@@ -164,10 +164,10 @@ class PosProductsDaoTest {
         sut.upsertProducts(products)
 
         // WHEN
-        sut.deleteProduct(products.first().localSiteId.value, 101L)
+        sut.deleteProduct(products.first().localSiteId, RemoteId(101L))
 
         // THEN
-        val remainingProducts = sut.observeAllProducts(products.first().localSiteId.value).first()
+        val remainingProducts = sut.observeAllProducts(products.first().localSiteId).first()
         assertEquals(2, remainingProducts.size)
         assertTrue(remainingProducts.any { it.remoteId.value == 100L })
         assertTrue(remainingProducts.any { it.remoteId.value == 102L })
@@ -177,7 +177,7 @@ class PosProductsDaoTest {
     @Test
     fun `when deleting non-existent product, then no error occurs`() = runTest {
         // WHEN & THEN - Should not throw exception
-        sut.deleteProduct(1, 999L)
+        sut.deleteProduct(LocalId(1), RemoteId(999L))
     }
 
     @Test
@@ -190,7 +190,7 @@ class PosProductsDaoTest {
         sut.upsertProducts(products)
 
         // WHEN
-        val results = sut.observeAllProducts(products.first().localSiteId.value).first()
+        val results = sut.observeAllProducts(products.first().localSiteId).first()
 
         // THEN
         assertEquals(2, results.size)
@@ -201,7 +201,7 @@ class PosProductsDaoTest {
     @Test
     fun `given empty database, when observing products, then empty list is emitted`() = runTest {
         // WHEN
-        val results = sut.observeAllProducts(1).first()
+        val results = sut.observeAllProducts(LocalId(1)).first()
 
         // THEN
         assertTrue(results.isEmpty())
@@ -219,7 +219,7 @@ class PosProductsDaoTest {
         sut.upsertProducts(listOf(product))
 
         // THEN
-        val storedProduct = sut.getProduct(product.localSiteId.value, product.remoteId.value)
+        val storedProduct = sut.getProduct(product.localSiteId, product.remoteId)
         assertNotNull(storedProduct)
         assertEquals(4.5, storedProduct.stockQuantity)
     }
@@ -241,7 +241,7 @@ class PosProductsDaoTest {
         sut.upsertProducts(listOf(product))
 
         // THEN
-        val storedProduct = sut.getProduct(product.localSiteId.value, product.remoteId.value)
+        val storedProduct = sut.getProduct(product.localSiteId, product.remoteId)
         assertNotNull(storedProduct)
         assertEquals(product.categories, storedProduct.categories)
         assertEquals(product.tags, storedProduct.tags)
