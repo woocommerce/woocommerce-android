@@ -80,8 +80,11 @@ class WooShippingLabelHazmatFormViewModel @Inject constructor(
     data class ViewState(
         val containsHazmatChecked: Boolean = false,
         val currentHazmatSelection: ShippingLabelHazmatCategory? = null,
-        val isSaveButtonVisible: Boolean = false
-    ) : Parcelable
+        val isSaveButtonVisible: Boolean = false,
+    ) : Parcelable {
+        val isSelectCategoryButtonVisible
+            get() = containsHazmatChecked && currentHazmatSelection == null
+    }
 
     data object OnSelectCategoryClicked : Event()
 
