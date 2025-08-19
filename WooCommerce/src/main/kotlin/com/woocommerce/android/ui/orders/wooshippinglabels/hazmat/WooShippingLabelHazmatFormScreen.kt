@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -41,8 +42,10 @@ fun WooShippingLabelHazmatFormScreen(viewModel: WooShippingLabelHazmatFormViewMo
     WooShippingLabelHazmatFormScreen(
         containsHazmatChecked = viewState?.containsHazmatChecked == true,
         selectedHazmatCategory = viewState?.currentHazmatSelection,
+        isSaveButtonVisible = viewState?.isSaveButtonVisible == true,
         onContainsHazmatChanged = viewModel::onContainsHazmatChanged,
         onSelectCategoryClick = viewModel::onSelectCategoryClick,
+        onSaveClick = viewModel::onSaveClick,
         onUrlSelected = viewModel::onUrlSelected
     )
 }
@@ -51,8 +54,10 @@ fun WooShippingLabelHazmatFormScreen(viewModel: WooShippingLabelHazmatFormViewMo
 fun WooShippingLabelHazmatFormScreen(
     containsHazmatChecked: Boolean,
     selectedHazmatCategory: ShippingLabelHazmatCategory?,
+    isSaveButtonVisible: Boolean,
     onContainsHazmatChanged: (Boolean) -> Unit,
     onSelectCategoryClick: () -> Unit,
+    onSaveClick: () -> Unit,
     onUrlSelected: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -137,6 +142,17 @@ fun WooShippingLabelHazmatFormScreen(
                 onUrlClick = { onUrlSelected(AppUrls.DHL_EXPRESS_HAZMAT_INSTRUCTIONS) }
             )
         )
+
+        if (isSaveButtonVisible) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            WCColoredButton(
+                onClick = onSaveClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.save))
+            }
+        }
     }
 }
 
@@ -179,8 +195,10 @@ fun WooShippingLabelHazmatFormScreenPreview() {
         WooShippingLabelHazmatFormScreen(
             containsHazmatChecked = false,
             selectedHazmatCategory = null,
+            isSaveButtonVisible = false,
             onContainsHazmatChanged = {},
             onSelectCategoryClick = {},
+            onSaveClick = {},
             onUrlSelected = {}
         )
     }
@@ -194,8 +212,10 @@ fun WooShippingLabelHazmatFormScreenWithSelectionPreview() {
         WooShippingLabelHazmatFormScreen(
             containsHazmatChecked = true,
             selectedHazmatCategory = ShippingLabelHazmatCategory.CLASS_1,
+            isSaveButtonVisible = false,
             onContainsHazmatChanged = {},
             onSelectCategoryClick = {},
+            onSaveClick = {},
             onUrlSelected = {}
         )
     }
