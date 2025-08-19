@@ -918,7 +918,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabelModel> {
-        if (isRevampWooShippingEnabled)  return ListInfo(isVisible = false)
+        if (isRevampWooShippingEnabled) return ListInfo(isVisible = false)
         orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
             .map { it.toShippingLabelModel() }
             .fillProducts(awaitOrder().items)
@@ -956,9 +956,9 @@ class OrderDetailViewModel @Inject constructor(
 
         val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
 
-        val isOrderEligibleForSLCreation = isOrderEligibleForSLCreation(orderEligibleForInPersonPayments)
+        val isOrderEligibleForLegacySLCreation = isOrderEligibleForLegacySLCreation(orderEligibleForInPersonPayments)
 
-        if (isOrderEligibleForSLCreation &&
+        if (isOrderEligibleForLegacySLCreation &&
             viewState.isCreateShippingLabelButtonVisible != true &&
             viewState.isProductListMenuVisible != true
         ) {
@@ -968,8 +968,8 @@ class OrderDetailViewModel @Inject constructor(
         }
 
         viewState = viewState.copy(
-            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation,
-            isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
+            isCreateShippingLabelButtonVisible = isOrderEligibleForLegacySLCreation,
+            isProductListMenuVisible = isOrderEligibleForLegacySLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             wcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
@@ -980,13 +980,11 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    private suspend fun isOrderEligibleForSLCreation(orderEligibleForInPersonPayments: Boolean) =
-        if (isRevampWooShippingEnabled) {
-            eligibilityDataStore.observeEligibility(awaitOrder().id).first() == true
-        } else {
+    private suspend fun isOrderEligibleForLegacySLCreation(orderEligibleForInPersonPayments: Boolean) =
+        !isRevampWooShippingEnabled &&
             shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
-                orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id)
-        } && !orderEligibleForInPersonPayments
+            orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id) &&
+            !orderEligibleForInPersonPayments
 
     private suspend fun shouldShowThankYouNoteButton() =
         selectedSite.getIfExists()?.isWPComAtomic == true &&
