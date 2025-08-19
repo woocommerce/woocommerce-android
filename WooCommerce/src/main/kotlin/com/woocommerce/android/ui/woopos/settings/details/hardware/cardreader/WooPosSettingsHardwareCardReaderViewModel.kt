@@ -106,6 +106,7 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
                             ),
                             batteryLevel = status.cardReader.currentBatteryLevel,
                             firmwareVersion = status.cardReader.firmwareVersion,
+                            isSoftwareUpdateAvailable = currentSoftwareUpdateAvailable
                         )
                     }
 
