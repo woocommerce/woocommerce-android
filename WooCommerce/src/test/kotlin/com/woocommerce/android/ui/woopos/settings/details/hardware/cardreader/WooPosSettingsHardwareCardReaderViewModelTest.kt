@@ -93,6 +93,68 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         verify(cardReaderFacade).connectToReader()
     }
 
+    @Test
+    fun `when update clicked, then calls facade update reader`() = runTest {
+        // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
+        whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUpdateClick()
+
+        // THEN
+        verify(cardReaderFacade).updateReader()
+    }
+
+    @Test
+    fun `given connected reader, when software update available, then shows update available`() = runTest {
+        // GIVEN
+        val mockReader = mock<CardReader> {
+            whenever(it.id).thenReturn("Test Reader")
+            whenever(it.currentBatteryLevel).thenReturn(0.75f)
+            whenever(it.firmwareVersion).thenReturn("1.2.3")
+        }
+        whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
+        whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        
+        // WHEN
+        val viewModel = createViewModel()
+        readerStatusFlow.value = CardReaderStatus.Connected(mockReader)
+        softwareUpdateFlow.value = SoftwareUpdateAvailability.Available
+        advanceUntilIdle()
+
+        // THEN
+        val uiState = viewModel.uiState.value
+        assertThat(uiState).isInstanceOf(WooPosSettingsHardwareCardReaderUiState.Connected::class.java)
+        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected
+        assertThat(connectedState.isSoftwareUpdateAvailable).isTrue()
+    }
+
+    @Test
+    fun `given connected reader, when software update not available, then shows update not available`() = runTest {
+        // GIVEN
+        val mockReader = mock<CardReader> {
+            whenever(it.id).thenReturn("Test Reader")
+            whenever(it.currentBatteryLevel).thenReturn(0.75f)
+            whenever(it.firmwareVersion).thenReturn("1.2.3")
+        }
+        whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
+        whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        
+        // WHEN
+        val viewModel = createViewModel()
+        readerStatusFlow.value = CardReaderStatus.Connected(mockReader)
+        softwareUpdateFlow.value = SoftwareUpdateAvailability.NotAvailable
+        advanceUntilIdle()
+
+        // THEN
+        val uiState = viewModel.uiState.value
+        assertThat(uiState).isInstanceOf(WooPosSettingsHardwareCardReaderUiState.Connected::class.java)
+        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected
+        assertThat(connectedState.isSoftwareUpdateAvailable).isFalse()
+    }
+
     private fun createViewModel() = WooPosSettingsHardwareCardReaderViewModel(
         cardReaderFacade = cardReaderFacade,
         resourceProvider = resourceProvider,
