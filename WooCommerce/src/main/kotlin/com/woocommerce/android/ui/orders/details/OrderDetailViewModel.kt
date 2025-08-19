@@ -914,6 +914,9 @@ class OrderDetailViewModel @Inject constructor(
     private suspend fun loadWooShippingShipments(): ListInfo<ShipmentUIModel> {
         if (!isRevampWooShippingEnabled) return ListInfo(isVisible = false)
 
+        val isEligibleForLabelCreation = eligibilityDataStore.observeEligibility(navArgs.orderId).first() == true
+        if (!isEligibleForLabelCreation) return ListInfo(isVisible = false)
+
         return ListInfo(isVisible = true, list = getWooShippingShipments(awaitOrder()))
     }
 
