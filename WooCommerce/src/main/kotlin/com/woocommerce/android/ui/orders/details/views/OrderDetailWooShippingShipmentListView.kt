@@ -112,7 +112,7 @@ private fun ShipmentItem(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .padding(start = 16.dp)
-                .defaultMinSize(minHeight = 48.dp)
+                .defaultMinSize(minHeight = 64.dp)
         ) {
             Text(
                 text = stringResource(
@@ -259,7 +259,7 @@ private fun LabelTrackingRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .padding(vertical = 16.dp)
+            .padding(vertical = 8.dp)
             .padding(start = 16.dp)
     ) {
         Icon(
@@ -267,7 +267,9 @@ private fun LabelTrackingRow(
             tint = MaterialTheme.colorScheme.primary,
             contentDescription = null
         )
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Text(
                 text = stringResource(R.string.order_shipment_tracking_number),
                 style = MaterialTheme.typography.bodyLarge
