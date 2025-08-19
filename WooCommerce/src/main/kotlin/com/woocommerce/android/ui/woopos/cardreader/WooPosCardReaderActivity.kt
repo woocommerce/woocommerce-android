@@ -103,19 +103,18 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
     }
 
     private fun observeUpdateResult(navHostFragment: NavHostFragment) {
-        // Since CardReaderUpdateDialogFragment is the start destination and uses navigateBackWithResult,
-        // which won't work without a previous destination, we monitor the fragment lifecycle.
-        // When the dialog fragment is removed, we close the activity.
-        navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(
-            object : androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks() {
-                override fun onFragmentDetached(fm: androidx.fragment.app.FragmentManager, f: androidx.fragment.app.Fragment) {
-                    if (f is CardReaderUpdateDialogFragment) {
-                        finish()
-                    }
+        navHostFragment.childFragmentManager.setFragmentResultListener(
+            WOO_POS_CARD_UPDATE_REQUEST_KEY,
+            this
+        ) { requestKey, bundle ->
+            when (requestKey) {
+                WOO_POS_CARD_UPDATE_REQUEST_KEY -> {
+                    finish()
                 }
-            },
-            false
-        )
+
+                else -> logResultListenerError(requestKey)
+            }
+        }
     }
 
     private fun setupNavGraph(navHostFragment: NavHostFragment, flowType: FlowType) {
@@ -135,9 +134,16 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             }
 
             FlowType.UPDATE -> {
-                // Set the update dialog as the start destination
                 graph.setStartDestination(R.id.cardReaderUpdateDialogFragment)
-                navController.setGraph(graph, null)
+                navController.setGraph(
+                    graph,
+                    Bundle().apply {
+                        putBoolean(
+                            CardReaderUpdateDialogFragment.KEY_READER_UPDATE_WOO_POS_FLOW,
+                            true
+                        )
+                    }
+                )
             }
         }
     }
@@ -150,6 +156,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
     companion object {
         const val WOO_POS_CARD_PAYMENT_REQUEST_KEY = "woo_pos_card_payment_request"
+        const val WOO_POS_CARD_UPDATE_REQUEST_KEY = "woo_pos_card_update_request"
         const val FLOW_TYPE_KEY = "flow_type"
 
         fun buildIntentForCardReaderConnection(context: Context) =
