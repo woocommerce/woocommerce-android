@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
@@ -161,12 +160,9 @@ private fun ShipmentItem(
 
             HorizontalDivider(Modifier.padding(start = 16.dp))
 
-            WCOutlinedButton(
-                text = stringResource(R.string.orderdetail_shipping_label_item_view_purchased_shipping_label),
+            ViewLabelRow(
                 onClick = { onViewShippingLabelClicked(shipment.label) },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
         } else {
             WCColoredButton(
@@ -177,6 +173,26 @@ private fun ShipmentItem(
                     .fillMaxWidth()
             )
         }
+    }
+}
+
+@Composable
+private fun ViewLabelRow(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .padding(16.dp)
+    ) {
+        Text(text = stringResource(R.string.orderdetail_shipping_label_item_view_purchased_shipping_label))
+
+        Icon(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = null
+        )
     }
 }
 
@@ -196,7 +212,7 @@ private fun ShipmentItemsRow(
         Text(text = stringResource(R.string.orderdetail_shipping_label_shipment_items, items.size))
 
         Icon(
-            imageVector = Icons.Default.ChevronRight,
+            painter = painterResource(R.drawable.ic_arrow_right),
             contentDescription = null
         )
     }
