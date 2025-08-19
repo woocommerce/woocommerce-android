@@ -35,12 +35,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
+import androidx.compose.material.icons.outlined.AddShoppingCart
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.DocumentScanner
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.LocalOffer
-import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,14 +58,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -224,25 +224,59 @@ fun CartBodyEmpty(
 }
 
 @Composable
+private fun EmptyStateSection(
+    icon: ImageVector,
+    iconContentDescription: String? = null,
+    text: String,
+    action: (@Composable () -> Unit)? = null
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = iconContentDescription,
+            modifier = Modifier
+                .size(66.dp)
+                .let { modifier ->
+                    iconContentDescription?.let {
+                        modifier.semantics { contentDescription = it }
+                    } ?: modifier
+                },
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3F)
+        )
+
+        Spacer(
+            modifier = Modifier.height(
+                if (action != null) {
+                    WooPosSpacing.Medium.value.toAdaptivePadding()
+                } else {
+                    WooPosSpacing.XLarge.value.toAdaptivePadding()
+                }
+            )
+        )
+
+        WooPosText(
+            text = text,
+            style = WooPosTypography.BodyLarge,
+            color = WooPosTheme.colors.onSurfaceVariantLowest,
+            textAlign = TextAlign.Center
+        )
+
+        action?.let {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+            it()
+        }
+    }
+}
+
+@Composable
 private fun EmptyCartMainSection() {
     val cartDescription = stringResource(R.string.woopos_cart_empty_content_description)
-    Image(
-        imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_empty_cart),
-        contentDescription = cartDescription,
-        modifier = Modifier
-            .size(88.dp)
-            .semantics { contentDescription = cartDescription },
-        colorFilter = ColorFilter.tint(
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3F),
-            blendMode = BlendMode.SrcAtop,
-        )
-    )
-    Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-    WooPosText(
-        text = stringResource(R.string.woopos_cart_empty_subtitle),
-        style = WooPosTypography.BodyLarge,
-        color = WooPosTheme.colors.onSurfaceVariantLowest,
-        textAlign = TextAlign.Center
+    EmptyStateSection(
+        icon = Icons.Outlined.AddShoppingCart,
+        iconContentDescription = cartDescription,
+        text = stringResource(R.string.woopos_cart_empty_subtitle)
     )
 }
 
@@ -253,11 +287,9 @@ private fun EmptyCartOrDivider() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier
-                .height(1.dp)
-                .weight(1f)
-                .background(WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.2f))
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.2f)
         )
         WooPosText(
             text = stringResource(R.string.woopos_cart_empty_or),
@@ -265,11 +297,9 @@ private fun EmptyCartOrDivider() {
             color = WooPosTheme.colors.onSurfaceVariantLowest,
             modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
         )
-        Box(
-            modifier = Modifier
-                .height(1.dp)
-                .weight(1f)
-                .background(WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.2f))
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.2f)
         )
     }
 }
@@ -278,32 +308,16 @@ private fun EmptyCartOrDivider() {
 private fun EmptyCartScanningSection(
     onBarcodeSetupClicked: () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.QrCodeScanner,
-            contentDescription = null,
-            modifier = Modifier.size(88.dp),
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3F)
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-        WooPosText(
-            text = stringResource(R.string.woopos_cart_empty_scan_products),
-            style = WooPosTypography.BodyLarge,
-            color = WooPosTheme.colors.onSurfaceVariantLowest,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
-
-        WooPosButtonSmall(
-            text = stringResource(R.string.woopos_cart_empty_setup_scanner),
-            onClick = onBarcodeSetupClicked
-        )
-    }
+    EmptyStateSection(
+        icon = Icons.Outlined.DocumentScanner,
+        text = stringResource(R.string.woopos_cart_empty_scan_products),
+        action = {
+            WooPosButtonSmall(
+                text = stringResource(R.string.woopos_cart_empty_setup_scanner),
+                onClick = onBarcodeSetupClicked
+            )
+        }
+    )
 }
 
 @Composable
