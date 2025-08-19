@@ -174,6 +174,7 @@ class DeveloperOptionsViewModel @Inject constructor(
             NEVER(R.string.never_update_reader),
             LOW_BATTERY_ERROR(R.string.low_battery_error_update_reader),
             LOW_BATTERY_SUCCEED_CONNECT(R.string.low_battery_succeed_connect_update_reader),
+            OPTIONAL_UPDATE_AVAILABLE(R.string.optional_update_available_reader),
             RANDOM(R.string.randomly_update_reader);
 
             fun toDomainModel() = CardReaderManager.SimulatorUpdateFrequency.valueOf(name)
