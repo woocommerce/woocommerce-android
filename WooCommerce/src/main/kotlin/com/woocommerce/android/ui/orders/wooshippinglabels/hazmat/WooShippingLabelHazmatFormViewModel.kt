@@ -52,6 +52,12 @@ class WooShippingLabelHazmatFormViewModel @Inject constructor(
         triggerEvent(OnSelectCategoryClicked)
     }
 
+    fun onSaveClick() {
+        _viewState.value.currentHazmatSelection
+            .let { OnHazmatCategorySelected(it) }
+            .let { triggerEvent(it) }
+    }
+
     fun onHazmatCategorySelected(selectedCategory: ShippingLabelHazmatCategory?) {
         if (_viewState.value.containsHazmatChecked.not()) return
 
