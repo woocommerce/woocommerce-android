@@ -43,6 +43,7 @@ fun WooShippingLabelHazmatFormScreen(viewModel: WooShippingLabelHazmatFormViewMo
         containsHazmatChecked = viewState?.containsHazmatChecked == true,
         selectedHazmatCategory = viewState?.currentHazmatSelection,
         isSaveButtonVisible = viewState?.isSaveButtonVisible == true,
+        isSelectCategoryButtonVisible = viewState?.isSelectCategoryButtonVisible == true,
         onContainsHazmatChanged = viewModel::onContainsHazmatChanged,
         onSelectCategoryClick = viewModel::onSelectCategoryClick,
         onSaveClick = viewModel::onSaveClick,
@@ -55,6 +56,7 @@ fun WooShippingLabelHazmatFormScreen(
     containsHazmatChecked: Boolean,
     selectedHazmatCategory: ShippingLabelHazmatCategory?,
     isSaveButtonVisible: Boolean,
+    isSelectCategoryButtonVisible: Boolean,
     onContainsHazmatChanged: (Boolean) -> Unit,
     onSelectCategoryClick: () -> Unit,
     onSaveClick: () -> Unit,
@@ -103,11 +105,10 @@ fun WooShippingLabelHazmatFormScreen(
                 selectedHazmatCategory = selectedHazmatCategory,
                 onSelectCategoryClick = onSelectCategoryClick
             )
-        } else {
+        } else if (isSelectCategoryButtonVisible) {
             WCColoredButton(
                 text = stringResource(R.string.woo_shipping_labels_hazmat_info_select_category),
                 onClick = onSelectCategoryClick,
-                enabled = containsHazmatChecked,
                 modifier = modifier.fillMaxWidth()
             )
         }
@@ -196,6 +197,7 @@ fun WooShippingLabelHazmatFormScreenPreview() {
             containsHazmatChecked = false,
             selectedHazmatCategory = null,
             isSaveButtonVisible = false,
+            isSelectCategoryButtonVisible = true,
             onContainsHazmatChanged = {},
             onSelectCategoryClick = {},
             onSaveClick = {},
@@ -213,6 +215,7 @@ fun WooShippingLabelHazmatFormScreenWithSelectionPreview() {
             containsHazmatChecked = true,
             selectedHazmatCategory = ShippingLabelHazmatCategory.CLASS_1,
             isSaveButtonVisible = false,
+            isSelectCategoryButtonVisible = false,
             onContainsHazmatChanged = {},
             onSelectCategoryClick = {},
             onSaveClick = {},
