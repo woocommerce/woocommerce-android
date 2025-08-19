@@ -457,7 +457,7 @@ class OrderDetailFragment :
         }
         viewModel.shippingLabels.observe(viewLifecycleOwner) {
             lifecycleScope.launch {
-                showShippingLabels(it, viewModel.awaitOrder().currency, viewModel.isRevampWooShippingEnabled)
+                showShippingLabels(it, viewModel.awaitOrder().currency)
             }
         }
         viewModel.subscriptions.observe(viewLifecycleOwner) {
@@ -835,8 +835,7 @@ class OrderDetailFragment :
 
     private fun showShippingLabels(
         shippingLabels: List<ShippingLabelModel>,
-        currency: String,
-        isRevampWooShippingEnabled: Boolean
+        currency: String
     ) {
         shippingLabels.whenNotNullNorEmpty {
             with(binding.orderDetailShippingLabelList) {
@@ -845,7 +844,6 @@ class OrderDetailFragment :
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
-                    isRevampWooShippingEnabled = isRevampWooShippingEnabled,
                     productClickListener = this@OrderDetailFragment,
                     shippingLabelClickListener = object : OnShippingLabelClickListener {
                         override fun onRefundRequested(shippingLabel: ShippingLabelModel) {

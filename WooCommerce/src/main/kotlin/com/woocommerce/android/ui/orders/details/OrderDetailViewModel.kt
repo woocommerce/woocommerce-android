@@ -219,7 +219,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private var pluginsInformation: Map<String, WooPlugin> = HashMap()
 
-    val isRevampWooShippingEnabled: Boolean
+    private val isRevampWooShippingEnabled: Boolean
         get() = FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() &&
             shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
 
