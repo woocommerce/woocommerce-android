@@ -51,16 +51,14 @@ class UnitTestNamingRule(config: Config) : Rule(config) {
     }
 
     private fun isAndroidTest(function: KtNamedFunction): Boolean {
-        // Get the file location from Entity
-        val entity = Entity.from(function)
-        val filePath = entity.location.filePath.absolutePath.toString()
+        val imports = function.containingKtFile.importList?.imports?.mapNotNull {
+            it.importedFqName?.asString()
+        } ?: emptyList()
 
-        // Check if the file is in androidTest directory
-        return filePath.contains("/src/androidTest/") ||
-            filePath.contains("\\src\\androidTest\\") ||
-            filePath.contains("androidTest/kotlin") ||
-            filePath.contains("androidTest\\kotlin") ||
-            filePath.contains("androidTest/java") ||
-            filePath.contains("androidTest\\java")
+        return imports.any {
+            it.startsWith("androidx.test") ||
+                it.startsWith("android.test") ||
+                it.contains("InstrumentationRegistry")
+        }
     }
 }
