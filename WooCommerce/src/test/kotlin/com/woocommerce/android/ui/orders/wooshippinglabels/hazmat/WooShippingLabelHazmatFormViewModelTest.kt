@@ -171,42 +171,23 @@ class WooShippingLabelHazmatFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onBackPressed is called with no selection, then trigger OnHazmatCategorySelected with null`() = testBlocking {
-        // Given
-        var capturedEvent: OnHazmatCategorySelected? = null
-        viewModel.event.observeForever {
-            capturedEvent = it as? OnHazmatCategorySelected
+    fun `when onSaveClick is called after removing selection, then trigger OnHazmatCategorySelected with null`() =
+        testBlocking {
+            // Given
+            val selectedCategory = ShippingLabelHazmatCategory.CLASS_1
+            viewModel = WooShippingLabelHazmatFormViewModel(
+                WooShippingLabelHazmatFormFragmentArgs(
+                    selectedCategoryName = selectedCategory.name
+                ).toSavedStateHandle()
+            )
+            var capturedEvent: OnHazmatCategorySelected? = null
+            viewModel.event.observeForever { capturedEvent = it as? OnHazmatCategorySelected }
+
+            // When
+            viewModel.onContainsHazmatChanged(false)
+            viewModel.onSaveClick()
+
+            // Then
+            assertThat(capturedEvent?.selectedCategory).isNull()
         }
-
-        // When
-        viewModel.onBackPressed()
-
-        // Then
-        assertThat(capturedEvent).isNotNull()
-        assertThat(capturedEvent?.selectedCategory).isNull()
-    }
-
-    @Test
-    fun `when onBackPressed is called with selection available, then trigger OnHazmatCategorySelected with selected category`() = testBlocking {
-        // Given
-        val selectedCategory = ShippingLabelHazmatCategory.CLASS_1
-
-        viewModel = WooShippingLabelHazmatFormViewModel(
-            WooShippingLabelHazmatFormFragmentArgs(
-                selectedCategoryName = selectedCategory.name
-            ).toSavedStateHandle()
-        )
-
-        var capturedEvent: OnHazmatCategorySelected? = null
-        viewModel.event.observeForever {
-            capturedEvent = it as? OnHazmatCategorySelected
-        }
-
-        // When
-        viewModel.onBackPressed()
-
-        // Then
-        assertThat(capturedEvent).isNotNull()
-        assertThat(capturedEvent?.selectedCategory).isEqualTo(selectedCategory)
-    }
 }
