@@ -117,7 +117,7 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         }
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
-        
+
         // WHEN
         val viewModel = createViewModel()
         readerStatusFlow.value = CardReaderStatus.Connected(mockReader)
@@ -141,7 +141,7 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         }
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
-        
+
         // WHEN
         val viewModel = createViewModel()
         readerStatusFlow.value = CardReaderStatus.Connected(mockReader)
