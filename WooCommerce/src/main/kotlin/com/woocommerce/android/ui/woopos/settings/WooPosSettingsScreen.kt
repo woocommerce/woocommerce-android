@@ -42,12 +42,12 @@ fun WooPosSettingsScreen(
 
     LaunchedEffect(initial) {
         if (initial?.first != null) {
-            delay(300)
+            delay(400)
             containerViewModel.onCategorySelected(initial.first)
             val navigationPath = buildNavigationPath(initial.second)
 
             for (destination in navigationPath) {
-                delay(300) // Delay to ensure smooth UI animations
+                delay(300)
                 containerViewModel.navigateToDetail(destination)
             }
         }

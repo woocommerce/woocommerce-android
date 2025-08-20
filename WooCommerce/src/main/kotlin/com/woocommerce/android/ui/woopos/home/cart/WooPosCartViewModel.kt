@@ -352,7 +352,7 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun clearCart() {
-        _state.value = WooPosCartState()
+        _state.value = WooPosCartState(isPosSettingsFeatureEnabled = posSettingsEnabled())
     }
 
     private suspend fun handleNewTransactionIfNeeded() {

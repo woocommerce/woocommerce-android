@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,7 +84,6 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
@@ -207,17 +207,23 @@ fun CartBodyEmpty(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        EmptyCartMainSection()
+        EmptyStateSection(
+            icon = Icons.Outlined.AddShoppingCart,
+            iconContentDescription = stringResource(R.string.woopos_cart_empty_content_description),
+            text = stringResource(R.string.woopos_cart_empty_subtitle)
+        )
 
         if (isPosSettingsFeatureEnabled) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
 
             EmptyCartOrDivider()
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
 
-            EmptyCartScanningSection(
-                onBarcodeSetupClicked = onBarcodeSetupClicked
+            EmptyStateSection(
+                icon = Icons.Outlined.DocumentScanner,
+                text = stringResource(R.string.woopos_cart_empty_scan_products),
+                action = onBarcodeSetupClicked
             )
         }
     }
@@ -235,13 +241,13 @@ private fun EmptyStateSection(
             imageVector = icon,
             contentDescription = iconContentDescription,
             modifier = Modifier
-                .size(56.dp)
+                .size(66.dp)
                 .let { modifier ->
                     iconContentDescription?.let {
                         modifier.semantics { contentDescription = it }
                     } ?: modifier
                 },
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4F)
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5F)
         )
 
         Spacer(
@@ -251,28 +257,22 @@ private fun EmptyStateSection(
         WooPosText(
             text = text,
             style = WooPosTypography.BodyMedium,
-            color = WooPosTheme.colors.onSurfaceVariantLowest,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
             textAlign = TextAlign.Center
         )
 
         action?.let {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
-            WooPosButtonSmall(
+            WooPosText(
                 text = stringResource(R.string.woopos_cart_empty_setup_scanner),
-                onClick = it
+                style = WooPosTypography.BodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .clickable { it() }
+                    .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
             )
         }
     }
-}
-
-@Composable
-private fun EmptyCartMainSection() {
-    val cartDescription = stringResource(R.string.woopos_cart_empty_content_description)
-    EmptyStateSection(
-        icon = Icons.Outlined.AddShoppingCart,
-        iconContentDescription = cartDescription,
-        text = stringResource(R.string.woopos_cart_empty_subtitle)
-    )
 }
 
 @Composable
@@ -284,30 +284,20 @@ private fun EmptyCartOrDivider() {
     ) {
         HorizontalDivider(
             modifier = Modifier.weight(1f),
-            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.2f)
+            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.15f)
         )
         WooPosText(
             text = stringResource(R.string.woopos_cart_empty_or),
-            style = WooPosTypography.BodyMedium,
+            style = WooPosTypography.BodySmall,
+            fontWeight = FontWeight.Bold,
             color = WooPosTheme.colors.onSurfaceVariantLowest,
             modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
         )
         HorizontalDivider(
             modifier = Modifier.weight(1f),
-            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.2f)
+            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.15f)
         )
     }
-}
-
-@Composable
-private fun EmptyCartScanningSection(
-    onBarcodeSetupClicked: () -> Unit
-) {
-    EmptyStateSection(
-        icon = Icons.Outlined.DocumentScanner,
-        text = stringResource(R.string.woopos_cart_empty_scan_products),
-        action = onBarcodeSetupClicked
-    )
 }
 
 @Composable
