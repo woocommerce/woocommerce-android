@@ -2,10 +2,14 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Icon
@@ -26,14 +30,23 @@ fun RoundedBorderDropDownWithLabel(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    icon: @Composable (RowScope.() -> Unit)? = null
 ) {
-    Column(modifier = modifier) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = colorResource(id = R.color.color_on_surface),
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
+    Column(modifier = modifier.width(IntrinsicSize.Max)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = colorResource(id = R.color.color_on_surface),
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            icon?.invoke(this)
+        }
         RoundedCornerBoxWithBorder(innerModifier = Modifier.clickable { onClick() }) {
             Row(
                 modifier = Modifier
@@ -68,7 +81,8 @@ private fun RoundedBorderDropDownWithLabelPreview() {
         RoundedBorderDropDownWithLabel(
             label = "Label",
             text = "Text",
-            onClick = {}
+            onClick = {},
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

@@ -18,6 +18,14 @@ internal abstract class LocationsDao {
     @Query(
         """
         SELECT * FROM LocationEntity
+        WHERE code = :country AND parentCode = ""
+        """
+    )
+    abstract suspend fun getCountry(country: String): WCLocationModel?
+
+    @Query(
+        """
+        SELECT * FROM LocationEntity
         WHERE parentCode = :country
         """
     )

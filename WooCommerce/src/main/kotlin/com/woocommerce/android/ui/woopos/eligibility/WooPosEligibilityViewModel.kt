@@ -96,7 +96,8 @@ class WooPosEligibilityViewModel @Inject constructor(
                     resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_currency_generic)
                 }
             }
-            WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected ->
+            WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
+            WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
         }
     }

@@ -3,23 +3,18 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class GetShipments @Inject constructor(
+    private val wooShippingLabelRepository: WooShippingLabelRepository,
     private val orderDetailRepository: OrderDetailRepository,
-    private val productDetailRepository: ProductDetailRepository,
-    private val configDataStore: WooShippingConfigDataStore,
-    private val mapper: WooShippingNetworkingMapper,
+    private val productDetailRepository: ProductDetailRepository
 ) {
     suspend operator fun invoke(order: Order): List<ShipmentUIModel> {
         val refunds = orderDetailRepository.getOrderRefunds(order.id)
@@ -46,11 +41,10 @@ class GetShipments @Inject constructor(
             }
         }
 
-        val config = configDataStore.observeConfig(order.id).first()
+        val shipments = wooShippingLabelRepository.getShipments(order.id)
+        val labels = wooShippingLabelRepository.getLabels(order.id)
 
-        val shipments = config?.shipments
-
-        var shipmentUIModelList = if (shipments.isNullOrEmpty()) {
+        var shipmentUIModelList = if (shipments.isEmpty()) {
             listOf(ShipmentUIModel(localId = "0", items = orderItems))
         } else {
             shipments.map { (shipmentId, shipmentItems) ->
@@ -64,28 +58,15 @@ class GetShipments @Inject constructor(
             }
         }.sortedBy { it.localId.toLong() }
 
-        config?.shippingLabelData?.let { data ->
-            // If there are purchased labels, merge their data into the result list
-            data.currentOrderLabels?.let { labels ->
-                shipmentUIModelList = mergePurchaseData(shipmentUIModelList, labels)
-            }
-
-            // If there are stored addresses, merge them into the result list
-            data.storedData?.let { storedData ->
-                shipmentUIModelList = mergeAddresses(
-                    shipmentUIModelList,
-                    storedData.selectedOrigin,
-                    storedData.selectedDestination
-                )
-            }
-        }
+        // If there are purchased labels, merge their data into the result list
+        shipmentUIModelList = mergePurchaseData(shipmentUIModelList, labels)
 
         return shipmentUIModelList
     }
 
     private fun mergePurchaseData(
         shipmentUIModelList: List<ShipmentUIModel>,
-        currentOrderLabels: List<ShippingLabelDTO>
+        currentOrderLabels: List<ShippingLabelModel>
     ) = shipmentUIModelList.map { shipmentUIModel ->
         val purchasedNonRefundedLabel = currentOrderLabels.find {
             it.shipmentId == shipmentUIModel.remoteId && it.status == ShippingLabelStatus.PURCHASED && it.refund == null
@@ -93,26 +74,7 @@ class GetShipments @Inject constructor(
         if (purchasedNonRefundedLabel == null) {
             shipmentUIModel
         } else {
-            shipmentUIModel.copy(purchased = true, label = mapper.invoke(purchasedNonRefundedLabel))
+            shipmentUIModel.copy(purchased = true, label = purchasedNonRefundedLabel)
         }
     }
-
-    private fun mergeAddresses(
-        shipmentUIModelList: List<ShipmentUIModel>,
-        originAddresses: Map<String, OriginAddressDTO>?,
-        destinationAddresses: Map<String, DestinationAddressDTO>?
-    ): List<ShipmentUIModel> = shipmentUIModelList.map { shipmentUIModel ->
-        val remoteId = shipmentUIModel.remoteId ?: return@map shipmentUIModel
-        val key = getStoredDataKey(remoteId)
-
-        val updatedLabel = shipmentUIModel.label?.copy(
-            originAddress = originAddresses?.get(key)?.let { mapper(it) }
-                ?: shipmentUIModel.label.originAddress,
-            destinationAddress = destinationAddresses?.get(key)?.let { mapper(it) }
-                ?: shipmentUIModel.label.destinationAddress
-        )
-        shipmentUIModel.copy(label = updatedLabel)
-    }
-
-    private fun getStoredDataKey(shipmentId: String) = "shipment_$shipmentId"
 }

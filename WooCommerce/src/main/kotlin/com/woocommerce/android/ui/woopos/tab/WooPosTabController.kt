@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -20,7 +21,8 @@ class WooPosTabController @Inject constructor(
     private val appPrefs: AppPrefs,
     private val selectedSite: SelectedSite,
     private val shouldPosTabBeVisible: WooPosTabShouldBeVisible,
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val wooPosLog: WooPosLogWrapper
 ) : DefaultLifecycleObserver {
 
     private lateinit var activity: MainActivity
@@ -64,10 +66,22 @@ class WooPosTabController @Inject constructor(
 
     private fun updateTabVisibilityFromRemoteAndPersist() {
         activity.lifecycleScope.launch {
-            val tabShouldBeVisible = shouldPosTabBeVisible()
-            setPOSTabVisibility(tabShouldBeVisible)
-            appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), tabShouldBeVisible)
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(tabShouldBeVisible))
+            val result = shouldPosTabBeVisible()
+
+            result.onSuccess { tabShouldBeVisible ->
+                setPOSTabVisibility(tabShouldBeVisible)
+                if (tabShouldBeVisible) {
+                    appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId())
+                } else {
+                    appPrefs.clearPOSTabVisibilityForSite(selectedSite.getSelectedSiteId())
+                }
+            }
+
+            result.onFailure { error ->
+                wooPosLog.i("POS Tab Visibility Value cannot be determined")
+            }
+
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(result))
         }
     }
 

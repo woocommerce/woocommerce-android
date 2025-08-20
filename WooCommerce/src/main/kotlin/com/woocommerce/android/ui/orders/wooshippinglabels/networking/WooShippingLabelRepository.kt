@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAccountSettingsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
@@ -13,18 +13,22 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
+import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
 import javax.inject.Inject
 
 class WooShippingLabelRepository @Inject constructor(
+    private val selectedSite: SelectedSite,
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
     private val eligibilityDataStore: WooShippingEligibilityDataStore,
-    private val configDataStore: WooShippingConfigDataStore,
+    private val wooShippingDao: WooShippingDao,
     private val accountSettingsDataStore: WooShippingAccountSettingsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
@@ -86,7 +90,14 @@ class WooShippingLabelRepository @Inject constructor(
             .also { response ->
                 response.model
                     ?.takeIf { !response.isError }
-                    ?.let { configDataStore.saveConfig(orderId, it.config) }
+                    ?.let { model ->
+                        wooShippingDao.replaceShipments(
+                            mapper(model.config.shipments ?: emptyMap(), site, orderId)
+                        )
+                        wooShippingDao.replaceLabels(
+                            mapper(model.config.shippingLabelData, site, orderId)
+                        )
+                    }
             }
 
     suspend fun fetchPurchasedShippingLabels(
@@ -105,7 +116,24 @@ class WooShippingLabelRepository @Inject constructor(
         site = site,
         orderId = orderId,
         labelId = labelId,
-    ).asWooResult { response -> response.shippingLabel?.let { mapper(it) } }
+    ).also {
+        it.result?.shippingLabel?.let { labelDTO ->
+            // The API doesn't return the origin and destination addresses,
+            // we get it from the already cached labels in the database after the purchase request
+            val currentLabel = wooShippingDao.getLabel(
+                selectedSite.get().localId(),
+                LocalOrRemoteId.RemoteId(orderId),
+                labelId
+            )
+            val updatedLabel = mapper(labelDTO, site, orderId).copy(
+                originAddress = currentLabel?.originAddress,
+                destinationAddress = currentLabel?.destinationAddress
+            )
+            wooShippingDao.insertLabel(updatedLabel)
+        }
+    }.asWooResult { response ->
+        response.shippingLabel?.let { mapper(it) }
+    }
 
     @Suppress("LongParameterList")
     suspend fun purchaseShippingLabel(
@@ -140,7 +168,13 @@ class WooShippingLabelRepository @Inject constructor(
             customs = customsData?.let { mapper.toCustomsDTO(it) },
             hazmat = mapper.toHazmatDTO(hazmatSelection),
             lastOrderCompleted = lastOrderCompleted
-        ).asWooResult { mapper(it) }
+        ).also {
+            it.result?.let { purchaseResultDTO ->
+                wooShippingDao.insertLabels(
+                    mapper.invoke(purchaseResultDTO, site, orderId)
+                )
+            }
+        }.asWooResult { mapper(it) }
     }
 
     suspend fun fetchOriginAddresses(
@@ -164,14 +198,14 @@ class WooShippingLabelRepository @Inject constructor(
             address = mapper.toAddressDTO(address)
         )
 
-        return if (normalizedAddress.result?.success == true) {
+        return if (normalizedAddress.result?.success == true || normalizedAddress.result?.errors != null) {
             normalizedAddress.asWooResult { mapper(it) }
         } else {
             WooResult(
                 WooError(
                     type = WooErrorType.API_ERROR,
                     original = GenericErrorType.INVALID_RESPONSE,
-                    message = normalizedAddress.result?.errors?.keys?.first()
+                    message = "Address normalization failed"
                 )
             )
         }
@@ -274,11 +308,44 @@ class WooShippingLabelRepository @Inject constructor(
         orderId = orderId,
         shipments = shipments,
         shipmentIdsToUpdate = shipmentIdsToUpdate
-    ).asWooResult()
+    ).asWooResult().also {
+        it.model?.data?.let { updatedShipments ->
+            wooShippingDao.replaceShipments(
+                mapper(updatedShipments, site, orderId)
+            )
+        }
+    }
 
     suspend fun refundLabel(
         site: SiteModel,
         orderId: Long,
         labelId: Long
     ): WooResult<RefundLabelResponseDTO> = restClient.refundShippingLabel(orderId, labelId, site).asWooResult()
+
+    suspend fun getShipments(orderId: Long): ShipmentMap {
+        return mapper(wooShippingDao.getShipments(selectedSite.get().localId(), LocalOrRemoteId.RemoteId(orderId)))
+    }
+
+    suspend fun getLabels(
+        orderId: Long
+    ) = wooShippingDao.getLabels(
+        selectedSite.get().localId(),
+        LocalOrRemoteId.RemoteId(orderId)
+    ).map { mapper(it) }
+
+    suspend fun getPurchasedLabels(
+        orderId: Long
+    ) = wooShippingDao.getPurchasedLabels(
+        selectedSite.get().localId(),
+        LocalOrRemoteId.RemoteId(orderId)
+    ).map { mapper(it) }
+
+    fun observeLabel(
+        orderId: Long,
+        labelId: Long
+    ) = wooShippingDao.observeLabel(
+        selectedSite.get().localId(),
+        LocalOrRemoteId.RemoteId(orderId),
+        labelId
+    ).map { entity -> entity?.let { mapper(it) } }
 }

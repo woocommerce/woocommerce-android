@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodM
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -22,9 +23,12 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooS
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.OriginAddressDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
 import com.woocommerce.android.util.StringUtils.combineStrings
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
+import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -95,22 +99,184 @@ class WooShippingNetworkingMapper @Inject constructor(
         )
     }
 
-    operator fun invoke(originAddressDTO: OriginAddressDTO): Address {
-        val (firstName, lastName) = parseFullName(originAddressDTO.name)
+    operator fun invoke(
+        shippingLabelDTO: ShippingLabelDTO,
+        site: SiteModel,
+        orderId: Long
+    ): WooShippingLabelEntity {
+        return WooShippingLabelEntity(
+            localSiteId = site.localId(),
+            orderId = LocalOrRemoteId.RemoteId(orderId),
+            labelId = shippingLabelDTO.labelId ?: 0,
+            tracking = shippingLabelDTO.tracking.orEmpty(),
+            refundableAmount = shippingLabelDTO.refundableAmount ?: BigDecimal.ZERO,
+            status = shippingLabelDTO.status.name,
+            created = shippingLabelDTO.created?.let { Date(it) },
+            carrierId = shippingLabelDTO.carrierId.orEmpty(),
+            serviceName = shippingLabelDTO.serviceName.orEmpty(),
+            commercialInvoiceUrl = shippingLabelDTO.commercialInvoiceUrl.orEmpty(),
+            isCommercialInvoiceSubmittedElectronically = shippingLabelDTO
+                .isCommercialInvoiceSubmittedElectronically == true,
+            packageName = shippingLabelDTO.packageName.orEmpty(),
+            isLetter = shippingLabelDTO.isLetter == true,
+            productNames = shippingLabelDTO.productNames.orEmpty(),
+            productIds = shippingLabelDTO.productIds.orEmpty(),
+            shipmentId = shippingLabelDTO.shipmentId.orEmpty(),
+            receiptItemId = shippingLabelDTO.receiptItemId ?: 0,
+            createdDate = shippingLabelDTO.createdDate?.let { Date(it) },
+            mainReceiptId = shippingLabelDTO.mainReceiptId ?: 0,
+            rate = shippingLabelDTO.rate ?: BigDecimal.ZERO,
+            currency = shippingLabelDTO.currency.orEmpty(),
+            expiryDate = shippingLabelDTO.expiryDate ?: 0,
+            usedDate = shippingLabelDTO.usedDate,
+            refund = shippingLabelDTO.refund?.let { refund ->
+                WooShippingLabelEntity.Refund(
+                    status = refund.status,
+                    requestDate = refund.requestDate?.let { Date(it) }
+                )
+            },
+            originAddress = null,
+            destinationAddress = null,
+        )
+    }
+
+    operator fun invoke(
+        shippingLabelData: ShippingLabelDataDTO,
+        site: SiteModel,
+        orderId: Long
+    ): List<WooShippingLabelEntity> {
+        fun key(shipmentId: String) = "shipment_$shipmentId"
+
+        return shippingLabelData.currentOrderLabels?.map { shippingLabelDTO ->
+            val shipmentKey = shippingLabelDTO.shipmentId?.let { key(it) }
+            val originAddress = shippingLabelData.storedData?.selectedOrigin?.get(shipmentKey)?.let {
+                WooShippingLabelEntity.Address(
+                    company = it.company,
+                    name = it.name,
+                    phone = it.phone,
+                    countryCode = it.country,
+                    state = it.state,
+                    address1 = it.address,
+                    address2 = it.address2,
+                    city = it.city,
+                    postcode = it.postcode,
+                    email = ""
+                )
+            }
+            val destinationAddress = shippingLabelData.storedData?.selectedDestination?.get(shipmentKey)?.let {
+                WooShippingLabelEntity.Address(
+                    company = it.company,
+                    name = it.name,
+                    phone = it.phone,
+                    countryCode = it.country,
+                    state = it.state,
+                    address1 = it.address,
+                    address2 = it.address2,
+                    city = it.city,
+                    postcode = it.postcode,
+                    email = "" // We set the email later from the order details
+                )
+            }
+
+            invoke(shippingLabelDTO, site, orderId).copy(
+                originAddress = originAddress,
+                destinationAddress = destinationAddress
+            )
+        }.orEmpty()
+    }
+
+    operator fun invoke(
+        purchasedShippingLabelResponseDTO: PurchasedShippingLabelResponseDTO,
+        site: SiteModel,
+        orderId: Long
+    ): List<WooShippingLabelEntity> {
+        fun key(shipmentId: String) = "shipment_$shipmentId"
+
+        return purchasedShippingLabelResponseDTO.labels.map { shippingLabelDTO ->
+            val shipmentKey = shippingLabelDTO.shipmentId?.let { key(it) }
+            val originAddress = purchasedShippingLabelResponseDTO.selectedOrigin[shipmentKey]?.let {
+                WooShippingLabelEntity.Address(
+                    company = it.company,
+                    name = it.name,
+                    phone = it.phone,
+                    countryCode = it.country,
+                    state = it.state,
+                    address1 = it.address,
+                    address2 = it.address2,
+                    city = it.city,
+                    postcode = it.postcode,
+                    email = ""
+                )
+            }
+            val destinationAddress = purchasedShippingLabelResponseDTO.selectedDestination[shipmentKey]?.let {
+                WooShippingLabelEntity.Address(
+                    company = it.company,
+                    name = it.name,
+                    phone = it.phone,
+                    countryCode = it.country,
+                    state = it.state,
+                    address1 = it.address,
+                    address2 = it.address2,
+                    city = it.city,
+                    postcode = it.postcode,
+                    email = "" // We set the email later from the order details
+                )
+            }
+
+            invoke(shippingLabelDTO, site, orderId).copy(
+                originAddress = originAddress,
+                destinationAddress = destinationAddress
+            )
+        }
+    }
+
+    operator fun invoke(labelEntity: WooShippingLabelEntity): ShippingLabelModel {
+        return ShippingLabelModel(
+            labelId = labelEntity.labelId,
+            tracking = labelEntity.tracking,
+            refundableAmount = labelEntity.refundableAmount,
+            status = ShippingLabelStatus.valueOf(labelEntity.status),
+            created = labelEntity.created,
+            carrierId = labelEntity.carrierId,
+            serviceName = labelEntity.serviceName,
+            commercialInvoiceUrl = labelEntity.commercialInvoiceUrl,
+            isCommercialInvoiceSubmittedElectronically = labelEntity.isCommercialInvoiceSubmittedElectronically,
+            packageName = labelEntity.packageName,
+            isLetter = labelEntity.isLetter,
+            productNames = labelEntity.productNames,
+            productIds = labelEntity.productIds,
+            shipmentId = labelEntity.shipmentId,
+            receiptItemId = labelEntity.receiptItemId,
+            createdDate = labelEntity.createdDate,
+            mainReceiptId = labelEntity.mainReceiptId,
+            rate = labelEntity.rate,
+            currency = labelEntity.currency,
+            expiryDate = labelEntity.expiryDate,
+            usedDate = labelEntity.usedDate,
+            refund = labelEntity.refund?.let { refund ->
+                ShippingLabelModel.Refund(status = refund.status, requestDate = refund.requestDate)
+            },
+            originAddress = labelEntity.originAddress?.let { invoke(it) },
+            destinationAddress = labelEntity.destinationAddress?.let { invoke(it) }
+        )
+    }
+
+    operator fun invoke(entityAddress: WooShippingLabelEntity.Address): Address {
+        val (firstName, lastName) = parseFullName(entityAddress.name)
         return Address(
-            company = originAddressDTO.company.orEmpty(),
+            company = entityAddress.company.orEmpty(),
             firstName = firstName,
             lastName = lastName,
-            phone = originAddressDTO.phone.orEmpty(),
+            phone = entityAddress.phone.orEmpty(),
             country = Location(
-                name = originAddressDTO.country.orEmpty(),
-                code = originAddressDTO.country.orEmpty()
+                name = entityAddress.countryCode.orEmpty(),
+                code = entityAddress.countryCode.orEmpty()
             ),
-            state = AmbiguousLocation.Raw(originAddressDTO.state.orEmpty()),
-            address1 = originAddressDTO.address.orEmpty(),
-            address2 = originAddressDTO.address2.orEmpty(),
-            city = originAddressDTO.city.orEmpty(),
-            postcode = originAddressDTO.postcode.orEmpty(),
+            state = AmbiguousLocation.Raw(entityAddress.state.orEmpty()),
+            address1 = entityAddress.address1.orEmpty(),
+            address2 = entityAddress.address2.orEmpty(),
+            city = entityAddress.city.orEmpty(),
+            postcode = entityAddress.postcode.orEmpty(),
             email = ""
         )
     }
@@ -223,9 +389,44 @@ class WooShippingNetworkingMapper @Inject constructor(
     operator fun invoke(normalizationResponseDTO: NormalizationResponseDTO): AddressNormalizationModel {
         return AddressNormalizationModel(
             address = invoke(normalizationResponseDTO.address),
-            normalizedAddress = invoke(normalizationResponseDTO.normalizedAddress),
-            isTrivial = normalizationResponseDTO.isTrivialNormalization
+            normalizedAddress = normalizationResponseDTO.normalizedAddress?.let {
+                invoke(normalizationResponseDTO.normalizedAddress)
+            } ?: Address.EMPTY,
+            isTrivial = normalizationResponseDTO.isTrivialNormalization,
+            errors = normalizationResponseDTO.errors
         )
+    }
+
+    operator fun invoke(
+        shipments: ShipmentMap,
+        site: SiteModel,
+        orderId: Long,
+    ): List<WooShippingShipmentEntity> {
+        return shipments.map { (shipmentId, items) ->
+            WooShippingShipmentEntity(
+                localSiteId = site.localId(),
+                orderId = LocalOrRemoteId.RemoteId(orderId),
+                shipmentId = shipmentId,
+                items = items.map { item ->
+                    WooShippingShipmentEntity.Item(
+                        id = item.id,
+                        subItems = item.subItems
+                    )
+                }
+            )
+        }
+    }
+
+    operator fun invoke(shipmentEntities: List<WooShippingShipmentEntity>): ShipmentMap {
+        return shipmentEntities.associate { entity ->
+            val items = entity.items.map {
+                ShipmentItem(
+                    id = it.id,
+                    subItems = it.subItems
+                )
+            }
+            entity.shipmentId to items
+        }
     }
 
     fun toOriginAddressPurchaseDTO(address: OriginShippingAddress): OriginAddressPurchaseDTO {

@@ -16,6 +16,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateProgress
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.announceAccessibilityChange
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -49,10 +50,25 @@ class CardReaderUpdateDialogFragment : PaymentsBaseDialogFragment(R.layout.card_
             viewLifecycleOwner
         ) { event ->
             when (event) {
-                is ExitWithResult<*> -> navigateBackWithResult(
-                    KEY_READER_UPDATE_RESULT,
-                    event.data as UpdateResult
-                )
+                is ExitWithResult<*> -> {
+                    val args = arguments
+                    val isWooPosFlow = args?.getBoolean(
+                        KEY_READER_UPDATE_WOO_POS_FLOW,
+                        false
+                    ) ?: false
+
+                    if (isWooPosFlow) {
+                        parentFragmentManager.setFragmentResult(
+                            WooPosCardReaderActivity.WOO_POS_CARD_UPDATE_REQUEST_KEY,
+                            Bundle()
+                        )
+                    } else {
+                        navigateBackWithResult(
+                            KEY_READER_UPDATE_RESULT,
+                            event.data as UpdateResult
+                        )
+                    }
+                }
 
                 is SoftwareUpdateProgress ->
                     announceSoftwareUpdateProgress(event.progress, binding)
@@ -94,5 +110,6 @@ class CardReaderUpdateDialogFragment : PaymentsBaseDialogFragment(R.layout.card_
 
     companion object {
         const val KEY_READER_UPDATE_RESULT = "key_reader_update_result"
+        const val KEY_READER_UPDATE_WOO_POS_FLOW = "key_reader_update_woo_pos_flow"
     }
 }

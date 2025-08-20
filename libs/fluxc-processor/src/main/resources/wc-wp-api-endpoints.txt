@@ -56,6 +56,7 @@
 
 /settings/general/
 /settings/products/
+/settings/point-of-sale/
 /settings/<group_id>#String/<id>#String
 
 /orders/<id>/refunds

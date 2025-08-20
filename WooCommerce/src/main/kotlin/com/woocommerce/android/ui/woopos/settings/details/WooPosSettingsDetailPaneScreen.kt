@@ -7,24 +7,23 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
+import com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner.WooPosSettingsHardwareBarcodeScannerScreen
+import com.woocommerce.android.ui.woopos.settings.details.hardware.cardreader.WooPosSettingsHardwareCardReaderScreen
 import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailScreen
+import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
 @Composable
 fun WooPosSettingsDetailPaneScreen(
@@ -32,6 +31,7 @@ fun WooPosSettingsDetailPaneScreen(
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
+    onShowScanningSetupDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentDestination = state.currentDestination
@@ -80,15 +80,17 @@ fun WooPosSettingsDetailPaneScreen(
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.BarcodeScanners -> {
-                    BarcodeScannerDetailScreen()
+                    WooPosSettingsHardwareBarcodeScannerScreen(
+                        onShowScanningSetupDialog = onShowScanningSetupDialog
+                    )
                 }
 
                 is WooPosSettingsDetailDestination.Hardware.CardReaders -> {
-                    CardReadersDetailScreen()
+                    WooPosSettingsHardwareCardReaderScreen()
                 }
 
                 is WooPosSettingsDetailDestination.Store.Overview -> {
-                    StoreDetailScreen()
+                    WooPosSettingsStoreScreen()
                 }
 
                 is WooPosSettingsDetailDestination.Help.Overview -> {
@@ -96,50 +98,5 @@ fun WooPosSettingsDetailPaneScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun BarcodeScannerDetailScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WooPosSpacing.Medium.value),
-        contentAlignment = Alignment.Center
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_barcode_scanner_detail_title),
-            style = WooPosTypography.Heading
-        )
-    }
-}
-
-@Composable
-private fun CardReadersDetailScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WooPosSpacing.Medium.value),
-        contentAlignment = Alignment.Center
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_card_reader_detail_title),
-            style = WooPosTypography.Heading
-        )
-    }
-}
-
-@Composable
-private fun StoreDetailScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WooPosSpacing.Medium.value),
-        contentAlignment = Alignment.Center
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_store_category),
-            style = WooPosTypography.Heading
-        )
     }
 }

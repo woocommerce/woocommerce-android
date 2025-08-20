@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.models
 import android.os.Parcelable
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -68,3 +69,17 @@ data class OriginShippingAddress(
         }
     }
 }
+
+fun OriginShippingAddress.toAddress() = Address(
+    firstName = firstName.orEmpty(),
+    lastName = lastName.orEmpty(),
+    company = company.orEmpty(),
+    address1 = address1.orEmpty(),
+    address2 = address2.orEmpty(),
+    city = city.orEmpty(),
+    state = AmbiguousLocation.Raw(state.orEmpty()),
+    postcode = postcode,
+    country = AmbiguousLocation.Raw(country).asLocation(),
+    email = email.orEmpty(),
+    phone = phone.orEmpty()
+)

@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -58,4 +60,12 @@ abstract class ScopedViewModel(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = initialValue
     )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun <T> Flow<T>.transformLatestWithDelay(delayMillis: Long, transform: (T) -> T): Flow<T> =
+        transformLatest { value ->
+            emit(value)
+            delay(delayMillis)
+            emit(transform(value))
+        }
 }
