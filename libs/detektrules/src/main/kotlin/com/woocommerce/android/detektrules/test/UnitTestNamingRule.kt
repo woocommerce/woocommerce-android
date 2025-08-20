@@ -51,14 +51,7 @@ class UnitTestNamingRule(config: Config) : Rule(config) {
     }
 
     private fun isAndroidTest(function: KtNamedFunction): Boolean {
-        val imports = function.containingKtFile.importList?.imports?.mapNotNull {
-            it.importedFqName?.asString()
-        } ?: emptyList()
-
-        return imports.any {
-            it.startsWith("androidx.test") ||
-                it.startsWith("android.test") ||
-                it.contains("InstrumentationRegistry")
-        }
+        val filePath = function.containingKtFile.virtualFilePath
+        return filePath.contains("androidTest")
     }
 }
