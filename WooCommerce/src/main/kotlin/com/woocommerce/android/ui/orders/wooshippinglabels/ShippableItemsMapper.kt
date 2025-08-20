@@ -68,7 +68,7 @@ fun List<ShippableItemModel>.toUIModel(
             ?: WooShippingLabelCreationViewModel.HazmatState.NoSelection,
         shippingRatesState = shippingRates,
         shipmentCostUI = shipmentCostUI,
-        purchaseState = shipmentUIModel.purchaseState,
+        isPurchaseAPILoading = shipmentUIModel.isPurchaseAPILoading,
         status = shipmentUIModel.label?.status ?: ShippingLabelStatus.UNKNOWN,
         shipmentPrintLabelUI = ShipmentPrintLabelUI(
             availablePrintSizes = getPaperSizes(shipmentUIModel.label?.originAddress?.country?.code),

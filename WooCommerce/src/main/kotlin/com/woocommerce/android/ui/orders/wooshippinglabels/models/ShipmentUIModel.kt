@@ -8,7 +8,7 @@ data class ShipmentUIModel(
     val localId: String,
     val remoteId: String? = null,
     val items: List<ShippableItemModel>,
-    val purchaseState: PurchaseState = PurchaseState.NoStarted,
+    val isPurchaseAPILoading: Boolean = false,
     val label: ShippingLabelModel? = null,
 ) : Parcelable {
     /**
@@ -18,12 +18,4 @@ data class ShipmentUIModel(
     val purchased: Boolean
         get() = label?.status == ShippingLabelStatus.PURCHASE_IN_PROGRESS ||
             (label?.status == ShippingLabelStatus.PURCHASED && label.refund == null)
-}
-
-@Parcelize
-sealed class PurchaseState : Parcelable {
-    data object NoStarted : PurchaseState()
-    data object InProgress : PurchaseState()
-    data object Success : PurchaseState()
-    data object Error : PurchaseState()
 }

@@ -49,8 +49,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.domain.DownloadAndPri
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
@@ -704,7 +702,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             hazmatStatesFlow
         ) { accountSettings, order, shipments, addresses, shippingRatesList,
             packageSelections, uiState, customsState, hazmatStates ->
-            if (accountSettings == null || shipments.any { it.purchaseState is PurchaseState.Error }) {
+            if (accountSettings == null) {
                 return@combine WooShippingViewState.Error
             }
 
@@ -932,6 +930,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     @Suppress("ComplexCondition")
     fun onPurchaseShippingLabel() {
+        val selectedShipmentIndex = selectedShipmentIndex
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
         val selectedAddress = shippingAddresses.value.getOrNull(selectedShipmentIndex)
         val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]
@@ -944,10 +943,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val shippableItemsIdList = shipmentItems.value[selectedShipmentIndex].map { it.productId }
         val hazmatSelection = hazmatStatesFlow.value[selectedShipmentIndex].hazmatSelection
 
-        val fallbackPurchaseState = shipments.value[selectedShipmentIndex].purchaseState
         updateShipment(
             selectedShipmentIndex,
-            shipments.value[selectedShipmentIndex].copy(purchaseState = PurchaseState.InProgress)
+            shipments.value[selectedShipmentIndex].copy(isPurchaseAPILoading = true)
         )
 
         val customsData = customsFormDataFlow.value[selectedShipmentIndex]
@@ -969,12 +967,21 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 hazmatSelection
             ).fold(
                 onSuccess = {
-                    handlePurchaseSuccess(it, selectedShipmentIndex)
+                    updateShipment(
+                        selectedShipmentIndex,
+                        shipments.value[selectedShipmentIndex].copy(
+                            isPurchaseAPILoading = false,
+                            label = it.labels.firstOrNull()
+                        )
+                    )
+                    observeShippingLabelPurchaseStatus(selectedShipmentIndex)
+                    // TODO check if we need to track this here or in the observeShippingLabelPurchaseStatus method
+                    analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
                 },
                 onFailure = { exception ->
                     updateShipment(
                         selectedShipmentIndex,
-                        shipments.value[selectedShipmentIndex].copy(purchaseState = fallbackPurchaseState)
+                        shipments.value[selectedShipmentIndex].copy(isPurchaseAPILoading = false)
                     )
                     if (exception is WooException && exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE) {
                         triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
@@ -991,17 +998,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 }
             )
         }
-    }
-
-    private fun handlePurchaseSuccess(result: PurchasedLabelData, shipmentId: Int) {
-        updateShipment(shipmentId, shipments.value[shipmentId].copy(purchaseState = PurchaseState.Success))
-        result.labels
-            .firstOrNull()
-            ?.let { purchasedLabel ->
-                updateShipment(shipmentId, shipments.value[shipmentId].copy(label = purchasedLabel))
-                observeShippingLabelPurchaseStatus(shipmentId)
-            }
-        analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
     }
 
     fun onSelectedRateSortOrderChanged(option: ShippingSortOption) {
@@ -1416,7 +1412,7 @@ data class ShipmentUI(
     val hazmatState: HazmatState,
     val shippingRatesState: ShippingRatesState,
     val shipmentCostUI: ShipmentCostUI?,
-    val purchaseState: PurchaseState = PurchaseState.NoStarted,
+    val isPurchaseAPILoading: Boolean = false,
     val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
     val shipmentPrintLabelUI: ShipmentPrintLabelUI?,
 ) : Parcelable {
