@@ -35,6 +35,4 @@ class UserAgent(
 
         "$systemUserAgent $appVersionName".trim()
     }
-
-    override fun toString(): String = apiUserAgent
 }
