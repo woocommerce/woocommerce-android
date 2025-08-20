@@ -44,7 +44,6 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.AccessibilityAnnouncement
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -91,7 +90,6 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentSuccess) {
             if (state is WooPosTotalsViewState.PaymentSuccess) {
-                AccessibilityAnnouncement(text = stringResource(R.string.woopos_payment_successful_label))
                 WooPosPaymentSuccessScreen(
                     state,
                     onReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked) },
@@ -108,7 +106,6 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.Error) {
             if (state is WooPosTotalsViewState.Error) {
-                AccessibilityAnnouncement(text = state.message)
                 TotalsErrorScreen(
                     errorMessage = state.message,
                     onUIEvent = onUIEvent
@@ -118,7 +115,6 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.InvalidCouponError) {
             if (state is WooPosTotalsViewState.InvalidCouponError) {
-                AccessibilityAnnouncement(text = "${state.message}: ${state.reason}")
                 TotalsInvalidCouponsErrorScreen(
                     errorMessage = state.message,
                     errorReason = state.reason,
@@ -129,15 +125,12 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentInProgress) {
             if (state is WooPosTotalsViewState.PaymentInProgress) {
-                AccessibilityAnnouncement(state.title)
-
                 WooPosPaymentInProgressScreen(state, onUIEvent)
             }
         }
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentFailed) {
             if (state is WooPosTotalsViewState.PaymentFailed) {
-                AccessibilityAnnouncement(state.title)
                 WooPosPaymentFailedScreen(
                     state = state,
                     onUIEvent = onUIEvent,
@@ -187,25 +180,21 @@ private fun TotalsLoaded(
                 when (val readerStatus = state.readerStatus) {
                     is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
                         ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
-                        AccessibilityAnnouncement(text = readerStatus.title)
                     }
                     is WooPosTotalsViewState.ReaderStatus.Preparing -> {
                         PreparingReader(
                             title = readerStatus.title,
                             subtitle = readerStatus.subtitle
                         )
-                        AccessibilityAnnouncement(text = readerStatus.title)
                     }
                     is WooPosTotalsViewState.ReaderStatus.CheckingOrder -> {
                         PreparingReader(
                             title = readerStatus.title,
                             subtitle = readerStatus.subtitle
                         )
-                        AccessibilityAnnouncement(text = readerStatus.title)
                     }
                     is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> {
                         ReaderReadyForPayment(readerStatus)
-                        AccessibilityAnnouncement(text = readerStatus.title)
                     }
                     WooPosTotalsViewState.ReaderStatus.Unavailable -> Unit
                 }

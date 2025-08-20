@@ -79,7 +79,6 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.AccessibilityAnnouncement
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
@@ -234,8 +233,6 @@ private fun CartBodyWithItems(
         label = "cart list height animation"
     )
 
-    AnnounceCartItemChangesForAccessibility(items)
-
     WooPosLazyColumn(
         modifier = modifier
             .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
@@ -287,46 +284,6 @@ private fun CartBodyWithItems(
             Spacer(modifier = Modifier.height(spacerHeight))
         }
     }
-}
-
-@Composable
-private fun AnnounceCartItemChangesForAccessibility(
-    items: List<WooPosCartItemViewState>,
-) {
-    val context = LocalContext.current
-    val previousItems = remember { mutableStateOf<List<WooPosCartItemViewState>>(emptyList()) }
-    var announcement by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(items) {
-        val changedItem = items.firstOrNull { currentItem ->
-            val previousItem = previousItems.value.find { it.itemNumber == currentItem.itemNumber }
-            previousItem == null || currentItem::class != previousItem::class
-        }
-
-        announcement = changedItem?.let { currentItem ->
-            when (currentItem) {
-                is WooPosCartItemViewState.Product ->
-                    context.getString(
-                        R.string.woopos_cart_product_added_to_cart_accessibility,
-                        currentItem.name, currentItem.price
-                    )
-                is WooPosCartItemViewState.Coupon ->
-                    context.getString(
-                        R.string.woopos_cart_coupon_added_to_cart_accessibility,
-                        currentItem.name
-                    )
-                is WooPosCartItemViewState.Error ->
-                    context.getString(
-                        R.string.woopos_cart_adding_item_to_cart_failed,
-                        currentItem.message
-                    )
-                is WooPosCartItemViewState.Loading ->
-                    context.getString(R.string.woopos_cart_searching_for_item)
-            }
-        }
-        previousItems.value = items
-    }
-
-    announcement?.let { AccessibilityAnnouncement(text = it) }
 }
 
 @Composable
