@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemM
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOptionUI
@@ -199,12 +198,6 @@ object ShippingLabelSampleData {
             )
         )
     }
-
-    fun getShipmentPrintLabelUI() = ShipmentPrintLabelUI(
-        availablePrintSizes = listOf(WooShippingLabelPaperSize.LABEL, WooShippingLabelPaperSize.LETTER),
-        isRefundAvailable = true,
-        isCustomsFormAvailable = true
-    )
 
     @Suppress("LongMethod")
     fun getShippingLabelUIModel(purchased: Boolean = false) = ShipmentUIModel(

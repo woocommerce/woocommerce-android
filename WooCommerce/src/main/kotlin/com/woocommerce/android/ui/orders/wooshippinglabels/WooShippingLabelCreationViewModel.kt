@@ -1413,8 +1413,7 @@ data class ShipmentUI(
     val shippingRatesState: ShippingRatesState,
     val shipmentCostUI: ShipmentCostUI?,
     val isPurchaseAPILoading: Boolean = false,
-    val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
-    val shipmentPrintLabelUI: ShipmentPrintLabelUI?,
+    val labelPurchaseStatus: LabelPurchaseStatus = LabelPurchaseStatus.Idle
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()
@@ -1434,12 +1433,23 @@ data class ShipmentCostUI(
     val optionsWithFees: Map<String, String>,
 ) : Parcelable
 
-@Parcelize
-data class ShipmentPrintLabelUI(
-    val availablePrintSizes: List<WooShippingLabelPaperSize>,
-    val isRefundAvailable: Boolean = false,
-    val isCustomsFormAvailable: Boolean = false,
-) : Parcelable
+sealed interface LabelPurchaseStatus : Parcelable {
+    @Parcelize
+    data object Idle : LabelPurchaseStatus
+
+    @Parcelize
+    data object PurchaseInProgress : LabelPurchaseStatus
+
+    @Parcelize
+    data class Purchased(
+        val availablePrintSizes: List<WooShippingLabelPaperSize>,
+        val isRefundAvailable: Boolean = false,
+        val isCustomsFormAvailable: Boolean = false
+    ) : LabelPurchaseStatus
+
+    @Parcelize
+    data class Failed(val errorMessage: String?) : LabelPurchaseStatus
+}
 
 data class PurchaseSectionUI(
     val isVisible: Boolean,
