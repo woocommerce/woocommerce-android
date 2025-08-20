@@ -8,6 +8,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,6 +21,7 @@ class WooPosCardReaderFacade @Inject constructor(
     private var activity: AppCompatActivity? = null
 
     val readerStatus: StateFlow<CardReaderStatus> = cardReaderManager.readerStatus
+    val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability> = cardReaderManager.softwareUpdateAvailability
 
     override fun onCreate(owner: LifecycleOwner) {
         activity = owner as AppCompatActivity

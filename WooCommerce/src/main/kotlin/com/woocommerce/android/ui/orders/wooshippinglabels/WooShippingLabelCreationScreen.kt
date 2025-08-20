@@ -333,8 +333,7 @@ private fun LabelCreationScreenWithBottomSheet(
             Column(
                 modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(bottom = 8.dp),
             ) {
                 val scope = rememberCoroutineScope()
                 val pagerState = rememberPagerState(initialPage = uiState.selectedIndex) { shipmentUIList.size }
@@ -345,7 +344,7 @@ private fun LabelCreationScreenWithBottomSheet(
 
                 if (shipmentUIList.size == 1 && shouldShowSplitShipmentButton) {
                     Row(
-                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                        modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -487,11 +486,7 @@ private fun CreateShippingCards(
             shippableItems = shipmentUI,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    start = dimensionResource(R.dimen.major_100),
-                    end = dimensionResource(R.dimen.major_100),
-                    bottom = dimensionResource(R.dimen.major_100)
-                ),
+                .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp),
             isExpanded = isExpanded.value,
             onExpand = { isExpanded.value = it }
         )
@@ -881,7 +876,7 @@ private fun WooShippingLabelCreationScreenPreview() {
             ),
             onEditCustomsClick = {},
             onEditDestinationAddress = {},
-            destinationStatus = AddressStatus.VERIFIED,
+            destinationStatus = AddressStatus.Verified,
             onLabelPaperSizeOptionSelected = {},
             onPrintShippingLabelClicked = {},
             onTrackShipmentClicked = {},

@@ -6,8 +6,10 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -37,7 +39,7 @@ fun WCOutlinedSpinner(
     helperText: String? = null,
     enabled: Boolean = true
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.width(IntrinsicSize.Max)) {
         Box {
             OutlinedTextField(
                 value = value,
@@ -50,7 +52,8 @@ fun WCOutlinedSpinner(
                     Icon(painter = painterResource(id = R.drawable.ic_arrow_drop_down), contentDescription = null)
                 },
                 enabled = enabled,
-                modifier = modifier
+                modifier = Modifier
+                    .fillMaxWidth()
                     .focusable(false)
             )
             // Capture and consume click events, this makes the text field non-focusable too.

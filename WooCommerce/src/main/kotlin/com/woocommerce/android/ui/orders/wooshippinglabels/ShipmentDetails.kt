@@ -678,7 +678,7 @@ fun ShipmentDetailsExpandedPreview() {
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
-                destinationStatus = AddressStatus.VERIFIED,
+                destinationStatus = AddressStatus.Verified,
                 shipmentPurchased = false,
                 onPeekHeightChanged = {}
             )
@@ -712,7 +712,7 @@ private fun ShipmentDetailsCollapsedPreview() {
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
-                destinationStatus = AddressStatus.VERIFIED,
+                destinationStatus = AddressStatus.Verified,
                 shipmentPurchased = false,
                 onPeekHeightChanged = {},
             )

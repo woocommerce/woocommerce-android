@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.tab
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
+import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -29,10 +30,11 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
 
     private lateinit var sut: WooPosTabShouldBeVisible
+    private lateinit var siteModel: SiteModel
 
     @Before
     fun setup() = testBlocking {
-        val siteModel = SiteModel().also { it.id = 1 }
+        siteModel = SiteModel().also { it.id = 1 }
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
         whenever(isScreenSizeAllowed()).thenReturn(true)
         whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(true)
@@ -41,41 +43,51 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
 
         sut = WooPosTabShouldBeVisible(
             selectedSite = selectedSite,
-            wooCommerceStore = wooCommerceStore,
             isScreenSizeAllowed = isScreenSizeAllowed,
+            wooCommerceStore = wooCommerceStore,
             isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
             wooPosLog = mock()
         )
     }
 
     @Test
-    fun `given feature flag enabled and supported country, when invoked, then return true`() = testBlocking {
-        assertTrue(sut())
+    fun `given feature flag enabled and supported country, when invoked, then return success true`() = testBlocking {
+        val r = sut()
+        assertTrue(r.isSuccess)
+        assertTrue(r.getOrThrow())
     }
 
     @Test
-    fun `given feature flag disabled, when invoked, then return false`() = testBlocking {
+    fun `given feature flag disabled, when invoked, then return success false`() = testBlocking {
         whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(false)
-        assertFalse(sut())
+        val r = sut()
+        assertTrue(r.isSuccess)
+        assertFalse(r.getOrThrow())
     }
 
     @Test
-    fun `given screen size not allowed, when invoked, then return false`() = testBlocking {
+    fun `given screen size not allowed, when invoked, then return success false`() = testBlocking {
         whenever(isScreenSizeAllowed()).thenReturn(false)
-        assertFalse(sut())
+        val r = sut()
+        assertTrue(r.isSuccess)
+        assertFalse(r.getOrThrow())
     }
 
     @Test
-    fun `given null site, when invoked, then return false`() = testBlocking {
+    fun `given null site, when invoked, then return failure unknown`() = testBlocking {
         whenever(selectedSite.getOrNull()).thenReturn(null)
-        assertFalse(sut())
+        val r = sut()
+        assertTrue(r.isFailure)
+        assertTrue(r.exceptionOrNull() is WooPosCouldNotDetermineValueException)
     }
 
     @Test
-    fun `given unsupported country, when invoked, then return false`() = testBlocking {
+    fun `given unsupported country, when invoked, then return success false`() = testBlocking {
         val siteSettings = buildSiteSettings(countryCode = "ca")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).thenReturn(WooResult(siteSettings))
-        assertFalse(sut())
+        val r = sut()
+        assertTrue(r.isSuccess)
+        assertFalse(r.getOrThrow())
     }
 
     @Test
@@ -89,19 +101,23 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given fetched settings with supported country, when invoked, then return true`() = testBlocking {
+    fun `given fetched settings with supported country, when invoked, then return success true`() = testBlocking {
         val fetchedSettings = buildSiteSettings(countryCode = "gb")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).thenReturn(WooResult(fetchedSettings))
 
-        assertTrue(sut())
+        val r = sut()
+        assertTrue(r.isSuccess)
+        assertTrue(r.getOrThrow())
     }
 
     @Test
-    fun `given fetched settings with unsupported country, when invoked, then return false`() = testBlocking {
+    fun `given fetched settings with unsupported country, when invoked, then return success false`() = testBlocking {
         val fetchedSettings = buildSiteSettings(countryCode = "ca")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).thenReturn(WooResult(fetchedSettings))
 
-        assertFalse(sut())
+        val r = sut()
+        assertTrue(r.isSuccess)
+        assertFalse(r.getOrThrow())
     }
 
     private fun buildSiteSettings(countryCode: String = "us") =

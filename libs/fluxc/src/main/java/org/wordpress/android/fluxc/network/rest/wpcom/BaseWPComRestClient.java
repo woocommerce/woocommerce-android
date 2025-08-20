@@ -1,11 +1,11 @@
 package org.wordpress.android.fluxc.network.rest.wpcom;
 
+import static org.wordpress.android.fluxc.utils.WPComRestClientUtils.getLocaleParamName;
+
 import android.content.Context;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-
-import static org.wordpress.android.fluxc.utils.WPComRestClientUtils.getLocaleParamName;
 
 import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder;
@@ -89,7 +89,7 @@ public abstract class BaseWPComRestClient {
     protected Request addUnauthedRequest(AccountSocialRequest request, boolean addLocaleParameter) {
         if (addLocaleParameter) {
             addLocaleToRequest(request);
-            request.setUserAgent(mUserAgent.getUserAgent());
+            request.setUserAgent(mUserAgent.getApiUserAgent());
         }
         return addRequest(request);
     }
@@ -113,7 +113,7 @@ public abstract class BaseWPComRestClient {
     private WPComGsonRequest setRequestAuthParams(WPComGsonRequest request, boolean shouldAuth) {
         request.setOnAuthFailedListener(mOnAuthFailedListener);
         request.setOnJetpackTunnelTimeoutListener(mOnJetpackTunnelTimeoutListener);
-        request.setUserAgent(mUserAgent.getUserAgent());
+        request.setUserAgent(mUserAgent.getApiUserAgent());
         request.setAccessToken(shouldAuth ? mAccessToken.get() : null);
         return request;
     }

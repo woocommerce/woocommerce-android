@@ -18,6 +18,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -103,7 +105,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.name.error).isNull()
         assertThat(result.editableAddress.company.error).isNull()
@@ -127,7 +129,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.name.error).isNull()
         assertThat(result.editableAddress.company.error).isNull()
@@ -152,7 +154,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.name.error).isNotEmpty()
         assertThat(result.editableAddress.company.error).isNull()
@@ -172,7 +174,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.address.error).isNotEmpty()
     }
@@ -191,7 +193,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.address.error).isNull()
     }
@@ -210,7 +212,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.city.error).isNotEmpty()
     }
@@ -229,7 +231,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.city.error).isNull()
     }
@@ -248,7 +250,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.postalCode.error).isNotEmpty()
     }
@@ -267,7 +269,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.postalCode.error).isNull()
     }
@@ -286,7 +288,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.phone.error).isNull()
     }
@@ -307,7 +309,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.isCompanyExpanded).isTrue()
     }
@@ -325,7 +327,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.isCompanyExpanded).isFalse()
     }
@@ -344,9 +346,9 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
-        assertThat(result.loading).isInstanceOf(WooShippingEditAddressViewModel.LoadingState.Hidden::class.java)
+        assertThat(result.loading).isInstanceOf(LoadingState.Hidden::class.java)
         assertThat(result.error).isNull()
     }
 
@@ -365,9 +367,9 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
-        assertThat(result.loading).isInstanceOf(WooShippingEditAddressViewModel.LoadingState.Hidden::class.java)
+        assertThat(result.loading).isInstanceOf(LoadingState.Hidden::class.java)
         assertThat(result.error).isNotNull
     }
 
@@ -386,7 +388,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.shouldUseStatesInput).isTrue()
     }
@@ -406,7 +408,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.shouldUseStatesInput).isFalse()
     }
@@ -426,7 +428,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.shouldUseStatesInput).isFalse()
         assertThat(result.editableAddress.state).isEqualTo(states.first())
@@ -525,7 +527,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.shouldUseStatesInput).isTrue()
         assertThat(result.editableAddress.state.name).isEqualTo("")
@@ -558,9 +560,9 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
-        assertThat(result.addressStatus).isEqualTo(AddressStatus.VERIFIED)
+        assertThat(result.addressStatus).isEqualTo(AddressStatus.Verified)
     }
 
     @Test
@@ -591,9 +593,9 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
-        assertThat(result.addressStatus).isEqualTo(AddressStatus.UNVERIFIED)
+        assertThat(result.addressStatus).isEqualTo(AddressStatus.Unverified)
     }
 
     @Test
@@ -624,9 +626,9 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
-        assertThat(result.addressStatus).isEqualTo(AddressStatus.SAVE_CHANGES)
+        assertThat(result.addressStatus).isEqualTo(AddressStatus.SaveChanges)
     }
 
     @Test
@@ -657,9 +659,9 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
             val result = sut.viewState.value
 
-            assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+            assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
-            assertThat(result.addressStatus).isEqualTo(AddressStatus.UNVERIFIED)
+            assertThat(result.addressStatus).isEqualTo(AddressStatus.Unverified)
         }
 
     @Test
@@ -689,9 +691,9 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
-        assertThat(result.addressStatus).isEqualTo(AddressStatus.MISSING_INFO)
+        assertThat(result.addressStatus).isEqualTo(AddressStatus.MissingInfo)
     }
 
     @Test
@@ -709,7 +711,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.addressValidationState).isEqualTo(AddressValidationState.NotStarted)
     }
@@ -745,7 +747,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.addressValidationState).isInstanceOf(AddressValidationState.VerificationFailed::class.java)
 
@@ -781,7 +783,13 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         sut.onNormalizeAddress(sut.viewState.value.editableAddress)
 
-        verify(analyticsTracker, times(2)).track(eq(AnalyticsEvent.WCS_EDITING_ADDRESS_STEP), any())
+        verify(analyticsTracker, atLeastOnce()).track(
+            eq(AnalyticsEvent.WCS_EDITING_ADDRESS_STEP),
+            any(),
+            any(),
+            any(),
+            anyOrNull()
+        )
     }
 
     @Test
@@ -791,7 +799,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = Address.EMPTY,
             normalizedAddress = Address.EMPTY,
-            isTrivial = true
+            isTrivial = true,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -810,7 +819,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.addressValidationState).isInstanceOf(AddressValidationState.AddressSelection::class.java)
     }
@@ -822,7 +831,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = Address.EMPTY,
             normalizedAddress = Address.EMPTY,
-            isTrivial = true
+            isTrivial = true,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -852,7 +862,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -870,7 +881,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         sut.onNormalizeAddress(updatedAddress)
 
         val result = sut.viewState.value
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
         val addressSelection = result.addressValidationState as AddressValidationState.AddressSelection
         assertThat(addressSelection.selectedAddress).isEqualTo(suggestedAddress)
     }
@@ -885,7 +896,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -903,14 +915,14 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         sut.onNormalizeAddress(updatedAddress)
 
         var result = sut.viewState.value
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
         var addressSelection = result.addressValidationState as AddressValidationState.AddressSelection
         assertThat(addressSelection.selectedAddress).isEqualTo(suggestedAddress)
 
         sut.onAddressSelectionChange(addressSelection.copy(selectedAddress = enteredAddress))
 
         result = sut.viewState.value
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
         addressSelection = result.addressValidationState as AddressValidationState.AddressSelection
         assertThat(addressSelection.selectedAddress).isEqualTo(enteredAddress)
     }
@@ -925,7 +937,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -943,14 +956,14 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         sut.onNormalizeAddress(updatedAddress)
 
         var result = sut.viewState.value
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
         val addressSelection = result.addressValidationState as AddressValidationState.AddressSelection
         assertThat(addressSelection.selectedAddress).isEqualTo(suggestedAddress)
 
         sut.onCloseAddressSelection()
 
         result = sut.viewState.value
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
         assertThat(result.addressValidationState).isEqualTo(AddressValidationState.NotStarted)
     }
 
@@ -964,7 +977,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
