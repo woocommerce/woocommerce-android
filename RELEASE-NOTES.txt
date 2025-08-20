@@ -14,6 +14,8 @@
 - [Internal] Migrate the cache of the `/config` endpoint to Room instead of DataStore [https://github.com/woocommerce/woocommerce-android/pull/14462]
 - [*] Improved error handling in login flow when the WP API is not reachable [https://github.com/woocommerce/woocommerce-android/pull/14472]
 - [*] Shipping Labels: Autofill the country field in the customs form and improve the form validation [https://github.com/woocommerce/woocommerce-android/pull/14469]
+- [*] Shipping Labels: Fix UI issues on edit address screen [https://github.com/woocommerce/woocommerce-android/pull/14476]
+- [Internal] Updated UserAgent of API requests to use `http.agent` System Property to fix performance issues related to WebView usage on app launch [https://github.com/woocommerce/woocommerce-android/pull/14431]
 - [*] Shipping Labels: Update button logic on the Hazardous Materials screen [https://github.com/woocommerce/woocommerce-android/pull/14488]
 
 23.0
