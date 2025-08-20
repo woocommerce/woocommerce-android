@@ -5,5 +5,6 @@ import com.woocommerce.android.model.Address
 data class AddressNormalizationModel(
     val address: Address,
     val normalizedAddress: Address,
-    val isTrivial: Boolean
+    val isTrivial: Boolean,
+    val errors: Map<String, String>?
 )

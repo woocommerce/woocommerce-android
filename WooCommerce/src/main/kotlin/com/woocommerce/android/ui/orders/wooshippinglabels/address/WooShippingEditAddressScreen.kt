@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.address
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -11,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,26 +34,27 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Snackbar
-import androidx.compose.material.SnackbarDefaults
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.SnackbarResult
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +68,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -129,8 +134,8 @@ fun WooShippingEditAddressScreen(
 fun WooShippingEditAddressScreen(
     screenTitle: String,
     editableAddress: EditableAddress,
-    loading: WooShippingEditAddressViewModel.LoadingState,
-    error: WooShippingEditAddressViewModel.EditAddressError?,
+    loading: LoadingState,
+    error: EditAddressError?,
     shouldUseStatesInput: Boolean,
     isCompanyExpanded: Boolean,
     addressStatus: AddressStatus,
@@ -171,15 +176,16 @@ fun WooShippingEditAddressScreen(
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         },
-        backgroundColor = MaterialTheme.colors.surface
+        containerColor = MaterialTheme.colorScheme.surface
     ) { padding ->
         Column(modifier = modifier.fillMaxSize()) {
             Column(
-                Modifier
+                modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .padding(padding)
                     .padding(16.dp)
-                    .weight(1f)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 val companyFocusRequester = remember { FocusRequester() }
                 val addressFocusRequester = remember { FocusRequester() }
@@ -212,7 +218,9 @@ fun WooShippingEditAddressScreen(
                     isExpanded = isCompanyExpanded,
                     label = stringResource(id = R.string.woo_shipping_label_company),
                     onExpand = onExpandCompany,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 32.dp)
                 ) {
                     RoundedBorderTextFieldWithLabel(
                         label = stringResource(id = R.string.woo_shipping_label_company),
@@ -225,7 +233,6 @@ fun WooShippingEditAddressScreen(
                                 addressFocusRequester.requestFocus()
                             }
                         ),
-                        modifier = Modifier.padding(top = 8.dp),
                         focusRequester = companyFocusRequester
                     )
                 }
@@ -233,7 +240,6 @@ fun WooShippingEditAddressScreen(
                 RoundedBorderDropDownWithLabel(
                     label = "${stringResource(id = R.string.woo_shipping_label_country)} *",
                     text = editableAddress.country.name,
-                    modifier = Modifier.padding(top = 24.dp),
                     onClick = onCountryChange
                 )
                 RoundedBorderTextFieldWithLabel(
@@ -249,7 +255,6 @@ fun WooShippingEditAddressScreen(
                         }
                     ),
                     focusRequester = addressFocusRequester,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
                 RoundedBorderTextFieldWithLabel(
                     label = stringResource(id = R.string.woo_shipping_label_city),
@@ -268,7 +273,6 @@ fun WooShippingEditAddressScreen(
                         }
                     ),
                     focusRequester = cityFocusRequester,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
 
                 Row {
@@ -287,17 +291,13 @@ fun WooShippingEditAddressScreen(
                             ),
                             focusRequester = stateFocusRequester,
                             onTextChange = onRawStateChange,
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                                .weight(1f)
+                            modifier = Modifier.weight(1f)
                         )
                     } else {
                         RoundedBorderDropDownWithLabel(
                             label = stringResource(id = R.string.woo_shipping_label_state),
                             text = editableAddress.state.name,
-                            modifier = Modifier
-                                .padding(top = 4.dp)
-                                .weight(1f),
+                            modifier = Modifier.weight(1f),
                             onClick = onStateChange
                         )
                     }
@@ -318,9 +318,7 @@ fun WooShippingEditAddressScreen(
                         ),
                         focusRequester = postalCodeFocusRequester,
                         onTextChange = onPostalCodeChange,
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .weight(1f)
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
@@ -339,8 +337,7 @@ fun WooShippingEditAddressScreen(
                             phoneFocusRequester.requestFocus()
                         }
                     ),
-                    focusRequester = emailFocusRequester,
-                    modifier = Modifier.padding(top = 32.dp)
+                    focusRequester = emailFocusRequester
                 )
                 RoundedBorderTextFieldWithLabel(
                     label = stringResource(id = R.string.woo_shipping_label_phone),
@@ -359,10 +356,10 @@ fun WooShippingEditAddressScreen(
                     ),
                     focusRequester = phoneFocusRequester,
                     onTextChange = onPhoneChange,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
-            Surface(elevation = 8.dp) {
+            HorizontalDivider()
+            Surface {
                 AddressStatusSection(
                     editableAddress = editableAddress,
                     addressStatus = addressStatus,
@@ -422,7 +419,7 @@ fun WooShippingEditAddressScreen(
             ErrorSnackbar(snackbarHostState, error)
         }
     }
-    if (loading is WooShippingEditAddressViewModel.LoadingState.DisplayLoading) {
+    if (loading is LoadingState.DisplayLoading) {
         LoadingModal(
             title = loading.title,
             description = loading.message
@@ -431,10 +428,7 @@ fun WooShippingEditAddressScreen(
 }
 
 @Composable
-private fun ErrorSnackbar(
-    snackbarHostState: SnackbarHostState,
-    error: WooShippingEditAddressViewModel.EditAddressError?,
-) {
+private fun ErrorSnackbar(snackbarHostState: SnackbarHostState, error: EditAddressError?) {
     val retry = stringResource(id = R.string.retry)
     LaunchedEffect(error) {
         if (error != null) {
@@ -468,32 +462,33 @@ internal fun AddressStatusSection(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val buttonText = when (addressStatus) {
-            AddressStatus.VERIFIED -> stringResource(id = R.string.close)
-            AddressStatus.VERIFY_FAILED -> stringResource(id = R.string.woo_shipping_address_use_as_entered)
-            AddressStatus.UNVERIFIED -> stringResource(id = R.string.woo_shipping_address_validate_and_save)
-            AddressStatus.MISSING_INFO -> stringResource(id = R.string.woo_shipping_address_missing_info_hint)
-            AddressStatus.SAVE_CHANGES -> stringResource(id = R.string.woo_shipping_address_save_changes)
-            AddressStatus.MISSING_ADDRESS -> ""
+            AddressStatus.Verified -> stringResource(id = R.string.close)
+            is AddressStatus.VerifyFailed -> stringResource(id = R.string.woo_shipping_address_use_as_entered)
+            AddressStatus.Unverified -> stringResource(id = R.string.woo_shipping_address_validate_and_save)
+            AddressStatus.MissingInfo -> stringResource(id = R.string.woo_shipping_address_missing_info_hint)
+            AddressStatus.SaveChanges -> stringResource(id = R.string.woo_shipping_address_save_changes)
+            AddressStatus.MissingAddress -> ""
         }
 
         val buttonAction: () -> Unit = when (addressStatus) {
-            AddressStatus.VERIFIED -> {
+            AddressStatus.Verified -> {
                 { onClose() }
             }
 
-            AddressStatus.UNVERIFIED -> {
+            AddressStatus.Unverified -> {
                 { onNormalizeAddress(editableAddress) }
             }
 
-            AddressStatus.MISSING_INFO -> {
+            AddressStatus.MissingInfo -> {
                 {}
             }
 
-            AddressStatus.SAVE_CHANGES, AddressStatus.VERIFY_FAILED -> {
+            AddressStatus.SaveChanges,
+            is AddressStatus.VerifyFailed -> {
                 { onUpdateAddress(editableAddress) }
             }
 
-            AddressStatus.MISSING_ADDRESS -> {
+            AddressStatus.MissingAddress -> {
                 {}
             }
         }
@@ -503,17 +498,17 @@ internal fun AddressStatusSection(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        if (addressStatus == AddressStatus.VERIFY_FAILED) {
+        if (addressStatus is AddressStatus.VerifyFailed) {
             WCOutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = buttonText,
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
                 onClick = buttonAction
             )
         } else {
             WCColoredButton(
                 onClick = buttonAction,
-                enabled = addressStatus != AddressStatus.MISSING_INFO,
+                enabled = addressStatus != AddressStatus.MissingInfo,
                 text = buttonText,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -537,7 +532,7 @@ internal fun RoundedBorderTextFieldWithLabel(
 ) {
     val hasError = error.isNotNullOrEmpty()
     val color = if (hasError) {
-        MaterialTheme.colors.error
+        MaterialTheme.colorScheme.error
     } else {
         colorResource(R.color.divider_color)
     }
@@ -555,7 +550,7 @@ internal fun RoundedBorderTextFieldWithLabel(
     Column(modifier = modifier) {
         Text(
             text = labelWithRequired,
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(vertical = 8.dp)
         )
         RoundedCornerBoxWithBorder(
@@ -573,12 +568,15 @@ internal fun RoundedBorderTextFieldWithLabel(
                         onValueChange = onTextChange,
                         keyboardOptions = keyboardOptions,
                         keyboardActions = keyboardActions,
-                        textStyle = MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.onSurface),
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        ),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface)
                     )
                     if (text.isEmpty()) {
                         Text(
                             text = hint,
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyLarge,
                             color = colorResource(id = R.color.color_on_surface_disabled)
                         )
                     }
@@ -589,8 +587,8 @@ internal fun RoundedBorderTextFieldWithLabel(
         error?.let {
             Text(
                 text = error,
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
         }
@@ -602,7 +600,7 @@ internal fun RoundedBorderTextFieldWithLabel(
 private fun RoundedBorderTextFieldWithLabelPreview() {
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colors.background)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         RoundedBorderTextFieldWithLabel(
@@ -642,18 +640,16 @@ private fun CollapsedField(
             content()
         } else {
             Row(
-                modifier = modifier
-                    .clickable { onExpand() }
-                    .padding(vertical = 16.dp, horizontal = 8.dp),
+                modifier = modifier.clickable { onExpand() }
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = null,
-                    tint = MaterialTheme.colors.primary
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = stringResource(id = R.string.add, label.lowercase()),
-                    color = MaterialTheme.colors.primary,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(start = 8.dp),
                     fontWeight = FontWeight.Bold
                 )
@@ -669,7 +665,7 @@ private fun SelectAddressWithCustomSnackBar(
     onAddressSelectionChange: (AddressValidationState.AddressSelection) -> Unit,
     onUpdateNormalizedAddress: (selection: AddressValidationState.AddressSelection) -> Unit,
     onCloseAddressSelection: () -> Unit,
-    error: WooShippingEditAddressViewModel.EditAddressError?,
+    error: EditAddressError?,
     isBottomSheetSnackBarVisible: Boolean,
     modalSheetState: SheetState,
     modifier: Modifier = Modifier
@@ -691,46 +687,32 @@ private fun SelectAddressWithCustomSnackBar(
         )
 
         if (error != null) {
-            androidx.compose.animation.AnimatedVisibility(
+            AnimatedVisibility(
                 visible = isBottomSheetSnackBarVisible,
-                enter = fadeIn(
-                    animationSpec = androidx.compose.animation.core.tween(
-                        durationMillis = 180
-                    )
-                ) + scaleIn(
-                    animationSpec = androidx.compose.animation.core.tween(
-                        durationMillis = 180
-                    )
-                ),
-                exit = fadeOut(
-                    animationSpec = androidx.compose.animation.core.tween(
-                        durationMillis = 90
-                    )
-                ) + scaleOut(
-                    animationSpec = androidx.compose.animation.core.tween(
-                        durationMillis = 90
-                    )
-
-                )
+                enter = fadeIn(animationSpec = tween(durationMillis = 180)) +
+                    scaleIn(animationSpec = tween(durationMillis = 180)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 90)) +
+                    scaleOut(animationSpec = tween(durationMillis = 90))
             ) {
                 Box(modifier = Modifier.padding(bottom = 120.dp)) {
                     Snackbar(
                         modifier = Modifier.padding(12.dp),
-                        content = { Text(error.message) },
                         action = {
                             TextButton(
-                                colors = ButtonDefaults
-                                    .textButtonColors(contentColor = SnackbarDefaults.primaryActionColor),
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = SnackbarDefaults.actionContentColor
+                                ),
                                 onClick = { error.onRetry() },
                                 content = { Text(stringResource(id = R.string.retry)) }
                             )
                         },
                         actionOnNewLine = false,
                         shape = MaterialTheme.shapes.small,
-                        backgroundColor = SnackbarDefaults.backgroundColor,
-                        contentColor = MaterialTheme.colors.surface,
-                        elevation = 6.dp
-                    )
+                        containerColor = SnackbarDefaults.color,
+                        contentColor = MaterialTheme.colorScheme.surface,
+                    ) {
+                        Text(error.message)
+                    }
                 }
             }
         }
@@ -750,7 +732,7 @@ private fun SelectAddress(
             Icon(
                 imageVector = Icons.Filled.Close,
                 contentDescription = null,
-                tint = MaterialTheme.colors.onSurface
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
         Column(
@@ -761,9 +743,9 @@ private fun SelectAddress(
         ) {
             Text(
                 text = stringResource(id = R.string.woo_shipping_confirm_address_title),
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 16.dp),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
             Text(
                 text = stringResource(id = R.string.woo_shipping_confirm_address_description),
@@ -813,7 +795,7 @@ private fun SelectAddress(
             stringResource(id = R.string.woo_shipping_confirm_submit_address_suggested)
         }
 
-        Surface(elevation = 8.dp) {
+        Surface(shadowElevation = 8.dp) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -838,7 +820,7 @@ private fun AddressSelectionItem(
     modifier: Modifier = Modifier
 ) {
     val borderColor = if (isSelected) {
-        MaterialTheme.colors.primary
+        MaterialTheme.colorScheme.primary
     } else {
         colorResource(R.color.divider_color)
     }
@@ -849,7 +831,7 @@ private fun AddressSelectionItem(
             label = "colorAnimation"
         )
     } else {
-        animateColorAsState(targetValue = MaterialTheme.colors.surface, label = "colorAnimation")
+        animateColorAsState(targetValue = MaterialTheme.colorScheme.surface, label = "colorAnimation")
     }
 
     RoundedCornerBoxWithBorder(
@@ -876,7 +858,7 @@ fun LoadingModal(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.4f))
+            .background(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
@@ -885,9 +867,9 @@ fun LoadingModal(
         contentAlignment = Alignment.Center
     ) {
         Surface(
-            color = MaterialTheme.colors.surface,
+            color = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(CornerSize(8.dp)),
-            elevation = 4.dp,
+            shadowElevation = 4.dp,
             modifier = Modifier
                 .sizeIn(maxWidth = 550.dp)
                 .fillMaxWidth()
@@ -897,13 +879,13 @@ fun LoadingModal(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.titleLarge
                 )
                 Row(modifier = Modifier.padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterVertically))
                     Text(
                         text = description,
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(start = 16.dp)
                     )
                 }

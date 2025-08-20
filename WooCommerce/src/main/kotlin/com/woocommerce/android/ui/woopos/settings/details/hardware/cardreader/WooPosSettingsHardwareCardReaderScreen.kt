@@ -72,7 +72,8 @@ fun WooPosSettingsHardwareCardReaderScreen(
         uiState = uiState,
         onConnectClicked = viewModel::onConnectClicked,
         onDisconnectClicked = viewModel::onDisconnectClicked,
-        onDocumentationClicked = viewModel::onDocumentationClicked
+        onDocumentationClicked = viewModel::onDocumentationClicked,
+        onUpdateClick = viewModel::onUpdateClick
     )
 }
 
@@ -81,7 +82,8 @@ private fun WooPosSettingsHardwareCardReaderContent(
     uiState: WooPosSettingsHardwareCardReaderUiState,
     onConnectClicked: () -> Unit,
     onDisconnectClicked: () -> Unit,
-    onDocumentationClicked: () -> Unit
+    onDocumentationClicked: () -> Unit,
+    onUpdateClick: () -> Unit,
 ) {
     AnimatedContent(
         targetState = uiState,
@@ -104,7 +106,8 @@ private fun WooPosSettingsHardwareCardReaderContent(
                             R.string.woopos_settings_card_reader_unknown_firmware
                         ),
                         isSoftwareUpdateAvailable = state.isSoftwareUpdateAvailable,
-                        onDisconnectClicked = onDisconnectClicked
+                        onDisconnectClicked = onDisconnectClicked,
+                        onUpdateClick = onUpdateClick
                     )
                 }
 
@@ -125,7 +128,8 @@ private fun ConnectedContent(
     batteryLevel: Float?,
     firmwareVersion: String,
     isSoftwareUpdateAvailable: Boolean,
-    onDisconnectClicked: () -> Unit
+    onDisconnectClicked: () -> Unit,
+    onUpdateClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -171,7 +175,7 @@ private fun ConnectedContent(
     FirmwareMenuItem(
         firmwareVersion = firmwareVersion,
         isSoftwareUpdateAvailable = isSoftwareUpdateAvailable,
-        onUpdateClick = { }
+        onUpdateClick = onUpdateClick
     )
 
     Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
@@ -342,7 +346,8 @@ fun WooPosSettingsHardwareCardReaderScreenNotConnectedPreview() {
             uiState = WooPosSettingsHardwareCardReaderUiState.Disconnected,
             onConnectClicked = { },
             onDisconnectClicked = { },
-            onDocumentationClicked = { }
+            onDocumentationClicked = { },
+            onUpdateClick = { }
         )
     }
 }
@@ -360,7 +365,8 @@ fun WooPosSettingsHardwareCardReaderScreenConnectedPreview() {
             ),
             onConnectClicked = { },
             onDisconnectClicked = { },
-            onDocumentationClicked = { }
+            onDocumentationClicked = { },
+            onUpdateClick = { }
         )
     }
 }

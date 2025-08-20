@@ -66,7 +66,8 @@ interface CardReaderManager {
         ALWAYS,
         LOW_BATTERY_ERROR,
         LOW_BATTERY_SUCCEED_CONNECT,
-        RANDOM
+        RANDOM,
+        OPTIONAL_UPDATE_AVAILABLE,
     }
 
     data class TapToPayUxConfig(

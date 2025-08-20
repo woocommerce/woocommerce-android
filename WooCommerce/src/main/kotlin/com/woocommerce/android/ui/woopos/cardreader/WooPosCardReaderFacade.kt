@@ -38,6 +38,13 @@ class WooPosCardReaderFacade @Inject constructor(
         startActivity(intent)
     }
 
+    fun updateReader() {
+        val intent = WooPosCardReaderActivity.buildIntentForCardReaderUpdate(activity!!).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+        startActivity(intent)
+    }
+
     suspend fun disconnectFromReader() {
         cardReaderManager.disconnectReader()
     }

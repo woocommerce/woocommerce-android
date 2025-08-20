@@ -2617,6 +2617,7 @@
     <string name="never_update_reader">Never</string>
     <string name="low_battery_error_update_reader" translatable="false">Low Battery Error</string>
     <string name="low_battery_succeed_connect_update_reader" translatable="false">Low Battery Succeed Connect</string>
+    <string name="optional_update_available_reader" translatable="false">Optional Update Available</string>
     <string name="randomly_update_reader">Randomly</string>
     <string name="enable_interac_payment" translatable="false">Enable Interac Payment</string>
 

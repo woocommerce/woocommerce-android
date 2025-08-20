@@ -72,6 +72,10 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
         }
     }
 
+    fun onUpdateClick() {
+        cardReaderFacade.updateReader()
+    }
+
     private fun listenForSoftwareUpdateAvailability() {
         softwareUpdateAvailabilityJob = viewModelScope.launch {
             cardReaderFacade.softwareUpdateAvailability.collect { updateAvailability ->
@@ -102,7 +106,7 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
                             ),
                             batteryLevel = status.cardReader.currentBatteryLevel,
                             firmwareVersion = status.cardReader.firmwareVersion,
-                            isSoftwareUpdateAvailable = true
+                            isSoftwareUpdateAvailable = currentSoftwareUpdateAvailable
                         )
                     }
 
