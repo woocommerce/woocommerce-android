@@ -76,7 +76,7 @@ internal fun AddressSectionPortrait(
             val barrier = createEndBarrier(shipFromLabel, shipToLabel)
             val endBarrier = createStartBarrier(shipFromSelect)
 
-            val destinationStatusModifier = if (destinationStatus == AddressStatus.MISSING_ADDRESS) {
+            val destinationStatusModifier = if (destinationStatus == AddressStatus.MissingAddress) {
                 Modifier
                     .padding(start = dimensionResource(R.dimen.major_100))
                     .constrainAs(destinationAddressStatus) {
@@ -172,7 +172,7 @@ internal fun AddressSectionPortrait(
                         bottom = dimensionResource(R.dimen.major_100)
                     )
             )
-            if (destinationStatus != AddressStatus.MISSING_ADDRESS) {
+            if (destinationStatus != AddressStatus.MissingAddress) {
                 Text(
                     text = shippingAddresses.shipTo.address.toString(),
                     modifier = Modifier
@@ -440,22 +440,25 @@ fun AddressStatusIndicator(
     modifier: Modifier = Modifier
 ) {
     val text = when (addressStatus) {
-        AddressStatus.VERIFIED -> stringResource(id = R.string.woo_shipping_address_verified)
-        AddressStatus.UNVERIFIED,
-        AddressStatus.VERIFY_FAILED -> stringResource(id = R.string.woo_shipping_address_unverified)
+        AddressStatus.Verified -> stringResource(id = R.string.woo_shipping_address_verified)
+        AddressStatus.Unverified,
+        is AddressStatus.VerifyFailed -> {
+            (addressStatus as? AddressStatus.VerifyFailed)?.exception?.generalError
+                ?: stringResource(id = R.string.woo_shipping_address_unverified)
+        }
 
-        AddressStatus.MISSING_INFO -> stringResource(id = R.string.woo_shipping_address_missing_info)
-        AddressStatus.SAVE_CHANGES -> stringResource(id = R.string.woo_shipping_address_unsaved_changes)
-        AddressStatus.MISSING_ADDRESS -> stringResource(id = R.string.woo_shipping_address_missing)
+        AddressStatus.MissingInfo -> stringResource(id = R.string.woo_shipping_address_missing_info)
+        AddressStatus.SaveChanges -> stringResource(id = R.string.woo_shipping_address_unsaved_changes)
+        AddressStatus.MissingAddress -> stringResource(id = R.string.woo_shipping_address_missing)
     }
 
     val color = when (addressStatus) {
-        AddressStatus.VERIFIED -> colorResource(id = R.color.woo_shipping_label_success)
+        AddressStatus.Verified -> colorResource(id = R.color.woo_shipping_label_success)
         else -> colorResource(id = R.color.woo_shipping_label_error)
     }
 
     val icon = when (addressStatus) {
-        AddressStatus.VERIFIED -> Icons.Outlined.CheckCircleOutline
+        AddressStatus.Verified -> Icons.Outlined.CheckCircleOutline
         else -> Icons.Outlined.Info
     }
 
@@ -503,7 +506,7 @@ private fun AddressSectionPortraitPreview() {
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
                 isReadOnly = true,
-                destinationStatus = AddressStatus.VERIFIED
+                destinationStatus = AddressStatus.Verified
             )
         }
     }
@@ -524,7 +527,7 @@ private fun AddressSectionPortraitMissingAddressPreview() {
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
                 isReadOnly = false,
-                destinationStatus = AddressStatus.VERIFIED
+                destinationStatus = AddressStatus.Verified
             )
         }
     }
@@ -545,7 +548,7 @@ private fun AddressSectionLandscapePreview() {
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
-                destinationStatus = AddressStatus.VERIFIED
+                destinationStatus = AddressStatus.Verified
             )
         }
     }
@@ -566,7 +569,7 @@ private fun AddressSectionLandscapeMissingAddressPreview() {
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
-                destinationStatus = AddressStatus.VERIFIED
+                destinationStatus = AddressStatus.Verified
             )
         }
     }
