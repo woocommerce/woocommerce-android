@@ -1024,6 +1024,7 @@
     <string name="orderdetail_shipping_label_shipment_header">Shipment %1$s</string>
     <string name="orderdetail_shipping_label_shipment_items">%1$d items</string>
     <string name="orderdetail_shipping_label_shipment_tracking_number">Tracking number</string>
+    <string name="orderdetail_shipping_label_refunded">You have successfully submitted a request for refund. You can purchase a new label.</string>
     <string name="orderdetail_custom_fields">Custom fields</string>
     <string name="orderdetail_ai_create_thank_you_note_button">✨Create thank-you note</string>
     <string name="receipt_preview_toolbar_title">Receipt Preview</string>

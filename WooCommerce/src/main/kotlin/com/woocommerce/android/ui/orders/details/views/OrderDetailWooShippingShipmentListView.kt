@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details.views
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -115,36 +117,58 @@ private fun ShipmentItem(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        Column(
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .padding(start = 16.dp)
-                .defaultMinSize(minHeight = 64.dp)
+                .fillMaxWidth()
         ) {
-            Text(
-                text = stringResource(
-                    id = R.string.orderdetail_shipping_label_shipment_header,
-                    "${index + 1}/$shipmentsSize"
-                ),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            if (shipment.purchased && shipment.label != null) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(R.drawable.ic_progress_circle_complete),
-                    contentDescription = stringResource(R.string.purchased_shipment_content_description),
-                    tint = colorResource(id = R.color.woo_green_70)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .defaultMinSize(minHeight = 64.dp)
+                    .padding(start = 16.dp)
+            ) {
+                Text(
+                    text = stringResource(
+                        id = R.string.orderdetail_shipping_label_shipment_header,
+                        "${index + 1}/$shipmentsSize"
+                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
                 )
 
-                Spacer(Modifier.weight(1f))
+                if (shipment.label?.isPurchased == true) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(R.drawable.ic_progress_circle_complete),
+                        contentDescription = stringResource(R.string.purchased_shipment_content_description),
+                        tint = colorResource(id = R.color.woo_green_70)
+                    )
 
-                WCOverflowMenu(
-                    items = listOf(stringResource(R.string.orderdetail_shipping_label_request_refund)),
-                    onSelected = { onRequestRefundClicked(shipment.label.labelId) },
+                    Spacer(Modifier.weight(1f))
+
+                    WCOverflowMenu(
+                        items = listOf(stringResource(R.string.orderdetail_shipping_label_request_refund)),
+                        onSelected = { onRequestRefundClicked(shipment.label.labelId) },
+                    )
+                }
+            }
+
+            if (shipment.label?.refund != null) {
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.orderdetail_shipping_label_refunded),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(horizontal = 16.dp)
+                        .background(
+                            color = colorResource(R.color.woo_blue_5).copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(16.dp)
                 )
+                Spacer(Modifier.height(16.dp))
             }
         }
         HorizontalDivider(Modifier.padding(start = 16.dp))
@@ -157,7 +181,7 @@ private fun ShipmentItem(
             HorizontalDivider(Modifier.padding(start = 16.dp))
         }
 
-        if (shipment.purchased && shipment.label != null) {
+        if (shipment.label?.isPurchased == true) {
             LabelTrackingRow(shipment.label)
 
             HorizontalDivider(Modifier.padding(start = 16.dp))
@@ -330,7 +354,10 @@ private fun OrderDetailWooShippingShipmentListViewPreview() {
     val shipments = remember {
         listOf(
             ShippingLabelSampleData.getShippingLabelUIModel(purchased = true),
-            ShippingLabelSampleData.getShippingLabelUIModel(purchased = false)
+            ShippingLabelSampleData.getShippingLabelUIModel(purchased = false),
+            ShippingLabelSampleData.getShippingLabelUIModel(purchased = true).let {
+                it.copy(label = it.label!!.copy(refund = ShippingLabelModel.Refund(null, null)))
+            }
         )
     }
 
