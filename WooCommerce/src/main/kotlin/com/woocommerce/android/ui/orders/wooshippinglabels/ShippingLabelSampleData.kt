@@ -239,7 +239,6 @@ object ShippingLabelSampleData {
                 currency = "USD"
             )
         ),
-        purchased = purchased,
         purchaseState = PurchaseState.NoStarted,
         label = if (purchased) {
             ShippingLabelModel(
