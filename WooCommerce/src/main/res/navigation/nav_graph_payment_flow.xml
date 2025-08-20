@@ -274,6 +274,10 @@
             android:name="requiredUpdate"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="isWooPosFlow"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderTutorialDialogFragment"
