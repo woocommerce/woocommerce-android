@@ -91,6 +91,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                         )
                     findNavController().navigateSafely(action)
                 }
+
                 is NavigateToCardReaderScreen -> {
                     val action = RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderFlow(
                         cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Refund(
@@ -100,6 +101,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                     )
                     findNavController().navigateSafely(action)
                 }
+
                 else -> event.isHandled = false
             }
         }
@@ -129,6 +131,15 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                     binding.refundSummaryMethodDescription.show()
                 } else {
                     binding.refundSummaryMethodDescription.hide()
+                }
+            }
+            new.isFetchingCardData.takeIfNotEqualTo(old?.isFetchingCardData) { loading ->
+                if (loading) {
+                    binding.refundMethodLayout.hide()
+                    binding.loadingPaymentMethodSkeletons.show()
+                } else {
+                    binding.refundMethodLayout.show()
+                    binding.loadingPaymentMethodSkeletons.hide()
                 }
             }
         }
