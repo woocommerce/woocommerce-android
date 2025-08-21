@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.HardwareTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.HelpTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsClosed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsOpened
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.StoreDetailsTapped
@@ -25,24 +26,23 @@ class WooPosSettingsViewModel @Inject constructor(
     val state: StateFlow<WooPosSettingsState> = _state.asStateFlow()
 
     fun onCategorySelected(category: WooPosSettingsCategory) {
-        when (category) {
-            WooPosSettingsCategory.STORE -> {
-                viewModelScope.launch {
-                    analyticsTracker.track(StoreDetailsTapped)
-                }
-            }
-            WooPosSettingsCategory.HARDWARE -> {
-                viewModelScope.launch {
-                    analyticsTracker.track(HardwareTapped)
-                }
-            }
-            else -> { /* No tracking for other categories yet */ }
-        }
+        trackCategorySelection(category)
         _state.update { currentState ->
             currentState.copy(
                 selectedCategory = category,
                 currentDestination = category.rootDestination
             )
+        }
+    }
+
+    private fun trackCategorySelection(category: WooPosSettingsCategory) {
+        val event = when (category) {
+            WooPosSettingsCategory.STORE -> StoreDetailsTapped
+            WooPosSettingsCategory.HARDWARE -> HardwareTapped
+            WooPosSettingsCategory.HELP -> HelpTapped
+        }
+        viewModelScope.launch {
+            analyticsTracker.track(event)
         }
     }
 
