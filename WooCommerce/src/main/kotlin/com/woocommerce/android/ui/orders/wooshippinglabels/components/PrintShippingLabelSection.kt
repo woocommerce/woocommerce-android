@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.components
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
@@ -35,24 +33,18 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.wooshippinglabels.LabelPurchaseStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 
 @Composable
-fun PrintShippingLabelSection(
-    status: ShippingLabelStatus,
-    isCustomsFormAvailable: Boolean,
-    isRefundAvailable: Boolean,
-    availablePaperSizes: List<WooShippingLabelPaperSize>,
+fun ShippingLabelPurchaseStatusSection(
+    labelPurchaseStatus: LabelPurchaseStatus,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -63,66 +55,43 @@ fun PrintShippingLabelSection(
     onLearnMoreClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.padding(top = 8.dp)
-    ) {
-        val (titleResId, messageResId) = when (status) {
-            PURCHASED -> Pair(
-                R.string.shipping_label_purchased_success_title,
-                R.string.shipping_label_purchased_success_message
-            )
+    when (labelPurchaseStatus) {
+        LabelPurchaseStatus.Idle -> {
+            // Empty
+        }
 
-            PURCHASE_IN_PROGRESS -> Pair(
-                R.string.shipping_label_purchased_in_progress_title,
-                R.string.shipping_label_purchased_in_progress_message
-            )
+        LabelPurchaseStatus.PurchaseInProgress -> {
+            PurchaseInProgressNotice(modifier.padding(vertical = 16.dp))
+        }
 
-            else -> Pair(
-                R.string.shipping_label_purchased_failure_title,
-                R.string.shipping_label_purchased_failure_message
+        is LabelPurchaseStatus.Purchased -> {
+            PurchasedLabelSection(
+                status = labelPurchaseStatus,
+                availablePaperSizes = labelPurchaseStatus.availablePrintSizes,
+                selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
+                onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
+                onPrintShippingLabelClicked = onPrintShippingLabelClicked,
+                onTrackShipmentClicked = onTrackShipmentClicked,
+                onSchedulePickUpClicked = onSchedulePickUpClicked,
+                onRefundClicked = onRefundClicked,
+                onPrintCustomsClicked = onPrintCustomsClicked,
+                onLearnMoreClicked = onLearnMoreClicked,
+                modifier = modifier.padding(vertical = 16.dp)
             )
         }
 
-        Text(
-            text = stringResource(id = titleResId),
-            style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = stringResource(id = messageResId),
-            modifier = Modifier.padding(top = 8.dp),
-            style = MaterialTheme.typography.subtitle1,
-        )
-        Spacer(modifier = Modifier.padding(top = 16.dp))
-        PrintShippingLabelCard(
-            isPrintButtonEnabled = status == PURCHASED,
-            isCustomsFormAvailable = isCustomsFormAvailable,
-            isRefundAvailable = isRefundAvailable,
-            availablePaperSizes = availablePaperSizes,
-            selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
-            onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
-            onPrintShippingLabelClicked = onPrintShippingLabelClicked,
-            onTrackShipmentClicked = onTrackShipmentClicked,
-            onSchedulePickUpClicked = onSchedulePickUpClicked,
-            onRefundClicked = onRefundClicked,
-            onPrintCustomsClicked = onPrintCustomsClicked,
-            onLearnMoreClicked = onLearnMoreClicked,
-        )
-        Text(
-            text = stringResource(id = R.string.shipping_label_purchased_note),
-            style = MaterialTheme.typography.caption,
-            color = colorResource(id = R.color.color_on_surface_medium),
-            modifier = Modifier.padding(top = 8.dp),
-        )
-        Spacer(modifier = Modifier.padding(top = 16.dp))
+        is LabelPurchaseStatus.Failed -> {
+            PurchaseFailureNotice(
+                errorMessage = labelPurchaseStatus.errorMessage,
+                modifier = modifier.padding(vertical = 16.dp)
+            )
+        }
     }
 }
 
 @Composable
-private fun PrintShippingLabelCard(
-    isPrintButtonEnabled: Boolean,
-    isCustomsFormAvailable: Boolean,
-    isRefundAvailable: Boolean,
+private fun PurchasedLabelSection(
+    status: LabelPurchaseStatus.Purchased,
     availablePaperSizes: List<WooShippingLabelPaperSize>,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
@@ -136,82 +105,161 @@ private fun PrintShippingLabelCard(
 ) {
     Column(
         modifier = modifier
-            .background(
-                color = colorResource(id = R.color.woo_shipping_label_success_surface),
-                shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
-            )
-            .padding(16.dp)
     ) {
-        RoundedCornerBoxWithBorder(backgroundColor = colorResource(id = R.color.woo_shipping_label_success_surface)) {
-            LabelPaperSizeDropdownMenu(
-                availablePaperSizes = availablePaperSizes,
-                selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
-                onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
+        Text(
+            text = stringResource(id = R.string.shipping_label_purchased_success_title),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = stringResource(id = R.string.shipping_label_purchased_success_message),
+            modifier = Modifier.padding(top = 8.dp),
+            style = MaterialTheme.typography.subtitle1,
+        )
+
+        Spacer(modifier = Modifier.padding(top = 16.dp))
+
+        Column(
+            modifier = Modifier
+                .background(
+                    color = colorResource(id = R.color.woo_shipping_label_success_surface),
+                    shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
+                )
+                .padding(16.dp)
+        ) {
+            RoundedCornerBoxWithBorder(backgroundColor = colorResource(id = R.color.woo_shipping_label_success_surface)) {
+                LabelPaperSizeDropdownMenu(
+                    availablePaperSizes = availablePaperSizes,
+                    selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
+                    onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                )
+            }
+
+            WCColoredButton(
+                text = stringResource(id = R.string.shipping_label_print_button),
+                onClick = { onPrintShippingLabelClicked() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(top = 12.dp, bottom = 4.dp),
+                colors = buttonColors(
+                    containerColor = colorResource(id = R.color.woo_shipping_label_success),
+                    contentColor = colorResource(id = R.color.woo_white)
+                )
             )
-        }
-
-        WCColoredButton(
-            enabled = isPrintButtonEnabled,
-            text = stringResource(id = R.string.shipping_label_print_button),
-            onClick = { onPrintShippingLabelClicked() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, bottom = 4.dp),
-            colors = buttonColors(
-                containerColor = colorResource(id = R.color.woo_shipping_label_success),
-                contentColor = colorResource(id = R.color.woo_white)
-            )
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable { onLearnMoreClicked() }
-                .padding(vertical = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Info,
-                contentDescription = null,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(16.dp),
-                tint = colorResource(id = R.color.woo_shipping_label_success)
-            )
-            Text(
-                text = stringResource(id = R.string.shipping_label_purchased_learn_how_to_print),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = R.color.woo_shipping_label_success)
-            )
-        }
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
-        ShippingLabelLink(
-            text = stringResource(id = R.string.shipping_label_purchased_track_shipment),
-            onClick = { onTrackShipmentClicked() },
-            showIcon = true,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-        ShippingLabelLink(
-            text = stringResource(id = R.string.shipping_label_purchased_schedule_pick_up),
-            onClick = { onSchedulePickUpClicked() },
-            showIcon = true,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-        if (isCustomsFormAvailable) {
+                    .clickable { onLearnMoreClicked() }
+                    .padding(vertical = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(16.dp),
+                    tint = colorResource(id = R.color.woo_shipping_label_success)
+                )
+                Text(
+                    text = stringResource(id = R.string.shipping_label_purchased_learn_how_to_print),
+                    style = MaterialTheme.typography.caption,
+                    color = colorResource(id = R.color.woo_shipping_label_success)
+                )
+            }
+            Divider(modifier = Modifier.padding(vertical = 8.dp))
             ShippingLabelLink(
-                text = stringResource(id = R.string.shipping_label_print_customs_form),
-                onClick = { onPrintCustomsClicked() },
+                text = stringResource(id = R.string.shipping_label_purchased_track_shipment),
+                onClick = { onTrackShipmentClicked() },
                 showIcon = true,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-        }
-        if (isRefundAvailable) {
             ShippingLabelLink(
-                text = stringResource(id = R.string.shipping_label_purchased_request_refund),
-                onClick = { onRefundClicked() },
-                showIcon = false,
+                text = stringResource(id = R.string.shipping_label_purchased_schedule_pick_up),
+                onClick = { onSchedulePickUpClicked() },
+                showIcon = true,
                 modifier = Modifier.padding(vertical = 8.dp)
+            )
+            if (status.isCustomsFormAvailable) {
+                ShippingLabelLink(
+                    text = stringResource(id = R.string.shipping_label_print_customs_form),
+                    onClick = { onPrintCustomsClicked() },
+                    showIcon = true,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+            if (status.isRefundAvailable) {
+                ShippingLabelLink(
+                    text = stringResource(id = R.string.shipping_label_purchased_request_refund),
+                    onClick = { onRefundClicked() },
+                    showIcon = false,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+        }
+        ReprintWarning(Modifier.padding(top = 8.dp))
+    }
+}
+
+@Composable
+private fun PurchaseInProgressNotice(modifier: Modifier) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(id = R.string.shipping_label_purchased_in_progress_title),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = stringResource(id = R.string.shipping_label_purchased_in_progress_message),
+            style = MaterialTheme.typography.subtitle1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = colorResource(R.color.woo_yellow_10).copy(alpha = 0.2f),
+                    shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
+                )
+                .padding(16.dp)
+        )
+        ReprintWarning()
+    }
+}
+
+@Composable
+private fun PurchaseFailureNotice(errorMessage: String?, modifier: Modifier) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(id = R.string.shipping_label_purchased_failure_title),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.Bold
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colors.error.copy(alpha = 0.2f),
+                    shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
+                )
+                .padding(16.dp)
+        ) {
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.subtitle1
+                )
+            }
+
+            Text(
+                text = stringResource(id = R.string.shipping_label_purchased_failure_message),
+                style = MaterialTheme.typography.subtitle1
             )
         }
     }
@@ -299,49 +347,77 @@ private fun ShippingLabelLink(
     }
 }
 
-@Preview(
-    name = "dark",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showSystemUi = true,
-    device = Devices.PIXEL_4
-)
-@Preview(
-    name = "light",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showSystemUi = true,
-    device = Devices.PIXEL_4
-)
 @Composable
-internal fun PrintShippingLabelSectionPreview() {
+private fun ReprintWarning(
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = stringResource(id = R.string.shipping_label_purchased_note),
+        style = MaterialTheme.typography.caption,
+        color = colorResource(id = R.color.color_on_surface_medium),
+        modifier = modifier,
+    )
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun PurchaseInProgressPreview() {
     WooThemeWithBackground {
-        Surface {
-            val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.A4) }
-            PrintShippingLabelSection(
-                status = PURCHASED,
-                isCustomsFormAvailable = true,
-                isRefundAvailable = true,
-                availablePaperSizes = emptyList(),
-                selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
-                onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
-                onPrintShippingLabelClicked = {},
-                onTrackShipmentClicked = {},
-                onSchedulePickUpClicked = {},
-                onRefundClicked = {},
-                onPrintCustomsClicked = {},
-                onLearnMoreClicked = {}
-            )
-        }
+        val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.A4) }
+        ShippingLabelPurchaseStatusSection(
+            labelPurchaseStatus = LabelPurchaseStatus.PurchaseInProgress,
+            selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
+            onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
+            onPrintShippingLabelClicked = {},
+            onTrackShipmentClicked = {},
+            onSchedulePickUpClicked = {},
+            onRefundClicked = {},
+            onPrintCustomsClicked = {},
+            onLearnMoreClicked = {},
+            modifier = Modifier.padding(24.dp)
+        )
     }
 }
 
-@Preview
+@LightDarkThemePreviews
 @Composable
-private fun ShippingLabelLinkPreview() {
+private fun PurchasedPreview() {
     WooThemeWithBackground {
-        ShippingLabelLink(
-            text = "Shipping Label",
-            onClick = {},
-            showIcon = true
+        val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.A4) }
+        ShippingLabelPurchaseStatusSection(
+            labelPurchaseStatus = LabelPurchaseStatus.Purchased(
+                availablePrintSizes = listOf(WooShippingLabelPaperSize.A4, WooShippingLabelPaperSize.LABEL),
+                isCustomsFormAvailable = true,
+                isRefundAvailable = true
+            ),
+            selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
+            onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
+            onPrintShippingLabelClicked = {},
+            onTrackShipmentClicked = {},
+            onSchedulePickUpClicked = {},
+            onRefundClicked = {},
+            onPrintCustomsClicked = {},
+            onLearnMoreClicked = {},
+            modifier = Modifier.padding(24.dp)
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun FailurePreview() {
+    WooThemeWithBackground {
+        ShippingLabelPurchaseStatusSection(
+            labelPurchaseStatus = LabelPurchaseStatus.Failed("An error occurred while purchasing the label."),
+            selectedLabelPaperSizeOption = WooShippingLabelPaperSize.A4,
+            onLabelPaperSizeOptionSelected = {},
+            onPrintShippingLabelClicked = {},
+            onTrackShipmentClicked = {},
+            onSchedulePickUpClicked = {},
+            onRefundClicked = {},
+            onPrintCustomsClicked = {},
+            onLearnMoreClicked = {},
+            modifier = Modifier.padding(24.dp)
         )
     }
 }

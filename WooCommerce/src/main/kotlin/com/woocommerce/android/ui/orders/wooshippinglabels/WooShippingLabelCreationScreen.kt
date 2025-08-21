@@ -73,9 +73,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.PrintShippingLabelSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelPurchaseStatusSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarVisuals
@@ -463,23 +463,19 @@ private fun CreateShippingCards(
     Column {
         val isExpanded = remember { mutableStateOf(false) }
 
-        if (shipmentUI.purchased && shipmentUI.shipmentPrintLabelUI != null) {
-            PrintShippingLabelSection(
-                status = shipmentUI.status,
-                isCustomsFormAvailable = shipmentUI.shipmentPrintLabelUI.isCustomsFormAvailable,
-                isRefundAvailable = shipmentUI.shipmentPrintLabelUI.isRefundAvailable,
-                availablePaperSizes = shipmentUI.shipmentPrintLabelUI.availablePrintSizes,
-                selectedLabelPaperSizeOption = uiState.paperSizeOption,
-                onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
-                onPrintShippingLabelClicked = onPrintShippingLabelClicked,
-                onTrackShipmentClicked = onTrackShipmentClicked,
-                onSchedulePickUpClicked = onSchedulePickUpClicked,
-                onRefundClicked = onRefundClicked,
-                onPrintCustomsClicked = onPrintCustomsClicked,
-                onLearnMoreClicked = onLearnMoreClicked,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
+        ShippingLabelPurchaseStatusSection(
+            labelPurchaseStatus = shipmentUI.labelPurchaseStatus,
+            selectedLabelPaperSizeOption = uiState.paperSizeOption,
+            onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
+            onPrintShippingLabelClicked = onPrintShippingLabelClicked,
+            onTrackShipmentClicked = onTrackShipmentClicked,
+            onSchedulePickUpClicked = onSchedulePickUpClicked,
+            onRefundClicked = onRefundClicked,
+            onPrintCustomsClicked = onPrintCustomsClicked,
+            onLearnMoreClicked = onLearnMoreClicked,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
         ShippingProductsCard(
             shippableItems = shipmentUI,
             modifier = Modifier
@@ -842,7 +838,7 @@ private fun WooShippingLabelCreationScreenPreview() {
                     hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
                     shippingRatesState = ShippingLabelSampleData.getShippingRatesSection(),
                     shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
-                    shipmentPrintLabelUI = ShippingLabelSampleData.getShipmentPrintLabelUI(),
+                    labelPurchaseStatus = LabelPurchaseStatus.Idle,
                 )
             ),
             shouldShowSplitShipmentButton = true,
