@@ -19,6 +19,7 @@
 - [*] Shipping Labels: Improved handling of address validation errors [https://github.com/woocommerce/woocommerce-android/pull/14468]
 - [*] Shipping Labels: Improved the error message for empty shipping rates list [https://github.com/woocommerce/woocommerce-android/pull/14433]
 - [*] Shipping Labels: Update button logic on the Hazardous Materials screen [https://github.com/woocommerce/woocommerce-android/pull/14488]
+- [*] Shipping Labels: Add error message for invalid dimensions errors to custom package creation screen [https://github.com/woocommerce/woocommerce-android/pull/14499]
 
 23.0
 -----
