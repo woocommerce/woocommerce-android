@@ -1406,7 +1406,6 @@ data class ShipmentUI(
     val shippableItems: List<ShippableItemUI>,
     val formattedTotalWeight: String,
     val formattedTotalPrice: String,
-    val purchased: Boolean,
     val packageSelectionState: PackageSelectionState,
     val customsState: CustomsState,
     val hazmatState: HazmatState,
@@ -1415,6 +1414,10 @@ data class ShipmentUI(
     val isPurchaseAPILoading: Boolean = false,
     val labelPurchaseStatus: LabelPurchaseStatus = LabelPurchaseStatus.Idle
 ) : Parcelable {
+    val purchased
+        get() = labelPurchaseStatus is LabelPurchaseStatus.PurchaseInProgress ||
+            labelPurchaseStatus is LabelPurchaseStatus.Purchased
+
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()
 }

@@ -62,7 +62,6 @@ fun List<ShippableItemModel>.toUIModel(
         shippableItems = shippableItemsUI,
         formattedTotalWeight = formattedTotalWeight,
         formattedTotalPrice = formattedTotalPrice,
-        purchased = shipmentUIModel.purchased,
         packageSelectionState = packageSelectionState,
         customsState = customsState,
         hazmatState = hazmatCategory?.let { WooShippingLabelCreationViewModel.HazmatState.Declared(it) }

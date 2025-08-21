@@ -832,7 +832,6 @@ private fun WooShippingLabelCreationScreenPreview() {
                     shippableItems = generateItems(6),
                     formattedTotalWeight = "8.5kg",
                     formattedTotalPrice = "$92.78",
-                    purchased = false,
                     packageSelectionState = NotSelected,
                     customsState = Unavailable,
                     hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
