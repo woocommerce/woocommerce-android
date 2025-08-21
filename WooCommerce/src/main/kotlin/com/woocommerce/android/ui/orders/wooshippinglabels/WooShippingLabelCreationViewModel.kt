@@ -955,7 +955,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { refreshShippingRates.emit(Unit) }
     }
 
-    @Suppress("ComplexCondition", "LongMethod")
+    @Suppress("ComplexCondition")
     fun onPurchaseShippingLabel() {
         val selectedShipmentIndex = selectedShipmentIndex
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
@@ -994,13 +994,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 hazmatSelection
             ).fold(
                 onSuccess = {
-                    updateShipment(
-                        selectedShipmentIndex,
-                        shipments.value[selectedShipmentIndex].copy(
-                            isPurchaseAPILoading = false,
-                            label = it.labels.firstOrNull()
-                        )
+                    val updatedShipment = shipments.value[selectedShipmentIndex].copy(
+                        isPurchaseAPILoading = false,
+                        label = it.labels.firstOrNull()
                     )
+                    updateShipment(selectedShipmentIndex, updatedShipment)
                 },
                 onFailure = { exception ->
                     updateShipment(
