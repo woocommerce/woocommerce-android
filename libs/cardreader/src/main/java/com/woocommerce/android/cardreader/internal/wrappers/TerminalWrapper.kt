@@ -114,6 +114,8 @@ internal class TerminalWrapper {
                 SimulateReaderUpdate.LOW_BATTERY_SUCCEED_CONNECT
             }
             CardReaderManager.SimulatorUpdateFrequency.RANDOM -> SimulateReaderUpdate.RANDOM
+            CardReaderManager.SimulatorUpdateFrequency.OPTIONAL_UPDATE_AVAILABLE ->
+                SimulateReaderUpdate.UPDATE_AVAILABLE
         }
     }
 

@@ -2614,6 +2614,7 @@
     <string name="never_update_reader">Never</string>
     <string name="low_battery_error_update_reader" translatable="false">Low Battery Error</string>
     <string name="low_battery_succeed_connect_update_reader" translatable="false">Low Battery Succeed Connect</string>
+    <string name="optional_update_available_reader" translatable="false">Optional Update Available</string>
     <string name="randomly_update_reader">Randomly</string>
     <string name="enable_interac_payment" translatable="false">Enable Interac Payment</string>
 
@@ -4649,6 +4650,8 @@
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We are unable to load shipping rates.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">We couldn\'t find a shipping service for the combination of the selected package and the total shipment weight. Please adjust your input and try again.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">We couldn\'t find a shipping service for the combination of the selected HAZMAT category, the selected package and the total shipment weight. Please adjust your input and try again.</string>
     <string name="woo_shipping_labels_package_creation_starred">Star this item</string>
     <string name="woo_shipping_labels_package_creation_unstarred">Unstar this item</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">Add a destination address to get shipping rates</string>
