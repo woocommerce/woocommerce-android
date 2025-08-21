@@ -52,6 +52,14 @@ class UnitTestNamingRule(config: Config) : Rule(config) {
 
     private fun isAndroidTest(function: KtNamedFunction): Boolean {
         val filePath = function.containingKtFile.virtualFilePath
-        return filePath.contains("androidTest")
+        val pathSegments = filePath.split("/")
+        val srcIndex = pathSegments.indexOf("src")
+
+        if (srcIndex != -1 && srcIndex < pathSegments.size - 1) {
+            val sourceSet = pathSegments[srcIndex + 1]
+            return sourceSet == "androidTest" || sourceSet.endsWith("AndroidTest")
+        }
+
+        return false
     }
 }
