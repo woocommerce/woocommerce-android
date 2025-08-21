@@ -15,7 +15,7 @@ import org.wordpress.android.util.AppLog.T.API
 import javax.inject.Inject
 import javax.inject.Singleton
 
-data class SyncResult(
+data class PosLocalCatalogSyncResult(
     val syncedCount: Int,
     val hasMore: Boolean,
     val nextOffset: Int
@@ -98,7 +98,7 @@ class PosLocalCatalogStore @Inject constructor(
         modifiedAfterGmt: String,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-    ): Result<SyncResult> =
+    ): Result<PosLocalCatalogSyncResult> =
         coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
@@ -118,7 +118,7 @@ class PosLocalCatalogStore @Inject constructor(
 
                     response.model.isNullOrEmpty() -> {
                         Result.success(
-                            SyncResult(
+                            PosLocalCatalogSyncResult(
                                 syncedCount = 0,
                                 hasMore = false,
                                 nextOffset = offset
@@ -145,7 +145,7 @@ class PosLocalCatalogStore @Inject constructor(
                         val hasMore = products.size == validPageSize
 
                         Result.success(
-                            SyncResult(
+                            PosLocalCatalogSyncResult(
                                 syncedCount = products.size,
                                 hasMore = hasMore,
                                 nextOffset = if (hasMore) offset + products.size else offset
