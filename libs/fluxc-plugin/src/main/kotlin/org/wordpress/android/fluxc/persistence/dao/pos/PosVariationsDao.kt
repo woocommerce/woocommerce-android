@@ -17,9 +17,6 @@ abstract class PosVariationsDao {
     @Query("SELECT * FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId = :productId AND remoteVariationId = :variationId")
     abstract suspend fun getVariation(localSiteId: LocalId, productId: RemoteId, variationId: RemoteId): WCPosVariationModel?
 
-    @Query("SELECT * FROM PosVariationEntity WHERE localSiteId = :localSiteId AND sku = :sku LIMIT 1")
-    abstract suspend fun getVariationBySku(localSiteId: LocalId, sku: String): WCPosVariationModel?
-
     @Upsert
     abstract suspend fun upsertVariations(variations: List<WCPosVariationModel>)
 
