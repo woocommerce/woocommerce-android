@@ -928,7 +928,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { refreshShippingRates.emit(Unit) }
     }
 
-    @Suppress("ComplexCondition")
+    @Suppress("ComplexCondition", "LongMethod")
     fun onPurchaseShippingLabel() {
         val selectedShipmentIndex = selectedShipmentIndex
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
@@ -1252,8 +1252,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 get() {
                     val unpurchasedShipments = shipmentUIList.filterNot { it.isPurchased }
                     return shipmentUIList.none { it.isPurchaseInProgress } &&
-                        (unpurchasedShipments.size > 1 ||
-                            (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1)
+                        (
+                            unpurchasedShipments.size > 1 ||
+                                (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1
+                            )
                 }
         }
     }

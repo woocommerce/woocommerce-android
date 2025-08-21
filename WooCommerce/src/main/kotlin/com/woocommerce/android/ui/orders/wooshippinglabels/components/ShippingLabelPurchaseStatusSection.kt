@@ -127,7 +127,9 @@ private fun PurchasedLabelSection(
                 )
                 .padding(16.dp)
         ) {
-            RoundedCornerBoxWithBorder(backgroundColor = colorResource(id = R.color.woo_shipping_label_success_surface)) {
+            RoundedCornerBoxWithBorder(
+                backgroundColor = colorResource(id = R.color.woo_shipping_label_success_surface)
+            ) {
                 LabelPaperSizeDropdownMenu(
                     availablePaperSizes = availablePaperSizes,
                     selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
