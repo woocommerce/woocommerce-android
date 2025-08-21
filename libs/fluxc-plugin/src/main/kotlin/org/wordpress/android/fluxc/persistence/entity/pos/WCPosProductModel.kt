@@ -5,7 +5,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 /**
- * POS-specific product table with limited columns for better performance in POS context
+ * POS-specific product table with limited columns for better performance in POS context.
  */
 @Entity(
     tableName = "PosProductEntity",

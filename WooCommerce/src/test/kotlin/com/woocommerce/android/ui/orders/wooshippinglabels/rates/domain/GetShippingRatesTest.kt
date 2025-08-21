@@ -130,5 +130,6 @@ class GetShippingRatesTest : BaseUnitTest() {
         )
 
         assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is NoAvailableRatesException)
     }
 }
