@@ -745,7 +745,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     onEditPaymentMethodClicked = ::onEditPaymentMethodClicked
                 ),
                 purchaseSectionUI = PurchaseSectionUI(
-                    isVisible = !shipmentUIList[uiState.selectedIndex].purchased &&
+                    isVisible = !shipmentUIList[uiState.selectedIndex].isReadOnly &&
                         shippingRatesStatesFlow.value[uiState.selectedIndex] is ShippingRatesState.DataState,
                     isOrderAlreadyCompleted = order.status == Order.Status.Completed,
                     markOrderComplete = uiState.markOrderComplete,
@@ -1250,7 +1250,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) : WooShippingViewState() {
             val shouldShowSplitShipmentButton: Boolean
                 get() {
-                    val unpurchasedShipments = shipmentUIList.filterNot { it.purchased }
+                    val unpurchasedShipments = shipmentUIList.filterNot { it.isReadOnly }
                     return unpurchasedShipments.size > 1 ||
                         (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1
                 }
@@ -1414,7 +1414,10 @@ data class ShipmentUI(
     val isPurchaseAPILoading: Boolean = false,
     val labelPurchaseStatus: LabelPurchaseStatus = LabelPurchaseStatus.Idle
 ) : Parcelable {
-    val purchased
+    val isPurchased
+        get() = labelPurchaseStatus is LabelPurchaseStatus.Purchased
+
+    val isReadOnly
         get() = labelPurchaseStatus is LabelPurchaseStatus.PurchaseInProgress ||
             labelPurchaseStatus is LabelPurchaseStatus.Purchased
 

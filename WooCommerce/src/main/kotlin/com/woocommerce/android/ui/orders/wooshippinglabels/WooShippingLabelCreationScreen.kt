@@ -287,7 +287,7 @@ private fun LabelCreationScreenWithBottomSheet(
 
     var bottomSheetPeekHeight by remember { mutableStateOf(0.dp) }
 
-    val screenTitle = if (shipmentUIList[uiState.selectedIndex].purchased) {
+    val screenTitle = if (shipmentUIList[uiState.selectedIndex].isPurchased) {
         R.string.shipping_label_print_screen_title
     } else {
         R.string.shipping_label_create_title
@@ -315,7 +315,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus,
                 noticeBannerUiState = uiState.noticeBannerUiState,
-                shipmentPurchased = selectedShipment.purchased,
+                readOnly = selectedShipment.isReadOnly,
                 onPeekHeightChanged = { bottomSheetPeekHeight = it },
             )
         },
@@ -365,7 +365,7 @@ private fun LabelCreationScreenWithBottomSheet(
                         Row(modifier = Modifier.fillMaxWidth()) {
                             ShipmentsTabRow(
                                 shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
-                                    ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
+                                    ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.isPurchased)
                                 },
                                 selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) {
                                     pagerState.currentPage
@@ -485,13 +485,13 @@ private fun CreateShippingCards(
             onExpand = { isExpanded.value = it }
         )
         HazmatCard(
-            onClick = if (shipmentUI.purchased) null else onHazmatNoticeClick,
+            onClick = if (shipmentUI.isReadOnly) null else onHazmatNoticeClick,
             selectedCategory = shipmentUI.hazmatState.hazmatSelection,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 4.dp, end = 8.dp)
         )
-        if (!shipmentUI.purchased) {
+        if (!shipmentUI.isReadOnly) {
             CustomsCard(
                 customsState = shipmentUI.customsState,
                 onEditCustomsClick = onEditCustomsClick,
