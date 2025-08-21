@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 59,
-    "identityHash": "2630068045ba803c535bb2253627160a",
+    "identityHash": "c9d5f4cba8f64b6d2e8fd920c2734f6d",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -2599,28 +2599,7 @@
             "remoteVariationId"
           ]
         },
-        "indices": [
-          {
-            "name": "index_PosVariationEntity_localSiteId_sku",
-            "unique": false,
-            "columnNames": [
-              "localSiteId",
-              "sku"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_PosVariationEntity_localSiteId_sku` ON `${TABLE_NAME}` (`localSiteId`, `sku`)"
-          },
-          {
-            "name": "index_PosVariationEntity_localSiteId_remoteProductId",
-            "unique": false,
-            "columnNames": [
-              "localSiteId",
-              "remoteProductId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_PosVariationEntity_localSiteId_remoteProductId` ON `${TABLE_NAME}` (`localSiteId`, `remoteProductId`)"
-          }
-        ],
+        "indices": [],
         "foreignKeys": []
       },
       {
@@ -4000,7 +3979,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2630068045ba803c535bb2253627160a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c9d5f4cba8f64b6d2e8fd920c2734f6d')"
     ]
   }
 }
