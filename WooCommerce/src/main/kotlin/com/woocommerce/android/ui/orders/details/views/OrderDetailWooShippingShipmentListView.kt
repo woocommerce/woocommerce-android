@@ -185,6 +185,7 @@ private fun ViewLabelRow(
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable(onClick = onClick)
             .padding(16.dp)
@@ -207,6 +208,7 @@ private fun ShipmentItemsRow(
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable(onClick = { isDialogShown = true })
             .padding(16.dp)
