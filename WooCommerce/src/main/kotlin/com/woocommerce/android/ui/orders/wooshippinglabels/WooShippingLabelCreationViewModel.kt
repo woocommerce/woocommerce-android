@@ -281,6 +281,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 val newLabel = result.shippingLabelModel ?: shipment.label.copy(status = result.status)
                 updateShipment(shipmentId, shipment.copy(label = newLabel.copy(originAddress = originAddress)))
 
+                if (result.status == ShippingLabelStatus.PURCHASED) {
+                    analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
+                }
+
                 if (result.status == ShippingLabelStatus.PURCHASED && uiState.value.markOrderComplete) {
                     markOrderAsComplete(navArgs.orderId).fold(
                         onSuccess = {
@@ -982,8 +986,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         )
                     )
                     observeShippingLabelPurchaseStatus(selectedShipmentIndex)
-                    // TODO check if we need to track this here or in the observeShippingLabelPurchaseStatus method
-                    analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
                 },
                 onFailure = { exception ->
                     updateShipment(
