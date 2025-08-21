@@ -2,7 +2,9 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 
 @Suppress("CyclomaticComplexMethod")
 fun ProductApiResponse.mapToPOSModel(): WCPosProductModel =
@@ -35,3 +37,31 @@ fun ProductApiResponse.mapToPOSModel(): WCPosProductModel =
         images = this.images?.toString() ?: "",
         attributes = this.attributes?.toString() ?: "",
     )
+
+@Suppress("CyclomaticComplexMethod")
+fun ProductVariationApiResponse.mapToPosVariationModel(
+    localSiteId: LocalOrRemoteId.LocalId,
+    remoteProductId: LocalOrRemoteId.RemoteId
+): WCPosVariationModel {
+    return WCPosVariationModel(
+        localSiteId = localSiteId,
+        remoteProductId = remoteProductId,
+        remoteVariationId = LocalOrRemoteId.RemoteId(this.id),
+        dateModified = this.date_modified ?: "",
+        sku = this.sku ?: "",
+        globalUniqueId = this.global_unique_id ?: "",
+        variationName = this.description ?: "",
+        price = this.price ?: "",
+        regularPrice = this.regular_price ?: "",
+        salePrice = this.sale_price ?: "",
+        description = this.description ?: "",
+        stockQuantity = this.stock_quantity,
+        stockStatus = this.stock_status ?: "",
+        manageStock = this.manage_stock,
+        backordered = this.backordered,
+        attributesJson = this.attributes?.toString() ?: "",
+        imageUrl = this.image?.asJsonObject?.get("src")?.asString ?: "",
+        status = this.status ?: "",
+        downloadable = this.downloadable
+    )
+}
