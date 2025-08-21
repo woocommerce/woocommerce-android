@@ -1250,9 +1250,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) : WooShippingViewState() {
             val shouldShowSplitShipmentButton: Boolean
                 get() {
-                    val unpurchasedShipments = shipmentUIList.filterNot { it.isReadOnly }
-                    return unpurchasedShipments.size > 1 ||
-                        (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1
+                    val unpurchasedShipments = shipmentUIList.filterNot { it.isPurchased }
+                    return shipmentUIList.none { it.isPurchaseInProgress } &&
+                        (unpurchasedShipments.size > 1 ||
+                            (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1)
                 }
         }
     }
@@ -1417,9 +1418,11 @@ data class ShipmentUI(
     val isPurchased
         get() = labelPurchaseStatus is LabelPurchaseStatus.Purchased
 
+    val isPurchaseInProgress
+        get() = labelPurchaseStatus is LabelPurchaseStatus.PurchaseInProgress
+
     val isReadOnly
-        get() = labelPurchaseStatus is LabelPurchaseStatus.PurchaseInProgress ||
-            labelPurchaseStatus is LabelPurchaseStatus.Purchased
+        get() = isPurchaseInProgress || isPurchased
 
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()
