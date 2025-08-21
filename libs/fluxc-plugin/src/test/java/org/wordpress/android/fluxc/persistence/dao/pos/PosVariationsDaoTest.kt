@@ -183,44 +183,6 @@ class PosVariationsDaoTest {
     }
 
     @Test
-    fun `given existing variation, when getting by SKU, then variation is returned`() = runTest {
-        // GIVEN
-        val variation = generatePosVariation(
-            productId = 100L,
-            variationId = 1001L,
-            sku = "UNIQUE-SKU-123"
-        )
-        sut.upsertVariation(variation)
-
-        // WHEN
-        val result = sut.getVariationBySku(variation.localSiteId, "UNIQUE-SKU-123")
-
-        // THEN
-        assertNotNull(result)
-        assertEquals(variation.remoteVariationId, result.remoteVariationId)
-        assertEquals("UNIQUE-SKU-123", result.sku)
-    }
-
-    @Test
-    fun `given multiple variations with different SKUs, when getting by SKU, then correct variation is returned`() = runTest {
-        // GIVEN
-        val variations = listOf(
-            generatePosVariation(productId = 100L, variationId = 1001L, sku = "SKU-001"),
-            generatePosVariation(productId = 100L, variationId = 1002L, sku = "SKU-002"),
-            generatePosVariation(productId = 200L, variationId = 2001L, sku = "SKU-003")
-        )
-        sut.upsertVariations(variations)
-
-        // WHEN
-        val result = sut.getVariationBySku(LocalId(1), "SKU-002")
-
-        // THEN
-        assertNotNull(result)
-        assertEquals(1002L, result.remoteVariationId.value)
-        assertEquals("SKU-002", result.sku)
-    }
-
-    @Test
     fun `given existing variation, when deleting variation, then variation is removed`() = runTest {
         // GIVEN
         val variation = generatePosVariation(productId = 100L, variationId = 1001L)
