@@ -62,6 +62,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShip
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.NoAvailableRatesException
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
@@ -670,7 +671,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         trackShippingRatesLoading(isSuccess = true)
                     },
                     onFailure = { exception ->
-                        updateState(ShippingRatesState.Error)
+                        val errorMessage = if (exception is NoAvailableRatesException) {
+                            exception.messageResId
+                        } else {
+                            R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error
+                        }
+
+                        updateState(ShippingRatesState.Error(errorMessage))
                         trackShippingRatesLoading(isSuccess = false, error = exception.message)
                     }
                 )
@@ -1269,7 +1276,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val missingDescription: Int
         ) : ShippingRatesState()
 
-        data object Error : ShippingRatesState()
+        data class Error(@StringRes val message: Int) : ShippingRatesState()
 
         data class Loading(
             val selectedRatesSortOrder: ShippingSortOption

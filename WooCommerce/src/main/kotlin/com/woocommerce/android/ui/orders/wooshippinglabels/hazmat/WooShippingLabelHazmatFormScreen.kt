@@ -4,18 +4,19 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,8 +42,11 @@ fun WooShippingLabelHazmatFormScreen(viewModel: WooShippingLabelHazmatFormViewMo
     WooShippingLabelHazmatFormScreen(
         containsHazmatChecked = viewState?.containsHazmatChecked == true,
         selectedHazmatCategory = viewState?.currentHazmatSelection,
+        isSaveButtonVisible = viewState?.isSaveButtonVisible == true,
+        isSelectCategoryButtonVisible = viewState?.isSelectCategoryButtonVisible == true,
         onContainsHazmatChanged = viewModel::onContainsHazmatChanged,
         onSelectCategoryClick = viewModel::onSelectCategoryClick,
+        onSaveClick = viewModel::onSaveClick,
         onUrlSelected = viewModel::onUrlSelected
     )
 }
@@ -51,8 +55,11 @@ fun WooShippingLabelHazmatFormScreen(viewModel: WooShippingLabelHazmatFormViewMo
 fun WooShippingLabelHazmatFormScreen(
     containsHazmatChecked: Boolean,
     selectedHazmatCategory: ShippingLabelHazmatCategory?,
+    isSaveButtonVisible: Boolean,
+    isSelectCategoryButtonVisible: Boolean,
     onContainsHazmatChanged: (Boolean) -> Unit,
     onSelectCategoryClick: () -> Unit,
+    onSaveClick: () -> Unit,
     onUrlSelected: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -98,11 +105,10 @@ fun WooShippingLabelHazmatFormScreen(
                 selectedHazmatCategory = selectedHazmatCategory,
                 onSelectCategoryClick = onSelectCategoryClick
             )
-        } else {
+        } else if (isSelectCategoryButtonVisible) {
             WCColoredButton(
                 text = stringResource(R.string.woo_shipping_labels_hazmat_info_select_category),
                 onClick = onSelectCategoryClick,
-                enabled = containsHazmatChecked,
                 modifier = modifier.fillMaxWidth()
             )
         }
@@ -137,6 +143,17 @@ fun WooShippingLabelHazmatFormScreen(
                 onUrlClick = { onUrlSelected(AppUrls.DHL_EXPRESS_HAZMAT_INSTRUCTIONS) }
             )
         )
+
+        if (isSaveButtonVisible) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            WCColoredButton(
+                onClick = onSaveClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.save))
+            }
+        }
     }
 }
 
@@ -179,8 +196,11 @@ fun WooShippingLabelHazmatFormScreenPreview() {
         WooShippingLabelHazmatFormScreen(
             containsHazmatChecked = false,
             selectedHazmatCategory = null,
+            isSaveButtonVisible = false,
+            isSelectCategoryButtonVisible = true,
             onContainsHazmatChanged = {},
             onSelectCategoryClick = {},
+            onSaveClick = {},
             onUrlSelected = {}
         )
     }
@@ -194,8 +214,11 @@ fun WooShippingLabelHazmatFormScreenWithSelectionPreview() {
         WooShippingLabelHazmatFormScreen(
             containsHazmatChecked = true,
             selectedHazmatCategory = ShippingLabelHazmatCategory.CLASS_1,
+            isSaveButtonVisible = false,
+            isSelectCategoryButtonVisible = false,
             onContainsHazmatChanged = {},
             onSelectCategoryClick = {},
+            onSaveClick = {},
             onUrlSelected = {}
         )
     }
