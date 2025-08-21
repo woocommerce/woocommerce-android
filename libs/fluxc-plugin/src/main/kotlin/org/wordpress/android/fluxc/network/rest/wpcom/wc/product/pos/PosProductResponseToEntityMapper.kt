@@ -4,6 +4,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 
+@Suppress("CyclomaticComplexMethod")
 fun ProductApiResponse.mapToPOSModel(): WCPosProductModel =
     WCPosProductModel(
         localSiteId = LocalOrRemoteId.LocalId(this.localSiteId),

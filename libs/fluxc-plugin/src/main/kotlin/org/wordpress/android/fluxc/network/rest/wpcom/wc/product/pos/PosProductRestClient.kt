@@ -51,7 +51,6 @@ class PosProductRestClient @Inject constructor(
         }
     }
 
-
     private fun buildBaseParams(
         pageSize: Int,
         offset: Int,
