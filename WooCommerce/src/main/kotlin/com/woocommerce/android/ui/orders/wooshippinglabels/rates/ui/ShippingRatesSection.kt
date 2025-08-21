@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 
@@ -32,8 +31,8 @@ internal fun ShippingRatesSection(
             )
         }
 
-        WooShippingLabelCreationViewModel.ShippingRatesState.Error -> ErrorMessageWithButton(
-            message = R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error,
+        is WooShippingLabelCreationViewModel.ShippingRatesState.Error -> ErrorMessageWithButton(
+            message = shippingRatesState.message,
             modifier = Modifier.sizeIn(minHeight = 300.dp),
             onRetryClick = { onRefreshShippingRates() }
         )

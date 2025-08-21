@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain
 
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
@@ -36,7 +38,13 @@ class GetShippingRates @Inject constructor(
     ).fold(
         onSuccess = { ratesResponse ->
             if (ratesResponse.isEmpty()) {
-                Result.failure(Exception("no_rates_available"))
+                val message = if (hazmatSelection == null) {
+                    R.string.woo_shipping_labels_package_creation_shipping_rates_empty
+                } else {
+                    R.string.woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat
+                }
+
+                Result.failure(NoAvailableRatesException(message))
             } else {
                 try {
                     val mappedRates = shippingMapper(ratesResponse, currencyCode)
@@ -51,3 +59,5 @@ class GetShippingRates @Inject constructor(
         }
     )
 }
+
+class NoAvailableRatesException(@StringRes val messageResId: Int) : Exception("No available rates")
