@@ -307,7 +307,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             invoke(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
         } doReturn Result.success(
             PurchasedLabelData(
-                labels = listOf(shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASED)),
+                labels = listOf(shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASE_IN_PROGRESS)),
                 origin = emptyMap(),
                 destination = emptyMap(),
                 rates = emptyMap()
@@ -793,7 +793,14 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onPurchaseShippingLabel succeed then track purchase_success`() = testBlocking {
+    fun `when label is purchased, then track purchase_success`() = testBlocking {
+        whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
+            ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
+                status = ShippingLabelStatus.PURCHASED,
+                shippingLabelModel = shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASED)
+            )
+        )
+
         createViewModel()
 
         val selectedRate = defaultShippingRates.values.first().first()
@@ -1543,5 +1550,32 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
         assertThat(dataState.purchaseSectionUI.isOrderAlreadyCompleted).isFalse()
+    }
+
+    @Test
+    fun `when opening a shipment with in-progress label, then fetch the label status`() = testBlocking {
+        val inProgressLabel = shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASE_IN_PROGRESS)
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = inProgressLabel
+            )
+        )
+        whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
+            ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
+                status = ShippingLabelStatus.PURCHASED,
+                shippingLabelModel = inProgressLabel.copy(status = ShippingLabelStatus.PURCHASED)
+            )
+        )
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value as DataState
+        assertThat(currentViewState.shipmentUIList).hasSize(1)
+        assertThat(currentViewState.shipmentUIList[0].isPurchased).isTrue
+        @Suppress("UnusedFlow")
+        verify(observeShippingLabelStatus).invoke(orderId, inProgressLabel.labelId)
     }
 }
