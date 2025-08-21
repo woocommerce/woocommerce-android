@@ -26,7 +26,6 @@ class OrderDetailShippingLabelsView @JvmOverloads constructor(
         shippingLabels: List<ShippingLabelModel>,
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
-        isRevampWooShippingEnabled: Boolean,
         productClickListener: OrderProductActionListener,
         shippingLabelClickListener: OnShippingLabelClickListener
     ) {
@@ -35,8 +34,7 @@ class OrderDetailShippingLabelsView @JvmOverloads constructor(
                 formatCurrencyForDisplay = formatCurrencyForDisplay,
                 productImageMap = productImageMap,
                 listener = shippingLabelClickListener,
-                productClickListener = productClickListener,
-                isRevampWooShippingEnabled = isRevampWooShippingEnabled
+                productClickListener = productClickListener
             )
         binding.shippingLabelList.apply {
             setHasFixedSize(true)

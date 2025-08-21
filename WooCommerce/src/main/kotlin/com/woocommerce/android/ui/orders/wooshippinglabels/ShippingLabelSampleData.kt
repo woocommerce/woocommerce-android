@@ -9,6 +9,11 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShi
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
@@ -200,5 +205,69 @@ object ShippingLabelSampleData {
         availablePrintSizes = listOf(WooShippingLabelPaperSize.LABEL, WooShippingLabelPaperSize.LETTER),
         isRefundAvailable = true,
         isCustomsFormAvailable = true
+    )
+
+    @Suppress("LongMethod")
+    fun getShippingLabelUIModel(purchased: Boolean = false) = ShipmentUIModel(
+        localId = "1",
+        remoteId = "1",
+        items = listOf(
+            ShippableItemModel(
+                itemId = 0,
+                productId = 0,
+                height = 0f,
+                width = 0f,
+                length = 0f,
+                weight = 0f,
+                title = "Sample Product",
+                imageUrl = "",
+                quantity = 1f,
+                price = BigDecimal.TEN,
+                currency = "USD"
+            ),
+            ShippableItemModel(
+                itemId = 0,
+                productId = 0,
+                height = 0f,
+                width = 0f,
+                length = 0f,
+                weight = 0f,
+                title = "Sample Product 2",
+                imageUrl = "",
+                quantity = 2f,
+                price = BigDecimal.TEN,
+                currency = "USD"
+            )
+        ),
+        purchased = purchased,
+        purchaseState = PurchaseState.NoStarted,
+        label = if (purchased) {
+            ShippingLabelModel(
+                labelId = 0L,
+                tracking = "TrackingNumber123",
+                refundableAmount = BigDecimal.ZERO,
+                status = ShippingLabelStatus.PURCHASED,
+                created = null,
+                carrierId = "",
+                serviceName = "",
+                commercialInvoiceUrl = "",
+                isCommercialInvoiceSubmittedElectronically = false,
+                packageName = "",
+                isLetter = false,
+                productNames = emptyList(),
+                productIds = emptyList(),
+                shipmentId = "shipment_1",
+                receiptItemId = 0L,
+                createdDate = null,
+                mainReceiptId = 0L,
+                rate = BigDecimal.ZERO,
+                currency = "",
+                expiryDate = 0L,
+                usedDate = null,
+                refund = null
+            )
+        } else {
+            null
+        }
     )
 }
