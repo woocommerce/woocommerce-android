@@ -180,7 +180,7 @@ class RefundSummaryViewModel @Inject constructor(
                 }
                 updateRefundSummaryState(paymentTitle, isMethodDescriptionVisible = true)
             } else {
-                enrichRefundMethodWithCardDetails(gateway.title)
+                enrichRefundMethodWithCardDetails(gateway.title.ifBlank { gateway.methodTitle })
             }
         }
     }
