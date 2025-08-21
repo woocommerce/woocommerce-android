@@ -180,7 +180,7 @@ class RefundSummaryViewModel @Inject constructor(
                 }
                 updateRefundSummaryState(paymentTitle, isMethodDescriptionVisible = true)
             } else {
-                enrichRefundMethodWithCardDetails(gateway.title.ifBlank { manualRefundMethod })
+                enrichRefundMethodWithCardDetails(gateway.title)
             }
         }
     }
@@ -205,7 +205,9 @@ class RefundSummaryViewModel @Inject constructor(
                     val refundMethodWithCard = result.run {
                         val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
                         val last4 = result.cardLast4.orEmpty()
-                        "$refundMethod ($brand **** $last4)"
+                        val creditCardRefundDefaultText =
+                            resourceProvider.getString(R.string.order_refunds_credit_card_refund)
+                        "${refundMethod.ifBlank { creditCardRefundDefaultText }} ($brand **** $last4)"
                     }
                     updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
                 }
