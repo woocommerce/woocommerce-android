@@ -56,7 +56,8 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
         _binding = FragmentRefundSummaryBinding.bind(view)
         setupToolbar()
         initializeViews()
-        setupObservers()
+        setupUiStateObservers()
+        handleEvents()
         handleResults()
     }
 
@@ -75,37 +76,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
         _binding = null
     }
 
-    private fun setupObservers() {
-        viewModel.event.observe(
-            viewLifecycleOwner
-        ) { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
-                is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
-                is ShowRefundConfirmation -> {
-                    val action =
-                        RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
-                            title = event.title,
-                            message = event.message,
-                            positiveButtonTitle = event.confirmButtonTitle
-                        )
-                    findNavController().navigateSafely(action)
-                }
-
-                is NavigateToCardReaderScreen -> {
-                    val action = RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderFlow(
-                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Refund(
-                            event.orderId,
-                            event.refundAmount
-                        )
-                    )
-                    findNavController().navigateSafely(action)
-                }
-
-                else -> event.isHandled = false
-            }
-        }
-
+    private fun setupUiStateObservers() {
         viewModel.refundSummaryStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isFormEnabled?.takeIfNotEqualTo(old?.isFormEnabled) {
                 binding.refundSummaryBtnRefund.isEnabled = new.isFormEnabled
@@ -141,6 +112,38 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                     binding.refundMethodLayout.show()
                     binding.loadingPaymentMethodSkeletons.hide()
                 }
+            }
+        }
+    }
+
+    private fun handleEvents() {
+        viewModel.event.observe(
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
+                is ShowRefundConfirmation -> {
+                    val action =
+                        RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
+                            title = event.title,
+                            message = event.message,
+                            positiveButtonTitle = event.confirmButtonTitle
+                        )
+                    findNavController().navigateSafely(action)
+                }
+
+                is NavigateToCardReaderScreen -> {
+                    val action = RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderFlow(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Refund(
+                            event.orderId,
+                            event.refundAmount
+                        )
+                    )
+                    findNavController().navigateSafely(action)
+                }
+
+                else -> event.isHandled = false
             }
         }
     }
