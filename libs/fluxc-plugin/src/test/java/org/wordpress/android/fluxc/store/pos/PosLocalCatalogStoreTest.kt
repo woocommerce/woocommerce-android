@@ -1,0 +1,362 @@
+package org.wordpress.android.fluxc.store.pos
+
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.PosProductRestClient
+import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
+import org.wordpress.android.fluxc.utils.initCoroutineEngine
+
+@RunWith(MockitoJUnitRunner::class)
+class PosLocalCatalogStoreTest {
+
+    @Mock
+    private lateinit var posProductRestClient: PosProductRestClient
+
+    @Mock
+    private lateinit var posProductsDao: PosProductsDao
+
+    private lateinit var store: PosLocalCatalogStore
+
+    companion object {
+        private val SITE_ID = LocalId(123)
+        private val PRODUCT_ID = RemoteId(456)
+        private val SITE = SiteModel().apply { id = 123 }
+        private const val SYNC_DATE = "2024-01-01T00:00:00Z"
+    }
+
+    private val testSiteId = SITE_ID
+    private val testRemoteId = PRODUCT_ID
+    private val testSite = SITE
+    private val validDateString = SYNC_DATE
+
+    private val sampleProduct1 = ProductTestData.coffeMug(testSiteId)
+    private val sampleProduct2 = ProductTestData.laptopStand(testSiteId)
+    private val sampleProducts = listOf(sampleProduct1, sampleProduct2)
+
+    @Before
+    fun setUp() {
+        store = PosLocalCatalogStore(
+            posProductRestClient = posProductRestClient,
+            coroutineEngine = initCoroutineEngine(),
+            posProductDao = posProductsDao
+        )
+    }
+
+    @Test
+    fun `when observing products for site, then emits current product catalog`() = runTest {
+        // GIVEN
+        whenever(posProductsDao.observeAllProducts(testSiteId))
+            .thenReturn(flowOf(sampleProducts))
+
+        // WHEN
+        val catalog = store.observeProducts(testSiteId).first().getOrThrow()
+
+        // THEN
+        assertThat(catalog).hasSize(2)
+        assertThat(catalog).containsExactlyInAnyOrder(sampleProduct1, sampleProduct2)
+    }
+
+    @Test
+    fun `when observing products for empty site, then emits empty catalog`() = runTest {
+        // GIVEN
+        whenever(posProductsDao.observeAllProducts(testSiteId))
+            .thenReturn(flowOf(emptyList()))
+
+        // WHEN
+        val catalog = store.observeProducts(testSiteId).first().getOrThrow()
+
+        // THEN
+        assertThat(catalog).isEmpty()
+    }
+
+    @Test
+    fun `when getting existing product, then returns product details`() = runTest {
+        // GIVEN
+        val expectedProduct = createTestProduct(remoteId = testRemoteId.value, name = "Wireless Mouse")
+        whenever(posProductsDao.getProduct(testSiteId, testRemoteId))
+            .thenReturn(expectedProduct)
+
+        // WHEN
+        val product = store.getProduct(testSiteId, testRemoteId).getOrThrow()
+
+        // THEN
+        assertThat(product).isNotNull()
+        assertThat(product!!.name).isEqualTo("Wireless Mouse")
+        assertThat(product.remoteId).isEqualTo(testRemoteId)
+    }
+
+    @Test
+    fun `when getting non-existing product, then returns null`() = runTest {
+        // GIVEN
+        val nonExistentProductId = RemoteId(999L)
+        whenever(posProductsDao.getProduct(testSiteId, nonExistentProductId))
+            .thenReturn(null)
+
+        // WHEN
+        val product = store.getProduct(testSiteId, nonExistentProductId).getOrThrow()
+
+        // THEN
+        assertThat(product).isNull()
+    }
+
+    @Test
+    fun `when syncing products, then saves products to local catalog and returns sync summary`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(
+            createTestApiResponse(id = 1L, name = "Coffee Mug"),
+            createTestApiResponse(id = 2L, name = "Laptop Stand")
+        )
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(WooResult(remoteProducts))
+
+        // WHEN
+        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+
+        // THEN
+        verify(posProductsDao).upsertProducts(any())
+        assertThat(syncResult.syncedCount).isEqualTo(2)
+        assertThat(syncResult.hasMore).isFalse()
+        assertThat(syncResult.nextOffset).isEqualTo(0)
+    }
+
+    @Test
+    fun `given full page of products, when syncing, then indicates more products available`() = runTest {
+        // GIVEN
+        val fullPageOfProducts = Array(100) { index ->
+            createTestApiResponse(id = index.toLong() + 1, name = "Product ${index + 1}")
+        }
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(WooResult(fullPageOfProducts))
+
+        // WHEN
+        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+
+        // THEN
+        assertThat(syncResult.hasMore).isTrue()
+        assertThat(syncResult.nextOffset).isEqualTo(100)
+        assertThat(syncResult.syncedCount).isEqualTo(100)
+    }
+
+    @Test
+    fun `given no remote products, when syncing, then completes without saving anything`() = runTest {
+        // GIVEN
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(WooResult(emptyArray()))
+
+        // WHEN
+        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+
+        // THEN
+        verifyNoInteractions(posProductsDao)
+        assertThat(syncResult.syncedCount).isEqualTo(0)
+        assertThat(syncResult.hasMore).isFalse()
+        assertThat(syncResult.nextOffset).isEqualTo(0)
+    }
+
+    @Test
+    fun `given network connectivity issues, when syncing, then throws network error`() = runTest {
+        // GIVEN
+        val connectivityError = WooError(
+            type = WooErrorType.NO_CONNECTION,
+            original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NO_CONNECTION,
+            message = "Connection failed"
+        )
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(WooResult(connectivityError))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        assertThat(error.errorMessage).contains("Connection failed")
+        verifyNoInteractions(posProductsDao)
+    }
+
+    @Test
+    fun `given database storage fails, when syncing, then throws database error`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product 1"))
+        val storageException = RuntimeException("Disk full")
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(WooResult(remoteProducts))
+        whenever(posProductsDao.upsertProducts(any()))
+            .thenThrow(storageException)
+
+        // WHEN
+        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as PosLocalCatalogError.DatabaseError
+        assertThat(error.errorMessage).contains("Failed to save products to database")
+        assertThat(error.throwable).isEqualTo(storageException)
+    }
+
+    @Test
+    fun `given oversized page request, when syncing, then constrains to maximum page size`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product 1"))
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(WooResult(remoteProducts))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 500)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        verify(posProductRestClient).fetchProducts(testSite, validDateString, 0, 100)
+    }
+
+    @Test
+    fun `given partial page of products, when syncing, then indicates no more products available`() = runTest {
+        // GIVEN
+        val partialPageProducts = Array(50) { index ->
+            createTestApiResponse(id = index.toLong() + 1, name = "Product ${index + 1}")
+        }
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(WooResult(partialPageProducts))
+
+        // WHEN
+        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+
+        // THEN
+        assertThat(syncResult.hasMore).isFalse()
+        assertThat(syncResult.nextOffset).isEqualTo(0)
+        assertThat(syncResult.syncedCount).isEqualTo(50)
+    }
+
+    @Test
+    fun `given negative page size, when syncing, then constrains to minimum page size`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product 1"))
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 1))
+            .thenReturn(WooResult(remoteProducts))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, -5)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        verify(posProductRestClient).fetchProducts(testSite, validDateString, 0, 1)
+    }
+
+    @Test
+    fun `given API timeout error, when syncing, then throws timeout specific network error`() = runTest {
+        // GIVEN
+        val timeoutError = WooError(
+            type = WooErrorType.TIMEOUT,
+            original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.TIMEOUT,
+            message = "Request timeout"
+        )
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(WooResult(timeoutError))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        assertThat(error.errorMessage).contains("Request timed out")
+        assertThat(error.code).isEqualTo("TIMEOUT")
+    }
+
+    @Test
+    fun `given multiple site IDs, when observing products, then returns site-specific catalog`() = runTest {
+        // GIVEN
+        val site1 = LocalId(111)
+        val site2 = LocalId(222)
+        val site1Products = listOf(createTestProduct(localSiteId = site1.value, remoteId = 1L, name = "Site1 Product"))
+        val site2Products = listOf(createTestProduct(localSiteId = site2.value, remoteId = 2L, name = "Site2 Product"))
+
+        whenever(posProductsDao.observeAllProducts(site1)).thenReturn(flowOf(site1Products))
+        whenever(posProductsDao.observeAllProducts(site2)).thenReturn(flowOf(site2Products))
+
+        // WHEN
+        val catalog1 = store.observeProducts(site1).first().getOrThrow()
+        val catalog2 = store.observeProducts(site2).first().getOrThrow()
+
+        // THEN
+        assertThat(catalog1).hasSize(1)
+        assertThat(catalog1.first().name).isEqualTo("Site1 Product")
+        assertThat(catalog2).hasSize(1)
+        assertThat(catalog2.first().name).isEqualTo("Site2 Product")
+    }
+
+    object ProductTestData {
+        fun coffeMug(siteId: LocalId) = WCPosProductModel(
+            localSiteId = siteId,
+            remoteId = RemoteId(1L),
+            name = "Coffee Mug",
+            description = "Ceramic coffee mug with handle",
+            price = "12.99",
+            images = ""
+        )
+
+        fun laptopStand(siteId: LocalId) = WCPosProductModel(
+            localSiteId = siteId,
+            remoteId = RemoteId(2L),
+            name = "Laptop Stand",
+            description = "Adjustable aluminum laptop stand",
+            price = "49.99",
+            images = ""
+        )
+
+        fun createProduct(
+            siteId: LocalId = SITE_ID,
+            remoteId: Long,
+            name: String,
+            price: String = "29.99"
+        ) = WCPosProductModel(
+            localSiteId = siteId,
+            remoteId = RemoteId(remoteId),
+            name = name,
+            description = "High-quality product for your store",
+            price = price,
+            images = ""
+        )
+
+        fun createApiResponse(
+            id: Long,
+            name: String,
+            price: String = "29.99"
+        ) = ProductApiResponse(
+            id = id,
+            name = name,
+            description = "High-quality product for your store",
+            price = price
+        )
+    }
+
+    private fun createTestProduct(
+        localSiteId: Int = testSiteId.value,
+        remoteId: Long,
+        name: String
+    ) = ProductTestData.createProduct(LocalId(localSiteId), remoteId, name)
+
+    private fun createTestApiResponse(
+        id: Long,
+        name: String
+    ) = ProductTestData.createApiResponse(id, name)
+}
