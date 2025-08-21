@@ -283,6 +283,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
                 if (result.status == ShippingLabelStatus.PURCHASED) {
                     analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
+                } else if (result.status == ShippingLabelStatus.PURCHASE_ERROR) {
+                    analyticsTracker.track(
+                        AnalyticsEvent.WCS_PURCHASE_STEP,
+                        mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to result.shippingLabelModel?.error)
+                    )
                 }
 
                 if (result.status == ShippingLabelStatus.PURCHASED && uiState.value.markOrderComplete) {
