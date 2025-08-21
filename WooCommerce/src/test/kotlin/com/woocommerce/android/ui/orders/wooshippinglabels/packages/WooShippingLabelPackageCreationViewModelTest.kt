@@ -740,4 +740,17 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         val carrierPackage = lastViewState?.packagesData?.carrierPackages?.get(USPS)?.first()?.packages?.first()
         assertThat(carrierPackage?.isStarred).isFalse
     }
+
+    @Test
+    fun `when dimensions are invalid and add custom package clicked, then show error`() = testBlocking {
+        var lastViewState: ViewState? = null
+        sut.viewState.observeForever { lastViewState = it }
+
+        sut.onLengthChange("0")
+        sut.onWidthChange("0")
+        sut.onHeightChange("0")
+        sut.onAddCustomPackageClick(savePackageAsTemplate = false)
+
+        assertThat(lastViewState?.customPackageCreationData?.invalidDimensionError).isTrue
+    }
 }
