@@ -23,10 +23,11 @@ class PosProductRestClient @Inject constructor(
         site: SiteModel,
         modifiedAfter: String? = null,
         offset: Int,
+        pageSize: Int,
     ): WooResult<Array<ProductApiResponse>> {
         val url = WOOCOMMERCE.products.pathV3
         val params = buildBaseParams(
-            pageSize = 100,
+            pageSize = pageSize,
             offset = offset,
             modifiedAfter = modifiedAfter,
             fields = FIELDS

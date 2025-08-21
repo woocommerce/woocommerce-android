@@ -32,9 +32,10 @@ class PosLocalCatalogStore @Inject constructor(
         site: SiteModel,
         modifiedAfter: String,
         offset: Int,
+        pageSize: Int = 100,
     ): Result<Unit> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedProducts") {
-            val response = posProductRestClient.fetchProducts(site, modifiedAfter, offset)
+            val response = posProductRestClient.fetchProducts(site, modifiedAfter, offset, pageSize)
             if (!response.isError && !response.model.isNullOrEmpty()) {
                 posProductDao.upsertProducts(response.model.map { it.mapToPOSModel() })
                 Result.success(Unit)
