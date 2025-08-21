@@ -241,10 +241,6 @@ class OrderDetailShippingLabelsAdapter(
                 }
             }
 
-            // Legacy flow buttons
-            viewBinding.shippingLabelItemViewMore.isVisible = true
-            viewBinding.shippingLabelItemViewMoreButtonTitle.isVisible = true
-
             // click on view more details section
             viewBinding.shippingLabelItemViewMore.setOnClickListener {
                 val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
