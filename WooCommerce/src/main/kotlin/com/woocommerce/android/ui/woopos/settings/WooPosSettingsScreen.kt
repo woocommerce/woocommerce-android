@@ -40,6 +40,10 @@ fun WooPosSettingsScreen(
     val containerViewModel: WooPosSettingsViewModel = hiltViewModel()
     val state by containerViewModel.state.collectAsState()
 
+    LaunchedEffect(Unit) {
+        containerViewModel.onSettingsOpened()
+    }
+
     LaunchedEffect(initial) {
         if (initial?.first != null) {
             delay(400)
@@ -53,7 +57,10 @@ fun WooPosSettingsScreen(
         }
     }
 
-    BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
+    BackHandler {
+        containerViewModel.onSettingsClosed()
+        onNavigationEvent(WooPosNavigationEvent.GoBack)
+    }
 
     Row(
         modifier = Modifier.fillMaxSize()
