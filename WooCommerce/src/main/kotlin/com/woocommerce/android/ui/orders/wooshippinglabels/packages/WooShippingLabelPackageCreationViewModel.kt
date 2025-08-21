@@ -175,16 +175,21 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
     fun onAddCustomPackageClick(savePackageAsTemplate: Boolean) {
         val customPackage = _viewState.value.customPackageCreationData
-        if (savePackageAsTemplate) {
-            handleCustomSelectionAsTemplate(customPackage)
-        } else {
-            triggerEvent(
-                PackageSelected(
-                    customPackage.toPackageData(
-                        dimensionUnit = _viewState.value.storeOptions.dimensionUnit
-                    )
+        when {
+            customPackage.invalidDimensions -> _viewState.value = _viewState.value.copy(
+                customPackageCreationData = _viewState.value.customPackageCreationData.copy(
+                    invalidDimensionError = true
                 )
             )
+
+            savePackageAsTemplate -> handleCustomSelectionAsTemplate(customPackage)
+            else -> {
+                triggerEvent(
+                    PackageSelected(
+                        customPackage.toPackageData(dimensionUnit = _viewState.value.storeOptions.dimensionUnit)
+                    )
+                )
+            }
         }
 
         tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
