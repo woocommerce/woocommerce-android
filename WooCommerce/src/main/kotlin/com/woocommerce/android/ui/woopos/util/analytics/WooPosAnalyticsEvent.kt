@@ -347,6 +347,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "settings_closed"
         }
 
+        data object StoreDetailsTapped : Event() {
+            override val name: String = "store_details_tapped"
+        }
+
         data object BarcodeScannerSetupFlowShown : Event() {
             override val name: String = "barcode_scanner_setup_flow_shown"
         }

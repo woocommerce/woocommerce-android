@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsClosed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsOpened
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.StoreDetailsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,11 @@ class WooPosSettingsViewModel @Inject constructor(
     val state: StateFlow<WooPosSettingsState> = _state.asStateFlow()
 
     fun onCategorySelected(category: WooPosSettingsCategory) {
+        if (category == WooPosSettingsCategory.STORE) {
+            viewModelScope.launch {
+                analyticsTracker.track(StoreDetailsTapped)
+            }
+        }
         _state.update { currentState ->
             currentState.copy(
                 selectedCategory = category,
