@@ -46,8 +46,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
@@ -222,7 +221,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         labelId = 1,
         tracking = "",
         refundableAmount = BigDecimal.ZERO,
-        status = UNKNOWN,
+        status = ShippingLabelStatus.UNKNOWN,
         created = null,
         carrierId = "",
         serviceName = "",
@@ -308,7 +307,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             invoke(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
         } doReturn Result.success(
             PurchasedLabelData(
-                labels = listOf(shippingLabelModel.copy(status = PURCHASED)),
+                labels = listOf(shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASED)),
                 origin = emptyMap(),
                 destination = emptyMap(),
                 rates = emptyMap()
@@ -851,8 +850,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             whenever(markOrderAsComplete(orderId)) doReturn Result.success(Unit)
             whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
                 ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
-                    status = PURCHASED,
-                    shippingLabelModel = shippingLabelModel.copy(status = PURCHASED)
+                    status = ShippingLabelStatus.PURCHASED,
+                    shippingLabelModel = shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASED)
                 )
             )
 
@@ -884,8 +883,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         whenever(markOrderAsComplete(orderId)) doReturn Result.failure(Exception("Error marking order as complete"))
         whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
             ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
-                status = PURCHASED,
-                shippingLabelModel = shippingLabelModel.copy(status = PURCHASED)
+                status = ShippingLabelStatus.PURCHASED,
+                shippingLabelModel = shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASED)
             )
         )
 
@@ -981,8 +980,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             ShipmentUIModel(
                 localId = "0",
                 items = defaultShippableItems,
-                purchased = true,
-                label = shippingLabelModel
+                label = shippingLabelModel.copy(
+                    status = ShippingLabelStatus.PURCHASED
+                )
             )
         )
 
@@ -999,12 +999,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val label = shippingLabelModel.copy(
             serviceName = "Test Service",
             rate = BigDecimal.TEN,
+            status = ShippingLabelStatus.PURCHASED
         )
         whenever(getShipments(any())) doReturn listOf(
             ShipmentUIModel(
                 localId = "0",
                 items = defaultShippableItems,
-                purchased = true,
                 label = label
             )
         )

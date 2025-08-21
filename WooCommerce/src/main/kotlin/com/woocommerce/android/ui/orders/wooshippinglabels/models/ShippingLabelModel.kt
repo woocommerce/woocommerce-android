@@ -66,6 +66,10 @@ data class ShippingLabelModel(
         }
 
     @IgnoredOnParcel
+    val isPurchased: Boolean
+        get() = status == ShippingLabelStatus.PURCHASED && refund == null
+
+    @IgnoredOnParcel
     private val hasLabelExpired: Boolean
         get() = status == ShippingLabelStatus.ANONYMIZED || usedDate != null || expiryDate < System.currentTimeMillis()
 

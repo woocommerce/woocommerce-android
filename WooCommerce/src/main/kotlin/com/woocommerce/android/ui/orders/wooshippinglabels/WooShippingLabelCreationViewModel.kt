@@ -828,7 +828,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         // If the shipment is found, reset its state
         if (shipmentIndex != -1) {
-            updateShipment(shipmentIndex, shipments.value[shipmentIndex].copy(purchased = false, label = null))
+            updateShipment(shipmentIndex, shipments.value[shipmentIndex].copy(label = null))
             selectedRatesFlow.value = selectedRatesFlow.value.toMutableList().apply { set(shipmentIndex, null) }
             selectedPackagesFlow.value = selectedPackagesFlow.value.toMutableList().apply { set(shipmentIndex, null) }
         }
@@ -1005,7 +1005,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         result.labels
             .firstOrNull()
             ?.let { purchasedLabel ->
-                updateShipment(shipmentId, shipments.value[shipmentId].copy(purchased = true, label = purchasedLabel))
+                updateShipment(shipmentId, shipments.value[shipmentId].copy(label = purchasedLabel))
                 observeShippingLabelPurchaseStatus(shipmentId)
             }
         analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
