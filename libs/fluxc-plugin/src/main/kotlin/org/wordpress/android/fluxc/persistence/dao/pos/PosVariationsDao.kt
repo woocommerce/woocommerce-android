@@ -15,7 +15,11 @@ abstract class PosVariationsDao {
     abstract fun observeVariationsForProduct(localSiteId: LocalId, productId: RemoteId): Flow<List<WCPosVariationModel>>
 
     @Query("SELECT * FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId = :productId AND remoteVariationId = :variationId")
-    abstract suspend fun getVariation(localSiteId: LocalId, productId: RemoteId, variationId: RemoteId): WCPosVariationModel?
+    abstract suspend fun getVariation(
+        localSiteId: LocalId,
+        productId: RemoteId,
+        variationId: RemoteId
+    ): WCPosVariationModel?
 
     @Upsert
     abstract suspend fun upsertVariations(variations: List<WCPosVariationModel>)
