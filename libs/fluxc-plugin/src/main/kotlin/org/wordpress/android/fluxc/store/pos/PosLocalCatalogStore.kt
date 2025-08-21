@@ -1,5 +1,7 @@
 package org.wordpress.android.fluxc.store.pos
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -7,28 +9,38 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.PosProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSModel
 import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog.T.API
 import javax.inject.Inject
 import javax.inject.Singleton
 
-sealed class ProductSyncResult {
-    data class Success(
-        val syncedCount: Int,
-        val hasMore: Boolean,
-        val nextOffset: Int
-    ) : ProductSyncResult()
+data class SyncResult(
+    val syncedCount: Int,
+    val hasMore: Boolean,
+    val nextOffset: Int
+)
 
-    data class Failure(
-        val error: PosLocalCatalogError
-    ) : ProductSyncResult()
-}
+sealed class PosLocalCatalogError(
+    override val message: String,
+    override val cause: Throwable? = null
+) : Exception(message, cause) {
 
-sealed class PosLocalCatalogError {
-    data class NetworkError(val message: String, val code: String? = null) : PosLocalCatalogError()
-    data class DatabaseError(val message: String, val throwable: Throwable? = null) : PosLocalCatalogError()
-    object EmptyResponse : PosLocalCatalogError()
-    data class UnknownError(val throwable: Throwable) : PosLocalCatalogError()
+    data class NetworkError(
+        val errorMessage: String,
+        val code: String? = null
+    ) : PosLocalCatalogError(errorMessage)
+
+    data class DatabaseError(
+        val errorMessage: String,
+        val throwable: Throwable? = null
+    ) : PosLocalCatalogError(errorMessage, throwable)
+
+    object EmptyResponse : PosLocalCatalogError("Empty response from server")
+
+    data class UnknownError(
+        val throwable: Throwable
+    ) : PosLocalCatalogError(throwable.message ?: "Unknown error", throwable)
 }
 
 @Singleton
@@ -42,48 +54,75 @@ class PosLocalCatalogStore @Inject constructor(
         private const val MAX_PAGE_SIZE = 100
     }
 
-    suspend fun observeProducts(siteId: LocalOrRemoteId.LocalId) =
-        coroutineEngine.withDefaultContext(API, this, "observeProducts") {
-            posProductDao.observeAllProducts(siteId)
-        }
+    /**
+     * Observes all products for a given site from the local database.
+     *
+     * @param siteId The local site ID to observe products for
+     * @return Flow of Result containing list of products or error
+     */
+    fun observeProducts(
+        siteId: LocalOrRemoteId.LocalId
+    ): Flow<Result<List<WCPosProductModel>>> =
+        posProductDao.observeAllProducts(siteId)
+            .map { products ->
+                Result.success(products)
+            }
 
+    /**
+     * Gets a single product from the local database.
+     *
+     * @param siteId The local site ID
+     * @param remoteProductId The remote product ID
+     * @return Result containing the product if found, null if not found, or error
+     */
     suspend fun getProduct(
         siteId: LocalOrRemoteId.LocalId,
         remoteProductId: LocalOrRemoteId.RemoteId
-    ) = coroutineEngine.withDefaultContext(API, this, "getProduct") {
-        posProductDao.getProduct(siteId, remoteProductId)
-    }
+    ): Result<WCPosProductModel?> =
+        coroutineEngine.withDefaultContext(API, this, "getProduct") {
+            val product = posProductDao.getProduct(siteId, remoteProductId)
+            Result.success(product)
+        }
 
+    /**
+     * Syncs recently modified products with pagination support.
+     *
+     * @param site The site to sync products for
+     * @param modifiedAfterGmt ISO 8601 formatted date string (GMT)
+     * @param offset Starting offset for pagination
+     * @param pageSize Number of products to fetch per page (default: 100, max: 100)
+     * @return Result containing SyncResponse with pagination info or error
+     */
     suspend fun syncRecentlyModifiedProducts(
         site: SiteModel,
         modifiedAfterGmt: String,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-    ): ProductSyncResult =
+    ): Result<SyncResult> =
         coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
-            try {
-                val response = posProductRestClient.fetchProducts(
-                    site = site,
-                    modifiedAfter = modifiedAfterGmt,
-                    offset = offset,
-                    pageSize = validPageSize
-                )
+            val response = posProductRestClient.fetchProducts(
+                site = site,
+                modifiedAfter = modifiedAfterGmt,
+                offset = offset,
+                pageSize = validPageSize
+            )
 
-                when {
+            when {
                     response.isError -> {
-                        ProductSyncResult.Failure(
-                            error = mapResponseError(response.error),
+                        Result.failure(
+                            mapResponseError(response.error)
                         )
                     }
 
                     response.model.isNullOrEmpty() -> {
-                        // Empty response is valid - means no more products
-                        ProductSyncResult.Success(
-                            syncedCount = 0,
-                            hasMore = false,
-                            nextOffset = offset
+                        Result.success(
+                            SyncResult(
+                                syncedCount = 0,
+                                hasMore = false,
+                                nextOffset = offset
+                            )
                         )
                     }
 
@@ -95,52 +134,49 @@ class PosLocalCatalogStore @Inject constructor(
                         }
 
                         if (upsertResult.isFailure) {
-                            return@withDefaultContext ProductSyncResult.Failure(
-                                error = PosLocalCatalogError.DatabaseError(
-                                    message = "Failed to save products to database",
+                            return@withDefaultContext Result.failure(
+                                PosLocalCatalogError.DatabaseError(
+                                    errorMessage = "Failed to save products to database",
                                     throwable = upsertResult.exceptionOrNull()
-                                ),
+                                )
                             )
                         }
 
                         val hasMore = products.size == validPageSize
 
-                        ProductSyncResult.Success(
-                            syncedCount = products.size,
-                            hasMore = hasMore,
-                            nextOffset = if (hasMore) offset + products.size else offset
+                        Result.success(
+                            SyncResult(
+                                syncedCount = products.size,
+                                hasMore = hasMore,
+                                nextOffset = if (hasMore) offset + products.size else offset
+                            )
                         )
                     }
-                }
-            } catch (e: Exception) {
-                ProductSyncResult.Failure(
-                    error = PosLocalCatalogError.UnknownError(e)
-                )
             }
         }
 
     private fun mapResponseError(error: WooError?): PosLocalCatalogError {
         return when (error?.type) {
-            WooErrorType.TIMEOUT -> PosLocalCatalogError.NetworkError("Request timed out", error.type.name)
+            WooErrorType.TIMEOUT -> PosLocalCatalogError.NetworkError(
+                errorMessage = "Request timed out",
+                code = error.type.name
+            )
             WooErrorType.NO_CONNECTION -> PosLocalCatalogError.NetworkError(
-                error.message ?: "No network connection",
-                error.type.name
+                errorMessage = error.message ?: "No network connection",
+                code = error.type.name
             )
-
             WooErrorType.INVALID_RESPONSE -> PosLocalCatalogError.NetworkError(
-                "Invalid response from server",
-                error.type.name
+                errorMessage = "Invalid response from server",
+                code = error.type.name
             )
-
             WooErrorType.API_ERROR -> PosLocalCatalogError.NetworkError(
-                error.message ?: "API error occurred",
-                error.type.name
+                errorMessage = error.message ?: "API error occurred",
+                code = error.type.name
             )
-
             WooErrorType.EMPTY_RESPONSE -> PosLocalCatalogError.EmptyResponse
             else -> PosLocalCatalogError.NetworkError(
-                error?.message ?: "Unknown error occurred",
-                error?.type?.name
+                errorMessage = error?.message ?: "Unknown error occurred",
+                code = error?.type?.name
             )
         }
     }
