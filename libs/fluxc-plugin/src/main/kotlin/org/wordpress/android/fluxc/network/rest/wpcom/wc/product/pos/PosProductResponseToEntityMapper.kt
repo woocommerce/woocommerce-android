@@ -1,8 +1,8 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.pos.PosVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 
@@ -38,30 +38,29 @@ fun ProductApiResponse.mapToPOSModel(): WCPosProductModel =
         attributes = this.attributes?.toString() ?: "",
     )
 
-@Suppress("CyclomaticComplexMethod")
-fun ProductVariationApiResponse.mapToPosVariationModel(
-    localSiteId: LocalOrRemoteId.LocalId,
-    remoteProductId: LocalOrRemoteId.RemoteId
+
+fun PosVariationApiResponse.mapToPosVariationModel(
+    localSiteId: LocalOrRemoteId.LocalId
 ): WCPosVariationModel {
     return WCPosVariationModel(
         localSiteId = localSiteId,
-        remoteProductId = remoteProductId,
+        remoteProductId = LocalOrRemoteId.RemoteId(this.productId),
         remoteVariationId = LocalOrRemoteId.RemoteId(this.id),
-        dateModified = this.date_modified ?: "",
-        sku = this.sku ?: "",
-        globalUniqueId = this.global_unique_id ?: "",
-        variationName = this.description ?: "",
-        price = this.price ?: "",
-        regularPrice = this.regular_price ?: "",
-        salePrice = this.sale_price ?: "",
-        description = this.description ?: "",
-        stockQuantity = this.stock_quantity,
-        stockStatus = this.stock_status ?: "",
-        manageStock = this.manage_stock,
+        dateModified = this.dateModified,
+        sku = this.sku,
+        globalUniqueId = this.globalUniqueId,
+        variationName = this.description,
+        price = this.price,
+        regularPrice = this.regularPrice,
+        salePrice = this.salePrice,
+        description = this.description,
+        stockQuantity = this.stockQuantity ?: 0.0,
+        stockStatus = this.stockStatus,
+        manageStock = this.manageStock,
         backordered = this.backordered,
-        attributesJson = this.attributes?.toString() ?: "",
-        imageUrl = this.image?.asJsonObject?.get("src")?.asString ?: "",
-        status = this.status ?: "",
+        attributesJson = this.attributes.toString(),
+        imageUrl = this.image?.src ?: "",
+        status = this.status,
         downloadable = this.downloadable
     )
 }

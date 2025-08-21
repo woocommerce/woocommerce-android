@@ -6,8 +6,8 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
+import org.wordpress.android.fluxc.model.pos.PosVariationApiResponse
 import javax.inject.Inject
 
 class PosProductRestClient @Inject constructor(
@@ -19,7 +19,7 @@ class PosProductRestClient @Inject constructor(
             "short_description,manage_stock,stock_quantity,stock_status,backorders_allowed," +
             "backordered,categories,tags,date_modified"
 
-        private const val VARIATIONS_FIELDS = "id,description,sku,global_unique_id,status,price," +
+        private const val VARIATIONS_FIELDS = "id,parent_id,description,sku,global_unique_id,status,price," +
             "regular_price,sale_price,date_modified,stock_quantity,stock_status,manage_stock," +
             "backordered,attributes,image,downloadable"
     }
@@ -61,7 +61,7 @@ class PosProductRestClient @Inject constructor(
         modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
-    ): WooResult<Array<ProductVariationApiResponse>> {
+    ): WooResult<Array<PosVariationApiResponse>> {
         val url = "/wc-analytics/variations"
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
@@ -77,7 +77,7 @@ class PosProductRestClient @Inject constructor(
             site = site,
             path = url,
             params = params,
-            clazz = Array<ProductVariationApiResponse>::class.java
+            clazz = Array<PosVariationApiResponse>::class.java
         )
 
         return when (response) {

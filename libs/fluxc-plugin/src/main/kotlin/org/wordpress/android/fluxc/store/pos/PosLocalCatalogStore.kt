@@ -245,8 +245,7 @@ class PosLocalCatalogStore @Inject constructor(
                     val siteId = site.localId()
 
                     val variations = response.model.map { variationResponse ->
-                        val parentProductId = LocalOrRemoteId.RemoteId(0L)
-                        variationResponse.mapToPosVariationModel(siteId, parentProductId)// TODO
+                        variationResponse.mapToPosVariationModel(siteId)
                     }
 
                     val upsertResult = runCatching {
