@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ClearCartTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmptyCartSetUpScannerTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.InteractionWithCustomerStarted
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemRemovedFromCart
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -135,6 +136,9 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             WooPosCartUIEvent.BarcodeSetupClicked -> {
+                viewModelScope.launch {
+                    analyticsTracker.track(EmptyCartSetUpScannerTapped)
+                }
                 sendEventToParent(ChildToParentEvent.NavigationEvent.ToSettings.BarcodeScanners)
             }
         }
