@@ -2,13 +2,11 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.PARSE_ERROR
-import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
-import org.wordpress.android.fluxc.store.WCProductStore.ProductError
-import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import javax.inject.Inject
 
 class PosProductRestClient @Inject constructor(
@@ -21,12 +19,11 @@ class PosProductRestClient @Inject constructor(
             "backordered,categories,tags,date_modified"
     }
 
-    @Suppress("LongMethod")
     suspend fun fetchProducts(
         site: SiteModel,
         modifiedAfter: String? = null,
-        offset: Int = 0,
-    ): Result<Array<ProductApiResponse>> {
+        offset: Int,
+    ): WooResult<Array<ProductApiResponse>> {
         val url = WOOCOMMERCE.products.pathV3
         val params = buildBaseParams(
             pageSize = 100,
@@ -44,14 +41,15 @@ class PosProductRestClient @Inject constructor(
 
         return when (response) {
             is WPAPIResponse.Success -> {
-                Result.success(response.data!!)
+                WooResult(response.data ?: emptyArray())
             }
 
             is WPAPIResponse.Error -> {
-                Result.failure(IllegalStateException())
+                WooResult(response.error.toWooError())
             }
         }
     }
+
 
     private fun buildBaseParams(
         pageSize: Int,
@@ -69,35 +67,5 @@ class PosProductRestClient @Inject constructor(
                 it["modified_after"] = modified
             }
         }
-    }
-
-    // TODO copy pasted - likely should be re-used.
-    private fun wpAPINetworkErrorToProductError(wpAPINetworkError: WPAPINetworkError): ProductError {
-        val productErrorType = when {
-            wpAPINetworkError.errorCode == "woocommerce_rest_product_invalid_id" ->
-                ProductErrorType.INVALID_PRODUCT_ID
-
-            wpAPINetworkError.errorCode == "rest_invalid_param" -> ProductErrorType.INVALID_PARAM
-            wpAPINetworkError.errorCode == "woocommerce_rest_review_invalid_id" ->
-                ProductErrorType.INVALID_REVIEW_ID
-
-            wpAPINetworkError.errorCode == "woocommerce_product_invalid_image_id" ->
-                ProductErrorType.INVALID_IMAGE_ID
-
-            wpAPINetworkError.errorCode == "product_invalid_sku" -> ProductErrorType.DUPLICATE_SKU
-            wpAPINetworkError.errorCode == "term_exists" -> ProductErrorType.TERM_EXISTS
-            wpAPINetworkError.errorCode == "woocommerce_variation_invalid_image_id" ->
-                ProductErrorType.INVALID_VARIATION_IMAGE_ID
-
-            wpAPINetworkError.errorCode == "woocommerce_rest_invalid_min_quantity" ||
-                wpAPINetworkError.errorCode == "woocommerce_rest_invalid_max_quantity" ||
-                wpAPINetworkError.errorCode == "woocommerce_rest_invalid_variation_min_quantity" ||
-                wpAPINetworkError.errorCode == "woocommerce_rest_invalid_variation_max_quantity" ->
-                ProductErrorType.INVALID_MIN_MAX_QUANTITY
-
-            wpAPINetworkError.type == PARSE_ERROR -> ProductErrorType.PARSE_ERROR
-            else -> ProductErrorType.fromString(wpAPINetworkError.errorCode.orEmpty())
-        }
-        return ProductError(productErrorType, wpAPINetworkError.combinedErrorMessage)
     }
 }
