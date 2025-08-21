@@ -202,7 +202,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private suspend fun trackScreenShownEvent() {
-        val unfulfilledShipmentsCount = shipments.drop(1).first().count { !it.purchased }
+        val unfulfilledShipmentsCount = shipments.drop(1).first().count { !it.isPurchasedOrInProgress }
         analyticsTracker.track(
             AnalyticsEvent.WCS_CREATE_SHIPPING_LABEL_FORM_SHOWN,
             mapOf("unfulfilled_shipments_count" to unfulfilledShipmentsCount)
@@ -225,7 +225,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) { shipments, selectedShipmentIndex ->
             shipments[selectedShipmentIndex]
         }.flatMapLatest { shipment ->
-            if (shipment.purchased) {
+            if (shipment.isPurchasedOrInProgress) {
                 flowOf(null)
             } else {
                 observeShippingLabelNotice(
@@ -582,7 +582,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             uiState.map { it.selectedIndex }.distinctUntilChanged(),
         ) { order, destination, originAddresses, shipments, selectedIndex ->
             val currentShipment = shipments[selectedIndex]
-            val updatedAddress = if (currentShipment.purchased) {
+            val updatedAddress = if (currentShipment.isPurchasedOrInProgress) {
                 val selectedAddress = shippingAddresses.value.getOrNull(selectedShipmentIndex)
                 val shipFrom = selectedAddress?.shipFrom?.takeIf { it != OriginShippingAddress.EMPTY }
                     ?: currentShipment.label?.originAddress?.let { originAddress ->

@@ -11,11 +11,7 @@ data class ShipmentUIModel(
     val isPurchaseAPILoading: Boolean = false,
     val label: ShippingLabelModel? = null,
 ) : Parcelable {
-    /**
-     * Whether the shipment has been purchased or not.
-     * A shipment is considered purchased if the label was already purchased or is in the process of being purchased.
-     */
-    val purchased: Boolean
+    val isPurchasedOrInProgress: Boolean
         get() = label?.status == ShippingLabelStatus.PURCHASE_IN_PROGRESS ||
             (label?.status == ShippingLabelStatus.PURCHASED && label.refund == null)
 }

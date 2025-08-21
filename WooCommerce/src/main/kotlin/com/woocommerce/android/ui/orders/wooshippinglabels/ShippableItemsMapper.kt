@@ -153,7 +153,7 @@ private fun getShipmentCostUI(
     currencyFormatter: (BigDecimal) -> String
 ): ShipmentCostUI? {
     return when {
-        shipmentUIModel.purchased -> {
+        shipmentUIModel.isPurchasedOrInProgress -> {
             requireNotNull(shipmentUIModel.label)
             ShipmentCostUI(
                 serviceName = shipmentUIModel.label.serviceName,
