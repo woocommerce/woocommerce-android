@@ -4,6 +4,7 @@
 23.2
 -----
 - [*] Shipping Labels: Add error message for invalid dimensions errors to custom package creation screen [https://github.com/woocommerce/woocommerce-android/pull/14499]
+- [*] Adds support for displaying fractional quantities in dashboard stock card [https://github.com/woocommerce/woocommerce-android/pull/14510]
 
 23.1
 -----
