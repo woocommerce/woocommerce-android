@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-29 09:54:05+0000
+Translation-Revision-Date: 2025-08-13 09:54:07+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">여전히 작동하지 않나요? 기기 제조업체에 고객 지원을 문의하세요.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">기기 설정으로 이동하여 \"키보드\"를 검색한 다음에 \"실제 키보드가 연결되었을 때 화면 키보드 표시\"를 활성화합니다. 이 설정은 키보드 앱 설정에 있을 수 있습니다.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">화면에서 키보드 아이콘 또는 도구 모음을 찾습니다.</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">여기를 눌러 키보드 표시 여부를 테스트합니다.</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">키보드가 표시되지 않으면 다음과 같은 옵션을 시도합니다.</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android에서는 바코드 스캐너가 실제 키보드로 취급되므로 화면 키보드가 표시되지 않을 수 있습니다. 확인해 보겠습니다.</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">화면 키보드 표시</string>
+    <string name="woopos_scanning_setup_success_message">상품 스캔을 시작할 준비가 되었습니다. 다음에 스캐너를 연결해야 할 때는 스캐너만 켜면 자동으로 다시 연결됩니다.</string>
+    <string name="woopos_barcode_scanning_title">최초 바코드 스캐너 설정</string>
+    <string name="woopos_cart_clear_all_button_content_description">장바구니의 아이템 지우기 아이콘</string>
+    <string name="product_selector_subscription_not_supported">구독 상품은 주문 생성이 지원되지 않습니다.</string>
+    <string name="save_copy">복사본 저장</string>
+    <string name="changes_not_saved_message">변경 사항이 저장되지 않았음</string>
+    <string name="discard_changes_question">변경 사항을 취소할까요?</string>
+    <string name="save_processed_image_success">이미지 저장됨</string>
+    <string name="save_processed_image_error">이미지 저장 실패</string>
+    <string name="remove_background_no_subject_detected">감지된 명확한 제목이 없습니다. 다른 이미지로 시도해 보세요.</string>
+    <string name="remove_background_image_load_error">이미지 로드 실패</string>
+    <string name="remove_background_title">이미지 장면 클리너 ✨</string>
+    <string name="remove_background">AI로 배경 제거</string>
     <string name="woo_shipping_labels_order_completion_error">주문을 완료로 표시할 수 없음</string>
     <string name="woo_shipping_address_use_as_entered">입력된 주소 사용</string>
     <string name="woo_shipping_labels_customs_product_details_weight_invalid">무게가 0보다 커야 함</string>
@@ -36,7 +56,6 @@ Language: ko_KR
     <string name="woopos_scanning_setup_info_bullet_1">시스템 블루투스 설정에서 블루투스 바코드 스캐너를 조회합니다.</string>
     <string name="woopos_scanning_setup_info_title">스캐너 설정</string>
     <string name="woopos_scanning_setup_more_information">상품에 대한 바코드를 설정하는 방법</string>
-    <string name="woopos_scanning_setup_success_message">상품 스캔을 시작할 준비가 되었습니다.\n바코드 및 QR 코드 스캐너 지원에 대해 자세히 알아보세요.</string>
     <string name="woopos_scanning_setup_success_title">스캐너가 설정되었습니다!</string>
     <string name="woopos_scanning_setup_go_to_settings">기기 설정으로 이동</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">블루투스를 활성화하고 OS 설정에서 %s 스캐너를 선택합니다.\n페어링되면 스캐너에서 신호음이 울리며 단색 LED가 표시됩니다.</string>
@@ -58,7 +77,6 @@ Language: ko_KR
     <string name="woopos_eligibility_reason_check_connection">인터넷 연결을 확인하고 앱을 다시 시작해 보세요. 문제가 계속 발생하면 지원을 문의해 주세요.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">회원님의 우커머스 버전은 지원되지 않습니다. POS 시스템에는 우커머스 버전 %1$s 이상이 필요합니다. 우커머스를 최신 버전으로 업데이트하세요.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">워드프레스 관리자에서 우커머스 플러그인이 설치되고 활성화되었는지 확인하세요. 문제가 계속 발생하는 경우 도움이 필요하면 지원을 문의해 주세요.</string>
-    <string name="woopos_barcode_scanning_title">바코드 스캐너 설정</string>
     <string name="orderfilters_sales_channel_filter_point_of_sale">판매 지점</string>
     <string name="orderfilters_sales_channel_filter">판매 채널</string>
     <string name="barcode_ean13_content_description">바코드 EAN13</string>
@@ -633,7 +651,7 @@ Language: ko_KR
     <string name="woopos_cart_back_content_description">장바구니 아이콘</string>
     <string name="woopos_products_screen_title">상품</string>
     <string name="woopos_items_in_cart">%d개 아이템</string>
-    <string name="woopos_clear_cart_button">지우기</string>
+    <string name="woopos_clear_cart_button">장바구니 지우기</string>
     <string name="more_menu_button_google_description">Google Ads로 매출과 트래픽을 늘리세요</string>
     <string name="more_menu_button_google">우커머스용 Google</string>
     <string name="no_quantity_rules">수량 규칙 없음</string>

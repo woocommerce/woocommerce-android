@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-29 09:54:05+0000
+Translation-Revision-Date: 2025-08-12 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">Masih belum berhasil? Hubungi dukungan pelanggan dari produsen perangkat Anda.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Buka pengaturan perangkat, cari \"keyboard\", lalu aktifkan \"Tampilkan keyboard di layar saat keyboard fisik terhubung\". Pengaturan ini mungkin ada di pengaturan aplikasi keyboard Anda.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">Cari ikon keyboard atau bilah peralatan di layar.</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">Ketuk di sini untuk menguji visibilitas keyboard</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">Jika keyboard tak terlihat, cobalah pilihan ini:</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android memperlakukan pemindai barcode sebagai keyboard fisik, sehingga mungkin menyembunyikan keyboard di layar Anda. Mari kita periksa:</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">Tampilkan Keyboard di Layar</string>
+    <string name="woopos_scanning_setup_success_message">Anda siap untuk mulai memindai produk. Lain kali Anda perlu menghubungkan pemindai, cukup nyalakan dan pemindai akan terhubung kembali secara otomatis.</string>
+    <string name="woopos_barcode_scanning_title">Penyiapan awal pemindai barcode</string>
+    <string name="woopos_cart_clear_all_button_content_description">Ikon bersihkan item di keranjang</string>
+    <string name="product_selector_subscription_not_supported">Produk langganan tidak didukung untuk pembuatan pesanan</string>
+    <string name="save_copy">Simpan salinan</string>
+    <string name="changes_not_saved_message">Perubahan tidak disimpan</string>
+    <string name="discard_changes_question">Buang perubahan?</string>
+    <string name="save_processed_image_success">Gambar berhasil disimpan</string>
+    <string name="save_processed_image_error">Gagal menyimpan gambar</string>
+    <string name="remove_background_no_subject_detected">Tidak ada subjek jelas yang terdeteksi. Coba dengan gambar lain.</string>
+    <string name="remove_background_image_load_error">Gagal memuat gambar</string>
+    <string name="remove_background_title">Pembersih pemandangan gambar✨</string>
+    <string name="remove_background">Hapus latar belakang dengan AI</string>
     <string name="woo_shipping_labels_order_completion_error">Tidak dapat menandai pesanan telah selesai</string>
     <string name="woo_shipping_address_use_as_entered">Gunakan alamat yang dimasukkan</string>
     <string name="woo_shipping_labels_customs_product_details_weight_invalid">Berat harus lebih besar dari nol</string>
@@ -36,7 +56,6 @@ Language: id
     <string name="woopos_scanning_setup_info_bullet_1">Hubungkan ke pemindai barcode Bluetooth Anda di pengaturan Sistem Bluetooth.</string>
     <string name="woopos_scanning_setup_info_title">Pengaturan pemindai</string>
     <string name="woopos_scanning_setup_more_information">Cara menyiapkan barcode produk</string>
-    <string name="woopos_scanning_setup_success_message">Anda siap untuk mulai memindai produk.\nBaca selengkapnya mengenai barcode dan dukungan pemindai kode QR.</string>
     <string name="woopos_scanning_setup_success_title">Pemindai sudah siap!</string>
     <string name="woopos_scanning_setup_go_to_settings">Buka pengaturan perangkat Anda</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">Aktifkan Bluetooth dan pilih pemindai %s Anda di pengaturan OS.\nPemindai akan berbunyi bip dan lampu LED-nya akan menyala terus saat dipasangkan.</string>
@@ -58,7 +77,6 @@ Language: id
     <string name="woopos_eligibility_reason_check_connection">Periksa sambungan internet, lalu coba luncurkan ulang aplikasi. Jika kendala ini terus berlanjut, hubungi bagian dukungan.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Versi WooCommerce Anda tidak didukung. Sistem POS memerlukan WooCommerce versi %1$s atau yang lebih tinggi. Harap perbarui WooCommerce dengan versi terbaru.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Pastikan plugin WooCommerce telah diinstal dan diaktifkan dari admin WordPress Anda. Jika masalah berlanjut, silakan hubungi dukungan untuk mendapatkan bantuan.</string>
-    <string name="woopos_barcode_scanning_title">Menyiapkan pemindai barcode</string>
     <string name="orderfilters_sales_channel_filter_point_of_sale">Point of Sale</string>
     <string name="orderfilters_sales_channel_filter">Kanal Penjualan</string>
     <string name="barcode_ean13_content_description">Barcode EAN13</string>
@@ -633,7 +651,7 @@ Language: id
     <string name="woopos_cart_back_content_description">Ikon keranjang</string>
     <string name="woopos_products_screen_title">Produk</string>
     <string name="woopos_items_in_cart">%d item</string>
-    <string name="woopos_clear_cart_button">Hapus</string>
+    <string name="woopos_clear_cart_button">Hapus keranjang</string>
     <string name="more_menu_button_google_description">Tingkatkan penjualan dan dorong lalu lintas dengan Google Ads</string>
     <string name="more_menu_button_google">Google untuk WooCommerce</string>
     <string name="no_quantity_rules">Tidak Ada Aturan Jumlah</string>

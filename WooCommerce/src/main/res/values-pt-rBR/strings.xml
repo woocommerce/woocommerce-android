@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-28 21:54:28+0000
+Translation-Revision-Date: 2025-08-12 15:54:08+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">Ainda não está funcionando? Entre em contato com o atendimento ao cliente do fabricante do dispositivo.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Acesse as configurações do dispositivo, pesquise \"teclado\" e ative a opção de mostrar teclado virtual quando o teclado físico estiver conectado. Essa opção pode estar nas configurações de teclado do seu aplicativo.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">Procure um ícone de teclado ou barra de ferramentas na tela.</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">Toque aqui para testar a visibilidade do teclado</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">Se o teclado não estiver visível, tente estas opções:</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">No Android, leitores de código de barras são reconhecidos como teclados físicos, o que pode ocultar o teclado virtual. Vejamos:</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">Mostrar o teclado virtual</string>
+    <string name="woopos_scanning_setup_success_message">Tudo pronto para começar a escanear produtos. Na próxima vez que precisar conectar seu leitor, basta ligá-lo para reconectá-lo automaticamente.</string>
+    <string name="woopos_barcode_scanning_title">Configuração inicial do leitor de código de barras</string>
+    <string name="woopos_cart_clear_all_button_content_description">Ícone de limpar itens do carrinho</string>
+    <string name="product_selector_subscription_not_supported">Produtos de assinatura não são aceitos na criação de pedidos</string>
+    <string name="save_copy">Salvar cópia</string>
+    <string name="changes_not_saved_message">Suas alterações não foram salvas</string>
+    <string name="discard_changes_question">Descartar alterações?</string>
+    <string name="save_processed_image_success">Imagem salva com sucesso</string>
+    <string name="save_processed_image_error">Falha ao salvar a imagem</string>
+    <string name="remove_background_no_subject_detected">Nenhum elemento nítido detectado. Tente com uma imagem diferente.</string>
+    <string name="remove_background_image_load_error">Falha ao carregar imagem</string>
+    <string name="remove_background_title">Removedor de cena da imagem ✨</string>
+    <string name="remove_background">Remover plano de fundo com IA</string>
     <string name="woo_shipping_labels_order_completion_error">Não foi possível marcar o pedido como concluído</string>
     <string name="woo_shipping_address_use_as_entered">Usar o endereço conforme inserido</string>
     <string name="woo_shipping_labels_customs_product_details_weight_invalid">O peso deve ser maior que zero</string>
@@ -36,7 +56,6 @@ Language: pt_BR
     <string name="woopos_scanning_setup_info_bullet_1">Confira o seu scanner de código de barras com Bluetooth nas configurações Bluetooth do sistema.</string>
     <string name="woopos_scanning_setup_info_title">Configuração do scanner</string>
     <string name="woopos_scanning_setup_more_information">Como configurar códigos de barras em produtos</string>
-    <string name="woopos_scanning_setup_success_message">Tudo pronto para começar a escanear produtos.\nLeia mais sobre o suporte ao scanner de código de barras e código QR.</string>
     <string name="woopos_scanning_setup_success_title">Scanner configurado!</string>
     <string name="woopos_scanning_setup_go_to_settings">Acesse as configurações do dispositivo</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">Ative o Bluetooth e selecione seu scanner %s nas configurações do SO.\nO scanner emitirá um bipe e o LED ficará aceso quando emparelhado.</string>
@@ -58,7 +77,6 @@ Language: pt_BR
     <string name="woopos_eligibility_reason_check_connection">Verifique sua conexão com a Internet e tente reiniciar o aplicativo. Se o problema persistir, entre em contato com o suporte.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Sua versão do WooCommerce não é compatível. O sistema PDV requer o WooCommerce na versão %1$s ou posterior. Atualize o WooCommerce para a versão mais recente.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Instale e ative o plugin do WooCommerce pela administração do WordPress. Entre em contato com o suporte para obter ajuda.</string>
-    <string name="woopos_barcode_scanning_title">Configurar um scanner de código de barras</string>
     <string name="orderfilters_sales_channel_filter_point_of_sale">Ponto de venda</string>
     <string name="orderfilters_sales_channel_filter">Canal de vendas</string>
     <string name="barcode_ean13_content_description">Código de barras EAN13</string>
@@ -633,7 +651,7 @@ Language: pt_BR
     <string name="woopos_cart_back_content_description">Ícone do carrinho</string>
     <string name="woopos_products_screen_title">Produtos</string>
     <string name="woopos_items_in_cart">%d item</string>
-    <string name="woopos_clear_cart_button">Limpar</string>
+    <string name="woopos_clear_cart_button">Limpar carrinho</string>
     <string name="more_menu_button_google_description">Otimizar vendas e aumentar o número de visitas com Google Ads</string>
     <string name="more_menu_button_google">Google para WooCommerce</string>
     <string name="no_quantity_rules">Não há regras de quantidade</string>
