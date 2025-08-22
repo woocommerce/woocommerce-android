@@ -2,7 +2,7 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 ## 23.1
-Enhanced your store management experience with exciting new features! Remove backgrounds from product images instantly with our new one-tap tool. Improved shipping labels with better address validation, cleaner layouts, and smarter split shipment handling. Fixed order selection issues and enhanced login error handling for smoother operations.
+Enhanced your store management experience with exciting new features! Remove backgrounds from product images instantly with our new one-tap tool. Improved shipping labels with better address validation and smarter split shipment handling. We also improved stability in the wear app and fixed minor bugs. Thank you for using our app!
 
 ## 23.0
 Psst... Excuse me, do you have a moment to talk about Woo Point of Sale? It now takes center stage with a shiny new POS tab in the main navigation—one tap and you’re selling in the UK and US, with improved external barcode scanner support for smoother checkouts. We’ve also refreshed the UI with sleek Material 3 touches and packed in small improvements and fixes you’ll want to explore.
