@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.util.datastore
 
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -9,7 +11,8 @@ import javax.inject.Singleton
 
 @Singleton
 class WooPosSyncTimestampManager @Inject constructor(
-    private val timestampRepository: WooPosSyncTimestampRepository
+    private val timestampRepository: WooPosSyncTimestampRepository,
+    private val logger: WooPosLogWrapper
 ) {
     private val gmtDateFormat = SimpleDateFormat(GMT_DATE_FORMAT, Locale.US).apply {
         timeZone = TimeZone.getTimeZone("GMT")
@@ -58,7 +61,8 @@ class WooPosSyncTimestampManager @Inject constructor(
     private fun parseGmtTimestamp(timestampString: String): Date? {
         return try {
             gmtDateFormat.parse(timestampString)
-        } catch (e: Exception) {
+        } catch (e: ParseException) {
+            logger.e("Failed to parse GMT timestamp: '$timestampString'", e)
             null
         }
     }
