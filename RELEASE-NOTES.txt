@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 23.2
 -----
-
+- [*] Shipping Labels: Add error message for invalid dimensions errors to custom package creation screen [https://github.com/woocommerce/woocommerce-android/pull/14499]
 
 23.1
 -----
