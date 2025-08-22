@@ -1,2 +1,0 @@
-23.0:
-Şşşt... Affedersiniz, Woo Point of Sale hakkında konuşmak için vaktiniz var mı? &#x1f4b0; Artık ana gezinmede yepyeni bir POS sekmesiyle ön plana çıkıyor; daha sorunsuz ödeme için iyileştirilmiş harici barkod tarayıcı desteği ile &#x1f4e6; tek tıkla İngiltere ve ABD'de satış yaparsınız. Ayrıca kullanıcı arayüzünü şık Material 3 dokunuşlarıyla yeniledik ✨ ve keşfetmek isteyeceğiniz küçük iyileştirmeler ve düzeltmeler ekledik.
