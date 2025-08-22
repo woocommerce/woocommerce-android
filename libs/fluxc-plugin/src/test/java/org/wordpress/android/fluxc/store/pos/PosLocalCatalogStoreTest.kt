@@ -20,7 +20,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.PosProductRestClient
 import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao

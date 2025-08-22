@@ -38,7 +38,6 @@ fun ProductApiResponse.mapToPOSModel(): WCPosProductModel =
         attributes = this.attributes?.toString() ?: "",
     )
 
-
 fun PosVariationApiResponse.mapToPosVariationModel(
     localSiteId: LocalOrRemoteId.LocalId
 ): WCPosVariationModel {
