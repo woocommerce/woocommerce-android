@@ -383,6 +383,109 @@ class PosLocalCatalogStoreTest {
         verifyNoInteractions(posVariationsDao)
     }
 
+    @Test
+    fun `given valid variation API response, when sync variations called, then variations saved to database`() = runTest {
+        // GIVEN
+        val variations = arrayOf(createTestVariationApiResponse())
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(variations))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        result.getOrNull()?.let { syncResult ->
+            assertThat(syncResult.syncedCount).isEqualTo(1)
+            assertThat(syncResult.hasMore).isFalse()
+            assertThat(syncResult.nextPage).isEqualTo(1)
+        }
+        verify(posVariationsDao).upsertVariations(any())
+    }
+
+    @Test
+    fun `given database error during variation sync, when sync called, then database error returned`() = runTest {
+        // GIVEN
+        val variations = arrayOf(createTestVariationApiResponse())
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(variations))
+        whenever(posVariationsDao.upsertVariations(any()))
+            .thenThrow(RuntimeException("Database error"))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(PosLocalCatalogError.DatabaseError::class.java)
+    }
+
+    @Test
+    fun `given full page of variations, when sync called, then pagination indicates more pages`() = runTest {
+        // GIVEN
+        val variations = Array(100) { createTestVariationApiResponse(id = it.toLong()) }
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(variations))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        result.getOrNull()?.let { syncResult ->
+            assertThat(syncResult.syncedCount).isEqualTo(100)
+            assertThat(syncResult.hasMore).isTrue()
+            assertThat(syncResult.nextPage).isEqualTo(2)
+        }
+    }
+
+    @Test
+    fun `given variation not in database, when get variation called, then null returned`() = runTest {
+        // GIVEN
+        val variationId = RemoteId(999L)
+        whenever(posVariationsDao.getVariation(testSiteId, testRemoteId, variationId))
+            .thenReturn(null)
+
+        // WHEN
+        val variation = store.getVariation(testSiteId, testRemoteId, variationId).getOrThrow()
+
+        // THEN
+        assertThat(variation).isNull()
+    }
+
+    @Test
+    fun `given page size over limit for variations, when sync called, then max page size enforced`() = runTest {
+        // GIVEN
+        val variations = Array(100) { createTestVariationApiResponse() }
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(variations))
+
+        // WHEN
+        store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 200)
+
+        // THEN
+        verify(posProductRestClient).fetchVariations(testSite, validDateString, 1, 100)
+    }
+
+    private fun createTestVariationApiResponse(
+        id: Long = 200L,
+        productId: Long = 100L
+    ) = org.wordpress.android.fluxc.model.pos.PosVariationApiResponse(
+        id = id,
+        productId = productId,
+        sku = "VAR-SKU-$id",
+        name = "Test Variation $id",
+        price = "25.00",
+        regularPrice = "30.00",
+        salePrice = "25.00",
+        stockQuantity = 10.0,
+        stockStatus = "instock",
+        manageStock = true,
+        status = "publish",
+        description = "Test variation description",
+        dateModified = "2024-01-01T00:00:00Z"
+    )
+
     private fun createTestVariation(
         variationId: Long,
         name: String,
