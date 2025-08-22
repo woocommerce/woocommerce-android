@@ -124,6 +124,8 @@ data class CustomPackageCreationData(
         isUserDefined = saveAsTemplate
     )
 
+    fun copyWithUpdatedError() = copy(invalidDimensionError = invalidDimensions)
+
     companion object {
         val EMPTY = CustomPackageCreationData(
             type = PackageType.BOX,
