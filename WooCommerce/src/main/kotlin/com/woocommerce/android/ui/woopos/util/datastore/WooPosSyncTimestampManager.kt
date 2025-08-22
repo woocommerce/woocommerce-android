@@ -14,6 +14,7 @@ class WooPosSyncTimestampManager @Inject constructor(
 ) {
     private val gmtDateFormat = SimpleDateFormat(GMT_DATE_FORMAT, Locale.US).apply {
         timeZone = TimeZone.getTimeZone("GMT")
+        isLenient = false
     }
 
     suspend fun storeProductsLastSyncTimestamp(timestamp: Date) {
