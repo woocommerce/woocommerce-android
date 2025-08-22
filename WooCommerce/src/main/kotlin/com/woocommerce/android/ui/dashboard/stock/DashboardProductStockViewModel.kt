@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.stock
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -27,7 +28,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import java.text.DecimalFormat
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardProductStockViewModel.Factory::class)
@@ -61,7 +64,8 @@ class DashboardProductStockViewModel @AssistedInject constructor(
                 .fold(
                     onSuccess = {
                         val sortedProductStockItems = it.sortedBy { item -> item.stockQuantity }
-                        emit(ViewState.Success(sortedProductStockItems, status))
+                        val productStockUiItems = sortedProductStockItems.map { item -> item.toUiItem() }
+                        emit(ViewState.Success(productStockUiItems, status))
                         trackEventForStockCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                     },
                     onFailure = {
@@ -88,7 +92,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
     }
 
-    fun onProductClicked(product: ProductStockItem) {
+    fun onProductClicked(product: ProductStockUiItem) {
         parentViewModel.trackCardInteracted(DashboardWidget.Type.STOCK.trackingIdentifier)
         val id = when {
             product.parentProductId != 0L -> product.parentProductId
@@ -104,10 +108,20 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         )
     }
 
+    private fun ProductStockItem.toUiItem() = ProductStockUiItem(
+        productId = productId,
+        parentProductId = parentProductId,
+        name = name,
+        // Show integers if no fraction, otherwise shows fraction.
+        stockQuantity = DecimalFormat("0.##").format(stockQuantity),
+        imageUrl = imageUrl,
+        itemsSold = itemsSold
+    )
+
     sealed interface ViewState {
         data class Loading(val selectedFilter: ProductStockStatus) : ViewState
         data class Success(
-            val productStockItems: List<ProductStockItem>,
+            val productStockItems: List<ProductStockUiItem>,
             val selectedFilter: ProductStockStatus
         ) : ViewState
 
@@ -115,6 +129,16 @@ class DashboardProductStockViewModel @AssistedInject constructor(
             Generic, WCAnalyticsInactive
         }
     }
+
+    @Parcelize
+    data class ProductStockUiItem(
+        val productId: Long,
+        val parentProductId: Long,
+        val name: String,
+        val stockQuantity: String,
+        val imageUrl: String?,
+        val itemsSold: Int
+    ) : Parcelable
 
     data class OpenProductDetail(val productId: Long) : MultiLiveEvent.Event()
 
