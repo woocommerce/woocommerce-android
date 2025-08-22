@@ -21,7 +21,7 @@ class PosProductRestClient @Inject constructor(
 
         private const val VARIATIONS_FIELDS = "id,parent_id,description,sku,global_unique_id,status,price," +
             "regular_price,sale_price,date_modified,stock_quantity,stock_status,manage_stock," +
-            "backordered,attributes,image,downloadable"
+            "backordered,attributes,image,downloadable,name"
     }
 
     suspend fun fetchProducts(

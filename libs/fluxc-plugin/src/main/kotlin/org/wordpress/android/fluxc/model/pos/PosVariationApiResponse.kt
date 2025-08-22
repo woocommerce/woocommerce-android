@@ -55,7 +55,10 @@ data class PosVariationApiResponse(
     val image: VariationImage? = null,
 
     @SerializedName("downloadable")
-    val downloadable: Boolean = false
+    val downloadable: Boolean = false,
+
+    @SerializedName("name")
+    val name: String = ""
 ) {
     data class VariationAttribute(
         @SerializedName("id")

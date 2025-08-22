@@ -48,7 +48,7 @@ fun PosVariationApiResponse.mapToPosVariationModel(
         dateModified = this.dateModified,
         sku = this.sku,
         globalUniqueId = this.globalUniqueId,
-        variationName = this.description,
+        variationName = this.name,
         price = this.price,
         regularPrice = this.regularPrice,
         salePrice = this.salePrice,
