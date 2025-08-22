@@ -1,2 +1,0 @@
-23.0:
-Permisi... Ada waktu sebentar untuk berkenalan dengan Woo Point of Sale? &#x1f4b0; Sekarang, fitur ini kian menonjol dengan tab POS baru yang tampil di navigasi utama—cukup satu ketukan dan Anda sudah bisa berjualan di Inggris dan AS, dengan dukungan pemindai barcode eksternal yang lebih baik &#x1f4e6; untuk checkout yang lebih lancar. Kami juga menyegarkan UI dengan sentuhan Material 3 yang elegan ✨ serta sejumlah perbaikan kecil yang layak Anda coba.
