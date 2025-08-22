@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.toSelectableUIModel
@@ -222,6 +223,8 @@ class GetSplitMovementsTest : BaseUnitTest() {
     }
 
     private val purchasedShipment = mapOf(
-        10 to ShipmentUIModel(localId = "0", remoteId = null, items = defaultShippableItems, purchased = true)
+        10 to ShippingLabelSampleData.getShippingLabelUIModel(purchased = true).copy(
+            items = defaultShippableItems
+        )
     )
 }

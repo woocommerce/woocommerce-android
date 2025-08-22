@@ -17,7 +17,9 @@
 - [*] Shipping Labels: Fix UI issues on edit address screen [https://github.com/woocommerce/woocommerce-android/pull/14476]
 - [Internal] Updated UserAgent of API requests to use `http.agent` System Property to fix performance issues related to WebView usage on app launch [https://github.com/woocommerce/woocommerce-android/pull/14431]
 - [*] Shipping Labels: Improved handling of address validation errors [https://github.com/woocommerce/woocommerce-android/pull/14468]
+- [*] Shipping Labels: Update UI of the shipping labels details in Order Details screen [https://github.com/woocommerce/woocommerce-android/pull/14485]
 - [*] Shipping Labels: Improved the error message for empty shipping rates list [https://github.com/woocommerce/woocommerce-android/pull/14433]
+- [*] Shipping Labels: Update button logic on the Hazardous Materials screen [https://github.com/woocommerce/woocommerce-android/pull/14488]
 
 23.0
 -----

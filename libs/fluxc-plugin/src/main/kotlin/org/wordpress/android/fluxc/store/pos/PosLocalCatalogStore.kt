@@ -67,7 +67,7 @@ class PosLocalCatalogStore @Inject constructor(
     /**
      * Observes all products for a given site from the local database.
      *
-     * @param siteId The local site ID to observe products for
+     * @param [siteId] The local site ID to observe products for
      * @return Flow of Result containing list of products or error
      */
     fun observeProducts(
@@ -81,8 +81,8 @@ class PosLocalCatalogStore @Inject constructor(
     /**
      * Gets a single product from the local database.
      *
-     * @param siteId The local site ID
-     * @param remoteProductId The remote product ID
+     * @param [siteId] The local site ID
+     * @param [remoteProductId] The remote product ID
      * @return Result containing the product if found, null if not found, or error
      */
     suspend fun getProduct(
@@ -97,10 +97,10 @@ class PosLocalCatalogStore @Inject constructor(
     /**
      * Syncs recently modified products with pagination support.
      *
-     * @param site The site to sync products for
-     * @param modifiedAfterGmt ISO 8601 formatted date string (GMT)
-     * @param offset Starting offset for pagination
-     * @param pageSize Number of products to fetch per page (default: 100, max: 100)
+     * @param [site] The site to sync products for
+     * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT)
+     * @param [offset] Starting offset for pagination
+     * @param [pageSize] Number of products to fetch per page (default: 100, max: 100)
      * @return Result containing SyncResponse with pagination info or error
      */
     suspend fun syncRecentlyModifiedProducts(
