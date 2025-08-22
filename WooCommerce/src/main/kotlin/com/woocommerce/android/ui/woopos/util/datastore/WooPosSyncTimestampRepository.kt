@@ -5,63 +5,93 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Repository for managing POS incremental sync timestamps using DataStore.
- * Stores and retrieves timestamps specific to the current site for products and variations sync.
- */
 @Singleton
 class WooPosSyncTimestampRepository @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val logger: WooPosLogWrapper
 ) {
-    private val productsTimestampKey = buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY)
-    private val variationsTimestampKey = buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY)
 
     suspend fun storeProductsLastSyncTimestamp(timestampGmt: String) {
-        dataStore.edit { preferences ->
-            preferences[productsTimestampKey] = timestampGmt
+        val key = buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY)
+        if (key != null) {
+            dataStore.edit { preferences ->
+                preferences[key] = timestampGmt
+            }
         }
     }
 
     suspend fun getProductsLastSyncTimestamp(): String? {
-        return dataStore.data.first()[productsTimestampKey]
+        val key = buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY)
+        return if (key != null) {
+            dataStore.data.first()[key]
+        } else {
+            null
+        }
     }
 
     suspend fun clearProductsLastSyncTimestamp() {
-        dataStore.edit { preferences ->
-            preferences.remove(productsTimestampKey)
+        val key = buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY)
+        if (key != null) {
+            dataStore.edit { preferences ->
+                preferences.remove(key)
+            }
         }
     }
 
     suspend fun storeVariationsLastSyncTimestamp(timestampGmt: String) {
-        dataStore.edit { preferences ->
-            preferences[variationsTimestampKey] = timestampGmt
+        val key = buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY)
+        if (key != null) {
+            dataStore.edit { preferences ->
+                preferences[key] = timestampGmt
+            }
         }
     }
 
     suspend fun getVariationsLastSyncTimestamp(): String? {
-        return dataStore.data.first()[variationsTimestampKey]
+        val key = buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY)
+        return if (key != null) {
+            dataStore.data.first()[key]
+        } else {
+            null
+        }
     }
 
     suspend fun clearVariationsLastSyncTimestamp() {
-        dataStore.edit { preferences ->
-            preferences.remove(variationsTimestampKey)
+        val key = buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY)
+        if (key != null) {
+            dataStore.edit { preferences ->
+                preferences.remove(key)
+            }
         }
     }
 
     suspend fun clearAllSyncTimestamps() {
-        dataStore.edit { preferences ->
-            preferences.remove(productsTimestampKey)
-            preferences.remove(variationsTimestampKey)
+        val productsKey = buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY)
+        val variationsKey = buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY)
+
+        if (productsKey != null && variationsKey != null) {
+            dataStore.edit { preferences ->
+                preferences.remove(productsKey)
+                preferences.remove(variationsKey)
+            }
         }
     }
 
-    private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
-        stringPreferencesKey("${selectedSite.getOrNull()?.siteId}-$key")
+    private fun buildSiteSpecificKey(key: String): Preferences.Key<String>? {
+        val site = selectedSite.getOrNull()
+        return if (site != null) {
+            stringPreferencesKey("${site.siteId}-$key")
+        } else {
+            logger.e("Cannot build site-specific key '$key': no site selected")
+            null
+        }
+    }
 
     private companion object {
         const val PRODUCTS_TIMESTAMP_KEY = "pos_products_sync_timestamp"
