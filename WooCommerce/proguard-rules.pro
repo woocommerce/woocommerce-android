@@ -79,6 +79,18 @@
 }
 ###### SavedStateHandleExt - end
 
+###### Google Crypto Tink dependencies - begin
+-dontwarn com.google.api.client.http.GenericUrl
+-dontwarn com.google.api.client.http.HttpHeaders
+-dontwarn com.google.api.client.http.HttpRequest
+-dontwarn com.google.api.client.http.HttpRequestFactory
+-dontwarn com.google.api.client.http.HttpResponse
+-dontwarn com.google.api.client.http.HttpTransport
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport
+-dontwarn org.joda.time.Instant
+###### Google Crypto Tink dependencies - end
+
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn java.beans.ConstructorProperties
 -dontwarn java.beans.Transient

@@ -28,7 +28,7 @@ internal abstract class ApiFakerDatabase : RoomDatabase() {
                 klass = ApiFakerDatabase::class.java,
                 name = "api-faker-db"
             )
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
 

@@ -175,16 +175,21 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
     fun onAddCustomPackageClick(savePackageAsTemplate: Boolean) {
         val customPackage = _viewState.value.customPackageCreationData
-        if (savePackageAsTemplate) {
-            handleCustomSelectionAsTemplate(customPackage)
-        } else {
-            triggerEvent(
-                PackageSelected(
-                    customPackage.toPackageData(
-                        dimensionUnit = _viewState.value.storeOptions.dimensionUnit
-                    )
+        when {
+            customPackage.invalidDimensions -> _viewState.value = _viewState.value.copy(
+                customPackageCreationData = _viewState.value.customPackageCreationData.copy(
+                    invalidDimensionError = true
                 )
             )
+
+            savePackageAsTemplate -> handleCustomSelectionAsTemplate(customPackage)
+            else -> {
+                triggerEvent(
+                    PackageSelected(
+                        customPackage.toPackageData(dimensionUnit = _viewState.value.storeOptions.dimensionUnit)
+                    )
+                )
+            }
         }
 
         tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
@@ -203,21 +208,30 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
     fun onLengthChange(length: String) {
         _viewState.update {
-            val newPackageData = it.customPackageCreationData.copy(length = length)
+            var newPackageData = it.customPackageCreationData.copy(length = length)
+            if (it.customPackageCreationData.invalidDimensionError) {
+                newPackageData = newPackageData.copyWithUpdatedError()
+            }
             it.copy(customPackageCreationData = newPackageData)
         }
     }
 
     fun onWidthChange(width: String) {
         _viewState.update {
-            val newPackageData = it.customPackageCreationData.copy(width = width)
+            var newPackageData = it.customPackageCreationData.copy(width = width)
+            if (it.customPackageCreationData.invalidDimensionError) {
+                newPackageData = newPackageData.copyWithUpdatedError()
+            }
             it.copy(customPackageCreationData = newPackageData)
         }
     }
 
     fun onHeightChange(height: String) {
         _viewState.update {
-            val newPackageData = it.customPackageCreationData.copy(height = height)
+            var newPackageData = it.customPackageCreationData.copy(height = height)
+            if (it.customPackageCreationData.invalidDimensionError) {
+                newPackageData = newPackageData.copyWithUpdatedError()
+            }
             it.copy(customPackageCreationData = newPackageData)
         }
     }

@@ -1,2 +1,0 @@
-23.0:
-Psst … Har du en stund över för att prata om Woo Point of Sale? &#x1f4b0; Den kliver nu fram med en splitterny POS-flik i huvudnavigeringen – ett enda tryck och du säljer i Storbritannien och USA, med förbättrat stöd för extern streckkodsskanner &#x1f4e6; för smidigare kassahantering. Vi har också uppdaterat användargränssnittet med eleganta Material 3-inslag ✨ och lagt till små förbättringar och korrigeringar som du nog vill kolla in.
