@@ -8,9 +8,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class WooPosSyncTimestampRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dataStore: DataStore<Preferences>,
