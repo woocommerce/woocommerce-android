@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.SplitShipment
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.SplitShipmentArgs
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
@@ -636,23 +637,5 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         )
     )
 
-    val purchasedShipmentUIModel = ShipmentUIModel(
-        localId = "10",
-        items = listOf(
-            ShippableItemModel(
-                itemId = 1L,
-                productId = 1L,
-                title = "A product with quantity 1",
-                price = BigDecimal(30),
-                quantity = 1f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
-            )
-        ),
-        purchased = true
-    )
+    val purchasedShipmentUIModel = ShippingLabelSampleData.getShippingLabelUIModel(purchased = true)
 }

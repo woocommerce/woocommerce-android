@@ -68,13 +68,14 @@ class GetShipments @Inject constructor(
         shipmentUIModelList: List<ShipmentUIModel>,
         currentOrderLabels: List<ShippingLabelModel>
     ) = shipmentUIModelList.map { shipmentUIModel ->
-        val purchasedNonRefundedLabel = currentOrderLabels.find {
-            it.shipmentId == shipmentUIModel.remoteId && it.status == ShippingLabelStatus.PURCHASED && it.refund == null
+        val shipmentLabels = currentOrderLabels.filter {
+            it.shipmentId == shipmentUIModel.remoteId
+        }.sortedByDescending { it.createdDate?.time }
+
+        val purchasedLabel = shipmentLabels.find {
+            it.status == ShippingLabelStatus.PURCHASED && it.refund == null
         }
-        if (purchasedNonRefundedLabel == null) {
-            shipmentUIModel
-        } else {
-            shipmentUIModel.copy(purchased = true, label = purchasedNonRefundedLabel)
-        }
+
+        shipmentUIModel.copy(label = purchasedLabel ?: shipmentLabels.firstOrNull())
     }
 }

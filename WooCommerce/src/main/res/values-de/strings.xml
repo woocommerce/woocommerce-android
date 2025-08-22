@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-29 15:54:04+0000
+Translation-Revision-Date: 2025-08-13 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">Es funktioniert immer noch nicht? Dann wende dich bitte an den Kundensupport des Geräteherstellers.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">Suche auf dem Bildschirm nach einem Tastatur-Icon oder einer Werkzeugleiste.</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">Hier tippen, um die Sichtbarkeit der Tastatur zu testen</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android behandelt Barcode-Scanner als physische Tastaturen, die deine Bildschirmtastatur womöglich verbergen. Lass uns Folgendes prüfen:</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Navigiere zu den Geräteeinstellungen, suche nach „Keyboard“ (Tastatur) und aktiviere dann die Option „Show on-screen keyboard when physical keyboard connected“ (Bildschirmtastatur anzeigen, wenn physische Tastatur verbunden ist). Diese Einstellung befindet sich möglicherweise in den Einstellungen deiner Tastatur-App.</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">Wenn die Tastatur nicht sichtbar ist, probiere die folgenden Optionen aus:</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">Bildschirmtastatur anzeigen</string>
+    <string name="woopos_scanning_setup_success_message">Du kannst jetzt mit dem Scannen von Produkten beginnen. Wenn du deinen Scanner das nächste Mal verbinden musst, schalte ihn einfach ein. Dann wird er die Verbindung automatisch wiederherstellen.</string>
+    <string name="woopos_barcode_scanning_title">Ersteinrichtung des Barcode-Scanners</string>
+    <string name="product_selector_subscription_not_supported">Abonnement-Produkte werden bei der Erstellung von Bestellungen nicht unterstützt</string>
+    <string name="save_copy">Kopie speichern</string>
+    <string name="changes_not_saved_message">Deine Änderungen werden nicht gespeichert</string>
+    <string name="woopos_cart_clear_all_button_content_description">Icon „Artikel im Warenkorb löschen“</string>
+    <string name="discard_changes_question">Änderungen verwerfen?</string>
+    <string name="save_processed_image_success">Bild erfolgreich gespeichert</string>
+    <string name="save_processed_image_error">Speichern des Bilds fehlgeschlagen</string>
+    <string name="remove_background_no_subject_detected">Kein eindeutiger Betreff gefunden. Versuche es mit einem anderen Bild.</string>
+    <string name="remove_background_image_load_error">Laden des Bilds fehlgeschlagen</string>
+    <string name="remove_background_title">Bildszenen-Bereiniger ✨</string>
+    <string name="remove_background">Hintergrund mit KI entfernen</string>
     <string name="woo_shipping_labels_order_completion_error">Die Bestellung konnte nicht als vollständig markiert werden.</string>
     <string name="woo_shipping_address_use_as_entered">Adresse wie eingegeben verwenden</string>
     <string name="woo_shipping_labels_customs_product_details_weight_invalid">Das Gewicht muss größer als Null sein</string>
@@ -36,7 +56,6 @@ Language: de
     <string name="woopos_scanning_setup_info_text">Der Barcode-Scanner überdeckt möglicherweise die Tastatur. Tippe auf das Tastatur-Icon oder aktiviere die Funktion in den Betriebssystemeinstellungen unter „Physische Tastatur“</string>
     <string name="woopos_scanning_setup_info_title">Scanner-Einrichtung</string>
     <string name="woopos_scanning_setup_more_information">So richtest du Barcodes für Produkte ein</string>
-    <string name="woopos_scanning_setup_success_message">Du kannst jetzt mit dem Scannen von Produkten beginnen.\nErhalte weitere Informationen zur Unterstützung von Barcodes und QR-Code-Scannern.</string>
     <string name="woopos_scanning_setup_success_title">Scanner eingerichtet!</string>
     <string name="woopos_scanning_setup_go_to_settings">Zu deinen Geräteeinstellungen</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">Aktiviere Bluetooth und wähle deinen %s-Scanner in den Betriebssystemeinstellungen aus.\nDer Scanner gibt einen Signalton aus. Nach der Kopplung leuchtet die LED des Scanners dauerhaft.</string>
@@ -59,7 +78,6 @@ Language: de
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Deine WooCommerce-Version wird nicht unterstützt. Das POS-System erfordert WooCommerce Version %1$s oder höher. Aktualisiere bitte auf die neueste Version von WooCommerce.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Stelle zunächst sicher, dass das WooCommerce-Plugin installiert ist und über deinen WordPress-Admin aktiviert wurde. Falls das Problem weiterhin besteht, wende dich bitte an den Support.</string>
     <string name="orderfilters_sales_channel_filter_point_of_sale">Verkaufsort (POS)</string>
-    <string name="woopos_barcode_scanning_title">Einen Barcode-Scanner einrichten</string>
     <string name="orderfilters_sales_channel_filter">Vertriebskanal</string>
     <string name="barcode_ean13_content_description">Barcode EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Zusätzliche Handhabung</string>
@@ -635,8 +653,8 @@ Language: de
     <string name="more_menu_button_google">Google für WooCommerce</string>
     <string name="no_quantity_rules">Keine Mengenregeln</string>
     <string name="woopos_items_in_cart">%d Artikel</string>
-    <string name="woopos_clear_cart_button">Löschen</string>
     <string name="woopos_payment_tax_label">Steuern</string>
+    <string name="woopos_clear_cart_button">Warenkorb leeren</string>
     <string name="blaze_campaign_preview_audience_section_title">Zielgruppe</string>
     <string name="woopos_exit_confirmation_dismiss_button">Abbrechen</string>
     <string name="woopos_exit_confirmation_title">POS beenden</string>

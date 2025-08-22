@@ -13,7 +13,7 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import org.wordpress.android.util.ToastUtils
 
 object OrderShipmentTrackingHelper {
-    private fun copyTrackingNumber(
+    fun copyTrackingNumber(
         context: Context,
         trackingNumber: String
     ) {

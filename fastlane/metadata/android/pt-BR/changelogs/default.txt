@@ -1,0 +1,2 @@
+23.0:
+Psiu! Você tem um minuto para falar sobre o Woo Point of Sale? &#x1f4b0; Agora ele é o centro das atenções, com uma nova guia de ponto de venda na navegação principal: basta um toque e você já começa a vender no Reino Unido e nos EUA, com maior compatibilidade com leitor externo de código de barras &#x1f4e6; para facilitar ainda mais a finalização da compras. Também atualizamos a IU com elegantes toques de Material 3 ✨ e algumas melhorias e correções que você adorará explorar.
