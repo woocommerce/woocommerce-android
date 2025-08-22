@@ -6,7 +6,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.pos.PosVariationApiResponse
 
 class PosVariationMapperTest {
-    
+
     @Test
     fun `given complete API response, when mapper called, then all fields mapped correctly`() {
         // Given
@@ -38,12 +38,12 @@ class PosVariationMapperTest {
             ),
             downloadable = false
         )
-        
+
         val siteId = LocalOrRemoteId.LocalId(1)
-        
+
         // When
         val model = response.mapToPosVariationModel(siteId)
-        
+
         // Then
         assertThat(model.localSiteId).isEqualTo(siteId)
         assertThat(model.remoteProductId.value).isEqualTo(456L)
@@ -66,7 +66,7 @@ class PosVariationMapperTest {
         assertThat(model.imageUrl).isEqualTo("https://example.com/image.jpg")
         assertThat(model.downloadable).isFalse()
     }
-    
+
     @Test
     fun `given null stock quantity, when mapper called, then defaults to zero`() {
         // Given
@@ -75,14 +75,14 @@ class PosVariationMapperTest {
             productId = 456L,
             stockQuantity = null
         )
-        
+
         // When
         val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
-        
+
         // Then
         assertThat(model.stockQuantity).isEqualTo(0.0)
     }
-    
+
     @Test
     fun `given null image, when mapper called, then image URL is empty`() {
         // Given
@@ -91,14 +91,14 @@ class PosVariationMapperTest {
             productId = 456L,
             image = null
         )
-        
+
         // When
         val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
-        
+
         // Then
         assertThat(model.imageUrl).isEmpty()
     }
-    
+
     @Test
     fun `given empty attributes, when mapper called, then JSON is empty array`() {
         // Given
@@ -107,14 +107,14 @@ class PosVariationMapperTest {
             productId = 456L,
             attributes = emptyList()
         )
-        
+
         // When
         val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
-        
+
         // Then
         assertThat(model.attributesJson).isEqualTo("[]")
     }
-    
+
     @Test
     fun `given multiple attributes, when mapper called, then JSON contains all attributes`() {
         // Given
@@ -127,10 +127,10 @@ class PosVariationMapperTest {
                 PosVariationApiResponse.VariationAttribute(3, "Material", "Cotton")
             )
         )
-        
+
         // When
         val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
-        
+
         // Then
         assertThat(model.attributesJson).contains("Color")
         assertThat(model.attributesJson).contains("Red")
@@ -139,7 +139,7 @@ class PosVariationMapperTest {
         assertThat(model.attributesJson).contains("Material")
         assertThat(model.attributesJson).contains("Cotton")
     }
-    
+
     @Test
     fun `given special characters in fields, when mapper called, then characters preserved`() {
         // Given
@@ -150,16 +150,16 @@ class PosVariationMapperTest {
             description = "Description with\nnewlines\tand\ttabs",
             sku = "SKU-WITH-SPECIAL-#123"
         )
-        
+
         // When
         val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
-        
+
         // Then
         assertThat(model.variationName).isEqualTo("Product with \"quotes\" & special <chars>")
         assertThat(model.description).contains("newlines")
         assertThat(model.sku).isEqualTo("SKU-WITH-SPECIAL-#123")
     }
-    
+
     @Test
     fun `given edge case numeric values, when mapper called, then values handled correctly`() {
         // Given
@@ -171,10 +171,10 @@ class PosVariationMapperTest {
             salePrice = "",
             stockQuantity = Double.MAX_VALUE
         )
-        
+
         // When
         val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(Int.MAX_VALUE))
-        
+
         // Then
         assertThat(model.remoteVariationId.value).isEqualTo(Long.MAX_VALUE)
         assertThat(model.remoteProductId.value).isEqualTo(0L)
@@ -183,7 +183,7 @@ class PosVariationMapperTest {
         assertThat(model.salePrice).isEmpty()
         assertThat(model.stockQuantity).isEqualTo(Double.MAX_VALUE)
     }
-    
+
     @Test
     fun `given minimal API response, when mapper called, then defaults applied correctly`() {
         // Given - only required fields
@@ -191,10 +191,10 @@ class PosVariationMapperTest {
             id = 1L,
             productId = 2L
         )
-        
+
         // When
         val model = response.mapToPosVariationModel(LocalOrRemoteId.LocalId(1))
-        
+
         // Then
         assertThat(model.remoteVariationId.value).isEqualTo(1L)
         assertThat(model.remoteProductId.value).isEqualTo(2L)
