@@ -379,7 +379,7 @@ class PosLocalCatalogStoreTest {
         // THEN
         assertThat(result.isFailure).isTrue()
         val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
-        assertThat(error.errorMessage).contains("API error")
+        assertThat(error.errorMessage).contains("Network error")
         verifyNoInteractions(posVariationsDao)
     }
 
