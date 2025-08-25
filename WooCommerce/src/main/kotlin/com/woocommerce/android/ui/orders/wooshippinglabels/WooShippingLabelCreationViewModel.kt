@@ -790,7 +790,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private suspend fun adjustFlowSizesToShipmentCount(shipments: List<ShipmentUIModel>) {
         suspend fun <T> MutableStateFlow<List<T>>.updateSize(defaultValue: suspend (Int) -> T) =
-            this.update { currentList ->
+            update { currentList ->
                 if (currentList.size <= shipments.size) {
                     currentList + List(shipments.size - currentList.size) { index ->
                         defaultValue(currentList.size + index)
