@@ -2,15 +2,13 @@ package org.wordpress.android.fluxc.network.rest.wpcom.reader;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 
 import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.generated.ReaderActionBuilder;
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST;
 import org.wordpress.android.fluxc.network.UserAgent;
+import org.wordpress.android.fluxc.network.rest.GsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener;
@@ -28,6 +26,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import androidx.annotation.NonNull;
 
 @Singleton
 public class ReaderRestClient extends BaseWPComRestClient {
@@ -53,9 +53,9 @@ public class ReaderRestClient extends BaseWPComRestClient {
         params.put("q", UrlUtils.urlEncode(searchTerm));
 
         WPComGsonRequest request = WPComGsonRequest.buildGetRequest(url, params, ReaderSearchSitesResponse.class,
-                new Response.Listener<ReaderSearchSitesResponse>() {
+                new GsonRequest.MyListener<ReaderSearchSitesResponse>() {
                     @Override
-                    public void onResponse(ReaderSearchSitesResponse response) {
+                    public void onResponse(ReaderSearchSitesResponse response, Map<String, String> headers) {
                         boolean canLoadMore = response.getSites().size() == count;
                         ReaderSearchSitesResponsePayload payload =
                                 new ReaderSearchSitesResponsePayload(

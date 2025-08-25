@@ -3,8 +3,6 @@ package org.wordpress.android.fluxc.network.rest.wpcom.auth;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import com.android.volley.Cache;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -21,6 +19,7 @@ import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.Payload;
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder;
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST;
+import org.wordpress.android.fluxc.network.rest.GsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError;
@@ -44,6 +43,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import androidx.annotation.NonNull;
 
 public class Authenticator {
     private static final String WPCOM_OAUTH_PREFIX = "https://public-api.wordpress.com/oauth2";
@@ -332,9 +333,9 @@ public class Authenticator {
         }
 
         WPComGsonRequest request = WPComGsonRequest.buildPostRequest(url, params, AuthEmailWPComRestResponse.class,
-                new Response.Listener<AuthEmailWPComRestResponse>() {
+                new GsonRequest.MyListener<AuthEmailWPComRestResponse>() {
                     @Override
-                    public void onResponse(AuthEmailWPComRestResponse response) {
+                    public void onResponse(AuthEmailWPComRestResponse response, Map<String, String> headers) {
                         AuthEmailResponsePayload responsePayload = new AuthEmailResponsePayload(payload.isSignup);
 
                         if (!response.success) {

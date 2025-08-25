@@ -2,10 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.plugin;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
 import com.android.volley.RequestQueue;
-import com.android.volley.Response.Listener;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.wordpress.android.fluxc.Dispatcher;
@@ -14,6 +11,7 @@ import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel;
 import org.wordpress.android.fluxc.network.UserAgent;
+import org.wordpress.android.fluxc.network.rest.GsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener;
@@ -33,6 +31,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
+
 @Singleton
 public class PluginRestClient extends BaseWPComRestClient {
     @Inject public PluginRestClient(Context appContext, Dispatcher dispatcher,
@@ -49,9 +49,9 @@ public class PluginRestClient extends BaseWPComRestClient {
         params.put("autoupdate", isAutoUpdatesEnabled);
         final WPComGsonRequest<PluginWPComRestResponse> request = WPComGsonRequest.buildPostRequest(url, params,
                 PluginWPComRestResponse.class,
-                new Listener<PluginWPComRestResponse>() {
+                new GsonRequest.MyListener<PluginWPComRestResponse>() {
                     @Override
-                    public void onResponse(PluginWPComRestResponse response) {
+                    public void onResponse(PluginWPComRestResponse response, Map<String, String> headers) {
                         SitePluginModel pluginFromResponse = pluginModelFromResponse(site, response);
                         mDispatcher.dispatch(PluginActionBuilder.newConfiguredSitePluginAction(
                                 new ConfiguredSitePluginPayload(site, pluginFromResponse)));
@@ -78,9 +78,9 @@ public class PluginRestClient extends BaseWPComRestClient {
         String url = WPCOMREST.sites.site(site.getSiteId()).plugins.slug(pluginSlug).install.getUrlV1_2();
         final WPComGsonRequest<PluginWPComRestResponse> request = WPComGsonRequest.buildPostRequest(url, null,
                 PluginWPComRestResponse.class,
-                new Listener<PluginWPComRestResponse>() {
+                new GsonRequest.MyListener<PluginWPComRestResponse>() {
                     @Override
-                    public void onResponse(PluginWPComRestResponse response) {
+                    public void onResponse(PluginWPComRestResponse response, Map<String, String> headers) {
                         SitePluginModel pluginFromResponse = pluginModelFromResponse(site, response);
                         mDispatcher.dispatch(PluginActionBuilder.newInstalledSitePluginAction(
                                 new InstalledSitePluginPayload(site, pluginFromResponse)));

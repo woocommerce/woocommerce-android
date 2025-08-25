@@ -1,12 +1,10 @@
 package org.wordpress.android.fluxc.network.wporg;
 
-import androidx.annotation.NonNull;
-
-import com.android.volley.Response.Listener;
-
 import org.wordpress.android.fluxc.network.rest.GsonRequest;
 
 import java.util.Map;
+
+import androidx.annotation.NonNull;
 
 public class WPOrgAPIGsonRequest<T> extends GsonRequest<T> {
     public WPOrgAPIGsonRequest(int method, String url, Map<String, String> params, Map<String, Object> body,
