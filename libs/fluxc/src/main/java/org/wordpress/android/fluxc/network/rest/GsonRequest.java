@@ -22,7 +22,7 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 
-public abstract class GsonRequest<T> extends BaseRequest<GsonRequest.ResponseWithHeaders<T>> {
+public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>> {
     private static final String PROTOCOL_CHARSET = "utf-8";
     private static final String PROTOCOL_CONTENT_TYPE = String.format("application/json; charset=%s", PROTOCOL_CHARSET);
 
@@ -38,16 +38,6 @@ public abstract class GsonRequest<T> extends BaseRequest<GsonRequest.ResponseWit
 
     public interface MyListener<T> {
         void onResponse(T response, Map<String, String> headers);
-    }
-
-    public static class ResponseWithHeaders<D>{
-        public D data;
-        public Map<String, String> headers;
-
-        public ResponseWithHeaders(D data, Map<String, String> headers) {
-            this.data = data;
-            this.headers = headers;
-        }
     }
 
     protected GsonRequest(int method, Map<String, String> params, Map<String, Object> body, String url, Class<T> clazz,
@@ -111,9 +101,9 @@ public abstract class GsonRequest<T> extends BaseRequest<GsonRequest.ResponseWit
     @Override
     protected void deliverResponse(ResponseWithHeaders<T> response) {
         if (mListener != null) {
-            mListener.onResponse(response.data, response.headers);
+            mListener.onResponse(response.getData(), response.getHeaders());
         } else {
-            mListenerWithoutHeaders.onResponse(response.data);
+            mListenerWithoutHeaders.onResponse(response.getData());
         }
     }
 
@@ -155,7 +145,7 @@ public abstract class GsonRequest<T> extends BaseRequest<GsonRequest.ResponseWit
             } else {
                 parsedData = mGson.fromJson(json, mClass);
             }
-            return Response.success(new ResponseWithHeaders(parsedData,response.headers), createCacheEntry(response));
+            return Response.success(new ResponseWithHeaders<>(parsedData,response.headers), createCacheEntry(response));
         } catch (UnsupportedEncodingException | JsonSyntaxException e) {
             logRequestPath();
             return Response.error(new ParseError(e));
