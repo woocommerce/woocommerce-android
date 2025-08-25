@@ -53,11 +53,11 @@ echo "adb devices"
 adb devices
 echo ""
 
-echo "--- 🤖 Stopping Emulator(s)"
-echo "adb -s emulator-5554 emu kill"
-adb -s emulator-5554 emu kill
-echo "adb devices"
-while adb devices | grep -q emulator-5554; do sleep 1; done
-echo ""
+# echo "--- 🤖 Stopping Emulator(s)"
+# echo "adb -s emulator-5554 emu kill"
+# adb -s emulator-5554 emu kill
+# echo "adb devices"
+# while adb devices | grep -q emulator-5554; do sleep 1; done
+# echo ""
 
 exit $ui_test_exit_code
