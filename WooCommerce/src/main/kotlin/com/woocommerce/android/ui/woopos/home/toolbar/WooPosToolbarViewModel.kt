@@ -17,6 +17,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_DOCUMENTATION_URL
+import com.woocommerce.android.ui.woopos.featureflags.WooPosHistoricalOrdersM1Enabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -50,6 +51,7 @@ class WooPosToolbarViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val wooPosPosSettingsEnabled: WooPosPosSettingsEnabled,
+    private val wooPosHistoricalOrdersM1Enabled: WooPosHistoricalOrdersM1Enabled,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosToolbarState(
@@ -181,12 +183,17 @@ class WooPosToolbarViewModel @Inject constructor(
                 )
             }
 
-            addAll(
-                listOf(
+            if (wooPosHistoricalOrdersM1Enabled()) {
+                add(
                     WooPosToolbarState.Menu.MenuItem(
                         title = R.string.woopos_orders_title,
                         icon = Icons.AutoMirrored.Filled.List,
-                    ),
+                    )
+                )
+            }
+
+            addAll(
+                listOf(
                     WooPosToolbarState.Menu.MenuItem(
                         title = R.string.woopos_barcode_scanning_title,
                         icon = Icons.Default.DocumentScanner,
