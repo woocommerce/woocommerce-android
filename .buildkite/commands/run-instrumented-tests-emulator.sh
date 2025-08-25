@@ -53,6 +53,20 @@ echo "adb devices"
 adb devices
 echo ""
 
+echo "ps auxw | grep emulator"
+ps auxw | grep emulator
+echo ""
+echo "pgrep -f emulator"
+pgrep -f emulator || true
+echo ""
+
+echo "ps auxw | grep qemu"
+ps auxw | grep qemu
+echo ""
+echo "pgrep -f qemu"
+pgrep -f qemu || true
+echo ""
+
 # echo "--- 🤖 Stopping Emulator(s)"
 # echo "adb -s emulator-5554 emu kill"
 # adb -s emulator-5554 emu kill
