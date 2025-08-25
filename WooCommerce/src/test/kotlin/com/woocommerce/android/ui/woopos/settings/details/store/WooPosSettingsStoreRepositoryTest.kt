@@ -27,7 +27,6 @@ class WooPosSettingsStoreRepositoryTest {
     fun `given complete site and settings data, when getStoreInfo, then returns full store info`() = runTest {
         // GIVEN
         whenever(siteModel.name).thenReturn("My WooCommerce Store")
-        whenever(siteModel.email).thenReturn("store@example.com")
 
         val settings = Settings(
             currencyCode = "USD",
@@ -50,15 +49,13 @@ class WooPosSettingsStoreRepositoryTest {
 
         // THEN
         assertThat(result.storeName).isEqualTo("My WooCommerce Store")
-        assertThat(result.email).isEqualTo("store@example.com")
         assertThat(result.address).isEqualTo("123 Main Street, Suite 456, New York, NY 10001, US")
     }
 
     @Test
-    fun `given site with null name and email, when getStoreInfo, then returns empty strings`() = runTest {
+    fun `given site with null name, when getStoreInfo, then returns empty strings`() = runTest {
         // GIVEN
         whenever(siteModel.name).thenReturn(null)
-        whenever(siteModel.email).thenReturn(null)
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
 
         // WHEN
@@ -66,7 +63,6 @@ class WooPosSettingsStoreRepositoryTest {
 
         // THEN
         assertThat(result.storeName).isEqualTo("")
-        assertThat(result.email).isEqualTo("")
         assertThat(result.address).isEqualTo("")
     }
 
@@ -74,7 +70,6 @@ class WooPosSettingsStoreRepositoryTest {
     fun `given partial address data, when getStoreInfo, then returns formatted address with available fields`() = runTest {
         // GIVEN
         whenever(siteModel.name).thenReturn("Test Store")
-        whenever(siteModel.email).thenReturn("test@store.com")
 
         val settings = Settings(
             currencyCode = "USD",
@@ -97,7 +92,6 @@ class WooPosSettingsStoreRepositoryTest {
 
         // THEN
         assertThat(result.storeName).isEqualTo("Test Store")
-        assertThat(result.email).isEqualTo("test@store.com")
         assertThat(result.address).isEqualTo("456 Oak Avenue, San Francisco, CA, US")
     }
 
@@ -105,7 +99,6 @@ class WooPosSettingsStoreRepositoryTest {
     fun `given address with only street address, when getStoreInfo, then returns just street address`() = runTest {
         // GIVEN
         whenever(siteModel.name).thenReturn("Minimal Store")
-        whenever(siteModel.email).thenReturn("minimal@store.com")
 
         val settings = Settings(
             currencyCode = "USD",
@@ -134,7 +127,6 @@ class WooPosSettingsStoreRepositoryTest {
     fun `given settings with all blank address fields, when getStoreInfo, then returns empty address`() = runTest {
         // GIVEN
         whenever(siteModel.name).thenReturn("Empty Address Store")
-        whenever(siteModel.email).thenReturn("empty@store.com")
 
         val settings = Settings(
             currencyCode = "USD",
@@ -163,7 +155,6 @@ class WooPosSettingsStoreRepositoryTest {
     fun `given null settings, when getStoreInfo, then returns empty address`() = runTest {
         // GIVEN
         whenever(siteModel.name).thenReturn("No Settings Store")
-        whenever(siteModel.email).thenReturn("nosettings@store.com")
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
 
         // WHEN
@@ -171,7 +162,6 @@ class WooPosSettingsStoreRepositoryTest {
 
         // THEN
         assertThat(result.storeName).isEqualTo("No Settings Store")
-        assertThat(result.email).isEqualTo("nosettings@store.com")
         assertThat(result.address).isEqualTo("")
     }
 
@@ -179,7 +169,6 @@ class WooPosSettingsStoreRepositoryTest {
     fun `given address with city and country only, when getStoreInfo, then returns city and country`() = runTest {
         // GIVEN
         whenever(siteModel.name).thenReturn("International Store")
-        whenever(siteModel.email).thenReturn("international@store.com")
 
         val settings = Settings(
             currencyCode = "GBP",
@@ -208,7 +197,6 @@ class WooPosSettingsStoreRepositoryTest {
     fun `given address with postal code and space formatting, when getStoreInfo, then formats postal code correctly`() = runTest {
         // GIVEN
         whenever(siteModel.name).thenReturn("Postal Store")
-        whenever(siteModel.email).thenReturn("postal@store.com")
 
         val settings = Settings(
             currencyCode = "USD",

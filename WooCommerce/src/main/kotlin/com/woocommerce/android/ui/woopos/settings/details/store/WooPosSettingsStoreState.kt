@@ -6,15 +6,13 @@ data class WooPosSettingsStoreState(
 ) {
     data class StoreInfo(
         val storeName: String,
-        val address: String,
-        val email: String
+        val address: String
     )
 
     data class ReceiptInfo(
         val storeName: String,
         val address: String,
         val phone: String,
-        val email: String,
         val refundPolicy: String
     )
 
