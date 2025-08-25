@@ -34,7 +34,7 @@ class ProductRestClientTest {
             executePostGsonRequest(
                 any(), any(), eq(BatchProductApiResponse::class.java), any()
             )
-        } doReturn WPAPIResponse.Success(null)
+        } doReturn WPAPIResponse.Success(null, emptyList())
     }
     private val wpComNetwork: WPComNetwork = mock()
 
@@ -112,7 +112,7 @@ class ProductRestClientTest {
     @Test
     fun `when fetch products called with exact sku search, then correct params is used for network call`() {
         runTest {
-            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null))
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null, emptyList()))
             sut.fetchProducts(
                 site = site,
                 searchQuery = "test query",
@@ -141,7 +141,7 @@ class ProductRestClientTest {
     @Test
     fun `when fetch products called with partial sku search, then correct params is used for network call`() {
         runTest {
-            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null))
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null, emptyList()))
             sut.fetchProducts(
                 site = site,
                 searchQuery = "test query",
@@ -169,7 +169,7 @@ class ProductRestClientTest {
     @Test
     fun `when fetch products called with the global unique id, then correct params is used for network call`() {
         runTest {
-            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null))
+            whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null, emptyList()))
             val globalUniqueIdSearchQuery = "test global unique id"
             sut.fetchProducts(
                 site = site,
