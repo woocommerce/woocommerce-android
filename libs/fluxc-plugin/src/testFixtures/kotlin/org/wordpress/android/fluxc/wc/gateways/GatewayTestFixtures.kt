@@ -2,7 +2,7 @@ package org.wordpress.android.fluxc.wc.gateways
 
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient.GatewayResponse
-import org.wordpress.android.fluxc.persistence.WCGatewaySqlUtils.GatewaysTable
+import org.wordpress.android.fluxc.persistence.entity.GatewayEntity
 
 object GatewayTestFixtures {
     val stubSite = SiteModel().apply { id = 321 }
@@ -30,8 +30,8 @@ object GatewayTestFixtures {
     )
 
     val gatewaysEntities = listOf(
-        GatewaysTable(
-            localSiteId = stubSite.id,
+        GatewayEntity(
+            siteId = stubSite.localId(),
             gatewayId = "cod",
             data = """
                 {
@@ -46,8 +46,8 @@ object GatewayTestFixtures {
                 }
                 """
         ),
-        GatewaysTable(
-            localSiteId = stubSite.id,
+        GatewayEntity(
+            siteId = stubSite.localId(),
             gatewayId = "stripe",
             data = """
                 {

@@ -3,7 +3,7 @@ package org.wordpress.android.fluxc.model.gateways
 import com.google.gson.Gson
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient.GatewayResponse
-import org.wordpress.android.fluxc.persistence.WCGatewaySqlUtils.GatewaysTable
+import org.wordpress.android.fluxc.persistence.entity.GatewayEntity
 import javax.inject.Inject
 
 class GatewayMapper @Inject constructor(private val gson: Gson) {
@@ -20,20 +20,20 @@ class GatewayMapper @Inject constructor(private val gson: Gson) {
         )
     }
 
-    fun toModel(entity: GatewaysTable): WCGatewayModel {
+    fun toModel(entity: GatewayEntity): WCGatewayModel {
         val response = gson.fromJson(entity.data, GatewayResponse::class.java)
         return toModel(response)
     }
 
-    fun toEntity(siteId: LocalId, response: GatewayResponse): GatewaysTable {
+    fun toEntity(siteId: LocalId, response: GatewayResponse): GatewayEntity {
         val json = gson.toJson(response)
-        return GatewaysTable(
-            localSiteId = siteId.value,
+        return GatewayEntity(
+            siteId = siteId,
             gatewayId = response.gatewayId,
             data = json
         )
     }
 
-    fun toEntities(siteId: LocalId, responses: List<GatewayResponse>): List<GatewaysTable> =
+    fun toEntities(siteId: LocalId, responses: List<GatewayResponse>): List<GatewayEntity> =
         responses.map { toEntity(siteId, it) }
 }

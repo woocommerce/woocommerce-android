@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ER
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient.GatewayId
-import org.wordpress.android.fluxc.persistence.WCGatewaySqlUtils
+import org.wordpress.android.fluxc.persistence.dao.GatewaysDao
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
@@ -18,11 +18,12 @@ import javax.inject.Singleton
 @Singleton
 class WCGatewayStore @Inject constructor(
     private val restClient: GatewayRestClient,
+    private val gatewaysDao: GatewaysDao,
     private val mapper: GatewayMapper,
     private val coroutineEngine: CoroutineEngine
 ) {
     suspend fun getGateway(site: SiteModel, gatewayId: String): WCGatewayModel? {
-        val entity = WCGatewaySqlUtils.selectGateway(site, gatewayId)
+        val entity = gatewaysDao.getGateway(site.localId(), gatewayId)
         return entity?.let { mapper.toModel(it) }
     }
 
@@ -40,7 +41,7 @@ class WCGatewayStore @Inject constructor(
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
                     val entity = mapper.toEntity(site.localId(), response.result)
-                    WCGatewaySqlUtils.insertOrUpdate(site, entity)
+                    gatewaysDao.upsertGateway(entity)
                     WooResult(mapper.toModel(response.result))
                 }
 
@@ -50,7 +51,7 @@ class WCGatewayStore @Inject constructor(
     }
 
     suspend fun getAllGateways(site: SiteModel): List<WCGatewayModel> =
-        WCGatewaySqlUtils.selectAllGateways(site).map { mapper.toModel(it) }
+        gatewaysDao.getGatewaysForSite(site.localId()).map { mapper.toModel(it) }
 
     suspend fun fetchAllGateways(site: SiteModel): WooResult<List<WCGatewayModel>> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchAllGateways") {
@@ -59,7 +60,7 @@ class WCGatewayStore @Inject constructor(
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
                     val entities = mapper.toEntities(site.localId(), response.result.toList())
-                    WCGatewaySqlUtils.insertOrUpdate(site, entities)
+                    gatewaysDao.replaceAllForSite(site.localId(), entities)
                     WooResult(response.result.map { mapper.toModel(it) })
                 }
 

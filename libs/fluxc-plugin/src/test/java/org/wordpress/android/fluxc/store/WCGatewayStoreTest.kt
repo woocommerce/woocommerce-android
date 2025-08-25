@@ -1,17 +1,12 @@
 package org.wordpress.android.fluxc.store
 
-import com.google.gson.Gson
-import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
+import com.google.gson.Gson
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.gateways.GatewayMapper
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
@@ -21,38 +16,30 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
-import org.wordpress.android.fluxc.persistence.WCGatewaySqlUtils.GatewaysTable
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.persistence.dao.GatewaysDao
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import org.wordpress.android.fluxc.wc.gateways.GatewayTestFixtures.gatewaysEntities
 import org.wordpress.android.fluxc.wc.gateways.GatewayTestFixtures.gatewaysResponse
 import org.wordpress.android.fluxc.wc.gateways.GatewayTestFixtures.stubSite
 
-@Config(manifest = Config.NONE)
-@RunWith(RobolectricTestRunner::class)
 class WCGatewayStoreTest {
     private val restClient = mock<GatewayRestClient>()
     private val errorSite = SiteModel().apply { id = 123 }
     private val mapper = GatewayMapper(Gson())
     private lateinit var store: WCGatewayStore
+    private val gatewaysDao: GatewaysDao = mock()
+
     private val gatewayId = gatewaysResponse.first().gatewayId
     private val error = WooError(WooErrorType.INVALID_ID, BaseRequest.GenericErrorType.NOT_FOUND, "Invalid gateway ID")
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
-        val config = SingleStoreWellSqlConfigForTests(
-            appContext,
-            listOf(GatewaysTable::class.java),
-            WellSqlConfig.Companion.ADDON_WOOCOMMERCE
-        )
-        WellSql.init(config)
-        config.reset()
-
         store = WCGatewayStore(
             restClient,
+            gatewaysDao,
             mapper,
-            initCoroutineEngine()
+            initCoroutineEngine(),
         )
     }
 
@@ -72,6 +59,8 @@ class WCGatewayStoreTest {
     @Test
     fun `update gateway`() = test {
         fetchAllTestGateways()
+        whenever(gatewaysDao.getGateway(stubSite.localId(), gatewayId))
+            .thenReturn(gatewaysEntities.first())
         val gateway = store.getGateway(stubSite, gatewayId)
         assertThat(gateway).isEqualTo(mapper.toModel(gatewaysResponse.first()))
         val gatewayIdCod = GatewayRestClient.GatewayId.CASH_ON_DELIVERY
@@ -79,27 +68,36 @@ class WCGatewayStoreTest {
         whenever(restClient.updateGateway(stubSite, gatewayIdCod, true))
             .thenReturn(WooPayload(updatedGateway))
 
-        store.updateGateway(
+        val model = store.updateGateway(
             site = stubSite,
             gatewayId = gatewayIdCod,
             enabled = true
         )
 
-        assertThat(store.getGateway(stubSite, gatewayId)).isEqualTo(mapper.toModel(updatedGateway))
+        verify(gatewaysDao).upsertGateway(mapper.toEntity(stubSite.localId(), updatedGateway))
+        assertThat(model).isEqualTo(WooResult(mapper.toModel(updatedGateway)))
     }
 
     @Test
     fun `get gateway`() = test {
-        fetchAllTestGateways()
+        whenever(gatewaysDao.getGateway(stubSite.localId(), gatewayId))
+            .thenReturn(gatewaysEntities.first())
+        whenever(gatewaysDao.getGateway(errorSite.localId(), gatewayId))
+            .thenReturn(null)
 
         val gateway = store.getGateway(stubSite, gatewayId)
 
         assertThat(gateway).isEqualTo(mapper.toModel(gatewaysResponse.first()))
+        val invalidRequestResult = store.getGateway(errorSite, gatewayId)
+        assertThat(invalidRequestResult).isNull()
     }
 
     @Test
     fun `get all gateways`() = test {
-        fetchAllTestGateways()
+        whenever(gatewaysDao.getGatewaysForSite(stubSite.localId()))
+            .thenReturn(gatewaysEntities)
+        whenever(gatewaysDao.getGatewaysForSite(errorSite.localId()))
+            .thenReturn(emptyList())
 
         val gateways = store.getAllGateways(stubSite)
 
