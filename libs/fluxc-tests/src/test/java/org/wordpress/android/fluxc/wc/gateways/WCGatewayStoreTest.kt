@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
@@ -34,6 +35,7 @@ class WCGatewayStoreTest {
     private val errorSite = SiteModel().apply { id = 123 }
     private val mapper = GatewayMapper()
     private lateinit var store: WCGatewayStore
+    private val gatewayId = GATEWAYS_RESPONSE.first().gatewayId
     private val error = WooError(INVALID_ID, NOT_FOUND, "Invalid gateway ID")
 
     @Before
@@ -65,6 +67,34 @@ class WCGatewayStoreTest {
         val invalidRequestResult = store.fetchAllGateways(errorSite)
         assertThat(invalidRequestResult.model).isNull()
         assertThat(invalidRequestResult.error).isEqualTo(error)
+    }
+
+    @Test
+    fun `update gateway`() = test {
+        fetchAllTestGateways()
+        val gateway = store.getGateway(site, gatewayId)
+        assertThat(gateway).isEqualTo(mapper.map(GATEWAYS_RESPONSE.first()))
+        val gatewayIdCod = GatewayRestClient.GatewayId.CASH_ON_DELIVERY
+        val updatedGateway = GATEWAYS_RESPONSE.first().copy(enabled = true)
+        whenever(restClient.updateGateway(site, gatewayIdCod, true))
+            .thenReturn(WooPayload(updatedGateway))
+
+        store.updateGateway(
+            site = site,
+            gatewayId = gatewayIdCod,
+            enabled = true
+        )
+
+        assertThat(store.getGateway(site, gatewayId)).isEqualTo(mapper.map(updatedGateway))
+    }
+
+    @Test
+    fun `get gateway`() = test {
+        fetchAllTestGateways()
+
+        val gateway = store.getGateway(site, gatewayId)
+
+        assertThat(gateway).isEqualTo(mapper.map(GATEWAYS_RESPONSE.first()))
     }
 
     @Test
