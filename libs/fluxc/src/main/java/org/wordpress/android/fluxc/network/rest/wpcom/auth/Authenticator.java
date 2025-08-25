@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.android.volley.Cache;
+import com.android.volley.Header;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -335,7 +336,7 @@ public class Authenticator {
         WPComGsonRequest request = WPComGsonRequest.buildPostRequest(url, params, AuthEmailWPComRestResponse.class,
                 new GsonRequest.ResponseListener<AuthEmailWPComRestResponse>() {
                     @Override
-                    public void onResponse(AuthEmailWPComRestResponse response, Map<String, String> headers) {
+                    public void onResponse(AuthEmailWPComRestResponse response, List<Header> headers) {
                         AuthEmailResponsePayload responsePayload = new AuthEmailResponsePayload(payload.isSignup);
 
                         if (!response.success) {

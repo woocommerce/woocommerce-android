@@ -57,7 +57,7 @@ class ProductsRestClientTest {
 
     @Test
     fun `returns products on successful fetch`() = test {
-        initRequest(data = Success(ProductsResponse(listOf(Product())), emptyMap()))
+        initRequest(data = Success(ProductsResponse(listOf(Product())), emptyList()))
 
         val response = productsRestClient.fetchProducts()
 

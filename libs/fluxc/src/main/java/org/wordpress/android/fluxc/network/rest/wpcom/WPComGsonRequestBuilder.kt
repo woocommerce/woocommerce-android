@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom
 
+import com.android.volley.Header
 import com.android.volley.RetryPolicy
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -27,7 +28,7 @@ class WPComGsonRequestBuilder
         url: String,
         params: Map<String, String>,
         clazz: Class<T>,
-        listener: (T, Map<String,String>) -> Unit,
+        listener: (T, List<Header>) -> Unit,
         errorListener: (WPComGsonNetworkError) -> Unit,
         customGsonBuilder: GsonBuilder? = null
     ): WPComGsonRequest<T> {
@@ -83,7 +84,7 @@ class WPComGsonRequestBuilder
         url: String,
         params: Map<String, String>,
         type: Type,
-        listener: (T, Map<String,String>) -> Unit,
+        listener: (T, List<Header>) -> Unit,
         errorListener: (WPComGsonNetworkError) -> Unit,
         customGsonBuilder: GsonBuilder? = null
     ): WPComGsonRequest<T> {
@@ -138,7 +139,7 @@ class WPComGsonRequestBuilder
         url: String,
         body: Map<String, Any>,
         clazz: Class<T>,
-        listener: (T, Map<String, String>) -> Unit,
+        listener: (T, List<Header>) -> Unit,
         errorListener: (WPComGsonNetworkError) -> Unit
     ): WPComGsonRequest<T> {
         return WPComGsonRequest.buildPostRequest(url, body, clazz, listener, errorListener)
@@ -177,7 +178,7 @@ class WPComGsonRequestBuilder
     }
 
     sealed class Response<T> {
-        data class Success<T>(val data: T, val headers: Map<String, String>) : Response<T>()
+        data class Success<T>(val data: T, val headers: List<Header>) : Response<T>()
         data class Error<T>(val error: WPComGsonNetworkError) : Response<T>()
     }
 }

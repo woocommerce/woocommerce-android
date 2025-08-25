@@ -299,7 +299,7 @@ class SiteStoreTest {
         whenever(siteRestClient.fetchSiteDomains(site)).thenReturn(
             Response.Success(
                 DomainsResponse(domains),
-                emptyMap()
+                emptyList()
             )
         )
 

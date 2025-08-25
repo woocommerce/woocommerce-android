@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Header;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
@@ -18,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -38,7 +40,7 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
     private final GsonBuilder mCustomGsonBuilder;
 
     public interface ResponseListener<T> {
-        void onResponse(T response, Map<String, String> headers);
+        void onResponse(T response, List<Header> headers);
     }
 
     protected GsonRequest(int method, Map<String, String> params, Map<String, Object> body, String url, Class<T> clazz,
@@ -147,7 +149,8 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
             } else {
                 parsedData = mGson.fromJson(json, mClass);
             }
-            return Response.success(new ResponseWithHeaders<>(parsedData,response.headers), createCacheEntry(response));
+            return Response.success(new ResponseWithHeaders<>(parsedData, response.allHeaders),
+                    createCacheEntry(response));
         } catch (UnsupportedEncodingException | JsonSyntaxException e) {
             logRequestPath();
             return Response.error(new ParseError(e));

@@ -63,7 +63,7 @@ class NonceRestClientTest {
         )
         val expectedNonce = "1expectedNONCE"
         givenLoginResponse(redirectResponse)
-        givenNonceRequestResponse(WPAPIResponse.Success(expectedNonce, emptyMap()))
+        givenNonceRequestResponse(WPAPIResponse.Success(expectedNonce, emptyList()))
 
         val actual = subject.requestNonce(site)
 
@@ -83,7 +83,7 @@ class NonceRestClientTest {
                     </div>
               </head>
             </html>
-        """.trimIndent(), emptyMap()
+        """.trimIndent(), emptyList()
         )
         givenLoginResponse(loginResponse)
 
@@ -105,7 +105,7 @@ class NonceRestClientTest {
                     <div id="login_error">Please enter the captcha to continue</div>
               </head>
             </html>
-        """.trimIndent(), emptyMap()
+        """.trimIndent(), emptyList()
         )
         givenLoginResponse(loginResponse)
 
@@ -138,7 +138,7 @@ class NonceRestClientTest {
         )
 
         val invalidNonce = "0"
-        val response = WPAPIResponse.Success(invalidNonce, emptyMap())
+        val response = WPAPIResponse.Success(invalidNonce, emptyList())
         givenLoginResponse(redirectResponse)
         whenever(wpApiEncodedRequestBuilder.syncGetRequest(subject, redirectUrl))
             .thenReturn(response)

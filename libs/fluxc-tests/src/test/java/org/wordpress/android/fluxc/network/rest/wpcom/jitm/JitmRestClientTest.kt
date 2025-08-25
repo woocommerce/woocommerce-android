@@ -91,7 +91,7 @@ class JitmRestClientTest {
                 )
             ).thenReturn(
                 WPAPIResponse.Success(
-                    arrayOf(provideJitmApiResponse()), emptyMap()
+                    arrayOf(provideJitmApiResponse()), emptyList()
                 )
             )
 
@@ -150,7 +150,7 @@ class JitmRestClientTest {
                 )
             ).thenReturn(
                 WPAPIResponse.Success(
-                    arrayOf(provideJitmApiResponse()), emptyMap()
+                    arrayOf(provideJitmApiResponse()), emptyList()
                 )
             )
 

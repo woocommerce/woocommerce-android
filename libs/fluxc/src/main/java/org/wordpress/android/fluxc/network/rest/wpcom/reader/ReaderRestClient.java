@@ -8,7 +8,6 @@ import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.generated.ReaderActionBuilder;
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST;
 import org.wordpress.android.fluxc.network.UserAgent;
-import org.wordpress.android.fluxc.network.rest.GsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener;
@@ -53,18 +52,15 @@ public class ReaderRestClient extends BaseWPComRestClient {
         params.put("q", UrlUtils.urlEncode(searchTerm));
 
         WPComGsonRequest request = WPComGsonRequest.buildGetRequest(url, params, ReaderSearchSitesResponse.class,
-                new GsonRequest.ResponseListener<ReaderSearchSitesResponse>() {
-                    @Override
-                    public void onResponse(ReaderSearchSitesResponse response, Map<String, String> headers) {
-                        boolean canLoadMore = response.getSites().size() == count;
-                        ReaderSearchSitesResponsePayload payload =
-                                new ReaderSearchSitesResponsePayload(
-                                        response.getSites(),
-                                        searchTerm,
-                                        offset,
-                                        canLoadMore);
-                        mDispatcher.dispatch(ReaderActionBuilder.newReaderSearchedSitesAction(payload));
-                    }
+                (response, headers) -> {
+                    boolean canLoadMore = response.getSites().size() == count;
+                    ReaderSearchSitesResponsePayload payload =
+                            new ReaderSearchSitesResponsePayload(
+                                    response.getSites(),
+                                    searchTerm,
+                                    offset,
+                                    canLoadMore);
+                    mDispatcher.dispatch(ReaderActionBuilder.newReaderSearchedSitesAction(payload));
                 }, new WPComErrorListener() {
                     @Override
                     public void onErrorResponse(@NonNull WPComGsonNetworkError error) {

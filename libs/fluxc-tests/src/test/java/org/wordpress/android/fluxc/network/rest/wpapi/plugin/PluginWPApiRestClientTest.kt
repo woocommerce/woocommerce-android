@@ -105,7 +105,7 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
         error: WPAPINetworkError? = null
     ): WPAPIResponse<PluginResponseModel> {
         val response =
-            if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data ?: mock(), emptyMap())
+            if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data ?: mock(), emptyList())
         whenever(
             expectedNetwork.executePostGsonRequest(
                 eq(site),
@@ -122,7 +122,7 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
         error: WPAPINetworkError? = null
     ): WPAPIResponse<PluginResponseModel> {
         val response =
-            if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data ?: mock(), emptyMap())
+            if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data ?: mock(), emptyList())
         whenever(
             expectedNetwork.executePutGsonRequest(
                 eq(site),

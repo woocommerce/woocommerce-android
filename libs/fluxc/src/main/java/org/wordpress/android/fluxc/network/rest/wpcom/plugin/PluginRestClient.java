@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.plugin;
 
 import android.content.Context;
 
+import com.android.volley.Header;
 import com.android.volley.RequestQueue;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -25,6 +26,7 @@ import org.wordpress.android.fluxc.store.PluginStore.InstalledSitePluginPayload;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -51,7 +53,7 @@ public class PluginRestClient extends BaseWPComRestClient {
                 PluginWPComRestResponse.class,
                 new GsonRequest.ResponseListener<PluginWPComRestResponse>() {
                     @Override
-                    public void onResponse(PluginWPComRestResponse response, Map<String, String> headers) {
+                    public void onResponse(PluginWPComRestResponse response, List<Header> headers) {
                         SitePluginModel pluginFromResponse = pluginModelFromResponse(site, response);
                         mDispatcher.dispatch(PluginActionBuilder.newConfiguredSitePluginAction(
                                 new ConfiguredSitePluginPayload(site, pluginFromResponse)));
@@ -80,7 +82,7 @@ public class PluginRestClient extends BaseWPComRestClient {
                 PluginWPComRestResponse.class,
                 new GsonRequest.ResponseListener<PluginWPComRestResponse>() {
                     @Override
-                    public void onResponse(PluginWPComRestResponse response, Map<String, String> headers) {
+                    public void onResponse(PluginWPComRestResponse response, List<Header> headers) {
                         SitePluginModel pluginFromResponse = pluginModelFromResponse(site, response);
                         mDispatcher.dispatch(PluginActionBuilder.newInstalledSitePluginAction(
                                 new InstalledSitePluginPayload(site, pluginFromResponse)));

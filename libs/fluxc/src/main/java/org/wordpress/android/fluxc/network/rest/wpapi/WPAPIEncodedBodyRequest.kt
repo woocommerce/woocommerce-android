@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpapi
 
+import com.android.volley.Header
 import com.android.volley.NetworkResponse
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
@@ -19,7 +20,7 @@ class WPAPIEncodedBodyRequest(
     url: String,
     private val params: Map<String, String>,
     private val body: Map<String, String>,
-    private val listener: (String?, Map<String, String>) -> Unit,
+    private val listener: (String?, List<Header>) -> Unit,
     errorListener: OnWPAPIErrorListener
 ) : BaseRequest<ResponseWithHeaders<String>>(method, url, WPAPIErrorListenerWrapper(errorListener)) {
     override fun getBody(): ByteArray {
@@ -51,7 +52,7 @@ class WPAPIEncodedBodyRequest(
                         ?: Charset.defaultCharset()
 
         val data = response?.data?.toString(contentTypeCharset)
-        return Response.success(ResponseWithHeaders(data, response?.headers ?: emptyMap()), null)
+        return Response.success(ResponseWithHeaders(data, response?.allHeaders ?: emptyList()), null)
     }
 
     override fun deliverResponse(response: ResponseWithHeaders<String>) {

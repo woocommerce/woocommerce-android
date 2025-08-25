@@ -43,7 +43,7 @@ class CustomerRestClientTest {
                 )
             ).thenReturn(
                 WPAPIResponse.Success(
-                    arrayOf(mock()), emptyMap()
+                    arrayOf(mock()), emptyList()
                 )
             )
 
