@@ -1,7 +1,5 @@
 package org.wordpress.android.fluxc.network.rest;
 
-import androidx.annotation.Nullable;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -22,21 +20,38 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class GsonRequest<T> extends BaseRequest<T> {
+import androidx.annotation.Nullable;
+
+public abstract class GsonRequest<T> extends BaseRequest<GsonRequest.ResponseWithHeaders<T>> {
     private static final String PROTOCOL_CHARSET = "utf-8";
     private static final String PROTOCOL_CONTENT_TYPE = String.format("application/json; charset=%s", PROTOCOL_CHARSET);
 
     private final Gson mGson;
     private final Class<T> mClass;
     private final Type mType;
-    private final Listener<T> mListener;
+    private final MyListener<T> mListener;
+    private final Listener<T> mListenerWithoutHeaders;
     private final Map<String, String> mParams;
     private final Map<String, Object> mBody;
 
     private final GsonBuilder mCustomGsonBuilder;
 
+    public interface MyListener<T> {
+        void onResponse(T response, Map<String, String> headers);
+    }
+
+    public static class ResponseWithHeaders<D>{
+        public D data;
+        public Map<String, String> headers;
+
+        public ResponseWithHeaders(D data, Map<String, String> headers) {
+            this.data = data;
+            this.headers = headers;
+        }
+    }
+
     protected GsonRequest(int method, Map<String, String> params, Map<String, Object> body, String url, Class<T> clazz,
-                       Type type, Listener<T> listener, BaseErrorListener errorListener) {
+                          Type type, Listener<T> listenerWithoutHeaders, BaseErrorListener errorListener) {
         super(method, url, errorListener);
         // HTTP RFC requires a body (even empty) for all POST requests. Volley will default to using the params
         // for the body so only do this if params is null since this behavior is desirable for form-encoded
@@ -47,6 +62,27 @@ public abstract class GsonRequest<T> extends BaseRequest<T> {
 
         mClass = clazz;
         mType = type;
+        mListenerWithoutHeaders = listenerWithoutHeaders;
+        mListener = null;
+        mCustomGsonBuilder = null;
+        mGson = getDefaultGsonBuilder().create();
+        mParams = params;
+        mBody = body;
+    }
+
+    protected GsonRequest(int method, Map<String, String> params, Map<String, Object> body, String url, Class<T> clazz,
+                       Type type, MyListener<T> listener, BaseErrorListener errorListener) {
+        super(method, url, errorListener);
+        // HTTP RFC requires a body (even empty) for all POST requests. Volley will default to using the params
+        // for the body so only do this if params is null since this behavior is desirable for form-encoded
+        // POST requests.
+        if (method == Method.POST && body == null && (params == null || params.size() == 0)) {
+            body = new HashMap<>();
+        }
+
+        mClass = clazz;
+        mType = type;
+        mListenerWithoutHeaders = null;
         mListener = listener;
         mCustomGsonBuilder = null;
         mGson = getDefaultGsonBuilder().create();
@@ -55,7 +91,7 @@ public abstract class GsonRequest<T> extends BaseRequest<T> {
     }
 
     protected GsonRequest(int method, Map<String, String> params, Map<String, Object> body, String url, Class<T> clazz,
-                          Type type, Listener<T> listener, BaseErrorListener errorListener,
+                          Type type, MyListener<T> listener, BaseErrorListener errorListener,
                           GsonBuilder customGsonBuilder) {
         super(method, url, errorListener);
         if (method == Method.POST && body == null && (params == null || params.size() == 0)) {
@@ -64,6 +100,7 @@ public abstract class GsonRequest<T> extends BaseRequest<T> {
 
         mClass = clazz;
         mType = type;
+        mListenerWithoutHeaders = null;
         mListener = listener;
         mCustomGsonBuilder = customGsonBuilder;
         mGson = (customGsonBuilder != null ? customGsonBuilder : getDefaultGsonBuilder()).create();
@@ -72,8 +109,12 @@ public abstract class GsonRequest<T> extends BaseRequest<T> {
     }
 
     @Override
-    protected void deliverResponse(T response) {
-        mListener.onResponse(response);
+    protected void deliverResponse(ResponseWithHeaders<T> response) {
+        if (mListener != null) {
+            mListener.onResponse(response.data, response.headers);
+        } else {
+            mListenerWithoutHeaders.onResponse(response.data);
+        }
     }
 
     @Override
@@ -105,16 +146,16 @@ public abstract class GsonRequest<T> extends BaseRequest<T> {
     }
 
     @Override
-    protected Response<T> parseNetworkResponse(NetworkResponse response) {
+    protected Response<ResponseWithHeaders<T>> parseNetworkResponse(NetworkResponse response) {
         try {
             String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-            T res;
+            T parsedData;
             if (mClass == null) {
-                res = mGson.fromJson(json, mType);
+                parsedData = mGson.fromJson(json, mType);
             } else {
-                res = mGson.fromJson(json, mClass);
+                parsedData = mGson.fromJson(json, mClass);
             }
-            return Response.success(res, createCacheEntry(response));
+            return Response.success(new ResponseWithHeaders(parsedData,response.headers), createCacheEntry(response));
         } catch (UnsupportedEncodingException | JsonSyntaxException e) {
             logRequestPath();
             return Response.error(new ParseError(e));
