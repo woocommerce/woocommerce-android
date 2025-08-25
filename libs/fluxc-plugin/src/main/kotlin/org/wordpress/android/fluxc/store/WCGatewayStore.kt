@@ -49,7 +49,7 @@ class WCGatewayStore @Inject constructor(
         }
     }
 
-    fun getAllGateways(site: SiteModel): List<WCGatewayModel> =
+    suspend fun getAllGateways(site: SiteModel): List<WCGatewayModel> =
         WCGatewaySqlUtils.selectAllGateways(site).map { mapper.toModel(it) }
 
     suspend fun fetchAllGateways(site: SiteModel): WooResult<List<WCGatewayModel>> {
