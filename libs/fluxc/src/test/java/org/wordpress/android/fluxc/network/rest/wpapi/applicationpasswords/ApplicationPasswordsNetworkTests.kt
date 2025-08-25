@@ -151,7 +151,7 @@ class ApplicationPasswordsNetworkTests {
 
             val deliverMethod = Request::class.java.getDeclaredMethod("deliverResponse", Any::class.java)
             deliverMethod.isAccessible = true
-            deliverMethod.invoke(request, ResponseWithHeaders(response, emptyMap()))
+            deliverMethod.invoke(request, ResponseWithHeaders(response, emptyList()))
 
             return@thenAnswer request
         }
