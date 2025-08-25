@@ -200,7 +200,7 @@ class JetpackTunnelGsonRequestBuilder @Inject constructor() {
     }
 
     sealed class JetpackResponse<T> {
-        data class JetpackSuccess<T>(val data: T?) : JetpackResponse<T>()
+        data class JetpackSuccess<T>(val data: T?, val headers: Map<String, String>) : JetpackResponse<T>()
         data class JetpackError<T>(val error: WPComGsonNetworkError) : JetpackResponse<T>()
     }
 }
