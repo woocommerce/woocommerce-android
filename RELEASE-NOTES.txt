@@ -5,6 +5,7 @@
 -----
 - [*] Shipping Labels: Add error message for invalid dimensions errors to custom package creation screen [https://github.com/woocommerce/woocommerce-android/pull/14499]
 - [*] Shipping Labels: Update the UI of shipping label purchase in-progress and failure states [https://github.com/woocommerce/woocommerce-android/pull/14498]
+- [*] Shipping Labels: Fix handling of existing shipping labels with in-progress purchase status [https://github.com/woocommerce/woocommerce-android/pull/14501]
 
 23.1
 -----

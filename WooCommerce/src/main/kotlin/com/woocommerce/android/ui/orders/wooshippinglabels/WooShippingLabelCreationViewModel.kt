@@ -89,9 +89,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
@@ -200,6 +198,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { observeShippingAddresses() }
         launch { observeCustomsDataChanges() }
         launch { observeNotices() }
+        launch { observeShippingLabelAsyncPurchaseStatus() }
     }
 
     private suspend fun trackScreenShownEvent() {
@@ -270,16 +269,38 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 }
             }
 
-    private fun observeShippingLabelPurchaseStatus(shipmentId: Int) {
-        launch {
-            val shipment = shipments.value[shipmentId]
-            val labelId = shipment.label?.labelId ?: return@launch
-            observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { result ->
-                val originAddress = shippingAddresses.value.getOrNull(shipmentId)?.shipFrom?.toAddress()
+    private suspend fun observeShippingLabelAsyncPurchaseStatus() {
+        val shipmentWithIndex = uiState.map { it.selectedIndex }.distinctUntilChanged()
+            .flatMapLatest { index ->
+                shipments.map { it.getOrNull(index) }
+                    .filterNotNull()
+                    .map { Pair(it, index) }
+            }
+
+        shipmentWithIndex
+            .filter { (shipment, _) -> shipment.label?.status == ShippingLabelStatus.PURCHASE_IN_PROGRESS }
+            .flatMapLatest { (shipment, index) ->
+                observeShippingLabelStatus(
+                    orderId = navArgs.orderId,
+                    labelId = shipment.label!!.labelId
+                ).map {
+                    Triple(shipment, index, it)
+                }
+            }.collect { (shipment, index, result) ->
+                val originAddress = shippingAddresses.value.getOrNull(index)?.shipFrom?.toAddress()
 
                 // If result has a label model update the label with it. Otherwise, just update the status.
-                val newLabel = result.shippingLabelModel ?: shipment.label.copy(status = result.status)
-                updateShipment(shipmentId, shipment.copy(label = newLabel.copy(originAddress = originAddress)))
+                val newLabel = result.shippingLabelModel ?: shipment.label?.copy(status = result.status)
+                updateShipment(index, shipment.copy(label = newLabel?.copy(originAddress = originAddress)))
+
+                if (result.status == ShippingLabelStatus.PURCHASED) {
+                    analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
+                } else if (result.status == ShippingLabelStatus.PURCHASE_ERROR) {
+                    analyticsTracker.track(
+                        AnalyticsEvent.WCS_PURCHASE_STEP,
+                        mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to result.shippingLabelModel?.error)
+                    )
+                }
 
                 if (result.status == ShippingLabelStatus.PURCHASED && uiState.value.markOrderComplete) {
                     markOrderAsComplete(navArgs.orderId).fold(
@@ -301,8 +322,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         }
                     )
                 }
-            }.launchIn(this)
-        }
+            }
     }
 
     private suspend fun getDestinationAddress() {
@@ -935,7 +955,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { refreshShippingRates.emit(Unit) }
     }
 
-    @Suppress("ComplexCondition", "LongMethod")
+    @Suppress("ComplexCondition")
     fun onPurchaseShippingLabel() {
         val selectedShipmentIndex = selectedShipmentIndex
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
@@ -974,16 +994,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 hazmatSelection
             ).fold(
                 onSuccess = {
-                    updateShipment(
-                        selectedShipmentIndex,
-                        shipments.value[selectedShipmentIndex].copy(
-                            isPurchaseAPILoading = false,
-                            label = it.labels.firstOrNull()
-                        )
+                    val updatedShipment = shipments.value[selectedShipmentIndex].copy(
+                        isPurchaseAPILoading = false,
+                        label = it.labels.firstOrNull()
                     )
-                    observeShippingLabelPurchaseStatus(selectedShipmentIndex)
-                    // TODO check if we need to track this here or in the observeShippingLabelPurchaseStatus method
-                    analyticsTracker.track(AnalyticsEvent.WCS_PURCHASE_STEP, mapOf(KEY_STATE to "purchase_success"))
+                    updateShipment(selectedShipmentIndex, updatedShipment)
                 },
                 onFailure = { exception ->
                     updateShipment(
