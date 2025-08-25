@@ -106,7 +106,7 @@ class WooPosToolbarViewModel @Inject constructor(
             }
             R.string.woopos_barcode_scanning_title -> {
                 viewModelScope.launch {
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.BarcodeInfoMenuItemClicked)
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.SetupBarcodeScannerClicked)
                 }
             }
             R.string.woopos_product_limitations_title -> {
