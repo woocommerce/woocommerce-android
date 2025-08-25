@@ -53,17 +53,22 @@ echo "adb devices"
 adb devices
 echo ""
 
-echo "ps auxw | grep emulator"
-ps auxw | grep emulator
+echo "--- 🤖 Debug running processes"
+echo "~~~ ps -xw -o ppid,pid,command"
+ps -xw -o ppid,pid,command
 echo ""
-echo "pgrep -f emulator"
+
+echo "~~~ ps auxw -o ppid,pid,user,command | grep emulator"
+ps auxw -o ppid,pid,user,command | grep emulator
+echo ""
+echo "~~~ pgrep -f emulator"
 pgrep -f emulator || true
 echo ""
 
-echo "ps auxw | grep qemu"
-ps auxw | grep qemu
+echo "~~~ ps auxw -o ppid,pid,user,command | grep qemu"
+ps auxw -o ppid,pid,user,command | grep qemu
 echo ""
-echo "pgrep -f qemu"
+echo "~~~ pgrep -f qemu"
 pgrep -f qemu || true
 echo ""
 
