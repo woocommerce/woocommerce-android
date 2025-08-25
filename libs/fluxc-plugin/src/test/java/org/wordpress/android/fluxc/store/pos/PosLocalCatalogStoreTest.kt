@@ -22,7 +22,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.PosProductRestClient
 import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 
 @RunWith(MockitoJUnitRunner::class)
@@ -33,6 +35,9 @@ class PosLocalCatalogStoreTest {
 
     @Mock
     private lateinit var posProductsDao: PosProductsDao
+
+    @Mock
+    private lateinit var posVariationsDao: PosVariationsDao
 
     private lateinit var store: PosLocalCatalogStore
 
@@ -57,7 +62,8 @@ class PosLocalCatalogStoreTest {
         store = PosLocalCatalogStore(
             posProductRestClient = posProductRestClient,
             coroutineEngine = initCoroutineEngine(),
-            posProductDao = posProductsDao
+            posProductDao = posProductsDao,
+            posVariationsDao = posVariationsDao
         )
     }
 
@@ -303,6 +309,195 @@ class PosLocalCatalogStoreTest {
         assertThat(catalog2).hasSize(1)
         assertThat(catalog2.first().name).isEqualTo("Site2 Product")
     }
+
+    // Variation-specific tests
+    @Test
+    fun `when observing variations for product, then emits current variations`() = runTest {
+        // GIVEN
+        val variation1 = createTestVariation(variationId = 1L, name = "Small")
+        val variation2 = createTestVariation(variationId = 2L, name = "Large")
+        val variations = listOf(variation1, variation2)
+
+        whenever(posVariationsDao.observeVariationsForProduct(testSiteId, testRemoteId))
+            .thenReturn(flowOf(variations))
+
+        // WHEN
+        val result = store.observeVariationsForProduct(testSiteId, testRemoteId).first().getOrThrow()
+
+        // THEN
+        assertThat(result).hasSize(2)
+        assertThat(result).containsExactlyInAnyOrder(variation1, variation2)
+    }
+
+    @Test
+    fun `when getting existing variation, then returns variation details`() = runTest {
+        // GIVEN
+        val variationId = RemoteId(789L)
+        val expectedVariation = createTestVariation(variationId = variationId.value, name = "Blue Large")
+        whenever(posVariationsDao.getVariation(testSiteId, testRemoteId, variationId))
+            .thenReturn(expectedVariation)
+
+        // WHEN
+        val variation = store.getVariation(testSiteId, testRemoteId, variationId).getOrThrow()
+
+        // THEN
+        assertThat(variation).isNotNull()
+        assertThat(variation!!.variationName).isEqualTo("Blue Large")
+        assertThat(variation.remoteVariationId).isEqualTo(variationId)
+    }
+
+    @Test
+    fun `given no remote variations, when syncing, then completes without saving`() = runTest {
+        // GIVEN
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(emptyArray()))
+
+        // WHEN
+        val syncResult = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100).getOrThrow()
+
+        // THEN
+        verifyNoInteractions(posVariationsDao)
+        assertThat(syncResult.syncedCount).isEqualTo(0)
+        assertThat(syncResult.hasMore).isFalse()
+        assertThat(syncResult.nextPage).isEqualTo(1)
+    }
+
+    @Test
+    fun `given network error, when syncing variations, then returns failure`() = runTest {
+        // GIVEN
+        val networkError = WooError(
+            type = WooErrorType.API_ERROR,
+            original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR,
+            message = "Network error"
+        )
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(networkError))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        assertThat(error.errorMessage).contains("Network error")
+        verifyNoInteractions(posVariationsDao)
+    }
+
+    @Test
+    fun `given valid variation API response, when sync variations called, then variations saved to database`() = runTest {
+        // GIVEN
+        val variations = arrayOf(createTestVariationApiResponse())
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(variations))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        result.getOrNull()?.let { syncResult ->
+            assertThat(syncResult.syncedCount).isEqualTo(1)
+            assertThat(syncResult.hasMore).isFalse()
+            assertThat(syncResult.nextPage).isEqualTo(1)
+        }
+        verify(posVariationsDao).upsertVariations(any())
+    }
+
+    @Test
+    fun `given database error during variation sync, when sync called, then database error returned`() = runTest {
+        // GIVEN
+        val variations = arrayOf(createTestVariationApiResponse())
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(variations))
+        whenever(posVariationsDao.upsertVariations(any()))
+            .thenThrow(RuntimeException("Database error"))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(PosLocalCatalogError.DatabaseError::class.java)
+    }
+
+    @Test
+    fun `given full page of variations, when sync called, then pagination indicates more pages`() = runTest {
+        // GIVEN
+        val variations = Array(100) { createTestVariationApiResponse(id = it.toLong()) }
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(variations))
+
+        // WHEN
+        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        result.getOrNull()?.let { syncResult ->
+            assertThat(syncResult.syncedCount).isEqualTo(100)
+            assertThat(syncResult.hasMore).isTrue()
+            assertThat(syncResult.nextPage).isEqualTo(2)
+        }
+    }
+
+    @Test
+    fun `given variation not in database, when get variation called, then null returned`() = runTest {
+        // GIVEN
+        val variationId = RemoteId(999L)
+        whenever(posVariationsDao.getVariation(testSiteId, testRemoteId, variationId))
+            .thenReturn(null)
+
+        // WHEN
+        val variation = store.getVariation(testSiteId, testRemoteId, variationId).getOrThrow()
+
+        // THEN
+        assertThat(variation).isNull()
+    }
+
+    @Test
+    fun `given page size over limit for variations, when sync called, then max page size enforced`() = runTest {
+        // GIVEN
+        val variations = Array(100) { createTestVariationApiResponse() }
+        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+            .thenReturn(WooResult(variations))
+
+        // WHEN
+        store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 200)
+
+        // THEN
+        verify(posProductRestClient).fetchVariations(testSite, validDateString, 1, 100)
+    }
+
+    private fun createTestVariationApiResponse(
+        id: Long = 200L,
+        productId: Long = 100L
+    ) = org.wordpress.android.fluxc.model.pos.PosVariationApiResponse(
+        id = id,
+        productId = productId,
+        sku = "VAR-SKU-$id",
+        name = "Test Variation $id",
+        price = "25.00",
+        regularPrice = "30.00",
+        salePrice = "25.00",
+        stockQuantity = 10.0,
+        stockStatus = "instock",
+        manageStock = true,
+        status = "publish",
+        description = "Test variation description",
+        dateModified = "2024-01-01T00:00:00Z"
+    )
+
+    private fun createTestVariation(
+        variationId: Long,
+        name: String,
+        price: String = "19.99"
+    ) = WCPosVariationModel(
+        localSiteId = testSiteId,
+        remoteProductId = testRemoteId,
+        remoteVariationId = RemoteId(variationId),
+        variationName = name,
+        price = price,
+        sku = "VAR-$variationId"
+    )
 
     object ProductTestData {
         fun coffeMug(siteId: LocalId) = WCPosProductModel(
