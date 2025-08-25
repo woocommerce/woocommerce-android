@@ -73,16 +73,15 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.PrintShippingLabelSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelPurchaseStatusSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarVisuals
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -226,8 +225,7 @@ fun WooShippingLabelCreationScreen(
         )
 
         val selectedShipment = shipmentUIList[uiState.selectedIndex]
-        val selectedPurchaseState = selectedShipment.purchaseState
-        if (selectedPurchaseState is PurchaseState.InProgress) {
+        if (selectedShipment.isPurchaseAPILoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -289,7 +287,7 @@ private fun LabelCreationScreenWithBottomSheet(
 
     var bottomSheetPeekHeight by remember { mutableStateOf(0.dp) }
 
-    val screenTitle = if (shipmentUIList[uiState.selectedIndex].purchased) {
+    val screenTitle = if (shipmentUIList[uiState.selectedIndex].isPurchased) {
         R.string.shipping_label_print_screen_title
     } else {
         R.string.shipping_label_create_title
@@ -317,7 +315,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus,
                 noticeBannerUiState = uiState.noticeBannerUiState,
-                shipmentPurchased = selectedShipment.purchased,
+                readOnly = selectedShipment.isReadOnly,
                 onPeekHeightChanged = { bottomSheetPeekHeight = it },
             )
         },
@@ -367,7 +365,7 @@ private fun LabelCreationScreenWithBottomSheet(
                         Row(modifier = Modifier.fillMaxWidth()) {
                             ShipmentsTabRow(
                                 shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
-                                    ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
+                                    ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.isPurchased)
                                 },
                                 selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) {
                                     pagerState.currentPage
@@ -465,23 +463,19 @@ private fun CreateShippingCards(
     Column {
         val isExpanded = remember { mutableStateOf(false) }
 
-        if (shipmentUI.purchased && shipmentUI.shipmentPrintLabelUI != null) {
-            PrintShippingLabelSection(
-                status = shipmentUI.status,
-                isCustomsFormAvailable = shipmentUI.shipmentPrintLabelUI.isCustomsFormAvailable,
-                isRefundAvailable = shipmentUI.shipmentPrintLabelUI.isRefundAvailable,
-                availablePaperSizes = shipmentUI.shipmentPrintLabelUI.availablePrintSizes,
-                selectedLabelPaperSizeOption = uiState.paperSizeOption,
-                onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
-                onPrintShippingLabelClicked = onPrintShippingLabelClicked,
-                onTrackShipmentClicked = onTrackShipmentClicked,
-                onSchedulePickUpClicked = onSchedulePickUpClicked,
-                onRefundClicked = onRefundClicked,
-                onPrintCustomsClicked = onPrintCustomsClicked,
-                onLearnMoreClicked = onLearnMoreClicked,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
+        ShippingLabelPurchaseStatusSection(
+            labelPurchaseStatus = shipmentUI.labelPurchaseStatus,
+            selectedLabelPaperSizeOption = uiState.paperSizeOption,
+            onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
+            onPrintShippingLabelClicked = onPrintShippingLabelClicked,
+            onTrackShipmentClicked = onTrackShipmentClicked,
+            onSchedulePickUpClicked = onSchedulePickUpClicked,
+            onRefundClicked = onRefundClicked,
+            onPrintCustomsClicked = onPrintCustomsClicked,
+            onLearnMoreClicked = onLearnMoreClicked,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
         ShippingProductsCard(
             shippableItems = shipmentUI,
             modifier = Modifier
@@ -491,13 +485,13 @@ private fun CreateShippingCards(
             onExpand = { isExpanded.value = it }
         )
         HazmatCard(
-            onClick = if (shipmentUI.purchased) null else onHazmatNoticeClick,
+            onClick = if (shipmentUI.isReadOnly) null else onHazmatNoticeClick,
             selectedCategory = shipmentUI.hazmatState.hazmatSelection,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 4.dp, end = 8.dp)
         )
-        if (!shipmentUI.purchased) {
+        if (!shipmentUI.isReadOnly) {
             CustomsCard(
                 customsState = shipmentUI.customsState,
                 onEditCustomsClick = onEditCustomsClick,
@@ -838,13 +832,12 @@ private fun WooShippingLabelCreationScreenPreview() {
                     shippableItems = generateItems(6),
                     formattedTotalWeight = "8.5kg",
                     formattedTotalPrice = "$92.78",
-                    purchased = false,
                     packageSelectionState = NotSelected,
                     customsState = Unavailable,
                     hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
                     shippingRatesState = ShippingLabelSampleData.getShippingRatesSection(),
                     shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
-                    shipmentPrintLabelUI = ShippingLabelSampleData.getShipmentPrintLabelUI(),
+                    labelPurchaseStatus = LabelPurchaseStatus.Idle,
                 )
             ),
             shouldShowSplitShipmentButton = true,

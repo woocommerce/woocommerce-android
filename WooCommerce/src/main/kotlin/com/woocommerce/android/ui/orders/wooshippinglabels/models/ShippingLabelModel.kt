@@ -39,7 +39,8 @@ data class ShippingLabelModel(
     val refund: Refund?,
     val products: List<Order.Item> = emptyList(),
     val originAddress: Address? = null,
-    val destinationAddress: Address? = null
+    val destinationAddress: Address? = null,
+    val error: String? = null,
 ) : Parcelable {
     @IgnoredOnParcel
     val trackingLink: String

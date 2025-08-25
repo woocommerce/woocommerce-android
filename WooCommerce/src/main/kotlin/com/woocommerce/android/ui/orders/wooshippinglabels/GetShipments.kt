@@ -69,7 +69,7 @@ class GetShipments @Inject constructor(
         currentOrderLabels: List<ShippingLabelModel>
     ) = shipmentUIModelList.map { shipmentUIModel ->
         val shipmentLabels = currentOrderLabels.filter {
-            it.shipmentId == shipmentUIModel.remoteId
+            it.shipmentId == shipmentUIModel.remoteId && it.status != ShippingLabelStatus.PURCHASE_ERROR
         }.sortedByDescending { it.createdDate?.time }
 
         val purchasedLabel = shipmentLabels.find {

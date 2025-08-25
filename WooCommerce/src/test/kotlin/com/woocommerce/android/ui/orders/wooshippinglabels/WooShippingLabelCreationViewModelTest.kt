@@ -1499,7 +1499,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }.last() as DataState
 
         viewState.shipmentUIList.first().let {
-            assertThat(it.purchased).isTrue()
+            assertThat(it.isReadOnly).isTrue()
         }
     }
 
