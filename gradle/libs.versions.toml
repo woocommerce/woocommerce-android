@@ -53,7 +53,6 @@ commons-fileupload = '1.6.0'
 dependency-analysis = '2.8.0'
 detekt = '1.23.7'
 eventbus = "3.3.1"
-facebook-flipper = '0.176.1'
 facebook-shimmer = '0.5.0'
 facebook-soloader = '0.12.1'
 fastlane-screengrab = '2.1.1'
@@ -206,8 +205,6 @@ commons-fileupload = { group = "commons-fileupload", name = "commons-fileupload"
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 eventbus-android = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 eventbus-java = {group = "org.greenrobot", name = "eventbus-java", version.ref = "eventbus" }
-facebook-flipper-main = { group = "com.facebook.flipper", name = "flipper", version.ref = "facebook-flipper" }
-facebook-flipper-network-plugin = { group = "com.facebook.flipper", name = "flipper-network-plugin", version.ref = "facebook-flipper" }
 facebook-shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "facebook-shimmer" }
 facebook-soloader = { group = "com.facebook.soloader", name = "soloader", version.ref = "facebook-soloader" }
 fastlane-screengrab = { group = "tools.fastlane", name = "screengrab", version.ref = "fastlane-screengrab" }
