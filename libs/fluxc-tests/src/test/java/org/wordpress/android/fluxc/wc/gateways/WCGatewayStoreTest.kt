@@ -34,8 +34,6 @@ class WCGatewayStoreTest {
     private val errorSite = SiteModel().apply { id = 123 }
     private val mapper = GatewayMapper()
     private lateinit var store: WCGatewayStore
-
-    private val gatewayId = GATEWAYS_RESPONSE.first().gatewayId
     private val error = WooError(INVALID_ID, NOT_FOUND, "Invalid gateway ID")
 
     @Before
@@ -80,31 +78,6 @@ class WCGatewayStoreTest {
 
         val invalidRequestResult = store.getAllGateways(errorSite)
         assertThat(invalidRequestResult.size).isEqualTo(0)
-    }
-
-    @Test
-    fun `fetch specific gateway`() = test {
-        val gateway = fetchSpecificTestGateway()
-
-        assertThat(gateway.model).isEqualTo(mapper.map(GATEWAYS_RESPONSE.first()))
-
-        whenever(restClient.fetchGateway(errorSite, gatewayId)).thenReturn(WooPayload(error))
-    }
-
-    @Test
-    fun `get specific gateway`() = test {
-        fetchSpecificTestGateway()
-        val gateway = store.getGateway(site, gatewayId)
-
-        assertThat(gateway).isEqualTo(mapper.map(GATEWAYS_RESPONSE.first()))
-        val invalidRequestResult = store.getGateway(errorSite, gatewayId)
-        assertThat(invalidRequestResult).isNull()
-    }
-
-    private suspend fun fetchSpecificTestGateway(): WooResult<WCGatewayModel> {
-        val fetchGatewaysPayload = WooPayload(GATEWAYS_RESPONSE.first())
-        whenever(restClient.fetchGateway(site, gatewayId)).thenReturn(fetchGatewaysPayload)
-        return store.fetchGateway(site, gatewayId)
     }
 
     private suspend fun fetchAllTestGateways(): WooResult<List<WCGatewayModel>> {
