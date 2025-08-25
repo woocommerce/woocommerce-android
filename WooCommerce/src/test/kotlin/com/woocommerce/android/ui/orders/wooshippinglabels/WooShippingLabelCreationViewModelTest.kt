@@ -645,6 +645,47 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when multiple-quantity items, then shows correct default weight`() = testBlocking {
+        val items = listOf(
+            ShippableItemModel(
+                itemId = 1,
+                productId = 1,
+                title = "title",
+                price = BigDecimal.ONE,
+                quantity = 2f,
+                weight = 1.5f,
+                currency = "USD",
+                width = 1f,
+                height = 1f,
+                length = 1f
+            )
+        )
+        whenever(getShipments(any())) doReturn listOf(ShipmentUIModel(localId = "0", items = items))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        // Select a package with weight 0.5
+        val pkg = PackageData(
+            id = "1",
+            name = "name",
+            dimensions = "1 x 1 x 1",
+            weight = "0.5",
+            isSelected = true,
+            isLetter = true
+        )
+        sut.onPackageSelected(pkg)
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        val dataState = currentViewState as DataState
+        val selection = dataState.shipmentUIList[0].packageSelectionState
+        val data = selection as PackageSelectionState.DataAvailable
+        assertThat(data.defaultWeight).isEqualTo("3.5")
+    }
+
+    @Test
     fun `CustomState is NotRequired when shouldRequireCustomsForm returns false`() = testBlocking {
         var currentViewState: WooShippingViewState? = null
 
