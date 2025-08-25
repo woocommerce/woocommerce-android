@@ -59,7 +59,7 @@ class JetpackMigrationRestClientTest {
         val expected = MigrationCompleteFetchedPayload.Success
         val expectedJson = mock<JsonElement>()
 
-        val expectedRestCallResponse = Success(expectedJson)
+        val expectedRestCallResponse = Success(expectedJson, emptyMap())
         verifyRestApi(errorHandler, expectedRestCallResponse, expected)
     }
 

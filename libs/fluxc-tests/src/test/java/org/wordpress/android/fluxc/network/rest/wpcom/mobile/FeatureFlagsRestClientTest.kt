@@ -199,7 +199,7 @@ class FeatureFlagsRestClientTest {
         val response = if (error != null) {
             Response.Error(error)
         } else {
-            Response.Success(nonNullData)
+            Response.Success(nonNullData, emptyMap())
         }
 
         whenever(

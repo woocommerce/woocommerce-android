@@ -624,7 +624,7 @@ class SiteRestClientTest {
         if (error == null && data == null) {
             error("Either data or error must be provided")
         }
-        val response = if (error != null) Response.Error(error) else Success<T>(data!!)
+        val response = if (error != null) Response.Error(error) else Success<T>(data!!, emptyMap())
         whenever(
                 wpComGsonRequestBuilder.syncGetRequest(
                         eq(restClient),
@@ -646,7 +646,7 @@ class SiteRestClientTest {
         data: T,
         error: WPComGsonNetworkError? = null
     ): Response<T> {
-        val response = if (error != null) Response.Error(error) else Success(data)
+        val response = if (error != null) Response.Error(error) else Success(data, emptyMap())
         whenever(
                 wpComGsonRequestBuilder.syncPostRequest(
                         eq(restClient),

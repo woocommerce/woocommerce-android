@@ -119,7 +119,7 @@ class SiteHomepageRestClientTest {
 
         val responseModel = restClient.updateHomepage(site, homepageSettings)
 
-        assertThat(responseModel).isEqualTo(Success(response))
+        assertThat(responseModel).isEqualTo(Success(response, emptyMap()))
         assertThat(urlCaptor.lastValue)
                 .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/12/homepage/")
         return assertThat(paramsCaptor.lastValue).isEqualTo(expectedParams)
@@ -157,7 +157,7 @@ class SiteHomepageRestClientTest {
         data: T,
         error: WPComGsonNetworkError? = null
     ): Response<T> {
-        val response = if (error != null) Response.Error<T>(error) else Success(data)
+        val response = if (error != null) Response.Error<T>(error) else Success(data, emptyMap())
         whenever(
                 wpComGsonRequestBuilder.syncPostRequest(
                         eq(restClient),

@@ -268,7 +268,7 @@ class QRCodeAuthRestClientTest {
         error: WPComGsonNetworkError? = null
     ): Response<QRCodeAuthValidateResponse> {
         val nonNullData = data ?: mock()
-        val response = if (error != null) Response.Error(error) else Response.Success(nonNullData)
+        val response = if (error != null) Response.Error(error) else Response.Success(nonNullData, emptyMap())
 
         whenever(
             wpComGsonRequestBuilder.syncPostRequest(
@@ -290,7 +290,7 @@ class QRCodeAuthRestClientTest {
         error: WPComGsonNetworkError? = null
     ): Response<QRCodeAuthAuthenticateResponse> {
         val nonNullData = data ?: mock()
-        val response = if (error != null) Response.Error(error) else Response.Success(nonNullData)
+        val response = if (error != null) Response.Error(error) else Response.Success(nonNullData, emptyMap())
 
         whenever(
             wpComGsonRequestBuilder.syncPostRequest(

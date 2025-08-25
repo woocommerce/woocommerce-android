@@ -6,7 +6,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
-import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequest
 import org.wordpress.android.util.UrlUtils
 import kotlin.test.assertEquals
@@ -27,8 +26,8 @@ class JetpackTunnelGsonRequestTest {
 
         val request = JetpackTunnelGsonRequest.buildGetRequest(url, DUMMY_SITE_ID, params,
                 Any::class.java,
-                { _: Any? -> },
-                WPComErrorListener { _ -> },
+                { _: Any?, _: Any? -> },
+            { _ -> },
                 {}
         )
 
@@ -54,8 +53,8 @@ class JetpackTunnelGsonRequestTest {
 
         val request = JetpackTunnelGsonRequest.buildPostRequest(url, DUMMY_SITE_ID, requestBody,
                 Any::class.java,
-                { _: Any? -> },
-                WPComErrorListener { _ -> }
+                { _: Any?, _: Any? -> },
+            { _ -> }
         )
 
         // Verify that the request was built and wrapped as expected
@@ -78,8 +77,8 @@ class JetpackTunnelGsonRequestTest {
 
         val request = JetpackTunnelGsonRequest.buildPutRequest(url, DUMMY_SITE_ID, requestBody,
                 Any::class.java,
-                { _: Any? -> },
-                WPComErrorListener { _ -> }
+                { _: Any?, _: Any? -> },
+            { _ -> }
         )
 
         // Verify that the request was built and wrapped as expected
@@ -102,8 +101,8 @@ class JetpackTunnelGsonRequestTest {
 
         val request = JetpackTunnelGsonRequest.buildPatchRequest(url, DUMMY_SITE_ID, requestBody,
                 Any::class.java,
-                { _: Any? -> },
-                WPComErrorListener { _ -> }
+                { _: Any?, _: Any? -> },
+            { _ -> }
         )
 
         // Verify that the request was built and wrapped as expected
@@ -125,8 +124,8 @@ class JetpackTunnelGsonRequestTest {
 
         val request = JetpackTunnelGsonRequest.buildDeleteRequest(url, DUMMY_SITE_ID, params,
                 Any::class.java,
-                { _: Any? -> },
-                WPComErrorListener { _ -> }
+                { _: Any?, _: Any? -> },
+            { _ -> }
         )
 
         // Verify that the request was built and wrapped as expected

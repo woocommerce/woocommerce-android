@@ -38,7 +38,7 @@ class WooExperimentalNetworkTest {
         testSite.origin = SiteModel.ORIGIN_WPCOM_REST
         testSite.applicationPasswordsAuthorizeUrl = "authorize_url"
         val sampleResponse = SampleResponse("value")
-        givenAppPasswordsResponse(WPAPIResponse.Success(SampleResponse("value")))
+        givenAppPasswordsResponse(WPAPIResponse.Success(SampleResponse("value"), emptyMap()))
 
         val response = sut.executeGetGsonRequest(
             site = testSite,
@@ -61,7 +61,7 @@ class WooExperimentalNetworkTest {
             testSite.applicationPasswordsAuthorizeUrl = "authorize_url"
             givenAppPasswordsResponse(WPAPIResponse.Error(WPAPINetworkError(mock(), "error")))
             val sampleResponse = SampleResponse("value")
-            givenJetpackTunnelResponse(WPAPIResponse.Success(sampleResponse))
+            givenJetpackTunnelResponse(WPAPIResponse.Success(sampleResponse, emptyMap()))
 
             val response = sut.executeGetGsonRequest(
                 site = testSite,
@@ -78,7 +78,7 @@ class WooExperimentalNetworkTest {
             testSite.origin = SiteModel.ORIGIN_WPCOM_REST
             testSite.applicationPasswordsAuthorizeUrl = null
             val sampleResponse = SampleResponse("value")
-            givenJetpackTunnelResponse(WPAPIResponse.Success(sampleResponse))
+            givenJetpackTunnelResponse(WPAPIResponse.Success(sampleResponse, emptyMap()))
 
             val response = sut.executeGetGsonRequest(
                 site = testSite,
@@ -103,7 +103,7 @@ class WooExperimentalNetworkTest {
                 )
             )
             givenJetpackTunnelResponse(
-                WPAPIResponse.Success(SampleResponse("value"))
+                WPAPIResponse.Success(SampleResponse("value"), emptyMap())
             )
 
             sut.executeGetGsonRequest(
