@@ -515,7 +515,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) { shipmentItems, selectedPackage, customWeightString ->
             if (selectedPackage.size == shipments.value.size && customWeightString.size == shipments.value.size) {
                 shipmentItems.mapIndexed { index, shipmentItemModelList ->
-                    val itemsWeight = shipmentItemModelList.sumByFloat { it.weight }
+                    val itemsWeight = shipmentItemModelList.sumByFloat { it.weight * it.quantity }
                     val packageWeight = selectedPackage[index]?.weight?.toFloatOrNull()
                     PackageWeight(
                         itemsWeight = itemsWeight,
