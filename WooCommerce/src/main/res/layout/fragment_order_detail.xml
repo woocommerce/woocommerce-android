@@ -121,7 +121,14 @@
                         android:visibility="gone"
                         tools:visibility="visible" />
 
-                    <!-- Shipping Labels List -->
+                    <!-- Woo Shipping Shipment List -->
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/orderDetail_wooShippingShipmentList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                    <!-- Legacy Woo Tax Shipping Labels List -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
                         android:id="@+id/orderDetail_shippingLabelList"
                         android:layout_width="match_parent"

@@ -160,6 +160,9 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `onAddPackageClick triggers createCustomPackage when saveAsTemplate is true`() = testBlocking {
+        sut.onLengthChange("1")
+        sut.onWidthChange("1")
+        sut.onHeightChange("1")
         sut.onAddCustomPackageClick(savePackageAsTemplate = true)
 
         verify(packageRepository, times(1)).createCustomPackage(any(), any())
@@ -185,6 +188,9 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 )
             )
 
+            sut.onLengthChange("1")
+            sut.onWidthChange("1")
+            sut.onHeightChange("1")
             sut.onAddCustomPackageClick(savePackageAsTemplate = true)
 
             verify(tracker).track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "saving_success"))
@@ -196,6 +202,9 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR)
             whenever(packageRepository.createCustomPackage(any(), any())).thenReturn(WooResult(error))
 
+            sut.onLengthChange("1")
+            sut.onWidthChange("1")
+            sut.onHeightChange("1")
             sut.onAddCustomPackageClick(savePackageAsTemplate = true)
 
             verify(tracker).track(
@@ -730,5 +739,18 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         // Verify the carrier package is unstarred
         val carrierPackage = lastViewState?.packagesData?.carrierPackages?.get(USPS)?.first()?.packages?.first()
         assertThat(carrierPackage?.isStarred).isFalse
+    }
+
+    @Test
+    fun `when dimensions are invalid and add custom package clicked, then show error`() = testBlocking {
+        var lastViewState: ViewState? = null
+        sut.viewState.observeForever { lastViewState = it }
+
+        sut.onLengthChange("0")
+        sut.onWidthChange("0")
+        sut.onHeightChange("0")
+        sut.onAddCustomPackageClick(savePackageAsTemplate = false)
+
+        assertThat(lastViewState?.customPackageCreationData?.invalidDimensionError).isTrue
     }
 }

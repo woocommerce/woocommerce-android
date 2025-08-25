@@ -24,7 +24,7 @@ class UnitTestNamingRule(config: Config) : Rule(config) {
     override fun visitNamedFunction(function: KtNamedFunction) {
         super.visitNamedFunction(function)
 
-        if (!isTestFunction(function)) return
+        if (!isTestFunction(function) || isAndroidTest(function)) return
 
         val functionName = function.name ?: return
 
@@ -48,5 +48,18 @@ class UnitTestNamingRule(config: Config) : Rule(config) {
             val annotationName = annotation.shortName?.asString()
             annotationName == "Test"
         }
+    }
+
+    private fun isAndroidTest(function: KtNamedFunction): Boolean {
+        val filePath = function.containingKtFile.virtualFilePath
+        val pathSegments = filePath.split("/")
+        val srcIndex = pathSegments.indexOf("src")
+
+        if (srcIndex != -1 && srcIndex < pathSegments.size - 1) {
+            val sourceSet = pathSegments[srcIndex + 1]
+            return sourceSet == "androidTest" || sourceSet.endsWith("AndroidTest")
+        }
+
+        return false
     }
 }

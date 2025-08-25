@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-30 14:54:04+0000
+Translation-Revision-Date: 2025-08-12 09:54:12+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">还是不行吗？ 请联系设备制造商的客户支持人员。</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">进入设备设置，搜索“键盘”，然后启用“连接物理键盘时显示屏幕键盘”。 此项设置可能位于键盘应用程序设置中。</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">在屏幕上查找键盘图标或工具栏。</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">轻点此处以测试键盘可见性</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">如果键盘不可见，请尝试以下选项：</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android 系统会将条形码扫描仪视为物理键盘，从而可能隐藏屏幕键盘。 让我们来检查一下：</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">显示屏幕键盘</string>
+    <string name="woopos_scanning_setup_success_message">您可以开始扫描产品了。 下次需要连接扫描仪时，您只需将其打开，它就会自动重新连接。</string>
+    <string name="woopos_barcode_scanning_title">条形码扫描仪初始设置</string>
+    <string name="woopos_cart_clear_all_button_content_description">“清除购物车中的商品”图标</string>
+    <string name="product_selector_subscription_not_supported">不支持为订阅产品创建订单</string>
+    <string name="save_copy">保存副本</string>
+    <string name="changes_not_saved_message">您的更改未保存</string>
+    <string name="discard_changes_question">放弃更改？</string>
+    <string name="save_processed_image_success">图片保存成功</string>
+    <string name="save_processed_image_error">图片保存失败</string>
+    <string name="remove_background_no_subject_detected">未检测到明确主体。 请尝试使用其他图片。</string>
+    <string name="remove_background_image_load_error">图片加载失败</string>
+    <string name="remove_background_title">图片场景清理器 ✨</string>
+    <string name="remove_background">使用 AI 移除背景</string>
     <string name="woo_shipping_labels_order_completion_error">无法将订单标记为完成</string>
     <string name="woo_shipping_address_use_as_entered">使用输入的地址</string>
     <string name="woo_shipping_labels_customs_product_details_weight_invalid">重量必须大于零</string>
@@ -36,7 +56,6 @@ Language: zh_CN
     <string name="woopos_scanning_setup_info_bullet_1">请参考系统蓝牙设置中的蓝牙条形码扫描仪。</string>
     <string name="woopos_scanning_setup_info_title">扫描仪设置</string>
     <string name="woopos_scanning_setup_more_information">如何在产品上设置条形码</string>
-    <string name="woopos_scanning_setup_success_message">您可以开始扫描产品了。\n详细了解条形码和二维码扫描仪支持。</string>
     <string name="woopos_scanning_setup_success_title">扫描仪设置完毕！</string>
     <string name="woopos_scanning_setup_go_to_settings">转到您的设备设置</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">在操作系统设置中启用蓝牙并选择您的 %s 扫描仪。\n配对成功后，扫描仪将发出蜂鸣音，同时 LED 指示灯变为常亮状态。</string>
@@ -58,7 +77,6 @@ Language: zh_CN
     <string name="woopos_eligibility_reason_check_connection">请检查您的互联网连接并尝试重新启动应用程序。如果问题仍然存在，请联系支持人员。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">您的 WooCommerce 版本不受支持。 POS 系统需要 WooCommerce %1$s 或更高版本。 请将 WooCommerce 更新到最新版本。</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">请确保您的 WordPress 管理员已安装并激活 WooCommerce 插件。 如果问题仍然存在，请联系支持人员寻求帮助。</string>
-    <string name="woopos_barcode_scanning_title">设置条形码扫描仪</string>
     <string name="orderfilters_sales_channel_filter_point_of_sale">销售点</string>
     <string name="orderfilters_sales_channel_filter">销售渠道</string>
     <string name="barcode_ean13_content_description">条形码 EAN13</string>
@@ -231,6 +249,7 @@ Language: zh_CN
     <string name="woo_shipping_address_save_changes">保存更改</string>
     <string name="woo_shipping_updating_address_failed">我们无法更新您的地址。 请重试。</string>
     <string name="woo_shipping_verifying_address_failed">地址验证失败。 请重试。</string>
+    <string name="woo_shipping_address_unsaved_changes">未保存的更改</string>
     <string name="woo_shipping_address_missing">缺少地址</string>
     <string name="woo_shipping_edit_destination_address_title">编辑目的地</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_selection">选择国家/地区</string>
@@ -632,7 +651,7 @@ Language: zh_CN
     <string name="woopos_cart_back_content_description">购物车图标</string>
     <string name="woopos_products_screen_title">产品</string>
     <string name="woopos_items_in_cart">%d 件商品</string>
-    <string name="woopos_clear_cart_button">清除</string>
+    <string name="woopos_clear_cart_button">清空购物车</string>
     <string name="more_menu_button_google_description">通过 Google Ads 推动销售并增加流量</string>
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="no_quantity_rules">无数量规则</string>

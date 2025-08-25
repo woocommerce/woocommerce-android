@@ -7,10 +7,10 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditableAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.InputValue
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragmentArgs
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressViewModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressViewModelTest
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.toAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
@@ -74,7 +74,8 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -152,7 +153,8 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -187,7 +189,8 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         val normalizeAddressResponse = AddressNormalizationModel(
             address = enteredAddress,
             normalizedAddress = suggestedAddress,
-            isTrivial = false
+            isTrivial = false,
+            errors = null
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
@@ -232,7 +235,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.phone.error).isNull()
     }
@@ -252,7 +255,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.phone.error).isNotNull()
     }
@@ -271,7 +274,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
 
         val result = sut.viewState.value
 
-        assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
+        assertThat(result).isInstanceOf(EditAddressViewState::class.java)
 
         assertThat(result.editableAddress.email.error).isNotNull()
     }

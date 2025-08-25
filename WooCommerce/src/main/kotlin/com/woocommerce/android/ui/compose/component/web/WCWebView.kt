@@ -74,6 +74,7 @@ fun WCWebView(
                         onPageFinished(it.url)
                         canGoBack = webView?.canGoBack() == true
                     }
+
                     is WCWebViewEvent.UrlFailed -> onUrlFailed(it.url, it.errorCode)
                 }
             }
@@ -137,7 +138,7 @@ fun WCWebView(
                         onProgressChanged = { newProgress -> progress = newProgress }
                     }
 
-                    this.settings.userAgentString = userAgent.userAgent
+                    this.settings.userAgentString = userAgent.webViewUserAgent
                 }.also { webView = it }
             },
             modifier = Modifier

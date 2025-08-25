@@ -28,33 +28,15 @@ import com.woocommerce.android.ui.woopos.home.WooPosProductInfoDialog
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
-import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
-import kotlinx.coroutines.delay
 
 @Composable
-fun WooPosSettingsScreen(
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    initial: Pair<WooPosSettingsCategory, WooPosSettingsDetailDestination>? = null,
-) {
+fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val containerViewModel: WooPosSettingsViewModel = hiltViewModel()
     val state by containerViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         containerViewModel.onSettingsOpened()
-    }
-
-    LaunchedEffect(initial) {
-        if (initial?.first != null) {
-            delay(400)
-            containerViewModel.onCategorySelected(initial.first)
-            val navigationPath = buildNavigationPath(initial.second)
-
-            for (destination in navigationPath) {
-                delay(300)
-                containerViewModel.navigateToDetail(destination)
-            }
-        }
     }
 
     BackHandler {
@@ -123,20 +105,6 @@ private fun SettingsCategoriesToolbar(
                 vertical = WooPosSpacing.Medium.value
             )
     )
-}
-
-private fun buildNavigationPath(
-    targetDestination: WooPosSettingsDetailDestination
-): List<WooPosSettingsDetailDestination> {
-    val path = mutableListOf<WooPosSettingsDetailDestination>()
-    var current: WooPosSettingsDetailDestination? = targetDestination
-
-    while (current != null) {
-        path.add(0, current)
-        current = current.parentDestination
-    }
-
-    return path
 }
 
 @WooPosPreview

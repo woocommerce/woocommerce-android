@@ -29,8 +29,7 @@ class OrderDetailShippingLabelsAdapter(
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productImageMap: ProductImageMap,
     private val listener: OnShippingLabelClickListener,
-    private val productClickListener: OrderProductActionListener,
-    private val isRevampWooShippingEnabled: Boolean
+    private val productClickListener: OrderProductActionListener
 ) : RecyclerView.Adapter<ShippingLabelsViewHolder>() {
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -66,7 +65,6 @@ class OrderDetailShippingLabelsAdapter(
             viewPool,
             productImageMap,
             formatCurrencyForDisplay,
-            isRevampWooShippingEnabled,
             listener,
             productClickListener
         )
@@ -84,7 +82,6 @@ class OrderDetailShippingLabelsAdapter(
         private val viewPool: RecyclerView.RecycledViewPool,
         private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (BigDecimal) -> String,
-        private val isRevampWooShippingEnabled: Boolean,
         private val listener: OnShippingLabelClickListener,
         private val productClickListener: OrderProductActionListener
     ) : RecyclerView.ViewHolder(viewBinding.root) {
@@ -109,14 +106,9 @@ class OrderDetailShippingLabelsAdapter(
 
             // Shipping label header
             with(viewBinding.shippingLabelListLblPackage) {
-                val packageNumber = if (isRevampWooShippingEnabled) {
-                    (shippingLabel.shipmentId?.toIntOrNull() ?: -1) + 1
-                } else {
-                    bindingAdapterPosition + 1
-                }
                 text = context.getString(
                     R.string.orderdetail_shipping_label_item_header,
-                    packageNumber
+                    bindingAdapterPosition + 1
                 )
             }
 
@@ -249,44 +241,21 @@ class OrderDetailShippingLabelsAdapter(
                 }
             }
 
-            if (isRevampWooShippingEnabled) {
-                // Legacy flow buttons
-                viewBinding.shippingLabelItemViewMore.isVisible = false
-                viewBinding.shippingLabelItemViewMoreButtonTitle.isVisible = false
-
-                if (isNotRefunded) {
-                    // New flow buttons
-                    viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.isVisible = true
-                    viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.setOnClickListener {
-                        listener.onViewShippingLabelClicked(shippingLabel)
+            // click on view more details section
+            viewBinding.shippingLabelItemViewMore.setOnClickListener {
+                val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
+                if (isChecked) {
+                    viewBinding.shippingLabelItemMorePanel.expand()
+                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(180F).setDuration(200)
+                        .start()
+                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                        text = context.getString(R.string.orderdetail_shipping_label_item_hide_shipping)
                     }
                 } else {
-                    viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.isVisible = false
-                }
-            } else {
-                // New flow buttons
-                viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.isVisible = false
-
-                // Legacy flow buttons
-                viewBinding.shippingLabelItemViewMore.isVisible = true
-                viewBinding.shippingLabelItemViewMoreButtonTitle.isVisible = true
-
-                // click on view more details section
-                viewBinding.shippingLabelItemViewMore.setOnClickListener {
-                    val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
-                    if (isChecked) {
-                        viewBinding.shippingLabelItemMorePanel.expand()
-                        viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(180F).setDuration(200)
-                            .start()
-                        with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
-                            text = context.getString(R.string.orderdetail_shipping_label_item_hide_shipping)
-                        }
-                    } else {
-                        viewBinding.shippingLabelItemMorePanel.collapse()
-                        viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
-                        with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
-                            text = context.getString(R.string.orderdetail_shipping_label_item_show_shipping)
-                        }
+                    viewBinding.shippingLabelItemMorePanel.collapse()
+                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                        text = context.getString(R.string.orderdetail_shipping_label_item_show_shipping)
                     }
                 }
             }

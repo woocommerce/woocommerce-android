@@ -92,7 +92,8 @@ data class CustomPackageCreationData(
     val height: String,
     val saveAsTemplate: Boolean,
     val weight: String? = null,
-    val name: String? = null
+    val name: String? = null,
+    val invalidDimensionError: Boolean = false
 ) : Parcelable {
     val isValid: Boolean
         get() = height.isNotEmpty() && length.isNotEmpty() && width.isNotEmpty() && isTemplateConfigured
@@ -107,6 +108,11 @@ data class CustomPackageCreationData(
             return name.isNotNullOrEmpty() && weight.isNotNullOrEmpty()
         }
 
+    val invalidDimensions: Boolean
+        get() = (length.toDoubleOrNull() ?: 0.0) <= 0.0 ||
+            (width.toDoubleOrNull() ?: 0.0) <= 0.0 ||
+            (height.toDoubleOrNull() ?: 0.0) <= 0.0
+
     fun toPackageData(dimensionUnit: String) = PackageData(
         id = "custom_package",
         name = name.orEmpty(),
@@ -117,6 +123,8 @@ data class CustomPackageCreationData(
         dimensionUnit = dimensionUnit,
         isUserDefined = saveAsTemplate
     )
+
+    fun copyWithUpdatedError() = copy(invalidDimensionError = invalidDimensions)
 
     companion object {
         val EMPTY = CustomPackageCreationData(

@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-30 14:54:04+0000
+Translation-Revision-Date: 2025-08-14 14:54:09+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">Не получилось? Обратитесь в службу поддержки производителя устройства.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">Найдите значок клавиатуры или панель инструментов на экране.</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">Нажмите здесь, чтобы проверить отображение клавиатуры</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">Если клавиатура не видна, попробуйте выполнить следующие действия.</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android воспринимает сканер штрихкодов как физическую клавиатуру, которая может заслонять экранную клавиатуру. Давайте проверим.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Перейдите в настройки устройства, выполните поиск по запросу keyboard (клавиатура) и включите параметр Show on-screen keyboard when physical keyboard connected (Отображать экранную клавиатуру при подключении физической клавиатуры). Этот параметр может находиться в настройках вашего приложения для клавиатуры.</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">Отображать экранную клавиатуру</string>
+    <string name="woopos_barcode_scanning_title">Начальная настройка сканера штрихкодов</string>
+    <string name="woopos_scanning_setup_success_message">Вы можете начинать сканировать товары. В следующий раз, когда вам потребуется сканер, просто включите его и он подключится автоматически.</string>
+    <string name="woopos_cart_clear_all_button_content_description">Значок «Очистить корзину»</string>
+    <string name="product_selector_subscription_not_supported">Товары по подписке не поддерживаются при создании заказа</string>
+    <string name="save_copy">Сохранить копию</string>
+    <string name="changes_not_saved_message">Изменения не сохранены</string>
+    <string name="discard_changes_question">Отменить изменения?</string>
+    <string name="save_processed_image_success">Изображение сохранено</string>
+    <string name="save_processed_image_error">Ошибка сохранения изображения</string>
+    <string name="remove_background_image_load_error">Ошибка при загрузке изображения</string>
+    <string name="remove_background">Убрать фон при помощи ИИ</string>
+    <string name="remove_background_no_subject_detected">Элементов для очистки не обнаружено. Попробуйте другое изображение.</string>
+    <string name="remove_background_title">Средство удаления фоновых изображений ✨</string>
     <string name="woo_shipping_labels_order_completion_error">Не удалось отметить заказ как выполненный</string>
     <string name="woo_shipping_address_use_as_entered">Использовать введённый адрес</string>
     <string name="woo_shipping_labels_customs_product_details_weight_invalid">Вес должен быть больше нуля</string>
@@ -36,7 +56,6 @@ Language: ru
     <string name="woopos_scanning_setup_info_bullet_1">Подключите сканер штрихкодов в системных настройках Bluetooth.</string>
     <string name="woopos_scanning_setup_info_title">Настройка сканера</string>
     <string name="woopos_scanning_setup_more_information">Настройка штрихкодов товаров</string>
-    <string name="woopos_scanning_setup_success_message">Вы готовы начать сканировать товары.\nПодробнее о поддержке сканера штрихкодов и QR-кодов.</string>
     <string name="woopos_scanning_setup_success_title">Сканер настроен!</string>
     <string name="woopos_scanning_setup_go_to_settings">Открыть настройки устройства</string>
     <string name="woopos_scanning_setup_pair_your_scanner_title">Подключение сканера</string>
@@ -57,7 +76,6 @@ Language: ru
     <string name="woopos_eligibility_reason_check_connection">Проверьте подключение к Интернету и попробуйте перезапустить приложение. Если решить проблему не удалось, обратитесь в службу поддержки.</string>
     <string name="woopos_eligibility_reason_feature_switch_disabled">Чтобы продолжить, необходимо активировать режим Point of Sale (Пункт продажи). Включите режим POS в консоли администратора WordPress в разделе «Настройки WooCommerce &gt; Расширенные &gt; Функции».</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Ваша версия WooCommerce не поддерживается. Для работы системы POS требуется WooCommerce версии %1$s или более поздней. Обновите WooCommerce до последней версии.</string>
-    <string name="woopos_barcode_scanning_title">Настройка сканера штрихкодов</string>
     <string name="orderfilters_sales_channel_filter_point_of_sale">Пункт продажи</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Необходимо установить плагин WooCommerce и активировать его через учётную запись администратора WordPress. Если решить проблему не удалось, обратитесь в службу поддержки.</string>
     <string name="orderfilters_sales_channel_filter">Канал продаж</string>
@@ -635,8 +653,8 @@ Language: ru
     <string name="more_menu_button_google">Google для WooCommerce</string>
     <string name="no_quantity_rules">Нет правил количества</string>
     <string name="woopos_items_in_cart">Товары (%d)</string>
-    <string name="woopos_clear_cart_button">Очистить</string>
     <string name="woopos_payment_tax_label">Налоги</string>
+    <string name="woopos_clear_cart_button">Очистить корзину</string>
     <string name="blaze_campaign_preview_audience_section_title">Аудитория</string>
     <string name="woopos_exit_confirmation_dismiss_button">Отмена</string>
     <string name="woopos_exit_confirmation_title">Закрыть POS</string>

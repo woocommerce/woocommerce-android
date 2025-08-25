@@ -391,7 +391,7 @@ class WooPosToolbarViewModelTest {
         viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
 
         // THEN
-        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToSettings.Root)
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
     }
 

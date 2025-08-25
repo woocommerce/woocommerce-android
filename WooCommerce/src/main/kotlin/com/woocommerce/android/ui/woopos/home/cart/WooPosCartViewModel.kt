@@ -139,7 +139,7 @@ class WooPosCartViewModel @Inject constructor(
                 viewModelScope.launch {
                     analyticsTracker.track(EmptyCartSetUpScannerTapped)
                 }
-                sendEventToParent(ChildToParentEvent.NavigationEvent.ToSettings.BarcodeScanners)
+                sendEventToParent(ChildToParentEvent.SetupBarcodeScannerClicked)
             }
         }
     }

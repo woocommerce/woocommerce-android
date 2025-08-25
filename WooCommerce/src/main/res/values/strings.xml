@@ -1021,6 +1021,11 @@
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
+    <string name="orderdetail_shipping_label_shipment_header">Shipment %1$s</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">%1$d item</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">%1$d items</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">Tracking number</string>
+    <string name="orderdetail_shipping_label_refunded">You have successfully submitted a request for refund. You can purchase a new label.</string>
     <string name="orderdetail_custom_fields">Custom fields</string>
     <string name="orderdetail_ai_create_thank_you_note_button">✨Create thank-you note</string>
     <string name="receipt_preview_toolbar_title">Receipt Preview</string>
@@ -1467,6 +1472,7 @@
     <string name="order_refunds_method">%1$s via %2$s</string>
     <string name="order_refunds_refund_details">Refund details</string>
     <string name="order_refunds_manual_refund">Manual refund</string>
+    <string name="order_refunds_credit_card_refund">Credit card</string>
     <string name="order_refunds_quote_image_description">Quotation icon</string>
     <string name="order_refunds_amount_refund_progress_message">Your refund for %s is being processed. Please wait…</string>
     <string name="order_refunds_amount_refund_confirmation_message">Waiting for refund confirmation…</string>
@@ -2614,6 +2620,7 @@
     <string name="never_update_reader">Never</string>
     <string name="low_battery_error_update_reader" translatable="false">Low Battery Error</string>
     <string name="low_battery_succeed_connect_update_reader" translatable="false">Low Battery Succeed Connect</string>
+    <string name="optional_update_available_reader" translatable="false">Optional Update Available</string>
     <string name="randomly_update_reader">Randomly</string>
     <string name="enable_interac_payment" translatable="false">Enable Interac Payment</string>
 
@@ -4644,6 +4651,7 @@
     <string name="woo_shipping_labels_package_creation_height">Height</string>
     <string name="woo_shipping_labels_package_creation_weight">Weight</string>
     <string name="woo_shipping_labels_package_creation_package_name">Package Name</string>
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">Package dimensions should all be larger than 0.</string>
     <string name="woo_shipping_labels_package_creation_save_package_option">Save this as a new package template</string>
     <string name="woo_shipping_labels_package_creation_add_package">Add Package</string>
     <string name="woo_shipping_labels_package_creation_empty_button">Create a custom package</string>
@@ -4653,6 +4661,8 @@
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We are unable to load shipping rates.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">We couldn\'t find a shipping service for the combination of the selected package and the total shipment weight. Please adjust your input and try again.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">We couldn\'t find a shipping service for the combination of the selected HAZMAT category, the selected package and the total shipment weight. Please adjust your input and try again.</string>
     <string name="woo_shipping_labels_package_creation_starred">Star this item</string>
     <string name="woo_shipping_labels_package_creation_unstarred">Unstar this item</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">Add a destination address to get shipping rates</string>

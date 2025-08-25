@@ -8,10 +8,17 @@ data class ShipmentUIModel(
     val localId: String,
     val remoteId: String? = null,
     val items: List<ShippableItemModel>,
-    val purchased: Boolean = false,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
     val label: ShippingLabelModel? = null,
-) : Parcelable
+) : Parcelable {
+    /**
+     * Whether the shipment has been purchased or not.
+     * A shipment is considered purchased if the label was already purchased or is in the process of being purchased.
+     */
+    val purchased: Boolean
+        get() = label?.status == ShippingLabelStatus.PURCHASE_IN_PROGRESS ||
+            (label?.status == ShippingLabelStatus.PURCHASED && label.refund == null)
+}
 
 @Parcelize
 sealed class PurchaseState : Parcelable {

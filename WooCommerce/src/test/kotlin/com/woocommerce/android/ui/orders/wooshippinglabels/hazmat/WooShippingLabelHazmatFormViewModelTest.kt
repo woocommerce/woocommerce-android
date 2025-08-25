@@ -171,42 +171,62 @@ class WooShippingLabelHazmatFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onBackPressed is called with no selection, then trigger OnHazmatCategorySelected with null`() = testBlocking {
-        // Given
-        var capturedEvent: OnHazmatCategorySelected? = null
-        viewModel.event.observeForever {
-            capturedEvent = it as? OnHazmatCategorySelected
+    fun `when onSaveClick is called after removing selection, then trigger OnHazmatCategorySelected with null`() =
+        testBlocking {
+            // Given
+            val selectedCategory = ShippingLabelHazmatCategory.CLASS_1
+            viewModel = WooShippingLabelHazmatFormViewModel(
+                WooShippingLabelHazmatFormFragmentArgs(
+                    selectedCategoryName = selectedCategory.name
+                ).toSavedStateHandle()
+            )
+            var capturedEvent: OnHazmatCategorySelected? = null
+            viewModel.event.observeForever { capturedEvent = it as? OnHazmatCategorySelected }
+
+            // When
+            viewModel.onContainsHazmatChanged(false)
+            viewModel.onSaveClick()
+
+            // Then
+            assertThat(capturedEvent?.selectedCategory).isNull()
         }
-
-        // When
-        viewModel.onBackPressed()
-
-        // Then
-        assertThat(capturedEvent).isNotNull()
-        assertThat(capturedEvent?.selectedCategory).isNull()
-    }
 
     @Test
-    fun `when onBackPressed is called with selection available, then trigger OnHazmatCategorySelected with selected category`() = testBlocking {
-        // Given
-        val selectedCategory = ShippingLabelHazmatCategory.CLASS_1
+    fun `when contains hazmat is checked and no category selected, then select category button is visible`() =
+        testBlocking {
+            // Given
+            var capturedViewState: WooShippingLabelHazmatFormViewModel.ViewState? = null
+            viewModel.viewState.observeForever {
+                capturedViewState = it
+            }
 
-        viewModel = WooShippingLabelHazmatFormViewModel(
-            WooShippingLabelHazmatFormFragmentArgs(
-                selectedCategoryName = selectedCategory.name
-            ).toSavedStateHandle()
-        )
+            // When
+            viewModel.onContainsHazmatChanged(true)
 
-        var capturedEvent: OnHazmatCategorySelected? = null
-        viewModel.event.observeForever {
-            capturedEvent = it as? OnHazmatCategorySelected
+            // Then
+            assertThat(capturedViewState?.isSelectCategoryButtonVisible).isTrue()
         }
 
-        // When
-        viewModel.onBackPressed()
+    @Test
+    fun `when contains hazmat is not checked or a category is selected, then select category button is not visible`() =
+        testBlocking {
+            // Given
+            var capturedViewState: WooShippingLabelHazmatFormViewModel.ViewState? = null
+            viewModel.viewState.observeForever {
+                capturedViewState = it
+            }
 
-        // Then
-        assertThat(capturedEvent).isNotNull()
-        assertThat(capturedEvent?.selectedCategory).isEqualTo(selectedCategory)
-    }
+            // When
+            viewModel.onContainsHazmatChanged(false)
+
+            // Then
+            assertThat(capturedViewState?.isSelectCategoryButtonVisible).isFalse()
+
+            // When
+            viewModel.onContainsHazmatChanged(true)
+            viewModel.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_1)
+
+            // Then
+            assertThat(capturedViewState?.isSelectCategoryButtonVisible).isFalse()
+        }
 }
