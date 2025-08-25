@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.network.rest.wpapi
 sealed class WPAPIResponse<T> {
     data class Success<T>(
         val data: T?,
+        val headers: Map<String, String>,
         val networkingMode: WPAPINetworkingMode? = null,
     ) : WPAPIResponse<T>()
 
