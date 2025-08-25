@@ -2,9 +2,6 @@ package org.wordpress.android.fluxc.network.rest.wpcom;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
-import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.GsonBuilder;
 
@@ -19,6 +16,8 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
 
 public class WPComGsonRequest<T> extends GsonRequest<T> {
     public interface WPComErrorListener {
@@ -55,13 +54,13 @@ public class WPComGsonRequest<T> extends GsonRequest<T> {
     }
 
     private WPComGsonRequest(int method, String url, Map<String, String> params, Map<String, Object> body,
-                             Class<T> clazz, Type type, Listener<T> listener, BaseErrorListener errorListener) {
+                             Class<T> clazz, Type type, MyListener<T> listener, BaseErrorListener errorListener) {
         super(method, params, body, url, clazz, type, listener, errorListener);
         addQueryParameters(params);
     }
 
     private WPComGsonRequest(int method, String url, Map<String, String> params, Map<String, Object> body,
-                             Class<T> clazz, Type type, Listener<T> listener, BaseErrorListener errorListener,
+                             Class<T> clazz, Type type, MyListener<T> listener, BaseErrorListener errorListener,
                              GsonBuilder customGsonBuilder) {
         super(method, params, body, url, clazz, type, listener, errorListener, customGsonBuilder);
         addQueryParameters(params);
@@ -76,20 +75,20 @@ public class WPComGsonRequest<T> extends GsonRequest<T> {
      * @param errorListener the error listener
      */
     public static <T> WPComGsonRequest<T> buildGetRequest(String url, Map<String, String> params, Class<T> clazz,
-                                                          Listener<T> listener, WPComErrorListener errorListener) {
+                                                          MyListener<T> listener, WPComErrorListener errorListener) {
         return new WPComGsonRequest<>(Method.GET, url, params, null, clazz, null, listener,
                 wrapInBaseListener(errorListener));
     }
 
     public static <T> WPComGsonRequest<T> buildGetRequest(String url, Map<String, String> params, Type type,
-                                                          Listener<T> listener, WPComErrorListener errorListener) {
+                                                          MyListener<T> listener, WPComErrorListener errorListener) {
         return new WPComGsonRequest<>(Method.GET, url, params, null, null, type, listener,
                 wrapInBaseListener(errorListener));
     }
 
     // Overloaded method to include custom GsonBuilder
     public static <T> WPComGsonRequest<T> buildGetRequest(String url, Map<String, String> params, Class<T> clazz,
-                                                          Listener<T> listener, WPComErrorListener errorListener,
+                                                          MyListener<T> listener, WPComErrorListener errorListener,
                                                           GsonBuilder customGsonBuilder) {
         return new WPComGsonRequest<>(Method.GET, url, params, null, clazz, null, listener,
                 wrapInBaseListener(errorListener), customGsonBuilder);
@@ -97,7 +96,7 @@ public class WPComGsonRequest<T> extends GsonRequest<T> {
 
     // Overloaded method to include custom GsonBuilder
     public static <T> WPComGsonRequest<T> buildGetRequest(String url, Map<String, String> params, Type type,
-                                                          Listener<T> listener, WPComErrorListener errorListener,
+                                                          MyListener<T> listener, WPComErrorListener errorListener,
                                                           GsonBuilder customGsonBuilder) {
         return new WPComGsonRequest<>(Method.GET, url, params, null, null, type, listener,
                 wrapInBaseListener(errorListener), customGsonBuilder);
@@ -112,7 +111,7 @@ public class WPComGsonRequest<T> extends GsonRequest<T> {
      * @param errorListener the error listener
      */
     public static <T> WPComGsonRequest<T> buildPostRequest(String url, Map<String, Object> body, Class<T> clazz,
-                                                           Listener<T> listener, WPComErrorListener errorListener) {
+                                                           MyListener<T> listener, WPComErrorListener errorListener) {
         return new WPComGsonRequest<>(Method.POST, url, null, body, clazz, null, listener,
                 wrapInBaseListener(errorListener));
     }
@@ -128,19 +127,19 @@ public class WPComGsonRequest<T> extends GsonRequest<T> {
      */
     public static <T> WPComGsonRequest<T> buildPostRequest(String url, Map<String, String> params,
                                                            Map<String, Object> body, Class<T> clazz,
-                                                           Listener<T> listener, WPComErrorListener errorListener) {
+                                                           MyListener<T> listener, WPComErrorListener errorListener) {
         return new WPComGsonRequest<>(Method.POST, url, params, body, clazz, null, listener,
                 wrapInBaseListener(errorListener));
     }
 
     public static <T> WPComGsonRequest<T> buildPostRequest(String url, Map<String, Object> body, Type type,
-                                                           Listener<T> listener, WPComErrorListener errorListener) {
+                                                           MyListener<T> listener, WPComErrorListener errorListener) {
         return new WPComGsonRequest<>(Method.POST, url, null, body, null, type, listener,
                 wrapInBaseListener(errorListener));
     }
 
     public static <T> WPComGsonRequest<T> buildFormPostRequest(String url, Map<String, String> params, Type type,
-                                                           Listener<T> listener, WPComErrorListener errorListener) {
+                                                               MyListener<T> listener, WPComErrorListener errorListener) {
         return new WPComGsonRequest<>(Method.POST, url, params, null, null, type, listener,
                 wrapInBaseListener(errorListener));
     }
