@@ -47,7 +47,7 @@ class WPAPIEncodedBodyRequestBuilder @Inject constructor() {
         restClient: BaseWPAPIRestClient
     ) {
         val request = WPAPIEncodedBodyRequest(method, url, params, body, { response ->
-            cont.resume(Success(response))
+            cont.resume(Success(response, emptyMap())) // TODO malinjir
         }, { error ->
             cont.resume(Error(error))
         })
