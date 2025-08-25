@@ -14,8 +14,8 @@ emulator -list-avds
 echo ""
 
 echo "--- 🤖 Launching Emulator(s)"
-echo "emulator -avd pixel5api34 -no-snapshot -no-boot-anim -no-audio &"
-emulator -avd pixel5api34 -no-snapshot -no-boot-anim -no-audio &
+echo "emulator -avd pixel5api34 -no-snapshot -wipe-data -no-boot-anim -no-audio &"
+emulator -avd pixel5api34 -no-snapshot -wipe-data -no-boot-anim -no-audio &
 echo ""
 
 echo "--- 🤖 Waiting for Emulator(s) to Start"
