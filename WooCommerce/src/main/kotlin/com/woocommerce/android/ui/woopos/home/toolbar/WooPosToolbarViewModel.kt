@@ -101,7 +101,7 @@ class WooPosToolbarViewModel @Inject constructor(
         when (event.menuItem.title) {
             R.string.woopos_settings_title -> {
                 viewModelScope.launch {
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings.Root)
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
                 }
             }
             R.string.woopos_barcode_scanning_title -> {

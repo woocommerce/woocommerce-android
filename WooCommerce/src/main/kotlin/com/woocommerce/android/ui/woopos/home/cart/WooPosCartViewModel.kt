@@ -135,7 +135,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             WooPosCartUIEvent.BarcodeSetupClicked -> {
-                sendEventToParent(ChildToParentEvent.NavigationEvent.ToSettings.BarcodeScanners)
+
             }
         }
     }
