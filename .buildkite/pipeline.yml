@@ -13,6 +13,12 @@ steps:
 
   - label: "Assemble"
     command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
       echo "--- 🛠 Building"
       ./gradlew :WooCommerce:assembleJalapenoDebug
     plugins: [ $CI_TOOLKIT ]
