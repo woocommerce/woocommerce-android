@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.WCGatewaySqlUtils
 import org.wordpress.android.fluxc.persistence.WCGatewaySqlUtils.GatewaysTable
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.wc.gateways.GatewayTestFixtures.gatewaysEntities
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -19,7 +20,7 @@ import kotlin.test.assertTrue
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCGatewaySqlUtilsTest {
-    private val site = SiteModel().apply { id = 2 }
+    private val site = SiteModel().apply { id = 321 }
 
     @Before
     fun setUp() {
@@ -34,15 +35,15 @@ class WCGatewaySqlUtilsTest {
 
     @Test
     fun `test gateway insert`() {
-        WCGatewaySqlUtils.insertOrUpdate(site, GATEWAYS_ENTITIES)
+        WCGatewaySqlUtils.insertOrUpdate(site, gatewaysEntities)
         val gateways = WCGatewaySqlUtils.selectAllGateways(site)
         assertEquals(2, gateways.size)
-        assertEquals(GATEWAYS_ENTITIES, gateways)
+        assertEquals(gatewaysEntities, gateways)
     }
 
     @Test
     fun `test gateway update`() {
-        val response = GATEWAYS_ENTITIES.first()
+        val response = gatewaysEntities.first()
         WCGatewaySqlUtils.insertOrUpdate(site, response)
         val gateway = WCGatewaySqlUtils.selectGateway(site, response.gatewayId)!!
         assertEquals(response, gateway)
@@ -55,19 +56,19 @@ class WCGatewaySqlUtilsTest {
 
     @Test
     fun `test select`() {
-        WCGatewaySqlUtils.insertOrUpdate(site, GATEWAYS_ENTITIES)
+        WCGatewaySqlUtils.insertOrUpdate(site, gatewaysEntities)
 
         val gateway = WCGatewaySqlUtils.selectGateway(site, "stripe")
-        assertEquals(GATEWAYS_ENTITIES[1], gateway)
+        assertEquals(gatewaysEntities[1], gateway)
     }
 
     @Test
     fun `test select empty result`() {
-        val newSiteId = 3
+        val newSiteId = 123
         val newSite = SiteModel().apply { id = newSiteId }
         val newGatewayEntities = listOf(
-            GATEWAYS_ENTITIES[0].copy(localSiteId = newSiteId),
-            GATEWAYS_ENTITIES[1].copy(localSiteId = newSiteId)
+            gatewaysEntities[0].copy(localSiteId = newSiteId),
+            gatewaysEntities[1].copy(localSiteId = newSiteId)
         )
         WCGatewaySqlUtils.insertOrUpdate(newSite, newGatewayEntities)
         val gateways = WCGatewaySqlUtils.selectAllGateways(site)

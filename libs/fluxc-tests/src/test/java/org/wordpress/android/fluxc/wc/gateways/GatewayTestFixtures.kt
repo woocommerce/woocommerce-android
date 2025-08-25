@@ -1,36 +1,39 @@
 package org.wordpress.android.fluxc.wc.gateways
 
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient.GatewayResponse
 import org.wordpress.android.fluxc.persistence.WCGatewaySqlUtils.GatewaysTable
 
-val GATEWAYS_RESPONSE = listOf(
+object GatewayTestFixtures {
+    val stubSite = SiteModel().apply { id = 321 }
+    val gatewaysResponse = listOf(
         GatewayResponse(
             "cod",
             "Cash on Delivery",
             "Pay cash",
             "",
             false,
-                "COD: Method title",
-                "COD: Method description",
+            "COD: Method title",
+            "COD: Method description",
             listOf("products")
         ),
         GatewayResponse(
-                "stripe",
-                "Credit card",
-                "Pay with CC",
-                "1",
-                true,
-                "Stripe: Method title",
-                "Stripe: Method description",
-                listOf("products", "refunds")
+            "stripe",
+            "Credit card",
+            "Pay with CC",
+            "1",
+            true,
+            "Stripe: Method title",
+            "Stripe: Method description",
+            listOf("products", "refunds")
         )
-)
+    )
 
-val GATEWAYS_ENTITIES = listOf(
-    GatewaysTable(
-        localSiteId = 2,
-        gatewayId = "cod",
-        data = """
+    val gatewaysEntities = listOf(
+        GatewaysTable(
+            localSiteId = stubSite.id,
+            gatewayId = "cod",
+            data = """
                 {
                     "description":"Pay cash",
                     "enabled":false,
@@ -42,11 +45,11 @@ val GATEWAYS_ENTITIES = listOf(
                     "title":"Cash on Delivery"
                 }
                 """
-    ),
-    GatewaysTable(
-        localSiteId = 2,
-        gatewayId = "stripe",
-        data = """
+        ),
+        GatewaysTable(
+            localSiteId = stubSite.id,
+            gatewayId = "stripe",
+            data = """
                 {
                     "description":"Pay with CC",
                     "enabled":true,
@@ -58,5 +61,6 @@ val GATEWAYS_ENTITIES = listOf(
                     "title":"Credit card"
                 }
                 """
+        )
     )
-)
+}

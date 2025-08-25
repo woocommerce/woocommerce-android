@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import org.wordpress.android.fluxc.wc.gateways.GatewayTestFixtures.gatewaysResponse
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -35,7 +36,7 @@ class WCGatewayStoreTest {
     private val errorSite = SiteModel().apply { id = 123 }
     private val mapper = GatewayMapper(Gson())
     private lateinit var store: WCGatewayStore
-    private val gatewayId = GATEWAYS_RESPONSE.first().gatewayId
+    private val gatewayId = gatewaysResponse.first().gatewayId
     private val error = WooError(INVALID_ID, NOT_FOUND, "Invalid gateway ID")
 
     @Before
@@ -60,8 +61,8 @@ class WCGatewayStoreTest {
     fun `fetch all gateways`() = test {
         val result = fetchAllTestGateways()
 
-        assertThat(result.model?.size).isEqualTo(GATEWAYS_RESPONSE.size)
-        assertThat(result.model?.first()).isEqualTo(mapper.toModel(GATEWAYS_RESPONSE.first()))
+        assertThat(result.model?.size).isEqualTo(gatewaysResponse.size)
+        assertThat(result.model?.first()).isEqualTo(mapper.toModel(gatewaysResponse.first()))
 
         whenever(restClient.fetchAllGateways(errorSite)).thenReturn(WooPayload(error))
         val invalidRequestResult = store.fetchAllGateways(errorSite)
@@ -73,9 +74,9 @@ class WCGatewayStoreTest {
     fun `update gateway`() = test {
         fetchAllTestGateways()
         val gateway = store.getGateway(site, gatewayId)
-        assertThat(gateway).isEqualTo(mapper.toModel(GATEWAYS_RESPONSE.first()))
+        assertThat(gateway).isEqualTo(mapper.toModel(gatewaysResponse.first()))
         val gatewayIdCod = GatewayRestClient.GatewayId.CASH_ON_DELIVERY
-        val updatedGateway = GATEWAYS_RESPONSE.first().copy(enabled = true)
+        val updatedGateway = gatewaysResponse.first().copy(enabled = true)
         whenever(restClient.updateGateway(site, gatewayIdCod, true))
             .thenReturn(WooPayload(updatedGateway))
 
@@ -94,7 +95,7 @@ class WCGatewayStoreTest {
 
         val gateway = store.getGateway(site, gatewayId)
 
-        assertThat(gateway).isEqualTo(mapper.toModel(GATEWAYS_RESPONSE.first()))
+        assertThat(gateway).isEqualTo(mapper.toModel(gatewaysResponse.first()))
     }
 
     @Test
@@ -104,14 +105,14 @@ class WCGatewayStoreTest {
         val gateways = store.getAllGateways(site)
 
         assertThat(gateways.size).isEqualTo(2)
-        assertThat(gateways.first()).isEqualTo(mapper.toModel(GATEWAYS_RESPONSE.first()))
+        assertThat(gateways.first()).isEqualTo(mapper.toModel(gatewaysResponse.first()))
 
         val invalidRequestResult = store.getAllGateways(errorSite)
         assertThat(invalidRequestResult.size).isEqualTo(0)
     }
 
     private suspend fun fetchAllTestGateways(): WooResult<List<WCGatewayModel>> {
-        val fetchGatewaysPayload = WooPayload(GATEWAYS_RESPONSE.toTypedArray())
+        val fetchGatewaysPayload = WooPayload(gatewaysResponse.toTypedArray())
         whenever(restClient.fetchAllGateways(site)).thenReturn(fetchGatewaysPayload)
         return store.fetchAllGateways(site)
     }
