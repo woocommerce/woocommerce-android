@@ -29,14 +29,14 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
     private final Gson mGson;
     private final Class<T> mClass;
     private final Type mType;
-    private final MyListener<T> mListener;
+    private final ResponseListener<T> mListener;
     private final Listener<T> mListenerWithoutHeaders;
     private final Map<String, String> mParams;
     private final Map<String, Object> mBody;
 
     private final GsonBuilder mCustomGsonBuilder;
 
-    public interface MyListener<T> {
+    public interface ResponseListener<T> {
         void onResponse(T response, Map<String, String> headers);
     }
 
@@ -61,7 +61,7 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
     }
 
     protected GsonRequest(int method, Map<String, String> params, Map<String, Object> body, String url, Class<T> clazz,
-                       Type type, MyListener<T> listener, BaseErrorListener errorListener) {
+                          Type type, ResponseListener<T> listener, BaseErrorListener errorListener) {
         super(method, url, errorListener);
         // HTTP RFC requires a body (even empty) for all POST requests. Volley will default to using the params
         // for the body so only do this if params is null since this behavior is desirable for form-encoded
@@ -81,7 +81,7 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
     }
 
     protected GsonRequest(int method, Map<String, String> params, Map<String, Object> body, String url, Class<T> clazz,
-                          Type type, MyListener<T> listener, BaseErrorListener errorListener,
+                          Type type, ResponseListener<T> listener, BaseErrorListener errorListener,
                           GsonBuilder customGsonBuilder) {
         super(method, url, errorListener);
         if (method == Method.POST && body == null && (params == null || params.size() == 0)) {

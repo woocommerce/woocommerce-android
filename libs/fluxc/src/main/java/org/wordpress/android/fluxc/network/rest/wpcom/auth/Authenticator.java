@@ -333,7 +333,7 @@ public class Authenticator {
         }
 
         WPComGsonRequest request = WPComGsonRequest.buildPostRequest(url, params, AuthEmailWPComRestResponse.class,
-                new GsonRequest.MyListener<AuthEmailWPComRestResponse>() {
+                new GsonRequest.ResponseListener<AuthEmailWPComRestResponse>() {
                     @Override
                     public void onResponse(AuthEmailWPComRestResponse response, Map<String, String> headers) {
                         AuthEmailResponsePayload responsePayload = new AuthEmailResponsePayload(payload.isSignup);

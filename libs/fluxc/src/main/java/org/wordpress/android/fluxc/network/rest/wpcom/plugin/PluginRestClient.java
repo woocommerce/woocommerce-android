@@ -49,7 +49,7 @@ public class PluginRestClient extends BaseWPComRestClient {
         params.put("autoupdate", isAutoUpdatesEnabled);
         final WPComGsonRequest<PluginWPComRestResponse> request = WPComGsonRequest.buildPostRequest(url, params,
                 PluginWPComRestResponse.class,
-                new GsonRequest.MyListener<PluginWPComRestResponse>() {
+                new GsonRequest.ResponseListener<PluginWPComRestResponse>() {
                     @Override
                     public void onResponse(PluginWPComRestResponse response, Map<String, String> headers) {
                         SitePluginModel pluginFromResponse = pluginModelFromResponse(site, response);
@@ -78,7 +78,7 @@ public class PluginRestClient extends BaseWPComRestClient {
         String url = WPCOMREST.sites.site(site.getSiteId()).plugins.slug(pluginSlug).install.getUrlV1_2();
         final WPComGsonRequest<PluginWPComRestResponse> request = WPComGsonRequest.buildPostRequest(url, null,
                 PluginWPComRestResponse.class,
-                new GsonRequest.MyListener<PluginWPComRestResponse>() {
+                new GsonRequest.ResponseListener<PluginWPComRestResponse>() {
                     @Override
                     public void onResponse(PluginWPComRestResponse response, Map<String, String> headers) {
                         SitePluginModel pluginFromResponse = pluginModelFromResponse(site, response);

@@ -217,7 +217,7 @@ public class AccountRestClient extends BaseWPComRestClient {
     public void fetchAccount() {
         String url = WPCOMREST.me.getUrlV1_1();
         add(WPComGsonRequest.buildGetRequest(url, null, AccountResponse.class,
-                new GsonRequest.MyListener<AccountResponse>() {
+                new GsonRequest.ResponseListener<AccountResponse>() {
                     @Override
                     public void onResponse(AccountResponse response, Map<String, String> headers) {
                         AccountModel account = responseToAccountModel(response);
@@ -244,7 +244,7 @@ public class AccountRestClient extends BaseWPComRestClient {
     public void fetchAccountSettings() {
         String url = WPCOMREST.me.settings.getUrlV1_1();
         add(WPComGsonRequest.buildGetRequest(url, null, AccountSettingsResponse.class,
-                new GsonRequest.MyListener<AccountSettingsResponse>() {
+                new GsonRequest.ResponseListener<AccountSettingsResponse>() {
                     @Override
                     public void onResponse(AccountSettingsResponse response, Map<String, String> headers) {
                         AccountModel settings = responseToAccountSettingsModel(response);
@@ -280,7 +280,7 @@ public class AccountRestClient extends BaseWPComRestClient {
         params.put("name", name);
 
         addUnauthedRequest(WPComGsonRequest.buildGetRequest(url, params, UsernameSuggestionsResponse.class,
-                new GsonRequest.MyListener<UsernameSuggestionsResponse>() {
+                new GsonRequest.ResponseListener<UsernameSuggestionsResponse>() {
                     @Override
                     public void onResponse(UsernameSuggestionsResponse response, Map<String, String> headers) {
                         AccountFetchUsernameSuggestionsResponsePayload payload = new
@@ -303,7 +303,7 @@ public class AccountRestClient extends BaseWPComRestClient {
     public void sendVerificationEmail() {
         String url = WPCOMREST.me.send_verification_email.getUrlV1_1();
         add(WPComGsonRequest.buildPostRequest(url, null, AccountBoolResponse.class,
-                new GsonRequest.MyListener<AccountBoolResponse>() {
+                new GsonRequest.ResponseListener<AccountBoolResponse>() {
                     @Override
                     public void onResponse(AccountBoolResponse response, Map<String, String> headers) {
                         NewAccountResponsePayload payload = new NewAccountResponsePayload();
@@ -334,7 +334,7 @@ public class AccountRestClient extends BaseWPComRestClient {
         // Note: we have to use a Map as a response here because the API response format is different depending
         // of the request we do.
         add(WPComGsonRequest.buildPostRequest(url, body, Map.class,
-                new GsonRequest.MyListener<Map<String, Object>>() {
+                new GsonRequest.ResponseListener<Map<String, Object>>() {
                     @Override
                     public void onResponse(Map<String, Object> response, Map<String, String> headers) {
                         AccountPushSettingsResponsePayload payload = new AccountPushSettingsResponsePayload(null);
@@ -434,7 +434,7 @@ public class AccountRestClient extends BaseWPComRestClient {
         params.put("client_secret", mAppSecrets.getAppSecret());
 
         add(WPComGsonRequest.buildPostRequest(url, params, AccountSocialResponse.class,
-                new GsonRequest.MyListener<AccountSocialResponse>() {
+                new GsonRequest.ResponseListener<AccountSocialResponse>() {
                     @Override
                     public void onResponse(AccountSocialResponse response, Map<String, String> headers) {
                         if (response != null) {
@@ -537,7 +537,7 @@ public class AccountRestClient extends BaseWPComRestClient {
         params.put("client_secret", mAppSecrets.getAppSecret());
 
         add(WPComGsonRequest.buildPostRequest(url, params, AccountSocialResponse.class,
-                new GsonRequest.MyListener<AccountSocialResponse>() {
+                new GsonRequest.ResponseListener<AccountSocialResponse>() {
                     @Override
                     public void onResponse(AccountSocialResponse response, Map<String, String> headers) {
                         if (response != null) {
@@ -637,7 +637,7 @@ public class AccountRestClient extends BaseWPComRestClient {
 
         add(WPComGsonRequest.buildPostRequest(url, params,
                 AccountBoolResponse.class,
-                new GsonRequest.MyListener<AccountBoolResponse>() {
+                new GsonRequest.ResponseListener<AccountBoolResponse>() {
                     @Override
                     public void onResponse(AccountBoolResponse response, Map<String, String> headers) {
                         AccountPushUsernameResponsePayload payload = new AccountPushUsernameResponsePayload(username,
@@ -674,7 +674,7 @@ public class AccountRestClient extends BaseWPComRestClient {
 
         WPComGsonRequest<AccountBoolResponse> request = WPComGsonRequest.buildPostRequest(url, body,
                 AccountBoolResponse.class,
-                new GsonRequest.MyListener<AccountBoolResponse>() {
+                new GsonRequest.ResponseListener<AccountBoolResponse>() {
                     @Override
                     public void onResponse(AccountBoolResponse response, Map<String, String> headers) {
                         NewAccountResponsePayload payload = new NewAccountResponsePayload();
@@ -706,7 +706,7 @@ public class AccountRestClient extends BaseWPComRestClient {
     public void fetchDomainContact() {
         String url = WPCOMREST.me.domain_contact_information.getUrlV1_1();
         add(WPComGsonRequest.buildGetRequest(url, null, DomainContactResponse.class,
-                new GsonRequest.MyListener<DomainContactResponse>() {
+                new GsonRequest.ResponseListener<DomainContactResponse>() {
                     @Override
                     public void onResponse(DomainContactResponse response, Map<String, String> headers) {
                         DomainContactPayload payload = new DomainContactPayload(responseToDomainContactModel(response));
@@ -740,7 +740,7 @@ public class AccountRestClient extends BaseWPComRestClient {
                 .auth_options
                 .getUrlV1_1();
         addUnauthedRequest(WPComGsonRequest.buildGetRequest(url, null, AuthOptionsResponse.class,
-                new GsonRequest.MyListener<AuthOptionsResponse>() {
+                new GsonRequest.ResponseListener<AuthOptionsResponse>() {
                     @Override
                     public void onResponse(AuthOptionsResponse response, Map<String, String> headers) {
                         FetchAuthOptionsResponsePayload payload = new FetchAuthOptionsResponsePayload();
@@ -810,7 +810,7 @@ public class AccountRestClient extends BaseWPComRestClient {
         params.put("q", value);
 
         WPComGsonRequest request = WPComGsonRequest.buildGetRequest(url, params, IsAvailableResponse.class,
-                new GsonRequest.MyListener<IsAvailableResponse>() {
+                new GsonRequest.ResponseListener<IsAvailableResponse>() {
                     @Override
                     public void onResponse(IsAvailableResponse response, Map<String, String> headers) {
                         IsAvailableResponsePayload payload = new IsAvailableResponsePayload();

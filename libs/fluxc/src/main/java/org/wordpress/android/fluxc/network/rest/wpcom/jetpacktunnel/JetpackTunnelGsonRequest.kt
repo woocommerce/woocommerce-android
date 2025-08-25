@@ -118,7 +118,12 @@ object JetpackTunnelGsonRequest {
         val tunnelRequestUrl = getTunnelApiUrl(siteId)
         val wrappedType = TypeToken.getParameterized(JetpackTunnelResponse::class.java, type).type
         val wrappedListener =
-            GsonRequest.MyListener<JetpackTunnelResponse<T>> { response, headers -> listener(response.data, headers) }
+            GsonRequest.ResponseListener<JetpackTunnelResponse<T>> { response, headers ->
+                listener(
+                    response.data,
+                    headers
+                )
+            }
 
         return jpTimeoutListener?.let { retryListener ->
             JetpackTimeoutRequestHandler(tunnelRequestUrl, wrappedParams, wrappedType,
@@ -237,7 +242,12 @@ object JetpackTunnelGsonRequest {
         val tunnelRequestUrl = getTunnelApiUrl(siteId)
         val wrappedType = TypeToken.getParameterized(JetpackTunnelResponse::class.java, type).type
         val wrappedListener =
-            GsonRequest.MyListener<JetpackTunnelResponse<T>> { response, headers -> listener(response.data, headers) }
+            GsonRequest.ResponseListener<JetpackTunnelResponse<T>> { response, headers ->
+                listener(
+                    response.data,
+                    headers
+                )
+            }
 
         return WPComGsonRequest.buildPostRequest(tunnelRequestUrl, wrappedBody, wrappedType,
                 wrappedListener, errorListener)

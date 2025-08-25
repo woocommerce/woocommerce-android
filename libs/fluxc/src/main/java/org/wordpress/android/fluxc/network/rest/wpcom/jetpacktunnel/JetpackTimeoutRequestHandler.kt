@@ -17,7 +17,7 @@ class JetpackTimeoutRequestHandler<T>(
     url: String,
     params: Map<String, String>,
     type: Type,
-    listener: GsonRequest.MyListener<T>,
+    listener: GsonRequest.ResponseListener<T>,
     errorListener: WPComErrorListener,
     retryListener: (WPComGsonRequest<*>) -> Unit,
     private val maxRetries: Int = DEFAULT_MAX_RETRIES

@@ -53,7 +53,7 @@ public class ReaderRestClient extends BaseWPComRestClient {
         params.put("q", UrlUtils.urlEncode(searchTerm));
 
         WPComGsonRequest request = WPComGsonRequest.buildGetRequest(url, params, ReaderSearchSitesResponse.class,
-                new GsonRequest.MyListener<ReaderSearchSitesResponse>() {
+                new GsonRequest.ResponseListener<ReaderSearchSitesResponse>() {
                     @Override
                     public void onResponse(ReaderSearchSitesResponse response, Map<String, String> headers) {
                         boolean canLoadMore = response.getSites().size() == count;
