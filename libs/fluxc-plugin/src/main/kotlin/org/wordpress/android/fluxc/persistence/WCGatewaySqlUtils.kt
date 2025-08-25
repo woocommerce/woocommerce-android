@@ -1,7 +1,5 @@
 package org.wordpress.android.fluxc.persistence
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.wellsql.generated.WCGatewaysTable
 import com.yarolegovich.wellsql.WellSql
 import com.yarolegovich.wellsql.core.Identifiable
@@ -9,51 +7,38 @@ import com.yarolegovich.wellsql.core.annotation.Column
 import com.yarolegovich.wellsql.core.annotation.PrimaryKey
 import com.yarolegovich.wellsql.core.annotation.Table
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient.GatewayResponse
 
 object WCGatewaySqlUtils {
-    private val gson: Gson by lazy {
-        val builder = GsonBuilder()
-        builder.create()
-    }
-
-    fun insertOrUpdate(site: SiteModel, data: GatewayResponse) =
+    fun insertOrUpdate(site: SiteModel, data: GatewaysTable) =
             insertOrUpdate(site, listOf(data))
 
-    fun insertOrUpdate(site: SiteModel, data: List<GatewayResponse>) {
+    fun insertOrUpdate(site: SiteModel, data: List<GatewaysTable>) {
         data.forEach { item ->
-            val json = gson.toJson(item)
             WellSql.delete(GatewaysTable::class.java)
                 .where()
                 .equals(WCGatewaysTable.LOCAL_SITE_ID, site.id)
                 .equals(WCGatewaysTable.GATEWAY_ID, item.gatewayId)
                 .endWhere()
                 .execute()
-            WellSql.insert(
-                    GatewaysTable(
-                            localSiteId = site.id,
-                            gatewayId = item.gatewayId,
-                            data = json
-                    )
-            ).execute()
+            WellSql.insert(item).execute()
         }
     }
 
     fun selectAllGateways(
         site: SiteModel
-    ): List<GatewayResponse> {
+    ): List<GatewaysTable> {
         val models = WellSql.select(GatewaysTable::class.java)
                 .where()
                 .equals(WCGatewaysTable.LOCAL_SITE_ID, site.id)
                 .endWhere()
                 .asModel
-        return models.map { gson.fromJson(it.data, GatewayResponse::class.java) }
+        return models
     }
 
     fun selectGateway(
         site: SiteModel,
         gatewayId: String
-    ): GatewayResponse? {
+    ): GatewaysTable? {
         val model = WellSql.select(GatewaysTable::class.java)
                 .where()
                 .equals(WCGatewaysTable.LOCAL_SITE_ID, site.id)
@@ -61,7 +46,7 @@ object WCGatewaySqlUtils {
                 .endWhere()
                 .asModel
                 .firstOrNull()
-        return model?.let { gson.fromJson(it.data, GatewayResponse::class.java) }
+        return model
     }
 
     @Table(name = "WCGateways")

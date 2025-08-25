@@ -34,41 +34,46 @@ class WCGatewaySqlUtilsTest {
 
     @Test
     fun `test gateway insert`() {
-        WCGatewaySqlUtils.insertOrUpdate(site, GATEWAYS_RESPONSE)
+        WCGatewaySqlUtils.insertOrUpdate(site, GATEWAYS_ENTITIES)
         val gateways = WCGatewaySqlUtils.selectAllGateways(site)
         assertEquals(2, gateways.size)
-        assertEquals(GATEWAYS_RESPONSE, gateways)
+        assertEquals(GATEWAYS_ENTITIES, gateways)
     }
 
     @Test
     fun `test gateway update`() {
-        val response = GATEWAYS_RESPONSE.first()
+        val response = GATEWAYS_ENTITIES.first()
         WCGatewaySqlUtils.insertOrUpdate(site, response)
         val gateway = WCGatewaySqlUtils.selectGateway(site, response.gatewayId)!!
         assertEquals(response, gateway)
 
-        val newTitle = "New title"
-        WCGatewaySqlUtils.insertOrUpdate(site, response.copy(title = newTitle))
+        val newData = "New Data"
+        WCGatewaySqlUtils.insertOrUpdate(site, response.copy(data = newData))
         val updatedGateway = WCGatewaySqlUtils.selectGateway(site, response.gatewayId)!!
-        assertEquals(newTitle, updatedGateway.title)
+        assertEquals(newData, updatedGateway.data)
     }
 
     @Test
     fun `test select`() {
-        WCGatewaySqlUtils.insertOrUpdate(site, GATEWAYS_RESPONSE)
+        WCGatewaySqlUtils.insertOrUpdate(site, GATEWAYS_ENTITIES)
 
         val gateway = WCGatewaySqlUtils.selectGateway(site, "stripe")
-        assertEquals(GATEWAYS_RESPONSE[1], gateway)
+        assertEquals(GATEWAYS_ENTITIES[1], gateway)
     }
 
     @Test
     fun `test select empty result`() {
-        val newSite = SiteModel().apply { id = 3 }
-        WCGatewaySqlUtils.insertOrUpdate(newSite, GATEWAYS_RESPONSE)
+        val newSiteId = 3
+        val newSite = SiteModel().apply { id = newSiteId }
+        val newGatewayEntities = listOf(
+            GATEWAYS_ENTITIES[0].copy(localSiteId = newSiteId),
+            GATEWAYS_ENTITIES[1].copy(localSiteId = newSiteId)
+        )
+        WCGatewaySqlUtils.insertOrUpdate(newSite, newGatewayEntities)
         val gateways = WCGatewaySqlUtils.selectAllGateways(site)
         assertTrue(gateways.isEmpty())
 
-        val gateway = WCGatewaySqlUtils.selectGateway(site, GATEWAYS_RESPONSE.first().gatewayId)
+        val gateway = WCGatewaySqlUtils.selectGateway(site, newGatewayEntities.first().gatewayId)
         assertNull(gateway)
     }
 }
