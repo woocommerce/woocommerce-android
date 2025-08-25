@@ -10,7 +10,7 @@ import org.wordpress.android.fluxc.utils.toWooPayload
 import javax.inject.Inject
 
 class GatewayRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
-    suspend fun updatePaymentGateway(
+    suspend fun updateGateway(
         site: SiteModel,
         gatewayId: GatewayId,
         enabled: Boolean? = null,

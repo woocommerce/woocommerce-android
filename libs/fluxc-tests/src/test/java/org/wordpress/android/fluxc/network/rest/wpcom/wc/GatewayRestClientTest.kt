@@ -91,7 +91,7 @@ class GatewayRestClientTest {
                 WPAPIResponse.Success(mock())
             )
 
-            val actualResponse = gatewayRestClient.updatePaymentGateway(
+            val actualResponse = gatewayRestClient.updateGateway(
                 SiteModel(),
                 CASH_ON_DELIVERY,
                 enabled = false,
@@ -120,7 +120,7 @@ class GatewayRestClientTest {
                 WPAPIResponse.Error(expectedError)
             )
 
-            val actualResponse = gatewayRestClient.updatePaymentGateway(
+            val actualResponse = gatewayRestClient.updateGateway(
                 SiteModel(),
                 CASH_ON_DELIVERY,
                 enabled = true,
