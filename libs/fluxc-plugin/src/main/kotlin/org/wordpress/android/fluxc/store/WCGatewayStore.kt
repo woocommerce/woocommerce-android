@@ -14,13 +14,12 @@ import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.toList
 
 @Singleton
 class WCGatewayStore @Inject constructor(
     private val restClient: GatewayRestClient,
-    private val coroutineEngine: CoroutineEngine,
-    private val mapper: GatewayMapper
+    private val mapper: GatewayMapper,
+    private val coroutineEngine: CoroutineEngine
 ) {
     suspend fun getGateway(site: SiteModel, gatewayId: String): WCGatewayModel? {
         val entity = WCGatewaySqlUtils.selectGateway(site, gatewayId)
@@ -38,34 +37,32 @@ class WCGatewayStore @Inject constructor(
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "updatePaymentGateway") {
             val response = restClient.updateGateway(site, gatewayId, enabled, title, description, settings)
             return@withDefaultContext when {
-                response.isError -> {
-                    WooResult(response.error)
-                }
+                response.isError -> WooResult(response.error)
                 response.result != null -> {
                     val entity = mapper.toEntity(site.localId(), response.result)
                     WCGatewaySqlUtils.insertOrUpdate(site, entity)
                     WooResult(mapper.toModel(response.result))
                 }
+
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
+        }
     }
-}
 
     fun getAllGateways(site: SiteModel): List<WCGatewayModel> =
-            WCGatewaySqlUtils.selectAllGateways(site).map { mapper.toModel(it) }
+        WCGatewaySqlUtils.selectAllGateways(site).map { mapper.toModel(it) }
 
     suspend fun fetchAllGateways(site: SiteModel): WooResult<List<WCGatewayModel>> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchAllGateways") {
             val response = restClient.fetchAllGateways(site)
             return@withDefaultContext when {
-                response.isError -> {
-                    WooResult(response.error)
-                }
+                response.isError -> WooResult(response.error)
                 response.result != null -> {
                     val entities = mapper.toEntities(site.localId(), response.result.toList())
                     WCGatewaySqlUtils.insertOrUpdate(site, entities)
                     WooResult(response.result.map { mapper.toModel(it) })
                 }
+
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }

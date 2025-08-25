@@ -42,17 +42,17 @@ class WCGatewayStoreTest {
     fun setUp() {
         val appContext = RuntimeEnvironment.application.applicationContext
         val config = SingleStoreWellSqlConfigForTests(
-                appContext,
-                listOf(GatewaysTable::class.java),
-                WellSqlConfig.ADDON_WOOCOMMERCE
+            appContext,
+            listOf(GatewaysTable::class.java),
+            WellSqlConfig.ADDON_WOOCOMMERCE
         )
         WellSql.init(config)
         config.reset()
 
         store = WCGatewayStore(
-                restClient,
-                initCoroutineEngine(),
-                mapper
+            restClient,
+            mapper,
+            initCoroutineEngine()
         )
     }
 
