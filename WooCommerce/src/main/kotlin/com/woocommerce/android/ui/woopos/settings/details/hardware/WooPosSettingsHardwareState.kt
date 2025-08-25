@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.settings.details.hardware
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.woocommerce.android.R
 
@@ -18,7 +18,7 @@ data class WooPosHardwareSettingsState(
         HardwareSettingsItem(
             titleRes = R.string.woopos_settings_hardware_barcode_scanners,
             subtitleRes = R.string.woopos_settings_hardware_barcode_scanners_subtitle,
-            icon = Icons.Default.QrCodeScanner
+            icon = Icons.Default.DocumentScanner,
         ),
         HardwareSettingsItem(
             titleRes = R.string.woopos_settings_hardware_card_readers,

@@ -10,6 +10,7 @@ data class WooPosCartState(
     val body: Body = Body.Empty,
     val areItemsRemovable: Boolean = true,
     val checkoutButtonState: CheckoutButtonState = CheckoutButtonState.Enabled,
+    val isPosSettingsFeatureEnabled: Boolean = false,
 ) : Parcelable {
     @Parcelize
     sealed class Body : Parcelable {

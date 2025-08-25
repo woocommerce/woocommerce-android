@@ -432,7 +432,7 @@ class WooPosHomeViewModelTest {
         val events = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
         val viewModel = createViewModel()
-        events.emit(ChildToParentEvent.BarcodeInfoMenuItemClicked)
+        events.emit(ChildToParentEvent.SetupBarcodeScannerClicked)
         assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ScanningSetupDialog)
 
         // WHEN
