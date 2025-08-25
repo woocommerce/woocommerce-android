@@ -45,6 +45,7 @@ automattic-encryptedlogging = '1.0.0'
 automattic-measure-builds = '3.2.1'
 automattic-tracks = '6.0.4'
 assertj = '3.27.3'
+avif = "1.3.0.841110fd"
 bumptech-glide = '4.16.0'
 cashapp-turbine = '1.0.0'
 coil = '2.7.0'
@@ -196,6 +197,7 @@ bumptech-glide-main = { group = "com.github.bumptech.glide", name = "glide", ver
 bumptech-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "bumptech-glide" }
 bumptech-glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "bumptech-glide" }
 bumptech-glide-volley-integration = { group = "com.github.bumptech.glide", name = "volley-integration", version.ref = "bumptech-glide" }
+avif = { module = "org.aomedia.avif.android:avif", version.ref = "avif" }
 bumptech-glide-avif-integration = { group = "com.github.bumptech.glide", name = "avif-integration", version.ref = "bumptech-glide" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "cashapp-turbine" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
