@@ -43,13 +43,20 @@ class WooShippingLabelHazmatFormViewModel @Inject constructor(
         _viewState.update { viewState ->
             viewState.copy(
                 containsHazmatChecked = containsHazmatChecked,
-                currentHazmatSelection = viewState.currentHazmatSelection.takeIf { containsHazmatChecked }
+                currentHazmatSelection = viewState.currentHazmatSelection.takeIf { containsHazmatChecked },
+                isSaveButtonVisible = navArgs.selectedCategoryName != null && !containsHazmatChecked
             )
         }
     }
 
     fun onSelectCategoryClick() {
         triggerEvent(OnSelectCategoryClicked)
+    }
+
+    fun onSaveClick() {
+        _viewState.value.currentHazmatSelection
+            .let { OnHazmatCategorySelected(it) }
+            .let { triggerEvent(it) }
     }
 
     fun onHazmatCategorySelected(selectedCategory: ShippingLabelHazmatCategory?) {
@@ -66,16 +73,18 @@ class WooShippingLabelHazmatFormViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
-        _viewState.value.currentHazmatSelection
-            .let { OnHazmatCategorySelected(it) }
-            .let { triggerEvent(it) }
+        triggerEvent(Event.Exit)
     }
 
     @Parcelize
     data class ViewState(
         val containsHazmatChecked: Boolean = false,
-        val currentHazmatSelection: ShippingLabelHazmatCategory? = null
-    ) : Parcelable
+        val currentHazmatSelection: ShippingLabelHazmatCategory? = null,
+        val isSaveButtonVisible: Boolean = false,
+    ) : Parcelable {
+        val isSelectCategoryButtonVisible
+            get() = containsHazmatChecked && currentHazmatSelection == null
+    }
 
     data object OnSelectCategoryClicked : Event()
 

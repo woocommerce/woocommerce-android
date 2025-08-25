@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-30 14:54:04+0000
+Translation-Revision-Date: 2025-08-12 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">עדיין לא עובד? יש לפנות לתמיכת הלקוחות של יצרן המכשיר.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">יש לעבור אל הגדרות המכשיר, לחפש את \'מקלדת\' ולהפעיל את האפשרות \'להציג את המקלדת שעל המסך כאשר מקלדת פיזית מחוברת\' (Show on-screen keyboard when physical keyboard connected). ייתכן שההגדרה הזאת נמצאת בהגדרות של אפליקציית המקלדת.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">כדאי לחפש סמל או סרגל כלים של המקלדת על המסך.</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">יש להקיש כאן כדי לבדוק את הנראות של המקלדת</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">אם המקלדת לא מופיעה, יש לנסות את האפשרויות הבאות:</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">מערכת Android מחשיבה בסורקי ברקוד בתור מקלדות פיזיות שעלולות להסתיר את המקלדת המופיעה על המסך. נוכל לבדוק את זה:</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">להציג את המקלדת שעל המסך</string>
+    <string name="woopos_scanning_setup_success_message">הכול מוכן, אפשר להתחיל לסרוק מוצרים. בפעם הבאה שיהיה צורך לחבר את הסורק, אפשר להדליק את הסורק והוא יתחבר מחדש אוטומטית.</string>
+    <string name="woopos_barcode_scanning_title">הגדרה ראשונית של סורק הברקוד</string>
+    <string name="woopos_cart_clear_all_button_content_description">הסמל \'להסיר פריטים בעגלת הקניות\'</string>
+    <string name="product_selector_subscription_not_supported">מוצרי מינוי שניתנים להזמנה לא נתמכים ביצירת הזמנות</string>
+    <string name="save_copy">לשמור עותק</string>
+    <string name="changes_not_saved_message">השינויים שביצעת לא נשמרו</string>
+    <string name="discard_changes_question">האם לבטל את השינויים?</string>
+    <string name="save_processed_image_success">התמונה נשמרה בהצלחה</string>
+    <string name="save_processed_image_error">שמירת התמונה נכשלה</string>
+    <string name="remove_background_no_subject_detected">לא זוהה נושא ברור. יש לנסות שוב עם תמונה שונה.</string>
+    <string name="remove_background_image_load_error">טעינת התמונה נכשלה</string>
+    <string name="remove_background_title">✨ מנקה של רקע התמונה</string>
+    <string name="remove_background">להסיר את הרקע עם בינה מלאכותית</string>
     <string name="woo_shipping_labels_order_completion_error">לא ניתן היה לסמן את ההזמנה כ\'הושלמה\'</string>
     <string name="woo_shipping_address_use_as_entered">להשתמש בכתובת כפי שהוזנה</string>
     <string name="woo_shipping_labels_customs_product_details_weight_invalid">המשקל חייב להיות מעל אפס (0)</string>
@@ -36,7 +56,6 @@ Language: he_IL
     <string name="woopos_scanning_setup_info_bullet_1">יש לחבר את סורק הברקוד באמצעות Bluetooth בהגדרות של Bluetooth במערכת.</string>
     <string name="woopos_scanning_setup_info_title">הגדרת הסורק</string>
     <string name="woopos_scanning_setup_more_information">איך להגדיר ברקוד על מוצרים</string>
-    <string name="woopos_scanning_setup_success_message">הכול מוכן, אפשר להתחיל לסרוק מוצרים.\nמידע נוסף על תמיכה בברקוד ובסורק של קודי QR.</string>
     <string name="woopos_scanning_setup_success_title">הסורק הוגדר!</string>
     <string name="woopos_scanning_setup_go_to_settings">לעבור להגדרות המכשיר</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">יש להפעיל את חיבור ה-Bluetooth ולבחור את הסורק של %s בהגדרות של מערכת ההפעלה.\nהסורק יצפצף ונורת LED תופיע ללא הבהובים כשהוא מקושר.</string>
@@ -58,7 +77,6 @@ Language: he_IL
     <string name="woopos_eligibility_reason_check_connection">יש לבדוק את החיבור לאינטרנט ולנסות להפעיל מחדש את האפליקציה. אם הבעיה נמשכת, ניתן ליצור קשר עם התמיכה.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">הגרסה של WooCommerce שברשותך לא נתמכת. למערכת POS נדרשת גרסת WooCommerce של ⁦%1$s⁩ ומעלה. עליך לעדכן את WooCommerce לגרסה האחרונה.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">יש לוודא שהתוסף של WooCommerce הותקן והופעל ממנהל המערכת של WordPress. אם עדיין קיימת בעיה, יש ליצור קשר עם התמיכה לעזרה.</string>
-    <string name="woopos_barcode_scanning_title">להגדיר סורק ברקוד</string>
     <string name="orderfilters_sales_channel_filter_point_of_sale">נקודת מכירה</string>
     <string name="orderfilters_sales_channel_filter">ערוץ מכירות</string>
     <string name="barcode_ean13_content_description">ברקוד של EAN13</string>
@@ -633,7 +651,7 @@ Language: he_IL
     <string name="woopos_cart_back_content_description">סמל \'עגלת קניות\'</string>
     <string name="woopos_products_screen_title">מוצרים</string>
     <string name="woopos_items_in_cart">פריט %d</string>
-    <string name="woopos_clear_cart_button">למחוק</string>
+    <string name="woopos_clear_cart_button">לנקות את עגלת הקניות</string>
     <string name="more_menu_button_google_description">לעודד מכירות ולהגדיל את התעבורה עם Google Ads</string>
     <string name="more_menu_button_google">Google ל-WooCommerce</string>
     <string name="no_quantity_rules">אין כללי כמות</string>

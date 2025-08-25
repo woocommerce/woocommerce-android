@@ -207,7 +207,7 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    ChildToParentEvent.BarcodeInfoMenuItemClicked -> {
+                    ChildToParentEvent.SetupBarcodeScannerClicked -> {
                         _state.value = _state.value.copy(
                             dialogState = DialogState.ScanningSetupDialog
                         )

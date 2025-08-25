@@ -1,11 +1,10 @@
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
-    android:fillViewport="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,9 +50,9 @@
                         style="@style/Woo.Card.Body.High"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginTop="@dimen/major_75"
-                        android:text="@string/order_refunds_previously_refunded"/>
+                        android:layout_weight="1"
+                        android:text="@string/order_refunds_previously_refunded" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/refundSummary_previouslyRefunded"
@@ -61,7 +60,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/major_75"
-                        tools:text="$45.00"/>
+                        tools:text="$45.00" />
 
                 </LinearLayout>
 
@@ -69,9 +68,9 @@
                 <View
                     style="@style/Woo.Divider"
                     android:layout_marginStart="@dimen/major_100"
-                    android:layout_marginEnd="@dimen/minor_00"
                     android:layout_marginTop="@dimen/major_75"
-                    android:layout_marginBottom="@dimen/major_75"/>
+                    android:layout_marginEnd="@dimen/minor_00"
+                    android:layout_marginBottom="@dimen/major_75" />
 
                 <!-- Refund amount -->
                 <LinearLayout
@@ -92,7 +91,7 @@
                         style="@style/Woo.Card.Body.Bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="$45.00"/>
+                        tools:text="$45.00" />
 
                 </LinearLayout>
 
@@ -102,16 +101,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/major_75"
+                    android:hint="@string/order_refunds_reason_hint"
                     app:counterEnabled="true"
-                    app:counterMaxLength="@integer/maxlength_order_refund_summary_reason"
-                    android:hint="@string/order_refunds_reason_hint" >
+                    app:counterMaxLength="@integer/maxlength_order_refund_summary_reason">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/refundSummary_reason"
                         style="@style/Woo.TextInputEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine"/>
+                        android:inputType="textMultiLine" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -125,10 +124,11 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/refund_method_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/major_75"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/major_75">
 
                 <com.google.android.material.textview.MaterialTextView
                     style="@style/Woo.Card.Header"
@@ -149,11 +149,35 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/minor_50"
-                    android:text="@string/order_refunds_refund_manual_refund_note"
                     android:lineSpacingMultiplier="1.4"
+                    android:text="@string/order_refunds_refund_manual_refund_note"
                     android:textIsSelectable="true" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/loading_payment_method_skeletons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/major_75"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <View
+                    android:layout_width="@dimen/skeleton_text_medium_width"
+                    android:layout_height="@dimen/skeleton_text_height_100"
+                    android:layout_marginTop="@dimen/minor_50"
+                    android:background="@color/skeleton_color" />
+
+                <View
+                    android:layout_width="@dimen/skeleton_text_large_width"
+                    android:layout_height="@dimen/skeleton_text_height_75"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:background="@color/skeleton_color" />
+
+            </LinearLayout>
+
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -162,10 +186,10 @@
             style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/minor_100"
-            android:layout_marginBottom="@dimen/minor_100"
             android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_100"
             android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/minor_100"
             android:text="@string/order_refunds_refund" />
 
     </LinearLayout>

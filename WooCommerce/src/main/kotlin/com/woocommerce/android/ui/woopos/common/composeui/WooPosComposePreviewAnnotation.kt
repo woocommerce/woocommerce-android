@@ -22,4 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
     device = "spec:width=674dp,height=800dp,dpi=420,isRound=false,chinSize=0dp,orientation=landscape",
     uiMode = Configuration.UI_MODE_TYPE_NORMAL
 )
+@Preview(
+    name = "Phone",
+    showSystemUi = true,
+    device = "spec:width=411dp,height=891dp,dpi=420,orientation=landscape",
+    uiMode = Configuration.UI_MODE_TYPE_NORMAL or Configuration.UI_MODE_NIGHT_YES
+)
 annotation class WooPosPreview

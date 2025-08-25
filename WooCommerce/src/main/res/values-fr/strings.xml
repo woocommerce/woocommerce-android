@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-07-29 09:54:05+0000
+Translation-Revision-Date: 2025-08-12 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_scanning_setup_software_keyboard_bullet_three">Cela ne fonctionne toujours pas ? Contactez l’assistance client du fabricant de votre appareil.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_one">Recherchez une icône de clavier ou une barre d’outils sur l’écran.</string>
+    <string name="woopos_scanning_setup_software_keyboard_hint">Appuyer ici pour tester la visibilité du clavier</string>
+    <string name="woopos_scanning_setup_software_keyboard_message_two">Si le clavier n’est pas visible, essayez les options suivantes :</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android traite les lecteurs de codes-barres comme des claviers physiques, ce qui peut masquer votre clavier visuel. À vérifier :</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Accédez aux réglages de l’appareil, recherchez « clavier », puis activez « Afficher le clavier visuel lorsque le clavier physique est connecté ». Ce réglage se trouve peut-être dans les réglages de l’application de votre clavier.</string>
+    <string name="woopos_scanning_setup_software_keyboard_title">Afficher le clavier visuel</string>
+    <string name="woopos_scanning_setup_success_message">Vous êtes prêt(e) à commencer à scanner des produits. La prochaine fois que vous devrez connecter votre scanner, il suffit de l’activer et il se reconnectera automatiquement.</string>
+    <string name="woopos_barcode_scanning_title">Configuration initiale du scanner de code-barres</string>
+    <string name="woopos_cart_clear_all_button_content_description">Icône Effacer les articles dans le panier</string>
+    <string name="save_copy">Enregistrer la copie</string>
+    <string name="changes_not_saved_message">Vos modifications ne sont pas enregistrées</string>
+    <string name="product_selector_subscription_not_supported">Les produits d’abonnement ne sont pas pris en charge pour la création de commande</string>
+    <string name="discard_changes_question">Annuler les modifications ?</string>
+    <string name="save_processed_image_success">Image enregistrée avec succès</string>
+    <string name="save_processed_image_error">Échec de l’enregistrement de l’image</string>
+    <string name="remove_background_no_subject_detected">Aucun sujet clair détecté. Essayez avec une autre image.</string>
+    <string name="remove_background_title">Nettoyeur de scènes d’image ✨</string>
+    <string name="remove_background_image_load_error">Échec du chargement de l’image</string>
+    <string name="remove_background">Supprimer l’arrière-plan avec l’IA</string>
     <string name="woo_shipping_labels_order_completion_error">Impossible d’indiquer la commande comme terminée</string>
     <string name="woo_shipping_address_use_as_entered">Utiliser l’adresse saisie</string>
     <string name="woo_shipping_labels_customs_product_details_weight_invalid">Le poids doit être supérieur à zéro</string>
@@ -36,7 +56,6 @@ Language: fr
     <string name="woopos_scanning_setup_info_bullet_1">Consultez votre scanner de code-barres bluetooth dans les réglages Bluetooth du système.</string>
     <string name="woopos_scanning_setup_info_title">Configuration du scanner</string>
     <string name="woopos_scanning_setup_more_information">Comment configurer des codes-barres sur des produits</string>
-    <string name="woopos_scanning_setup_success_message">Vous êtes prêt(e) à commencer à scanner des produits.\nEn savoir plus sur la prise en charge des scanners de codes-barres et de codes QR.</string>
     <string name="woopos_scanning_setup_success_title">Scanner configuré !</string>
     <string name="woopos_scanning_setup_go_to_settings">Accéder aux réglages de votre appareil</string>
     <string name="woopos_scanning_setup_pair_your_scanner_message">Activez le Bluetooth et sélectionnez votre scanner %s dans les réglages du système d’exploitation.\nLe scanner émettra un bip et affichera un voyant LED lorsqu’il sera appairé.</string>
@@ -58,7 +77,6 @@ Language: fr
     <string name="woopos_eligibility_reason_check_connection">Vérifiez votre connexion Internet et essayez de relancer l’application. Si le problème persiste, veuillez contacter l’assistance.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Votre version de WooCommerce n’est pas prise en charge. Le système PDV nécessite WooCommerce version %1$s ou supérieure. Veuillez procéder à la mise à jour de WooCommerce vers la dernière version.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Veuillez vous assurer que l’extension WooCommerce est installée et activée dans votre interface d’administration WordPress. Si le problème persiste, veuillez contacter l’assistance pour obtenir de l’aide.</string>
-    <string name="woopos_barcode_scanning_title">Configurer un scanner de codes-barres</string>
     <string name="orderfilters_sales_channel_filter_point_of_sale">Point de vente</string>
     <string name="orderfilters_sales_channel_filter">Canal de vente</string>
     <string name="barcode_ean13_content_description">Code-barres EAN13</string>
@@ -635,8 +653,8 @@ Language: fr
     <string name="more_menu_button_google">Google pour WooCommerce</string>
     <string name="no_quantity_rules">Pas de règles de quantité</string>
     <string name="woopos_items_in_cart">%d élément</string>
-    <string name="woopos_clear_cart_button">Effacer</string>
     <string name="woopos_payment_tax_label">Taxes</string>
+    <string name="woopos_clear_cart_button">Effacer le panier</string>
     <string name="blaze_campaign_preview_audience_section_title">Audience</string>
     <string name="woopos_exit_confirmation_dismiss_button">Annuler</string>
     <string name="woopos_exit_confirmation_title">Quitter le PDV</string>

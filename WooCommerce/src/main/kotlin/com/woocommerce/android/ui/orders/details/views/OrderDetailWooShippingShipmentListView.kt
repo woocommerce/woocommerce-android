@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleDa
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.util.StringUtils.getQuantityString
 
 @Composable
 fun OrderDetailWooShippingShipmentListView(
@@ -209,6 +210,7 @@ private fun ViewLabelRow(
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable(onClick = onClick)
             .padding(16.dp)
@@ -231,11 +233,18 @@ private fun ShipmentItemsRow(
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable(onClick = { isDialogShown = true })
             .padding(16.dp)
     ) {
-        Text(text = stringResource(R.string.orderdetail_shipping_label_shipment_items, items.size))
+        Text(
+            text = getQuantityString(
+                quantity = items.size,
+                default = R.string.orderdetail_shipping_label_shipment_items_multiple,
+                one = R.string.orderdetail_shipping_label_shipment_items_one,
+            )
+        )
 
         Icon(
             painter = painterResource(R.drawable.ic_arrow_right),
@@ -252,7 +261,11 @@ private fun ShipmentItemsRow(
                         .verticalScroll(rememberScrollState())
                 ) {
                     Text(
-                        text = stringResource(R.string.orderdetail_shipping_label_shipment_items, items.size),
+                        text = getQuantityString(
+                            quantity = items.size,
+                            default = R.string.orderdetail_shipping_label_shipment_items_multiple,
+                            one = R.string.orderdetail_shipping_label_shipment_items_one,
+                        ),
                         style = MaterialTheme.typography.titleLarge,
                     )
 

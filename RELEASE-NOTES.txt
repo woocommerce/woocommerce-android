@@ -1,6 +1,10 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+23.2
+-----
+- [*] Shipping Labels: Add error message for invalid dimensions errors to custom package creation screen [https://github.com/woocommerce/woocommerce-android/pull/14499]
+
 23.1
 -----
 - [*] You can now remove background from product images in the app. Just open the product image and click "Remove background" button. [https://github.com/woocommerce/woocommerce-android/pull/14445]
@@ -18,6 +22,8 @@
 - [Internal] Updated UserAgent of API requests to use `http.agent` System Property to fix performance issues related to WebView usage on app launch [https://github.com/woocommerce/woocommerce-android/pull/14431]
 - [*] Shipping Labels: Improved handling of address validation errors [https://github.com/woocommerce/woocommerce-android/pull/14468]
 - [*] Shipping Labels: Update UI of the shipping labels details in Order Details screen [https://github.com/woocommerce/woocommerce-android/pull/14485]
+- [*] Shipping Labels: Improved the error message for empty shipping rates list [https://github.com/woocommerce/woocommerce-android/pull/14433]
+- [*] Shipping Labels: Update button logic on the Hazardous Materials screen [https://github.com/woocommerce/woocommerce-android/pull/14488]
 
 23.0
 -----
