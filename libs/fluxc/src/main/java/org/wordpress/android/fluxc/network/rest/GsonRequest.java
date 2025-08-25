@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>> {
@@ -98,8 +99,9 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
         mBody = body;
     }
 
+
     @Override
-    protected void deliverResponse(ResponseWithHeaders<T> response) {
+    protected void deliverResponse(@NonNull ResponseWithHeaders<T> response) {
         if (mListener != null) {
             mListener.onResponse(response.getData(), response.getHeaders());
         } else {
