@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 class PackageCreationResponse {
     val custom: List<CustomPackageDTO>? = null
-    val predefined: Map<String, List<String>>? = null
 }
 
 data class CustomPackageCreationRequestData(

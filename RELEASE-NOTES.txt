@@ -4,6 +4,7 @@
 23.2
 -----
 - [Internal] Propagate response headers to all Rest Clients [https://github.com/woocommerce/woocommerce-android/pull/14513]
+- [*] Shipping Labels: Add error message for invalid dimensions errors to custom package creation screen [https://github.com/woocommerce/woocommerce-android/pull/14499]
 
 23.1
 -----

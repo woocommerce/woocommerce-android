@@ -1,8 +1,11 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 23.1
+Enhanced your store management experience with exciting new features! Remove backgrounds from product images instantly with our new one-tap tool. Improved shipping labels with better address validation, cleaner layouts, and smarter split shipment handling. Fixed order selection issues and enhanced login error handling for smoother operations.
+
 ## 23.0
-Psst... Excuse me, do you have a moment to talk about Woo Point of Sale? 💰 It now takes center stage with a shiny new POS tab in the main navigation—one tap and you’re selling in the UK and US, with improved external barcode scanner support 📦 for smoother checkouts. We’ve also refreshed the UI with sleek Material 3 touches ✨ and packed in small improvements and fixes you’ll want to explore.
+Psst... Excuse me, do you have a moment to talk about Woo Point of Sale? It now takes center stage with a shiny new POS tab in the main navigation—one tap and you’re selling in the UK and US, with improved external barcode scanner support for smoother checkouts. We’ve also refreshed the UI with sleek Material 3 touches and packed in small improvements and fixes you’ll want to explore.
 
 ## 22.9
 We’ve enhanced your WooCommerce experience with exciting Point of Sale improvements! Now filter orders by POS sales channel, set up barcode readers seamlessly, and spot POS orders with new badges on your dashboard. We’ve also fixed loading issues in order details, resolved payment screen crashes, restored search functionality, and improved shipping label address validation. Plus better plugin detection and currency handling after app restarts.
