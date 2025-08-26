@@ -113,7 +113,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onEditOriginAddress = viewModel::onEditOriginAddress,
                 onSelectedRateSortOrderChanged = viewModel::onSelectedRateSortOrderChanged,
                 onRefreshShippingRates = viewModel::onRefreshShippingRates,
-                weightInputList = viewModel.weightInputList,
+                weightInputList = viewModel.weightInputsFlow.collectAsState().value,
                 weightUnit = viewState.weightUnit,
                 onWeightChange = viewModel::onWeightChange,
                 uiState = viewState.uiState,
