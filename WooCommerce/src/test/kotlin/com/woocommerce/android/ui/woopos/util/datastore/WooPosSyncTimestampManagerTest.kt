@@ -10,164 +10,131 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.Locale
-import java.util.TimeZone
 
 class WooPosSyncTimestampManagerTest {
     private val repository: WooPosSyncTimestampRepository = mock()
     private val logger: WooPosLogWrapper = mock()
 
     private lateinit var manager: WooPosSyncTimestampManager
-    private lateinit var gmtDateFormat: SimpleDateFormat
+    private val gmtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.US).withZone(ZoneOffset.UTC)
 
     @Before
     fun setup() {
         manager = WooPosSyncTimestampManager(repository, logger)
-        gmtDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).apply {
-            timeZone = TimeZone.getTimeZone("GMT")
+    }
+
+    @Test
+    fun `given timestamp in millis, when storing products timestamp, then timestamp is stored`() {
+        runTest {
+            // GIVEN
+            val timestamp = LocalDateTime.parse("2024-01-15T10:30:00", gmtFormatter)
+                .toInstant(ZoneOffset.UTC).toEpochMilli()
+
+            // WHEN
+            manager.storeProductsLastSyncTimestamp(timestamp)
+
+            // THEN
+            verify(repository).storeProductsLastSyncTimestamp(timestamp)
         }
     }
 
     @Test
-    fun `given date object, when storing products timestamp, then formatted GMT string is stored`() {
+    fun `given valid timestamp in repository, when getting products timestamp, then timestamp is returned`() {
         runTest {
-            // Given
-            val date: Date = gmtDateFormat.parse("2024-01-15T10:30:00")!!
+            // GIVEN
+            val expectedTimestamp = LocalDateTime.parse("2024-01-15T10:30:00", gmtFormatter)
+                .toInstant(ZoneOffset.UTC).toEpochMilli()
+            whenever(repository.getProductsLastSyncTimestamp()).thenReturn(expectedTimestamp)
 
-            // When
-            manager.storeProductsLastSyncTimestamp(date)
-
-            // Then
-            verify(repository).storeProductsLastSyncTimestamp("2024-01-15T10:30:00")
-        }
-    }
-
-    @Test
-    fun `given valid timestamp string in repository, when getting products timestamp, then date object is returned`() {
-        runTest {
-            // Given
-            val timestampString = "2024-01-15T10:30:00"
-            val expectedDate = gmtDateFormat.parse(timestampString)
-            whenever(repository.getProductsLastSyncTimestamp()).thenReturn(timestampString)
-
-            // When
+            // WHEN
             val result = manager.getProductsLastSyncTimestamp()
 
-            // Then
-            assertThat(result).isEqualTo(expectedDate)
+            // THEN
+            assertThat(result).isEqualTo(expectedTimestamp)
         }
     }
 
     @Test
     fun `given no timestamp in repository, when getting products timestamp, then null is returned`() {
         runTest {
-            // Given
+            // GIVEN
             whenever(repository.getProductsLastSyncTimestamp()).thenReturn(null)
 
-            // When
+            // WHEN
             val result = manager.getProductsLastSyncTimestamp()
 
-            // Then
+            // THEN
             assertThat(result).isNull()
-        }
-    }
-
-    @Test
-    fun `given invalid timestamp string in repository, when getting products timestamp, then null is returned and error logged`() {
-        runTest {
-            // Given
-            val invalidTimestamp = "not-a-valid-timestamp"
-            whenever(repository.getProductsLastSyncTimestamp()).thenReturn(invalidTimestamp)
-
-            // When
-            val result = manager.getProductsLastSyncTimestamp()
-
-            // Then
-            assertThat(result).isNull()
-            verify(logger).e(eq("Failed to parse GMT timestamp: 'not-a-valid-timestamp'"), any())
         }
     }
 
     @Test
     fun `when clearing products timestamp, then repository clear method is called`() {
         runTest {
-            // When
+            // WHEN
             manager.clearProductsLastSyncTimestamp()
 
-            // Then
+            // THEN
             verify(repository).clearProductsLastSyncTimestamp()
         }
     }
 
     @Test
-    fun `given date object, when storing variations timestamp, then formatted GMT string is stored`() {
+    fun `given timestamp in millis, when storing variations timestamp, then timestamp is stored`() {
         runTest {
-            // Given
-            val date = gmtDateFormat.parse("2024-01-15T11:45:00")!!
+            // GIVEN
+            val timestamp = LocalDateTime.parse("2024-01-15T11:45:00", gmtFormatter)
+                .toInstant(ZoneOffset.UTC).toEpochMilli()
 
-            // When
-            manager.storeVariationsLastSyncTimestamp(date)
+            // WHEN
+            manager.storeVariationsLastSyncTimestamp(timestamp)
 
-            // Then
-            verify(repository).storeVariationsLastSyncTimestamp("2024-01-15T11:45:00")
+            // THEN
+            verify(repository).storeVariationsLastSyncTimestamp(timestamp)
         }
     }
 
     @Test
-    fun `given valid timestamp string in repository, when getting variations timestamp, then date object is returned`() {
+    fun `given valid timestamp in repository, when getting variations timestamp, then timestamp is returned`() {
         runTest {
-            // Given
-            val timestampString = "2024-01-15T11:45:00"
-            val expectedDate = gmtDateFormat.parse(timestampString)
-            whenever(repository.getVariationsLastSyncTimestamp()).thenReturn(timestampString)
+            // GIVEN
+            val expectedTimestamp = LocalDateTime.parse("2024-01-15T11:45:00", gmtFormatter)
+                .toInstant(ZoneOffset.UTC).toEpochMilli()
+            whenever(repository.getVariationsLastSyncTimestamp()).thenReturn(expectedTimestamp)
 
-            // When
+            // WHEN
             val result = manager.getVariationsLastSyncTimestamp()
 
-            // Then
-            assertThat(result).isEqualTo(expectedDate)
+            // THEN
+            assertThat(result).isEqualTo(expectedTimestamp)
         }
     }
 
     @Test
     fun `given no timestamp in repository, when getting variations timestamp, then null is returned`() {
         runTest {
-            // Given
+            // GIVEN
             whenever(repository.getVariationsLastSyncTimestamp()).thenReturn(null)
 
-            // When
+            // WHEN
             val result = manager.getVariationsLastSyncTimestamp()
 
-            // Then
+            // THEN
             assertThat(result).isNull()
-        }
-    }
-
-    @Test
-    fun `given invalid timestamp string in repository, when getting variations timestamp, then null is returned and error logged`() {
-        runTest {
-            // Given
-            val invalidTimestamp = "invalid-date-format"
-            whenever(repository.getVariationsLastSyncTimestamp()).thenReturn(invalidTimestamp)
-
-            // When
-            val result = manager.getVariationsLastSyncTimestamp()
-
-            // Then
-            assertThat(result).isNull()
-            verify(logger).e(eq("Failed to parse GMT timestamp: 'invalid-date-format'"), any())
         }
     }
 
     @Test
     fun `when clearing variations timestamp, then repository clear method is called`() {
         runTest {
-            // When
+            // WHEN
             manager.clearVariationsLastSyncTimestamp()
 
-            // Then
+            // THEN
             verify(repository).clearVariationsLastSyncTimestamp()
         }
     }
@@ -175,88 +142,104 @@ class WooPosSyncTimestampManagerTest {
     @Test
     fun `when clearing all timestamps, then repository clear all method is called`() {
         runTest {
-            // When
+            // WHEN
             manager.clearAllSyncTimestamps()
 
-            // Then
+            // THEN
             verify(repository).clearAllSyncTimestamps()
         }
     }
 
     @Test
-    fun `given date object, when formatting for API, then correct GMT string is returned`() {
-        // Given
-        val date = gmtDateFormat.parse("2024-01-15T14:30:00")!!
+    fun `given timestamp in millis, when formatting for API, then correct GMT string is returned`() {
+        // GIVEN
+        val timestamp = LocalDateTime.parse("2024-01-15T14:30:00", gmtFormatter)
+            .toInstant(ZoneOffset.UTC).toEpochMilli()
 
-        // When
-        val result = manager.formatTimestampForApi(date)
+        // WHEN
+        val result = manager.formatTimestampForApi(timestamp)
 
-        // Then
+        // THEN
         assertThat(result).isEqualTo("2024-01-15T14:30:00")
     }
 
     @Test
-    fun `given valid timestamp string, when parsing from API, then correct date object is returned`() {
-        // Given
+    fun `given valid timestamp string, when parsing from API, then correct timestamp in millis is returned`() {
+        // GIVEN
         val timestampString = "2024-01-15T14:30:00"
-        val expectedDate = gmtDateFormat.parse(timestampString)
+        val expectedTimestamp = LocalDateTime.parse(timestampString, gmtFormatter)
+            .toInstant(ZoneOffset.UTC).toEpochMilli()
 
-        // When
+        // WHEN
         val result = manager.parseTimestampFromApi(timestampString)
 
-        // Then
-        assertThat(result).isEqualTo(expectedDate)
+        // THEN
+        assertThat(result).isEqualTo(expectedTimestamp)
     }
 
     @Test
     fun `given invalid timestamp string, when parsing from API, then null is returned and error logged`() {
-        // Given
+        // GIVEN
         val invalidTimestamp = "2024-15-45T25:70:90"
 
-        // When
+        // WHEN
         val result = manager.parseTimestampFromApi(invalidTimestamp)
 
-        // Then
+        // THEN
         assertThat(result).isNull()
         verify(logger).e(eq("Failed to parse GMT timestamp: '2024-15-45T25:70:90'"), any())
     }
 
     @Test
-    fun `given timestamp with milliseconds, when parsing, then parsing handles format correctly`() {
-        // Given
+    fun `given timestamp without milliseconds, when parsing, then parsing handles format correctly`() {
+        // GIVEN
         val timestampWithoutMillis = "2024-01-15T10:30:00"
-        val expectedDate = gmtDateFormat.parse(timestampWithoutMillis)
+        val expectedTimestamp = LocalDateTime.parse(timestampWithoutMillis, gmtFormatter)
+            .toInstant(ZoneOffset.UTC).toEpochMilli()
 
-        // When
+        // WHEN
         val result = manager.parseTimestampFromApi(timestampWithoutMillis)
 
-        // Then
-        assertThat(result).isEqualTo(expectedDate)
+        // THEN
+        assertThat(result).isEqualTo(expectedTimestamp)
     }
 
     @Test
     fun `given empty string timestamp, when parsing from API, then null is returned and error logged`() {
-        // Given
+        // GIVEN
         val emptyTimestamp = ""
 
-        // When
+        // WHEN
         val result = manager.parseTimestampFromApi(emptyTimestamp)
 
-        // Then
+        // THEN
         assertThat(result).isNull()
         verify(logger).e(eq("Failed to parse GMT timestamp: ''"), any())
     }
 
     @Test
     fun `given whitespace timestamp, when parsing from API, then null is returned and error logged`() {
-        // Given
+        // GIVEN
         val whitespaceTimestamp = "   "
 
-        // When
+        // WHEN
         val result = manager.parseTimestampFromApi(whitespaceTimestamp)
 
-        // Then
+        // THEN
         assertThat(result).isNull()
         verify(logger).e(eq("Failed to parse GMT timestamp: '   '"), any())
+    }
+
+    @Test
+    fun `given timestamp with timezone suffix, when parsing from API, then null is returned`() {
+        // GIVEN
+        val timestampWithTZ = "2024-01-15T10:30:00Z"
+
+        // WHEN
+        val result = manager.parseTimestampFromApi(timestampWithTZ)
+
+        // THEN
+        assertThat(result).isNull()
+        verify(logger).e(eq("Failed to parse GMT timestamp: '2024-01-15T10:30:00Z'"), any())
     }
 }
