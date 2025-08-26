@@ -12,4 +12,5 @@ sealed class WooPosCartUIEvent {
     data class OnBarcodeEvent(
         val result: BarcodeInputDetector.BarcodeResult
     ) : WooPosCartUIEvent()
+    data object BarcodeSetupClicked : WooPosCartUIEvent()
 }

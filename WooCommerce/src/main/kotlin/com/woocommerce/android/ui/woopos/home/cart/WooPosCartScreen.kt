@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,11 +36,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
+import androidx.compose.material.icons.outlined.AddShoppingCart
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.DocumentScanner
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -55,14 +59,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -140,7 +141,9 @@ private fun WooPosCartScreen(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         height = Dimension.fillToConstraints
-                    }
+                    },
+                    onBarcodeSetupClicked = { onUIEvent(WooPosCartUIEvent.BarcodeSetupClicked) },
+                    isPosSettingsFeatureEnabled = state.isPosSettingsFeatureEnabled
                 )
             }
 
@@ -192,28 +195,106 @@ private fun WooPosCartScreen(
 }
 
 @Composable
-fun CartBodyEmpty(modifier: Modifier = Modifier) {
+fun CartBodyEmpty(
+    modifier: Modifier = Modifier,
+    onBarcodeSetupClicked: () -> Unit = {},
+    isPosSettingsFeatureEnabled: Boolean,
+) {
     Column(
         modifier = modifier
             .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_empty_cart),
-            contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
-            modifier = Modifier.size(88.dp),
-            colorFilter = ColorFilter.tint(
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.4F),
-                blendMode = BlendMode.SrcAtop,
-            )
+        EmptyStateSection(
+            icon = Icons.Outlined.AddShoppingCart,
+            iconContentDescription = stringResource(R.string.woopos_cart_empty_content_description),
+            text = stringResource(R.string.woopos_cart_empty_subtitle)
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+        if (isPosSettingsFeatureEnabled) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
+            EmptyCartOrDivider()
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
+            EmptyStateSection(
+                icon = Icons.Outlined.DocumentScanner,
+                text = stringResource(R.string.woopos_cart_empty_scan_products),
+                action = onBarcodeSetupClicked
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyStateSection(
+    icon: ImageVector,
+    iconContentDescription: String? = null,
+    text: String,
+    action: (() -> Unit)? = null
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            imageVector = icon,
+            contentDescription = iconContentDescription,
+            modifier = Modifier
+                .size(66.dp)
+                .let { modifier ->
+                    iconContentDescription?.let {
+                        modifier.semantics { contentDescription = it }
+                    } ?: modifier
+                },
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5F)
+        )
+
+        Spacer(
+            modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+
         WooPosText(
-            text = stringResource(R.string.woopos_cart_empty_subtitle),
-            style = WooPosTypography.BodyLarge,
-            color = WooPosTheme.colors.onSurfaceVariantLowest,
+            text = text,
+            style = WooPosTypography.BodyMedium,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
             textAlign = TextAlign.Center
+        )
+
+        action?.let {
+            WooPosText(
+                text = stringResource(R.string.woopos_cart_empty_setup_scanner),
+                style = WooPosTypography.BodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .clickable { it() }
+                    .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyCartOrDivider() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.15f)
+        )
+        WooPosText(
+            text = stringResource(R.string.woopos_cart_empty_or),
+            style = WooPosTypography.BodySmall,
+            fontWeight = FontWeight.Bold,
+            color = WooPosTheme.colors.onSurfaceVariantLowest,
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+        )
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.15f)
         )
     }
 }
@@ -233,8 +314,6 @@ private fun CartBodyWithItems(
         targetValue = if (checkoutButtonState == WooPosCartState.CheckoutButtonState.Invisible) 212.dp else 0.dp,
         label = "cart list height animation"
     )
-
-    AnnounceCartItemChangesForAccessibility(items)
 
     WooPosLazyColumn(
         modifier = modifier
@@ -286,50 +365,6 @@ private fun CartBodyWithItems(
         item {
             Spacer(modifier = Modifier.height(spacerHeight))
         }
-    }
-}
-
-@Composable
-private fun AnnounceCartItemChangesForAccessibility(
-    items: List<WooPosCartItemViewState>,
-) {
-    val localView = LocalView.current
-    val previousItems = remember { mutableStateOf<List<WooPosCartItemViewState>>(emptyList()) }
-    LaunchedEffect(items) {
-        val changedItem = items.firstOrNull { currentItem ->
-            val previousItem = previousItems.value.find { it.itemNumber == currentItem.itemNumber }
-            previousItem == null || currentItem::class != previousItem::class
-        }
-
-        changedItem?.let { currentItem ->
-            val message = when (currentItem) {
-                is WooPosCartItemViewState.Product ->
-                    localView.context.getString(
-                        R.string.woopos_cart_product_added_to_cart_accessibility,
-                        currentItem.name,
-                        currentItem.price
-                    )
-
-                is WooPosCartItemViewState.Coupon ->
-                    localView.context.getString(
-                        R.string.woopos_cart_coupon_added_to_cart_accessibility,
-                        currentItem.name
-                    )
-
-                is WooPosCartItemViewState.Error ->
-                    localView.context.getString(
-                        R.string.woopos_cart_adding_item_to_cart_failed,
-                        currentItem.message
-                    )
-
-                is WooPosCartItemViewState.Loading ->
-                    localView.context.getString(R.string.woopos_cart_searching_for_item)
-            }
-
-            @Suppress("DEPRECATION")
-            localView.announceForAccessibility(message)
-        }
-        previousItems.value = items
     }
 }
 
@@ -485,7 +520,8 @@ private fun ClearCartButton(
             DropdownMenu(
                 expanded = dropdownExpanded,
                 onDismissRequest = { dropdownExpanded = false },
-                modifier = Modifier.defaultMinSize(minWidth = 200.dp)
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 200.dp)
                     .background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
             ) {
                 DropdownMenuItem(
@@ -587,7 +623,7 @@ private fun ProductItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding(),)
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
                     .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
@@ -1069,7 +1105,8 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 ),
                 body = WooPosCartState.Body.Empty,
                 areItemsRemovable = false,
-                checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
+                checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible,
+                isPosSettingsFeatureEnabled = true
             )
         ) {}
     }
@@ -1095,7 +1132,7 @@ fun WooPosCartScreenErrorLoadingPreview(modifier: Modifier = Modifier) {
                         ),
                         WooPosCartItemViewState.Loading(
                             itemNumber = 2,
-                            name = "ADAXS1313XDVZX"
+                            name = "nADAXS1313XDVZX"
                         ),
                         WooPosCartItemViewState.Error(
                             itemNumber = 3,

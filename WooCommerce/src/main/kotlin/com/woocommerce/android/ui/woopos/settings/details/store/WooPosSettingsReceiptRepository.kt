@@ -32,7 +32,6 @@ class WooPosSettingsReceiptRepository @Inject constructor(
                     storeName = settings["woocommerce_pos_store_name"] ?: "",
                     address = settings["woocommerce_pos_store_address"] ?: "",
                     phone = settings["woocommerce_pos_store_phone"] ?: "",
-                    email = settings["woocommerce_pos_store_email"] ?: "",
                     refundPolicy = settings["woocommerce_pos_refund_returns_policy"] ?: ""
                 )
 

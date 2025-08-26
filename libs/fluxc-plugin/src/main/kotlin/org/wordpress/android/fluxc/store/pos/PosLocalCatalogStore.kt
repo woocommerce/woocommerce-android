@@ -8,8 +8,11 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.PosProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVariationModel
 import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog.T.API
 import javax.inject.Inject
@@ -19,6 +22,12 @@ data class PosLocalCatalogSyncResult(
     val syncedCount: Int,
     val hasMore: Boolean,
     val nextOffset: Int
+)
+
+data class PosVariationsSyncResult(
+    val syncedCount: Int,
+    val hasMore: Boolean,
+    val nextPage: Int
 )
 
 sealed class PosLocalCatalogError(
@@ -48,6 +57,7 @@ class PosLocalCatalogStore @Inject constructor(
     private val posProductRestClient: PosProductRestClient,
     private val coroutineEngine: CoroutineEngine,
     private val posProductDao: PosProductsDao,
+    private val posVariationsDao: PosVariationsDao,
 ) {
     companion object {
         private const val DEFAULT_PAGE_SIZE = 100
@@ -152,6 +162,119 @@ class PosLocalCatalogStore @Inject constructor(
                             )
                         )
                     }
+            }
+        }
+
+    /**
+     * Observes all variations for a given product from the local database.
+     *
+     * @param siteId The local site ID
+     * @param productId The remote product ID
+     * @return [Flow] of [Result] containing list of variations or error
+     */
+    fun observeVariationsForProduct(
+        siteId: LocalOrRemoteId.LocalId,
+        productId: LocalOrRemoteId.RemoteId
+    ): Flow<Result<List<WCPosVariationModel>>> =
+        posVariationsDao.observeVariationsForProduct(siteId, productId)
+            .map { variations ->
+                Result.success(variations)
+            }
+
+    /**
+     * Gets a single variation from the local database.
+     *
+     * @param siteId The local site ID
+     * @param productId The remote product ID
+     * @param variationId The remote variation ID
+     * @return [Result] containing the variation if found, null if not found, or error
+     */
+    suspend fun getVariation(
+        siteId: LocalOrRemoteId.LocalId,
+        productId: LocalOrRemoteId.RemoteId,
+        variationId: LocalOrRemoteId.RemoteId
+    ): Result<WCPosVariationModel?> =
+        coroutineEngine.withDefaultContext(API, this, "getVariation") {
+            val variation = posVariationsDao.getVariation(siteId, productId, variationId)
+            Result.success(variation)
+        }
+
+    /**
+     * Syncs recently modified variations with pagination support.
+     *
+     * @param site The site to sync variations for
+     * @param modifiedAfterGmt ISO 8601 formatted date string (GMT)
+     * @param page Starting page for pagination (1-based)
+     * @param pageSize Number of variations to fetch per page (default: 100, max: 100)
+     * @return [Result] containing [PosVariationsSyncResult] with pagination info or error
+     */
+    suspend fun syncRecentlyModifiedVariations(
+        site: SiteModel,
+        modifiedAfterGmt: String,
+        page: Int = 1,
+        pageSize: Int = DEFAULT_PAGE_SIZE,
+    ): Result<PosVariationsSyncResult> =
+        coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedVariations") {
+            val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
+
+            val response = posProductRestClient.fetchVariations(
+                site = site,
+                modifiedAfter = modifiedAfterGmt,
+                page = page,
+                pageSize = validPageSize
+            )
+
+            when {
+                response.isError -> {
+                    Result.failure(
+                        mapResponseError(response.error)
+                    )
+                }
+
+                response.model.isNullOrEmpty() -> {
+                    Result.success(
+                        PosVariationsSyncResult(
+                            syncedCount = 0,
+                            hasMore = false,
+                            nextPage = page
+                        )
+                    )
+                }
+
+                else -> {
+                    val siteId = site.localId()
+
+                    val variations = response.model.map { variationResponse ->
+                        variationResponse.mapToPosVariationModel(siteId)
+                    }
+
+                    val upsertResult = runCatching {
+                        posVariationsDao.upsertVariations(variations)
+                    }
+
+                    if (upsertResult.isFailure) {
+                        return@withDefaultContext Result.failure(
+                            PosLocalCatalogError.DatabaseError(
+                                errorMessage = "Failed to save variations to database",
+                                throwable = upsertResult.exceptionOrNull()
+                            )
+                        )
+                    }
+
+                    val hasMore = variations.size == validPageSize
+
+                    Result.success(
+                        PosVariationsSyncResult(
+                            syncedCount = variations.size,
+                            hasMore = hasMore,
+                            nextPage = if (hasMore) {
+                                page + 1
+                            } else {
+                                page
+                            }
+                        )
+                    )
+                }
             }
         }
 

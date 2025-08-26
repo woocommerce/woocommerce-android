@@ -120,6 +120,7 @@ data class ShippingLabelDTO(
     @SerializedName("tracking") val tracking: String? = null,
     @SerializedName("refundable_amount") val refundableAmount: BigDecimal? = null,
     @SerializedName("status") val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
+    @SerializedName("error") val error: String? = null,
     @SerializedName("created") val created: Long? = null,
     @SerializedName("carrier_id") val carrierId: String? = null,
     @SerializedName("service_name") val serviceName: String? = null,
