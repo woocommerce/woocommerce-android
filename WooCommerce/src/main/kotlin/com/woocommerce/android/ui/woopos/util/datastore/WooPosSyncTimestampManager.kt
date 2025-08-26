@@ -1,45 +1,32 @@
 package com.woocommerce.android.ui.woopos.util.datastore
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Locale
-import java.util.TimeZone
 import javax.inject.Inject
 
 class WooPosSyncTimestampManager @Inject constructor(
     private val timestampRepository: WooPosSyncTimestampRepository,
     private val logger: WooPosLogWrapper
 ) {
-    private val gmtDateFormat = SimpleDateFormat(GMT_DATE_FORMAT, Locale.US).apply {
-        timeZone = TimeZone.getTimeZone("GMT")
-        isLenient = false
+    private val gmtFormatter = DateTimeFormatter.ofPattern(GMT_DATE_FORMAT, Locale.US).withZone(ZoneOffset.UTC)
+
+    suspend fun storeProductsLastSyncTimestamp(timestamp: Long) {
+        timestampRepository.storeProductsLastSyncTimestamp(timestamp)
     }
 
-    suspend fun storeProductsLastSyncTimestamp(timestamp: Date) {
-        val timestampGmt: String = gmtDateFormat.format(timestamp)
-        timestampRepository.storeProductsLastSyncTimestamp(timestampGmt)
-    }
+    suspend fun getProductsLastSyncTimestamp(): Long? = timestampRepository.getProductsLastSyncTimestamp()
 
-    suspend fun getProductsLastSyncTimestamp(): Date? {
-        val timestampString = timestampRepository.getProductsLastSyncTimestamp()
-        return timestampString?.let { parseGmtTimestamp(it) }
-    }
+    suspend fun clearProductsLastSyncTimestamp() = timestampRepository.clearProductsLastSyncTimestamp()
 
-    suspend fun clearProductsLastSyncTimestamp() {
-        timestampRepository.clearProductsLastSyncTimestamp()
-    }
+    suspend fun storeVariationsLastSyncTimestamp(timestamp: Long) =
+        timestampRepository.storeVariationsLastSyncTimestamp(timestamp)
 
-    suspend fun storeVariationsLastSyncTimestamp(timestamp: Date) {
-        val timestampGmt: String = gmtDateFormat.format(timestamp)
-        timestampRepository.storeVariationsLastSyncTimestamp(timestampGmt)
-    }
-
-    suspend fun getVariationsLastSyncTimestamp(): Date? {
-        val timestampString = timestampRepository.getVariationsLastSyncTimestamp()
-        return timestampString?.let { parseGmtTimestamp(it) }
-    }
+    suspend fun getVariationsLastSyncTimestamp(): Long? = timestampRepository.getVariationsLastSyncTimestamp()
 
     suspend fun clearVariationsLastSyncTimestamp() {
         timestampRepository.clearVariationsLastSyncTimestamp()
@@ -49,19 +36,20 @@ class WooPosSyncTimestampManager @Inject constructor(
         timestampRepository.clearAllSyncTimestamps()
     }
 
-    fun formatTimestampForApi(timestamp: Date): String {
-        return gmtDateFormat.format(timestamp)
+    fun formatTimestampForApi(timestamp: Long): String {
+        return gmtFormatter.format(Instant.ofEpochMilli(timestamp))
     }
 
-    fun parseTimestampFromApi(timestampString: String): Date? {
-        return parseGmtTimestamp(timestampString)
+    fun parseTimestampFromApi(dateFromApi: String): Long? {
+        return parseGmtTimestamp(dateFromApi)
     }
 
-    private fun parseGmtTimestamp(timestampString: String): Date? {
+    private fun parseGmtTimestamp(dateFromApi: String): Long? {
         return try {
-            gmtDateFormat.parse(timestampString)
-        } catch (e: ParseException) {
-            logger.e("Failed to parse GMT timestamp: '$timestampString'", e)
+            val localDateTime = LocalDateTime.parse(dateFromApi, gmtFormatter)
+            return localDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()
+        } catch (e: DateTimeParseException) {
+            logger.e("Failed to parse GMT timestamp: '$dateFromApi'", e)
             null
         }
     }

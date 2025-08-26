@@ -15,19 +15,19 @@ class WooPosSyncTimestampRepository @Inject constructor(
     private val logger: WooPosLogWrapper
 ) {
 
-    suspend fun storeProductsLastSyncTimestamp(timestampGmt: String) {
+    suspend fun storeProductsLastSyncTimestamp(timestamp: Long) {
         val key = buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY)
         if (key != null) {
             dataStore.edit { preferences ->
-                preferences[key] = timestampGmt
+                preferences[key] = timestamp.toString()
             }
         }
     }
 
-    suspend fun getProductsLastSyncTimestamp(): String? {
+    suspend fun getProductsLastSyncTimestamp(): Long? {
         val key = buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY)
         return if (key != null) {
-            dataStore.data.first()[key]
+            dataStore.data.first()[key]?.toLong()
         } else {
             null
         }
@@ -42,19 +42,19 @@ class WooPosSyncTimestampRepository @Inject constructor(
         }
     }
 
-    suspend fun storeVariationsLastSyncTimestamp(timestampGmt: String) {
+    suspend fun storeVariationsLastSyncTimestamp(timestamp: Long) {
         val key = buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY)
         if (key != null) {
             dataStore.edit { preferences ->
-                preferences[key] = timestampGmt
+                preferences[key] = timestamp.toString()
             }
         }
     }
 
-    suspend fun getVariationsLastSyncTimestamp(): String? {
+    suspend fun getVariationsLastSyncTimestamp(): Long? {
         val key = buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY)
         return if (key != null) {
-            dataStore.data.first()[key]
+            dataStore.data.first()[key]?.toLong()
         } else {
             null
         }
