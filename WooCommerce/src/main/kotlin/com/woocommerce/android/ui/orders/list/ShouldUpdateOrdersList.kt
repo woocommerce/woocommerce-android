@@ -13,6 +13,7 @@ class ShouldUpdateOrdersList @Inject constructor(
     private val listStore: ListStore,
     private val appPrefs: AppPrefsWrapper
 ) {
+    @Suppress("ReturnCount")
     suspend operator fun invoke(listDescriptor: ListDescriptor): Boolean {
         // 23-07-2025: Consider removing this in the future
         // AINFRA-986

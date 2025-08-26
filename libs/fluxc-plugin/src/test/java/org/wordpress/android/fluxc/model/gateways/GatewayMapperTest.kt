@@ -17,7 +17,7 @@ class GatewayMapperTest {
     }
 
     @Test
-    fun `toModel maps all fields when present`() {
+    fun `given fields are present, when toModel, then maps all `() {
         val response = GatewayResponse(
             gatewayId = "cod",
             title = "Cash on delivery",
@@ -42,7 +42,7 @@ class GatewayMapperTest {
     }
 
     @Test
-    fun `toModel applies defaults when fields are null`() {
+    fun `given fields are null, when toModel, then applies defaults`() {
         val response = GatewayResponse(
             gatewayId = "stripe",
             title = null,
@@ -67,7 +67,7 @@ class GatewayMapperTest {
     }
 
     @Test
-    fun `order parsing handles non-numeric values as zero`() {
+    fun `given non-numeric values, when toModel, then order parsing handles them as zero`() {
         val response = GatewayResponse(
             gatewayId = "dummy",
             title = null,
@@ -85,7 +85,7 @@ class GatewayMapperTest {
     }
 
     @Test
-    fun `toEntity and toModel(entity) round trip preserves data`() {
+    fun `given round trip, when toEntity and toModel(entity), then data is preserved`() {
         val siteId = LocalId(7)
         val response = GatewayResponse(
             gatewayId = "cod",
@@ -111,7 +111,7 @@ class GatewayMapperTest {
     }
 
     @Test
-    fun `toEntities maps list of responses`() {
+    fun `when toEntities, then maps list of responses`() {
         val siteId = LocalId(3)
         val responses = listOf(
             GatewayResponse(
@@ -150,7 +150,7 @@ class GatewayMapperTest {
     }
 
     @Test
-    fun `toModel(entity) parses JSON saved in GatewayEntity`() {
+    fun `given JSON saved in GatewayEntity, when toModel(entity), then parses it successfully`() {
         val response = GatewayResponse(
             gatewayId = "custom",
             title = "Custom Title",

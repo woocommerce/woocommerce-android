@@ -1,12 +1,12 @@
 package org.wordpress.android.fluxc.store
 
+import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
-import com.google.gson.Gson
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.gateways.GatewayMapper
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
@@ -44,7 +44,7 @@ class WCGatewayStoreTest {
     }
 
     @Test
-    fun `fetch all gateways`() = test {
+    fun `when fetch all gateways, then works as expected`() = test {
         val result = fetchAllTestGateways()
 
         assertThat(result.model?.size).isEqualTo(gatewaysResponse.size)
@@ -57,7 +57,7 @@ class WCGatewayStoreTest {
     }
 
     @Test
-    fun `update gateway`() = test {
+    fun `when update gateway, then works as expected`() = test {
         fetchAllTestGateways()
         whenever(gatewaysDao.getGateway(stubSite.localId(), gatewayId))
             .thenReturn(gatewaysEntities.first())
@@ -79,7 +79,7 @@ class WCGatewayStoreTest {
     }
 
     @Test
-    fun `get gateway`() = test {
+    fun `when get gateway, then works as expected`() = test {
         whenever(gatewaysDao.getGateway(stubSite.localId(), gatewayId))
             .thenReturn(gatewaysEntities.first())
         whenever(gatewaysDao.getGateway(errorSite.localId(), gatewayId))
@@ -93,7 +93,7 @@ class WCGatewayStoreTest {
     }
 
     @Test
-    fun `get all gateways`() = test {
+    fun `when get all gateways, then works as expected`() = test {
         whenever(gatewaysDao.getGatewaysForSite(stubSite.localId()))
             .thenReturn(gatewaysEntities)
         whenever(gatewaysDao.getGatewaysForSite(errorSite.localId()))
