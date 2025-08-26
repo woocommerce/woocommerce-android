@@ -3,9 +3,9 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.DocumentScanner
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.Settings
 import androidx.lifecycle.ViewModel
@@ -187,7 +187,7 @@ class WooPosToolbarViewModel @Inject constructor(
                 add(
                     WooPosToolbarState.Menu.MenuItem(
                         title = R.string.woopos_orders_title,
-                        icon = Icons.AutoMirrored.Filled.List,
+                        icon = Icons.Default.Description,
                     )
                 )
             }
@@ -204,7 +204,7 @@ class WooPosToolbarViewModel @Inject constructor(
                     ),
                     WooPosToolbarState.Menu.MenuItem(
                         title = R.string.woopos_documentation_title,
-                        icon = Icons.Default.Description,
+                        icon = Icons.Default.Info,
                     ),
                     WooPosToolbarState.Menu.MenuItem(
                         title = R.string.woopos_get_support_title,
