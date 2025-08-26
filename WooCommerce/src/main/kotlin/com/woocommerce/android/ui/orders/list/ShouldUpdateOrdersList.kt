@@ -20,6 +20,12 @@ class ShouldUpdateOrdersList @Inject constructor(
             appPrefs.orderSummaryMigrated = true
             return true
         }
+        // 26-08-2025: Consider removing this in the future
+        // AINFRA-1190
+        if (!appPrefs.gatewayMigrated) {
+            appPrefs.gatewayMigrated = true
+            return true
+        }
 
         val listId = listDescriptor.uniqueIdentifier.value
         val shouldUpdateByState = listStore.getListState(listDescriptor) == ListState.NEEDS_REFRESH
