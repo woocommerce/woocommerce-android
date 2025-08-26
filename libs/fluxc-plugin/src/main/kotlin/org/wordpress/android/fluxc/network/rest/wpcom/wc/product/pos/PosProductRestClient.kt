@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.pos.PosGenerateCatalogResponse
 import org.wordpress.android.fluxc.model.pos.PosVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
@@ -14,7 +15,7 @@ class PosProductRestClient @Inject constructor(
     private val wooNetwork: WooNetwork,
 ) {
     companion object {
-        private const val FIELDS = "localSiteId,id,name,sku,global_unique_id,type,price,downloadable," +
+        private const val PRODUCT_FIELDS = "localSiteId,id,name,sku,global_unique_id,type,price,downloadable," +
             "images,attributes,parent_id,status,regular_price,sale_price,on_sale,description," +
             "short_description,manage_stock,stock_quantity,stock_status,backorders_allowed," +
             "backordered,categories,tags,date_modified"
@@ -35,7 +36,7 @@ class PosProductRestClient @Inject constructor(
             pageSize = pageSize,
             offset = offset,
             modifiedAfter = modifiedAfter,
-            fields = FIELDS
+            fields = PRODUCT_FIELDS
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -78,6 +79,32 @@ class PosProductRestClient @Inject constructor(
             path = url,
             params = params,
             clazz = Array<PosVariationApiResponse>::class.java
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> {
+                WooResult(response.data ?: emptyArray())
+            }
+
+            is WPAPIResponse.Error -> {
+                WooResult(response.error.toWooError())
+            }
+        }
+    }
+
+    suspend fun postGenerateCatalog(
+        site: SiteModel,
+    ): WooResult<Array<PosGenerateCatalogResponse>> {
+        val url = WOOCOMMERCE.catalog.pathV3
+        val params = mutableMapOf(
+            "_fields" to PRODUCT_FIELDS
+        )
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            params = params,
+            clazz = Array<PosGenerateCatalogResponse>::class.java
         )
 
         return when (response) {
