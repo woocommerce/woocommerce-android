@@ -29,6 +29,7 @@ fun WooPosRootHost(
                 NavigationEvent.ExitPos -> onNavigationEvent(ExitPosClicked)
                 NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted -> onNavigationEvent(ReturnHomeFromCashPayment)
                 NavigationEvent.ToSettings -> onNavigationEvent(OpenSettings)
+                NavigationEvent.ToOrders -> onNavigationEvent(WooPosNavigationEvent.OpenOrders)
             }
         }
     }
