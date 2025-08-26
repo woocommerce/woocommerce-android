@@ -214,7 +214,7 @@ fun CartBodyEmpty(
             tint = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.5F)
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
         if (isPosSettingsFeatureEnabled) {
             val annotatedText = buildAnnotatedString {
@@ -244,10 +244,11 @@ fun CartBodyEmpty(
                 color = WooPosTheme.colors.onSurfaceVariantLowest,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .clickable {
-                        onBarcodeSetupClicked()
-                    }
-                    .padding(horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding())
+                    .clickable { onBarcodeSetupClicked() }
+                    .padding(
+                        horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                        vertical = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    )
             )
         } else {
             WooPosText(
