@@ -19,8 +19,7 @@ class WooPosSettingsStoreRepository @Inject constructor(
 
             WooPosSettingsStoreState.StoreInfo(
                 storeName = site.name ?: "",
-                address = storeAddress,
-                email = site.email ?: ""
+                address = storeAddress
             )
         }
 

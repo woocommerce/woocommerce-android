@@ -87,7 +87,7 @@ fun ShipmentDetails(
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
-    shipmentPurchased: Boolean,
+    readOnly: Boolean,
     onPeekHeightChanged: (Dp) -> Unit
 ) {
     val expandProgress = bottomSheetState.progress(
@@ -200,7 +200,7 @@ fun ShipmentDetails(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = 16.dp),
-                            shipmentPurchased = shipmentPurchased,
+                            readOnly = readOnly,
                             onEditDestinationAddress = onEditDestinationAddress,
                             onEditOriginAddress = onEditOriginAddress,
                             onOriginAddressSelected = onOriginAddressSelected,
@@ -217,7 +217,7 @@ fun ShipmentDetails(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = 16.dp),
-                            shipmentPurchased = shipmentPurchased,
+                            readOnly = readOnly,
                             onEditDestinationAddress = onEditDestinationAddress,
                             onEditOriginAddress = onEditOriginAddress,
                             onOriginAddressSelected = onOriginAddressSelected,
@@ -259,7 +259,7 @@ private fun ShipmentDetailsPortrait(
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
-    shipmentPurchased: Boolean
+    readOnly: Boolean
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -272,14 +272,14 @@ private fun ShipmentDetailsPortrait(
             totalItems = totalItems,
             totalItemsCost = totalItemsCost,
             shippingLines = shippingLines,
-            isReadOnly = shipmentPurchased,
+            isReadOnly = readOnly,
             onEditDestinationAddress = onEditDestinationAddress,
             onEditOriginAddress = onEditOriginAddress,
             onOriginAddressSelected = onOriginAddressSelected,
             destinationStatus = destinationStatus
         )
         Divider()
-        if (!shipmentPurchased) {
+        if (!readOnly) {
             PaymentSection(paymentsSectionUI = paymentsSectionUI)
             Divider()
         }
@@ -300,7 +300,7 @@ private fun ShipmentDetailsLandscape(
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
-    shipmentPurchased: Boolean = false
+    readOnly: Boolean = false
 ) {
     Column(
         modifier
@@ -309,7 +309,7 @@ private fun ShipmentDetailsLandscape(
     ) {
         AddressSectionLandscape(
             shippingAddresses = shippingAddresses,
-            isReadOnly = shipmentPurchased,
+            isReadOnly = readOnly,
             onEditDestinationAddress = onEditDestinationAddress,
             onEditOriginAddress = onEditOriginAddress,
             onOriginAddressSelected = onOriginAddressSelected,
@@ -330,7 +330,7 @@ private fun ShipmentDetailsLandscape(
             )
             VerticalDivider(Modifier.padding(top = 16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                if (!shipmentPurchased) {
+                if (!readOnly) {
                     PaymentSection(
                         paymentsSectionUI = paymentsSectionUI,
                         modifier = Modifier
@@ -679,7 +679,7 @@ fun ShipmentDetailsExpandedPreview() {
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
                 destinationStatus = AddressStatus.Verified,
-                shipmentPurchased = false,
+                readOnly = false,
                 onPeekHeightChanged = {}
             )
         }
@@ -713,7 +713,7 @@ private fun ShipmentDetailsCollapsedPreview() {
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
                 destinationStatus = AddressStatus.Verified,
-                shipmentPurchased = false,
+                readOnly = false,
                 onPeekHeightChanged = {},
             )
         }

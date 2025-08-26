@@ -228,7 +228,7 @@ class GetShipmentsTests : BaseUnitTest() {
         val result = sut.invoke(order)
         val shipmentUIModel = result.first()
 
-        assertFalse(shipmentUIModel.purchased)
+        assertFalse(shipmentUIModel.isPurchasedOrInProgress)
     }
 
     @Test
@@ -275,7 +275,7 @@ class GetShipmentsTests : BaseUnitTest() {
         val result = sut.invoke(order)
         val shipmentUIModel = result.first()
 
-        assertFalse(shipmentUIModel.purchased)
+        assertFalse(shipmentUIModel.isPurchasedOrInProgress)
     }
 
     @Test
@@ -322,7 +322,7 @@ class GetShipmentsTests : BaseUnitTest() {
         val result = sut.invoke(order)
         val shipmentUIModel = result.first()
 
-        assertTrue(shipmentUIModel.purchased)
+        assertTrue(shipmentUIModel.isPurchasedOrInProgress)
         assertNotNull(shipmentUIModel.label)
     }
 }

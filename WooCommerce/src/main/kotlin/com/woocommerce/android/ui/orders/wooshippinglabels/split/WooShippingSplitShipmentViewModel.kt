@@ -58,7 +58,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                         currencyFormatter = currencyFormatter,
                         dimensionUnit = storeOptions.dimensionUnit,
                         weightUnit = storeOptions.weightUnit,
-                        purchased = it.value.purchased
+                        purchased = it.value.isPurchasedOrInProgress
                     )
                 }
 
@@ -174,8 +174,8 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     }
 
     private fun mergeUnfulfilledShipments() {
-        val fulfilledShipments = currentShipments.value.filter { it.value.purchased }
-        val unfulfilledShipments = currentShipments.value.filterNot { it.value.purchased }
+        val fulfilledShipments = currentShipments.value.filter { it.value.isPurchasedOrInProgress }
+        val unfulfilledShipments = currentShipments.value.filterNot { it.value.isPurchasedOrInProgress }
         val firstUnfulfilledShipmentKey = unfulfilledShipments.keys.first()
         val firstUnfulfilledShipmentValue = unfulfilledShipments.values.first()
         val mergedShipmentUIModel = firstUnfulfilledShipmentValue.copy(

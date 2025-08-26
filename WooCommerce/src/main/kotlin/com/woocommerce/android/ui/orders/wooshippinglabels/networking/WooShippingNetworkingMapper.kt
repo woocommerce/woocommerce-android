@@ -75,6 +75,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             tracking = shippingLabelDTO.tracking.orEmpty(),
             refundableAmount = shippingLabelDTO.refundableAmount ?: BigDecimal.ZERO,
             status = shippingLabelDTO.status,
+            error = shippingLabelDTO.error,
             created = shippingLabelDTO.created?.let { Date(it) },
             carrierId = shippingLabelDTO.carrierId.orEmpty(),
             serviceName = shippingLabelDTO.serviceName.orEmpty(),

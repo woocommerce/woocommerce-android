@@ -1,26 +1,48 @@
 package com.woocommerce.android.ui.woopos.settings
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.HardwareTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.HelpTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsClosed
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsOpened
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.StoreDetailsTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosSettingsViewModel @Inject constructor() : ViewModel() {
+class WooPosSettingsViewModel @Inject constructor(
+    private val analyticsTracker: WooPosAnalyticsTracker
+) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsState())
     val state: StateFlow<WooPosSettingsState> = _state.asStateFlow()
 
     fun onCategorySelected(category: WooPosSettingsCategory) {
+        trackCategorySelection(category)
         _state.update { currentState ->
             currentState.copy(
                 selectedCategory = category,
                 currentDestination = category.rootDestination
             )
+        }
+    }
+
+    private fun trackCategorySelection(category: WooPosSettingsCategory) {
+        val event = when (category) {
+            WooPosSettingsCategory.STORE -> StoreDetailsTapped
+            WooPosSettingsCategory.HARDWARE -> HardwareTapped
+            WooPosSettingsCategory.HELP -> HelpTapped
+        }
+        viewModelScope.launch {
+            analyticsTracker.track(event)
         }
     }
 
@@ -56,6 +78,18 @@ class WooPosSettingsViewModel @Inject constructor() : ViewModel() {
     fun hideDialog() {
         _state.update { currentState ->
             currentState.copy(dialogState = WooPosHomeState.DialogState.Hidden)
+        }
+    }
+
+    fun onSettingsOpened() {
+        viewModelScope.launch {
+            analyticsTracker.track(SettingsOpened)
+        }
+    }
+
+    fun onSettingsClosed() {
+        viewModelScope.launch {
+            analyticsTracker.track(SettingsClosed)
         }
     }
 }

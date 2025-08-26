@@ -9,13 +9,11 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShi
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOptionUI
@@ -201,12 +199,6 @@ object ShippingLabelSampleData {
         )
     }
 
-    fun getShipmentPrintLabelUI() = ShipmentPrintLabelUI(
-        availablePrintSizes = listOf(WooShippingLabelPaperSize.LABEL, WooShippingLabelPaperSize.LETTER),
-        isRefundAvailable = true,
-        isCustomsFormAvailable = true
-    )
-
     @Suppress("LongMethod")
     fun getShippingLabelUIModel(purchased: Boolean = false) = ShipmentUIModel(
         localId = "1",
@@ -239,7 +231,6 @@ object ShippingLabelSampleData {
                 currency = "USD"
             )
         ),
-        purchaseState = PurchaseState.NoStarted,
         label = if (purchased) {
             ShippingLabelModel(
                 labelId = 0L,

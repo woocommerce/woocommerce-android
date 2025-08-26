@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel.Companion.SINGLE_QUANTITY
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
@@ -61,20 +62,14 @@ fun List<ShippableItemModel>.toUIModel(
         shippableItems = shippableItemsUI,
         formattedTotalWeight = formattedTotalWeight,
         formattedTotalPrice = formattedTotalPrice,
-        purchased = shipmentUIModel.purchased,
         packageSelectionState = packageSelectionState,
         customsState = customsState,
         hazmatState = hazmatCategory?.let { WooShippingLabelCreationViewModel.HazmatState.Declared(it) }
             ?: WooShippingLabelCreationViewModel.HazmatState.NoSelection,
         shippingRatesState = shippingRates,
         shipmentCostUI = shipmentCostUI,
-        purchaseState = shipmentUIModel.purchaseState,
-        status = shipmentUIModel.label?.status ?: ShippingLabelStatus.UNKNOWN,
-        shipmentPrintLabelUI = ShipmentPrintLabelUI(
-            availablePrintSizes = getPaperSizes(shipmentUIModel.label?.originAddress?.country?.code),
-            isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true,
-            isCustomsFormAvailable = shipmentUIModel.label?.commercialInvoiceUrl.isNotNullOrEmpty()
-        ),
+        isPurchaseAPILoading = shipmentUIModel.isPurchaseAPILoading,
+        labelPurchaseStatus = shipmentUIModel.label?.toPurchaseStatus() ?: LabelPurchaseStatus.Idle
     )
 }
 
@@ -158,7 +153,7 @@ private fun getShipmentCostUI(
     currencyFormatter: (BigDecimal) -> String
 ): ShipmentCostUI? {
     return when {
-        shipmentUIModel.purchased -> {
+        shipmentUIModel.isPurchasedOrInProgress -> {
             requireNotNull(shipmentUIModel.label)
             ShipmentCostUI(
                 serviceName = shipmentUIModel.label.serviceName,
@@ -196,9 +191,26 @@ private fun getShipmentCostUI(
     }
 }
 
-private fun getPaperSizes(countryCode: String?): List<WooShippingLabelPaperSize> =
-    if (countryCode.isNullOrEmpty() || countryCode.uppercase() in listOf("US", "CA", "MX", "DO")) {
-        WooShippingLabelPaperSize.entries.minus(WooShippingLabelPaperSize.A4)
-    } else {
-        WooShippingLabelPaperSize.entries
+private fun ShippingLabelModel.toPurchaseStatus(): LabelPurchaseStatus {
+    fun getPaperSizes(countryCode: String?): List<WooShippingLabelPaperSize> =
+        if (countryCode.isNullOrEmpty() || countryCode.uppercase() in listOf("US", "CA", "MX", "DO")) {
+            WooShippingLabelPaperSize.entries.minus(WooShippingLabelPaperSize.A4)
+        } else {
+            WooShippingLabelPaperSize.entries
+        }
+
+    return when {
+        status == ShippingLabelStatus.PURCHASE_IN_PROGRESS -> LabelPurchaseStatus.PurchaseInProgress
+        status == ShippingLabelStatus.PURCHASED && refund == null -> {
+            LabelPurchaseStatus.Purchased(
+                availablePrintSizes = getPaperSizes(originAddress?.country?.code),
+                isRefundAvailable = isRefundAvailable,
+                isCustomsFormAvailable = commercialInvoiceUrl.isNotNullOrEmpty()
+            )
+        }
+        status == ShippingLabelStatus.PURCHASE_ERROR -> LabelPurchaseStatus.Failed(
+            errorMessage = error
+        )
+        else -> LabelPurchaseStatus.Idle
     }
+}
