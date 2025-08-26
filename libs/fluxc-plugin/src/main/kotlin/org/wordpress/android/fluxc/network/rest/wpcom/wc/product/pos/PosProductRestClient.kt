@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.pos.PosCatalogStatusResponse
 import org.wordpress.android.fluxc.model.pos.PosGenerateCatalogResponse
 import org.wordpress.android.fluxc.model.pos.PosVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -100,11 +101,38 @@ class PosProductRestClient @Inject constructor(
             "_fields" to PRODUCT_FIELDS
         )
 
+        val response = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = params,
+            clazz = Array<PosGenerateCatalogResponse>::class.java
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> {
+                WooResult(response.data ?: emptyArray())
+            }
+
+            is WPAPIResponse.Error -> {
+                WooResult(response.error.toWooError())
+            }
+        }
+    }
+
+    suspend fun getCatalogStatus(
+        site: SiteModel,
+        jobId: String,
+    ): WooResult<Array<PosCatalogStatusResponse>> {
+        val url = WOOCOMMERCE.catalog.status.id(jobId).pathV3
+        val params = mutableMapOf(
+            "_fields" to PRODUCT_FIELDS
+        )
+
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
             path = url,
             params = params,
-            clazz = Array<PosGenerateCatalogResponse>::class.java
+            clazz = Array<PosCatalogStatusResponse>::class.java
         )
 
         return when (response) {
