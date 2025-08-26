@@ -825,12 +825,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onShipmentSplit(newShipments: List<ShipmentUIModel>) {
+        shipments.value = newShipments
         if (selectedShipmentIndex >= newShipments.size) {
             uiState.update {
                 it.copy(selectedIndex = it.selectedIndex.coerceAtMost(newShipments.size - 1))
             }
+        } else {
+            resetWeight(selectedShipmentIndex)
         }
-        shipments.value = newShipments
     }
 
     fun onShippingLabelRefunded(labelId: Long) {
@@ -1056,8 +1058,24 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onPackageSelected(packageData: PackageData) {
+        val index = selectedShipmentIndex
         selectedPackagesFlow.value = selectedPackagesFlow.value.toMutableList().apply {
-            set(selectedShipmentIndex, packageData)
+            set(index, packageData)
+        }
+
+        resetWeight(selectedShipmentIndex)
+    }
+
+    private fun resetWeight(shipmentIndex: Int) {
+        val selectedWeightInput = weightInputList[shipmentIndex]
+        if (selectedWeightInput.weight.isNotEmpty() && !selectedWeightInput.autoFilled) return
+
+        val itemsWeight = shipmentItems.value[shipmentIndex].sumByFloat { it.weight * it.quantity }
+        val packageWeight = selectedPackagesFlow.value[shipmentIndex]?.weight?.toFloatOrNull() ?: 0f
+        val totalWeight = itemsWeight + packageWeight
+
+        weightInputList = weightInputList.toMutableList().apply {
+            set(shipmentIndex, WeightInput(weight = totalWeight.toString(), autoFilled = true))
         }
     }
 
