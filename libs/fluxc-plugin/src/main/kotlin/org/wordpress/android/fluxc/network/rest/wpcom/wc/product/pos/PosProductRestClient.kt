@@ -95,7 +95,7 @@ class PosProductRestClient @Inject constructor(
 
     suspend fun postGenerateCatalog(
         site: SiteModel,
-    ): WooResult<Array<PosGenerateCatalogResponse>> {
+    ): WooResult<PosGenerateCatalogResponse> {
         val url = WOOCOMMERCE.catalog.pathV3
         val params = mutableMapOf(
             "_fields" to PRODUCT_FIELDS
@@ -105,12 +105,12 @@ class PosProductRestClient @Inject constructor(
             site = site,
             path = url,
             body = params,
-            clazz = Array<PosGenerateCatalogResponse>::class.java
+            clazz = PosGenerateCatalogResponse::class.java
         )
 
         return when (response) {
             is WPAPIResponse.Success -> {
-                WooResult(response.data ?: emptyArray())
+                WooResult(response.data)
             }
 
             is WPAPIResponse.Error -> {
@@ -122,7 +122,7 @@ class PosProductRestClient @Inject constructor(
     suspend fun getCatalogStatus(
         site: SiteModel,
         jobId: String,
-    ): WooResult<Array<PosCatalogStatusResponse>> {
+    ): WooResult<PosCatalogStatusResponse> {
         val url = WOOCOMMERCE.catalog.status.id(jobId).pathV3
         val params = mutableMapOf(
             "_fields" to PRODUCT_FIELDS
@@ -132,12 +132,12 @@ class PosProductRestClient @Inject constructor(
             site = site,
             path = url,
             params = params,
-            clazz = Array<PosCatalogStatusResponse>::class.java
+            clazz = PosCatalogStatusResponse::class.java
         )
 
         return when (response) {
             is WPAPIResponse.Success -> {
-                WooResult(response.data ?: emptyArray())
+                WooResult(response.data)
             }
 
             is WPAPIResponse.Error -> {
