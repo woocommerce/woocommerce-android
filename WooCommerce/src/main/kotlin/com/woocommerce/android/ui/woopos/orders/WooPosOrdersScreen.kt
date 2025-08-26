@@ -149,7 +149,6 @@ fun WooPosOrdersDetailPaneScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // Match SettingsDetail: toolbar with Medium padding (no statusBarsPadding here)
         WooPosToolbar(
             modifier = Modifier
                 .padding(
@@ -163,7 +162,6 @@ fun WooPosOrdersDetailPaneScreen(
             titleFontWeight = FontWeight.Normal
         )
 
-        // Your detail content area
         Column(
             modifier = Modifier
                 .fillMaxSize()
