@@ -682,7 +682,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val dataState = currentViewState as DataState
         val selection = dataState.shipmentUIList[0].packageSelectionState
         val data = selection as PackageSelectionState.DataAvailable
-        assertThat(data.defaultWeight).isEqualTo("3.5")
+        assertThat(data.shipmentWeight).isEqualTo("3.5")
     }
 
     @Test
