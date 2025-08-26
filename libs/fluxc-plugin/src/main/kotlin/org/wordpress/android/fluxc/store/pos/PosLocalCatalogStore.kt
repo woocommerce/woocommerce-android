@@ -30,6 +30,15 @@ data class PosVariationsSyncResult(
     val nextPage: Int
 )
 
+data class PosGenerateCatalogResult(
+    val jobId: String?,
+)
+
+data class PosCatalogStatusResult(
+    val downloadUrl: String?,
+    val status: String?,
+)
+
 sealed class PosLocalCatalogError(
     override val message: String,
     override val cause: Throwable? = null
