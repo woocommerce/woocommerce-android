@@ -443,6 +443,23 @@ class WooPosToolbarViewModelTest {
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
     }
 
+    @Test
+    fun `when Orders MenuItemClicked, then ToOrders navigation event should be sent`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+        val menuItem = WooPosToolbarState.Menu.MenuItem(
+            title = com.woocommerce.android.R.string.woopos_orders_title,
+            icon = Icons.Default.Description
+        )
+
+        // WHEN
+        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToOrders)
+        assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
+    }
+
     private fun createViewModel() = WooPosToolbarViewModel(
         cardReaderFacade,
         childrenToParentEventSender,
