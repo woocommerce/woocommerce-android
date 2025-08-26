@@ -686,6 +686,168 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when reselecting package, then weight reflects items plus new package weight`() = testBlocking {
+        val items = listOf(
+            ShippableItemModel(
+                itemId = 1,
+                productId = 1,
+                title = "title",
+                price = BigDecimal.ONE,
+                quantity = 1f,
+                weight = 1f,
+                currency = "USD",
+                width = 1f,
+                height = 1f,
+                length = 1f
+            )
+        )
+        whenever(getShipments(any())) doReturn listOf(ShipmentUIModel(localId = "0", items = items))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val firstPackage = PackageData(
+            id = "1",
+            name = "Pkg1",
+            dimensions = "10x10x10",
+            weight = "1",
+            isSelected = true,
+            isLetter = false
+        )
+        val secondPackage = PackageData(
+            id = "2",
+            name = "Pkg2",
+            dimensions = "5x5x5",
+            weight = "0.5",
+            isSelected = true,
+            isLetter = false
+        )
+
+        sut.onPackageSelected(firstPackage)
+        advanceUntilIdle()
+
+        sut.onPackageSelected(secondPackage)
+        advanceUntilIdle()
+
+        val weight = sut.weightInputsFlow.value[0].weight
+        assertThat(weight).isEqualTo("1.5")
+    }
+
+    @Test
+    fun `when manual weight entered, then subsequent package selection should NOT override manual weight`() = testBlocking {
+        val items = listOf(
+            ShippableItemModel(
+                itemId = 1,
+                productId = 1,
+                title = "title",
+                price = BigDecimal.ONE,
+                quantity = 1f,
+                weight = 1f,
+                currency = "USD",
+                width = 1f,
+                height = 1f,
+                length = 1f
+            )
+        )
+        whenever(getShipments(any())) doReturn listOf(ShipmentUIModel(localId = "0", items = items))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val initialPackage = PackageData(
+            id = "1",
+            name = "Pkg1",
+            dimensions = "10x10x10",
+            weight = "1",
+            isSelected = true,
+            isLetter = false
+        )
+        val otherPackage = PackageData(
+            id = "2",
+            name = "Pkg2",
+            dimensions = "5x5x5",
+            weight = "0.5",
+            isSelected = true,
+            isLetter = false
+        )
+
+        sut.onPackageSelected(initialPackage)
+        advanceUntilIdle()
+
+        sut.onWeightChange("7.77")
+
+        sut.onPackageSelected(otherPackage)
+        advanceUntilIdle()
+
+        val weight = sut.weightInputsFlow.value[0].weight
+        assertThat(weight).isEqualTo("7.77")
+    }
+
+    @Test
+    fun `when shipment is split after package selection, then weight is reset to totalWeight of current shipment`() =
+        testBlocking {
+            createViewModel()
+            advanceUntilIdle()
+
+            val pkg = PackageData(
+                id = "1",
+                name = "Pkg1",
+                dimensions = "10x10x10",
+                weight = "1",
+                isSelected = true,
+                isLetter = false
+            )
+            sut.onPackageSelected(pkg)
+            advanceUntilIdle()
+
+            // Split into two shipments
+            val firstShipmentItems = listOf(defaultShippableItems[0], defaultShippableItems[1])
+            val secondShipmentItems = listOf(defaultShippableItems[2])
+            val newShipments = listOf(
+                ShipmentUIModel(localId = "0", items = firstShipmentItems),
+                ShipmentUIModel(localId = "1", items = secondShipmentItems)
+            )
+
+            sut.onShipmentSplit(newShipments)
+            advanceUntilIdle()
+
+            val weightAfterSplit = sut.weightInputsFlow.value[0].weight
+            assertThat(weightAfterSplit).isEqualTo("2.01")
+        }
+
+    @Test
+    fun `when manual weight set, then splitting shipments should preserve manual weight`() = testBlocking {
+        createViewModel()
+        advanceUntilIdle()
+
+        val pkg = PackageData(
+            id = "1",
+            name = "Pkg1",
+            dimensions = "10x10x10",
+            weight = "5",
+            isSelected = true,
+            isLetter = false
+        )
+        sut.onPackageSelected(pkg)
+        advanceUntilIdle()
+
+        sut.onWeightChange("7.77")
+
+        // Split into two shipments
+        val firstShipmentItems = listOf(defaultShippableItems[0], defaultShippableItems[1])
+        val secondShipmentItems = listOf(defaultShippableItems[2])
+        val newShipments = listOf(
+            ShipmentUIModel(localId = "0", items = firstShipmentItems),
+            ShipmentUIModel(localId = "1", items = secondShipmentItems)
+        )
+
+        sut.onShipmentSplit(newShipments)
+        advanceUntilIdle()
+
+        assertThat(sut.weightInputsFlow.value[0].weight).isEqualTo("7.77")
+    }
+
+    @Test
     fun `CustomState is NotRequired when shouldRequireCustomsForm returns false`() = testBlocking {
         var currentViewState: WooShippingViewState? = null
 
