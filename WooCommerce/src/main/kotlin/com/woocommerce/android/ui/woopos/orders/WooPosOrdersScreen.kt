@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -44,6 +43,7 @@ fun WooPosOrdersScreen(
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
+    val onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) }
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 
     Row(modifier = Modifier.fillMaxSize()) {
@@ -53,8 +53,9 @@ fun WooPosOrdersScreen(
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            OrdersToolbar(
-                titleText = stringResource(R.string.woopos_orders_title)
+            WooPosToolbar(
+                titleText = stringResource(R.string.woopos_orders_title),
+                onBackClicked = onBackClicked,
             )
 
             WooPosOrdersListPaneScreen(
@@ -73,25 +74,6 @@ fun WooPosOrdersScreen(
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
         )
     }
-}
-
-@Composable
-private fun OrdersToolbar(
-    titleText: String
-) {
-    WooPosText(
-        text = titleText,
-        style = WooPosTypography.Heading,
-        fontWeight = FontWeight.Bold,
-        maxLines = 1,
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Medium.value
-            )
-    )
 }
 
 @Composable
