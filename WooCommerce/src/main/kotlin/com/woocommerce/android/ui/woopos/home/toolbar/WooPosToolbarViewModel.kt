@@ -89,6 +89,7 @@ class WooPosToolbarViewModel @Inject constructor(
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
                 }
             }
+
             R.string.woopos_exit_confirmation_title ->
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
@@ -108,6 +109,7 @@ class WooPosToolbarViewModel @Inject constructor(
                     cardReaderFacade.disconnectFromReader()
                 }
             }
+
             WooPosToolbarState.WooPosCardReaderStatus.NotConnected -> {
                 if (!networkStatus.isConnected()) {
                     viewModelScope.launch {
@@ -143,14 +145,16 @@ class WooPosToolbarViewModel @Inject constructor(
             }
 
             addAll(
-                WooPosToolbarState.Menu.MenuItem(
-                    title = R.string.woopos_settings_title,
-                    icon = Icons.Default.Settings,
-                ),
-                WooPosToolbarState.Menu.MenuItem(
-                    title = R.string.woopos_exit_confirmation_title,
-                    icon = Icons.AutoMirrored.Filled.ExitToApp,
-                ),
+                listOf(
+                    WooPosToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_settings_title,
+                        icon = Icons.Default.Settings,
+                    ),
+                    WooPosToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_exit_confirmation_title,
+                        icon = Icons.AutoMirrored.Filled.ExitToApp,
+                    ),
+                )
             )
         }
     }
