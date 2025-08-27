@@ -201,12 +201,6 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    ChildToParentEvent.SimpleProductExplanationMenuItemClicked -> {
-                        _state.value = _state.value.copy(
-                            dialogState = DialogState.ProductsInfoDialog
-                        )
-                    }
-
                     ChildToParentEvent.SetupBarcodeScannerClicked -> {
                         _state.value = _state.value.copy(
                             dialogState = DialogState.ScanningSetupDialog

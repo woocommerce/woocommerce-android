@@ -2,10 +2,6 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.DocumentScanner
-import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,8 +11,6 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.common.data.WOO_POS_DOCUMENTATION_URL
-import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.MenuItemClicked
@@ -25,10 +19,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOut
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GetSupportTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ViewDocsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,7 +39,6 @@ class WooPosToolbarViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
-    private val wooPosPosSettingsEnabled: WooPosPosSettingsEnabled,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosToolbarState(
@@ -104,34 +94,11 @@ class WooPosToolbarViewModel @Inject constructor(
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
                 }
             }
-            R.string.woopos_barcode_scanning_title -> {
-                viewModelScope.launch {
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.SetupBarcodeScannerClicked)
-                }
-            }
-            R.string.woopos_product_limitations_title -> {
-                viewModelScope.launch {
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-                    analyticsTracker.track(WooPosAnalyticsEvent.Event.SimpleProductExplanationDialogShown)
-                }
-            }
-            R.string.woopos_get_support_title -> {
-                getSupportFacade.openSupportForm()
-                viewModelScope.launch {
-                    analyticsTracker.track(GetSupportTapped)
-                }
-            }
             R.string.woopos_exit_confirmation_title ->
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
                     analyticsTracker.track(ExitTapped)
                 }
-            R.string.woopos_documentation_title -> {
-                viewModelScope.launch {
-                    _openUrlEvent.emit(WOO_POS_DOCUMENTATION_URL)
-                    analyticsTracker.track(ViewDocsTapped)
-                }
-            }
         }
     }
 
@@ -170,40 +137,15 @@ class WooPosToolbarViewModel @Inject constructor(
     }
 
     private val toolbarMenuItems by lazy {
-        buildList {
-            if (wooPosPosSettingsEnabled()) {
-                add(
-                    WooPosToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_settings_title,
-                        icon = Icons.Default.Settings,
-                    )
-                )
-            }
-
-            addAll(
-                listOf(
-                    WooPosToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_barcode_scanning_title,
-                        icon = Icons.Default.DocumentScanner,
-                    ),
-                    WooPosToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_product_limitations_title,
-                        icon = Icons.Default.SearchOff,
-                    ),
-                    WooPosToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_documentation_title,
-                        icon = Icons.Default.Description,
-                    ),
-                    WooPosToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_get_support_title,
-                        icon = Icons.AutoMirrored.Filled.Help,
-                    ),
-                    WooPosToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_exit_confirmation_title,
-                        icon = Icons.AutoMirrored.Filled.ExitToApp,
-                    ),
-                )
-            )
-        }
+        listOf(
+            WooPosToolbarState.Menu.MenuItem(
+                title = R.string.woopos_settings_title,
+                icon = Icons.Default.Settings,
+            ),
+            WooPosToolbarState.Menu.MenuItem(
+                title = R.string.woopos_exit_confirmation_title,
+                icon = Icons.AutoMirrored.Filled.ExitToApp,
+            ),
+        )
     }
 }

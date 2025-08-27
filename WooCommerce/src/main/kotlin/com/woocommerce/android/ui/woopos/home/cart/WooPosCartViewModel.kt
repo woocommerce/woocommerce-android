@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSe
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
@@ -70,12 +69,11 @@ class WooPosCartViewModel @Inject constructor(
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
     private val barcodeEventTracker: WooPosBarcodeEventTracker,
-    private val posSettingsEnabled: WooPosPosSettingsEnabled,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = WooPosCartState(isPosSettingsFeatureEnabled = posSettingsEnabled()),
+        initialValue = WooPosCartState(),
         key = "cartViewState"
     )
 
@@ -356,7 +354,7 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun clearCart() {
-        _state.value = WooPosCartState(isPosSettingsFeatureEnabled = posSettingsEnabled())
+        _state.value = WooPosCartState()
     }
 
     private suspend fun handleNewTransactionIfNeeded() {

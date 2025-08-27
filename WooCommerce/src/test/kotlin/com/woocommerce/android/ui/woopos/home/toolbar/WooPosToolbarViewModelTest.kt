@@ -12,7 +12,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_DOCUMENTATION_URL
-import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
@@ -49,7 +48,6 @@ class WooPosToolbarViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val wooPosPosSettingsEnabled: WooPosPosSettingsEnabled = mock()
 
     @Test
     fun `given card reader status is NotConnected, when initialized, then state should be NotConnected`() = runTest {
@@ -85,48 +83,8 @@ class WooPosToolbarViewModelTest {
     }
 
     @Test
-    fun `when OnToolbarMenuClicked passed with settings feature flag disabled, then menu should be visible without settings`() = runTest {
+    fun `when OnToolbarMenuClicked passed, then menu should be visible with settings`() = runTest {
         // GIVEN
-        whenever(wooPosPosSettingsEnabled.invoke()).thenReturn(false)
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked)
-
-        // THEN
-        assertThat(viewModel.state.value.menu)
-            .isEqualTo(
-                WooPosToolbarState.Menu.Visible(
-                    listOf(
-                        WooPosToolbarState.Menu.MenuItem(
-                            title = R.string.woopos_barcode_scanning_title,
-                            icon = Icons.Default.DocumentScanner,
-                        ),
-                        WooPosToolbarState.Menu.MenuItem(
-                            title = R.string.woopos_product_limitations_title,
-                            icon = Icons.Default.SearchOff,
-                        ),
-                        WooPosToolbarState.Menu.MenuItem(
-                            title = R.string.woopos_documentation_title,
-                            icon = Icons.Default.Description,
-                        ),
-                        WooPosToolbarState.Menu.MenuItem(
-                            title = R.string.woopos_get_support_title,
-                            icon = Icons.AutoMirrored.Filled.Help,
-                        ),
-                        WooPosToolbarState.Menu.MenuItem(
-                            title = R.string.woopos_exit_confirmation_title,
-                            icon = Icons.AutoMirrored.Filled.ExitToApp,
-                        ),
-                    )
-                )
-            )
-    }
-
-    @Test
-    fun `when OnToolbarMenuClicked passed with settings feature flag enabled, then menu should be visible with settings`() = runTest {
-        // GIVEN
-        whenever(wooPosPosSettingsEnabled.invoke()).thenReturn(true)
         val viewModel = createViewModel()
 
         // WHEN
@@ -402,6 +360,5 @@ class WooPosToolbarViewModelTest {
         networkStatus,
         resourceProvider,
         analyticsTracker,
-        wooPosPosSettingsEnabled,
     )
 }
