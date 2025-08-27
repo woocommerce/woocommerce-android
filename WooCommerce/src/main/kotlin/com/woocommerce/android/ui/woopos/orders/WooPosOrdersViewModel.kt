@@ -17,5 +17,3 @@ class WooPosOrdersViewModel @Inject constructor() : ViewModel() {
         _state.update { it.copy(selectedOrderId = orderId) }
     }
 }
-
-enum class WooPosOrdersDetailDestination { LIST, DETAIL }
