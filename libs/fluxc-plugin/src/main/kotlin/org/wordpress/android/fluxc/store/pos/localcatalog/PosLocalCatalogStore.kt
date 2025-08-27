@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.store.pos
+package org.wordpress.android.fluxc.store.pos.localcatalog
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,51 +17,6 @@ import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog.T.API
 import javax.inject.Inject
 import javax.inject.Singleton
-
-data class PosLocalCatalogSyncResult(
-    val syncedCount: Int,
-    val hasMore: Boolean,
-    val nextOffset: Int
-)
-
-data class PosVariationsSyncResult(
-    val syncedCount: Int,
-    val hasMore: Boolean,
-    val nextPage: Int
-)
-
-data class PosGenerateCatalogResult(
-    val jobId: String,
-)
-
-data class PosCatalogStatusResult(
-    val downloadUrl: String?,
-    val status: String,
-)
-
-sealed class PosLocalCatalogError(
-    override val message: String,
-    override val cause: Throwable? = null
-) : Exception(message, cause) {
-
-    data class NetworkError(
-        val errorMessage: String,
-        val code: String? = null
-    ) : PosLocalCatalogError(errorMessage)
-
-    data class DatabaseError(
-        val errorMessage: String,
-        val throwable: Throwable? = null
-    ) : PosLocalCatalogError(errorMessage, throwable)
-
-    object EmptyResponse : PosLocalCatalogError("Empty response from server")
-
-    data class InvalidResponse(val errorMessage: String) : PosLocalCatalogError(errorMessage)
-
-    data class UnknownError(
-        val throwable: Throwable
-    ) : PosLocalCatalogError(throwable.message ?: "Unknown error", throwable)
-}
 
 @Singleton
 class PosLocalCatalogStore @Inject constructor(

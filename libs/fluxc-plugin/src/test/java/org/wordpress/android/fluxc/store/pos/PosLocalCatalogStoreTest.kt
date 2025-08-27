@@ -27,6 +27,8 @@ import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
+import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogError
+import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogStore
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 
 @RunWith(MockitoJUnitRunner::class)
