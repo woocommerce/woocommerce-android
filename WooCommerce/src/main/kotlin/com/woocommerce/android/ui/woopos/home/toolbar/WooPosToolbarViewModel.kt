@@ -17,17 +17,13 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.MenuI
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnCardReaderStatusClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
-import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,7 +31,6 @@ import javax.inject.Inject
 class WooPosToolbarViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
-    private val getSupportFacade: WooPosGetSupportFacade,
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
@@ -47,9 +42,6 @@ class WooPosToolbarViewModel @Inject constructor(
         )
     )
     val state: StateFlow<WooPosToolbarState> = _state
-
-    private val _openUrlEvent = MutableSharedFlow<String>()
-    val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()
 
     init {
         viewModelScope.launch {

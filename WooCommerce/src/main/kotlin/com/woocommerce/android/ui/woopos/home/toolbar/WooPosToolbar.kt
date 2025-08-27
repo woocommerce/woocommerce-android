@@ -63,20 +63,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.WooPosCardReaderStatus
-import com.woocommerce.android.util.ChromeCustomTabUtils
-import kotlinx.coroutines.flow.collectLatest
 
 private val TOOLBAR_ELEVATION = WooPosElevation.Medium
 
 @Composable
 fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
     val viewModel: WooPosToolbarViewModel = hiltViewModel()
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        viewModel.openUrlEvent.collectLatest { url ->
-            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
-        }
-    }
     WooPosFloatingToolbar(
         modifier = modifier,
         state = viewModel.state.collectAsState(),
