@@ -315,8 +315,6 @@ dependencies {
 
     // Debug dependencies
     debugImplementation project(":libs:apifaker")
-    debugImplementation(libs.facebook.soloader)
-
     if (isLeakCanaryEnabled()) {
         debugImplementation(libs.squareup.leakcanary.android)
     }
