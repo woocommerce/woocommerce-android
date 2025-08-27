@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.HardwareTapped
@@ -66,7 +65,7 @@ class WooPosSettingsViewModel @Inject constructor(
 
     fun showProductInfoDialog() {
         _state.update { currentState ->
-            currentState.copy(dialogState = WooPosHomeState.DialogState.ProductsInfoDialog)
+            currentState.copy(dialogState = WooPosSettingsDialogState.ProductsInfoDialog)
         }
         viewModelScope.launch {
             analyticsTracker.track(WooPosAnalyticsEvent.Event.SimpleProductExplanationDialogShown)
@@ -75,13 +74,13 @@ class WooPosSettingsViewModel @Inject constructor(
 
     fun showScanningSetupDialog() {
         _state.update { currentState ->
-            currentState.copy(dialogState = WooPosHomeState.DialogState.ScanningSetupDialog)
+            currentState.copy(dialogState = WooPosSettingsDialogState.ScanningSetupDialog)
         }
     }
 
     fun hideDialog() {
         _state.update { currentState ->
-            currentState.copy(dialogState = WooPosHomeState.DialogState.Hidden)
+            currentState.copy(dialogState = WooPosSettingsDialogState.Hidden)
         }
     }
 

@@ -71,12 +71,6 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
-            WooPosHomeUIEvent.DismissProductsInfoDialog -> {
-                _state.value = _state.value.copy(
-                    dialogState = DialogState.Hidden
-                )
-            }
-
             WooPosHomeUIEvent.DismissScanningSetupDialog -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
