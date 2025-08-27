@@ -66,7 +66,7 @@ fun WooPosOrdersScreen(
         }
 
         WooPosOrdersDetailPaneScreen(
-            order = state.orders.firstOrNull { it.id == state.selectedOrderId },
+            order = state.selectedOrder,
             modifier = Modifier
                 .weight(0.7f)
                 .fillMaxHeight()

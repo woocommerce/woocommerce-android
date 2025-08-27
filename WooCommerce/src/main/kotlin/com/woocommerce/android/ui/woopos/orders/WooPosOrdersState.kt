@@ -13,4 +13,7 @@ data class WooPosOrdersState(
         WooPosOrder(3, "Order 3")
     ),
     val selectedOrderId: Long? = 1
-)
+) {
+    val selectedOrder: WooPosOrder?
+        get() = selectedOrderId?.let { id -> orders.firstOrNull { it.id == id } }
+}
