@@ -113,11 +113,6 @@ fun WooPosOrdersListPaneScreen(
                     color = fg,
                     modifier = Modifier.weight(1f)
                 )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = fg
-                )
             }
         }
     }
