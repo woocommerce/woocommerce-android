@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.ReaderNotConnected
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Server
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -63,6 +64,15 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
         val result = mapper.mapTerminalError(mock(), terminalException)
 
         assertThat(result.type).isEqualTo(CardReadTimeOut)
+    }
+
+    @Test
+    fun `when NOT_CONNECTED_TO_READER Terminal exception thrown, then NOT_CONNECTED_TO_READER type returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.NOT_CONNECTED_TO_READER)
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(ReaderNotConnected)
     }
 
     @Test
