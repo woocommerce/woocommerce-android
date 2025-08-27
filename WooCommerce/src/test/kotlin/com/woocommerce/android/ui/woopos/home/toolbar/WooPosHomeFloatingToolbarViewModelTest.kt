@@ -39,7 +39,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class WooPosToolbarViewModelTest {
+class WooPosHomeFloatingToolbarViewModelTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -95,7 +95,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
 
         // THEN
         assertThat(viewModel.state.value.menu)
@@ -134,7 +134,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
 
         // THEN
         assertThat(viewModel.state.value.menu)
@@ -178,7 +178,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
 
         // THEN
         assertThat(viewModel.state.value.menu)
@@ -218,10 +218,10 @@ class WooPosToolbarViewModelTest {
     fun `when OnOutsideOfToolbarMenuClicked passed and menu is visible, then menu should be hidden`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked)
 
         // THEN
         assertThat(viewModel.state.value.menu)
@@ -236,7 +236,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
         // THEN
         verify(cardReaderFacade).connectToReader()
@@ -252,7 +252,7 @@ class WooPosToolbarViewModelTest {
         )
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ExitPosClicked)
@@ -267,7 +267,7 @@ class WooPosToolbarViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+            viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
             // THEN
             verify(cardReaderFacade).disconnectFromReader()
@@ -282,7 +282,7 @@ class WooPosToolbarViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+            viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
             // THEN
             verify(cardReaderFacade).connectToReader()
@@ -293,7 +293,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         viewModel.onUiEvent(
-            WooPosToolbarUIEvent.MenuItemClicked(
+            WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(
                 WooPosHomeFloatingToolbarState.Menu.MenuItem(
                     title = R.string.woopos_get_support_title,
                     icon = Icons.AutoMirrored.Filled.Help,
@@ -313,7 +313,7 @@ class WooPosToolbarViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(
@@ -333,7 +333,7 @@ class WooPosToolbarViewModelTest {
 
             // WHEN
             val viewModel = createViewModel()
-            viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+            viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
             // THEN
             verify(cardReaderFacade, never()).connectToReader()
@@ -350,7 +350,7 @@ class WooPosToolbarViewModelTest {
 
         viewModel.openUrlEvent.test {
             // WHEN
-            viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+            viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
             // THEN
             assertEquals(WOO_POS_DOCUMENTATION_URL, awaitItem())
@@ -365,7 +365,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         viewModel.onUiEvent(
-            WooPosToolbarUIEvent.MenuItemClicked(
+            WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(
                 WooPosHomeFloatingToolbarState.Menu.MenuItem(
                     title = R.string.woopos_product_limitations_title,
                     icon = Icons.Default.SearchOff,
@@ -385,7 +385,7 @@ class WooPosToolbarViewModelTest {
             title = R.string.woopos_product_limitations_title,
             icon = Icons.Default.SearchOff,
         )
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         verify(analyticsTracker).track(SimpleProductExplanationDialogShown)
     }
@@ -397,7 +397,7 @@ class WooPosToolbarViewModelTest {
             title = R.string.woopos_get_support_title,
             icon = Icons.AutoMirrored.Filled.Help
         )
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         verify(analyticsTracker).track(GetSupportTapped)
     }
@@ -409,7 +409,7 @@ class WooPosToolbarViewModelTest {
             title = R.string.woopos_documentation_title,
             icon = Icons.Default.Description
         )
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         verify(analyticsTracker).track(ViewDocsTapped)
     }
@@ -421,7 +421,7 @@ class WooPosToolbarViewModelTest {
             title = R.string.woopos_exit_confirmation_title,
             icon = Icons.AutoMirrored.Filled.ExitToApp
         )
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         verify(analyticsTracker).track(ExitTapped)
     }
@@ -436,14 +436,14 @@ class WooPosToolbarViewModelTest {
         )
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
-    private fun createViewModel() = WooPosToolbarViewModel(
+    private fun createViewModel() = WooPosHomeFloatingToolbarViewModel(
         cardReaderFacade,
         childrenToParentEventSender,
         getSupportFacade,

@@ -21,10 +21,10 @@ import com.woocommerce.android.ui.woopos.featureflags.WooPosHistoricalOrdersM1En
 import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.MenuItemClicked
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnCardReaderStatusClicked
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.MenuItemClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosToolbarViewModel @Inject constructor(
+class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val getSupportFacade: WooPosGetSupportFacade,
@@ -74,7 +74,7 @@ class WooPosToolbarViewModel @Inject constructor(
         }
     }
 
-    fun onUiEvent(event: WooPosToolbarUIEvent) {
+    fun onUiEvent(event: WooPosHomeFloatingToolbarUIEvent) {
         val currentState = _state.value
         if (currentState.menu is WooPosHomeFloatingToolbarState.Menu.Visible && event !is MenuItemClicked) {
             hideMenu()
@@ -107,28 +107,32 @@ class WooPosToolbarViewModel @Inject constructor(
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
                 }
             }
+
             R.string.woopos_barcode_scanning_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.SetupBarcodeScannerClicked)
                 }
             }
+
             R.string.woopos_product_limitations_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
                     analyticsTracker.track(WooPosAnalyticsEvent.Event.SimpleProductExplanationDialogShown)
                 }
             }
+
             R.string.woopos_get_support_title -> {
                 getSupportFacade.openSupportForm()
                 viewModelScope.launch {
                     analyticsTracker.track(GetSupportTapped)
                 }
             }
-            R.string.woopos_exit_confirmation_title ->
-                viewModelScope.launch {
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
-                    analyticsTracker.track(ExitTapped)
-                }
+
+            R.string.woopos_exit_confirmation_title -> viewModelScope.launch {
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
+                analyticsTracker.track(ExitTapped)
+            }
+
             R.string.woopos_documentation_title -> {
                 viewModelScope.launch {
                     _openUrlEvent.emit(WOO_POS_DOCUMENTATION_URL)
@@ -149,6 +153,7 @@ class WooPosToolbarViewModel @Inject constructor(
                     cardReaderFacade.disconnectFromReader()
                 }
             }
+
             WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected -> {
                 if (!networkStatus.isConnected()) {
                     viewModelScope.launch {
@@ -165,11 +170,9 @@ class WooPosToolbarViewModel @Inject constructor(
         }
     }
 
-    private fun mapCardReaderStatusToUiState(status: CardReaderStatus): WooPosHomeFloatingToolbarState.WooPosCardReaderStatus {
-        return when (status) {
-            is Connected -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected
-            is NotConnected, Connecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
-        }
+    private fun mapCardReaderStatusToUiState(status: CardReaderStatus) = when (status) {
+        is Connected -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected
+        is NotConnected, Connecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
     }
 
     private val toolbarMenuItems by lazy {

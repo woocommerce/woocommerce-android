@@ -70,7 +70,7 @@ private val TOOLBAR_ELEVATION = WooPosElevation.Medium
 
 @Composable
 fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
-    val viewModel: WooPosToolbarViewModel = hiltViewModel()
+    val viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel()
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.openUrlEvent.collectLatest { url ->
@@ -89,7 +89,7 @@ fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
 private fun WooPosFloatingToolbar(
     modifier: Modifier = Modifier,
     state: State<WooPosHomeFloatingToolbarState>,
-    onUIEvent: (WooPosToolbarUIEvent) -> Unit,
+    onUIEvent: (WooPosHomeFloatingToolbarUIEvent) -> Unit,
 ) {
     val cardReaderStatus = state.value.cardReaderStatus
     val menu = state.value.menu
@@ -107,7 +107,7 @@ private fun WooPosFloatingToolbar(
                     contentDescription = labels.floatingToolbarMenuOverlayContentDescription
                 },
             isVisible = menu is Menu.Visible,
-            onClick = { onUIEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked) }
+            onClick = { onUIEvent(WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked) }
         )
 
         ConstraintLayout(modifier = modifier) {
@@ -151,7 +151,7 @@ private fun WooPosFloatingToolbar(
                             },
                         menuItems = menu.items,
                         onClick = { menuItem ->
-                            onUIEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+                            onUIEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
                         }
                     )
                 }
@@ -165,7 +165,7 @@ private fun Toolbar(
     modifier: Modifier,
     menuCardDisabled: Boolean,
     cardReaderStatus: WooPosCardReaderStatus,
-    onUIEvent: (WooPosToolbarUIEvent) -> Unit
+    onUIEvent: (WooPosHomeFloatingToolbarUIEvent) -> Unit
 ) {
     val labels = getToolbarAccessibilityLabels(cardReaderStatus, menuCardDisabled)
 
@@ -186,7 +186,7 @@ private fun Toolbar(
                 },
             state = cardReaderStatus,
             menuCardDisabled = menuCardDisabled,
-        ) { onUIEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked) }
+        ) { onUIEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked) }
 
         MenuButtonWithPopUpMenu(
             modifier = Modifier
@@ -205,7 +205,7 @@ private fun Toolbar(
                     stateDescription = labels.floatingToolbarPopUpMenuStateDescription
                 },
             menuCardDisabled = menuCardDisabled,
-        ) { onUIEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked) }
+        ) { onUIEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked) }
     }
 }
 
