@@ -4,5 +4,5 @@ sealed class WooPosToolbarUIEvent {
     data object OnToolbarMenuClicked : WooPosToolbarUIEvent()
     data object OnOutsideOfToolbarMenuClicked : WooPosToolbarUIEvent()
     data object OnCardReaderStatusClicked : WooPosToolbarUIEvent()
-    data class MenuItemClicked(val menuItem: WooPosToolbarState.Menu.MenuItem) : WooPosToolbarUIEvent()
+    data class MenuItemClicked(val menuItem: WooPosHomeFloatingToolbarState.Menu.MenuItem) : WooPosToolbarUIEvent()
 }

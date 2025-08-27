@@ -63,7 +63,7 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.cardReaderStatus)
-            .isEqualTo(WooPosToolbarState.WooPosCardReaderStatus.NotConnected)
+            .isEqualTo(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected)
     }
 
     @Test
@@ -74,7 +74,7 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.cardReaderStatus)
-            .isEqualTo(WooPosToolbarState.WooPosCardReaderStatus.Connected)
+            .isEqualTo(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected)
     }
 
     @Test
@@ -85,7 +85,7 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.cardReaderStatus)
-            .isEqualTo(WooPosToolbarState.WooPosCardReaderStatus.NotConnected)
+            .isEqualTo(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected)
     }
 
     @Test
@@ -100,25 +100,25 @@ class WooPosToolbarViewModelTest {
         // THEN
         assertThat(viewModel.state.value.menu)
             .isEqualTo(
-                WooPosToolbarState.Menu.Visible(
+                WooPosHomeFloatingToolbarState.Menu.Visible(
                     listOf(
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_barcode_scanning_title,
                             icon = Icons.Default.DocumentScanner,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_product_limitations_title,
                             icon = Icons.Default.SearchOff,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_documentation_title,
                             icon = Icons.Default.Info,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_get_support_title,
                             icon = Icons.AutoMirrored.Filled.Help,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_title,
                             icon = Icons.AutoMirrored.Filled.ExitToApp,
                         ),
@@ -139,29 +139,29 @@ class WooPosToolbarViewModelTest {
         // THEN
         assertThat(viewModel.state.value.menu)
             .isEqualTo(
-                WooPosToolbarState.Menu.Visible(
+                WooPosHomeFloatingToolbarState.Menu.Visible(
                     listOf(
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_settings_title,
                             icon = Icons.Default.Settings,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_barcode_scanning_title,
                             icon = Icons.Default.DocumentScanner,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_product_limitations_title,
                             icon = Icons.Default.SearchOff,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_documentation_title,
                             icon = Icons.Default.Info,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_get_support_title,
                             icon = Icons.AutoMirrored.Filled.Help,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_title,
                             icon = Icons.AutoMirrored.Filled.ExitToApp,
                         ),
@@ -183,29 +183,29 @@ class WooPosToolbarViewModelTest {
         // THEN
         assertThat(viewModel.state.value.menu)
             .isEqualTo(
-                WooPosToolbarState.Menu.Visible(
+                WooPosHomeFloatingToolbarState.Menu.Visible(
                     listOf(
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_orders_title,
                             icon = Icons.Default.Description,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_barcode_scanning_title,
                             icon = Icons.Default.DocumentScanner,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_product_limitations_title,
                             icon = Icons.Default.SearchOff,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_documentation_title,
                             icon = Icons.Default.Info,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_get_support_title,
                             icon = Icons.AutoMirrored.Filled.Help,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_title,
                             icon = Icons.AutoMirrored.Filled.ExitToApp,
                         ),
@@ -225,7 +225,7 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.menu)
-            .isEqualTo(WooPosToolbarState.Menu.Hidden)
+            .isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
     @Test
@@ -246,7 +246,7 @@ class WooPosToolbarViewModelTest {
     fun `when MenuItemClicked with ExitPosClicked, then ExitPosClicked event should be sent`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_exit_confirmation_title,
             icon = Icons.AutoMirrored.Filled.ExitToApp
         )
@@ -256,7 +256,7 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ExitPosClicked)
-        assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
+        assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
     @Test
@@ -294,7 +294,7 @@ class WooPosToolbarViewModelTest {
 
         viewModel.onUiEvent(
             WooPosToolbarUIEvent.MenuItemClicked(
-                WooPosToolbarState.Menu.MenuItem(
+                WooPosHomeFloatingToolbarState.Menu.MenuItem(
                     title = R.string.woopos_get_support_title,
                     icon = Icons.AutoMirrored.Filled.Help,
                 )
@@ -343,7 +343,7 @@ class WooPosToolbarViewModelTest {
     fun `when Documentation MenuItemClicked, then openUrlEvent should be emitted with proper url`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_documentation_title,
             icon = Icons.Default.Description
         )
@@ -354,7 +354,7 @@ class WooPosToolbarViewModelTest {
 
             // THEN
             assertEquals(WOO_POS_DOCUMENTATION_URL, awaitItem())
-            assertEquals(WooPosToolbarState.Menu.Hidden, viewModel.state.value.menu)
+            assertEquals(WooPosHomeFloatingToolbarState.Menu.Hidden, viewModel.state.value.menu)
 
             cancelAndConsumeRemainingEvents()
         }
@@ -366,7 +366,7 @@ class WooPosToolbarViewModelTest {
 
         viewModel.onUiEvent(
             WooPosToolbarUIEvent.MenuItemClicked(
-                WooPosToolbarState.Menu.MenuItem(
+                WooPosHomeFloatingToolbarState.Menu.MenuItem(
                     title = R.string.woopos_product_limitations_title,
                     icon = Icons.Default.SearchOff,
                 )
@@ -381,7 +381,7 @@ class WooPosToolbarViewModelTest {
     @Test
     fun `when where are my products is clicked, then should track analytics event`() = runTest {
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_product_limitations_title,
             icon = Icons.Default.SearchOff,
         )
@@ -393,7 +393,7 @@ class WooPosToolbarViewModelTest {
     @Test
     fun `when get Support is clicked, then should track analytics event`() = runTest {
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_get_support_title,
             icon = Icons.AutoMirrored.Filled.Help
         )
@@ -405,7 +405,7 @@ class WooPosToolbarViewModelTest {
     @Test
     fun `when View Documentation is clicked, then should track analytics event`() = runTest {
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_documentation_title,
             icon = Icons.Default.Description
         )
@@ -417,7 +417,7 @@ class WooPosToolbarViewModelTest {
     @Test
     fun `when Exit menu item is clicked, then should track analytics event`() = runTest {
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_exit_confirmation_title,
             icon = Icons.AutoMirrored.Filled.ExitToApp
         )
@@ -430,7 +430,7 @@ class WooPosToolbarViewModelTest {
     fun `when Settings MenuItemClicked, then ToSettings navigation event should be sent`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_settings_title,
             icon = Icons.Default.Settings
         )
@@ -440,7 +440,7 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
-        assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
+        assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
     private fun createViewModel() = WooPosToolbarViewModel(

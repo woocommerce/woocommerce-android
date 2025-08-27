@@ -54,12 +54,12 @@ class WooPosToolbarViewModel @Inject constructor(
     private val wooPosHistoricalOrdersM1Enabled: WooPosHistoricalOrdersM1Enabled,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
-        WooPosToolbarState(
-            cardReaderStatus = WooPosToolbarState.WooPosCardReaderStatus.NotConnected,
-            menu = WooPosToolbarState.Menu.Hidden,
+        WooPosHomeFloatingToolbarState(
+            cardReaderStatus = WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected,
+            menu = WooPosHomeFloatingToolbarState.Menu.Hidden,
         )
     )
-    val state: StateFlow<WooPosToolbarState> = _state
+    val state: StateFlow<WooPosHomeFloatingToolbarState> = _state
 
     private val _openUrlEvent = MutableSharedFlow<String>()
     val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()
@@ -76,7 +76,7 @@ class WooPosToolbarViewModel @Inject constructor(
 
     fun onUiEvent(event: WooPosToolbarUIEvent) {
         val currentState = _state.value
-        if (currentState.menu is WooPosToolbarState.Menu.Visible && event !is MenuItemClicked) {
+        if (currentState.menu is WooPosHomeFloatingToolbarState.Menu.Visible && event !is MenuItemClicked) {
             hideMenu()
             return
         }
@@ -84,7 +84,7 @@ class WooPosToolbarViewModel @Inject constructor(
         when (event) {
             is OnToolbarMenuClicked -> {
                 _state.value = currentState.copy(
-                    menu = WooPosToolbarState.Menu.Visible(toolbarMenuItems)
+                    menu = WooPosHomeFloatingToolbarState.Menu.Visible(toolbarMenuItems)
                 )
             }
 
@@ -139,17 +139,17 @@ class WooPosToolbarViewModel @Inject constructor(
     }
 
     private fun hideMenu() {
-        _state.value = _state.value.copy(menu = WooPosToolbarState.Menu.Hidden)
+        _state.value = _state.value.copy(menu = WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
     private fun handleOnCardReaderStatusClicked() {
         when (_state.value.cardReaderStatus) {
-            WooPosToolbarState.WooPosCardReaderStatus.Connected -> {
+            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected -> {
                 viewModelScope.launch {
                     cardReaderFacade.disconnectFromReader()
                 }
             }
-            WooPosToolbarState.WooPosCardReaderStatus.NotConnected -> {
+            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected -> {
                 if (!networkStatus.isConnected()) {
                     viewModelScope.launch {
                         childrenToParentEventSender.sendToParent(
@@ -165,10 +165,10 @@ class WooPosToolbarViewModel @Inject constructor(
         }
     }
 
-    private fun mapCardReaderStatusToUiState(status: CardReaderStatus): WooPosToolbarState.WooPosCardReaderStatus {
+    private fun mapCardReaderStatusToUiState(status: CardReaderStatus): WooPosHomeFloatingToolbarState.WooPosCardReaderStatus {
         return when (status) {
-            is Connected -> WooPosToolbarState.WooPosCardReaderStatus.Connected
-            is NotConnected, Connecting -> WooPosToolbarState.WooPosCardReaderStatus.NotConnected
+            is Connected -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected
+            is NotConnected, Connecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
         }
     }
 
@@ -176,7 +176,7 @@ class WooPosToolbarViewModel @Inject constructor(
         buildList {
             if (wooPosPosSettingsEnabled()) {
                 add(
-                    WooPosToolbarState.Menu.MenuItem(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_settings_title,
                         icon = Icons.Default.Settings,
                     )
@@ -185,7 +185,7 @@ class WooPosToolbarViewModel @Inject constructor(
 
             if (wooPosHistoricalOrdersM1Enabled()) {
                 add(
-                    WooPosToolbarState.Menu.MenuItem(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_orders_title,
                         icon = Icons.Default.Description,
                     )
@@ -194,23 +194,23 @@ class WooPosToolbarViewModel @Inject constructor(
 
             addAll(
                 listOf(
-                    WooPosToolbarState.Menu.MenuItem(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_barcode_scanning_title,
                         icon = Icons.Default.DocumentScanner,
                     ),
-                    WooPosToolbarState.Menu.MenuItem(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_product_limitations_title,
                         icon = Icons.Default.SearchOff,
                     ),
-                    WooPosToolbarState.Menu.MenuItem(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_documentation_title,
                         icon = Icons.Default.Info,
                     ),
-                    WooPosToolbarState.Menu.MenuItem(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_get_support_title,
                         icon = Icons.AutoMirrored.Filled.Help,
                     ),
-                    WooPosToolbarState.Menu.MenuItem(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_exit_confirmation_title,
                         icon = Icons.AutoMirrored.Filled.ExitToApp,
                     ),
