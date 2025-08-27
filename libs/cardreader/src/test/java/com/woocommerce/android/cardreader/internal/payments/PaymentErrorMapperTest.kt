@@ -22,6 +22,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
+@Suppress("DoNotMockDataClass")
 class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
     private lateinit var mapper: PaymentErrorMapper
 
