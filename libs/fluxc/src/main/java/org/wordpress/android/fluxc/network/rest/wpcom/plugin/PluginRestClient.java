@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.network.rest.wpcom.plugin;
 
 import android.content.Context;
 
-import com.android.volley.Header;
 import com.android.volley.RequestQueue;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -13,6 +12,7 @@ import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel;
 import org.wordpress.android.fluxc.network.UserAgent;
 import org.wordpress.android.fluxc.network.rest.GsonRequest;
+import org.wordpress.android.fluxc.network.rest.Header;
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener;

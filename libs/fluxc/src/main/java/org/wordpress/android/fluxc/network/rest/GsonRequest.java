@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.network.rest;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.Header;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
@@ -18,6 +17,7 @@ import org.wordpress.android.fluxc.network.BaseRequest;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,12 +149,24 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
             } else {
                 parsedData = mGson.fromJson(json, mClass);
             }
-            return Response.success(new ResponseWithHeaders<>(parsedData, response.allHeaders),
+
+            return Response.success(new ResponseWithHeaders<>(parsedData, mapHeaders(response)),
                     createCacheEntry(response));
         } catch (UnsupportedEncodingException | JsonSyntaxException e) {
             logRequestPath();
             return Response.error(new ParseError(e));
         }
+    }
+
+    @NonNull private static List<Header> mapHeaders(
+            @NonNull NetworkResponse response) {
+        List<Header> convertedHeaders = new ArrayList<>();
+        if (response.allHeaders != null) {
+            for (com.android.volley.Header header : response.allHeaders) {
+                convertedHeaders.add(new Header(header.getName(), header.getValue()));
+            }
+        }
+        return convertedHeaders;
     }
 
     public static GsonBuilder getDefaultGsonBuilder() {

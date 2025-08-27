@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpapi
 
-import com.android.volley.Header
 import com.android.volley.NetworkResponse
 import com.android.volley.NoConnectionError
 import com.android.volley.RequestQueue
@@ -54,7 +53,7 @@ class NonceRestClientTest {
                             byteArrayOf(),
                             false,
                             System.currentTimeMillis(),
-                            listOf(Header("Location", nonceRequestUrl))
+                            listOf(com.android.volley.Header("Location", nonceRequestUrl))
                         )
                     )
                 ),
@@ -129,7 +128,7 @@ class NonceRestClientTest {
                             byteArrayOf(),
                             false,
                             System.currentTimeMillis(),
-                            listOf(Header("Location", redirectUrl))
+                            listOf(com.android.volley.Header("Location", redirectUrl))
                         )
                     )
                 ),
@@ -211,7 +210,7 @@ class NonceRestClientTest {
                         byteArrayOf(),
                         false,
                         System.currentTimeMillis(),
-                        listOf(Header("Location", nonceRequestUrl))
+                        listOf(com.android.volley.Header("Location", nonceRequestUrl))
                     )
                 )
             ),

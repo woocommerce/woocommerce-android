@@ -1,6 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpapi
 
-import com.android.volley.Header
+import org.wordpress.android.fluxc.network.rest.Header
 
 sealed class WPAPIResponse<T> {
     data class Success<T>(

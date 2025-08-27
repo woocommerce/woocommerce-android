@@ -1,10 +1,10 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel
 
-import com.android.volley.Header
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.network.rest.GsonRequest
+import org.wordpress.android.fluxc.network.rest.Header
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener
 import java.lang.reflect.Type

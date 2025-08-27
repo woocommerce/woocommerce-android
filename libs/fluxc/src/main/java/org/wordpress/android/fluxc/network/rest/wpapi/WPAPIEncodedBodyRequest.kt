@@ -1,10 +1,10 @@
 package org.wordpress.android.fluxc.network.rest.wpapi
 
-import com.android.volley.Header
 import com.android.volley.NetworkResponse
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.Header
 import org.wordpress.android.fluxc.network.rest.ResponseWithHeaders
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticateErrorPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
@@ -52,7 +52,10 @@ class WPAPIEncodedBodyRequest(
                         ?: Charset.defaultCharset()
 
         val data = response?.data?.toString(contentTypeCharset)
-        return Response.success(ResponseWithHeaders(data, response?.allHeaders ?: emptyList()), null)
+        return Response.success(
+            ResponseWithHeaders(
+                data,
+                response?.allHeaders?.map { Header(it.name, it.value) } ?: emptyList()), null)
     }
 
     override fun deliverResponse(response: ResponseWithHeaders<String>) {
