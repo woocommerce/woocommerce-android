@@ -31,12 +31,12 @@ data class PosVariationsSyncResult(
 )
 
 data class PosGenerateCatalogResult(
-    val jobId: String?,
+    val jobId: String,
 )
 
 data class PosCatalogStatusResult(
     val downloadUrl: String?,
-    val status: String?,
+    val status: String,
 )
 
 sealed class PosLocalCatalogError(
@@ -55,6 +55,8 @@ sealed class PosLocalCatalogError(
     ) : PosLocalCatalogError(errorMessage, throwable)
 
     object EmptyResponse : PosLocalCatalogError("Empty response from server")
+
+    data class InvalidResponse(val errorMessage: String) : PosLocalCatalogError(errorMessage)
 
     data class UnknownError(
         val throwable: Throwable
@@ -310,8 +312,12 @@ class PosLocalCatalogStore @Inject constructor(
                     Result.failure(PosLocalCatalogError.EmptyResponse)
                 }
 
+                response.model.jobId == null -> {
+                    Result.failure(PosLocalCatalogError.InvalidResponse("Missing job ID in response"))
+                }
+
                 else -> {
-                    val jobId = response.model.jobId?.toString()
+                    val jobId = response.model.jobId.toString()
                     Result.success(
                         PosGenerateCatalogResult(jobId = jobId)
                     )
@@ -342,6 +348,10 @@ class PosLocalCatalogStore @Inject constructor(
 
                 response.model == null -> {
                     Result.failure(PosLocalCatalogError.EmptyResponse)
+                }
+
+                response.model.status.isNullOrEmpty() -> {
+                    Result.failure(PosLocalCatalogError.InvalidResponse("Missing job ID in response"))
                 }
 
                 else -> {
