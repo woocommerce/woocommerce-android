@@ -598,6 +598,62 @@ class PosLocalCatalogStoreTest {
         assertThat(result.downloadUrl).isNull()
     }
 
+    @Test
+    fun `when generating catalog returns null job ID, then returns invalid response error`() = runTest {
+        // GIVEN
+        val response = PosGenerateCatalogResponse(jobId = null)
+        whenever(posProductRestClient.postGenerateCatalog(testSite))
+            .thenReturn(WooResult(response))
+
+        // WHEN
+        val result = store.generateCatalog(testSite)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as PosLocalCatalogError.InvalidResponse
+        assertThat(error.message).isEqualTo("Missing job ID in response")
+    }
+
+    @Test
+    fun `when fetching catalog status with null status field, then returns invalid response error`() = runTest {
+        // GIVEN
+        val jobId = "12345"
+        val response = PosCatalogStatusResponse(
+            status = null,
+            downloadUrl = "https://example.com/catalog.zip"
+        )
+        whenever(posProductRestClient.getCatalogStatus(testSite, jobId))
+            .thenReturn(WooResult(response))
+
+        // WHEN
+        val result = store.fetchCatalogStatus(testSite, jobId)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as PosLocalCatalogError.InvalidResponse
+        assertThat(error.message).isEqualTo("Missing job ID in response")
+    }
+
+    @Test
+    fun `when fetching catalog status with empty status field, then returns invalid response error`() = runTest {
+        // GIVEN
+        val jobId = "12345"
+        val response = PosCatalogStatusResponse(
+            status = "",
+            downloadUrl = "https://example.com/catalog.zip"
+        )
+        whenever(posProductRestClient.getCatalogStatus(testSite, jobId))
+            .thenReturn(WooResult(response))
+
+        // WHEN
+        val result = store.fetchCatalogStatus(testSite, jobId)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as PosLocalCatalogError.InvalidResponse
+        assertThat(error.message).isEqualTo("Missing job ID in response")
+    }
+
     private fun createTestVariationApiResponse(
         id: Long = 200L,
         productId: Long = 100L
