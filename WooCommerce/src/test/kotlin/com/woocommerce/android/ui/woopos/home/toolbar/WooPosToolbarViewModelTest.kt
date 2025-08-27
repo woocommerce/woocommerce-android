@@ -5,6 +5,7 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.DocumentScanner
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.Settings
 import app.cash.turbine.test
@@ -12,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_DOCUMENTATION_URL
+import com.woocommerce.android.ui.woopos.featureflags.WooPosHistoricalOrdersM1Enabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -41,6 +43,7 @@ class WooPosToolbarViewModelTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
+
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
     }
@@ -50,6 +53,7 @@ class WooPosToolbarViewModelTest {
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val wooPosPosSettingsEnabled: WooPosPosSettingsEnabled = mock()
+    private val wooPosHistoricalOrdersM1Enabled: WooPosHistoricalOrdersM1Enabled = mock()
 
     @Test
     fun `given card reader status is NotConnected, when initialized, then state should be NotConnected`() = runTest {
@@ -108,7 +112,7 @@ class WooPosToolbarViewModelTest {
                         ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_documentation_title,
-                            icon = Icons.Default.Description,
+                            icon = Icons.Default.Info,
                         ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_get_support_title,
@@ -151,7 +155,51 @@ class WooPosToolbarViewModelTest {
                         ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_documentation_title,
+                            icon = Icons.Default.Info,
+                        ),
+                        WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_get_support_title,
+                            icon = Icons.AutoMirrored.Filled.Help,
+                        ),
+                        WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_exit_confirmation_title,
+                            icon = Icons.AutoMirrored.Filled.ExitToApp,
+                        ),
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `when OnToolbarMenuClicked passed with orders flag enabled, then menu should include orders`() = runTest {
+        // GIVEN
+        whenever(wooPosPosSettingsEnabled.invoke()).thenReturn(false)
+        whenever(wooPosHistoricalOrdersM1Enabled.invoke()).thenReturn(true)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked)
+
+        // THEN
+        assertThat(viewModel.state.value.menu)
+            .isEqualTo(
+                WooPosToolbarState.Menu.Visible(
+                    listOf(
+                        WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_orders_title,
                             icon = Icons.Default.Description,
+                        ),
+                        WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_barcode_scanning_title,
+                            icon = Icons.Default.DocumentScanner,
+                        ),
+                        WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_product_limitations_title,
+                            icon = Icons.Default.SearchOff,
+                        ),
+                        WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_documentation_title,
+                            icon = Icons.Default.Info,
                         ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_get_support_title,
@@ -403,5 +451,6 @@ class WooPosToolbarViewModelTest {
         resourceProvider,
         analyticsTracker,
         wooPosPosSettingsEnabled,
+        wooPosHistoricalOrdersM1Enabled,
     )
 }

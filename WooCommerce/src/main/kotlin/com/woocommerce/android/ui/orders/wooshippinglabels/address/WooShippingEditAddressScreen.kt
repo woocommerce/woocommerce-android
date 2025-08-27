@@ -240,6 +240,7 @@ fun WooShippingEditAddressScreen(
                 RoundedBorderDropDownWithLabel(
                     label = "${stringResource(id = R.string.woo_shipping_label_country)} *",
                     text = editableAddress.country.name,
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = onCountryChange
                 )
                 RoundedBorderTextFieldWithLabel(
