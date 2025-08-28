@@ -21,7 +21,8 @@ import javax.inject.Singleton
 data class PosLocalCatalogSyncResult(
     val syncedCount: Int,
     val hasMore: Boolean,
-    val nextOffset: Int
+    val nextOffset: Int,
+    val totalPages: Int,
 )
 
 data class PosVariationsSyncResult(
@@ -131,7 +132,8 @@ class PosLocalCatalogStore @Inject constructor(
                             PosLocalCatalogSyncResult(
                                 syncedCount = 0,
                                 hasMore = false,
-                                nextOffset = offset
+                                nextOffset = offset,
+                                totalPages = 0
                             )
                         )
                     }
@@ -158,7 +160,8 @@ class PosLocalCatalogStore @Inject constructor(
                             PosLocalCatalogSyncResult(
                                 syncedCount = products.size,
                                 hasMore = hasMore,
-                                nextOffset = if (hasMore) offset + products.size else offset
+                                nextOffset = if (hasMore) offset + products.size else offset,
+                                totalPages = 3 // Tbd Local Catalog: Read from header.
                             )
                         )
                     }

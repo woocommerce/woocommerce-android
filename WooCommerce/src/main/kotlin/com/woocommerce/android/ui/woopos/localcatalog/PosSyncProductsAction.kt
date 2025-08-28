@@ -51,15 +51,12 @@ class PosSyncProductsAction @Inject constructor(
                 onSuccess = { syncResult ->
                     // TBD Local Catalog We should first fetch the headers to decide if the catalog size is acceptable
                     if (pagesSynced == 0) {
-                        // TBD Local Catalog: The size will come in a header from the server
-                        totalPagesAvailable = 8
-
-                        if (totalPagesAvailable > maxPages) {
+                        if (syncResult.totalPages > maxPages) {
                             WooLog.e(
                                 T.POS,
-                                "Catalog too large: $totalPagesAvailable pages exceed maximum of $maxPages pages"
+                                "Catalog too large: $syncResult.totalPages pages exceed maximum of $maxPages pages"
                             )
-                            return Result.Failed.CatalogTooLarge(totalPagesAvailable, maxPages)
+                            return Result.Failed.CatalogTooLarge(syncResult.totalPages, maxPages)
                         }
                     }
 
