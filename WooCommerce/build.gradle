@@ -19,7 +19,9 @@ fladle {
     variant = "vanillaDebug"
     serviceAccountCredentials = rootProject.file(".configure-files/firebase.secrets.json")
     testTargets = [
-            "notPackage com.woocommerce.android.e2e.tests.screenshot"
+            "notPackage com.woocommerce.android.e2e.tests.screenshot",
+            "notClass com.woocommerce.android.e2e.tests.ui.OrdersRealAPI",
+            "notClass com.woocommerce.android.e2e.tests.ui.ProductsRealAPI"
     ]
     devices = [
             ["model": "MediumPhone.arm", "version": "35"]
@@ -315,8 +317,6 @@ dependencies {
 
     // Debug dependencies
     debugImplementation project(":libs:apifaker")
-    debugImplementation(libs.facebook.soloader)
-
     if (isLeakCanaryEnabled()) {
         debugImplementation(libs.squareup.leakcanary.android)
     }
