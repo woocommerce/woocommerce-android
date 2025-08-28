@@ -105,7 +105,7 @@ class PosLocalCatalogStore @Inject constructor(
      */
     suspend fun syncRecentlyModifiedProducts(
         site: SiteModel,
-        modifiedAfterGmt: String,
+        modifiedAfterGmt: String?,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PAGE_SIZE,
     ): Result<PosLocalCatalogSyncResult> =

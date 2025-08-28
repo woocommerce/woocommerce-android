@@ -23,6 +23,7 @@ class PosSyncProductsAction @Inject constructor(
         }
     }
 
+    @Suppress("ReturnCount")
     suspend fun execute(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
@@ -32,10 +33,9 @@ class PosSyncProductsAction @Inject constructor(
         var pagesSynced = 0
         var totalSyncedProducts = 0
         var shouldContinue = true
-        var totalPagesAvailable: Int? = null
+        var totalPagesAvailable: Int?
 
         while (shouldContinue) {
-
             /**
              * TBD Local Catalog We want to update the store to only fetch items and not store them so we can insert
              * all of them in a single transaction.

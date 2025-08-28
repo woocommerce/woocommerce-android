@@ -78,7 +78,8 @@ class PosLocalCatalogSyncRepository @Inject constructor(
 
             is PosSyncProductsAction.Result.Failed.CatalogTooLarge -> {
                 PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-                    error = "Catalog too large: ${productSyncResult.totalPages} pages exceed maximum of ${productSyncResult.maxPages} pages",
+                    error = "Catalog too large: ${productSyncResult.totalPages} pages exceed maximum " +
+                        "of ${productSyncResult.maxPages} pages",
                     totalPages = productSyncResult.totalPages,
                     maxPages = productSyncResult.maxPages
                 )
@@ -89,5 +90,4 @@ class PosLocalCatalogSyncRepository @Inject constructor(
             }
         }
     }
-
 }
