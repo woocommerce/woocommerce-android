@@ -656,10 +656,11 @@ class WCOrderStore @Inject internal constructor(
         orderBy: OrderBy = OrderBy.DATE,
         sortOrder: SortOrder = SortOrder.DESCENDING,
         statusFilter: String? = null,
-        deleteOldData: Boolean = page == 1
+        deleteOldData: Boolean = page == 1,
+        createdVia: String? = null
     ): WooResult<List<OrderEntity>> {
         return coroutineEngine.withDefaultContext(API, this, "fetchOrders") {
-            val result = wcOrderRestClient.fetchOrders(site, count, page, orderBy, sortOrder, statusFilter)
+            val result = wcOrderRestClient.fetchOrders(site, count, page, orderBy, sortOrder, statusFilter, createdVia)
 
             return@withDefaultContext if (result.isError) {
                 WooResult(WooError(API_ERROR, SERVER_ERROR, result.error.message))
