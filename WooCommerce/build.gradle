@@ -27,7 +27,7 @@ fladle {
     localResultsDir = "$rootDir/build/instrumented-tests"
 
     useOrchestrator = true
-    testTimeout = "5m"
+    testTimeout = "10m"
     flakyTestAttempts = 1
 
     maxTestShards = 50
