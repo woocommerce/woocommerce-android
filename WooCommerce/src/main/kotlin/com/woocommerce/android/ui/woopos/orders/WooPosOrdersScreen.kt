@@ -45,7 +45,6 @@ fun WooPosOrdersScreen(
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
-    // Trigger initial load
     LaunchedEffect(Unit) {
         viewModel.refreshOrders()
     }
