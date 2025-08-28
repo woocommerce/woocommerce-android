@@ -33,7 +33,6 @@ class PosSyncProductsAction @Inject constructor(
         var pagesSynced = 0
         var totalSyncedProducts = 0
         var shouldContinue = true
-        var totalPagesAvailable: Int?
 
         while (shouldContinue) {
             /**
