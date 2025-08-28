@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.woopos.orders
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.formatToDDMMMYYYY
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -136,29 +139,39 @@ fun WooPosOrdersListPaneScreen(
     ) {
         items(orders, key = { it.id }) { order ->
             val isSelected = order.id == selectedOrderId
-            val bg = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
-            val fg = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-
+            val background = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+            val foreground = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(WooPosSpacing.Small.value)
                     .clip(MaterialTheme.shapes.medium)
-                    .background(bg)
+                    .background(background)
                     .clickable { onOrderSelected(order.id) }
                     .semantics { selected = isSelected }
                     .padding(
                         horizontal = WooPosSpacing.Medium.value,
                         vertical = WooPosSpacing.Medium.value
                     ),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
+                Column (
+                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
+                ) {
+                    WooPosText("Order #${order.number}",
+                        style = WooPosTypography.BodyMedium)
+                    WooPosText(
+                        text = order.dateCreated.formatToDDMMMYYYY(),
+                        style = WooPosTypography.BodySmall,
+                        color = foreground
+                    )
+                }
+
+                Spacer(Modifier.weight(1f))
+
                 WooPosText(
-                    text = order.id.toString(),
+                    text = "${order.total} ${order.currency}",
                     style = WooPosTypography.BodyMedium,
-                    fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                    color = fg,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.alignByBaseline()
                 )
             }
         }
