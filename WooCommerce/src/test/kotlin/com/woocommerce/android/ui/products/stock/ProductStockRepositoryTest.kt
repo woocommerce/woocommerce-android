@@ -166,7 +166,7 @@ class ProductStockRepositoryTest : BaseUnitTest() {
         val PRODUCT_VARIATION_STOCK = ProductStockItemApiResponse(
             productId = 2,
             parentId = 1,
-            stockQuantity = 1,
+            stockQuantity = 1f,
             stockStatus = "instock",
             name = "Product 1 Variation",
         )
@@ -175,7 +175,7 @@ class ProductStockRepositoryTest : BaseUnitTest() {
                 productId = 1,
                 parentId = 0,
                 name = "Product 1",
-                stockQuantity = 1,
+                stockQuantity = 1f,
                 stockStatus = "instock",
             )
         )
@@ -184,7 +184,7 @@ class ProductStockRepositoryTest : BaseUnitTest() {
                 productId = 1,
                 parentId = 0,
                 name = "Product 1",
-                stockQuantity = 1,
+                stockQuantity = 1f,
                 stockStatus = "instock",
             ),
             PRODUCT_VARIATION_STOCK
@@ -209,7 +209,7 @@ class ProductStockRepositoryTest : BaseUnitTest() {
                 productId = 1,
                 parentProductId = 0,
                 name = "Product 1",
-                stockQuantity = 1,
+                stockQuantity = 1f,
                 itemsSold = 2,
                 imageUrl = null
             )
@@ -219,7 +219,7 @@ class ProductStockRepositoryTest : BaseUnitTest() {
                 productId = 1,
                 parentProductId = 0,
                 name = "Product 1",
-                stockQuantity = 1,
+                stockQuantity = 1f,
                 itemsSold = 2,
                 imageUrl = null
             ),
@@ -227,7 +227,7 @@ class ProductStockRepositoryTest : BaseUnitTest() {
                 productId = 2,
                 parentProductId = 1,
                 name = "Product 1 Variation",
-                stockQuantity = 1,
+                stockQuantity = 1f,
                 itemsSold = 2,
                 imageUrl = null
             )

@@ -60,7 +60,6 @@ class WooPosSettingsReceiptRepositoryTest {
             "woocommerce_pos_store_name" to "Test Store",
             "woocommerce_pos_store_address" to "123 Test Street",
             "woocommerce_pos_store_phone" to "+1234567890",
-            "woocommerce_pos_store_email" to "test@store.com",
             "woocommerce_pos_refund_returns_policy" to "30 day returns"
         )
         val apiResult = WooResult(settingsMap)
@@ -75,7 +74,6 @@ class WooPosSettingsReceiptRepositoryTest {
         assertThat(successData.receiptInfo.storeName).isEqualTo("Test Store")
         assertThat(successData.receiptInfo.address).isEqualTo("123 Test Street")
         assertThat(successData.receiptInfo.phone).isEqualTo("+1234567890")
-        assertThat(successData.receiptInfo.email).isEqualTo("test@store.com")
         assertThat(successData.receiptInfo.refundPolicy).isEqualTo("30 day returns")
     }
 
@@ -95,7 +93,6 @@ class WooPosSettingsReceiptRepositoryTest {
         assertThat(successData.receiptInfo.storeName).isEqualTo("")
         assertThat(successData.receiptInfo.address).isEqualTo("")
         assertThat(successData.receiptInfo.phone).isEqualTo("")
-        assertThat(successData.receiptInfo.email).isEqualTo("")
         assertThat(successData.receiptInfo.refundPolicy).isEqualTo("")
     }
 

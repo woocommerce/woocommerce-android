@@ -307,7 +307,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             invoke(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
         } doReturn Result.success(
             PurchasedLabelData(
-                labels = listOf(shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASED)),
+                labels = listOf(shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASE_IN_PROGRESS)),
                 origin = emptyMap(),
                 destination = emptyMap(),
                 rates = emptyMap()
@@ -645,6 +645,47 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when multiple-quantity items, then shows correct default weight`() = testBlocking {
+        val items = listOf(
+            ShippableItemModel(
+                itemId = 1,
+                productId = 1,
+                title = "title",
+                price = BigDecimal.ONE,
+                quantity = 2f,
+                weight = 1.5f,
+                currency = "USD",
+                width = 1f,
+                height = 1f,
+                length = 1f
+            )
+        )
+        whenever(getShipments(any())) doReturn listOf(ShipmentUIModel(localId = "0", items = items))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        // Select a package with weight 0.5
+        val pkg = PackageData(
+            id = "1",
+            name = "name",
+            dimensions = "1 x 1 x 1",
+            weight = "0.5",
+            isSelected = true,
+            isLetter = true
+        )
+        sut.onPackageSelected(pkg)
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        val dataState = currentViewState as DataState
+        val selection = dataState.shipmentUIList[0].packageSelectionState
+        val data = selection as PackageSelectionState.DataAvailable
+        assertThat(data.defaultWeight).isEqualTo("3.5")
+    }
+
+    @Test
     fun `CustomState is NotRequired when shouldRequireCustomsForm returns false`() = testBlocking {
         var currentViewState: WooShippingViewState? = null
 
@@ -793,7 +834,14 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onPurchaseShippingLabel succeed then track purchase_success`() = testBlocking {
+    fun `when label is purchased, then track purchase_success`() = testBlocking {
+        whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
+            ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
+                status = ShippingLabelStatus.PURCHASED,
+                shippingLabelModel = shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASED)
+            )
+        )
+
         createViewModel()
 
         val selectedRate = defaultShippingRates.values.first().first()
@@ -1499,7 +1547,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }.last() as DataState
 
         viewState.shipmentUIList.first().let {
-            assertThat(it.purchased).isTrue()
+            assertThat(it.isReadOnly).isTrue()
         }
     }
 
@@ -1543,5 +1591,32 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
         assertThat(dataState.purchaseSectionUI.isOrderAlreadyCompleted).isFalse()
+    }
+
+    @Test
+    fun `when opening a shipment with in-progress label, then fetch the label status`() = testBlocking {
+        val inProgressLabel = shippingLabelModel.copy(status = ShippingLabelStatus.PURCHASE_IN_PROGRESS)
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = inProgressLabel
+            )
+        )
+        whenever(observeShippingLabelStatus(eq(orderId), any())) doReturn flowOf(
+            ObserveShippingLabelStatus.ObserveShippingLabelStatusResult(
+                status = ShippingLabelStatus.PURCHASED,
+                shippingLabelModel = inProgressLabel.copy(status = ShippingLabelStatus.PURCHASED)
+            )
+        )
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value as DataState
+        assertThat(currentViewState.shipmentUIList).hasSize(1)
+        assertThat(currentViewState.shipmentUIList[0].isPurchased).isTrue
+        @Suppress("UnusedFlow")
+        verify(observeShippingLabelStatus).invoke(orderId, inProgressLabel.labelId)
     }
 }

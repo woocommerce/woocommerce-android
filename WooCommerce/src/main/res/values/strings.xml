@@ -4380,6 +4380,7 @@
     <string name="woopos_barcode_scanning_title">Initial barcode scanner setup</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
+    <string name="woopos_orders_title">Orders</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
@@ -4582,7 +4583,6 @@
     <string name="woopos_settings_store_name_label">Store name</string>
     <string name="woopos_settings_store_address_label">Address</string>
     <string name="woopos_settings_store_phone_label">Phone</string>
-    <string name="woopos_settings_store_email_label">Email</string>
     <string name="woopos_settings_refund_policy_label">Refund &amp; Returns Policy</string>
     <string name="woopos_settings_store_not_set">Not set</string>
 

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -34,7 +35,14 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val containerViewModel: WooPosSettingsViewModel = hiltViewModel()
     val state by containerViewModel.state.collectAsState()
 
-    BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
+    LaunchedEffect(Unit) {
+        containerViewModel.onSettingsOpened()
+    }
+
+    BackHandler {
+        containerViewModel.onSettingsClosed()
+        onNavigationEvent(WooPosNavigationEvent.GoBack)
+    }
 
     Row(
         modifier = Modifier.fillMaxSize()

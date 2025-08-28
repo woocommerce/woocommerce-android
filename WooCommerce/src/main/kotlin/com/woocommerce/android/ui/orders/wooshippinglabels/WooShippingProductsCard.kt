@@ -96,13 +96,12 @@ private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::cl
                     shippableItems = generateItems(6),
                     formattedTotalWeight = "8.5kg",
                     formattedTotalPrice = "$92.78",
-                    purchased = false,
                     packageSelectionState = WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected,
                     customsState = WooShippingLabelCreationViewModel.CustomsState.NotRequired,
                     hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection,
                     shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable,
                     shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
-                    shipmentPrintLabelUI = ShippingLabelSampleData.getShipmentPrintLabelUI()
+                    labelPurchaseStatus = LabelPurchaseStatus.Idle
                 ),
                 isExpanded = isExpanded
             )
@@ -173,13 +172,12 @@ private fun ShippingProductsCardHeaderPreview() {
         shippableItems = generateItems(4),
         formattedTotalWeight = "8.5kg",
         formattedTotalPrice = "$92.78",
-        purchased = false,
         packageSelectionState = WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected,
         customsState = WooShippingLabelCreationViewModel.CustomsState.NotRequired,
         hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection,
         shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable,
         shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
-        shipmentPrintLabelUI = ShippingLabelSampleData.getShipmentPrintLabelUI()
+        labelPurchaseStatus = LabelPurchaseStatus.Idle
     )
     val isExpanded = remember { mutableStateOf(false) }
 

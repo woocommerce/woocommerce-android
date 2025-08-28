@@ -25,14 +25,12 @@ class WooPosSettingsStoreViewModelTest {
         // GIVEN
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "Test Store",
-            address = "123 Test St",
-            email = "test@store.com"
+            address = "123 Test St"
         )
         val receiptInfo = WooPosSettingsStoreState.ReceiptInfo(
             storeName = "Test Store",
             address = "123 Test St",
             phone = "+1234567890",
-            email = "test@store.com",
             refundPolicy = "30 day returns"
         )
         whenever(storeRepository.getStoreInfo()).thenReturn(storeInfo)
@@ -53,8 +51,7 @@ class WooPosSettingsStoreViewModelTest {
         // GIVEN
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "Test Store",
-            address = "123 Test St",
-            email = "test@store.com"
+            address = "123 Test St"
         )
         whenever(storeRepository.getStoreInfo()).thenReturn(storeInfo)
         whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.NotAvailable)
@@ -74,8 +71,7 @@ class WooPosSettingsStoreViewModelTest {
         // GIVEN
         val storeInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "Test Store",
-            address = "123 Test St",
-            email = "test@store.com"
+            address = "123 Test St"
         )
         whenever(storeRepository.getStoreInfo()).thenReturn(storeInfo)
         whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.Error)
@@ -105,8 +101,7 @@ class WooPosSettingsStoreViewModelTest {
         // GIVEN
         val emptyStoreInfo = WooPosSettingsStoreState.StoreInfo(
             storeName = "",
-            address = "",
-            email = ""
+            address = ""
         )
         whenever(storeRepository.getStoreInfo()).thenReturn(emptyStoreInfo)
         whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.NotAvailable)

@@ -67,7 +67,9 @@ class GetSplitMovements @Inject constructor() {
         items: Map<Int, ShipmentUIModel>,
         isRemoveMovement: Boolean
     ): List<Int> {
-        val otherUnfulfilledKeys = items.filterNot { it.key == sourceShipmentKey || it.value.purchased }.keys.toList()
+        val otherUnfulfilledKeys = items.filterNot {
+            it.key == sourceShipmentKey || it.value.isPurchasedOrInProgress
+        }.keys.toList()
         if (isRemoveMovement) return otherUnfulfilledKeys
 
         val otherKeys = items.keys.filter { it != sourceShipmentKey }
