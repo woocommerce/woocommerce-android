@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
@@ -39,6 +41,11 @@ fun WooPosOrdersScreen(
 ) {
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+
+    // Trigger initial load
+    LaunchedEffect(Unit) {
+        viewModel.refreshOrders()
+    }
 
     val onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) }
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
@@ -55,12 +62,55 @@ fun WooPosOrdersScreen(
                 onBackClicked = onBackClicked,
             )
 
-            WooPosOrdersListPaneScreen(
-                orders = state.orders,
-                selectedOrderId = state.selectedOrderId,
-                onOrderSelected = viewModel::onOrderSelected,
-                modifier = Modifier.fillMaxSize()
-            )
+            when {
+                state.isLoading -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        WooPosText(
+                            text = stringResource(R.string.loading),
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(WooPosSpacing.Large.value)
+                        )
+                    }
+                }
+                state.error != null -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        WooPosText(
+                            text = state.error ?: stringResource(R.string.error_generic),
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(WooPosSpacing.Large.value)
+                        )
+                    }
+                }
+                state.orders.isEmpty() -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        WooPosText(
+                            text = "No Orders Found",
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(WooPosSpacing.Large.value)
+                        )
+                    }
+                }
+                else -> {
+                    WooPosOrdersListPaneScreen(
+                        orders = state.orders,
+                        selectedOrderId = state.selectedOrderId,
+                        onOrderSelected = viewModel::onOrderSelected,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
         }
 
         WooPosOrdersDetailPaneScreen(
@@ -75,7 +125,7 @@ fun WooPosOrdersScreen(
 
 @Composable
 fun WooPosOrdersListPaneScreen(
-    orders: List<WooPosOrder>,
+    orders: List<Order>,
     selectedOrderId: Long?,
     onOrderSelected: (Long) -> Unit,
     modifier: Modifier = Modifier
@@ -104,7 +154,7 @@ fun WooPosOrdersListPaneScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 WooPosText(
-                    text = order.title,
+                    text = order.id.toString(),
                     style = WooPosTypography.BodyMedium,
                     fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
                     color = fg,
@@ -117,7 +167,7 @@ fun WooPosOrdersListPaneScreen(
 
 @Composable
 fun WooPosOrdersDetailPaneScreen(
-    order: WooPosOrder?,
+    order: Order?,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -130,7 +180,7 @@ fun WooPosOrdersDetailPaneScreen(
                     start = WooPosSpacing.Medium.value,
                     end = WooPosSpacing.Medium.value
                 ),
-            titleText = order?.title ?: stringResource(R.string.woopos_orders_title),
+            titleText = order?.id.toString() ?: stringResource(R.string.woopos_orders_title),
             onBackClicked = null,
             titleStyle = WooPosTypography.BodyLarge,
             titleFontWeight = FontWeight.Normal
