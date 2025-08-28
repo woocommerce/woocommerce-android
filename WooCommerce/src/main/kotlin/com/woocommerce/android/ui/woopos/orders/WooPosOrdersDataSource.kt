@@ -35,5 +35,7 @@ class WooPosOrdersDataSource @Inject constructor(
         )
     }
 
-    private suspend fun List<OrderEntity>?.toAppModels(): List<Order> = this?.map { orderMapper.toAppModel(it) } ?: emptyList()
+    private suspend fun List<OrderEntity>?.toAppModels(): List<Order> = this?.map {
+        orderMapper.toAppModel(it)
+    } ?: emptyList()
 }
