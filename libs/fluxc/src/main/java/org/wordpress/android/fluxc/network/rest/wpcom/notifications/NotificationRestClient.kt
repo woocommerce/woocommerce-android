@@ -127,7 +127,7 @@ class NotificationRestClient @Inject constructor(
         val url = WPCOMREST.devices.new_.urlV1
         val request = WPComGsonRequest.buildPostRequest(
             url, params, RegisterDeviceRestResponse::class.java,
-            { response: RegisterDeviceRestResponse? ->
+            { response: RegisterDeviceRestResponse?, _ ->
                 response?.let {
                     if (!it.id.isNullOrEmpty()) {
                         val payload = RegisterDeviceResponsePayload(it.id)
@@ -166,7 +166,7 @@ class NotificationRestClient @Inject constructor(
         val url = WPCOMREST.devices.deviceId(deviceId).delete.urlV1
         val request = WPComGsonRequest.buildPostRequest(
             url, null, Any::class.java,
-            {
+            { _, _ ->
                 val payload = UnregisterDeviceResponsePayload()
                 dispatcher.dispatch(NotificationActionBuilder.newUnregisteredDeviceAction(payload))
             },
@@ -197,7 +197,7 @@ class NotificationRestClient @Inject constructor(
         )
         val request =
             WPComGsonRequest.buildGetRequest(url, params, NotificationHashesApiResponse::class.java,
-                { response: NotificationHashesApiResponse? ->
+                { response: NotificationHashesApiResponse?, _ ->
                     // Create a map of remote id to note_hash
                     val hashesMap: Map<Long, Long> =
                         response?.notes?.map { it.id to it.note_hash }?.toMap() ?: emptyMap()
@@ -243,7 +243,7 @@ class NotificationRestClient @Inject constructor(
 
         val request =
             WPComGsonRequest.buildGetRequest(url, params, NotificationsApiResponse::class.java,
-                { response: NotificationsApiResponse? ->
+                { response: NotificationsApiResponse?, _ ->
                     val lastSeenTime = response?.last_seen_time?.let {
                         Date(it)
                     }
@@ -285,7 +285,7 @@ class NotificationRestClient @Inject constructor(
         )
         val request =
             WPComGsonRequest.buildGetRequest(url, params, NotificationsApiResponse::class.java,
-                { response ->
+                { response, _ ->
                     val notification = response?.notes?.firstOrNull()?.let {
                         NotificationApiResponse.notificationResponseToNotificationModel(it)
                     }
@@ -323,7 +323,7 @@ class NotificationRestClient @Inject constructor(
         val params = mapOf("time" to timestamp.toString())
         val request =
             WPComGsonRequest.buildPostRequest(url, params, NotificationSeenApiResponse::class.java,
-                { response ->
+                { response, _ ->
                     val payload = MarkNotificationSeenResponsePayload(
                         response.success,
                         response.last_seen_time
