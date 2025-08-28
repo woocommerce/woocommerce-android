@@ -24,6 +24,7 @@ class PosLocalCatalogSyncWorker @AssistedInject constructor(
         const val WORK_NAME = "PosLocalCatalogSyncWork"
     }
 
+    @Suppress("ReturnCount")
     override suspend fun doWork(): Result {
         if (!accountRepository.isUserLoggedIn()) {
             WooLog.d(T.POS, "User not logged in, skipping local catalog sync")

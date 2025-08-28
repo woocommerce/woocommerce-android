@@ -175,8 +175,16 @@ class PosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     @Test
     fun `when site changes between calls, then worker uses current site`() = testBlocking {
         // GIVEN
-        val site1 = SiteModel().apply { id = 1; siteId = 123L; name = "Site 1" }
-        val site2 = SiteModel().apply { id = 2; siteId = 456L; name = "Site 2" }
+        val site1 = SiteModel().apply {
+            id = 1
+            siteId = 123L
+            name = "Site 1"
+        }
+        val site2 = SiteModel().apply {
+            id = 2
+            siteId = 456L
+            name = "Site 2"
+        }
 
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         whenever(syncRepository.syncLocalCatalogFull(any()))
