@@ -139,8 +139,18 @@ fun WooPosOrdersListPaneScreen(
     ) {
         items(orders, key = { it.id }) { order ->
             val isSelected = order.id == selectedOrderId
-            val background = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
-            val foreground = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+            val background = if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            }
+
+            val foreground = if (isSelected) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -154,11 +164,13 @@ fun WooPosOrdersListPaneScreen(
                     ),
                 verticalAlignment = Alignment.Top
             ) {
-                Column (
+                Column(
                     verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
                 ) {
-                    WooPosText("Order #${order.number}",
-                        style = WooPosTypography.BodyMedium)
+                    WooPosText(
+                        "Order #${order.number}",
+                        style = WooPosTypography.BodyMedium
+                    )
                     WooPosText(
                         text = order.dateCreated.formatToDDMMMYYYY(),
                         style = WooPosTypography.BodySmall,
