@@ -49,7 +49,6 @@ import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.OpenProductDetail
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
-import com.woocommerce.android.ui.products.stock.ProductStockItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
@@ -103,7 +102,7 @@ private fun DashboardProductStockCard(
     viewState: DashboardProductStockViewModel.ViewState,
     onHideClicked: () -> Unit,
     onFilterSelected: (ProductStockStatus) -> Unit,
-    onProductClicked: (ProductStockItem) -> Unit,
+    onProductClicked: (DashboardProductStockViewModel.ProductStockUiItem) -> Unit,
     onContactSupportClicked: () -> Unit,
     onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -191,9 +190,9 @@ private fun ProductStockLoading(
 @Composable
 private fun ProductStockCardContent(
     selectedFilter: ProductStockStatus,
-    productStockItems: List<ProductStockItem>,
+    productStockItems: List<DashboardProductStockViewModel.ProductStockUiItem>,
     onFilterSelected: (ProductStockStatus) -> Unit,
-    onProductClicked: (ProductStockItem) -> Unit,
+    onProductClicked: (DashboardProductStockViewModel.ProductStockUiItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -253,8 +252,8 @@ fun StockEmptyView(modifier: Modifier = Modifier) {
 
 @Composable
 fun ProductStockRow(
-    product: ProductStockItem,
-    onItemClicked: (ProductStockItem) -> Unit,
+    product: DashboardProductStockViewModel.ProductStockUiItem,
+    onItemClicked: (DashboardProductStockViewModel.ProductStockUiItem) -> Unit,
     displayDivider: Boolean,
     modifier: Modifier = Modifier,
 ) {

@@ -44,7 +44,7 @@ data class ProductStockItemApiResponse(
     @SerializedName("stock_status")
     val stockStatus: String? = null,
     @SerializedName("stock_quantity")
-    val stockQuantity: Int? = null,
+    val stockQuantity: Float? = null,
     @SerializedName("low_stock_amount")
     val lowStockAmount: Int? = null
 )
