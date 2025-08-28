@@ -188,15 +188,9 @@ fun WooPosOrdersDetailPaneScreen(
     ) {
         WooPosToolbar(
             modifier = Modifier
-                .padding(
-                    top = WooPosSpacing.Medium.value,
-                    start = WooPosSpacing.Medium.value,
-                    end = WooPosSpacing.Medium.value
-                ),
-            titleText = order?.id.toString() ?: stringResource(R.string.woopos_orders_title),
-            onBackClicked = null,
-            titleStyle = WooPosTypography.BodyLarge,
-            titleFontWeight = FontWeight.Normal
+                .fillMaxWidth(),
+            titleText = "Order #${order?.number ?: "--"}",
+            titleFontWeight = FontWeight.Bold
         )
 
         Column(
