@@ -32,7 +32,7 @@ class WooShippingLabelPackageRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `fetchAllStorePackages returns WooResult with result`() = testBlocking {
+    fun `fetchShippingPackages returns WooResult with result`() = testBlocking {
         val storePackagesDAO = StorePackagesDAO(
             storeOptions = StoreOptionsDAO(
                 currencySymbol = "",
@@ -47,21 +47,21 @@ class WooShippingLabelPackageRepositoryTest : BaseUnitTest() {
         whenever(packageRestClient.fetchShippingLabelPackages(siteModel)).thenReturn(WooPayload(packageResponse))
         whenever(packageMapper(packageResponse)).thenReturn(storePackagesDAO)
 
-        val result = repository.fetchAllStorePackages()
+        val result = repository.fetchShippingPackages()
 
         assertThat(result.isError).isFalse
         assertThat(storePackagesDAO).isEqualTo(result.model)
     }
 
     @Test
-    fun `fetchAllStorePackages returns WooResult with error`() = testBlocking {
+    fun `fetchShippingPackages returns WooResult with error`() = testBlocking {
         val error = WooError(
             type = GENERIC_ERROR,
             original = UNKNOWN
         )
         whenever(packageRestClient.fetchShippingLabelPackages(siteModel)).thenReturn(WooPayload(error))
 
-        val result = repository.fetchAllStorePackages()
+        val result = repository.fetchShippingPackages()
 
         assertThat(result.isError).isTrue
         assertThat(error).isEqualTo(result.error)

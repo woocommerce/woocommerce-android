@@ -16,7 +16,7 @@ class WooShippingLabelPackageRepository @Inject constructor(
     private val packageRestClient: WooShippingLabelPackageRestClient,
     private val wooShippingDao: WooShippingDao
 ) {
-    suspend fun fetchAllStorePackages(
+    suspend fun fetchShippingPackages(
         site: SiteModel = selectedSite.get()
     ) = packageRestClient.fetchShippingLabelPackages(site).asWooResult { packageMapper(selectedSite.get(), it) }
         .also { result ->
