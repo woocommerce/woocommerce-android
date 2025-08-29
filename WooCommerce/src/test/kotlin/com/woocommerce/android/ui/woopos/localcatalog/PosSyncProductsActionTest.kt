@@ -13,7 +13,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.pos.PosLocalCatalogStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogSyncResult
 import kotlin.Result as KotlinResult
 
 class PosSyncProductsActionTest {
@@ -209,7 +210,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
             .thenReturn(
                 KotlinResult.success(
-                    org.wordpress.android.fluxc.store.pos.PosLocalCatalogSyncResult(
+                    PosLocalCatalogSyncResult(
                         syncedCount = productsCount,
                         hasMore = false,
                         nextOffset = 0,
@@ -223,7 +224,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
             .thenReturn(
                 KotlinResult.success(
-                    org.wordpress.android.fluxc.store.pos.PosLocalCatalogSyncResult(
+                    PosLocalCatalogSyncResult(
                         syncedCount = page1Count,
                         hasMore = true,
                         nextOffset = page1Count,
@@ -235,7 +236,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(page1Count), any()))
             .thenReturn(
                 KotlinResult.success(
-                    org.wordpress.android.fluxc.store.pos.PosLocalCatalogSyncResult(
+                    PosLocalCatalogSyncResult(
                         syncedCount = page2Count,
                         hasMore = true,
                         nextOffset = page1Count + page2Count,
@@ -254,7 +255,7 @@ class PosSyncProductsActionTest {
         )
             .thenReturn(
                 KotlinResult.success(
-                    org.wordpress.android.fluxc.store.pos.PosLocalCatalogSyncResult(
+                    PosLocalCatalogSyncResult(
                         syncedCount = page3Count,
                         hasMore = false,
                         nextOffset = 0,
@@ -268,7 +269,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    org.wordpress.android.fluxc.store.pos.PosLocalCatalogSyncResult(
+                    PosLocalCatalogSyncResult(
                         syncedCount = 0,
                         hasMore = false,
                         nextOffset = 0,
@@ -292,7 +293,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
             .thenReturn(
                 KotlinResult.success(
-                    org.wordpress.android.fluxc.store.pos.PosLocalCatalogSyncResult(
+                    PosLocalCatalogSyncResult(
                         syncedCount = 100,
                         hasMore = true,
                         nextOffset = 100,
@@ -311,7 +312,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
             .thenReturn(
                 KotlinResult.success(
-                    org.wordpress.android.fluxc.store.pos.PosLocalCatalogSyncResult(
+                    PosLocalCatalogSyncResult(
                         syncedCount = 0,
                         hasMore = true,
                         nextOffset = 100,
@@ -323,7 +324,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(100), any()))
             .thenReturn(
                 KotlinResult.success(
-                    org.wordpress.android.fluxc.store.pos.PosLocalCatalogSyncResult(
+                    PosLocalCatalogSyncResult(
                         syncedCount = 50,
                         hasMore = false,
                         nextOffset = 0,
