@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.pos.PosLocalCatalogStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogStore
 import javax.inject.Inject
 
 class PosSyncProductsAction @Inject constructor(
