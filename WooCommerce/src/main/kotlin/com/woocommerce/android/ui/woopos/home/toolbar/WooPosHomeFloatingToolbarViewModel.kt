@@ -149,7 +149,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
             addAll(
                 listOf(
-                    WooPosToolbarState.Menu.MenuItem(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_settings_title,
                         icon = Icons.Default.Settings,
                     ),
