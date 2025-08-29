@@ -63,7 +63,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 body,
                 clazz,
                 /* listener = */
-                { continuation.resume(WPAPIResponse.Success(it)) },
+                { responseData, headers -> continuation.resume(WPAPIResponse.Success(responseData, headers)) },
                 /* errorListener = */
                 { continuation.resume(WPAPIResponse.Error(it)) }
             )

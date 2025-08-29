@@ -12,7 +12,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 class WPAPIResponseExtTests {
     @Test
     fun `given a null response with success status, when converting, then return an error`() {
-        val response = WPAPIResponse.Success<String>(null)
+        val response = WPAPIResponse.Success<String>(null, emptyList())
 
         val result = response.toWooPayload { "Got response: $it" }
 
@@ -24,7 +24,7 @@ class WPAPIResponseExtTests {
 
     @Test
     fun `given a null response and nullable type, when converting, then return null wrapped in success`() {
-        val response = WPAPIResponse.Success<String>(null)
+        val response = WPAPIResponse.Success<String>(null, emptyList())
 
         val result = response.toWooPayload<String, String?> { "Got response: $it" }
 
@@ -34,7 +34,7 @@ class WPAPIResponseExtTests {
 
     @Test
     fun `given a non-null success response, when converting, then map the types`() {
-        val response = WPAPIResponse.Success("message")
+        val response = WPAPIResponse.Success("message", emptyList())
 
         val result = response.toWooPayload { it.hashCode() }
 

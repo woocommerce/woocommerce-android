@@ -296,7 +296,12 @@ class SiteStoreTest {
         site.id = siteLocalId
         val domains = listOf(Domain(domain = "example.wordpress.com", primaryDomain = true, wpcomDomain = true))
 
-        whenever(siteRestClient.fetchSiteDomains(site)).thenReturn(Response.Success(DomainsResponse(domains)))
+        whenever(siteRestClient.fetchSiteDomains(site)).thenReturn(
+            Response.Success(
+                DomainsResponse(domains),
+                emptyList()
+            )
+        )
 
         siteStore.fetchSiteDomains(site)
 

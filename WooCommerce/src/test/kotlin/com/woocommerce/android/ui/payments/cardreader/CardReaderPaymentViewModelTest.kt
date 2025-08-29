@@ -22,9 +22,11 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalI
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.ReaderNotConnected
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Server
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
@@ -144,7 +146,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentFailedWithValidDataForRetry = PaymentFailed(Generic, mock(), "dummy msg")
     private val paymentFailedWithNoNetwork = PaymentFailed(NoNetwork, mock(), "dummy msg")
     private val paymentFailedWithPaymentDeclined = PaymentFailed(DeclinedByBackendError.Unknown, mock(), "dummy msg")
-    private val paymentFailedWithCardReadTimeOut = PaymentFailed(Generic, mock(), "dummy msg")
+    private val paymentFailedWithCardReadTimeOut = PaymentFailed(CardReadTimeOut, mock(), "dummy msg")
+    private val paymentFailedWithReaderNotConnected = PaymentFailed(ReaderNotConnected, mock(), "dummy msg")
     private val paymentFailedWithServerError = PaymentFailed(Server(""), mock(), "dummy msg")
     private val paymentFailedWithAmountTooSmallWooPayments = PaymentFailed(
         DeclinedByBackendError.AmountTooSmallWooPayments(
@@ -827,7 +830,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given external reader, when payment fails because of CARD_READ_TIMEOUT, then error is mapped correctly`() =
         testBlocking {
-            whenever(errorMapper.mapPaymentErrorToUiError(Generic, false))
+            whenever(errorMapper.mapPaymentErrorToUiError(CardReadTimeOut, false))
                 .thenReturn(PaymentFlowError.Generic)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(paymentFailedWithCardReadTimeOut) }
@@ -842,9 +845,26 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given external reader, when payment fails because of READER_NOT_CONNECTED, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(ReaderNotConnected, false))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithReaderNotConnected) }
+            }
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
+                PaymentFlowError.Generic.message
+            )
+        }
+
+    @Test
     fun `given built in reader, when payment fails because of CARD_READ_TIMEOUT, then error is mapped correctly`() =
         testBlocking {
-            whenever(errorMapper.mapPaymentErrorToUiError(Generic, true))
+            whenever(errorMapper.mapPaymentErrorToUiError(CardReadTimeOut, true))
                 .thenReturn(PaymentFlowError.Generic)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(paymentFailedWithCardReadTimeOut) }
@@ -932,7 +952,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given external reader, when payment fails because of CARD_READ_TIME_OUT, then error is mapped correctly`() =
         testBlocking {
-            whenever(errorMapper.mapPaymentErrorToUiError(Generic, false))
+            whenever(errorMapper.mapPaymentErrorToUiError(CardReadTimeOut, false))
                 .thenReturn(PaymentFlowError.Generic)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(paymentFailedWithCardReadTimeOut) }
@@ -949,7 +969,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given built in reader, when payment fails because of CARD_READ_TIME_OUT, then error is mapped correctly`() =
         testBlocking {
-            whenever(errorMapper.mapPaymentErrorToUiError(Generic, true))
+            whenever(errorMapper.mapPaymentErrorToUiError(CardReadTimeOut, true))
                 .thenReturn(PaymentFlowError.Generic)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(paymentFailedWithCardReadTimeOut) }
