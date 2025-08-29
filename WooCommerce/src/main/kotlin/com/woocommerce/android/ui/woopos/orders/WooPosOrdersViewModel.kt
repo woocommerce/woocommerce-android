@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.woopos.common.data.WooPosOrdersDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,26 +27,39 @@ class WooPosOrdersViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            val result = ordersDataSource.loadOrders()
-
-            if (result.isError || result.model == null) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = result.error?.message ?: "Unknown error"
-                    )
-                }
-                return@launch
-            }
-
-            result.model?.let { list ->
-                _state.update { prev ->
-                    prev.copy(
-                        isLoading = false,
-                        orders = list,
-                        selectedOrderId = prev.selectedOrderId?.takeIf { id -> list.any { o -> o.id == id } }
-                            ?: list.firstOrNull()?.id
-                    )
+            ordersDataSource.loadOrders().collect { res ->
+                when (res) {
+                    is WooPosOrdersDataSource.OrdersResult.Cached -> {
+                        // Show cache immediately, keep loading=true while remote is in flight
+                        val list = res.orders
+                        _state.update { prev ->
+                            prev.copy(
+                                orders = list,
+                                // preserve selection if still present; otherwise pick first
+                                selectedOrderId = prev.selectedOrderId?.takeIf { id -> list.any { o -> o.id == id } }
+                                    ?: list.firstOrNull()?.id
+                            )
+                        }
+                    }
+                    is WooPosOrdersDataSource.OrdersResult.Remote -> {
+                        res.ordersResult.fold(
+                            onSuccess = { list ->
+                                _state.update { prev ->
+                                    prev.copy(
+                                        isLoading = false,
+                                        error = null,
+                                        orders = list,
+                                        selectedOrderId = prev.selectedOrderId
+                                            ?.takeIf { id -> list.any { o -> o.id == id } }
+                                            ?: list.firstOrNull()?.id
+                                    )
+                                }
+                            },
+                            onFailure = { err ->
+                                _state.update { it.copy(isLoading = false, error = err.message ?: "Unknown error") }
+                            }
+                        )
+                    }
                 }
             }
         }

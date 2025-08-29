@@ -1,9 +1,11 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.common.data
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCache
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -13,14 +15,19 @@ class WooPosOrdersDataSource @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
+    private val ordersCache: WooPosOrdersCache,
 ) {
-    suspend fun loadOrders(): WooResult<List<Order>> {
-        val result = fetchOrdersFromStore(1)
+    fun loadOrders(): Flow<OrdersResult> = flow {
+        val cached = ordersCache.getAll()
+        emit(OrdersResult.Cached(cached))
 
-        return if (result.isError) {
-            WooResult(result.error)
+        val result = fetchOrdersFromStore(page = 1)
+        if (result.isError) {
+            emit(OrdersResult.Remote(Result.failure(Exception(result.error.message))))
         } else {
-            WooResult(result.model.toAppModels())
+            val mapped = result.model.toAppModels()
+            ordersCache.addAll(mapped)
+            emit(OrdersResult.Remote(Result.success(mapped)))
         }
     }
 
@@ -38,4 +45,9 @@ class WooPosOrdersDataSource @Inject constructor(
     private suspend fun List<OrderEntity>?.toAppModels(): List<Order> = this?.map {
         orderMapper.toAppModel(it)
     } ?: emptyList()
+
+    sealed class OrdersResult {
+        data class Cached(val orders: List<Order>) : OrdersResult()
+        data class Remote(val ordersResult: Result<List<Order>>) : OrdersResult()
+    }
 }
