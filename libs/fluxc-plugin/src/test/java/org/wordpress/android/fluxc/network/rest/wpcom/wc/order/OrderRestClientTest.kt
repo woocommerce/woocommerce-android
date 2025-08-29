@@ -53,7 +53,7 @@ class OrderRestClientTest {
             "_fields" to "id,date_created_gmt,date_modified_gmt",
             "created_via" to expectedCreatedVia
         )
-        val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>())
+        val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>(), emptyList())
 
         whenever(
             wooNetwork.executeGetGsonRequest(
@@ -97,7 +97,7 @@ class OrderRestClientTest {
     @Test
     fun `when createdViaFilter is null, then created_via parameter is not sent to API`() = runTest {
         // Given
-        val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>())
+        val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>(), emptyList())
 
         whenever(
             wooNetwork.executeGetGsonRequest(
@@ -141,7 +141,7 @@ class OrderRestClientTest {
     @Test
     fun `when createdViaFilter is blank, then created_via parameter is not sent to API`() = runTest {
         // Given
-        val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>())
+        val mockResponse = WPAPIResponse.Success(arrayOf<OrderSummaryApiResponse>(), emptyList())
 
         whenever(
             wooNetwork.executeGetGsonRequest(
@@ -186,7 +186,7 @@ class OrderRestClientTest {
     fun `when createdViaFilter is provided for first page fetch, then created_via parameter is sent to API`() = runTest {
         // Given
         val expectedCreatedVia = "pos-rest-api"
-        val mockResponse = WPAPIResponse.Success(arrayOf<OrderDto>())
+        val mockResponse = WPAPIResponse.Success(arrayOf<OrderDto>(), emptyList())
 
         whenever(
             wooNetwork.executeGetGsonRequest(
