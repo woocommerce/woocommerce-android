@@ -71,7 +71,7 @@ class PosLocalCatalogStore @Inject constructor(
      */
     suspend fun syncRecentlyModifiedProducts(
         site: SiteModel,
-        modifiedAfterGmt: String,
+        modifiedAfterGmt: String?,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PAGE_SIZE,
     ): Result<PosLocalCatalogSyncResult> =
@@ -97,7 +97,8 @@ class PosLocalCatalogStore @Inject constructor(
                             PosLocalCatalogSyncResult(
                                 syncedCount = 0,
                                 hasMore = false,
-                                nextOffset = offset
+                                nextOffset = offset,
+                                totalPages = 0
                             )
                         )
                     }
@@ -124,7 +125,8 @@ class PosLocalCatalogStore @Inject constructor(
                             PosLocalCatalogSyncResult(
                                 syncedCount = products.size,
                                 hasMore = hasMore,
-                                nextOffset = if (hasMore) offset + products.size else offset
+                                nextOffset = if (hasMore) offset + products.size else offset,
+                                totalPages = 3 // Tbd Local Catalog: Read from header.
                             )
                         )
                     }
