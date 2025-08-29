@@ -5,6 +5,7 @@ import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -20,12 +21,13 @@ import org.wordpress.android.fluxc.model.SiteModel
 @ExperimentalCoroutinesApi
 class PosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
-    private lateinit var context: Context
-    private lateinit var workerParams: WorkerParameters
-    private lateinit var accountRepository: AccountRepository
-    private lateinit var selectedSite: SelectedSite
-    private lateinit var syncRepository: PosLocalCatalogSyncRepository
+    private var context: Context = mock()
+    private var workerParams: WorkerParameters = mock()
+    private var accountRepository: AccountRepository = mock()
+    private var selectedSite: SelectedSite = mock()
+    private var syncRepository: PosLocalCatalogSyncRepository = mock()
     private lateinit var site: SiteModel
+    private var logger: WooPosLogWrapper = mock()
 
     private val successResponse = PosLocalCatalogSyncResult.Success(
         productsSynced = 10,
@@ -40,12 +42,6 @@ class PosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        context = mock()
-        workerParams = mock()
-        accountRepository = mock()
-        selectedSite = mock()
-        syncRepository = mock()
-
         site = SiteModel().apply {
             id = 1
             siteId = 123L
@@ -62,7 +58,8 @@ class PosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             workerParams = workerParams,
             accountRepository = accountRepository,
             selectedSite = selectedSite,
-            syncRepository = syncRepository
+            syncRepository = syncRepository,
+            logger = logger,
         )
     }
 
@@ -115,8 +112,6 @@ class PosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     @Test
     fun `when sync fails with catalog too large, then returns failure without retry`() = testBlocking {
         // GIVEN
-        val totalPages = 15
-        val maxPages = 10
         whenever(syncRepository.syncLocalCatalogFull(site))
             .thenReturn(catalogTooLargeResponse)
 

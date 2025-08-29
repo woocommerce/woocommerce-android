@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncRepository.Companion.PAGE_SIZE
 import com.woocommerce.android.ui.woopos.localcatalog.PosSyncProductsAction.Result
 import kotlinx.coroutines.test.runTest
@@ -21,13 +22,13 @@ import kotlin.Result as KotlinResult
 class PosSyncProductsActionTest {
 
     private lateinit var sut: PosSyncProductsAction
-    private lateinit var posLocalCatalogStore: PosLocalCatalogStore
+    private var posLocalCatalogStore: PosLocalCatalogStore = mock()
     private lateinit var site: SiteModel
+    private var logger: WooPosLogWrapper = mock()
 
     @Before
     fun setup() {
-        posLocalCatalogStore = mock()
-        sut = PosSyncProductsAction(posLocalCatalogStore)
+        sut = PosSyncProductsAction(posLocalCatalogStore, logger)
         site = SiteModel().apply {
             id = 1
             siteId = 123L

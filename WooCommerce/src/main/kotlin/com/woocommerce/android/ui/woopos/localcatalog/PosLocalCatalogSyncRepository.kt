@@ -1,9 +1,8 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
@@ -27,6 +26,7 @@ class PosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncProductsAction: PosSyncProductsAction,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val dispatchers: CoroutineDispatchers,
+    private val logger: WooPosLogWrapper,
 ) {
     companion object {
         const val PAGE_SIZE = 100
@@ -58,7 +58,7 @@ class PosLocalCatalogSyncRepository @Inject constructor(
     ): PosLocalCatalogSyncResult {
         val startTime = System.currentTimeMillis()
 
-        WooLog.d(T.POS, "Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
+        logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
         val productSyncResult = posSyncProductsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
         // TBD Local Catalog We'll want to trigger variations action here too

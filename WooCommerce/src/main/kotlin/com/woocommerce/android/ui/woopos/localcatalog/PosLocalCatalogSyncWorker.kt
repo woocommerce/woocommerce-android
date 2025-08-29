@@ -6,8 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -18,6 +17,7 @@ class PosLocalCatalogSyncWorker @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     private val selectedSite: SelectedSite,
     private val syncRepository: PosLocalCatalogSyncRepository,
+    private val logger: WooPosLogWrapper,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -27,24 +27,23 @@ class PosLocalCatalogSyncWorker @AssistedInject constructor(
     @Suppress("ReturnCount")
     override suspend fun doWork(): Result {
         if (!accountRepository.isUserLoggedIn()) {
-            WooLog.d(T.POS, "User not logged in, skipping local catalog sync")
+            logger.d("User not logged in, skipping local catalog sync")
             return Result.failure()
         }
 
         val site = selectedSite.getOrNull()
         if (site == null) {
-            WooLog.e(T.POS, "No selected WooCommerce site found, skipping local catalog sync")
+            logger.e("No selected WooCommerce site found, skipping local catalog sync")
             return Result.failure()
         }
 
-        WooLog.d(T.POS, "Starting full local catalog sync")
+        logger.d("Starting full local catalog sync")
 
         val syncResult = syncRepository.syncLocalCatalogFull(site)
 
         return when (syncResult) {
             is PosLocalCatalogSyncResult.Success -> {
-                WooLog.d(
-                    T.POS,
+                logger.d(
                     "Local catalog sync completed successfully. Products: ${syncResult.productsSynced}, " +
                         "Variations: ${syncResult.variationsSynced}, Duration: ${syncResult.syncDurationMs}ms"
                 )
@@ -52,12 +51,12 @@ class PosLocalCatalogSyncWorker @AssistedInject constructor(
             }
 
             is PosLocalCatalogSyncResult.Failure.UnexpectedError -> {
-                WooLog.e(T.POS, "Local catalog sync failed: ${syncResult.error}. Retrying ...")
+                logger.e("Local catalog sync failed: ${syncResult.error}. Retrying ...")
                 Result.retry()
             }
             is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
                 // TBD Local Catalog - stop future syncs for this site if catalog too large
-                WooLog.e(T.POS, "Local catalog sync failed: ${syncResult.error}.")
+                logger.e("Local catalog sync failed: ${syncResult.error}.")
                 Result.failure()
             }
         }

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -18,15 +19,14 @@ import org.wordpress.android.fluxc.model.SiteModel
 @ExperimentalCoroutinesApi
 class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private lateinit var sut: PosLocalCatalogSyncRepository
-    private lateinit var posSyncProductsAction: PosSyncProductsAction
-    private lateinit var syncTimestampManager: WooPosSyncTimestampManager
+    private var posSyncProductsAction: PosSyncProductsAction = mock()
+    private var syncTimestampManager: WooPosSyncTimestampManager = mock()
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
+    private lateinit var logger: WooPosLogWrapper
 
     @Before
     fun setup() {
-        posSyncProductsAction = mock()
-        syncTimestampManager = mock()
         dispatchers = CoroutineDispatchers(
             main = UnconfinedTestDispatcher(),
             io = UnconfinedTestDispatcher(),
@@ -36,7 +36,8 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         sut = PosLocalCatalogSyncRepository(
             posSyncProductsAction = posSyncProductsAction,
             syncTimestampManager = syncTimestampManager,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            logger = logger,
         )
 
         site = SiteModel().apply {

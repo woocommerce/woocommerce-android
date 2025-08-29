@@ -10,8 +10,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -20,7 +19,8 @@ import javax.inject.Singleton
 
 @Singleton
 class PosLocalCatalogSyncScheduler @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val logger: WooPosLogWrapper,
 ) {
 
     private companion object {
@@ -52,7 +52,7 @@ class PosLocalCatalogSyncScheduler @Inject constructor(
             syncWorkRequest
         )
 
-        WooLog.d(T.POS, "POS local catalog full sync scheduled.")
+        logger.d("POS local catalog full sync scheduled.")
     }
 
     fun triggerManualFullCatalogSync() {
@@ -66,7 +66,7 @@ class PosLocalCatalogSyncScheduler @Inject constructor(
             oneTimeWorkRequest
         )
 
-        WooLog.d(T.POS, "Manual POS local catalog sync triggered")
+        logger.d("Manual POS local catalog sync triggered")
     }
 
     fun isPeriodicWorkRunning(): Boolean {
