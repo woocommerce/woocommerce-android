@@ -23,12 +23,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.home.WooPosHomeState
-import com.woocommerce.android.ui.woopos.home.WooPosProductInfoDialog
 import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
+import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
+import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
 
 @Composable
 fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
@@ -76,14 +76,14 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     }
 
     val dialogState = state.dialogState
-    WooPosProductInfoDialog(
-        state = WooPosHomeState.DialogState.ProductsInfoDialog,
-        isVisible = dialogState is WooPosHomeState.DialogState.ProductsInfoDialog,
+    WooPosSettingsProductInfoDialog(
+        state = WooPosSettingsProductInfoDialogState,
+        isVisible = dialogState is WooPosSettingsDialogState.ProductsInfoDialog,
         onDismissRequest = { containerViewModel.hideDialog() }
     )
 
     WooPosScanningSetupDialog(
-        isVisible = dialogState is WooPosHomeState.DialogState.ScanningSetupDialog,
+        isVisible = dialogState is WooPosSettingsDialogState.ScanningSetupDialog,
         onDismissRequest = { containerViewModel.hideDialog() }
     )
 }

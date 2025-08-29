@@ -143,8 +143,7 @@ private fun WooPosCartScreen(
                         end.linkTo(parent.end)
                         height = Dimension.fillToConstraints
                     },
-                    onBarcodeSetupClicked = { onUIEvent(WooPosCartUIEvent.BarcodeSetupClicked) },
-                    isPosSettingsFeatureEnabled = state.isPosSettingsFeatureEnabled
+                    onBarcodeSetupClicked = { onUIEvent(WooPosCartUIEvent.BarcodeSetupClicked) }
                 )
             }
 
@@ -199,7 +198,6 @@ private fun WooPosCartScreen(
 fun CartBodyEmpty(
     modifier: Modifier = Modifier,
     onBarcodeSetupClicked: () -> Unit = {},
-    isPosSettingsFeatureEnabled: Boolean,
 ) {
     Column(
         modifier = modifier
@@ -216,48 +214,39 @@ fun CartBodyEmpty(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
-        if (isPosSettingsFeatureEnabled) {
-            val annotatedText = buildAnnotatedString {
-                append(stringResource(R.string.woopos_cart_empty_subtitle_with_scanner))
-                pushStringAnnotation(
-                    tag = "clickable",
-                    annotation = "scan_barcode"
+        val annotatedText = buildAnnotatedString {
+            append(stringResource(R.string.woopos_cart_empty_subtitle_with_scanner))
+            pushStringAnnotation(
+                tag = "clickable",
+                annotation = "scan_barcode"
+            )
+            append(" ")
+            withStyle(
+                style = SpanStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
+                    fontWeight = FontWeight.Normal
                 )
-                append(" ")
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        textDecoration = TextDecoration.Underline,
-                        fontWeight = FontWeight.Normal
-                    )
-                ) {
-                    append(stringResource(R.string.woopos_cart_empty_scan_barcode))
-                }
-                append(" ")
-                pop()
-                append(stringResource(R.string.woopos_cart_empty_subtitle_suffix))
+            ) {
+                append(stringResource(R.string.woopos_cart_empty_scan_barcode))
             }
-
-            WooPosText(
-                text = annotatedText,
-                style = WooPosTypography.BodyMedium,
-                color = WooPosTheme.colors.onSurfaceVariantLowest,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .clickable { onBarcodeSetupClicked() }
-                    .padding(
-                        horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                        vertical = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                    )
-            )
-        } else {
-            WooPosText(
-                text = stringResource(R.string.woopos_cart_empty_subtitle),
-                style = WooPosTypography.BodyMedium,
-                color = WooPosTheme.colors.onSurfaceVariantLowest,
-                textAlign = TextAlign.Center
-            )
+            append(" ")
+            pop()
+            append(stringResource(R.string.woopos_cart_empty_subtitle_suffix))
         }
+
+        WooPosText(
+            text = annotatedText,
+            style = WooPosTypography.BodyMedium,
+            color = WooPosTheme.colors.onSurfaceVariantLowest,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .clickable { onBarcodeSetupClicked() }
+                .padding(
+                    horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                    vertical = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                )
+        )
     }
 }
 
@@ -1067,8 +1056,7 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 ),
                 body = WooPosCartState.Body.Empty,
                 areItemsRemovable = false,
-                checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible,
-                isPosSettingsFeatureEnabled = true
+                checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
             )
         ) {}
     }

@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSe
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosPosSettingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -114,9 +113,6 @@ class WooPosCartViewModelTest {
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val barcodeEventTracker: WooPosBarcodeEventTracker = mock()
-    private val posSettingsEnabled: WooPosPosSettingsEnabled = mock {
-        on { invoke() }.thenReturn(false)
-    }
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1464,7 +1460,6 @@ class WooPosCartViewModelTest {
             wooPosLogWrapper,
             soundHelper,
             barcodeEventTracker,
-            posSettingsEnabled,
             savedState,
         )
     }

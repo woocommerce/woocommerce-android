@@ -1,14 +1,15 @@
 package com.woocommerce.android.ui.woopos.settings
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
+import kotlinx.parcelize.Parcelize
 
 data class WooPosSettingsState(
     val selectedCategory: WooPosSettingsCategory = WooPosSettingsCategory.STORE,
     val currentDestination: WooPosSettingsDetailDestination = selectedCategory.rootDestination,
-    val dialogState: WooPosHomeState.DialogState = WooPosHomeState.DialogState.Hidden
+    val dialogState: WooPosSettingsDialogState = WooPosSettingsDialogState.Hidden
 ) {
     val canGoBack: Boolean
         get() = currentDestination.parentDestination != null
@@ -55,4 +56,16 @@ sealed class WooPosSettingsDetailDestination {
             override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
         }
     }
+}
+
+@Parcelize
+sealed class WooPosSettingsDialogState : Parcelable {
+    @Parcelize
+    data object Hidden : WooPosSettingsDialogState()
+
+    @Parcelize
+    data object ProductsInfoDialog : WooPosSettingsDialogState()
+
+    @Parcelize
+    data object ScanningSetupDialog : WooPosSettingsDialogState()
 }
