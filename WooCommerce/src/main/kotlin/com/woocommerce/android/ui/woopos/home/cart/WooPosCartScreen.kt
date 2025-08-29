@@ -38,12 +38,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.outlined.AddShoppingCart
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.DocumentScanner
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -60,16 +58,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -202,100 +203,61 @@ fun CartBodyEmpty(
 ) {
     Column(
         modifier = modifier
-            .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+            .padding(WooPosSpacing.XLarge.value.toAdaptivePadding()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        EmptyStateSection(
-            icon = Icons.Outlined.AddShoppingCart,
-            iconContentDescription = stringResource(R.string.woopos_cart_empty_content_description),
-            text = stringResource(R.string.woopos_cart_empty_subtitle)
+        Icon(
+            imageVector = Icons.Outlined.AddShoppingCart,
+            contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
+            modifier = Modifier.size(80.dp),
+            tint = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.5F)
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
         if (isPosSettingsFeatureEnabled) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+            val annotatedText = buildAnnotatedString {
+                append(stringResource(R.string.woopos_cart_empty_subtitle_with_scanner))
+                pushStringAnnotation(
+                    tag = "clickable",
+                    annotation = "scan_barcode"
+                )
+                append(" ")
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        textDecoration = TextDecoration.Underline,
+                        fontWeight = FontWeight.Normal
+                    )
+                ) {
+                    append(stringResource(R.string.woopos_cart_empty_scan_barcode))
+                }
+                append(" ")
+                pop()
+                append(stringResource(R.string.woopos_cart_empty_subtitle_suffix))
+            }
 
-            EmptyCartOrDivider()
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
-
-            EmptyStateSection(
-                icon = Icons.Outlined.DocumentScanner,
-                text = stringResource(R.string.woopos_cart_empty_scan_products),
-                action = onBarcodeSetupClicked
-            )
-        }
-    }
-}
-
-@Composable
-private fun EmptyStateSection(
-    icon: ImageVector,
-    iconContentDescription: String? = null,
-    text: String,
-    action: (() -> Unit)? = null
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            imageVector = icon,
-            contentDescription = iconContentDescription,
-            modifier = Modifier
-                .size(66.dp)
-                .let { modifier ->
-                    iconContentDescription?.let {
-                        modifier.semantics { contentDescription = it }
-                    } ?: modifier
-                },
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5F)
-        )
-
-        Spacer(
-            modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-
-        WooPosText(
-            text = text,
-            style = WooPosTypography.BodyMedium,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-            textAlign = TextAlign.Center
-        )
-
-        action?.let {
             WooPosText(
-                text = stringResource(R.string.woopos_cart_empty_setup_scanner),
+                text = annotatedText,
                 style = WooPosTypography.BodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary,
+                color = WooPosTheme.colors.onSurfaceVariantLowest,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .clickable { it() }
-                    .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .clickable { onBarcodeSetupClicked() }
+                    .padding(
+                        horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                        vertical = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    )
+            )
+        } else {
+            WooPosText(
+                text = stringResource(R.string.woopos_cart_empty_subtitle),
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantLowest,
+                textAlign = TextAlign.Center
             )
         }
-    }
-}
-
-@Composable
-private fun EmptyCartOrDivider() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.15f)
-        )
-        WooPosText(
-            text = stringResource(R.string.woopos_cart_empty_or),
-            style = WooPosTypography.BodySmall,
-            fontWeight = FontWeight.Bold,
-            color = WooPosTheme.colors.onSurfaceVariantLowest,
-            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
-        )
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.15f)
-        )
     }
 }
 

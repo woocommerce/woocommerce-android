@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.store.pos
+package org.wordpress.android.fluxc.store.pos.localcatalog
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,8 +21,7 @@ import javax.inject.Singleton
 data class PosLocalCatalogSyncResult(
     val syncedCount: Int,
     val hasMore: Boolean,
-    val nextOffset: Int,
-    val totalPages: Int,
+    val nextOffset: Int
 )
 
 data class PosVariationsSyncResult(
@@ -275,6 +274,82 @@ class PosLocalCatalogStore @Inject constructor(
                             } else {
                                 page
                             }
+                        )
+                    )
+                }
+            }
+        }
+
+    /**
+     * Generates a new catalog on the server.
+     *
+     * @param [site] The site to generate catalog for
+     * @return [Result] containing PosGenerateCatalogResult with job ID or error
+     */
+    suspend fun generateCatalog(
+        site: SiteModel
+    ): Result<PosGenerateCatalogResult> =
+        coroutineEngine.withDefaultContext(API, this, "generateCatalog") {
+            val response = posProductRestClient.postGenerateCatalog(site)
+
+            when {
+                response.isError -> {
+                    Result.failure(
+                        mapResponseError(response.error)
+                    )
+                }
+
+                response.model == null -> {
+                    Result.failure(PosLocalCatalogError.EmptyResponse)
+                }
+
+                response.model.jobId == null -> {
+                    Result.failure(PosLocalCatalogError.InvalidResponse("Missing job ID in response"))
+                }
+
+                else -> {
+                    val jobId = response.model.jobId.toString()
+                    Result.success(
+                        PosGenerateCatalogResult(jobId = jobId)
+                    )
+                }
+            }
+        }
+
+    /**
+     * Fetches the status of a catalog generation job.
+     *
+     * @param [site] The site to check catalog status for
+     * @param [jobId] The job ID from generateCatalog
+     * @return [Result] containing PosCatalogStatusResult with status and download URL or error
+     */
+    suspend fun fetchCatalogStatus(
+        site: SiteModel,
+        jobId: String
+    ): Result<PosCatalogStatusResult> =
+        coroutineEngine.withDefaultContext(API, this, "fetchCatalogStatus") {
+            val response = posProductRestClient.getCatalogStatus(site, jobId)
+
+            when {
+                response.isError -> {
+                    Result.failure(
+                        mapResponseError(response.error)
+                    )
+                }
+
+                response.model == null -> {
+                    Result.failure(PosLocalCatalogError.EmptyResponse)
+                }
+
+                response.model.status.isNullOrEmpty() -> {
+                    Result.failure(PosLocalCatalogError.InvalidResponse("Missing job ID in response"))
+                }
+
+                else -> {
+                    Result.success(
+                        PosCatalogStatusResult(
+                            status = response.model.status,
+                            downloadUrl = response.model.downloadUrl
                         )
                     )
                 }
