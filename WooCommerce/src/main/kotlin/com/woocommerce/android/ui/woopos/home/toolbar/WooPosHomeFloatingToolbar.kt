@@ -406,7 +406,7 @@ private fun Circle(
 private fun getToolbarAccessibilityLabels(
     cardReaderStatus: WooPosCardReaderStatus,
     menuCardDisabled: Boolean
-): WooPosHomeFloatingAccessibilityLabels {
+): WooPosHomeFloatingToolbarAccessibilityLabels {
     val floatingToolbarPopUpMenuOpenContentDescription = stringResource(
         id = R.string.woopos_floating_toolbar_pop_up_menu_open_content_description
     )
@@ -454,7 +454,7 @@ private fun getToolbarAccessibilityLabels(
         }
     }
 
-    return WooPosHomeFloatingAccessibilityLabels(
+    return WooPosHomeFloatingToolbarAccessibilityLabels(
         cardReaderStatusContentDescription = cardReaderStatusContentDescription,
         floatingToolbarPopUpMenuStateDescription = floatingToolbarPopUpMenuStateDescription,
         floatingToolbarMenuOverlayContentDescription = floatingToolbarMenuOverlayContentDescription,
