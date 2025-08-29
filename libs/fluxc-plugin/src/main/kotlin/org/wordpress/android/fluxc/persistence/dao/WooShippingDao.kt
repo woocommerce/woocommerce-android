@@ -7,6 +7,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
+import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
 
 @Dao
@@ -106,4 +107,10 @@ abstract class WooShippingDao {
         deleteShipments(localSiteId, orderId)
         insertShipments(shipments)
     }
+
+    @Upsert
+    abstract suspend fun insertShippingPackages(packages: WooShippingPackagesEntity)
+
+    @Query("SELECT * FROM WooShippingPackagesEntity WHERE localSiteId = :localSiteId")
+    abstract suspend fun getShippingPackages(localSiteId: LocalOrRemoteId.LocalId): WooShippingPackagesEntity?
 }
