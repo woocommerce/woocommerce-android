@@ -19,9 +19,10 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.network.rest.ResponseWithHeaders
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
-import java.util.*
+import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -150,7 +151,7 @@ class ApplicationPasswordsNetworkTests {
 
             val deliverMethod = Request::class.java.getDeclaredMethod("deliverResponse", Any::class.java)
             deliverMethod.isAccessible = true
-            deliverMethod.invoke(request, response)
+            deliverMethod.invoke(request, ResponseWithHeaders(response, emptyList()))
 
             return@thenAnswer request
         }

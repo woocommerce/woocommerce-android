@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".app.WooCommerceWearDebug"
+        android:name=".app.WooCommerceWear"
         tools:replace="android:name"/>
 
 </manifest>

@@ -144,7 +144,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private val selectedPackagesFlow = MutableStateFlow<List<PackageData?>>(emptyList())
     private val customsFormDataFlow = MutableStateFlow<List<CustomsData?>>(emptyList())
-    private val packageWeightsFlow = MutableStateFlow<List<PackageWeight?>>(emptyList())
+    private val shipmentWeightsFlow = MutableStateFlow<List<ShipmentWeight?>>(emptyList())
     private val packageSelectionsFlow = MutableStateFlow<List<PackageSelectionState>>(emptyList())
     private val customsStatesFlow = MutableStateFlow<List<CustomsState>>(emptyList())
     private val hazmatStatesFlow = MutableStateFlow<List<HazmatState>>(emptyList())
@@ -191,7 +191,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { setAccountDefaults() }
         launch { getShippingAddresses() }
         launch { getOrderInformation() }
-        launch { observePackageWeight() }
+        launch { observeShipmentWeight() }
         launch { observePackageChanges() }
         launch { observeShippingRates() }
         launch { observeShippingRatesState() }
@@ -395,11 +395,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             accountSettings,
             selectedPackagesFlow.filter { it.isNotEmpty() },
             shippingAddresses.filter { it.isNotEmpty() },
-            packageWeightsFlow.filter { it.isNotEmpty() },
+            shipmentWeightsFlow.filter { it.isNotEmpty() },
             customsStatesFlow.filter { it.isNotEmpty() },
             hazmatStatesFlow.filter { it.isNotEmpty() },
             refreshShippingRates.onStart { emit(Unit) },
-        ) { accountSettings, selectedPackages, addresses, packageWeight, customState, hazmatStates, _ ->
+        ) { accountSettings, selectedPackages, addresses, shipmentWeights, customState, hazmatStates, _ ->
             val customsFulfilled = customState[selectedShipmentIndex] is CustomsState.DataAvailable ||
                 customState[selectedShipmentIndex] is CustomsState.NotRequired
             val selectedPackage = selectedPackages[selectedShipmentIndex]
@@ -410,7 +410,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     packageSelected = selectedPackage,
                     shipFrom = selectedAddress.shipFrom,
                     shipTo = selectedAddress.shipTo.address,
-                    weight = packageWeight[selectedShipmentIndex]?.totalWeight,
+                    weight = shipmentWeights[selectedShipmentIndex]?.totalWeight,
                     currencyCode = accountSettings?.storeOptions?.currencySymbol,
                     customsData = customsFormDataFlow.value[selectedShipmentIndex],
                     hazmatSelection = hazmatStates[selectedShipmentIndex].hazmatSelection
@@ -505,7 +505,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     @OptIn(FlowPreview::class)
-    private suspend fun observePackageWeight() {
+    private suspend fun observeShipmentWeight() {
         combine(
             shipmentItems.filter { it.isNotEmpty() && it.size > selectedShipmentIndex },
             selectedPackagesFlow.filter { it.isNotEmpty() && it.size == shipments.value.size },
@@ -515,9 +515,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) { shipmentItems, selectedPackage, customWeightString ->
             if (selectedPackage.size == shipments.value.size && customWeightString.size == shipments.value.size) {
                 shipmentItems.mapIndexed { index, shipmentItemModelList ->
-                    val itemsWeight = shipmentItemModelList.sumByFloat { it.weight }
+                    val itemsWeight = shipmentItemModelList.sumByFloat { it.weight * it.quantity }
                     val packageWeight = selectedPackage[index]?.weight?.toFloatOrNull()
-                    PackageWeight(
+                    ShipmentWeight(
                         itemsWeight = itemsWeight,
                         packageWeight = packageWeight,
                         customWeight = customWeightString[index].toFloatOrNull()
@@ -527,13 +527,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 null
             }
         }.filterNotNull()
-            .collectLatest { packageWeightsFlow.value = it }
+            .collectLatest { shipmentWeightsFlow.value = it }
     }
 
     private suspend fun observePackageChanges() {
         combine(
             selectedPackagesFlow.filter { it.isNotEmpty() },
-            packageWeightsFlow.filter { it.isNotEmpty() },
+            shipmentWeightsFlow.filter { it.isNotEmpty() },
             accountSettings.map { it?.storeOptions },
             packageSelectionsFlow.filter { it.isNotEmpty() }
         ) { packagesSelected, packageWeight, storeOptions, _ ->
@@ -790,7 +790,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private suspend fun adjustFlowSizesToShipmentCount(shipments: List<ShipmentUIModel>) {
         suspend fun <T> MutableStateFlow<List<T>>.updateSize(defaultValue: suspend (Int) -> T) =
-            this.update { currentList ->
+            update { currentList ->
                 if (currentList.size <= shipments.size) {
                     currentList + List(shipments.size - currentList.size) { index ->
                         defaultValue(currentList.size + index)
@@ -811,7 +811,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         customsFormDataFlow.updateSize { index ->
             createDefaultCustomsData(shipments[index], shippingAddresses.value[index])
         }
-        packageWeightsFlow.updateSize { null }
+        shipmentWeightsFlow.updateSize { null }
         packageSelectionsFlow.updateSize { NotSelected }
         customsStatesFlow.updateSize { CustomsState.NotRequired }
         hazmatStatesFlow.updateSize { NoSelection }
@@ -961,7 +961,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
         val selectedAddress = shippingAddresses.value.getOrNull(selectedShipmentIndex)
         val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]
-        val weight = packageWeightsFlow.value[selectedShipmentIndex]?.totalWeight
+        val weight = shipmentWeightsFlow.value[selectedShipmentIndex]?.totalWeight
 
         if (selectedPackage == null || selectedAddress == null || shippingRate == null || weight == null) return
 
@@ -1315,7 +1315,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) : PackageSelectionState()
     }
 
-    data class PackageWeight(
+    data class ShipmentWeight(
         val itemsWeight: Float,
         val packageWeight: Float? = null,
         val customWeight: Float? = null
