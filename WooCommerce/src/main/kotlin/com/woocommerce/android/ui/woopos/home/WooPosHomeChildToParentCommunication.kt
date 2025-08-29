@@ -55,6 +55,7 @@ sealed class ChildToParentEvent {
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitPos : NavigationEvent()
         data object ToSettings : NavigationEvent()
+        data object ToOrders : NavigationEvent()
     }
 
     sealed class SearchEvent : ChildToParentEvent() {

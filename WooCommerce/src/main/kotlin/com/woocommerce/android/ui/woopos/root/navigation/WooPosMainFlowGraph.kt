@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.emailreceipt.emailReceiptScreen
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.home.eligibilityScreen
 import com.woocommerce.android.ui.woopos.home.homeScreen
+import com.woocommerce.android.ui.woopos.orders.ordersScreen
 import com.woocommerce.android.ui.woopos.settings.settingsScreen
 import com.woocommerce.android.ui.woopos.splash.SPLASH_ROUTE
 import com.woocommerce.android.ui.woopos.splash.splashScreen
@@ -27,5 +28,6 @@ fun NavGraphBuilder.mainGraph(
         emailReceiptScreen(onNavigationEvent = onNavigationEvent)
         eligibilityScreen(onNavigationEvent = onNavigationEvent)
         settingsScreen(onNavigationEvent = onNavigationEvent)
+        ordersScreen(onNavigationEvent = onNavigationEvent)
     }
 }
