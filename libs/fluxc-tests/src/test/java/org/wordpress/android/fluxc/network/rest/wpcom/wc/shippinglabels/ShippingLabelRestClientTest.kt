@@ -32,7 +32,7 @@ class ShippingLabelRestClientTest {
                     any()
                 )
             ).thenReturn(
-                WPAPIResponse.Success(mock())
+                WPAPIResponse.Success(mock(), emptyList())
             )
             // WHEN
             val siteModel = SiteModel()

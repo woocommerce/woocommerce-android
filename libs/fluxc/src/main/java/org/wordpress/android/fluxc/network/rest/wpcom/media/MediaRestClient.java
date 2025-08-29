@@ -3,9 +3,6 @@ package org.wordpress.android.fluxc.network.rest.wpcom.media;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.android.volley.RequestQueue;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -49,6 +46,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -113,7 +112,7 @@ public class MediaRestClient extends BaseWPComRestClient implements ProgressList
         String url = WPCOMREST.sites.site(site.getSiteId()).media.item(media.getMediaId()).getUrlV1_1();
 
         add(WPComGsonRequest.buildPostRequest(url, getEditRequestParams(media), MediaWPComRestResponse.class,
-                response -> {
+                (response, headers) -> {
                     MediaModel responseMedia = mMediaResponseUtils.getMediaFromRestResponse(response);
                     AppLog.v(T.MEDIA, "media changes pushed for " + responseMedia.getTitle());
                     responseMedia.setLocalSiteId(site.getId());
@@ -300,7 +299,7 @@ public class MediaRestClient extends BaseWPComRestClient implements ProgressList
         }
         String url = WPCOMREST.sites.site(site.getSiteId()).media.getUrlV1_1();
         add(WPComGsonRequest.buildGetRequest(url, params, MultipleMediaResponse.class,
-                response -> {
+                (response, headers) -> {
                     List<MediaModel> mediaList = mMediaResponseUtils.getMediaListFromRestResponse(
                             response,
                             site.getId());
@@ -332,7 +331,7 @@ public class MediaRestClient extends BaseWPComRestClient implements ProgressList
 
         String url = WPCOMREST.sites.site(site.getSiteId()).media.item(media.getMediaId()).getUrlV1_1();
         add(WPComGsonRequest.buildGetRequest(url, null, MediaWPComRestResponse.class,
-                response -> {
+                (response, headers) -> {
                     MediaModel responseMedia = mMediaResponseUtils.getMediaFromRestResponse(response);
                     responseMedia.setLocalSiteId(site.getId());
                     AppLog.v(T.MEDIA, "Fetched media with ID: " + media.getMediaId());
@@ -361,7 +360,7 @@ public class MediaRestClient extends BaseWPComRestClient implements ProgressList
 
         String url = WPCOMREST.sites.site(site.getSiteId()).media.item(media.getMediaId()).delete.getUrlV1_1();
         add(WPComGsonRequest.buildPostRequest(url, null, MediaWPComRestResponse.class,
-                response -> {
+                (response, headers) -> {
                     mMediaResponseUtils.getMediaFromRestResponse(response);
                     AppLog.v(T.MEDIA, "deleted media: " + media.getTitle());
                     notifyMediaDeleted(site, media, null);

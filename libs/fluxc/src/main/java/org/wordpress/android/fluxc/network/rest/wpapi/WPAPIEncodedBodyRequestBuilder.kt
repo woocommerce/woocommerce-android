@@ -46,8 +46,8 @@ class WPAPIEncodedBodyRequestBuilder @Inject constructor() {
         nonce: String?,
         restClient: BaseWPAPIRestClient
     ) {
-        val request = WPAPIEncodedBodyRequest(method, url, params, body, { response ->
-            cont.resume(Success(response))
+        val request = WPAPIEncodedBodyRequest(method, url, params, body, { response, headers ->
+            cont.resume(Success(response, headers))
         }, { error ->
             cont.resume(Error(error))
         })

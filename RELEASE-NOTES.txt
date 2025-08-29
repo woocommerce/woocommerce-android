@@ -3,12 +3,14 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 23.2
 -----
+- [Internal] Propagate response headers to all Rest Clients [https://github.com/woocommerce/woocommerce-android/pull/14513]
 - [*] Shipping Labels: Add error message for invalid dimensions errors to custom package creation screen [https://github.com/woocommerce/woocommerce-android/pull/14499]
 - [*] Adds support for displaying fractional quantities in dashboard stock card [https://github.com/woocommerce/woocommerce-android/pull/14510]
 - [*] Shipping Labels: Update the UI of shipping label purchase in-progress and failure states [https://github.com/woocommerce/woocommerce-android/pull/14498]
 - [*] Shipping Labels: Fix handling of existing shipping labels with in-progress purchase status [https://github.com/woocommerce/woocommerce-android/pull/14501]
 - [Internal] [WEAR] Update horologist to 0.6.23 [https://github.com/woocommerce/woocommerce-android/pull/13395]
 - [WEAR] Updated UserAgent of API requests to use `http.agent` System Property to fix performance issues related to WebView usage on app launch [https://github.com/woocommerce/woocommerce-android/pull/14431]
+- [*] [Login] Improved the detection of WooCommerce API version during login flow [https://github.com/woocommerce/woocommerce-android/pull/14524]
 
 23.1
 -----

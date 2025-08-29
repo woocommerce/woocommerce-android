@@ -46,7 +46,7 @@ class PluginJetpackTunnelRestClient @Inject constructor(
                 site.siteId,
                 emptyMap(),
                 PluginResponseModel::class.java,
-                { response: PluginResponseModel? ->
+                { response: PluginResponseModel?, _ ->
                     response?.let {
                         val payload = FetchedSitePluginPayload(
                             it.toDomainModel(site.id)
@@ -98,7 +98,7 @@ class PluginJetpackTunnelRestClient @Inject constructor(
                 site.siteId,
                 body,
                 PluginResponseModel::class.java,
-                { response: PluginResponseModel? ->
+                { response: PluginResponseModel?, _ ->
                     response?.let {
                         val payload = InstalledSitePluginPayload(
                                 site,
@@ -149,7 +149,7 @@ class PluginJetpackTunnelRestClient @Inject constructor(
                 site.siteId,
                 body,
                 PluginResponseModel::class.java,
-                { response: PluginResponseModel? ->
+                { response: PluginResponseModel?, _ ->
                     response?.let {
                         val payload = ConfiguredSitePluginPayload(
                                 site,

@@ -17,6 +17,7 @@ sealed class CardPaymentStatus {
 
     sealed class CardPaymentStatusErrorType {
         object CardReadTimeOut : CardPaymentStatusErrorType()
+        object ReaderNotConnected : CardPaymentStatusErrorType()
         object NoNetwork : CardPaymentStatusErrorType()
         data class Server(val errorMessage: String) : CardPaymentStatusErrorType()
         object Generic : CardPaymentStatusErrorType()
