@@ -18,40 +18,6 @@ import org.wordpress.android.util.AppLog.T.API
 import javax.inject.Inject
 import javax.inject.Singleton
 
-data class PosLocalCatalogSyncResult(
-    val syncedCount: Int,
-    val hasMore: Boolean,
-    val nextOffset: Int
-)
-
-data class PosVariationsSyncResult(
-    val syncedCount: Int,
-    val hasMore: Boolean,
-    val nextPage: Int
-)
-
-sealed class PosLocalCatalogError(
-    override val message: String,
-    override val cause: Throwable? = null
-) : Exception(message, cause) {
-
-    data class NetworkError(
-        val errorMessage: String,
-        val code: String? = null
-    ) : PosLocalCatalogError(errorMessage)
-
-    data class DatabaseError(
-        val errorMessage: String,
-        val throwable: Throwable? = null
-    ) : PosLocalCatalogError(errorMessage, throwable)
-
-    object EmptyResponse : PosLocalCatalogError("Empty response from server")
-
-    data class UnknownError(
-        val throwable: Throwable
-    ) : PosLocalCatalogError(throwable.message ?: "Unknown error", throwable)
-}
-
 @Singleton
 class PosLocalCatalogStore @Inject constructor(
     private val posProductRestClient: PosProductRestClient,
