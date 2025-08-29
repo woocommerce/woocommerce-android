@@ -44,7 +44,7 @@ class WPComV2MediaRestClient @Inject constructor(
         )
 
         return when (response) {
-            is WPComGsonRequestBuilder.Response.Success -> WPAPIResponse.Success(response.data)
+            is WPComGsonRequestBuilder.Response.Success -> WPAPIResponse.Success(response.data, response.headers)
             is WPComGsonRequestBuilder.Response.Error -> WPAPIResponse.Error(
                 WPAPINetworkError(response.error, response.error.apiError)
             )

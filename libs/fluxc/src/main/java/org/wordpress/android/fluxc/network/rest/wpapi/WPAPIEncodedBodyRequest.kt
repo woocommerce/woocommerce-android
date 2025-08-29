@@ -2,9 +2,10 @@ package org.wordpress.android.fluxc.network.rest.wpapi
 
 import com.android.volley.NetworkResponse
 import com.android.volley.Response
-import com.android.volley.Response.Listener
 import com.android.volley.toolbox.HttpHeaderParser
 import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.Header
+import org.wordpress.android.fluxc.network.rest.ResponseWithHeaders
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticateErrorPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
 import java.io.UnsupportedEncodingException
@@ -19,9 +20,9 @@ class WPAPIEncodedBodyRequest(
     url: String,
     private val params: Map<String, String>,
     private val body: Map<String, String>,
-    private val listener: Listener<String>,
+    private val listener: (String?, List<Header>) -> Unit,
     errorListener: OnWPAPIErrorListener
-) : BaseRequest<String>(method, url, WPAPIErrorListenerWrapper(errorListener)) {
+) : BaseRequest<ResponseWithHeaders<String>>(method, url, WPAPIErrorListenerWrapper(errorListener)) {
     override fun getBody(): ByteArray {
         return encodeParameters(body)
     }
@@ -44,18 +45,21 @@ class WPAPIEncodedBodyRequest(
         return WPAPINetworkError(error)
     }
 
-    override fun parseNetworkResponse(response: NetworkResponse?): Response<String> {
+    override fun parseNetworkResponse(response: NetworkResponse?): Response<ResponseWithHeaders<String>> {
         val contentTypeCharset =
                 response?.headers
                         ?.let { charset(HttpHeaderParser.parseCharset(it)) }
                         ?: Charset.defaultCharset()
 
         val data = response?.data?.toString(contentTypeCharset)
-        return Response.success(data, null)
+        return Response.success(
+            ResponseWithHeaders(
+                data,
+                response?.allHeaders?.map { Header(it.name, it.value) } ?: emptyList()), null)
     }
 
-    override fun deliverResponse(response: String) {
-        listener.onResponse(response)
+    override fun deliverResponse(response: ResponseWithHeaders<String>) {
+        listener(response.data, response.headers)
     }
 
     /**

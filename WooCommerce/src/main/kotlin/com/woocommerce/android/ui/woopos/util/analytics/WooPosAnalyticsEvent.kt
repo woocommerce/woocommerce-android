@@ -123,9 +123,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object ExitConfirmed : Event() {
             override val name: String = "exit_confirmed"
         }
-        data object GetSupportTapped : Event() {
-            override val name: String = "get_support_tapped"
-        }
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
@@ -331,10 +328,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 get() = "reader_ready_for_card_payment"
         }
 
-        data object ViewDocsTapped : Event() {
-            override val name: String = "view_docs_tapped"
-        }
-
         data object SimpleProductExplanationDialogShown : Event() {
             override val name: String = "simple_products_explanation_dialog_shown"
         }
@@ -357,6 +350,14 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object HelpTapped : Event() {
             override val name: String = "help_tapped"
+        }
+
+        data object GetSupportTapped : Event() {
+            override val name: String = "get_support_tapped"
+        }
+
+        data object ViewDocsTapped : Event() {
+            override val name: String = "view_docs_tapped"
         }
 
         data object EmptyCartSetUpScannerTapped : Event() {

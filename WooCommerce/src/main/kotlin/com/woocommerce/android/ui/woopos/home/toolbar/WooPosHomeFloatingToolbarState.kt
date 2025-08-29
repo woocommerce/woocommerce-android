@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.woocommerce.android.R
 
-data class WooPosToolbarState(
+data class WooPosHomeFloatingToolbarState(
     val cardReaderStatus: WooPosCardReaderStatus,
     val menu: Menu,
 ) {
