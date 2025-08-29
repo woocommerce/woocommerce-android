@@ -90,6 +90,19 @@ class ObserveShippingPackagesTest : BaseUnitTest() {
         assertTrue(result.first() == PackagesState.Error(error.message!!))
     }
 
+    @Test
+    fun `when starting, then refresh data once`() = testBlocking {
+        val site = SiteModel().apply { id = 1 }
+        val shippingPackages = generatePackagesData()
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(packageRepository.observeShippingPackages(site)).thenReturn(flowOf(shippingPackages))
+        whenever(fetchShippingPackages()).thenReturn(Result.success(shippingPackages))
+
+        val result = observeShippingPackages().toList()
+
+        assertTrue(result.size == 1)
+    }
+
     private fun generatePackagesData() = WooShippingPackagesEntity(
         localSiteId = LocalOrRemoteId.LocalId(1),
         storeOptions = WooShippingPackagesEntity.StoreOptions(
