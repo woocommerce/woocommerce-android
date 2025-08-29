@@ -3,9 +3,6 @@ package org.wordpress.android.fluxc.store
 import android.content.Context
 import com.wellsql.generated.SiteModelTable
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -524,9 +521,5 @@ open class WooCommerceStore @Inject internal constructor(
         applyDecimalFormatting: Boolean
     ): String {
         return formatCurrencyForDisplay(amount.toString(), site, currencyCode, applyDecimalFormatting)
-    }
-
-    private suspend fun <A, B> Iterable<A>.pmap(f: suspend (A) -> B): List<B> = coroutineScope {
-        map { async { f(it) } }.awaitAll()
     }
 }

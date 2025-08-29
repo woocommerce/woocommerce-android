@@ -12,8 +12,6 @@ import javax.inject.Inject
 
 class WooSystemRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
     companion object {
-        private const val NOT_FOUND = 404
-        private const val FORBIDDEN = 403
         private const val SAVE_SITE_TITLE_RESPONSE_FIELD = "title"
     }
 

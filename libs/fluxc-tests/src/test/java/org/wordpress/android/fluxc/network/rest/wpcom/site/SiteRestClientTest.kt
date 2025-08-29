@@ -81,7 +81,6 @@ class SiteRestClientTest {
         setIsJetpackConnected(true)
     }
 
-
     @Before
     fun setUp() {
         urlCaptor = argumentCaptor()
