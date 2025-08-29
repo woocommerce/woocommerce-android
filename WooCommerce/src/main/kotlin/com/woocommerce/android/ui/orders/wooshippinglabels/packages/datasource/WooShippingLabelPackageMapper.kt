@@ -39,9 +39,7 @@ class WooShippingLabelPackageMapper @Inject constructor() {
         )
     }
 
-    operator fun invoke(
-        response: PackageCreationResponse
-    ): List<Package> = response.custom?.map {
+    operator fun invoke(site: SiteModel, response: PackageCreationResponse): List<Package> = response.custom?.map {
         Package(
             id = it.id.orEmpty(),
             name = it.name.orEmpty(),
