@@ -18,14 +18,15 @@ class WooShippingLabelPackageRepository @Inject constructor(
 ) {
     suspend fun fetchShippingPackages(
         site: SiteModel = selectedSite.get()
-    ) = packageRestClient.fetchShippingLabelPackages(site).asWooResult { packageMapper(selectedSite.get(), it) }
+    ) = packageRestClient.fetchShippingLabelPackages(site)
+        .asWooResult { packageMapper(site = selectedSite.get(), response = it) }
         .also { result ->
             result.model?.takeIf { !result.isError }?.let { model -> wooShippingDao.insertShippingPackages(model) }
         }
 
-    suspend fun getShippingPackages(
+    fun observeShippingPackages(
         site: SiteModel = selectedSite.get()
-    ) = wooShippingDao.getShippingPackages(site.localId())
+    ) = wooShippingDao.observeShippingPackages(site.localId())
 
     suspend fun createCustomPackage(
         requestData: List<CustomPackageCreationRequestData>,

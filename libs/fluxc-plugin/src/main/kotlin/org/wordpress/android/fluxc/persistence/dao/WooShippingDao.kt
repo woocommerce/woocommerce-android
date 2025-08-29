@@ -112,5 +112,5 @@ abstract class WooShippingDao {
     abstract suspend fun insertShippingPackages(packages: WooShippingPackagesEntity)
 
     @Query("SELECT * FROM WooShippingPackagesEntity WHERE localSiteId = :localSiteId")
-    abstract suspend fun getShippingPackages(localSiteId: LocalOrRemoteId.LocalId): WooShippingPackagesEntity?
+    abstract fun observeShippingPackages(localSiteId: LocalOrRemoteId.LocalId): Flow<WooShippingPackagesEntity?>
 }
