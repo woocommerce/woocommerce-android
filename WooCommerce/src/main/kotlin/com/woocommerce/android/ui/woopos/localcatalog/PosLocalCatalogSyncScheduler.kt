@@ -58,6 +58,11 @@ class PosLocalCatalogSyncScheduler @Inject constructor(
     fun triggerManualFullCatalogSync() {
         val oneTimeWorkRequest = OneTimeWorkRequestBuilder<PosLocalCatalogSyncWorker>()
             .setConstraints(getConstraints())
+            .setBackoffCriteria(
+                BackoffPolicy.EXPONENTIAL,
+                1,
+                TimeUnit.MINUTES
+            )
             .build()
 
         workManager.enqueueUniqueWork(
