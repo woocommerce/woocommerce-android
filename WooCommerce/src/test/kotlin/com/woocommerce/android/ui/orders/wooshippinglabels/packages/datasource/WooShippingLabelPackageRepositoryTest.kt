@@ -10,11 +10,13 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooShippingLabelPackageRepositoryTest : BaseUnitTest() {
@@ -28,37 +30,36 @@ class WooShippingLabelPackageRepositoryTest : BaseUnitTest() {
     @Before
     fun setUp() {
         whenever(selectedSite.get()).thenReturn(siteModel)
-        repository = WooShippingLabelPackageRepository(selectedSite, packageMapper, packageRestClient)
+        repository = WooShippingLabelPackageRepository(selectedSite, packageMapper, packageRestClient, mock())
     }
 
     @Test
-    fun `fetchShippingPackages returns WooResult with result`() = testBlocking {
-        val storePackagesDAO = StorePackagesDAO(
-            storeOptions = StoreOptionsDAO(
+    fun `when fetchShippingPackages succeed, then return WooResult with result`() = testBlocking {
+        val localSiteId = LocalOrRemoteId.LocalId(1)
+        val shippingPackages = WooShippingPackagesEntity(
+            localSiteId = localSiteId,
+            storeOptions = WooShippingPackagesEntity.StoreOptions(
                 currencySymbol = "",
                 dimensionUnit = "",
                 weightUnit = "",
                 originCountry = ""
             ),
             savedPackages = listOf(),
-            carrierPackages = mapOf()
+            carrierPackageGroups = listOf()
         )
         val packageResponse = mock<PackageResponse>()
         whenever(packageRestClient.fetchShippingLabelPackages(siteModel)).thenReturn(WooPayload(packageResponse))
-        whenever(packageMapper(packageResponse)).thenReturn(storePackagesDAO)
+        whenever(packageMapper(siteModel, packageResponse)).thenReturn(shippingPackages)
 
         val result = repository.fetchShippingPackages()
 
         assertThat(result.isError).isFalse
-        assertThat(storePackagesDAO).isEqualTo(result.model)
+        assertThat(shippingPackages).isEqualTo(result.model)
     }
 
     @Test
-    fun `fetchShippingPackages returns WooResult with error`() = testBlocking {
-        val error = WooError(
-            type = GENERIC_ERROR,
-            original = UNKNOWN
-        )
+    fun `when fetchShippingPackages returns error, then return WooResult with error`() = testBlocking {
+        val error = WooError(type = GENERIC_ERROR, original = UNKNOWN)
         whenever(packageRestClient.fetchShippingLabelPackages(siteModel)).thenReturn(WooPayload(error))
 
         val result = repository.fetchShippingPackages()
