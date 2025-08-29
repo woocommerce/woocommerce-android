@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncRepository.Companion.PAGE_SIZE
 import com.woocommerce.android.ui.woopos.localcatalog.PosSyncProductsAction.Result
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -39,7 +40,7 @@ class PosSyncProductsActionTest {
         givenSinglePageCatalog(productsCount = 50)
 
         // WHEN
-        val result = sut.execute(site, maxPages = 2)
+        val result = sut.execute(site, pageSize = 100, maxPages = 2)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Success::class.java)
@@ -57,7 +58,7 @@ class PosSyncProductsActionTest {
         )
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = null, maxPages = maxPages)
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Success::class.java)
@@ -71,7 +72,7 @@ class PosSyncProductsActionTest {
         givenEmptyCatalog()
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = null, maxPages = maxPages)
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Success::class.java)
@@ -86,14 +87,14 @@ class PosSyncProductsActionTest {
         givenSinglePageCatalog(productsCount = 25)
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = modifiedAfter, maxPages = maxPages)
+        val result = sut.execute(site, modifiedAfterGmt = modifiedAfter, pageSize = 100, maxPages = maxPages)
 
         // THEN
         verify(posLocalCatalogStore).syncRecentlyModifiedProducts(
             site = eq(site),
             modifiedAfterGmt = eq(modifiedAfter),
             offset = eq(0),
-            pageSize = eq(PosSyncProductsAction.PAGE_SIZE)
+            pageSize = eq(100)
         )
         assertThat(result).isInstanceOf(Result.Success::class.java)
     }
@@ -103,13 +104,13 @@ class PosSyncProductsActionTest {
         // GIVEN
         val maxPages = 3
         givenMultiPageCatalog(
-            page1Count = PosSyncProductsAction.PAGE_SIZE,
-            page2Count = PosSyncProductsAction.PAGE_SIZE,
-            page3Count = PosSyncProductsAction.PAGE_SIZE
+            page1Count = PAGE_SIZE,
+            page2Count = PAGE_SIZE,
+            page3Count = PAGE_SIZE
         )
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = null, maxPages = maxPages)
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Success::class.java)
@@ -121,13 +122,13 @@ class PosSyncProductsActionTest {
         // GIVEN
         val maxPages = 2
         givenMultiPageCatalog(
-            page1Count = PosSyncProductsAction.PAGE_SIZE,
-            page2Count = PosSyncProductsAction.PAGE_SIZE,
-            page3Count = PosSyncProductsAction.PAGE_SIZE
+            page1Count = PAGE_SIZE,
+            page2Count = PAGE_SIZE,
+            page3Count = PAGE_SIZE
         )
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = null, maxPages = maxPages)
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Failed.CatalogTooLarge::class.java)
@@ -140,7 +141,7 @@ class PosSyncProductsActionTest {
         givenFirstPageFails(errorMessage)
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = null, maxPages = 10)
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = 10)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Failed.UnexpectedError::class.java)
@@ -155,7 +156,7 @@ class PosSyncProductsActionTest {
         givenSecondPageFails(errorMessage)
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = null, maxPages = maxPages)
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Failed.UnexpectedError::class.java)
@@ -169,7 +170,7 @@ class PosSyncProductsActionTest {
         givenFirstPageFailsWithNullMessage()
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = null, maxPages = maxPages)
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Failed.UnexpectedError::class.java)
@@ -183,7 +184,7 @@ class PosSyncProductsActionTest {
         givenPageWithZeroProductsButHasMore()
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = null, maxPages = maxPages)
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Success::class.java)
@@ -198,7 +199,7 @@ class PosSyncProductsActionTest {
         givenSinglePageCatalog(productsCount = 10)
 
         // WHEN
-        val result = sut.execute(site, modifiedAfterGmt = null, maxPages = maxPages)
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
         assertThat(result).isInstanceOf(Result.Success::class.java)
@@ -206,7 +207,7 @@ class PosSyncProductsActionTest {
             .syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any())
     }
 
-    private suspend fun givenSinglePageCatalog(productsCount: Int = PosSyncProductsAction.PAGE_SIZE / 2) {
+    private suspend fun givenSinglePageCatalog(productsCount: Int = PAGE_SIZE / 2) {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
             .thenReturn(
                 KotlinResult.success(

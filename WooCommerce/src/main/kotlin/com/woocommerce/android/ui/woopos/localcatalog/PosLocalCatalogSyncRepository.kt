@@ -29,12 +29,13 @@ class PosLocalCatalogSyncRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
 ) {
     companion object {
+        const val PAGE_SIZE = 100
         const val MAX_PAGES_PER_FULL_SYNC = 10
         const val MAX_PAGES_PER_INCREMENTAL_SYNC = 3
     }
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
-        return@withContext performSync(site = site, maxPages = MAX_PAGES_PER_FULL_SYNC)
+        return@withContext performSync(site = site, pageSize = PAGE_SIZE, maxPages = MAX_PAGES_PER_FULL_SYNC)
     }
 
     suspend fun syncLocalCatalogIncremental(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
@@ -44,12 +45,14 @@ class PosLocalCatalogSyncRepository @Inject constructor(
         return@withContext performSync(
             site = site,
             modifiedAfterGmt = modifiedAfterGmt,
+            pageSize = PAGE_SIZE,
             maxPages = MAX_PAGES_PER_INCREMENTAL_SYNC,
         )
     }
 
     private suspend fun performSync(
         site: SiteModel,
+        pageSize: Int,
         maxPages: Int,
         modifiedAfterGmt: String? = null,
     ): PosLocalCatalogSyncResult {
@@ -57,7 +60,7 @@ class PosLocalCatalogSyncRepository @Inject constructor(
 
         WooLog.d(T.POS, "Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
-        val productSyncResult = posSyncProductsAction.execute(site, modifiedAfterGmt, maxPages)
+        val productSyncResult = posSyncProductsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
         // TBD Local Catalog We'll want to trigger variations action here too
 
         val syncDuration = System.currentTimeMillis() - startTime
