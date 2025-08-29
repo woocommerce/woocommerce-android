@@ -84,6 +84,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
+import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
@@ -114,7 +115,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 59
+const val WC_DATABASE_VERSION = 60
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -159,6 +160,7 @@ const val WC_DATABASE_VERSION = 59
         WCOrderStatusModel::class,
         WooShippingLabelEntity::class,
         WooShippingShipmentEntity::class,
+        WooShippingPackagesEntity::class,
         WCGlobalAttributeModel::class,
     ],
     autoMigrations = [
@@ -202,6 +204,7 @@ const val WC_DATABASE_VERSION = 59
         AutoMigration(from = 56, to = 57),
         AutoMigration(from = 57, to = 58),
         AutoMigration(from = 58, to = 59),
+        AutoMigration(from = 59, to = 60),
     ]
 )
 @TypeConverters(
