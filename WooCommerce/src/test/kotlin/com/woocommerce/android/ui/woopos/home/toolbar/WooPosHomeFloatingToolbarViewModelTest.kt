@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Settings
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -90,7 +91,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
                             title = R.string.woopos_settings_title,
                             icon = Icons.Default.Settings,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_title,
                             icon = Icons.AutoMirrored.Filled.ExitToApp,
                         ),
@@ -241,17 +242,17 @@ class WooPosHomeFloatingToolbarViewModelTest {
     fun `when Orders MenuItemClicked, then ToOrders navigation event should be sent`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
-            title = com.woocommerce.android.R.string.woopos_orders_title,
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
+            title = R.string.woopos_orders_title,
             icon = Icons.Default.Description
         )
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToOrders)
-        assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
+        assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
     private fun createViewModel() = WooPosHomeFloatingToolbarViewModel(
