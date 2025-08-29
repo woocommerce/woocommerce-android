@@ -29,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -39,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -63,20 +61,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.WooPosCardReaderStatus
-import com.woocommerce.android.util.ChromeCustomTabUtils
-import kotlinx.coroutines.flow.collectLatest
 
 private val TOOLBAR_ELEVATION = WooPosElevation.Medium
 
 @Composable
 fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
     val viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel()
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        viewModel.openUrlEvent.collectLatest { url ->
-            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
-        }
-    }
     WooPosFloatingToolbar(
         modifier = modifier,
         state = viewModel.state.collectAsState(),

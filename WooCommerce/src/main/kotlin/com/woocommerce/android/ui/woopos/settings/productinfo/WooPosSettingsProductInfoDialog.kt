@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.home
+package com.woocommerce.android.ui.woopos.settings.productinfo
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -34,8 +34,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
-fun WooPosProductInfoDialog(
-    state: WooPosHomeState.DialogState.ProductsInfoDialog,
+fun WooPosSettingsProductInfoDialog(
+    state: WooPosSettingsProductInfoDialogState,
     isVisible: Boolean,
     onDismissRequest: () -> Unit,
 ) {
@@ -146,7 +146,7 @@ fun WooPosProductInfoDialog(
 }
 
 @Composable
-private fun getCombinedContentDescription(state: WooPosHomeState.DialogState.ProductsInfoDialog): String {
+private fun getCombinedContentDescription(state: WooPosSettingsProductInfoDialogState): String {
     val dialogContentDescription = stringResource(
         id = R.string.woopos_banner_simple_products_dialog_content_description
     )
@@ -156,14 +156,14 @@ private fun getCombinedContentDescription(state: WooPosHomeState.DialogState.Pro
 
 @WooPosPreview
 @Composable
-fun ProductInfoDialogPreview() {
+fun WooPosSettingsProductInfoDialogPreview() {
     WooPosTheme {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            WooPosProductInfoDialog(
-                state = WooPosHomeState.DialogState.ProductsInfoDialog,
+            WooPosSettingsProductInfoDialog(
+                state = WooPosSettingsProductInfoDialogState,
                 isVisible = true,
                 onDismissRequest = {},
             )

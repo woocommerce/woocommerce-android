@@ -31,6 +31,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.TooManyPinTries
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.ReaderNotConnected
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Server
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 
@@ -45,6 +46,7 @@ internal class PaymentErrorMapper {
             }
         val type = when (exception.errorCode) {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CardReadTimeOut
+            TerminalErrorCode.NOT_CONNECTED_TO_READER -> ReaderNotConnected
             TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapDeclinedByStripeApiError(exception)
             TerminalErrorCode.REQUEST_TIMED_OUT -> NoNetwork
             TerminalErrorCode.TAP_TO_PAY_NFC_DISABLED -> NfcDisabled

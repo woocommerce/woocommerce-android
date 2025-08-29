@@ -162,107 +162,6 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `when where are my products clicked, then display products info dialog`() {
-        // WHEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-        )
-        val viewModel = createViewModel()
-
-        // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(
-            WooPosHomeState.DialogState.ProductsInfoDialog
-        )
-    }
-
-    @Test
-    fun `given product info dialog is displayed, then ensure dialog heading is correct`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-        )
-        val viewModel = createViewModel()
-
-        // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(
-            WooPosHomeState.DialogState.ProductsInfoDialog
-        )
-    }
-
-    @Test
-    fun `given product info dialog is displayed, then ensure dialog primary message is correct`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-        )
-        val viewModel = createViewModel()
-
-        // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(
-            WooPosHomeState.DialogState.ProductsInfoDialog
-        )
-    }
-
-    @Test
-    fun `when where are my products clicked, then ensure dialog secondary message is correct`() {
-        // WHEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-        )
-        val viewModel = createViewModel()
-
-        // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(
-            WooPosHomeState.DialogState.ProductsInfoDialog
-        )
-    }
-
-    @Test
-    fun `when where are my products clicked, then ensure dialog tertiary message is correct`() {
-        // WHEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-        )
-        val viewModel = createViewModel()
-
-        // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(
-            WooPosHomeState.DialogState.ProductsInfoDialog
-        )
-    }
-
-    @Test
-    fun `when where are my products clicked, then ensure dialog primary button label is correct`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(
-            WooPosHomeState.DialogState.ProductsInfoDialog
-        )
-    }
-
-    @Test
-    fun `given product info is displayed, when dialog is dismissed, then ensure the state is updated`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-        )
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
-
-        // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
-    }
-
-    @Test
     fun `given home screen is at checkout, when go back to checkout clicked after failed payment, then should show cart with totals`() = runTest {
         // GIVEN
         val events = MutableSharedFlow<ChildToParentEvent>()
@@ -408,22 +307,6 @@ class WooPosHomeViewModelTest {
 
         // THEN
         analyticsTracker.track(BackToCartTapped)
-    }
-
-    @Test
-    fun `given Cart state with ProductsInfoDialog visible, when SystemBackClicked, then dialog should be dismissed`() = runTest {
-        // GIVEN
-        val events = MutableSharedFlow<ChildToParentEvent>()
-        whenever(childrenToParentEventReceiver.events).thenReturn(events)
-        val viewModel = createViewModel()
-        events.emit(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.ProductsInfoDialog)
-
-        // WHEN
-        viewModel.onUIEvent(SystemBackClicked)
-
-        // THEN
-        assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
     }
 
     @Test

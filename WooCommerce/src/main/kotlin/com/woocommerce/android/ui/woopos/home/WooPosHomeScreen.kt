@@ -177,14 +177,6 @@ private fun Dialogs(
     dialogState: WooPosHomeState.DialogState,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
-    WooPosProductInfoDialog(
-        state = WooPosHomeState.DialogState.ProductsInfoDialog,
-        isVisible = dialogState is WooPosHomeState.DialogState.ProductsInfoDialog,
-        onDismissRequest = {
-            onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
-        }
-    )
-
     WooPosScanningSetupDialog(
         isVisible = dialogState is WooPosHomeState.DialogState.ScanningSetupDialog,
         onDismissRequest = {

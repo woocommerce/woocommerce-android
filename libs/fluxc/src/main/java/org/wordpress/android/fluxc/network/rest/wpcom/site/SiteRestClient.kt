@@ -186,7 +186,7 @@ class SiteRestClient @Inject constructor(
             clazz = SitesFeaturesRestResponse::class.java
         ).let {
             when (it) {
-                is Success -> Success(it.data.features.mapValues { it.value.active })
+                is Success -> Success(it.data.features.mapValues { it.value.active }, it.headers)
                 is Error -> Error(it.error)
             }
         }
@@ -357,7 +357,7 @@ class SiteRestClient @Inject constructor(
     fun fetchPlans(site: SiteModel) {
         val url = WPCOMREST.sites.site(site.siteId).plans.urlV1_3
         val request = WPComGsonRequest.buildGetRequest(url, null, PlansResponse::class.java,
-                { response ->
+                { response, _ ->
                     val plans = response.plansList
                     mDispatcher.dispatch(
                             SiteActionBuilder.newFetchedPlansAction(FetchedPlansPayload(site, plans))
@@ -375,7 +375,7 @@ class SiteRestClient @Inject constructor(
         val url = WPCOMREST.sites.site(site.siteId).delete.urlV1_1
         val request = WPComGsonRequest.buildPostRequest(url, null,
                 SiteWPComRestResponse::class.java,
-                {
+                { _, _ ->
                     val payload = DeleteSiteResponsePayload(site)
                     mDispatcher.dispatch(SiteActionBuilder.newDeletedSiteAction(payload))
                 }
@@ -391,7 +391,7 @@ class SiteRestClient @Inject constructor(
         val url = WPCOMREST.sites.site(site.siteId).exports.start.urlV1_1
         val request = WPComGsonRequest.buildPostRequest(url, null,
                 ExportSiteResponse::class.java,
-                {
+                { _, _ ->
                     val payload = ExportSiteResponsePayload()
                     mDispatcher.dispatch(SiteActionBuilder.newExportedSiteAction(payload))
                 }
@@ -438,7 +438,7 @@ class SiteRestClient @Inject constructor(
         }
         val request = WPComGsonRequest.buildGetRequest<List<DomainSuggestionResponse>>(url, params,
                 object : TypeToken<List<DomainSuggestionResponse>>() {}.type,
-                { response ->
+                { response, _ ->
                     val payload = SuggestDomainsResponsePayload(
                             query,
                             response
@@ -567,7 +567,7 @@ class SiteRestClient @Inject constructor(
         val requestUrl = WPCOMREST.sites.siteUrl(sanitizedUrl).urlV1_1
         val request = WPComGsonRequest.buildGetRequest(requestUrl, null,
                 SiteWPComRestResponse::class.java,
-                { response ->
+                { response, _ ->
                     val payload = FetchWPComSiteResponsePayload(siteUrl, siteResponseToSiteModel(response))
                     mDispatcher.dispatch(SiteActionBuilder.newFetchedWpcomSiteByUrlAction(payload))
                 }
@@ -588,7 +588,7 @@ class SiteRestClient @Inject constructor(
         val url = WPCOMREST.sites.urlV1_1 + testedUrl
         val request = WPComGsonRequest.buildGetRequest(url, null,
                 SiteWPComRestResponse::class.java,
-                {
+                { _, _ ->
                     val payload = IsWPComResponsePayload(testedUrl, true)
                     mDispatcher.dispatch(SiteActionBuilder.newCheckedIsWpcomUrlAction(payload))
                 }
@@ -612,7 +612,7 @@ class SiteRestClient @Inject constructor(
     fun checkDomainAvailability(domainName: String) {
         val url = WPCOMREST.domains.domainName(domainName).is_available.urlV1_3
         val request = WPComGsonRequest.buildGetRequest(url, null, DomainAvailabilityResponse::class.java,
-                { response ->
+                { response, _ ->
                     val payload = responseToDomainAvailabilityPayload(response)
                     mDispatcher.dispatch(SiteActionBuilder.newCheckedDomainAvailabilityAction(payload))
                 }
@@ -638,7 +638,7 @@ class SiteRestClient @Inject constructor(
         val url = WPCOMREST.domains.supported_states.countryCode(countryCode).urlV1_1
         val request = WPComGsonRequest.buildGetRequest<List<SupportedStateResponse>>(url, null,
                 object : TypeToken<List<SupportedStateResponse>>() {}.type,
-                { response ->
+                { response, _ ->
                     val payload = DomainSupportedStatesResponsePayload(response)
                     mDispatcher.dispatch(SiteActionBuilder.newFetchedDomainSupportedStatesAction(payload))
                 },
@@ -663,7 +663,7 @@ class SiteRestClient @Inject constructor(
         val url = WPCOMREST.domains.supported_countries.urlV1_1
         val request = WPComGsonRequest.buildGetRequest<List<SupportedCountryResponse>>(url, null,
                 object : TypeToken<List<SupportedCountryResponse>>() {}.type,
-                { response ->
+                { response, _ ->
                     val payload = DomainSupportedCountriesResponsePayload(response)
                     mDispatcher.dispatch(
                             SiteActionBuilder.newFetchedDomainSupportedCountriesAction(payload)
@@ -712,7 +712,7 @@ class SiteRestClient @Inject constructor(
         params["domain"] = domain
         val request = WPComGsonRequest
                 .buildPostRequest(url, params, DesignatePrimaryDomainResponse::class.java,
-                        { (success) ->
+                        { (success), _ ->
                             mDispatcher.dispatch(
                                     SiteActionBuilder.newDesignatedPrimaryDomainAction(
                                             DesignatedPrimaryDomainPayload(site, success)
@@ -735,7 +735,7 @@ class SiteRestClient @Inject constructor(
         val url = WPCOMREST.sites.site(site.siteId).automated_transfers.eligibility.urlV1_1
         val request = WPComGsonRequest
                 .buildGetRequest(url, null, AutomatedTransferEligibilityCheckResponse::class.java,
-                        { response ->
+                        { response, _ ->
                             val strErrorCodes = mutableListOf<String>()
                             if (response.errors != null) {
                                 for (eligibilityError in response.errors) {
@@ -770,7 +770,7 @@ class SiteRestClient @Inject constructor(
         params["plugin"] = pluginSlugToInstall
         val request = WPComGsonRequest
                 .buildPostRequest(url, params, InitiateAutomatedTransferResponse::class.java,
-                        { response ->
+                        { response, _ ->
                             val payload = InitiateAutomatedTransferResponsePayload(
                                     site, pluginSlugToInstall,
                                     response.success
@@ -789,7 +789,7 @@ class SiteRestClient @Inject constructor(
         val url = WPCOMREST.sites.site(site.siteId).automated_transfers.status.urlV1_1
         val request = WPComGsonRequest
                 .buildGetRequest(url, null, AutomatedTransferStatusResponse::class.java,
-                        { response ->
+                        { response, _ ->
                             mDispatcher.dispatch(
                                     SiteActionBuilder.newCheckedAutomatedTransferStatusAction(
                                             AutomatedTransferStatusResponsePayload(
@@ -818,7 +818,7 @@ class SiteRestClient @Inject constructor(
         params["variant"] = variant
         val request = WPComGsonRequest
                 .buildPostRequest(url, params, QuickStartCompletedResponse::class.java,
-                        { response ->
+                        { response, _ ->
                             mDispatcher.dispatch(
                                     SiteActionBuilder.newCompletedQuickStartAction(
                                             QuickStartCompletedResponsePayload(site, response.success)
@@ -841,7 +841,7 @@ class SiteRestClient @Inject constructor(
         val url = WPCOMV2.sites.site(site.siteId).atomic_auth_proxy.read_access_cookies.url
         val request = WPComGsonRequest.buildGetRequest(url, params,
                 PrivateAtomicCookieResponse::class.java,
-                { response ->
+                { response, _ ->
                     if (response != null) {
                         mDispatcher.dispatch(
                                 SiteActionBuilder
@@ -876,7 +876,7 @@ class SiteRestClient @Inject constructor(
         val url = WPCOMV2.sites.site(remoteSiteId).rewind.capabilities.url
         val request = WPComGsonRequest.buildGetRequest(url, params,
                 JetpackCapabilitiesResponse::class.java,
-                { response ->
+                { response, _ ->
                     if (response?.capabilities != null) {
                         val payload = responseToJetpackCapabilitiesPayload(remoteSiteId, response)
                         mDispatcher.dispatch(SiteActionBuilder.newFetchedJetpackCapabilitiesAction(payload))

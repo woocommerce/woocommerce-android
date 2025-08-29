@@ -1,6 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel
 
-import com.android.volley.Response.Listener
+import org.wordpress.android.fluxc.network.rest.GsonRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
@@ -17,7 +17,7 @@ class JetpackTimeoutRequestHandler<T>(
     url: String,
     params: Map<String, String>,
     type: Type,
-    listener: Listener<T>,
+    listener: GsonRequest.ResponseListener<T>,
     errorListener: WPComErrorListener,
     retryListener: (WPComGsonRequest<*>) -> Unit,
     private val maxRetries: Int = DEFAULT_MAX_RETRIES
