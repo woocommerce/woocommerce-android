@@ -33,6 +33,7 @@ class WooPosOrdersViewModel @Inject constructor(
                         val list = res.orders
                         _state.update { prev ->
                             prev.copy(
+                                isLoading = false,
                                 orders = list,
                                 selectedOrderId = prev.selectedOrderId?.takeIf { id -> list.any { o -> o.id == id } }
                                     ?: list.firstOrNull()?.id
