@@ -15,10 +15,12 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCache
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,6 +36,9 @@ class WooPosActivity : AppCompatActivity() {
 
     @Inject
     lateinit var wooPosCouponCreationFacade: WooPosCouponCreationFacade
+
+    @Inject
+    lateinit var ordersCache: WooPosOrdersCache
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +57,13 @@ class WooPosActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    override fun onDestroy() {
+        runBlocking {
+            ordersCache.clear()
+        }
+        super.onDestroy()
     }
 }
 

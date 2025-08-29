@@ -25,6 +25,10 @@ class WooPosOrdersInMemoryCache @Inject constructor() : WooPosOrdersCache {
         ordersCache.values.toList()
     }
 
+    override suspend fun clear() = mutex.withLock {
+        ordersCache.clear()
+    }
+
     private fun addAllInternal(orders: List<Order>) {
         orders.forEach { order ->
             ordersCache[order.id] = order

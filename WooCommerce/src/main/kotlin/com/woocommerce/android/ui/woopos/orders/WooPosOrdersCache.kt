@@ -6,4 +6,6 @@ interface WooPosOrdersCache {
     suspend fun addAll(orders: List<Order>)
 
     suspend fun getAll(): List<Order>
+
+    suspend fun clear()
 }
