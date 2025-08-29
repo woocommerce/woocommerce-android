@@ -333,7 +333,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
         return response.takeIf { it.isError.not() }
             ?.model?.firstOrNull()
-            ?.let { PackageData.fromPackageDAO(it) }
+            ?.let { PackageData.fromPackageEntity(it) }
             ?.let { Result.success(it) }
             ?: Result.failure(Throwable(response.error.type.toString()))
     }
