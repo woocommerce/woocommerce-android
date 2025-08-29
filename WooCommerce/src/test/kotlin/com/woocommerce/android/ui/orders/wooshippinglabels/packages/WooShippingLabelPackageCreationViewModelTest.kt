@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingL
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackagesState.Data
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowPackageTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ViewState
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPackagesFromStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchShippingPackages
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.PackageDAO
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
@@ -50,7 +50,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: WooShippingLabelPackageCreationViewModel
     private val resourceProvider: ResourceProvider = mock()
-    private val fetchPackages: FetchPackagesFromStore = mock()
+    private val fetchPackages: FetchShippingPackages = mock()
     private val packageRepository: WooShippingLabelPackageRepository = mock()
     private val selectedSite: SelectedSite = mock {
         on { getOrNull() } doReturn SiteModel().apply { siteId = 123 }

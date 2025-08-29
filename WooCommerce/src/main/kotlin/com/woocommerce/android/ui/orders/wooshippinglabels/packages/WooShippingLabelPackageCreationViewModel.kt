@@ -13,7 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPackagesFromStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchShippingPackages
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CustomPackageCreationRequestData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
@@ -39,7 +39,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
-    private val fetchPackages: FetchPackagesFromStore,
+    private val fetchPackages: FetchShippingPackages,
     private val updateSavedCarrierPackages: UpdateSavedCarrierPackages,
     private val packageRepository: WooShippingLabelPackageRepository,
     private val tracker: AnalyticsTrackerWrapper,

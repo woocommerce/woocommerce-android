@@ -18,20 +18,20 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FetchPackagesFromStoreTest : BaseUnitTest() {
+class FetchShippingPackagesTest : BaseUnitTest() {
 
     private val packageRepository: WooShippingLabelPackageRepository = mock()
     private val selectedSite: SelectedSite = mock()
-    private val fetchPackagesFromStore = FetchPackagesFromStore(selectedSite, packageRepository)
+    private val fetchShippingPackages = FetchShippingPackages(selectedSite, packageRepository)
 
     @Test
     fun `invoke should return Data with carrier and saved packages`() = testBlocking {
         val storePackages = generatePackagesData()
         val site = SiteModel().apply { id = 1 }
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(packageRepository.fetchAllStorePackages(site)).thenReturn(WooResult(storePackages))
+        whenever(packageRepository.fetchShippingPackages(site)).thenReturn(WooResult(storePackages))
 
-        val result = fetchPackagesFromStore() as PackagesState.Data
+        val result = fetchShippingPackages() as PackagesState.Data
 
         assertThat(result.savedPackages).containsExactly(
             PackageData(
@@ -75,9 +75,9 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
         val error = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         val site = SiteModel().apply { id = 1 }
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(packageRepository.fetchAllStorePackages(site)).thenReturn(WooResult(error))
+        whenever(packageRepository.fetchShippingPackages(site)).thenReturn(WooResult(error))
 
-        val result = fetchPackagesFromStore()
+        val result = fetchShippingPackages()
 
         assertThat(result).isEqualTo(PackagesState.Error(WooErrorType.GENERIC_ERROR.name))
     }
