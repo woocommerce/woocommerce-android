@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.C
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.WooShippingLabelPackageRestClient
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,7 +13,8 @@ import javax.inject.Singleton
 class WooShippingLabelPackageRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val packageMapper: WooShippingLabelPackageMapper,
-    private val packageRestClient: WooShippingLabelPackageRestClient
+    private val packageRestClient: WooShippingLabelPackageRestClient,
+    private val wooShippingDao: WooShippingDao
 ) {
     suspend fun fetchAllStorePackages(
         site: SiteModel = selectedSite.get()
