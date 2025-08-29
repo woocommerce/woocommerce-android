@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.woopos.common.data.WooPosOrdersDataSource
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
