@@ -30,12 +30,10 @@ class WooPosOrdersViewModel @Inject constructor(
             ordersDataSource.loadOrders().collect { res ->
                 when (res) {
                     is WooPosOrdersDataSource.OrdersResult.Cached -> {
-                        // Show cache immediately, keep loading=true while remote is in flight
                         val list = res.orders
                         _state.update { prev ->
                             prev.copy(
                                 orders = list,
-                                // preserve selection if still present; otherwise pick first
                                 selectedOrderId = prev.selectedOrderId?.takeIf { id -> list.any { o -> o.id == id } }
                                     ?: list.firstOrNull()?.id
                             )
