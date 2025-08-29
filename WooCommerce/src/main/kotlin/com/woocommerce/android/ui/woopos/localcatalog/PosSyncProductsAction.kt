@@ -9,10 +9,6 @@ import javax.inject.Inject
 class PosSyncProductsAction @Inject constructor(
     private val posLocalCatalogStore: PosLocalCatalogStore
 ) {
-    companion object {
-        const val PAGE_SIZE = 100
-    }
-
     sealed class Result {
         data class Success(val productsSynced: Int) : Result()
 
@@ -27,6 +23,7 @@ class PosSyncProductsAction @Inject constructor(
     suspend fun execute(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
+        pageSize: Int,
         maxPages: Int
     ): Result {
         var currentOffset = 0
@@ -41,9 +38,9 @@ class PosSyncProductsAction @Inject constructor(
              */
             val result = posLocalCatalogStore.syncRecentlyModifiedProducts(
                 site = site,
+                pageSize = pageSize,
                 modifiedAfterGmt = modifiedAfterGmt,
-                offset = currentOffset,
-                pageSize = PAGE_SIZE
+                offset = currentOffset
             )
 
             result.fold(

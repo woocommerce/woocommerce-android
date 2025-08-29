@@ -49,7 +49,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when full sync succeeds, then returns success`() = testBlocking {
         // GIVEN
         val productsSynced = 150
-        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any()))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(PosSyncProductsAction.Result.Success(productsSynced))
 
         // WHEN
@@ -63,7 +63,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when full sync succeeds, then stores timestamp`() = testBlocking {
         // GIVEN
         val productsSynced = 150
-        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any()))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(PosSyncProductsAction.Result.Success(productsSynced))
 
         // WHEN
@@ -78,7 +78,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val totalPages = 15
         val maxPages = PosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
-        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any()))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(PosSyncProductsAction.Result.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
@@ -92,7 +92,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when full sync fails with unexpected error, then returns UnexpectedError failure`() = testBlocking {
         // GIVEN
         val errorMessage = "Network timeout"
-        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any()))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(PosSyncProductsAction.Result.Failed.UnexpectedError(errorMessage))
 
         // WHEN
@@ -106,7 +106,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when incremental sync succeeds, then returns success`() = testBlocking {
         // GIVEN
         val productsSynced = 150
-        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any()))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(PosSyncProductsAction.Result.Success(productsSynced))
 
         // WHEN
@@ -120,7 +120,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when incremental sync succeeds, then stores timestamp`() = testBlocking {
         // GIVEN
         val productsSynced = 150
-        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any()))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(PosSyncProductsAction.Result.Success(productsSynced))
 
         // WHEN
@@ -135,7 +135,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val totalPages = 15
         val maxPages = PosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
-        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any()))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(PosSyncProductsAction.Result.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
@@ -149,7 +149,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when incremental sync fails with unexpected error, then returns UnexpectedError failure`() = testBlocking {
         // GIVEN
         val errorMessage = "Network timeout"
-        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any()))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(PosSyncProductsAction.Result.Failed.UnexpectedError(errorMessage))
 
         // WHEN
