@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Settings
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -26,7 +27,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class WooPosToolbarViewModelTest {
+class WooPosHomeFloatingToolbarViewModelTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -48,7 +49,7 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.cardReaderStatus)
-            .isEqualTo(WooPosToolbarState.WooPosCardReaderStatus.NotConnected)
+            .isEqualTo(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected)
     }
 
     @Test
@@ -59,7 +60,7 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.cardReaderStatus)
-            .isEqualTo(WooPosToolbarState.WooPosCardReaderStatus.Connected)
+            .isEqualTo(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected)
     }
 
     @Test
@@ -70,7 +71,7 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.cardReaderStatus)
-            .isEqualTo(WooPosToolbarState.WooPosCardReaderStatus.NotConnected)
+            .isEqualTo(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected)
     }
 
     @Test
@@ -79,18 +80,18 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
 
         // THEN
         assertThat(viewModel.state.value.menu)
             .isEqualTo(
-                WooPosToolbarState.Menu.Visible(
+                WooPosHomeFloatingToolbarState.Menu.Visible(
                     listOf(
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_settings_title,
                             icon = Icons.Default.Settings,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_title,
                             icon = Icons.AutoMirrored.Filled.ExitToApp,
                         ),
@@ -103,14 +104,14 @@ class WooPosToolbarViewModelTest {
     fun `when OnOutsideOfToolbarMenuClicked passed and menu is visible, then menu should be hidden`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked)
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked)
 
         // THEN
         assertThat(viewModel.state.value.menu)
-            .isEqualTo(WooPosToolbarState.Menu.Hidden)
+            .isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
     @Test
@@ -121,7 +122,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
         // THEN
         verify(cardReaderFacade).connectToReader()
@@ -131,17 +132,17 @@ class WooPosToolbarViewModelTest {
     fun `when MenuItemClicked with ExitPosClicked, then ExitPosClicked event should be sent`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_exit_confirmation_title,
             icon = Icons.AutoMirrored.Filled.ExitToApp
         )
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ExitPosClicked)
-        assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
+        assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
     @Test
@@ -152,7 +153,7 @@ class WooPosToolbarViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+            viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
             // THEN
             verify(cardReaderFacade).disconnectFromReader()
@@ -167,7 +168,7 @@ class WooPosToolbarViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+            viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
             // THEN
             verify(cardReaderFacade).connectToReader()
@@ -182,7 +183,7 @@ class WooPosToolbarViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(
@@ -202,7 +203,7 @@ class WooPosToolbarViewModelTest {
 
             // WHEN
             val viewModel = createViewModel()
-            viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+            viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
 
             // THEN
             verify(cardReaderFacade, never()).connectToReader()
@@ -211,11 +212,11 @@ class WooPosToolbarViewModelTest {
     @Test
     fun `when Exit menu item is clicked, then should track analytics event`() = runTest {
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_exit_confirmation_title,
             icon = Icons.AutoMirrored.Filled.ExitToApp
         )
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         verify(analyticsTracker).track(ExitTapped)
     }
@@ -224,37 +225,37 @@ class WooPosToolbarViewModelTest {
     fun `when Settings MenuItemClicked, then ToSettings navigation event should be sent`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
             title = R.string.woopos_settings_title,
             icon = Icons.Default.Settings
         )
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
-        assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
+        assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
     @Test
     fun `when Orders MenuItemClicked, then ToOrders navigation event should be sent`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
-            title = com.woocommerce.android.R.string.woopos_orders_title,
+        val menuItem = WooPosHomeFloatingToolbarState.Menu.MenuItem(
+            title = R.string.woopos_orders_title,
             icon = Icons.Default.Description
         )
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+        viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NavigationEvent.ToOrders)
-        assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
+        assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
-    private fun createViewModel() = WooPosToolbarViewModel(
+    private fun createViewModel() = WooPosHomeFloatingToolbarViewModel(
         cardReaderFacade,
         childrenToParentEventSender,
         networkStatus,

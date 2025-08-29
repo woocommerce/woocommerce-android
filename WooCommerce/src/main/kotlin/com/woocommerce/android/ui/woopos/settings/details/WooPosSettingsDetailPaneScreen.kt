@@ -46,7 +46,7 @@ fun WooPosSettingsDetailPaneScreen(
         WooPosToolbar(
             modifier = Modifier
                 .padding(
-                    top = WooPosSpacing.Medium.value,
+                    top = WooPosSpacing.None.value,
                     start = WooPosSpacing.Medium.value,
                     end = WooPosSpacing.Medium.value,
                 ),
