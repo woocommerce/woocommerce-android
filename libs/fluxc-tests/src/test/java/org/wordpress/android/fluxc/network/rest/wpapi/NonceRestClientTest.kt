@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpapi
 
-import com.android.volley.Header
 import com.android.volley.NetworkResponse
 import com.android.volley.NoConnectionError
 import com.android.volley.RequestQueue
@@ -54,7 +53,7 @@ class NonceRestClientTest {
                             byteArrayOf(),
                             false,
                             System.currentTimeMillis(),
-                            listOf(Header("Location", nonceRequestUrl))
+                            listOf(com.android.volley.Header("Location", nonceRequestUrl))
                         )
                     )
                 ),
@@ -63,7 +62,7 @@ class NonceRestClientTest {
         )
         val expectedNonce = "1expectedNONCE"
         givenLoginResponse(redirectResponse)
-        givenNonceRequestResponse(WPAPIResponse.Success(expectedNonce))
+        givenNonceRequestResponse(WPAPIResponse.Success(expectedNonce, emptyList()))
 
         val actual = subject.requestNonce(site)
 
@@ -83,7 +82,7 @@ class NonceRestClientTest {
                     </div>
               </head>
             </html>
-        """.trimIndent()
+        """.trimIndent(), emptyList()
         )
         givenLoginResponse(loginResponse)
 
@@ -105,7 +104,7 @@ class NonceRestClientTest {
                     <div id="login_error">Please enter the captcha to continue</div>
               </head>
             </html>
-        """.trimIndent()
+        """.trimIndent(), emptyList()
         )
         givenLoginResponse(loginResponse)
 
@@ -129,7 +128,7 @@ class NonceRestClientTest {
                             byteArrayOf(),
                             false,
                             System.currentTimeMillis(),
-                            listOf(Header("Location", redirectUrl))
+                            listOf(com.android.volley.Header("Location", redirectUrl))
                         )
                     )
                 ),
@@ -138,7 +137,7 @@ class NonceRestClientTest {
         )
 
         val invalidNonce = "0"
-        val response = WPAPIResponse.Success(invalidNonce)
+        val response = WPAPIResponse.Success(invalidNonce, emptyList())
         givenLoginResponse(redirectResponse)
         whenever(wpApiEncodedRequestBuilder.syncGetRequest(subject, redirectUrl))
             .thenReturn(response)
@@ -211,7 +210,7 @@ class NonceRestClientTest {
                         byteArrayOf(),
                         false,
                         System.currentTimeMillis(),
-                        listOf(Header("Location", nonceRequestUrl))
+                        listOf(com.android.volley.Header("Location", nonceRequestUrl))
                     )
                 )
             ),

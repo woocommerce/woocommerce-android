@@ -33,7 +33,8 @@
 /products/tags/<id>/
 /products/tags/batch/
 
-
+/catalog/
+/catalog/status/<id>#String/
 
 /product-add-ons/
 

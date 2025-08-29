@@ -40,7 +40,7 @@ class ProductsStoreTest {
 
     @Test
     fun fetchProductsAction() = test {
-        initRestClient(data = Success(ProductsResponse(listOf(Product()))))
+        initRestClient(data = Success(ProductsResponse(listOf(Product())), emptyList()))
 
         productsStore.onAction(Action(ProductAction.FETCH_PRODUCTS, null))
 
@@ -49,7 +49,7 @@ class ProductsStoreTest {
 
     @Test
     fun fetchProductsSuccess() = test {
-        initRestClient(data = Success(ProductsResponse(listOf(Product()))))
+        initRestClient(data = Success(ProductsResponse(listOf(Product())), emptyList()))
 
         val response = productsStore.fetchProducts()
 

@@ -4,6 +4,7 @@ import com.android.volley.RetryPolicy
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.Header
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComErrorListener
@@ -31,7 +32,7 @@ class JetpackTunnelGsonRequestBuilder @Inject constructor() {
         url: String,
         params: Map<String, String>,
         clazz: Class<T>,
-        listener: (T?) -> Unit,
+        listener: (T?, List<Header>) -> Unit,
         errorListener: WPComErrorListener,
         jpTimeoutListener: ((WPComGsonRequest<*>) -> Unit)?
     ): WPComGsonRequest<JetpackTunnelResponse<T>>? {
@@ -70,7 +71,7 @@ class JetpackTunnelGsonRequestBuilder @Inject constructor() {
             site.siteId,
             params,
             clazz,
-            listener = { cont.resume(JetpackSuccess(it)) },
+            listener = { data, headers -> cont.resume(JetpackSuccess(data, headers)) },
             errorListener = { cont.resume(JetpackError(it)) },
             jpTimeoutListener = { request: WPComGsonRequest<*> -> restClient.add(request) }
         )
@@ -104,7 +105,7 @@ class JetpackTunnelGsonRequestBuilder @Inject constructor() {
         url: String,
         body: Map<String, Any>,
         clazz: Class<T>,
-        listener: (T?) -> Unit,
+        listener: (T?, List<Header>) -> Unit,
         errorListener: WPComErrorListener
     ): WPComGsonRequest<JetpackTunnelResponse<T>>? {
         return JetpackTunnelGsonRequest.buildPostRequest(
@@ -135,7 +136,7 @@ class JetpackTunnelGsonRequestBuilder @Inject constructor() {
             url,
             site.siteId, body,
             clazz,
-            listener = { cont.resume(JetpackSuccess(it)) },
+            listener = { data, headers -> cont.resume(JetpackSuccess(data, headers)) },
             errorListener = { cont.resume(JetpackError(it)) }
         )
         cont.invokeOnCancellation {
@@ -160,8 +161,9 @@ class JetpackTunnelGsonRequestBuilder @Inject constructor() {
         body: Map<String, Any>,
         clazz: Class<T>
     ) = suspendCancellableCoroutine<JetpackResponse<T>> { cont ->
-        val request = JetpackTunnelGsonRequest.buildPutRequest<T>(url, site.siteId, body, clazz,
-            listener = { cont.resume(JetpackSuccess(it)) },
+        val request = JetpackTunnelGsonRequest.buildPutRequest<T>(
+            url, site.siteId, body, clazz,
+            listener = { data, headers -> cont.resume(JetpackSuccess(data, headers)) },
             errorListener = { cont.resume(JetpackError(it)) }
         )
         cont.invokeOnCancellation {
@@ -190,7 +192,7 @@ class JetpackTunnelGsonRequestBuilder @Inject constructor() {
             site.siteId,
             params,
             clazz,
-            listener = { cont.resume(JetpackSuccess(it)) },
+            listener = { data, headers -> cont.resume(JetpackSuccess(data, headers)) },
             errorListener = { cont.resume(JetpackError(it)) }
         )
         cont.invokeOnCancellation {
@@ -200,7 +202,7 @@ class JetpackTunnelGsonRequestBuilder @Inject constructor() {
     }
 
     sealed class JetpackResponse<T> {
-        data class JetpackSuccess<T>(val data: T?) : JetpackResponse<T>()
+        data class JetpackSuccess<T>(val data: T?, val headers: List<Header>) : JetpackResponse<T>()
         data class JetpackError<T>(val error: WPComGsonNetworkError) : JetpackResponse<T>()
     }
 }

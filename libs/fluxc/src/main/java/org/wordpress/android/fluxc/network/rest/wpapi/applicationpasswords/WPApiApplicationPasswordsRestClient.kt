@@ -152,7 +152,7 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
         @Suppress("UNCHECKED_CAST")
         return when (response) {
             is WPAPIResponse.Success -> response.data?.let {
-                WPAPIResponse.Success(it.uuid)
+                WPAPIResponse.Success(it.uuid, response.headers)
             } ?: WPAPIResponse.Error(
                 WPAPINetworkError(
                     BaseNetworkError(
@@ -212,7 +212,7 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
                 emptyMap(),
                 T::class.java,
                 /* listener = */
-                { continuation.resume(WPAPIResponse.Success(it)) },
+                { responseData, headers -> continuation.resume(WPAPIResponse.Success(responseData, headers)) },
                 /* errorListener = */
                 { continuation.resume(WPAPIResponse.Error(it)) }
             )

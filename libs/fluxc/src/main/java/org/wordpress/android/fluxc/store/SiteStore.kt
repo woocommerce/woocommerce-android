@@ -1788,7 +1788,7 @@ open class SiteStore @Inject constructor(
             when (val response =
                 siteRestClient.fetchDomainPrice(domainName)) {
                 is Success -> {
-                    WPAPIResponse.Success(response.data)
+                    WPAPIResponse.Success(response.data, response.headers)
                 }
                 is Error -> {
                     WPAPIResponse.Error(WPAPINetworkError(response.error))

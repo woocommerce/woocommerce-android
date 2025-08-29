@@ -4,6 +4,7 @@ import com.android.volley.RetryPolicy
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.Header
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Error
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
@@ -27,7 +28,7 @@ class WPComGsonRequestBuilder
         url: String,
         params: Map<String, String>,
         clazz: Class<T>,
-        listener: (T) -> Unit,
+        listener: (T, List<Header>) -> Unit,
         errorListener: (WPComGsonNetworkError) -> Unit,
         customGsonBuilder: GsonBuilder? = null
     ): WPComGsonRequest<T> {
@@ -52,8 +53,8 @@ class WPComGsonRequestBuilder
         customGsonBuilder: GsonBuilder? = null,
         authenticatedRequest: Boolean = true
     ) = suspendCancellableCoroutine<Response<T>> { cont ->
-        val request = WPComGsonRequest.buildGetRequest(url, params, clazz, {
-            cont.resume(Success(it))
+        val request = WPComGsonRequest.buildGetRequest(url, params, clazz, { responseData, headers ->
+            cont.resume(Success(responseData, headers))
         }, {
             cont.resume(Error(it))
         }, customGsonBuilder)
@@ -83,7 +84,7 @@ class WPComGsonRequestBuilder
         url: String,
         params: Map<String, String>,
         type: Type,
-        listener: (T) -> Unit,
+        listener: (T, List<Header>) -> Unit,
         errorListener: (WPComGsonNetworkError) -> Unit,
         customGsonBuilder: GsonBuilder? = null
     ): WPComGsonRequest<T> {
@@ -107,8 +108,8 @@ class WPComGsonRequestBuilder
         forced: Boolean = false,
         authenticatedRequest: Boolean = true
     ) = suspendCancellableCoroutine<Response<T>> { cont ->
-        val request = WPComGsonRequest.buildGetRequest<T>(url, params, type, {
-            cont.resume(Success(it))
+        val request = WPComGsonRequest.buildGetRequest<T>(url, params, type, { responseData, headers ->
+            cont.resume(Success(responseData, headers))
         }, {
             cont.resume(Error(it))
         })
@@ -138,7 +139,7 @@ class WPComGsonRequestBuilder
         url: String,
         body: Map<String, Any>,
         clazz: Class<T>,
-        listener: (T) -> Unit,
+        listener: (T, List<Header>) -> Unit,
         errorListener: (WPComGsonNetworkError) -> Unit
     ): WPComGsonRequest<T> {
         return WPComGsonRequest.buildPostRequest(url, body, clazz, listener, errorListener)
@@ -162,8 +163,8 @@ class WPComGsonRequestBuilder
         retryPolicy: RetryPolicy? = null,
         headers: Map<String, String> = emptyMap()
     ) = suspendCancellableCoroutine<Response<T>> { cont ->
-        val request = WPComGsonRequest.buildPostRequest(url, params, body, clazz, {
-            cont.resume(Success(it))
+        val request = WPComGsonRequest.buildPostRequest(url, params, body, clazz, { responseData, headers ->
+            cont.resume(Success(responseData, headers))
         }, {
             cont.resume(Error(it))
         }).also { request ->
@@ -177,7 +178,7 @@ class WPComGsonRequestBuilder
     }
 
     sealed class Response<T> {
-        data class Success<T>(val data: T) : Response<T>()
+        data class Success<T>(val data: T, val headers: List<Header>) : Response<T>()
         data class Error<T>(val error: WPComGsonNetworkError) : Response<T>()
     }
 }

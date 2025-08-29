@@ -127,7 +127,7 @@ class BlazeCampaignsRestClientTest {
         val response = if (error != null) {
             Response.Error(error)
         } else {
-            Response.Success(nonNullData)
+            Response.Success(nonNullData, emptyList())
         }
 
         whenever(
