@@ -8,7 +8,6 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.util.AppLog
@@ -30,7 +29,6 @@ class WooNetwork @Inject constructor(
     private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration,
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
-    private val applicationPasswordsStore: ApplicationPasswordsStore,
     private val siteSqlUtils: SiteSqlUtils
 ) : WPAPINetwork {
     override suspend fun <T : Any> executeGetGsonRequest(
@@ -138,8 +136,6 @@ class WooNetwork @Inject constructor(
             )
         }
 
-        val hasAppPassword = applicationPasswordsStore.hasCredentials(site)
-
         return when (val appPasswordsResponse = applicationPasswordsNetwork.request()) {
             is WPAPIResponse.Success<*> -> {
                 AppLog.v(
@@ -147,17 +143,14 @@ class WooNetwork @Inject constructor(
                     "Request successful for site: ${site.url}, using Application Passwords"
                 )
                 (appPasswordsResponse as WPAPIResponse<T>).copyWith(
-                    // When creating a new Application Password, we don't want to track this request, as its duration
-                    // is not relevant to our experiment.
-                    // So we track only requests where we already have a password saved.
-                    networkingMode = if (hasAppPassword) WPAPINetworkingMode.ApplicationPasswordsWithJetpack else null
+                    networkingMode = WPAPINetworkingMode.ApplicationPasswordsWithJetpack
                 )
             }
 
             is WPAPIResponse.Error<*> -> {
                 AppLog.w(
                     AppLog.T.API,
-                    "Request failed for site: ${site.url} using Application Passwords, falling back to Jetpack Tunnel"
+                    "Request to $ using Application Passwords, falling back to Jetpack Tunnel"
                 )
                 if (appPasswordsResponse.error.errorCode ==
                     ApplicationPasswordsNetwork.APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE
