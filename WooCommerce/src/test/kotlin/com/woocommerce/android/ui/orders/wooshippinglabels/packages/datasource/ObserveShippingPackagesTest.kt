@@ -85,9 +85,9 @@ class ObserveShippingPackagesTest : BaseUnitTest() {
         whenever(packageRepository.observeShippingPackages(site)).thenReturn(flowOf(null))
         whenever(fetchShippingPackages()).thenReturn(Result.failure(error))
 
-        val result = observeShippingPackages().toList()
+        val result = observeShippingPackages().first()
 
-        assertTrue(result.first() == PackagesState.Error(error.message!!))
+        assertThat(result).isEqualTo(PackagesState.Error(error.message!!))
     }
 
     @Test
