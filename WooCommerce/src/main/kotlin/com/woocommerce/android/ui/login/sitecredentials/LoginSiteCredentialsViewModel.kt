@@ -37,8 +37,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
@@ -55,7 +55,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
-    @ApplicationPasswordsClientId private val applicationPasswordsClientId: String
+    private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -82,7 +82,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private val SiteModel?.fullAuthorizationUrl: String?
         get() = this?.applicationPasswordsAuthorizeUrl
-            ?.let { url -> "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL" }
+            ?.let { url ->
+                "$url?app_name=${applicationPasswordsConfiguration.applicationName}&success_url=$REDIRECTION_URL"
+            }
 
     val viewState = combine(
         flowOf(siteAddress.removeSchemeAndSuffix()),
