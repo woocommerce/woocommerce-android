@@ -504,7 +504,7 @@ class WCOrderStore @Inject internal constructor(
      * Returns the notes belonging to supplied [OrderEntity] as a list of [OrderNoteEntity].
      */
     suspend fun getOrderNotesForOrder(site: SiteModel, orderId: Long): List<OrderNoteEntity> =
-            orderNotesDao.queryNotesOfOrder(localSiteId = site.localId(), orderId = RemoteId(orderId))
+        orderNotesDao.queryNotesOfOrder(localSiteId = site.localId(), orderId = RemoteId(orderId))
 
     /**
      * Returns the order status options available for the provided site [SiteModel] as a list of [WCOrderStatusModel].
@@ -539,6 +539,7 @@ class WCOrderStore @Inject internal constructor(
             WCOrderAction.FETCH_ORDERS_COUNT -> fetchOrdersCount(action.payload as FetchOrdersCountPayload)
             WCOrderAction.UPDATE_ORDER_STATUS ->
                 throw IllegalStateException("Invalid action. Use suspendable updateOrderStatus(..) directly")
+
             WCOrderAction.SEARCH_ORDERS -> searchOrders(action.payload as SearchOrdersPayload)
             WCOrderAction.FETCH_ORDER_STATUS_OPTIONS ->
                 fetchOrderStatusOptions(action.payload as FetchOrderStatusOptionsPayload)
@@ -547,10 +548,13 @@ class WCOrderStore @Inject internal constructor(
             WCOrderAction.FETCHED_ORDERS -> handleFetchOrdersCompleted(action.payload as FetchOrdersResponsePayload)
             WCOrderAction.FETCHED_ORDER_LIST ->
                 handleFetchOrderListCompleted(action.payload as FetchOrderListResponsePayload)
+
             WCOrderAction.FETCHED_ORDERS_BY_IDS ->
                 handleFetchOrderByIdsCompleted(action.payload as FetchOrdersByIdsResponsePayload)
+
             WCOrderAction.FETCHED_ORDERS_COUNT ->
                 handleFetchOrdersCountCompleted(action.payload as FetchOrdersCountResponsePayload)
+
             WCOrderAction.SEARCHED_ORDERS -> handleSearchOrdersCompleted(action.payload as SearchOrdersResponsePayload)
             WCOrderAction.FETCHED_ORDER_STATUS_OPTIONS ->
                 handleFetchOrderStatusOptionsCompleted(action.payload as FetchOrderStatusOptionsResponsePayload)
@@ -569,8 +573,7 @@ class WCOrderStore @Inject internal constructor(
     private fun fetchOrderList(payload: FetchOrderListPayload) {
         wcOrderRestClient.fetchOrderListSummaries(
             listDescriptor = payload.listDescriptor,
-            offset = payload.offset,
-            useAppPasswordsForJetpackSites = payload.useAppPasswordsForJetpackSites
+            offset = payload.offset
         )
     }
 
@@ -592,7 +595,7 @@ class WCOrderStore @Inject internal constructor(
         return coroutineEngine.withDefaultContext(API, this, "checkIfHasOrders") {
             val result = wcOrderRestClient.fetchOrderCountSync(site, filterByStatus)
             return@withDefaultContext if (result.isError) {
-                 OrdersCountResult.Failure(result.error)
+                OrdersCountResult.Failure(result.error)
             } else {
                 OrdersCountResult.Success(result.count)
             }
@@ -972,7 +975,9 @@ class WCOrderStore @Inject internal constructor(
             )
         )
 
-        mDispatcher.dispatch(ListActionBuilder.newFetchedListItemsAction(FetchedListItemsPayload(
+        mDispatcher.dispatch(
+            ListActionBuilder.newFetchedListItemsAction(
+            FetchedListItemsPayload(
             listDescriptor = payload.listDescriptor,
             remoteItemIds = payload.orderSummaries.map { it.orderId.value },
             loadedMore = payload.loadedMore,
@@ -1054,12 +1059,12 @@ class WCOrderStore @Inject internal constructor(
 
                 mDispatcher.dispatch(
                     ListActionBuilder.newListDataFailureAction(
-                            OnListDataFailure(listTypeIdentifier).apply {
-                                error = ListError(
-                                    errorType,
-                                    payload.error.message
-                                )
-                            }
+                        OnListDataFailure(listTypeIdentifier).apply {
+                            error = ListError(
+                                errorType,
+                                payload.error.message
+                            )
+                        }
                     )
                 )
             }

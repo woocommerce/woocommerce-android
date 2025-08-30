@@ -16,7 +16,6 @@ import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooExperimentalNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
@@ -24,7 +23,6 @@ import org.wordpress.android.fluxc.utils.initCoroutineEngine
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderRestClientTest {
     private val wooNetwork: WooNetwork = mock()
-    private val wooExperimentalNetwork: WooExperimentalNetwork = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderDtoMapper: OrderDtoMapper = mock()
     private val coroutineEngine: CoroutineEngine = initCoroutineEngine()
@@ -38,7 +36,6 @@ class OrderRestClientTest {
             dispatcher = dispatcher,
             orderDtoMapper = orderDtoMapper,
             wooNetwork = wooNetwork,
-            wooExperimentalNetwork = wooExperimentalNetwork,
             coroutineEngine = coroutineEngine
         )
     }
@@ -75,7 +72,7 @@ class OrderRestClientTest {
         )
 
         // When
-        orderRestClient.fetchOrderListSummaries(listDescriptor, 0, false)
+        orderRestClient.fetchOrderListSummaries(listDescriptor, 0)
 
         // Then
         val paramsCaptor = argumentCaptor<Map<String, String>>()
@@ -119,7 +116,7 @@ class OrderRestClientTest {
         )
 
         // When
-        orderRestClient.fetchOrderListSummaries(listDescriptor, 0, false)
+        orderRestClient.fetchOrderListSummaries(listDescriptor, 0)
 
         // Then
         val paramsCaptor = argumentCaptor<Map<String, String>>()
@@ -163,7 +160,7 @@ class OrderRestClientTest {
         )
 
         // When
-        orderRestClient.fetchOrderListSummaries(listDescriptor, 0, false)
+        orderRestClient.fetchOrderListSummaries(listDescriptor, 0)
 
         // Then
         val paramsCaptor = argumentCaptor<Map<String, String>>()
