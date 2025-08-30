@@ -1,6 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
 interface ApplicationPasswordsConfiguration {
-    val isEnabled: Boolean
+    val isEnabledForSiteCredentials: Boolean
     val applicationName: String
 }
