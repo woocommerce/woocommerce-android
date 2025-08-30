@@ -195,8 +195,7 @@ class OrderListItemDataSource @Inject constructor(
     override fun fetchList(listDescriptor: WCOrderListDescriptor, offset: Long) {
         val fetchOrderListPayload = FetchOrderListPayload(
             listDescriptor = listDescriptor,
-            offset = offset,
-            useAppPasswordsForJetpackSites = remoteConfigRepository.isJetpackAppPasswordsExperimentEnabled()
+            offset = offset
         )
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderListAction(fetchOrderListPayload))
     }

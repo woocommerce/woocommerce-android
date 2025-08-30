@@ -84,8 +84,7 @@ class WCOrderStore @Inject internal constructor(
 
     class FetchOrderListPayload(
         val listDescriptor: WCOrderListDescriptor,
-        val offset: Long,
-        val useAppPasswordsForJetpackSites: Boolean
+        val offset: Long
     ) : Payload<BaseNetworkError>()
 
     class FetchOrdersByIdsPayload(
