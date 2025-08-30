@@ -6,6 +6,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
@@ -17,13 +18,16 @@ import javax.inject.Singleton
 /**
  * The Woo app supports connecting to sites using either Jetpack or the site credentials (technically application
  * passwords). This class allows this by supporting multiple networking implementations depending on the type of site:
- * - Jetpack Sites: the API call will use Jetpack Tunnel using [JetpackTunnelWPAPINetwork]
+ * - Jetpack Sites:
+ *     - When enabled and if the site supports it, the API call will use [ApplicationPasswordsNetwork]
+ *     - Otherwise, it will use [JetpackTunnelWPAPINetwork]
  * - Non-Jetpack Sites: the API call will use Application Passwords using [ApplicationPasswordsNetwork]
  *
  * The [SiteModel.ORIGIN_XMLRPC] support is kept for backward compatibility
  */
 @Singleton
 class WooNetwork @Inject constructor(
+    private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration,
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
     private val applicationPasswordsStore: ApplicationPasswordsStore,
@@ -122,11 +126,13 @@ class WooNetwork @Inject constructor(
         site: SiteModel,
         request: suspend WPAPINetwork.() -> WPAPIResponse<T>
     ): WPAPIResponse<T> {
-        if (!site.isApplicationPasswordsSupported) {
-            AppLog.v(
-                AppLog.T.API,
-                "Application Passwords not supported for site: ${site.url}, use Jetpack Tunnel"
-            )
+        if (!applicationPasswordsConfiguration.isEnabledForJetpack || !site.isApplicationPasswordsSupported) {
+            if (applicationPasswordsConfiguration.isEnabledForJetpack) {
+                AppLog.v(
+                    AppLog.T.API,
+                    "Application Passwords not supported for site: ${site.url}, use Jetpack Tunnel"
+                )
+            }
             return jetpackTunnelWPAPINetwork.request().copyWith(
                 networkingMode = WPAPINetworkingMode.JetpackTunnel()
             )
