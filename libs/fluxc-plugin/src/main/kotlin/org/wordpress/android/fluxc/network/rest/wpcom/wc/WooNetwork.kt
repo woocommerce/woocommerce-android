@@ -1,10 +1,16 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
+import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,8 +24,10 @@ import javax.inject.Singleton
  */
 @Singleton
 class WooNetwork @Inject constructor(
+    private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
-    private val applicationPasswordsNetwork: ApplicationPasswordsNetwork
+    private val applicationPasswordsStore: ApplicationPasswordsStore,
+    private val siteSqlUtils: SiteSqlUtils
 ) : WPAPINetwork {
     override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
@@ -31,8 +39,8 @@ class WooNetwork @Inject constructor(
         forced: Boolean,
         requestTimeout: Int,
         retries: Int
-    ): WPAPIResponse<T> = site.getDelegate()
-        .executeGetGsonRequest(
+    ): WPAPIResponse<T> = handleRequest(site) {
+        executeGetGsonRequest(
             site = site,
             path = path,
             clazz = clazz,
@@ -43,49 +51,132 @@ class WooNetwork @Inject constructor(
             requestTimeout = requestTimeout,
             retries = retries
         )
+    }
 
     override suspend fun <T : Any> executePostGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
         body: Map<String, Any>
-    ): WPAPIResponse<T> = site.getDelegate()
-        .executePostGsonRequest(
+    ): WPAPIResponse<T> = handleRequest(site) {
+        executePostGsonRequest(
             site = site,
             path = path,
             clazz = clazz,
             body = body
         )
+    }
 
     override suspend fun <T : Any> executePutGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
         body: Map<String, Any>
-    ): WPAPIResponse<T> = site.getDelegate()
-        .executePutGsonRequest(
+    ): WPAPIResponse<T> = handleRequest(site) {
+        executePutGsonRequest(
             site = site,
             path = path,
             clazz = clazz,
             body = body
         )
+    }
 
     override suspend fun <T : Any> executeDeleteGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
         params: Map<String, String>
-    ): WPAPIResponse<T> = site.getDelegate()
-        .executeDeleteGsonRequest(
+    ): WPAPIResponse<T> = handleRequest(site) {
+        executeDeleteGsonRequest(
             site = site,
             path = path,
             clazz = clazz,
             params = params
         )
+    }
 
-    private fun SiteModel.getDelegate() = when (origin) {
-        SiteModel.ORIGIN_WPCOM_REST -> jetpackTunnelWPAPINetwork
-        SiteModel.ORIGIN_XMLRPC, SiteModel.ORIGIN_WPAPI -> applicationPasswordsNetwork
-        else -> error("Site with unsupported origin")
+    private suspend fun <T : Any> handleRequest(
+        site: SiteModel,
+        request: suspend WPAPINetwork.() -> WPAPIResponse<T>
+    ): WPAPIResponse<T> {
+        return when (site.origin) {
+            SiteModel.ORIGIN_WPAPI, SiteModel.ORIGIN_XMLRPC -> {
+                applicationPasswordsNetwork.request().copyWith(
+                    networkingMode = WPAPINetworkingMode.ApplicationPasswords
+                )
+            }
+
+            SiteModel.ORIGIN_WPCOM_REST -> {
+                handleRequestForJetpackSites(site) {
+                    request()
+                }
+            }
+
+            else -> {
+                throw IllegalArgumentException("Unsupported site origin: ${site.origin}")
+            }
+        }
+    }
+
+    private suspend fun <T : Any> handleRequestForJetpackSites(
+        site: SiteModel,
+        request: suspend WPAPINetwork.() -> WPAPIResponse<T>
+    ): WPAPIResponse<T> {
+        if (!site.isApplicationPasswordsSupported) {
+            AppLog.v(
+                AppLog.T.API,
+                "Application Passwords not supported for site: ${site.url}, use Jetpack Tunnel"
+            )
+            return jetpackTunnelWPAPINetwork.request().copyWith(
+                networkingMode = WPAPINetworkingMode.JetpackTunnel()
+            )
+        }
+
+        val hasAppPassword = applicationPasswordsStore.hasCredentials(site)
+
+        return when (val appPasswordsResponse = applicationPasswordsNetwork.request()) {
+            is WPAPIResponse.Success<*> -> {
+                AppLog.v(
+                    AppLog.T.API,
+                    "Request successful for site: ${site.url}, using Application Passwords"
+                )
+                (appPasswordsResponse as WPAPIResponse<T>).copyWith(
+                    // When creating a new Application Password, we don't want to track this request, as its duration
+                    // is not relevant to our experiment.
+                    // So we track only requests where we already have a password saved.
+                    networkingMode = if (hasAppPassword) WPAPINetworkingMode.ApplicationPasswordsWithJetpack else null
+                )
+            }
+
+            is WPAPIResponse.Error<*> -> {
+                AppLog.w(
+                    AppLog.T.API,
+                    "Request failed for site: ${site.url} using Application Passwords, falling back to Jetpack Tunnel"
+                )
+                if (appPasswordsResponse.error.errorCode ==
+                    ApplicationPasswordsNetwork.APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE
+                ) {
+                    withContext(Dispatchers.IO) {
+                        site.applicationPasswordsAuthorizeUrl = null
+                        siteSqlUtils.insertOrUpdateSite(site)
+                    }
+                }
+                jetpackTunnelWPAPINetwork.request().copyWith(
+                    networkingMode = WPAPINetworkingMode.JetpackTunnel(
+                        isFallback = true,
+                        applicationPasswordsError = appPasswordsResponse.error
+                    )
+                )
+            }
+        }
+    }
+
+    private fun <T : Any> WPAPIResponse<T>.copyWith(
+        networkingMode: WPAPINetworkingMode?
+    ): WPAPIResponse<T> {
+        return when (this) {
+            is WPAPIResponse.Success -> this.copy(networkingMode = networkingMode)
+            is WPAPIResponse.Error -> this.copy(networkingMode = networkingMode)
+        }
     }
 }
