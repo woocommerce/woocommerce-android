@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
@@ -41,7 +42,7 @@ class WooNetwork @Inject constructor(
         forced: Boolean,
         requestTimeout: Int,
         retries: Int
-    ): WPAPIResponse<T> = handleRequest(site) {
+    ): WPAPIResponse<T> = handleRequest(site, RequestContext(path, "GET")) {
         executeGetGsonRequest(
             site = site,
             path = path,
@@ -60,7 +61,7 @@ class WooNetwork @Inject constructor(
         path: String,
         clazz: Class<T>,
         body: Map<String, Any>
-    ): WPAPIResponse<T> = handleRequest(site) {
+    ): WPAPIResponse<T> = handleRequest(site, RequestContext(path, "POST")) {
         executePostGsonRequest(
             site = site,
             path = path,
@@ -74,7 +75,7 @@ class WooNetwork @Inject constructor(
         path: String,
         clazz: Class<T>,
         body: Map<String, Any>
-    ): WPAPIResponse<T> = handleRequest(site) {
+    ): WPAPIResponse<T> = handleRequest(site, RequestContext(path, "PUT")) {
         executePutGsonRequest(
             site = site,
             path = path,
@@ -88,7 +89,7 @@ class WooNetwork @Inject constructor(
         path: String,
         clazz: Class<T>,
         params: Map<String, String>
-    ): WPAPIResponse<T> = handleRequest(site) {
+    ): WPAPIResponse<T> = handleRequest(site, RequestContext(path, "DELETE")) {
         executeDeleteGsonRequest(
             site = site,
             path = path,
@@ -99,6 +100,7 @@ class WooNetwork @Inject constructor(
 
     private suspend fun <T : Any> handleRequest(
         site: SiteModel,
+        requestContext: RequestContext,
         request: suspend WPAPINetwork.() -> WPAPIResponse<T>
     ): WPAPIResponse<T> {
         return when (site.origin) {
@@ -109,7 +111,7 @@ class WooNetwork @Inject constructor(
             }
 
             SiteModel.ORIGIN_WPCOM_REST -> {
-                handleRequestForJetpackSites(site) {
+                handleRequestForJetpackSites(site, requestContext) {
                     request()
                 }
             }
@@ -122,6 +124,7 @@ class WooNetwork @Inject constructor(
 
     private suspend fun <T : Any> handleRequestForJetpackSites(
         site: SiteModel,
+        requestContext: RequestContext,
         request: suspend WPAPINetwork.() -> WPAPIResponse<T>
     ): WPAPIResponse<T> {
         if (!applicationPasswordsConfiguration.isEnabledForJetpack || !site.isApplicationPasswordsSupported) {
@@ -138,20 +141,14 @@ class WooNetwork @Inject constructor(
 
         return when (val appPasswordsResponse = applicationPasswordsNetwork.request()) {
             is WPAPIResponse.Success<*> -> {
-                AppLog.v(
-                    AppLog.T.API,
-                    "Request successful for site: ${site.url}, using Application Passwords"
-                )
                 (appPasswordsResponse as WPAPIResponse<T>).copyWith(
                     networkingMode = WPAPINetworkingMode.ApplicationPasswordsWithJetpack
                 )
             }
 
             is WPAPIResponse.Error<*> -> {
-                AppLog.w(
-                    AppLog.T.API,
-                    "Request to $ using Application Passwords, falling back to Jetpack Tunnel"
-                )
+                logMessageForFailedRequest(requestContext, site.url, appPasswordsResponse.error)
+
                 if (appPasswordsResponse.error.errorCode ==
                     ApplicationPasswordsNetwork.APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE
                 ) {
@@ -178,4 +175,21 @@ class WooNetwork @Inject constructor(
             is WPAPIResponse.Error -> this.copy(networkingMode = networkingMode)
         }
     }
+
+    private fun logMessageForFailedRequest(requestContext: RequestContext, siteUrl: String, error: WPAPINetworkError) {
+        AppLog.w(
+            AppLog.T.API,
+            "Request failed using Application Passwords for Jetpack Site,\n" +
+                "site: ${siteUrl},\n" +
+                "path: ${requestContext.path},\n" +
+                "method: ${requestContext.method},\n" +
+                "error: HTTP status code ${error.volleyError.networkResponse?.statusCode}, " +
+                "error message: ${error.errorCode?.ifEmpty { null } ?: error.message}",
+        )
+    }
+
+    private data class RequestContext(
+        val path: String,
+        val method: String
+    )
 }

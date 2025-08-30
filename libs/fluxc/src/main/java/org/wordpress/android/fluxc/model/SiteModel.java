@@ -1090,7 +1090,7 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
 
     public boolean isApplicationPasswordsSupported() {
         return mApplicationPasswordsAuthorizeUrl != null &&
-!mApplicationPasswordsAuthorizeUrl.isEmpty();
+                !mApplicationPasswordsAuthorizeUrl.isEmpty();
     }
 
     public int getPublishedStatus() {
