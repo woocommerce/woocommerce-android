@@ -184,7 +184,7 @@ class WooNetwork @Inject constructor(
                 "site: ${siteUrl},\n" +
                 "path: ${requestContext.path},\n" +
                 "method: ${requestContext.method},\n" +
-                "error: HTTP status code ${error.volleyError.networkResponse?.statusCode}, " +
+                "error: HTTP status code ${error.volleyError?.networkResponse?.statusCode}, " +
                 "error message: ${error.errorCode?.ifEmpty { null } ?: error.message}",
         )
     }
