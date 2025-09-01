@@ -818,14 +818,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onShipmentSplit(newShipments: List<ShipmentUIModel>) {
-        shipments.value = newShipments
         if (selectedShipmentIndex >= newShipments.size) {
             uiState.update {
                 it.copy(selectedIndex = it.selectedIndex.coerceAtMost(newShipments.size - 1))
             }
-        } else {
-            resetWeight(selectedShipmentIndex)
         }
+        shipments.value = newShipments
+        resetWeight(selectedShipmentIndex)
     }
 
     fun onShippingLabelRefunded(labelId: Long) {
