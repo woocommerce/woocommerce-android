@@ -74,6 +74,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         modifiedAfterGmt: String?,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PAGE_SIZE,
+        storeInDb: Boolean = true
     ): Result<WooPosLocalCatalogSyncResult> =
         coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
@@ -106,17 +107,19 @@ class WooPosLocalCatalogStore @Inject constructor(
                     else -> {
                         val products = response.model.map { it.mapToPOSModel() }
 
-                        val upsertResult = runCatching {
-                            posProductDao.upsertProducts(products)
-                        }
+                        if (storeInDb) {
+                            val upsertResult = runCatching {
+                                posProductDao.upsertProducts(products)
+                            }
 
-                        if (upsertResult.isFailure) {
-                            return@withDefaultContext Result.failure(
-                                WooPosLocalCatalogError.DatabaseError(
-                                    errorMessage = "Failed to save products to database",
-                                    throwable = upsertResult.exceptionOrNull()
+                            if (upsertResult.isFailure) {
+                                return@withDefaultContext Result.failure(
+                                    WooPosLocalCatalogError.DatabaseError(
+                                        errorMessage = "Failed to save products to database",
+                                        throwable = upsertResult.exceptionOrNull()
+                                    )
                                 )
-                            )
+                            }
                         }
 
                         val hasMore = products.size == validPageSize
