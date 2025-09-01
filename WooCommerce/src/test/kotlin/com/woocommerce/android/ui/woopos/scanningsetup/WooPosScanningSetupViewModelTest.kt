@@ -4,14 +4,9 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
-import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScannerDetectionServiceForTracking
-import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScannerSetupNavigator
-import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupAnalyticsTracker
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.Companion.TEST_BARCODE_EAN13
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
-import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupUiEvent
-import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupViewModel
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
