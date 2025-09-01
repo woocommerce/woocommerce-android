@@ -23,7 +23,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 
 @ExperimentalCoroutinesApi
 class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
-    private companion object Companion {
+    private companion object {
         const val ORDER_ID = 1L
 
         val testSite = SiteModel()

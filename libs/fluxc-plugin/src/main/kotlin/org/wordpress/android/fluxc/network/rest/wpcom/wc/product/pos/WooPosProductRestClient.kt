@@ -15,7 +15,7 @@ import javax.inject.Inject
 class WooPosProductRestClient @Inject constructor(
     private val wooNetwork: WooNetwork,
 ) {
-    companion object Companion {
+    companion object {
         private const val PRODUCT_FIELDS = "localSiteId,id,name,sku,global_unique_id,type,price,downloadable," +
             "images,attributes,parent_id,status,regular_price,sale_price,on_sale,description," +
             "short_description,manage_stock,stock_quantity,stock_status,backorders_allowed," +

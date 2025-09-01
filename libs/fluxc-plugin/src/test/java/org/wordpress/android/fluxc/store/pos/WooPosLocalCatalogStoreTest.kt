@@ -45,7 +45,7 @@ class WooPosLocalCatalogStoreTest {
 
     private lateinit var store: WooPosLocalCatalogStore
 
-    companion object Companion {
+    companion object {
         private val SITE_ID = LocalId(123)
         private val PRODUCT_ID = RemoteId(456)
         private val SITE = SiteModel().apply { id = 123 }

@@ -23,7 +23,7 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
     private val logger: WooPosLogWrapper,
 ) {
 
-    private companion object Companion {
+    private companion object {
         private const val ONE_TIME_WORK_NAME = "PosLocalCatalogSyncOneTime"
 
         const val REFRESH_INTERVAL_HOURS = 24L

@@ -20,7 +20,7 @@ class WooPosLocalCatalogSyncWorker @AssistedInject constructor(
     private val logger: WooPosLogWrapper,
 ) : CoroutineWorker(appContext, workerParams) {
 
-    companion object Companion {
+    companion object {
         const val WORK_NAME = "PosLocalCatalogSyncWork"
     }
 
