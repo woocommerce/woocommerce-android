@@ -49,7 +49,7 @@ class WooPosProductRestClient @Inject constructor(
 
         return when (response) {
             is WPAPIResponse.Success -> {
-                WooResult(response.data ?: emptyArray())
+                WooResult(response.data ?: emptyArray(), headers = response.headers)
             }
 
             is WPAPIResponse.Error -> {
