@@ -23,7 +23,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private var syncTimestampManager: WooPosSyncTimestampManager = mock()
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
-    private lateinit var logger: WooPosLogWrapper
+    private var logger: WooPosLogWrapper = mock()
 
     @Before
     fun setup() {
