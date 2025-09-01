@@ -91,8 +91,7 @@ class WooPosLocalCatalogStore @Inject constructor(
             val serverDate = headersParser.getServerDate(response)
 
             if (serverDate == null) {
-                return@withDefaultContext Result.failure(
-                    WooPosLocalCatalogError.InvalidResponse("Missing header in response, Server Date: $serverDate.")
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
                 )
             }
 
