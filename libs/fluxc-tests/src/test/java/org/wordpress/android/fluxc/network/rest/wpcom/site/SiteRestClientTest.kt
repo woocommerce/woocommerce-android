@@ -24,12 +24,15 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.NewSiteResponse.BlogDetails
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteWPComRestResponse.SitesResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.StatusType.ERROR
@@ -47,18 +50,36 @@ import kotlin.test.assertNotNull
 
 @RunWith(MockitoJUnitRunner::class)
 class SiteRestClientTest {
-    @Mock private lateinit var dispatcher: Dispatcher
-    @Mock private lateinit var wpComGsonRequestBuilder: WPComGsonRequestBuilder
-    @Mock private lateinit var site: SiteModel
-    @Mock private lateinit var requestQueue: RequestQueue
-    @Mock private lateinit var accessToken: AccessToken
-    @Mock private lateinit var userAgent: UserAgent
-    @Mock private lateinit var appSecrets: AppSecrets
+    @Mock
+    private lateinit var dispatcher: Dispatcher
+
+    @Mock
+    private lateinit var wpComGsonRequestBuilder: WPComGsonRequestBuilder
+
+    @Mock
+    private lateinit var jetpackTunnelGsonRequestBuilder: JetpackTunnelGsonRequestBuilder
+
+    @Mock
+    private lateinit var requestQueue: RequestQueue
+
+    @Mock
+    private lateinit var accessToken: AccessToken
+
+    @Mock
+    private lateinit var userAgent: UserAgent
+
+    @Mock
+    private lateinit var appSecrets: AppSecrets
     private lateinit var urlCaptor: KArgumentCaptor<String>
     private lateinit var paramsCaptor: KArgumentCaptor<Map<String, String>>
     private lateinit var bodyCaptor: KArgumentCaptor<Map<String, Any>>
     private lateinit var restClient: SiteRestClient
+
     private val siteId: Long = 12
+    private val site = SiteModel().apply {
+        siteId = this@SiteRestClientTest.siteId
+        setIsJetpackConnected(true)
+    }
 
     @Before
     fun setUp() {
@@ -71,11 +92,11 @@ class SiteRestClientTest {
             requestQueue = requestQueue,
             appSecrets = appSecrets,
             wpComGsonRequestBuilder = wpComGsonRequestBuilder,
+            jetpackTunnelGsonRequestBuilder = jetpackTunnelGsonRequestBuilder,
             coroutineEngine = initCoroutineEngine(),
             accessToken = accessToken,
             userAgent = userAgent
         )
-        whenever(site.siteId).thenReturn(siteId)
     }
 
     @Test
@@ -92,7 +113,7 @@ class SiteRestClientTest {
         assertThat(responseModel.name).isEqualTo(name)
         assertThat(responseModel.siteId).isEqualTo(siteId)
         assertThat(urlCaptor.lastValue)
-                .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/12")
+            .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/12")
         assertThat(paramsCaptor.lastValue).isEqualTo(mapOf("fields" to SiteRestClient.SITE_FIELDS))
     }
 
@@ -100,13 +121,13 @@ class SiteRestClientTest {
     fun `fetchSite returns error when API call fails`() = test {
         val errorMessage = "message"
         initSiteResponse(
-                error = WPComGsonNetworkError(
-                        BaseNetworkError(
-                                GenericErrorType.NETWORK_ERROR,
-                                errorMessage,
-                                VolleyError(errorMessage)
-                        )
+            error = WPComGsonNetworkError(
+                BaseNetworkError(
+                    GenericErrorType.NETWORK_ERROR,
+                    errorMessage,
+                    VolleyError(errorMessage)
                 )
+            )
         )
         val errorResponse = restClient.fetchSite(site)
 
@@ -135,9 +156,9 @@ class SiteRestClientTest {
         assertThat(responseModel.sites[0].siteId).isEqualTo(siteId)
 
         assertThat(urlCaptor.firstValue)
-                .isEqualTo("https://public-api.wordpress.com/rest/v1.2/me/sites/")
+            .isEqualTo("https://public-api.wordpress.com/rest/v1.2/me/sites/")
         assertThat(urlCaptor.lastValue)
-                .isEqualTo("https://public-api.wordpress.com/rest/v1.1/me/sites/features/")
+            .isEqualTo("https://public-api.wordpress.com/rest/v1.1/me/sites/features/")
         assertThat(paramsCaptor.firstValue).isEqualTo(
             mapOf(
                 "filters" to "wpcom",
@@ -182,6 +203,7 @@ class SiteRestClientTest {
         val sitesResponse = SitesResponse()
         sitesResponse.sites = listOf(response)
 
+        initRootEndpointResponse()
         initSitesResponse(data = sitesResponse)
         initSitesFeaturesResponse(data = SitesFeaturesRestResponse(features = emptyMap()))
 
@@ -194,13 +216,13 @@ class SiteRestClientTest {
     fun `fetchSites returns error when API call fails`() = test {
         val errorMessage = "message"
         initSitesResponse(
-                error = WPComGsonNetworkError(
-                        BaseNetworkError(
-                                GenericErrorType.NETWORK_ERROR,
-                                errorMessage,
-                                VolleyError(errorMessage)
-                        )
+            error = WPComGsonNetworkError(
+                BaseNetworkError(
+                    GenericErrorType.NETWORK_ERROR,
+                    errorMessage,
+                    VolleyError(errorMessage)
                 )
+            )
         )
         val errorResponse = restClient.fetchSites(listOf(), false)
 
@@ -248,23 +270,23 @@ class SiteRestClientTest {
         assertThat(result.dryRun).isEqualTo(dryRun)
 
         assertThat(urlCaptor.lastValue)
-                .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/new/")
+            .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/new/")
         assertThat(bodyCaptor.lastValue).isEqualTo(
-                mapOf(
-                        "blog_name" to siteName,
-                        "blog_title" to siteTitle,
-                        "lang_id" to language,
-                        "public" to "1",
-                        "validate" to "0",
-                        "find_available_url" to findAvailableUrl.toString(),
-                        "client_id" to appId,
-                        "client_secret" to appSecret,
-                        "options" to mapOf<String, Any>(
-                                "site_segment" to segmentId,
-                                "template" to siteDesign,
-                                "timezone_string" to timeZoneId,
-                        )
+            mapOf(
+                "blog_name" to siteName,
+                "blog_title" to siteTitle,
+                "lang_id" to language,
+                "public" to "1",
+                "validate" to "0",
+                "find_available_url" to findAvailableUrl.toString(),
+                "client_id" to appId,
+                "client_secret" to appSecret,
+                "options" to mapOf<String, Any>(
+                    "site_segment" to segmentId,
+                    "template" to siteDesign,
+                    "timezone_string" to timeZoneId,
                 )
+            )
         )
     }
 
@@ -421,19 +443,19 @@ class SiteRestClientTest {
         assertThat(result.dryRun).isEqualTo(dryRun)
 
         assertThat(urlCaptor.lastValue)
-                .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/new/")
+            .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/new/")
         assertThat(bodyCaptor.lastValue).isEqualTo(
-                mapOf(
-                        "blog_name" to siteName,
-                        "lang_id" to language,
-                        "public" to "-1",
-                        "validate" to "1",
-                        "client_id" to appId,
-                        "client_secret" to appSecret,
-                        "options" to mapOf<String, Any>(
-                            "timezone_string" to timeZoneId,
-                        )
+            mapOf(
+                "blog_name" to siteName,
+                "lang_id" to language,
+                "public" to "-1",
+                "validate" to "1",
+                "client_id" to appId,
+                "client_secret" to appSecret,
+                "options" to mapOf<String, Any>(
+                    "timezone_string" to timeZoneId,
                 )
+            )
         )
     }
 
@@ -449,6 +471,7 @@ class SiteRestClientTest {
 
         // then
         val body = bodyCaptor.lastValue
+
         @Suppress("UNCHECKED_CAST")
         val options = body["options"] as Map<String, String>
 
@@ -481,6 +504,7 @@ class SiteRestClientTest {
 
         // then
         val body = bodyCaptor.lastValue
+
         @Suppress("UNCHECKED_CAST")
         val options = body["options"] as Map<String, String>
 
@@ -581,6 +605,102 @@ class SiteRestClientTest {
         urlUtilsMock.close()
     }
 
+    @Test
+    fun `given a Jetpack site, when fetching site info, then fetch app passwords url from root endpoint`() = test {
+        initSiteResponse(
+            SiteWPComRestResponse().apply {
+                ID = siteId
+                URL = "site.com"
+                jetpack = true
+                jetpack_connection = true
+            }
+        )
+        val response = RootWPAPIRestResponse(
+            authentication = RootWPAPIRestResponse.Authentication(
+                applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
+                    endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
+                        authorization = "https://test.com/application-passwords"
+                    )
+                )
+            )
+        )
+
+        initRootEndpointResponse(response)
+
+        val result = restClient.fetchSite(site)
+
+        assertThat(result.applicationPasswordsAuthorizeUrl).isEqualTo(
+            response.authentication?.applicationPasswords?.endpoints?.authorization
+        )
+    }
+
+    @Test
+    fun `given a Jetpack CP site, when fetching site info, then use root endpoint`() = test {
+        val jetpackCPSite = SiteModel().apply {
+            setIsJetpackConnected(false)
+            setIsJetpackCPConnected(false)
+        }
+        val response = RootWPAPIRestResponse(
+            name = "Test site",
+            description = "Description",
+            authentication = RootWPAPIRestResponse.Authentication(
+                applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
+                    endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
+                        authorization = "https://test.com/application-passwords"
+                    )
+                )
+            )
+        )
+
+        initRootEndpointResponse(response)
+
+        val result = restClient.fetchSite(jetpackCPSite)
+
+        assertThat(result.name).isEqualTo(response.name)
+        assertThat(result.description).isEqualTo(response.description)
+        assertThat(result.applicationPasswordsAuthorizeUrl).isEqualTo(
+            response.authentication?.applicationPasswords?.endpoints?.authorization
+        )
+    }
+
+    @Test
+    fun `given Jetpack CP sites, when fetching sites, then use root endpoint for additional data`() = test {
+        val wpComSiteResponse = SiteWPComRestResponse()
+        wpComSiteResponse.ID = siteId
+        val name = "Test site"
+        wpComSiteResponse.name = name
+        wpComSiteResponse.URL = "site.com"
+        wpComSiteResponse.jetpack = false
+        wpComSiteResponse.jetpack_connection = true
+
+        val sitesResponse = SitesResponse()
+        sitesResponse.sites = listOf(wpComSiteResponse)
+        initSitesResponse(sitesResponse)
+
+        val rootResponse = RootWPAPIRestResponse(
+            name = "Updated name",
+            description = "Description",
+            authentication = RootWPAPIRestResponse.Authentication(
+                applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
+                    endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
+                        authorization = "https://test.com/application-passwords"
+                    )
+                )
+            )
+        )
+        initRootEndpointResponse(rootResponse)
+
+        val result = restClient.fetchSites(emptyList(), false)
+
+        assertThat(result.sites).hasSize(1)
+        val site = result.sites[0]
+        assertThat(site.name).isEqualTo(rootResponse.name)
+        assertThat(site.description).isEqualTo(rootResponse.description)
+        assertThat(site.applicationPasswordsAuthorizeUrl).isEqualTo(
+            rootResponse.authentication?.applicationPasswords?.endpoints?.authorization
+        )
+    }
+
     private suspend fun initSiteResponse(
         data: SiteWPComRestResponse? = null,
         error: WPComGsonNetworkError? = null
@@ -606,14 +726,45 @@ class SiteRestClientTest {
         data: SitesFeaturesRestResponse? = null,
         error: WPComGsonNetworkError? = null
     ): Response<SitesFeaturesRestResponse> {
-        return initGetResponse(SitesFeaturesRestResponse::class.java, data ?: mock(), error)
+        return initGetResponse(
+            clazz = SitesFeaturesRestResponse::class.java,
+            data = data ?: SitesFeaturesRestResponse(emptyMap()),
+            error = error
+        )
     }
 
     private suspend fun initAllDomainsResponse(
         data: AllDomainsResponse? = null,
         error: WPComGsonNetworkError? = null
     ): Response<AllDomainsResponse> {
-        return initGetResponse(AllDomainsResponse::class.java, data ?: mock(), error)
+        return initGetResponse(AllDomainsResponse::class.java, data ?: AllDomainsResponse(emptyList()), error)
+    }
+
+    private suspend fun initRootEndpointResponse(
+        data: RootWPAPIRestResponse = RootWPAPIRestResponse(),
+        error: WPComGsonNetworkError? = null
+    ): JetpackResponse<RootWPAPIRestResponse> {
+        val response = if (error != null) {
+            JetpackResponse.JetpackError(error)
+        } else {
+            JetpackResponse.JetpackSuccess(data, emptyList())
+        }
+
+        whenever(
+            jetpackTunnelGsonRequestBuilder.syncGetRequest(
+                restClient = eq(restClient),
+                site = any(),
+                url = eq("/"),
+                params = any(),
+                clazz = eq(RootWPAPIRestResponse::class.java),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                retryPolicy = anyOrNull()
+            )
+        ).thenReturn(response)
+
+        return response
     }
 
     private suspend fun <T> initGetResponse(
@@ -626,17 +777,17 @@ class SiteRestClientTest {
         }
         val response = if (error != null) Response.Error(error) else Success<T>(data!!, emptyList())
         whenever(
-                wpComGsonRequestBuilder.syncGetRequest(
-                        eq(restClient),
-                        urlCaptor.capture(),
-                        paramsCaptor.capture(),
-                        eq(clazz),
-                        any(),
-                        any(),
-                        any(),
-                        customGsonBuilder = anyOrNull(),
-                        authenticatedRequest = any()
-                )
+            wpComGsonRequestBuilder.syncGetRequest(
+                eq(restClient),
+                urlCaptor.capture(),
+                paramsCaptor.capture(),
+                eq(clazz),
+                any(),
+                any(),
+                any(),
+                customGsonBuilder = anyOrNull(),
+                authenticatedRequest = any()
+            )
         ).thenReturn(response)
         return response
     }
@@ -648,15 +799,15 @@ class SiteRestClientTest {
     ): Response<T> {
         val response = if (error != null) Response.Error(error) else Success(data, emptyList())
         whenever(
-                wpComGsonRequestBuilder.syncPostRequest(
-                        eq(restClient),
-                        urlCaptor.capture(),
-                        paramsCaptor.capture(),
-                        bodyCaptor.capture(),
-                        eq(clazz),
-                        anyOrNull(),
-                        anyOrNull(),
-                )
+            wpComGsonRequestBuilder.syncPostRequest(
+                eq(restClient),
+                urlCaptor.capture(),
+                paramsCaptor.capture(),
+                bodyCaptor.capture(),
+                eq(clazz),
+                anyOrNull(),
+                anyOrNull(),
+            )
         ).thenReturn(response)
         return response
     }

@@ -1304,7 +1304,7 @@ open class SiteStore @Inject constructor(
             OnSiteChanged(SiteErrorUtils.genericToSiteError(siteModel.error))
         } else {
             try {
-                OnSiteChanged(createOrUpdateSite(siteModel))
+                OnSiteChanged(createOrUpdateSite(siteModel, includesAppPasswordsUrl = true))
             } catch (e: DuplicateSiteException) {
                 OnSiteChanged(SiteError(DUPLICATE_SITE))
             }
@@ -1352,7 +1352,7 @@ open class SiteStore @Inject constructor(
         val updatedSites = mutableListOf<SiteModel>()
         for (site in sites.sites) {
             try {
-                val isUpdated = (createOrUpdateSite(site) == 1)
+                val isUpdated = (createOrUpdateSite(site, includesAppPasswordsUrl = false) == 1)
                 if (isUpdated) {
                     rowsAffected++
                     updatedSites.add(site)
@@ -1364,7 +1364,7 @@ open class SiteStore @Inject constructor(
         return UpdateSitesResult(rowsAffected, updatedSites, duplicateSiteFound)
     }
 
-    private fun createOrUpdateSite(site: SiteModel): Int {
+    private fun createOrUpdateSite(site: SiteModel, includesAppPasswordsUrl: Boolean): Int {
         val freshSiteFromDB = getSiteBySiteId(site.siteId)
         // Update the site with existing values from the DB that are not returned by the REST API
         if (freshSiteFromDB != null) {
@@ -1373,7 +1373,7 @@ open class SiteStore @Inject constructor(
             site.webEditor = freshSiteFromDB.webEditor
 
             // The WPCom REST API doesn't return info about the application passwords authorize URL.
-            if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
+            if (site.origin == SiteModel.ORIGIN_WPCOM_REST && !includesAppPasswordsUrl) {
                 site.applicationPasswordsAuthorizeUrl = freshSiteFromDB.applicationPasswordsAuthorizeUrl
             }
         }
