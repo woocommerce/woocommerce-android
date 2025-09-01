@@ -5,4 +5,5 @@ data class WooPosLocalCatalogSyncResult(
     val hasMore: Boolean,
     val nextOffset: Int,
     val totalPages: Int,
+    val serverDate: String,
 )

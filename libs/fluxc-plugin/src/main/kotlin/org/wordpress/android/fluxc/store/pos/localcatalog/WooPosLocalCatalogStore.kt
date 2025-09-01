@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.tools.CoroutineEngine
+import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog.T.API
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,6 +25,7 @@ class WooPosLocalCatalogStore @Inject constructor(
     private val coroutineEngine: CoroutineEngine,
     private val posProductDao: WooPosProductsDao,
     private val posVariationsDao: WooPosVariationsDao,
+    private val headersParser: HeadersParser,
 ) {
     companion object Companion {
         private const val DEFAULT_PAGE_SIZE = 100
@@ -86,53 +88,75 @@ class WooPosLocalCatalogStore @Inject constructor(
                 pageSize = validPageSize
             )
 
+            val serverDate = headersParser.getServerDate(response)
+
+            if (serverDate == null) {
+                return@withDefaultContext Result.failure(
+                    WooPosLocalCatalogError.InvalidResponse(
+                        "Missing required header in response, Server Date: $serverDate."
+                    )
+                )
+            }
+
             when {
-                    response.isError -> {
-                        Result.failure(
-                            mapResponseError(response.error)
+                response.isError -> {
+                    Result.failure(
+                        mapResponseError(response.error)
+                    )
+                }
+
+                response.model.isNullOrEmpty() -> {
+                    Result.success(
+                        WooPosLocalCatalogSyncResult(
+                            syncedCount = 0,
+                            hasMore = false,
+                            nextOffset = offset,
+                            totalPages = 0,
+                            serverDate = serverDate
                         )
-                    }
+                    )
+                }
 
-                    response.model.isNullOrEmpty() -> {
-                        Result.success(
-                            WooPosLocalCatalogSyncResult(
-                                syncedCount = 0,
-                                hasMore = false,
-                                nextOffset = offset,
-                                totalPages = 0
-                            )
-                        )
-                    }
+                else -> {
+                    val products = response.model.map { it.mapToPOSModel() }
 
-                    else -> {
-                        val products = response.model.map { it.mapToPOSModel() }
-
-                        if (storeInDb) {
-                            val upsertResult = runCatching {
-                                posProductDao.upsertProducts(products)
-                            }
-
-                            if (upsertResult.isFailure) {
-                                return@withDefaultContext Result.failure(
-                                    WooPosLocalCatalogError.DatabaseError(
-                                        errorMessage = "Failed to save products to database",
-                                        throwable = upsertResult.exceptionOrNull()
-                                    )
-                                )
-                            }
+                    if (storeInDb) {
+                        val upsertResult = runCatching {
+                            posProductDao.upsertProducts(products)
                         }
 
-                        val hasMore = products.size == validPageSize
+                        if (upsertResult.isFailure) {
+                            return@withDefaultContext Result.failure(
+                                WooPosLocalCatalogError.DatabaseError(
+                                    errorMessage = "Failed to save products to database",
+                                    throwable = upsertResult.exceptionOrNull()
+                                )
+                            )
+                        }
+                    }
 
-                        Result.success(
-                            WooPosLocalCatalogSyncResult(
-                                syncedCount = products.size,
-                                hasMore = hasMore,
-                                nextOffset = if (hasMore) offset + products.size else offset,
-                                totalPages = 3 // Tbd Local Catalog: Read from header.
+                    val hasMore = products.size == validPageSize
+
+                    val totalPages = headersParser.getTotalPages(response)
+
+                    if (totalPages == null) {
+                        return@withDefaultContext Result.failure(
+                            WooPosLocalCatalogError.InvalidResponse(
+                                "Missing required header in response, Total Pages: $totalPages."
                             )
                         )
                     }
+
+                    Result.success(
+                        WooPosLocalCatalogSyncResult(
+                            syncedCount = products.size,
+                            hasMore = hasMore,
+                            nextOffset = if (hasMore) offset + products.size else offset,
+                            totalPages = totalPages,
+                            serverDate = serverDate,
+                        )
+                    )
+                }
             }
         }
 
@@ -331,18 +355,22 @@ class WooPosLocalCatalogStore @Inject constructor(
                 errorMessage = "Request timed out",
                 code = error.type.name
             )
+
             WooErrorType.NO_CONNECTION -> WooPosLocalCatalogError.NetworkError(
                 errorMessage = error.message ?: "No network connection",
                 code = error.type.name
             )
+
             WooErrorType.INVALID_RESPONSE -> WooPosLocalCatalogError.NetworkError(
                 errorMessage = "Invalid response from server",
                 code = error.type.name
             )
+
             WooErrorType.API_ERROR -> WooPosLocalCatalogError.NetworkError(
                 errorMessage = error.message ?: "API error occurred",
                 code = error.type.name
             )
+
             WooErrorType.EMPTY_RESPONSE -> WooPosLocalCatalogError.EmptyResponse
             else -> WooPosLocalCatalogError.NetworkError(
                 errorMessage = error?.message ?: "Unknown error occurred",
