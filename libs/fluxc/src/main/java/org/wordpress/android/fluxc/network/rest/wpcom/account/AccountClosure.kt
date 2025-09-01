@@ -16,7 +16,7 @@ fun AccountRestClient.closeAccount(onResult: (CloseAccountResult) -> Unit) {
         WPCOMREST.me.account.close.urlV1_1,
         null,
         CloseAccountResponse::class.java,
-        { onResult(Success) },
+        { _, _ -> onResult(Success) },
         { error ->
             val errorType = ErrorType.values().firstOrNull { error.apiError == it.token } ?: ErrorType.UNKNOWN
             onResult(Failure(error = Error(errorType, error.message)))

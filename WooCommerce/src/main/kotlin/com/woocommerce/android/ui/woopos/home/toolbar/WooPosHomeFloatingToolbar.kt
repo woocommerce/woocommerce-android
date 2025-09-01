@@ -29,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -39,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -61,22 +59,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.Menu
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.WooPosCardReaderStatus
-import com.woocommerce.android.util.ChromeCustomTabUtils
-import kotlinx.coroutines.flow.collectLatest
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.Menu
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.WooPosCardReaderStatus
 
 private val TOOLBAR_ELEVATION = WooPosElevation.Medium
 
 @Composable
 fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
-    val viewModel: WooPosToolbarViewModel = hiltViewModel()
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        viewModel.openUrlEvent.collectLatest { url ->
-            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
-        }
-    }
+    val viewModel: WooPosHomeFloatingToolbarViewModel = hiltViewModel()
     WooPosFloatingToolbar(
         modifier = modifier,
         state = viewModel.state.collectAsState(),
@@ -88,8 +78,8 @@ fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
 @Composable
 private fun WooPosFloatingToolbar(
     modifier: Modifier = Modifier,
-    state: State<WooPosToolbarState>,
-    onUIEvent: (WooPosToolbarUIEvent) -> Unit,
+    state: State<WooPosHomeFloatingToolbarState>,
+    onUIEvent: (WooPosHomeFloatingToolbarUIEvent) -> Unit,
 ) {
     val cardReaderStatus = state.value.cardReaderStatus
     val menu = state.value.menu
@@ -107,7 +97,7 @@ private fun WooPosFloatingToolbar(
                     contentDescription = labels.floatingToolbarMenuOverlayContentDescription
                 },
             isVisible = menu is Menu.Visible,
-            onClick = { onUIEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked) }
+            onClick = { onUIEvent(WooPosHomeFloatingToolbarUIEvent.OnOutsideOfToolbarMenuClicked) }
         )
 
         ConstraintLayout(modifier = modifier) {
@@ -151,7 +141,7 @@ private fun WooPosFloatingToolbar(
                             },
                         menuItems = menu.items,
                         onClick = { menuItem ->
-                            onUIEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+                            onUIEvent(WooPosHomeFloatingToolbarUIEvent.MenuItemClicked(menuItem))
                         }
                     )
                 }
@@ -165,7 +155,7 @@ private fun Toolbar(
     modifier: Modifier,
     menuCardDisabled: Boolean,
     cardReaderStatus: WooPosCardReaderStatus,
-    onUIEvent: (WooPosToolbarUIEvent) -> Unit
+    onUIEvent: (WooPosHomeFloatingToolbarUIEvent) -> Unit
 ) {
     val labels = getToolbarAccessibilityLabels(cardReaderStatus, menuCardDisabled)
 
@@ -186,7 +176,7 @@ private fun Toolbar(
                 },
             state = cardReaderStatus,
             menuCardDisabled = menuCardDisabled,
-        ) { onUIEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked) }
+        ) { onUIEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked) }
 
         MenuButtonWithPopUpMenu(
             modifier = Modifier
@@ -205,7 +195,7 @@ private fun Toolbar(
                     stateDescription = labels.floatingToolbarPopUpMenuStateDescription
                 },
             menuCardDisabled = menuCardDisabled,
-        ) { onUIEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked) }
+        ) { onUIEvent(WooPosHomeFloatingToolbarUIEvent.OnToolbarMenuClicked) }
     }
 }
 
@@ -406,7 +396,7 @@ private fun Circle(
 private fun getToolbarAccessibilityLabels(
     cardReaderStatus: WooPosCardReaderStatus,
     menuCardDisabled: Boolean
-): WooPosToolbarAccessibilityLabels {
+): WooPosHomeFloatingToolbarAccessibilityLabels {
     val floatingToolbarPopUpMenuOpenContentDescription = stringResource(
         id = R.string.woopos_floating_toolbar_pop_up_menu_open_content_description
     )
@@ -454,7 +444,7 @@ private fun getToolbarAccessibilityLabels(
         }
     }
 
-    return WooPosToolbarAccessibilityLabels(
+    return WooPosHomeFloatingToolbarAccessibilityLabels(
         cardReaderStatusContentDescription = cardReaderStatusContentDescription,
         floatingToolbarPopUpMenuStateDescription = floatingToolbarPopUpMenuStateDescription,
         floatingToolbarMenuOverlayContentDescription = floatingToolbarMenuOverlayContentDescription,
@@ -468,7 +458,7 @@ private fun getToolbarAccessibilityLabels(
 fun PreviewWooPosFloatingToolbarStatusNotConnected() {
     val state = remember {
         mutableStateOf(
-            WooPosToolbarState(
+            WooPosHomeFloatingToolbarState(
                 cardReaderStatus = WooPosCardReaderStatus.NotConnected,
                 menu = Menu.Hidden
             )
@@ -482,7 +472,7 @@ fun PreviewWooPosFloatingToolbarStatusNotConnected() {
 fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
     val state = remember {
         mutableStateOf(
-            WooPosToolbarState(
+            WooPosHomeFloatingToolbarState(
                 cardReaderStatus = WooPosCardReaderStatus.Connected,
                 menu = Menu.Visible(
                     listOf(
@@ -507,7 +497,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
 }
 
 @Composable
-private fun Preview(state: MutableState<WooPosToolbarState>) {
+private fun Preview(state: MutableState<WooPosHomeFloatingToolbarState>) {
     WooPosTheme {
         Box(
             modifier = Modifier.fillMaxSize(),

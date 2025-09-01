@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputD
 sealed class WooPosHomeUIEvent {
     data object SystemBackClicked : WooPosHomeUIEvent()
     data object ExitConfirmationDialogDismissed : WooPosHomeUIEvent()
-    data object DismissProductsInfoDialog : WooPosHomeUIEvent()
     data object DismissScanningSetupDialog : WooPosHomeUIEvent()
     data object OnPaymentCompletedViaCash : WooPosHomeUIEvent()
     data object ExitPosClicked : WooPosHomeUIEvent()

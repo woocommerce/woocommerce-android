@@ -38,7 +38,6 @@ sealed class ChildToParentEvent {
     data object GoBackToCheckoutAfterFailedPayment : ChildToParentEvent()
     data object OrderSuccessfullyPaidByCard : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()
-    data object SimpleProductExplanationMenuItemClicked : ChildToParentEvent()
     data object SetupBarcodeScannerClicked : ChildToParentEvent()
     data object CouponsValidationFailed : ChildToParentEvent()
     data object RemoveCouponsClicked : ChildToParentEvent()
@@ -55,6 +54,7 @@ sealed class ChildToParentEvent {
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitPos : NavigationEvent()
         data object ToSettings : NavigationEvent()
+        data object ToOrders : NavigationEvent()
     }
 
     sealed class SearchEvent : ChildToParentEvent() {

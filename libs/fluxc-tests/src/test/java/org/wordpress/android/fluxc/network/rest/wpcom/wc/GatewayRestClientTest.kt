@@ -38,7 +38,7 @@ class GatewayRestClientTest {
                     retries = any()
                 )
             ).thenReturn(
-                WPAPIResponse.Success(arrayOf(mock()))
+                WPAPIResponse.Success(arrayOf(mock()), emptyList())
             )
 
             val actualResponse = gatewayRestClient.fetchAllGateways(SiteModel())
@@ -88,7 +88,7 @@ class GatewayRestClientTest {
                     any()
                 )
             ).thenReturn(
-                WPAPIResponse.Success(mock())
+                WPAPIResponse.Success(mock(), emptyList())
             )
 
             val actualResponse = gatewayRestClient.updateGateway(

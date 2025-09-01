@@ -15,4 +15,5 @@ sealed class WooPosNavigationEvent {
         val reason: WooPosLaunchability.NonLaunchabilityReason
     ) : WooPosNavigationEvent()
     data object OpenSettings : WooPosNavigationEvent()
+    data object OpenOrders : WooPosNavigationEvent()
 }

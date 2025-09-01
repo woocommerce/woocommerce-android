@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.discovery
 
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.network.Response
 import org.wordpress.android.fluxc.network.rest.JsonObjectOrEmptyArray
@@ -9,7 +10,7 @@ class RootWPAPIRestResponse(
     val description: String? = null,
     val url: String? = null,
     @SerializedName("gmt_offset") val gmtOffset: String? = null,
-    val namespaces: List<String>? = null,
+    @JsonAdapter(NamespacesDeserializer::class) val namespaces: List<String>? = null,
     val authentication: Authentication? = null
 ) : Response {
     class Authentication(

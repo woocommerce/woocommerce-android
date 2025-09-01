@@ -79,8 +79,8 @@ class WPAPIGsonRequestBuilder @Inject constructor() {
         nonce: String?,
         restClient: BaseWPAPIRestClient
     ) {
-        val request = WPAPIGsonRequest(method, url, params, body, clazz, { response ->
-            cont.resume(Success(response))
+        val request = WPAPIGsonRequest(method, url, params, body, clazz, { responseData, headers ->
+            cont.resume(Success(responseData, headers))
         }, { error ->
             cont.resume(Error(error))
         })
@@ -113,8 +113,8 @@ class WPAPIGsonRequestBuilder @Inject constructor() {
         nonce: String?,
         restClient: BaseWPAPIRestClient
     ) {
-        val request = WPAPIGsonRequest<T>(method, url, params, body, type, { response ->
-            cont.resume(Success(response))
+        val request = WPAPIGsonRequest<T>(method, url, params, body, type, { responseData, headers ->
+            cont.resume(Success(responseData, headers))
         }, { error ->
             cont.resume(Error(error))
         })

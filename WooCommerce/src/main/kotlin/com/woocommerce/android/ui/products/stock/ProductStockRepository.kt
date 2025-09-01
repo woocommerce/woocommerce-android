@@ -133,7 +133,7 @@ class ProductStockRepository @Inject constructor(
             productId = it.productId ?: 0,
             parentProductId = it.parentId ?: 0,
             name = it.name ?: "",
-            stockQuantity = it.stockQuantity ?: 0,
+            stockQuantity = it.stockQuantity ?: 0f,
             itemsSold = getSalesForProduct(it.productId, salesReport),
             imageUrl = getProductThumbnail(it.productId, salesReport)
         )
@@ -163,7 +163,7 @@ data class ProductStockItem(
     val productId: Long,
     val parentProductId: Long,
     val name: String,
-    val stockQuantity: Int,
+    val stockQuantity: Float,
     val imageUrl: String?,
     val itemsSold: Int
 ) : Parcelable

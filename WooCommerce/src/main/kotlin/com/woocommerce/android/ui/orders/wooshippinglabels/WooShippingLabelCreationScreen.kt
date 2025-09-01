@@ -330,7 +330,6 @@ private fun LabelCreationScreenWithBottomSheet(
         ) {
             Column(
                 modifier
-                    .verticalScroll(rememberScrollState())
                     .padding(bottom = 8.dp),
             ) {
                 val scope = rememberCoroutineScope()
@@ -394,7 +393,9 @@ private fun LabelCreationScreenWithBottomSheet(
 
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
                     verticalAlignment = Alignment.Top,
                 ) { page ->
                     CreateShippingCards(

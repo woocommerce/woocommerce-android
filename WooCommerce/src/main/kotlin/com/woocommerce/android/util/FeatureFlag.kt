@@ -13,7 +13,7 @@ enum class FeatureFlag {
     NEW_SHIPPING_SUPPORT,
     REVAMP_WOO_SHIPPING,
     BULK_UPDATE_ORDERS_STATUS,
-    WOO_POS_SETTINGS,
+    WOO_POS_HISTORICAL_ORDERS_M1,
     WOO_POS_LOCAL_CATALOG_M1,
     HIDE_SITES_FROM_SITE_PICKER,
     AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL;
@@ -24,7 +24,7 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            WOO_POS_SETTINGS,
+            WOO_POS_HISTORICAL_ORDERS_M1,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,

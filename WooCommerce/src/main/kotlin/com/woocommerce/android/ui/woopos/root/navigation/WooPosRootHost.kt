@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenCashPayment
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenEmailReceipt
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenOrders
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenSettings
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.ReturnHomeFromCashPayment
 
@@ -28,7 +29,8 @@ fun WooPosRootHost(
                 is NavigationEvent.ToEmailReceipt -> onNavigationEvent(OpenEmailReceipt(it.orderId))
                 NavigationEvent.ExitPos -> onNavigationEvent(ExitPosClicked)
                 NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted -> onNavigationEvent(ReturnHomeFromCashPayment)
-                is NavigationEvent.ToSettings -> onNavigationEvent(OpenSettings)
+                NavigationEvent.ToSettings -> onNavigationEvent(OpenSettings)
+                NavigationEvent.ToOrders -> onNavigationEvent(OpenOrders)
             }
         }
     }
