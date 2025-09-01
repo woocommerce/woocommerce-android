@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DA
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.SALES_CHANNEL
+import com.woocommerce.android.ui.orders.filters.data.SalesChannel
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
@@ -390,19 +391,19 @@ class OrderFilterCategoriesViewModel @Inject constructor(
 
         return mutableListOf(
             OrderFilterOptionUiModel(
-                key = "pos",
+                key = SalesChannel.POS.key,
                 displayName = resourceProvider.getString(R.string.point_of_sale),
-                isSelected = currentSelection.contains("pos")
+                isSelected = currentSelection.contains(SalesChannel.POS.key)
             ),
             OrderFilterOptionUiModel(
-                key = "checkout",
+                key = SalesChannel.WEB_CHECKOUT.key,
                 displayName = resourceProvider.getString(R.string.orderfilters_sales_channel_filter_web_checkout),
-                isSelected = currentSelection.contains("checkout")
+                isSelected = currentSelection.contains(SalesChannel.WEB_CHECKOUT.key)
             ),
             OrderFilterOptionUiModel(
-                key = "admin",
+                key = SalesChannel.WP_ADMIN.key,
                 displayName = resourceProvider.getString(R.string.orderfilters_sales_channel_filter_wp_admin),
-                isSelected = currentSelection.contains("admin")
+                isSelected = currentSelection.contains(SalesChannel.WP_ADMIN.key)
             )
         ).apply {
             addFilterOptionAll(resourceProvider)
