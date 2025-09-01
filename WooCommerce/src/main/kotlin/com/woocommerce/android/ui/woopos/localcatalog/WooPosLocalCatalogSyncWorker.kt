@@ -11,7 +11,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-class PosLocalCatalogSyncWorker @AssistedInject constructor(
+class WooPosLocalCatalogSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val accountRepository: AccountRepository,
@@ -20,7 +20,7 @@ class PosLocalCatalogSyncWorker @AssistedInject constructor(
     private val logger: WooPosLogWrapper,
 ) : CoroutineWorker(appContext, workerParams) {
 
-    companion object {
+    companion object Companion {
         const val WORK_NAME = "PosLocalCatalogSyncWork"
     }
 

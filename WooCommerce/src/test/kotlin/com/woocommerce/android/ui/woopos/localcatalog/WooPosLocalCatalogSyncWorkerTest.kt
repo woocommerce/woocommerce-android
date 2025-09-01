@@ -19,7 +19,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
-class PosLocalCatalogSyncWorkerTest : BaseUnitTest() {
+class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
     private var context: Context = mock()
     private var workerParams: WorkerParameters = mock()
@@ -52,8 +52,8 @@ class PosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(site)
     }
 
-    private fun createWorker(): PosLocalCatalogSyncWorker {
-        return PosLocalCatalogSyncWorker(
+    private fun createWorker(): WooPosLocalCatalogSyncWorker {
+        return WooPosLocalCatalogSyncWorker(
             appContext = context,
             workerParams = workerParams,
             accountRepository = accountRepository,

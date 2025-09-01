@@ -27,12 +27,12 @@ import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
-import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogError
-import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogError
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 
 @RunWith(MockitoJUnitRunner::class)
-class PosLocalCatalogStoreTest {
+class WooPosLocalCatalogStoreTest {
 
     @Mock
     private lateinit var posProductRestClient: PosProductRestClient
@@ -43,9 +43,9 @@ class PosLocalCatalogStoreTest {
     @Mock
     private lateinit var posVariationsDao: PosVariationsDao
 
-    private lateinit var store: PosLocalCatalogStore
+    private lateinit var store: WooPosLocalCatalogStore
 
-    companion object {
+    companion object Companion {
         private val SITE_ID = LocalId(123)
         private val PRODUCT_ID = RemoteId(456)
         private val SITE = SiteModel().apply { id = 123 }
@@ -63,7 +63,7 @@ class PosLocalCatalogStoreTest {
 
     @Before
     fun setUp() {
-        store = PosLocalCatalogStore(
+        store = WooPosLocalCatalogStore(
             posProductRestClient = posProductRestClient,
             coroutineEngine = initCoroutineEngine(),
             posProductDao = posProductsDao,
@@ -198,7 +198,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Connection failed")
         verifyNoInteractions(posProductsDao)
     }
@@ -218,7 +218,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.DatabaseError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.DatabaseError
         assertThat(error.errorMessage).contains("Failed to save products to database")
         assertThat(error.throwable).isEqualTo(storageException)
     }
@@ -287,7 +287,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Request timed out")
         assertThat(error.code).isEqualTo("TIMEOUT")
     }
@@ -382,7 +382,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Network error")
         verifyNoInteractions(posVariationsDao)
     }
@@ -421,7 +421,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PosLocalCatalogError.DatabaseError::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooPosLocalCatalogError.DatabaseError::class.java)
     }
 
     @Test
@@ -498,7 +498,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PosLocalCatalogError.EmptyResponse::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooPosLocalCatalogError.EmptyResponse::class.java)
     }
 
     @Test
@@ -517,7 +517,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Network request failed")
         assertThat(error.code).isEqualTo("API_ERROR")
     }
@@ -556,7 +556,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PosLocalCatalogError.EmptyResponse::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooPosLocalCatalogError.EmptyResponse::class.java)
     }
 
     @Test
@@ -576,7 +576,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Request timed out")
         assertThat(error.code).isEqualTo("TIMEOUT")
     }
@@ -612,7 +612,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.InvalidResponse
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
         assertThat(error.message).isEqualTo("Missing job ID in response")
     }
 
@@ -632,7 +632,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.InvalidResponse
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
         assertThat(error.message).isEqualTo("Missing job ID in response")
     }
 
@@ -652,7 +652,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.InvalidResponse
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
         assertThat(error.message).isEqualTo("Missing job ID in response")
     }
 

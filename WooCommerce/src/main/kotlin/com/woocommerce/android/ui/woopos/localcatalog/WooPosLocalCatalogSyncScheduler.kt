@@ -18,12 +18,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PosLocalCatalogSyncScheduler @Inject constructor(
+class WooPosLocalCatalogSyncScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val logger: WooPosLogWrapper,
 ) {
 
-    private companion object {
+    private companion object Companion {
         private const val ONE_TIME_WORK_NAME = "PosLocalCatalogSyncOneTime"
 
         const val REFRESH_INTERVAL_HOURS = 24L
@@ -33,7 +33,7 @@ class PosLocalCatalogSyncScheduler @Inject constructor(
     private val workManager = WorkManager.getInstance(context)
 
     fun schedulePeriodicFullCatalogSync() {
-        val syncWorkRequest = PeriodicWorkRequestBuilder<PosLocalCatalogSyncWorker>(
+        val syncWorkRequest = PeriodicWorkRequestBuilder<WooPosLocalCatalogSyncWorker>(
             REFRESH_INTERVAL_HOURS,
             TimeUnit.HOURS
         )
@@ -47,7 +47,7 @@ class PosLocalCatalogSyncScheduler @Inject constructor(
             .build()
 
         workManager.enqueueUniquePeriodicWork(
-            PosLocalCatalogSyncWorker.WORK_NAME,
+            WooPosLocalCatalogSyncWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             syncWorkRequest
         )
@@ -56,7 +56,7 @@ class PosLocalCatalogSyncScheduler @Inject constructor(
     }
 
     fun triggerManualFullCatalogSync() {
-        val oneTimeWorkRequest = OneTimeWorkRequestBuilder<PosLocalCatalogSyncWorker>()
+        val oneTimeWorkRequest = OneTimeWorkRequestBuilder<WooPosLocalCatalogSyncWorker>()
             .setConstraints(getConstraints())
             .setBackoffCriteria(
                 BackoffPolicy.EXPONENTIAL,
@@ -75,7 +75,7 @@ class PosLocalCatalogSyncScheduler @Inject constructor(
     }
 
     fun isPeriodicWorkRunning(): Boolean {
-        val periodicWork = workManager.getWorkInfosForUniqueWork(PosLocalCatalogSyncWorker.WORK_NAME).get()
+        val periodicWork = workManager.getWorkInfosForUniqueWork(WooPosLocalCatalogSyncWorker.WORK_NAME).get()
 
         return periodicWork.any { it.state == WorkInfo.State.RUNNING }
     }

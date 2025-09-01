@@ -2,19 +2,20 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
-class PosSyncProductsAction @Inject constructor(
-    private val posLocalCatalogStore: PosLocalCatalogStore,
+class WooPosSyncProductsAction @Inject constructor(
+    private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
 ) {
-    sealed class Result {
-        data class Success(val productsSynced: Int) : Result()
+    sealed class WooPosSyncProductsResult {
+        data class Success(val productsSynced: Int) : WooPosSyncProductsResult()
 
-        sealed class Failed(val error: String) : Result() {
+        sealed class Failed(val error: String) : WooPosSyncProductsResult() {
             class CatalogTooLarge(val totalPages: Int, val maxPages: Int) :
                 Failed("Catalog too large: $totalPages pages exceed maximum of $maxPages pages")
+
             class UnexpectedError(error: String) : Failed(error)
         }
     }
@@ -25,7 +26,7 @@ class PosSyncProductsAction @Inject constructor(
         modifiedAfterGmt: String? = null,
         pageSize: Int,
         maxPages: Int
-    ): Result {
+    ): WooPosSyncProductsResult {
         var currentOffset = 0
         var pagesSynced = 0
         var totalSyncedProducts = 0
@@ -51,7 +52,7 @@ class PosSyncProductsAction @Inject constructor(
                             logger.e(
                                 "Catalog too large: $syncResult.totalPages pages exceed maximum of $maxPages pages"
                             )
-                            return Result.Failed.CatalogTooLarge(syncResult.totalPages, maxPages)
+                            return WooPosSyncProductsResult.Failed.CatalogTooLarge(syncResult.totalPages, maxPages)
                         }
                     }
 
@@ -69,12 +70,12 @@ class PosSyncProductsAction @Inject constructor(
                 onFailure = { error ->
                     // TBD Local Catalog Add retry logic. We shouldn't fail when one page fails.
                     logger.e("Sync failed on page ${pagesSynced + 1}: ${error.message}")
-                    return Result.Failed.UnexpectedError(error.message ?: "Unknown error")
+                    return WooPosSyncProductsResult.Failed.UnexpectedError(error.message ?: "Unknown error")
                 }
             )
         }
 
         logger.d("Products sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
-        return Result.Success(totalSyncedProducts)
+        return WooPosSyncProductsResult.Success(totalSyncedProducts)
     }
 }

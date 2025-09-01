@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductsAction.WooPosSyncProductsResult
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
@@ -23,7 +24,7 @@ sealed class PosLocalCatalogSyncResult {
 
 @Singleton
 class PosLocalCatalogSyncRepository @Inject constructor(
-    private val posSyncProductsAction: PosSyncProductsAction,
+    private val posSyncProductsAction: WooPosSyncProductsAction,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
@@ -66,7 +67,7 @@ class PosLocalCatalogSyncRepository @Inject constructor(
         val syncDuration = System.currentTimeMillis() - startTime
 
         return when (productSyncResult) {
-            is PosSyncProductsAction.Result.Success -> {
+            is WooPosSyncProductsResult.Success -> {
                 // TBD Local Catalog we need to use store server timestamp
                 val currentTime = System.currentTimeMillis()
                 // TBD Local Catalog We need to store incremental and full sync timestamps separately
@@ -79,7 +80,7 @@ class PosLocalCatalogSyncRepository @Inject constructor(
                 )
             }
 
-            is PosSyncProductsAction.Result.Failed.CatalogTooLarge -> {
+            is WooPosSyncProductsResult.Failed.CatalogTooLarge -> {
                 PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
                     error = "Catalog too large: ${productSyncResult.totalPages} pages exceed maximum " +
                         "of ${productSyncResult.maxPages} pages",
@@ -88,7 +89,7 @@ class PosLocalCatalogSyncRepository @Inject constructor(
                 )
             }
 
-            is PosSyncProductsAction.Result.Failed -> {
+            is WooPosSyncProductsResult.Failed -> {
                 PosLocalCatalogSyncResult.Failure.UnexpectedError(productSyncResult.error)
             }
         }

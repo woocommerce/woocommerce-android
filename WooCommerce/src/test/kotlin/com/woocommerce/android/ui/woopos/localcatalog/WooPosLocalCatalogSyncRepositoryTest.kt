@@ -17,9 +17,9 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
-class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
+class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private lateinit var sut: PosLocalCatalogSyncRepository
-    private var posSyncProductsAction: PosSyncProductsAction = mock()
+    private var posSyncProductsAction: WooPosSyncProductsAction = mock()
     private var syncTimestampManager: WooPosSyncTimestampManager = mock()
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
@@ -51,7 +51,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val productsSynced = 150
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(PosSyncProductsAction.Result.Success(productsSynced))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -65,7 +65,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val productsSynced = 150
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(PosSyncProductsAction.Result.Success(productsSynced))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced))
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -80,7 +80,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val totalPages = 15
         val maxPages = PosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(PosSyncProductsAction.Result.Failed.CatalogTooLarge(totalPages, maxPages))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -94,7 +94,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val errorMessage = "Network timeout"
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(PosSyncProductsAction.Result.Failed.UnexpectedError(errorMessage))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.UnexpectedError(errorMessage))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -108,7 +108,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val productsSynced = 150
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(PosSyncProductsAction.Result.Success(productsSynced))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
@@ -122,7 +122,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val productsSynced = 150
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(PosSyncProductsAction.Result.Success(productsSynced))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced))
 
         // WHEN
         sut.syncLocalCatalogIncremental(site)
@@ -137,7 +137,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val totalPages = 15
         val maxPages = PosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(PosSyncProductsAction.Result.Failed.CatalogTooLarge(totalPages, maxPages))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
@@ -151,7 +151,7 @@ class PosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val errorMessage = "Network timeout"
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(PosSyncProductsAction.Result.Failed.UnexpectedError(errorMessage))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.UnexpectedError(errorMessage))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
