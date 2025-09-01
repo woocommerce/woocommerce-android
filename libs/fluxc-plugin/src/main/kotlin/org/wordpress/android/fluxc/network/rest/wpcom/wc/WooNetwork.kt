@@ -127,8 +127,9 @@ class WooNetwork @Inject constructor(
         requestContext: RequestContext,
         request: suspend WPAPINetwork.() -> WPAPIResponse<T>
     ): WPAPIResponse<T> {
-        if (!applicationPasswordsConfiguration.isEnabledForJetpack || !site.isApplicationPasswordsSupported) {
-            if (applicationPasswordsConfiguration.isEnabledForJetpack) {
+        val appPasswordsEnabled = applicationPasswordsConfiguration.isEnabledForJetpackAccess()
+        if (!appPasswordsEnabled || !site.isApplicationPasswordsSupported) {
+            if (appPasswordsEnabled) {
                 AppLog.v(
                     AppLog.T.API,
                     "Application Passwords not supported for site: ${site.url}, use Jetpack Tunnel"

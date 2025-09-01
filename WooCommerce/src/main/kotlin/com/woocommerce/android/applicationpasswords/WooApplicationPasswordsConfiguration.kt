@@ -7,9 +7,9 @@ import jakarta.inject.Inject
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 
 class WooApplicationPasswordsConfiguration @Inject constructor() : ApplicationPasswordsConfiguration {
-    override val isEnabledForSiteCredentials: Boolean = true
-    override val isEnabledForJetpack: Boolean
-        get() = APP_PASSWORDS_FOR_JETPACK_SITES.isEnabled()
     override val applicationName: String =
         "${BuildConfig.APPLICATION_ID}.app-client.${DeviceInfo.name.replace(' ', '-')}"
+
+    override fun isEnabledForDirectAccess(): Boolean = true
+    override suspend fun isEnabledForJetpackAccess(): Boolean = APP_PASSWORDS_FOR_JETPACK_SITES.isEnabled()
 }
