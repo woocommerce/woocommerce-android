@@ -1,13 +1,13 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogStore
 import javax.inject.Inject
 
 class PosSyncProductsAction @Inject constructor(
-    private val posLocalCatalogStore: PosLocalCatalogStore
+    private val posLocalCatalogStore: PosLocalCatalogStore,
+    private val logger: WooPosLogWrapper,
 ) {
     sealed class Result {
         data class Success(val productsSynced: Int) : Result()
@@ -48,20 +48,19 @@ class PosSyncProductsAction @Inject constructor(
                     // TBD Local Catalog We should first fetch the headers to decide if the catalog size is acceptable
                     if (pagesSynced == 0) {
                         if (syncResult.totalPages > maxPages) {
-                            WooLog.e(
-                                T.POS,
+                            logger.e(
                                 "Catalog too large: $syncResult.totalPages pages exceed maximum of $maxPages pages"
                             )
                             return Result.Failed.CatalogTooLarge(syncResult.totalPages, maxPages)
                         }
                     }
 
-                    WooLog.d(T.POS, "Page ${pagesSynced + 1} synced, ${syncResult.syncedCount} products")
+                    logger.d("Page ${pagesSynced + 1} synced, ${syncResult.syncedCount} products")
                     totalSyncedProducts += syncResult.syncedCount
                     pagesSynced++
 
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
-                        WooLog.d(T.POS, "No more products to sync")
+                        logger.d("No more products to sync")
                         shouldContinue = false
                     } else {
                         currentOffset = syncResult.nextOffset
@@ -69,13 +68,13 @@ class PosSyncProductsAction @Inject constructor(
                 },
                 onFailure = { error ->
                     // TBD Local Catalog Add retry logic. We shouldn't fail when one page fails.
-                    WooLog.e(T.POS, "Sync failed on page ${pagesSynced + 1}: ${error.message}")
+                    logger.e("Sync failed on page ${pagesSynced + 1}: ${error.message}")
                     return Result.Failed.UnexpectedError(error.message ?: "Unknown error")
                 }
             )
         }
 
-        WooLog.d(T.POS, "Products sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
+        logger.d("Products sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
         return Result.Success(totalSyncedProducts)
     }
 }
