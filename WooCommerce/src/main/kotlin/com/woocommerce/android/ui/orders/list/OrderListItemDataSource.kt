@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.R
-import com.woocommerce.android.config.RemoteConfigRepository
 import com.woocommerce.android.extensions.getBillingName
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.TimeGroup.GROUP_FUTURE
@@ -45,8 +44,7 @@ class OrderListItemDataSource @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val fetcher: FetchOrdersRepository,
     private val resourceProvider: ResourceProvider,
-    private val dateUtils: DateUtils,
-    private val remoteConfigRepository: RemoteConfigRepository
+    private val dateUtils: DateUtils
 ) : ListItemDataSourceInterface<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType> {
     override fun getItemsAndFetchIfNecessary(
         listDescriptor: WCOrderListDescriptor,

@@ -181,7 +181,7 @@ class WooNetwork @Inject constructor(
         AppLog.w(
             AppLog.T.API,
             "Request failed using Application Passwords for Jetpack Site,\n" +
-                "site: ${siteUrl},\n" +
+                "site: $siteUrl,\n" +
                 "path: ${requestContext.path},\n" +
                 "method: ${requestContext.method},\n" +
                 "error: HTTP status code ${error.volleyError?.networkResponse?.statusCode}, " +
