@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.home.scanningsetup
+package com.woocommerce.android.ui.woopos.scanningsetup
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes

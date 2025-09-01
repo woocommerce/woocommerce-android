@@ -1,7 +1,7 @@
-package com.woocommerce.android.ui.woopos.home.scanningsetup
+package com.woocommerce.android.ui.woopos.scanningsetup
 
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
+import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
 
 sealed class WooPosScanningSetupUiEvent {
     data object OnDialogShown : WooPosScanningSetupUiEvent()

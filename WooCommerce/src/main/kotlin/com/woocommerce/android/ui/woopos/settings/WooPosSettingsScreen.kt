@@ -17,7 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupDialog
+import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
