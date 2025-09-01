@@ -27,7 +27,7 @@ class WooPosLocalCatalogStore @Inject constructor(
     private val posVariationsDao: WooPosVariationsDao,
     private val headersParser: HeadersParser,
 ) {
-    companion object Companion {
+    private companion object {
         private const val DEFAULT_PAGE_SIZE = 100
         private const val MAX_PAGE_SIZE = 100
     }
