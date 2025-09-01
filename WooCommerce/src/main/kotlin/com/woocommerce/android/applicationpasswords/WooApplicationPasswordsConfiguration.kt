@@ -10,6 +10,5 @@ class WooApplicationPasswordsConfiguration @Inject constructor() : ApplicationPa
     override val applicationName: String =
         "${BuildConfig.APPLICATION_ID}.app-client.${DeviceInfo.name.replace(' ', '-')}"
 
-    override fun isEnabledForDirectAccess(): Boolean = true
     override suspend fun isEnabledForJetpackAccess(): Boolean = APP_PASSWORDS_FOR_JETPACK_SITES.isEnabled()
 }

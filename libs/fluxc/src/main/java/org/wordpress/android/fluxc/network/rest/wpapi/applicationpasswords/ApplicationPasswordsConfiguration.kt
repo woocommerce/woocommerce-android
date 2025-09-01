@@ -7,7 +7,7 @@ interface ApplicationPasswordsConfiguration {
      * Returns true if the Application Passwords feature is enabled for direct site access.
      * This applies when sites are accessed using their URL directly (not through Jetpack).
      */
-    fun isEnabledForDirectAccess(): Boolean
+    fun isEnabledForDirectAccess(): Boolean = true
 
     /**
      * Returns true if the Application Passwords feature is enabled for Jetpack-mediated access.
