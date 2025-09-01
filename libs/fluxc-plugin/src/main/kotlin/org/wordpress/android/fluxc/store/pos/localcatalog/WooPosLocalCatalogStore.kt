@@ -92,38 +92,28 @@ class WooPosLocalCatalogStore @Inject constructor(
 
             if (serverDate == null) {
                 return@withDefaultContext Result.failure(
-                    WooPosLocalCatalogError.InvalidResponse(
-                        "Missing required header in response, Server Date: $serverDate."
-                    )
+                    WooPosLocalCatalogError.InvalidResponse("Missing header in response, Server Date: $serverDate.")
                 )
             }
 
             when {
-                response.isError -> {
-                    Result.failure(
-                        mapResponseError(response.error)
-                    )
-                }
+                response.isError -> Result.failure(mapResponseError(response.error))
 
-                response.model.isNullOrEmpty() -> {
-                    Result.success(
-                        WooPosLocalCatalogSyncResult(
-                            syncedCount = 0,
-                            hasMore = false,
-                            nextOffset = offset,
-                            totalPages = 0,
-                            serverDate = serverDate
-                        )
+                response.model.isNullOrEmpty() -> Result.success(
+                    WooPosLocalCatalogSyncResult(
+                        syncedCount = 0,
+                        hasMore = false,
+                        nextOffset = offset,
+                        totalPages = 0,
+                        serverDate = serverDate
                     )
-                }
+                )
 
                 else -> {
                     val products = response.model.map { it.mapToPOSModel() }
 
                     if (storeInDb) {
-                        val upsertResult = runCatching {
-                            posProductDao.upsertProducts(products)
-                        }
+                        val upsertResult = runCatching { posProductDao.upsertProducts(products) }
 
                         if (upsertResult.isFailure) {
                             return@withDefaultContext Result.failure(

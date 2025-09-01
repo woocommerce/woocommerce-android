@@ -36,7 +36,7 @@ import org.wordpress.android.fluxc.utils.initCoroutineEngine
 class WooPosLocalCatalogStoreTest {
     private val posProductRestClient: WooPosProductRestClient = mock()
 
-    private val posProductsDao: WooPosProductsDao =  mock()
+    private val posProductsDao: WooPosProductsDao = mock()
 
     private val posVariationsDao: WooPosVariationsDao = mock()
 

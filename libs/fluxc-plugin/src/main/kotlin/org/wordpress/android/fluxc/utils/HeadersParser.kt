@@ -26,6 +26,4 @@ class HeadersParser @Inject constructor(
     fun <T> getServerDate(response: WooResult<T>): String? = response.headers
         .findLast { SERVER_DATE_HEADER.equals(it.key, ignoreCase = true) }
         ?.value
-
-
 }
