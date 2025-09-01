@@ -3,14 +3,14 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.model.pos.PosVariationApiResponse
+import org.wordpress.android.fluxc.model.pos.WooPosVariationApiResponse
 
-class PosVariationMapperTest {
+class WooPosVariationMapperTest {
 
     @Test
     fun `given complete API response, when mapper called, then all fields mapped correctly`() {
         // Given
-        val response = PosVariationApiResponse(
+        val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
             name = "Blue Large T-Shirt",
@@ -27,10 +27,10 @@ class PosVariationMapperTest {
             manageStock = true,
             backordered = false,
             attributes = listOf(
-                PosVariationApiResponse.VariationAttribute(1, "Color", "Blue"),
-                PosVariationApiResponse.VariationAttribute(2, "Size", "Large")
+                WooPosVariationApiResponse.VariationAttribute(1, "Color", "Blue"),
+                WooPosVariationApiResponse.VariationAttribute(2, "Size", "Large")
             ),
-            image = PosVariationApiResponse.VariationImage(
+            image = WooPosVariationApiResponse.VariationImage(
                 id = 789,
                 src = "https://example.com/image.jpg",
                 name = "product-image",
@@ -70,7 +70,7 @@ class PosVariationMapperTest {
     @Test
     fun `given null stock quantity, when mapper called, then defaults to zero`() {
         // Given
-        val response = PosVariationApiResponse(
+        val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
             stockQuantity = null
@@ -86,7 +86,7 @@ class PosVariationMapperTest {
     @Test
     fun `given null image, when mapper called, then image URL is empty`() {
         // Given
-        val response = PosVariationApiResponse(
+        val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
             image = null
@@ -102,7 +102,7 @@ class PosVariationMapperTest {
     @Test
     fun `given empty attributes, when mapper called, then JSON is empty array`() {
         // Given
-        val response = PosVariationApiResponse(
+        val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
             attributes = emptyList()
@@ -118,13 +118,13 @@ class PosVariationMapperTest {
     @Test
     fun `given multiple attributes, when mapper called, then JSON contains all attributes`() {
         // Given
-        val response = PosVariationApiResponse(
+        val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
             attributes = listOf(
-                PosVariationApiResponse.VariationAttribute(1, "Color", "Red"),
-                PosVariationApiResponse.VariationAttribute(2, "Size", "Medium"),
-                PosVariationApiResponse.VariationAttribute(3, "Material", "Cotton")
+                WooPosVariationApiResponse.VariationAttribute(1, "Color", "Red"),
+                WooPosVariationApiResponse.VariationAttribute(2, "Size", "Medium"),
+                WooPosVariationApiResponse.VariationAttribute(3, "Material", "Cotton")
             )
         )
 
@@ -143,7 +143,7 @@ class PosVariationMapperTest {
     @Test
     fun `given special characters in fields, when mapper called, then characters preserved`() {
         // Given
-        val response = PosVariationApiResponse(
+        val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
             name = "Product with \"quotes\" & special <chars>",
@@ -163,7 +163,7 @@ class PosVariationMapperTest {
     @Test
     fun `given edge case numeric values, when mapper called, then values handled correctly`() {
         // Given
-        val response = PosVariationApiResponse(
+        val response = WooPosVariationApiResponse(
             id = Long.MAX_VALUE,
             productId = 0L,
             price = "0.01",
@@ -187,7 +187,7 @@ class PosVariationMapperTest {
     @Test
     fun `given minimal API response, when mapper called, then defaults applied correctly`() {
         // Given - only required fields
-        val response = PosVariationApiResponse(
+        val response = WooPosVariationApiResponse(
             id = 1L,
             productId = 2L
         )

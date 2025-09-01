@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 
 @Dao
-abstract class PosVariationsDao {
+abstract class WooPosVariationsDao {
 
     @Query("SELECT * FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId = :productId ORDER BY variationName ASC")
     abstract fun observeVariationsForProduct(localSiteId: LocalId, productId: RemoteId): Flow<List<WCPosVariationModel>>

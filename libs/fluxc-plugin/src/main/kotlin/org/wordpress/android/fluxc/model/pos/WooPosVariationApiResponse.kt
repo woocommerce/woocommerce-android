@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 /**
  * Response model for WooCommerce Analytics variations endpoint (/wc-analytics/variations).
  */
-data class PosVariationApiResponse(
+data class WooPosVariationApiResponse(
     @SerializedName("id")
     val id: Long = 0L,
 

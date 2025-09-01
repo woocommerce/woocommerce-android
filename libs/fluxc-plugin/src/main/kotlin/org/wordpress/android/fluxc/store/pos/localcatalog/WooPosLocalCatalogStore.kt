@@ -6,11 +6,11 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.PosProductRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVariationModel
-import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
-import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -20,10 +20,10 @@ import javax.inject.Singleton
 
 @Singleton
 class WooPosLocalCatalogStore @Inject constructor(
-    private val posProductRestClient: PosProductRestClient,
+    private val posProductRestClient: WooPosProductRestClient,
     private val coroutineEngine: CoroutineEngine,
-    private val posProductDao: PosProductsDao,
-    private val posVariationsDao: PosVariationsDao,
+    private val posProductDao: WooPosProductsDao,
+    private val posVariationsDao: WooPosVariationsDao,
 ) {
     companion object Companion {
         private const val DEFAULT_PAGE_SIZE = 100

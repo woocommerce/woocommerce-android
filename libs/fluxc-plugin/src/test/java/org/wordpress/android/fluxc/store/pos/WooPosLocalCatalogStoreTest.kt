@@ -16,15 +16,15 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.pos.PosCatalogStatusResponse
-import org.wordpress.android.fluxc.model.pos.PosGenerateCatalogResponse
+import org.wordpress.android.fluxc.model.pos.WooPosCatalogStatusResponse
+import org.wordpress.android.fluxc.model.pos.WooPosGenerateCatalogResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.PosProductRestClient
-import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
-import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogError
@@ -35,13 +35,13 @@ import org.wordpress.android.fluxc.utils.initCoroutineEngine
 class WooPosLocalCatalogStoreTest {
 
     @Mock
-    private lateinit var posProductRestClient: PosProductRestClient
+    private lateinit var posProductRestClient: WooPosProductRestClient
 
     @Mock
-    private lateinit var posProductsDao: PosProductsDao
+    private lateinit var posProductsDao: WooPosProductsDao
 
     @Mock
-    private lateinit var posVariationsDao: PosVariationsDao
+    private lateinit var posVariationsDao: WooPosVariationsDao
 
     private lateinit var store: WooPosLocalCatalogStore
 
@@ -475,7 +475,7 @@ class WooPosLocalCatalogStoreTest {
     fun `when generating catalog successfully, then returns job ID`() = runTest {
         // GIVEN
         val expectedJobId = 12345L
-        val response = PosGenerateCatalogResponse(jobId = expectedJobId)
+        val response = WooPosGenerateCatalogResponse(jobId = expectedJobId)
         whenever(posProductRestClient.postGenerateCatalog(testSite))
             .thenReturn(WooResult(response))
 
@@ -528,7 +528,7 @@ class WooPosLocalCatalogStoreTest {
         val jobId = "12345"
         val expectedStatus = "completed"
         val expectedDownloadUrl = "https://example.com/catalog.zip"
-        val response = PosCatalogStatusResponse(
+        val response = WooPosCatalogStatusResponse(
             status = expectedStatus,
             downloadUrl = expectedDownloadUrl
         )
@@ -585,7 +585,7 @@ class WooPosLocalCatalogStoreTest {
     fun `when fetching catalog status for in-progress job, then returns processing status`() = runTest {
         // GIVEN
         val jobId = "12345"
-        val response = PosCatalogStatusResponse(
+        val response = WooPosCatalogStatusResponse(
             status = "processing",
             downloadUrl = null
         )
@@ -603,7 +603,7 @@ class WooPosLocalCatalogStoreTest {
     @Test
     fun `when generating catalog returns null job ID, then returns invalid response error`() = runTest {
         // GIVEN
-        val response = PosGenerateCatalogResponse(jobId = null)
+        val response = WooPosGenerateCatalogResponse(jobId = null)
         whenever(posProductRestClient.postGenerateCatalog(testSite))
             .thenReturn(WooResult(response))
 
@@ -620,7 +620,7 @@ class WooPosLocalCatalogStoreTest {
     fun `when fetching catalog status with null status field, then returns invalid response error`() = runTest {
         // GIVEN
         val jobId = "12345"
-        val response = PosCatalogStatusResponse(
+        val response = WooPosCatalogStatusResponse(
             status = null,
             downloadUrl = "https://example.com/catalog.zip"
         )
@@ -640,7 +640,7 @@ class WooPosLocalCatalogStoreTest {
     fun `when fetching catalog status with empty status field, then returns invalid response error`() = runTest {
         // GIVEN
         val jobId = "12345"
-        val response = PosCatalogStatusResponse(
+        val response = WooPosCatalogStatusResponse(
             status = "",
             downloadUrl = "https://example.com/catalog.zip"
         )
@@ -659,7 +659,7 @@ class WooPosLocalCatalogStoreTest {
     private fun createTestVariationApiResponse(
         id: Long = 200L,
         productId: Long = 100L
-    ) = org.wordpress.android.fluxc.model.pos.PosVariationApiResponse(
+    ) = org.wordpress.android.fluxc.model.pos.WooPosVariationApiResponse(
         id = id,
         productId = productId,
         sku = "VAR-SKU-$id",

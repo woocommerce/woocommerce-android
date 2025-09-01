@@ -19,13 +19,13 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class PosVariationsDaoTest {
+class WooPosVariationsDaoTest {
 
     @Rule
     @JvmField
     val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
 
-    private lateinit var sut: PosVariationsDao
+    private lateinit var sut: WooPosVariationsDao
 
     @Before
     fun setUp() {

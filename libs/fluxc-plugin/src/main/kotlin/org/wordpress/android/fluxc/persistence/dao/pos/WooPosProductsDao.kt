@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 
 @Dao
-abstract class PosProductsDao {
+abstract class WooPosProductsDao {
     @Query("SELECT * FROM PosProductEntity WHERE localSiteId = :localSiteId")
     abstract fun observeAllProducts(localSiteId: LocalId): Flow<List<WCPosProductModel>>
 

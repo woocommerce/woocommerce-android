@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.model.pos.PosVariationApiResponse
+import org.wordpress.android.fluxc.model.pos.WooPosVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
@@ -38,7 +38,7 @@ fun ProductApiResponse.mapToPOSModel(): WCPosProductModel =
         attributes = this.attributes?.toString() ?: "",
     )
 
-fun PosVariationApiResponse.mapToPosVariationModel(
+fun WooPosVariationApiResponse.mapToPosVariationModel(
     localSiteId: LocalOrRemoteId.LocalId
 ): WCPosVariationModel {
     return WCPosVariationModel(

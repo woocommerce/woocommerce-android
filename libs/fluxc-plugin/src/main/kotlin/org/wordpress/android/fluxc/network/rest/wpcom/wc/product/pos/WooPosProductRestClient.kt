@@ -2,9 +2,9 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.pos.PosCatalogStatusResponse
-import org.wordpress.android.fluxc.model.pos.PosGenerateCatalogResponse
-import org.wordpress.android.fluxc.model.pos.PosVariationApiResponse
+import org.wordpress.android.fluxc.model.pos.WooPosCatalogStatusResponse
+import org.wordpress.android.fluxc.model.pos.WooPosGenerateCatalogResponse
+import org.wordpress.android.fluxc.model.pos.WooPosVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -12,10 +12,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiRespo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import javax.inject.Inject
 
-class PosProductRestClient @Inject constructor(
+class WooPosProductRestClient @Inject constructor(
     private val wooNetwork: WooNetwork,
 ) {
-    companion object {
+    companion object Companion {
         private const val PRODUCT_FIELDS = "localSiteId,id,name,sku,global_unique_id,type,price,downloadable," +
             "images,attributes,parent_id,status,regular_price,sale_price,on_sale,description," +
             "short_description,manage_stock,stock_quantity,stock_status,backorders_allowed," +
@@ -63,7 +63,7 @@ class PosProductRestClient @Inject constructor(
         modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
-    ): WooResult<Array<PosVariationApiResponse>> {
+    ): WooResult<Array<WooPosVariationApiResponse>> {
         val url = "/wc-analytics/variations"
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
@@ -79,7 +79,7 @@ class PosProductRestClient @Inject constructor(
             site = site,
             path = url,
             params = params,
-            clazz = Array<PosVariationApiResponse>::class.java
+            clazz = Array<WooPosVariationApiResponse>::class.java
         )
 
         return when (response) {
@@ -95,7 +95,7 @@ class PosProductRestClient @Inject constructor(
 
     suspend fun postGenerateCatalog(
         site: SiteModel,
-    ): WooResult<PosGenerateCatalogResponse> {
+    ): WooResult<WooPosGenerateCatalogResponse> {
         val url = WOOCOMMERCE.catalog.pathV3
         val params = mutableMapOf(
             "_fields" to PRODUCT_FIELDS
@@ -105,7 +105,7 @@ class PosProductRestClient @Inject constructor(
             site = site,
             path = url,
             body = params,
-            clazz = PosGenerateCatalogResponse::class.java
+            clazz = WooPosGenerateCatalogResponse::class.java
         )
 
         return when (response) {
@@ -122,7 +122,7 @@ class PosProductRestClient @Inject constructor(
     suspend fun getCatalogStatus(
         site: SiteModel,
         jobId: String,
-    ): WooResult<PosCatalogStatusResponse> {
+    ): WooResult<WooPosCatalogStatusResponse> {
         val url = WOOCOMMERCE.catalog.status.id(jobId).pathV3
         val params = mutableMapOf(
             "_fields" to PRODUCT_FIELDS
@@ -132,7 +132,7 @@ class PosProductRestClient @Inject constructor(
             site = site,
             path = url,
             params = params,
-            clazz = PosCatalogStatusResponse::class.java
+            clazz = WooPosCatalogStatusResponse::class.java
         )
 
         return when (response) {
