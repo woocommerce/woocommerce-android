@@ -30,7 +30,12 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
             .joinToString(separator = ",")
 
         val salesChannelFilters = orderFiltersRepository.getCurrentFilterSelection(SALES_CHANNEL)
-        val createdViaFilter = if (salesChannelFilters.contains("pos")) "pos-rest-api" else null
+        val createdViaFilter = when {
+            salesChannelFilters.contains("pos") -> "pos-rest-api"
+            salesChannelFilters.contains("checkout") -> "checkout"
+            salesChannelFilters.contains("admin") -> "admin"
+            else -> null
+        }
 
         return WCOrderListDescriptor(
             site = selectedSite.get(),

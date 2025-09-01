@@ -393,6 +393,16 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 key = "pos",
                 displayName = resourceProvider.getString(R.string.point_of_sale),
                 isSelected = currentSelection.contains("pos")
+            ),
+            OrderFilterOptionUiModel(
+                key = "checkout",
+                displayName = resourceProvider.getString(R.string.orderfilters_sales_channel_filter_web_checkout),
+                isSelected = currentSelection.contains("checkout")
+            ),
+            OrderFilterOptionUiModel(
+                key = "admin",
+                displayName = resourceProvider.getString(R.string.orderfilters_sales_channel_filter_wp_admin),
+                isSelected = currentSelection.contains("admin")
             )
         ).apply {
             addFilterOptionAll(resourceProvider)
