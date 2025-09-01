@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncRepository.Companion.PAGE_SIZE
-import com.woocommerce.android.ui.woopos.localcatalog.PosSyncProductsAction.Result
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductsAction.WooPosSyncProductsResult
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -15,20 +15,20 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogStore
-import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogSyncResult
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogSyncResult
 import kotlin.Result as KotlinResult
 
-class PosSyncProductsActionTest {
+class WooPosSyncProductsActionTest {
 
-    private lateinit var sut: PosSyncProductsAction
-    private var posLocalCatalogStore: PosLocalCatalogStore = mock()
+    private lateinit var sut: WooPosSyncProductsAction
+    private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
 
     @Before
     fun setup() {
-        sut = PosSyncProductsAction(posLocalCatalogStore, logger)
+        sut = WooPosSyncProductsAction(posLocalCatalogStore, logger)
         site = SiteModel().apply {
             id = 1
             siteId = 123L
@@ -44,8 +44,8 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, pageSize = 100, maxPages = 2)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Success::class.java)
-        assertThat((result as Result.Success).productsSynced).isEqualTo(50)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
+        assertThat((result as WooPosSyncProductsResult.Success).productsSynced).isEqualTo(50)
     }
 
     @Test
@@ -62,8 +62,8 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Success::class.java)
-        assertThat((result as Result.Success).productsSynced).isEqualTo(250)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
+        assertThat((result as WooPosSyncProductsResult.Success).productsSynced).isEqualTo(250)
     }
 
     @Test
@@ -76,8 +76,8 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Success::class.java)
-        assertThat((result as Result.Success).productsSynced).isEqualTo(0)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
+        assertThat((result as WooPosSyncProductsResult.Success).productsSynced).isEqualTo(0)
     }
 
     @Test
@@ -97,7 +97,7 @@ class PosSyncProductsActionTest {
             offset = eq(0),
             pageSize = eq(100)
         )
-        assertThat(result).isInstanceOf(Result.Success::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
     }
 
     @Test
@@ -114,8 +114,8 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Success::class.java)
-        assertThat((result as Result.Success).productsSynced).isEqualTo(300)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
+        assertThat((result as WooPosSyncProductsResult.Success).productsSynced).isEqualTo(300)
     }
 
     @Test
@@ -132,7 +132,7 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Failed.CatalogTooLarge::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Failed.CatalogTooLarge::class.java)
     }
 
     @Test
@@ -145,8 +145,8 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = 10)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Failed.UnexpectedError::class.java)
-        assertThat((result as Result.Failed).error).isEqualTo(errorMessage)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Failed.UnexpectedError::class.java)
+        assertThat((result as WooPosSyncProductsResult.Failed).error).isEqualTo(errorMessage)
     }
 
     @Test
@@ -160,8 +160,8 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Failed.UnexpectedError::class.java)
-        assertThat((result as Result.Failed).error).isEqualTo(errorMessage)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Failed.UnexpectedError::class.java)
+        assertThat((result as WooPosSyncProductsResult.Failed).error).isEqualTo(errorMessage)
     }
 
     @Test
@@ -174,8 +174,8 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Failed.UnexpectedError::class.java)
-        assertThat((result as Result.Failed).error).isEqualTo("Unknown error")
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Failed.UnexpectedError::class.java)
+        assertThat((result as WooPosSyncProductsResult.Failed).error).isEqualTo("Unknown error")
     }
 
     @Test
@@ -188,7 +188,7 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Success::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
         verify(posLocalCatalogStore, times(1))
             .syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any())
     }
@@ -203,7 +203,7 @@ class PosSyncProductsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(Result.Success::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
         verify(posLocalCatalogStore, times(1))
             .syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any())
     }
@@ -212,7 +212,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
             .thenReturn(
                 KotlinResult.success(
-                    PosLocalCatalogSyncResult(
+                    WooPosLocalCatalogSyncResult(
                         syncedCount = productsCount,
                         hasMore = false,
                         nextOffset = 0,
@@ -226,7 +226,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
             .thenReturn(
                 KotlinResult.success(
-                    PosLocalCatalogSyncResult(
+                    WooPosLocalCatalogSyncResult(
                         syncedCount = page1Count,
                         hasMore = true,
                         nextOffset = page1Count,
@@ -238,7 +238,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(page1Count), any()))
             .thenReturn(
                 KotlinResult.success(
-                    PosLocalCatalogSyncResult(
+                    WooPosLocalCatalogSyncResult(
                         syncedCount = page2Count,
                         hasMore = true,
                         nextOffset = page1Count + page2Count,
@@ -257,7 +257,7 @@ class PosSyncProductsActionTest {
         )
             .thenReturn(
                 KotlinResult.success(
-                    PosLocalCatalogSyncResult(
+                    WooPosLocalCatalogSyncResult(
                         syncedCount = page3Count,
                         hasMore = false,
                         nextOffset = 0,
@@ -271,7 +271,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    PosLocalCatalogSyncResult(
+                    WooPosLocalCatalogSyncResult(
                         syncedCount = 0,
                         hasMore = false,
                         nextOffset = 0,
@@ -295,7 +295,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
             .thenReturn(
                 KotlinResult.success(
-                    PosLocalCatalogSyncResult(
+                    WooPosLocalCatalogSyncResult(
                         syncedCount = 100,
                         hasMore = true,
                         nextOffset = 100,
@@ -314,7 +314,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
             .thenReturn(
                 KotlinResult.success(
-                    PosLocalCatalogSyncResult(
+                    WooPosLocalCatalogSyncResult(
                         syncedCount = 0,
                         hasMore = true,
                         nextOffset = 100,
@@ -326,7 +326,7 @@ class PosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(100), any()))
             .thenReturn(
                 KotlinResult.success(
-                    PosLocalCatalogSyncResult(
+                    WooPosLocalCatalogSyncResult(
                         syncedCount = 50,
                         hasMore = false,
                         nextOffset = 0,

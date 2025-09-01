@@ -6,11 +6,11 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.PosProductRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVariationModel
-import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
-import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -19,13 +19,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PosLocalCatalogStore @Inject constructor(
-    private val posProductRestClient: PosProductRestClient,
+class WooPosLocalCatalogStore @Inject constructor(
+    private val posProductRestClient: WooPosProductRestClient,
     private val coroutineEngine: CoroutineEngine,
-    private val posProductDao: PosProductsDao,
-    private val posVariationsDao: PosVariationsDao,
+    private val posProductDao: WooPosProductsDao,
+    private val posVariationsDao: WooPosVariationsDao,
 ) {
-    companion object {
+    private companion object {
         private const val DEFAULT_PAGE_SIZE = 100
         private const val MAX_PAGE_SIZE = 100
     }
@@ -74,7 +74,7 @@ class PosLocalCatalogStore @Inject constructor(
         modifiedAfterGmt: String?,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-    ): Result<PosLocalCatalogSyncResult> =
+    ): Result<WooPosLocalCatalogSyncResult> =
         coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
@@ -94,7 +94,7 @@ class PosLocalCatalogStore @Inject constructor(
 
                     response.model.isNullOrEmpty() -> {
                         Result.success(
-                            PosLocalCatalogSyncResult(
+                            WooPosLocalCatalogSyncResult(
                                 syncedCount = 0,
                                 hasMore = false,
                                 nextOffset = offset,
@@ -112,7 +112,7 @@ class PosLocalCatalogStore @Inject constructor(
 
                         if (upsertResult.isFailure) {
                             return@withDefaultContext Result.failure(
-                                PosLocalCatalogError.DatabaseError(
+                                WooPosLocalCatalogError.DatabaseError(
                                     errorMessage = "Failed to save products to database",
                                     throwable = upsertResult.exceptionOrNull()
                                 )
@@ -122,7 +122,7 @@ class PosLocalCatalogStore @Inject constructor(
                         val hasMore = products.size == validPageSize
 
                         Result.success(
-                            PosLocalCatalogSyncResult(
+                            WooPosLocalCatalogSyncResult(
                                 syncedCount = products.size,
                                 hasMore = hasMore,
                                 nextOffset = if (hasMore) offset + products.size else offset,
@@ -174,14 +174,14 @@ class PosLocalCatalogStore @Inject constructor(
      * @param modifiedAfterGmt ISO 8601 formatted date string (GMT)
      * @param page Starting page for pagination (1-based)
      * @param pageSize Number of variations to fetch per page (default: 100, max: 100)
-     * @return [Result] containing [PosVariationsSyncResult] with pagination info or error
+     * @return [Result] containing [WooPosVariationsSyncResult] with pagination info or error
      */
     suspend fun syncRecentlyModifiedVariations(
         site: SiteModel,
         modifiedAfterGmt: String,
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-    ): Result<PosVariationsSyncResult> =
+    ): Result<WooPosVariationsSyncResult> =
         coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedVariations") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
@@ -201,7 +201,7 @@ class PosLocalCatalogStore @Inject constructor(
 
                 response.model.isNullOrEmpty() -> {
                     Result.success(
-                        PosVariationsSyncResult(
+                        WooPosVariationsSyncResult(
                             syncedCount = 0,
                             hasMore = false,
                             nextPage = page
@@ -222,7 +222,7 @@ class PosLocalCatalogStore @Inject constructor(
 
                     if (upsertResult.isFailure) {
                         return@withDefaultContext Result.failure(
-                            PosLocalCatalogError.DatabaseError(
+                            WooPosLocalCatalogError.DatabaseError(
                                 errorMessage = "Failed to save variations to database",
                                 throwable = upsertResult.exceptionOrNull()
                             )
@@ -232,7 +232,7 @@ class PosLocalCatalogStore @Inject constructor(
                     val hasMore = variations.size == validPageSize
 
                     Result.success(
-                        PosVariationsSyncResult(
+                        WooPosVariationsSyncResult(
                             syncedCount = variations.size,
                             hasMore = hasMore,
                             nextPage = if (hasMore) {
@@ -254,7 +254,7 @@ class PosLocalCatalogStore @Inject constructor(
      */
     suspend fun generateCatalog(
         site: SiteModel
-    ): Result<PosGenerateCatalogResult> =
+    ): Result<WooPosGenerateCatalogResult> =
         coroutineEngine.withDefaultContext(API, this, "generateCatalog") {
             val response = posProductRestClient.postGenerateCatalog(site)
 
@@ -266,17 +266,17 @@ class PosLocalCatalogStore @Inject constructor(
                 }
 
                 response.model == null -> {
-                    Result.failure(PosLocalCatalogError.EmptyResponse)
+                    Result.failure(WooPosLocalCatalogError.EmptyResponse)
                 }
 
                 response.model.jobId == null -> {
-                    Result.failure(PosLocalCatalogError.InvalidResponse("Missing job ID in response"))
+                    Result.failure(WooPosLocalCatalogError.InvalidResponse("Missing job ID in response"))
                 }
 
                 else -> {
                     val jobId = response.model.jobId.toString()
                     Result.success(
-                        PosGenerateCatalogResult(jobId = jobId)
+                        WooPosGenerateCatalogResult(jobId = jobId)
                     )
                 }
             }
@@ -292,7 +292,7 @@ class PosLocalCatalogStore @Inject constructor(
     suspend fun fetchCatalogStatus(
         site: SiteModel,
         jobId: String
-    ): Result<PosCatalogStatusResult> =
+    ): Result<WooPosCatalogStatusResult> =
         coroutineEngine.withDefaultContext(API, this, "fetchCatalogStatus") {
             val response = posProductRestClient.getCatalogStatus(site, jobId)
 
@@ -304,16 +304,16 @@ class PosLocalCatalogStore @Inject constructor(
                 }
 
                 response.model == null -> {
-                    Result.failure(PosLocalCatalogError.EmptyResponse)
+                    Result.failure(WooPosLocalCatalogError.EmptyResponse)
                 }
 
                 response.model.status.isNullOrEmpty() -> {
-                    Result.failure(PosLocalCatalogError.InvalidResponse("Missing job ID in response"))
+                    Result.failure(WooPosLocalCatalogError.InvalidResponse("Missing job ID in response"))
                 }
 
                 else -> {
                     Result.success(
-                        PosCatalogStatusResult(
+                        WooPosCatalogStatusResult(
                             status = response.model.status,
                             downloadUrl = response.model.downloadUrl
                         )
@@ -322,26 +322,26 @@ class PosLocalCatalogStore @Inject constructor(
             }
         }
 
-    private fun mapResponseError(error: WooError?): PosLocalCatalogError {
+    private fun mapResponseError(error: WooError?): WooPosLocalCatalogError {
         return when (error?.type) {
-            WooErrorType.TIMEOUT -> PosLocalCatalogError.NetworkError(
+            WooErrorType.TIMEOUT -> WooPosLocalCatalogError.NetworkError(
                 errorMessage = "Request timed out",
                 code = error.type.name
             )
-            WooErrorType.NO_CONNECTION -> PosLocalCatalogError.NetworkError(
+            WooErrorType.NO_CONNECTION -> WooPosLocalCatalogError.NetworkError(
                 errorMessage = error.message ?: "No network connection",
                 code = error.type.name
             )
-            WooErrorType.INVALID_RESPONSE -> PosLocalCatalogError.NetworkError(
+            WooErrorType.INVALID_RESPONSE -> WooPosLocalCatalogError.NetworkError(
                 errorMessage = "Invalid response from server",
                 code = error.type.name
             )
-            WooErrorType.API_ERROR -> PosLocalCatalogError.NetworkError(
+            WooErrorType.API_ERROR -> WooPosLocalCatalogError.NetworkError(
                 errorMessage = error.message ?: "API error occurred",
                 code = error.type.name
             )
-            WooErrorType.EMPTY_RESPONSE -> PosLocalCatalogError.EmptyResponse
-            else -> PosLocalCatalogError.NetworkError(
+            WooErrorType.EMPTY_RESPONSE -> WooPosLocalCatalogError.EmptyResponse
+            else -> WooPosLocalCatalogError.NetworkError(
                 errorMessage = error?.message ?: "Unknown error occurred",
                 code = error?.type?.name
             )

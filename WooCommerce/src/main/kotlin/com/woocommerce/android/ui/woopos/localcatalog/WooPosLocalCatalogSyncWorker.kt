@@ -11,7 +11,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-class PosLocalCatalogSyncWorker @AssistedInject constructor(
+class WooPosLocalCatalogSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val accountRepository: AccountRepository,

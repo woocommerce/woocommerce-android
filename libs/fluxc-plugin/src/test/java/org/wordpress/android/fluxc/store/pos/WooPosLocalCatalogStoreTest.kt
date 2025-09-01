@@ -16,34 +16,34 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.pos.PosCatalogStatusResponse
-import org.wordpress.android.fluxc.model.pos.PosGenerateCatalogResponse
+import org.wordpress.android.fluxc.model.pos.WooPosCatalogStatusResponse
+import org.wordpress.android.fluxc.model.pos.WooPosGenerateCatalogResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.PosProductRestClient
-import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
-import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
-import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogError
-import org.wordpress.android.fluxc.store.pos.localcatalog.PosLocalCatalogStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogError
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 
 @RunWith(MockitoJUnitRunner::class)
-class PosLocalCatalogStoreTest {
+class WooPosLocalCatalogStoreTest {
 
     @Mock
-    private lateinit var posProductRestClient: PosProductRestClient
+    private lateinit var posProductRestClient: WooPosProductRestClient
 
     @Mock
-    private lateinit var posProductsDao: PosProductsDao
+    private lateinit var posProductsDao: WooPosProductsDao
 
     @Mock
-    private lateinit var posVariationsDao: PosVariationsDao
+    private lateinit var posVariationsDao: WooPosVariationsDao
 
-    private lateinit var store: PosLocalCatalogStore
+    private lateinit var store: WooPosLocalCatalogStore
 
     companion object {
         private val SITE_ID = LocalId(123)
@@ -63,7 +63,7 @@ class PosLocalCatalogStoreTest {
 
     @Before
     fun setUp() {
-        store = PosLocalCatalogStore(
+        store = WooPosLocalCatalogStore(
             posProductRestClient = posProductRestClient,
             coroutineEngine = initCoroutineEngine(),
             posProductDao = posProductsDao,
@@ -198,7 +198,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Connection failed")
         verifyNoInteractions(posProductsDao)
     }
@@ -218,7 +218,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.DatabaseError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.DatabaseError
         assertThat(error.errorMessage).contains("Failed to save products to database")
         assertThat(error.throwable).isEqualTo(storageException)
     }
@@ -287,7 +287,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Request timed out")
         assertThat(error.code).isEqualTo("TIMEOUT")
     }
@@ -382,7 +382,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Network error")
         verifyNoInteractions(posVariationsDao)
     }
@@ -421,7 +421,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PosLocalCatalogError.DatabaseError::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooPosLocalCatalogError.DatabaseError::class.java)
     }
 
     @Test
@@ -475,7 +475,7 @@ class PosLocalCatalogStoreTest {
     fun `when generating catalog successfully, then returns job ID`() = runTest {
         // GIVEN
         val expectedJobId = 12345L
-        val response = PosGenerateCatalogResponse(jobId = expectedJobId)
+        val response = WooPosGenerateCatalogResponse(jobId = expectedJobId)
         whenever(posProductRestClient.postGenerateCatalog(testSite))
             .thenReturn(WooResult(response))
 
@@ -498,7 +498,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PosLocalCatalogError.EmptyResponse::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooPosLocalCatalogError.EmptyResponse::class.java)
     }
 
     @Test
@@ -517,7 +517,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Network request failed")
         assertThat(error.code).isEqualTo("API_ERROR")
     }
@@ -528,7 +528,7 @@ class PosLocalCatalogStoreTest {
         val jobId = "12345"
         val expectedStatus = "completed"
         val expectedDownloadUrl = "https://example.com/catalog.zip"
-        val response = PosCatalogStatusResponse(
+        val response = WooPosCatalogStatusResponse(
             status = expectedStatus,
             downloadUrl = expectedDownloadUrl
         )
@@ -556,7 +556,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PosLocalCatalogError.EmptyResponse::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooPosLocalCatalogError.EmptyResponse::class.java)
     }
 
     @Test
@@ -576,7 +576,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.NetworkError
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Request timed out")
         assertThat(error.code).isEqualTo("TIMEOUT")
     }
@@ -585,7 +585,7 @@ class PosLocalCatalogStoreTest {
     fun `when fetching catalog status for in-progress job, then returns processing status`() = runTest {
         // GIVEN
         val jobId = "12345"
-        val response = PosCatalogStatusResponse(
+        val response = WooPosCatalogStatusResponse(
             status = "processing",
             downloadUrl = null
         )
@@ -603,7 +603,7 @@ class PosLocalCatalogStoreTest {
     @Test
     fun `when generating catalog returns null job ID, then returns invalid response error`() = runTest {
         // GIVEN
-        val response = PosGenerateCatalogResponse(jobId = null)
+        val response = WooPosGenerateCatalogResponse(jobId = null)
         whenever(posProductRestClient.postGenerateCatalog(testSite))
             .thenReturn(WooResult(response))
 
@@ -612,7 +612,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.InvalidResponse
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
         assertThat(error.message).isEqualTo("Missing job ID in response")
     }
 
@@ -620,7 +620,7 @@ class PosLocalCatalogStoreTest {
     fun `when fetching catalog status with null status field, then returns invalid response error`() = runTest {
         // GIVEN
         val jobId = "12345"
-        val response = PosCatalogStatusResponse(
+        val response = WooPosCatalogStatusResponse(
             status = null,
             downloadUrl = "https://example.com/catalog.zip"
         )
@@ -632,7 +632,7 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.InvalidResponse
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
         assertThat(error.message).isEqualTo("Missing job ID in response")
     }
 
@@ -640,7 +640,7 @@ class PosLocalCatalogStoreTest {
     fun `when fetching catalog status with empty status field, then returns invalid response error`() = runTest {
         // GIVEN
         val jobId = "12345"
-        val response = PosCatalogStatusResponse(
+        val response = WooPosCatalogStatusResponse(
             status = "",
             downloadUrl = "https://example.com/catalog.zip"
         )
@@ -652,14 +652,14 @@ class PosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as PosLocalCatalogError.InvalidResponse
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
         assertThat(error.message).isEqualTo("Missing job ID in response")
     }
 
     private fun createTestVariationApiResponse(
         id: Long = 200L,
         productId: Long = 100L
-    ) = org.wordpress.android.fluxc.model.pos.PosVariationApiResponse(
+    ) = org.wordpress.android.fluxc.model.pos.WooPosVariationApiResponse(
         id = id,
         productId = productId,
         sku = "VAR-SKU-$id",

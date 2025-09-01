@@ -1,6 +1,6 @@
 package org.wordpress.android.fluxc.store.pos.localcatalog
 
-sealed class PosLocalCatalogError(
+sealed class WooPosLocalCatalogError(
     override val message: String,
     override val cause: Throwable? = null
 ) : Exception(message, cause) {
@@ -8,18 +8,18 @@ sealed class PosLocalCatalogError(
     data class NetworkError(
         val errorMessage: String,
         val code: String? = null
-    ) : PosLocalCatalogError(errorMessage)
+    ) : WooPosLocalCatalogError(errorMessage)
 
     data class DatabaseError(
         val errorMessage: String,
         val throwable: Throwable? = null
-    ) : PosLocalCatalogError(errorMessage, throwable)
+    ) : WooPosLocalCatalogError(errorMessage, throwable)
 
-    object EmptyResponse : PosLocalCatalogError("Empty response from server")
+    object EmptyResponse : WooPosLocalCatalogError("Empty response from server")
 
-    data class InvalidResponse(val errorMessage: String) : PosLocalCatalogError(errorMessage)
+    data class InvalidResponse(val errorMessage: String) : WooPosLocalCatalogError(errorMessage)
 
     data class UnknownError(
         val throwable: Throwable
-    ) : PosLocalCatalogError(throwable.message ?: "Unknown error", throwable)
+    ) : WooPosLocalCatalogError(throwable.message ?: "Unknown error", throwable)
 }
