@@ -1,8 +1,8 @@
-package com.woocommerce.android.ui.woopos.home.scanningsetup
+package com.woocommerce.android.ui.woopos.scanningsetup
 
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScannerConfigurations
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
+import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
+import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.ScannerConfigurations
+import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import javax.inject.Inject
 
 class WooPosScannerSetupNavigator @Inject constructor() {

@@ -1,8 +1,8 @@
-package com.woocommerce.android.ui.woopos.home.scanningsetup
+package com.woocommerce.android.ui.woopos.scanningsetup
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
+import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
+import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

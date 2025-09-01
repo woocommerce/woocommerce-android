@@ -1,6 +1,7 @@
-package com.woocommerce.android.ui.woopos.home.scanningsetup
+package com.woocommerce.android.ui.woopos.scanningsetup
 
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import androidx.annotation.DrawableRes
@@ -86,8 +87,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
-import com.woocommerce.android.ui.woopos.home.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
+import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
+import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.ScanningSetupStep
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.delay
@@ -808,7 +809,7 @@ private fun ScannerSetupInfoContent(
 @Composable
 private fun EventListeners(
     viewModel: WooPosScanningSetupViewModel,
-    context: android.content.Context,
+    context: Context,
     onDismissRequestWrapper: () -> Unit
 ) {
     LaunchedEffect(Unit) {
