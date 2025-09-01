@@ -216,7 +216,8 @@ class WooPosSyncProductsActionTest {
                         syncedCount = productsCount,
                         hasMore = false,
                         nextOffset = 0,
-                        totalPages = 1
+                        totalPages = 1,
+                        serverDate = "",
                     )
                 )
             )
@@ -230,7 +231,8 @@ class WooPosSyncProductsActionTest {
                         syncedCount = page1Count,
                         hasMore = true,
                         nextOffset = page1Count,
-                        totalPages = totalPages
+                        totalPages = totalPages,
+                        serverDate = ""
                     )
                 )
             )
@@ -242,7 +244,8 @@ class WooPosSyncProductsActionTest {
                         syncedCount = page2Count,
                         hasMore = true,
                         nextOffset = page1Count + page2Count,
-                        totalPages = totalPages
+                        totalPages = totalPages,
+                        serverDate = "",
                     )
                 )
             )
@@ -261,7 +264,8 @@ class WooPosSyncProductsActionTest {
                         syncedCount = page3Count,
                         hasMore = false,
                         nextOffset = 0,
-                        totalPages = totalPages
+                        totalPages = totalPages,
+                        serverDate = "",
                     )
                 )
             )
@@ -275,7 +279,8 @@ class WooPosSyncProductsActionTest {
                         syncedCount = 0,
                         hasMore = false,
                         nextOffset = 0,
-                        totalPages = 1
+                        totalPages = 1,
+                        serverDate = "",
                     )
                 )
             )
@@ -299,7 +304,8 @@ class WooPosSyncProductsActionTest {
                         syncedCount = 100,
                         hasMore = true,
                         nextOffset = 100,
-                        totalPages = 2
+                        totalPages = 2,
+                        serverDate = ""
                     )
                 )
             )
@@ -318,7 +324,8 @@ class WooPosSyncProductsActionTest {
                         syncedCount = 0,
                         hasMore = true,
                         nextOffset = 100,
-                        totalPages = 2
+                        totalPages = 2,
+                        serverDate = "",
                     )
                 )
             )
@@ -330,7 +337,8 @@ class WooPosSyncProductsActionTest {
                         syncedCount = 50,
                         hasMore = false,
                         nextOffset = 0,
-                        totalPages = 2
+                        totalPages = 2,
+                        serverDate = ""
                     )
                 )
             )
