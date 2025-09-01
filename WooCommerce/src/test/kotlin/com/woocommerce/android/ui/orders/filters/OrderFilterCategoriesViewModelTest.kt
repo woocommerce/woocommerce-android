@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
+import com.woocommerce.android.ui.orders.filters.data.SalesChannel
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
@@ -149,6 +150,63 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             }
         )
             .allMatch { it.orderFilterOptions.none { it.isSelected } }
+    }
+
+    @Test
+    fun `given sales channel filter is supported, when initialized, then sales channel options include all channels`() =
+        testBlocking {
+            // GIVEN
+            whenever(isSalesChannelFilterSupported.invoke()).thenReturn(true)
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            val salesChannelFilter = currentCategoryList.find {
+                it.categoryKey == OrderListFilterCategory.SALES_CHANNEL
+            }
+            assertThat(salesChannelFilter).isNotNull
+            val filterKeys = salesChannelFilter!!.orderFilterOptions.map { it.key }
+            assertThat(filterKeys).contains(
+                SalesChannel.POS.key,
+                SalesChannel.WEB_CHECKOUT.key,
+                SalesChannel.WP_ADMIN.key,
+                OrderFilterOptionUiModel.DEFAULT_ALL_KEY
+            )
+        }
+
+    @Test
+    fun `given sales channel filter is not supported, when initialized, then sales channel filter is not shown`() =
+        testBlocking {
+            // GIVEN
+            whenever(isSalesChannelFilterSupported.invoke()).thenReturn(false)
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            val salesChannelFilter = currentCategoryList.find {
+                it.categoryKey == OrderListFilterCategory.SALES_CHANNEL
+            }
+            assertThat(salesChannelFilter).isNull()
+        }
+
+    @Test
+    fun `when sales channel filter is selected, then filter options are updated`() = testBlocking {
+        // GIVEN
+        whenever(isSalesChannelFilterSupported.invoke()).thenReturn(true)
+        initViewModel()
+
+        // WHEN
+        viewModel.onSalesChannelSelected(SalesChannel.WEB_CHECKOUT.key)
+
+        // THEN
+        val salesChannelFilter = currentCategoryList.find {
+            it.categoryKey == OrderListFilterCategory.SALES_CHANNEL
+        }
+        assertThat(salesChannelFilter).isNotNull
+        val selectedOption = salesChannelFilter!!.orderFilterOptions.find { it.isSelected }
+        assertThat(selectedOption?.key).isEqualTo(SalesChannel.WEB_CHECKOUT.key)
     }
 
     private fun allFilterOptionsAreUnselected() = currentCategoryList
