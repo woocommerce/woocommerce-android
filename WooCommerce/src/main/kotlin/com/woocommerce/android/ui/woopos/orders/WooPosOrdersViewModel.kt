@@ -26,26 +26,26 @@ class WooPosOrdersViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            val result = ordersDataSource.loadOrders()
-
-            if (result.isError || result.model == null) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = result.error?.message ?: "Unknown error"
-                    )
+            when (val result = ordersDataSource.loadOrders()) {
+                is LoadOrdersResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.error.message ?: "Unknown error"
+                        )
+                    }
                 }
-                return@launch
-            }
-
-            result.model?.let { list ->
-                _state.update { prev ->
-                    prev.copy(
-                        isLoading = false,
-                        orders = list,
-                        selectedOrderId = prev.selectedOrderId?.takeIf { id -> list.any { o -> o.id == id } }
-                            ?: list.firstOrNull()?.id
-                    )
+                is LoadOrdersResult.Success -> {
+                    val list = result.orders
+                    _state.update { prev ->
+                        prev.copy(
+                            isLoading = false,
+                            orders = list,
+                            selectedOrderId = prev.selectedOrderId?.takeIf { id ->
+                                list.any { o -> o.id == id }
+                            } ?: list.firstOrNull()?.id
+                        )
+                    }
                 }
             }
         }

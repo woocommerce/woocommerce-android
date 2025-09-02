@@ -17,9 +17,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -79,8 +77,10 @@ class WooPosOrdersDataSourceTest {
         val result = sut.loadOrders()
 
         // THEN
-        assertThat(result.isError).isFalse()
-        assertThat(result.model).containsExactly(o1, o2)
+        assertThat(result).isInstanceOf(LoadOrdersResult.Success::class.java)
+        val success = result as LoadOrdersResult.Success
+        assertThat(success.orders).containsExactly(o1, o2)
+
         verify(selectedSite).get()
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
@@ -122,8 +122,16 @@ class WooPosOrdersDataSourceTest {
         val result = sut.loadOrders()
 
         // THEN
-        assertThat(result.isError).isTrue()
-        assertThat(result.error).isEqualTo(WooError(API_ERROR, SERVER_ERROR, orderError.message))
+        assertThat(result).isInstanceOf(LoadOrdersResult.Error::class.java)
+        val error = result as LoadOrdersResult.Error
+        assertThat(error.error).isEqualTo(
+            WooError(
+                org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR,
+                org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR,
+                orderError.message
+            )
+        )
+
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
             count = eq(25),
@@ -159,8 +167,10 @@ class WooPosOrdersDataSourceTest {
         val result = sut.loadOrders()
 
         // THEN
-        assertThat(result.isError).isFalse()
-        assertThat(result.model).isEmpty()
+        assertThat(result).isInstanceOf(LoadOrdersResult.Success::class.java)
+        val success = result as LoadOrdersResult.Success
+        assertThat(success.orders).isEmpty()
+
         verify(selectedSite).get()
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),

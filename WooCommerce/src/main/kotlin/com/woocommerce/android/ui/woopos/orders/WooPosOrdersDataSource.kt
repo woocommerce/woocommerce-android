@@ -7,7 +7,6 @@ import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderBy
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -18,15 +17,22 @@ private sealed class FetchOrdersResult {
     data class Error(val error: WooError) : FetchOrdersResult()
 }
 
+sealed class LoadOrdersResult {
+    data class Success(val orders: List<Order>) : LoadOrdersResult()
+    data class Error(val error: WooError) : LoadOrdersResult()
+}
+
 class WooPosOrdersDataSource @Inject constructor(
     private val orderStore: OrderRestClient,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
 ) {
-    suspend fun loadOrders(): WooResult<List<Order>> {
+    suspend fun loadOrders(): LoadOrdersResult {
         return when (val result = fetchOrdersFromStore(1)) {
-            is FetchOrdersResult.Error -> WooResult(result.error)
-            is FetchOrdersResult.Success -> WooResult(result.orders.toAppModels())
+            is FetchOrdersResult.Error -> LoadOrdersResult.Error(result.error)
+            is FetchOrdersResult.Success -> LoadOrdersResult.Success(
+                result.orders.toAppModels()
+            )
         }
     }
 
