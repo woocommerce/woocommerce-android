@@ -7,6 +7,9 @@ import com.android.volley.DefaultRetryPolicy
 import com.android.volley.RequestQueue
 import com.android.volley.VolleyError
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.apache.commons.text.StringEscapeUtils
 import org.json.JSONException
 import org.json.JSONObject
@@ -21,6 +24,7 @@ import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
@@ -30,6 +34,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteWPComRestResponse.SitesResponse
 import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType
 import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferEligibilityResponsePayload
@@ -101,6 +107,7 @@ class SiteRestClient @Inject constructor(
     @Named("regular") requestQueue: RequestQueue?,
     private val appSecrets: AppSecrets,
     private val wpComGsonRequestBuilder: WPComGsonRequestBuilder,
+    private val jetpackTunnelGsonRequestBuilder: JetpackTunnelGsonRequestBuilder,
     private val coroutineEngine: CoroutineEngine,
     accessToken: AccessToken?,
     userAgent: UserAgent?
@@ -166,7 +173,10 @@ class SiteRestClient @Inject constructor(
                     if (filterJetpackConnectedPackageSite && siteModel.isJetpackCPConnected) continue
                     siteArray.add(siteModel)
                 }
-                SitesModel(siteArray, jetpackCPSiteArray)
+
+                val updatedJetpackCPSites = fetchAdditionalDetailsForJetpackCPSites(jetpackCPSiteArray)
+
+                SitesModel(siteArray, updatedJetpackCPSites)
             }
 
             is Error -> {
@@ -174,6 +184,28 @@ class SiteRestClient @Inject constructor(
                 payload.error = response.error
                 payload
             }
+        }
+    }
+
+    private suspend fun fetchAdditionalDetailsForJetpackCPSites(sites: List<SiteModel>): List<SiteModel> {
+        return coroutineScope {
+            sites.map { site ->
+                async {
+                    // Fetching the root endpoint will update the hasWooCommerce field and other site metadata
+                    fetchSiteUsingRootEndpoint(site).let {
+                        if (it.isError) {
+                            // If there was an error just ignore it and return the original site
+                            AppLog.w(
+                                AppLog.T.API,
+                                "Error fetching root endpoint for Jetpack CP connected site: ${site.url}, error: ${it.error}"
+                            )
+                            site
+                        } else {
+                            it
+                        }
+                    }
+                }
+            }.awaitAll()
         }
     }
 
@@ -200,6 +232,18 @@ class SiteRestClient @Inject constructor(
     }
 
     suspend fun fetchSite(site: SiteModel): SiteModel {
+        return if (site.isJetpackConnected) {
+            fetchSiteUsingWPComEndpoint(site).apply {
+                fetchAppPasswordsAuthorizationUrl(site).onSuccess {
+                    applicationPasswordsAuthorizeUrl = it
+                }
+            }
+        } else {
+            fetchSiteUsingRootEndpoint(site)
+        }
+    }
+
+    private suspend fun fetchSiteUsingWPComEndpoint(site: SiteModel): SiteModel {
         val params = mutableMapOf<String, String>()
         params[FIELDS] = SITE_FIELDS
         val url = WPCOMREST.sites.urlV1_1 + site.siteId
@@ -214,12 +258,61 @@ class SiteRestClient @Inject constructor(
                 }
                 newSite
             }
+
             is Error -> {
                 val payload = SiteModel()
                 payload.error = response.error
                 payload
             }
         }
+    }
+
+    private suspend fun fetchSiteUsingRootEndpoint(site: SiteModel): SiteModel {
+        val result = jetpackTunnelGsonRequestBuilder.syncGetRequest(
+            restClient = this,
+            site = site,
+            url = "/",
+            params = mapOf("_fields" to ROOT_ENDPOINT_FIELDS),
+            clazz = RootWPAPIRestResponse::class.java
+        )
+
+        return when {
+            result is JetpackResponse.JetpackSuccess && result.data != null -> {
+                // Keep existing fields, and update only fields fetched from the root endpoint
+                site.apply {
+                    name = result.data.name
+                    description = result.data.description
+                    timezone = result.data.gmtOffset
+                    hasWooCommerce = result.data.namespaces?.any {
+                        it.startsWith(WOO_API_NAMESPACE_PREFIX)
+                    } ?: false
+
+                    applicationPasswordsAuthorizeUrl = result.data.authentication?.applicationPasswords
+                        ?.endpoints?.authorization
+                }
+            }
+
+            else -> {
+                val payload = SiteModel()
+                payload.error = (result as? JetpackResponse.JetpackError)?.error
+                    ?: BaseNetworkError(GenericErrorType.UNKNOWN)
+                payload
+            }
+        }
+    }
+
+    private suspend fun fetchAppPasswordsAuthorizationUrl(site: SiteModel): Result<String?> {
+        val result = jetpackTunnelGsonRequestBuilder.syncGetRequest(
+            restClient = this,
+            site = site,
+            url = "/",
+            params = mapOf("_fields" to "authentication"),
+            clazz = RootWPAPIRestResponse::class.java
+        )
+
+        return (result as? JetpackResponse.JetpackSuccess)?.let {
+            Result.success(it.data?.authentication?.applicationPasswords?.endpoints?.authorization)
+        } ?: Result.failure(Exception((result as? JetpackResponse.JetpackError)?.error?.message ?: "Unknown error"))
     }
 
     /**
@@ -1092,8 +1185,10 @@ class SiteRestClient @Inject constructor(
         private const val NEW_SITE_TIMEOUT_MS = 90000
         @VisibleForTesting
         const val SITE_FIELDS = "ID,URL,name,description,jetpack,jetpack_connection,visible,is_private," +
-                "options,plan,capabilities,quota,icon,meta,zendesk_site_meta,organization_id," +
-                "was_ecommerce_trial,single_user_site,jetpack_modules"
+            "options,plan,capabilities,quota,icon,meta,zendesk_site_meta,organization_id," +
+            "was_ecommerce_trial,single_user_site,jetpack_modules"
+        private const val ROOT_ENDPOINT_FIELDS = "name,description,gmt_offset,namespaces,authentication"
+        private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FIELDS = "fields"
         private const val FILTERS = "filters"
     }

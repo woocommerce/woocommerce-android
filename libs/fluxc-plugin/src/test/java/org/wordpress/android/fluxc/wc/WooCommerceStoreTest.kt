@@ -10,7 +10,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -39,13 +38,11 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResp
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse.SystemPluginModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient.WPSiteSettingsResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
-import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
@@ -374,99 +371,6 @@ class WooCommerceStoreTest {
             wooCommerceStore.fetchWooCommerceSites()
 
             verify(siteStore, never()).fetchSites(any())
-        }
-    }
-
-    @Test
-    fun `when fetching a jetpack cp site, then fetch metadata from the remote site manually`() {
-        runBlocking {
-            val site = SiteUtils.generateJetpackCPSite()
-            whenever(accountStore.hasAccessToken()).thenReturn(true)
-            whenever(siteStore.fetchSites(any())).thenReturn(OnSiteChanged(1, updatedSites = listOf(site)))
-            whenever(siteStore.sites).thenReturn(listOf(site))
-            whenever(restClient.fetchSiteSettings(site)).thenReturn(
-                WooPayload(
-                    WPSiteSettingsResponse(title = "new title")
-                )
-            )
-            whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
-
-            val sites = wooCommerceStore.fetchWooCommerceSites().model!!
-
-            verify(restClient).fetchSiteSettings(site)
-            verify(restClient).checkIfWooCommerceIsAvailable(site)
-            assertThat(sites.first().hasWooCommerce).isTrue
-            assertThat(sites.first().name).isEqualTo("new title")
-        }
-    }
-
-    @Test
-    fun `given 3 woo and 3 updated sites, when fetching a jetpack cp site, emit event with 6 rows affected`() {
-        runBlocking {
-            val sites = (0..4).map {
-                SiteUtils.generateSelfHostedNonJPSite().apply { siteId = it.toLong() }
-            }
-            whenever(siteStore.sites).thenReturn(sites)
-
-            whenever(accountStore.hasAccessToken()).thenReturn(true)
-            val updatedSites = (0..4).map {
-                SiteUtils.generateJetpackCPSite().apply { siteId = it.toLong() }
-            }
-            whenever(siteStore.fetchSites(any())).thenReturn(
-                OnSiteChanged(3, updatedSites = updatedSites)
-            )
-            sites.forEach {
-                whenever(restClient.fetchSiteSettings(it)).thenReturn(
-                    WooPayload(WPSiteSettingsResponse(title = "new title"))
-                )
-            }
-            whenever(restClient.checkIfWooCommerceIsAvailable(sites[0])).thenReturn(WooPayload(true))
-            whenever(restClient.checkIfWooCommerceIsAvailable(sites[1])).thenReturn(WooPayload(true))
-            whenever(restClient.checkIfWooCommerceIsAvailable(sites[2])).thenReturn(WooPayload(true))
-            whenever(restClient.checkIfWooCommerceIsAvailable(sites[3])).thenReturn(WooPayload(null))
-            whenever(restClient.checkIfWooCommerceIsAvailable(sites[4])).thenReturn(WooPayload(null))
-
-            wooCommerceStore.fetchWooCommerceSites()
-
-            val eventCaptor = argumentCaptor<OnSiteChanged>()
-            verify(dispatcher).emitChange(eventCaptor.capture())
-            assertThat(eventCaptor.firstValue.rowsAffected).isEqualTo(6)
-        }
-    }
-
-    @Test
-    fun `when fetching a non-Jetpack self-hosted site, then detect WooCommerce installation manually`() {
-        runBlocking {
-            val site = SiteUtils.generateSelfHostedNonJPSite()
-            whenever(accountStore.hasAccessToken()).thenReturn(false)
-            whenever(siteStore.fetchSite(any())).thenReturn(OnSiteChanged(1, updatedSites = listOf(site)))
-            whenever(siteStore.sites).thenReturn(listOf(site))
-            whenever(siteStore.getSiteByLocalId(any())).thenReturn(site)
-            whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
-            fetchSupportedWooApiVersion(response = RootWPAPIRestResponse())
-
-            wooCommerceStore.fetchWooCommerceSite(site)
-
-            verify(siteStore).fetchSite(site)
-            verify(restClient).checkIfWooCommerceIsAvailable(site)
-        }
-    }
-
-    @Test
-    fun `when fetching a Jetpack site using site credentials, then detect WooCommerce installation manually`() {
-        runBlocking {
-            val site = SiteUtils.generateJetpackSiteOverXMLRPC()
-            whenever(accountStore.hasAccessToken()).thenReturn(false)
-            whenever(siteStore.fetchSite(any())).thenReturn(OnSiteChanged(1, updatedSites = listOf(site)))
-            whenever(siteStore.sites).thenReturn(listOf(site))
-            whenever(siteStore.getSiteByLocalId(any())).thenReturn(site)
-            whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
-            fetchSupportedWooApiVersion(response = RootWPAPIRestResponse())
-
-            wooCommerceStore.fetchWooCommerceSite(site)
-
-            verify(siteStore).fetchSite(site)
-            verify(restClient).checkIfWooCommerceIsAvailable(site)
         }
     }
 

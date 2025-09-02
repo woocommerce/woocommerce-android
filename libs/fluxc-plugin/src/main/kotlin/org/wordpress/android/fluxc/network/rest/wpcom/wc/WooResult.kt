@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc
 
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.Header
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.Store
 
@@ -19,7 +20,7 @@ data class WooPayload<T>(val result: T? = null) : Payload<WooError>() {
     }
 }
 
-data class WooResult<T>(val model: T? = null) : Store.OnChanged<WooError>() {
+data class WooResult<T>(val model: T? = null, val headers: List<Header> = emptyList()) : Store.OnChanged<WooError>() {
     constructor(error: WooError) : this() {
         this.error = error
     }

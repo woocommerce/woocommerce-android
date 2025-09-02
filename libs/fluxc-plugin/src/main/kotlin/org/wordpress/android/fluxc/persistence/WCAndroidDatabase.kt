@@ -62,8 +62,8 @@ import org.wordpress.android.fluxc.persistence.dao.UserDao
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.dao.WooPaymentsDepositsOverviewDao
 import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
-import org.wordpress.android.fluxc.persistence.dao.pos.PosProductsDao
-import org.wordpress.android.fluxc.persistence.dao.pos.PosVariationsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
+import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
@@ -236,8 +236,8 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
     internal abstract val customerDao: CustomerDao
     internal abstract val productsDao: ProductsDao
-    internal abstract val posProductsDao: PosProductsDao
-    internal abstract val posVariationsDao: PosVariationsDao
+    internal abstract val posProductsDao: WooPosProductsDao
+    internal abstract val posVariationsDao: WooPosVariationsDao
     internal abstract val productVariationsDao: ProductVariationsDao
     internal abstract val productCategoriesDao: ProductCategoriesDao
     internal abstract val productTagsDao: ProductTagsDao

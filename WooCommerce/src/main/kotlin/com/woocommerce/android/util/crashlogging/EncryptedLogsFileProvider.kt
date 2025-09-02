@@ -20,7 +20,7 @@ class EncryptedLogsFileProvider @Inject constructor(
         }
     }
 
-    companion object Companion {
+    companion object {
         private const val LOG_ENTRIES_LIMIT = 1000
     }
 }
