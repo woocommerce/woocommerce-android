@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -20,7 +19,7 @@ class WCGlobalAttributeStoreTest {
     private lateinit var storeUnderTest: WCGlobalAttributeStore
     private val restClient = mock<ProductAttributeRestClient>()
     private val globalAttributesDao = mock<GlobalAttributesDao>()
-    private val mapper = mock<WCGlobalAttributeMapper>()
+    private val mapper = WCGlobalAttributeMapper()
 
     @Before
     fun setUp() {
@@ -52,9 +51,9 @@ class WCGlobalAttributeStoreTest {
         whenever(globalAttributesDao.getAttributesForSite(stubSite.localId()))
             .thenReturn(parsedAttributesList)
 
-        storeUnderTest.fetchStoreAttributes(stubSite)
+        val result = storeUnderTest.fetchStoreAttributes(stubSite)
 
-        verify(mapper).responseToAttributeModelList(attributesFullListResponse!!, stubSite)
+        assertThat(result.model).isEqualTo(mapper.responseToAttributeModelList(attributesFullListResponse!!, stubSite))
     }
 
     @Test
@@ -64,13 +63,10 @@ class WCGlobalAttributeStoreTest {
         whenever(globalAttributesDao.getAttributesForSite(stubSite.localId()))
             .thenReturn(parsedAttributesList)
 
-        whenever(mapper.responseToAttributeModelList(attributesFullListResponse!!, stubSite))
-            .thenReturn(parsedAttributesList)
+        val result = storeUnderTest.fetchStoreAttributes(stubSite)
 
-        storeUnderTest.fetchStoreAttributes(stubSite).let { result ->
-            assertThat(result.model).isNotNull
-            assertThat(result.model).isEqualTo(parsedAttributesList)
-            assertThat(result.error).isNull()
-        }
+        assertThat(result.model).isNotNull
+        assertThat(result.model).isEqualTo(parsedAttributesList)
+        assertThat(result.error).isNull()
     }
 }
