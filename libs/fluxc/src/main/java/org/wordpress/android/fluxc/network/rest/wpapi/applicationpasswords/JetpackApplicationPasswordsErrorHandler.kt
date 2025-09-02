@@ -1,14 +1,17 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class JetpackApplicationPasswordsErrorHandler @Inject constructor() {
+class JetpackApplicationPasswordsErrorHandler @Inject constructor(
+    private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport
+) {
     private var failuresCount: Int = 0
 
-    fun handleError(error: WPAPINetworkError) {
+    fun handleError(siteModel: SiteModel, error: WPAPINetworkError) {
         val httpStatusCode = error.volleyError?.networkResponse?.statusCode
         val apiErrorCode = error.errorCode
 
@@ -18,13 +21,11 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor() {
             apiErrorCode == "incorrect_password" ||
             apiErrorCode == "application_passwords_disabled_for_user"
         ) {
-            // App passwords not supported
-            TODO()
+            jetpackApplicationPasswordsSupport.flagAsUnsupported(siteModel)
         } else {
             failuresCount++
             if (failuresCount >= FAILURES_THRESHOLD) {
-                // Too many failures, disable app passwords
-                TODO()
+                jetpackApplicationPasswordsSupport.flagAsUnsupported(siteModel)
             }
         }
     }
