@@ -20,7 +20,6 @@ class WooPosSyncProductsAction @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     suspend fun execute(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
@@ -28,71 +27,91 @@ class WooPosSyncProductsAction @Inject constructor(
         maxPages: Int
     ): WooPosSyncProductsResult {
         return posLocalCatalogStore.executeInTransaction {
-            var currentOffset = 0
-            var pagesSynced = 0
-            var totalSyncedProducts = 0
-            var shouldContinue = true
-
-            while (shouldContinue) {
-                val result = posLocalCatalogStore.syncRecentlyModifiedProducts(
-                    site = site,
-                    pageSize = pageSize,
-                    modifiedAfterGmt = modifiedAfterGmt,
-                    offset = currentOffset,
-                    storeInDb = true
-                )
-
-                result.fold(
-                    onSuccess = { syncResult ->
-                        if (pagesSynced == 0) {
-                            if (syncResult.totalPages > maxPages) {
-                                logger.e(
-                                    "Catalog too large: ${syncResult.totalPages} pages exceed maximum of $maxPages pages"
-                                )
-                                throw CatalogTooLargeException(syncResult.totalPages, maxPages)
-                            }
-                        }
-
-                        logger.d("Page ${pagesSynced + 1} synced, ${syncResult.syncedCount} products")
-                        totalSyncedProducts += syncResult.syncedCount
-                        pagesSynced++
-
-                        if (!syncResult.hasMore || syncResult.syncedCount == 0) {
-                            logger.d("No more products to sync")
-                            shouldContinue = false
-                        } else {
-                            currentOffset = syncResult.nextOffset
-                        }
-                    },
-                    onFailure = { error ->
-                        logger.e("Sync failed on page ${pagesSynced + 1}: ${error.message}")
-                        throw error
-                    }
-                )
-            }
-
-            logger.d("Products sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
-            WooPosSyncProductsResult.Success(totalSyncedProducts)
+            syncAllPages(site, modifiedAfterGmt, pageSize, maxPages)
         }.fold(
             onSuccess = { result ->
                 logger.d("Transaction committed successfully")
                 result
             },
             onFailure = { error ->
-                when (error) {
-                    is CatalogTooLargeException -> {
-                        logger.e("Catalog too large, transaction rolled back")
-                        error.toSyncResult()
-                    }
-                    else -> {
-                        logger.e("Transaction failed and was rolled back: ${error.message}")
-                        WooPosSyncProductsResult.Failed.UnexpectedError(
-                            error.message ?: "Transaction failed and was rolled back"
-                        )
-                    }
-                }
+                handleTransactionError(error)
             }
         )
+    }
+
+    private suspend fun syncAllPages(
+        site: SiteModel,
+        modifiedAfterGmt: String?,
+        pageSize: Int,
+        maxPages: Int
+    ): WooPosSyncProductsResult {
+        var currentOffset = 0
+        var pagesSynced = 0
+        var totalSyncedProducts = 0
+        var shouldContinue = true
+
+        while (shouldContinue) {
+            val result = posLocalCatalogStore.syncRecentlyModifiedProducts(
+                site = site,
+                pageSize = pageSize,
+                modifiedAfterGmt = modifiedAfterGmt,
+                offset = currentOffset,
+                storeInDb = true
+            )
+
+            result.fold(
+                onSuccess = { syncResult ->
+                    processPageResult(syncResult, pagesSynced, maxPages)
+                    totalSyncedProducts += syncResult.syncedCount
+                    pagesSynced++
+                    
+                    if (!syncResult.hasMore || syncResult.syncedCount == 0) {
+                        logger.d("No more products to sync")
+                        shouldContinue = false
+                    } else {
+                        currentOffset = syncResult.nextOffset
+                    }
+                },
+                onFailure = { error ->
+                    logger.e("Sync failed on page ${pagesSynced + 1}: ${error.message}")
+                    throw error
+                }
+            )
+        }
+
+        logger.d("Products sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
+        return WooPosSyncProductsResult.Success(totalSyncedProducts)
+    }
+
+    private fun processPageResult(
+        syncResult: org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogSyncResult,
+        pagesSynced: Int,
+        maxPages: Int
+    ) {
+        if (pagesSynced == 0) {
+            if (syncResult.totalPages > maxPages) {
+                logger.e(
+                    "Catalog too large: ${syncResult.totalPages} pages exceed maximum of $maxPages pages"
+                )
+                throw CatalogTooLargeException(syncResult.totalPages, maxPages)
+            }
+        }
+        logger.d("Page ${pagesSynced + 1} synced, ${syncResult.syncedCount} products")
+    }
+
+    private fun handleTransactionError(error: Throwable): WooPosSyncProductsResult {
+        return when (error) {
+            is CatalogTooLargeException -> {
+                logger.e("Catalog too large, transaction rolled back")
+                error.toSyncResult()
+            }
+            else -> {
+                logger.e("Transaction failed and was rolled back: ${error.message}")
+                WooPosSyncProductsResult.Failed.UnexpectedError(
+                    error.message ?: "Transaction failed and was rolled back"
+                )
+            }
+        }
     }
 
     internal class CatalogTooLargeException(
