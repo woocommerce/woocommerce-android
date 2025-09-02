@@ -91,6 +91,7 @@ class WooPosLocalCatalogStore @Inject constructor(
             val serverDate = headersParser.getServerDate(response)
 
             if (serverDate == null) {
+                return@withDefaultContext Result.failure(
                     WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
                 )
             }
@@ -129,6 +130,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                     val totalPages = headersParser.getTotalPages(response)
 
                     if (totalPages == null) {
+                        return@withDefaultContext Result.failure(
+                            WooPosLocalCatalogError.InvalidResponse(
                                 "Missing required header in response: Total Pages."
                             )
                         )
