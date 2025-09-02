@@ -64,7 +64,6 @@ class WooPosLocalCatalogStore @Inject constructor(
             Result.success(product)
         }
 
-
     /**
      * Executes a block of code within a database transaction.
      * If the block throws an exception, the transaction is rolled back.

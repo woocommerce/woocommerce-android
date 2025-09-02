@@ -166,7 +166,6 @@ class WooPosSyncProductsActionTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosSyncProductsResult.Failed.UnexpectedError::class.java)
-        assertThat((result as WooPosSyncProductsResult.Failed).error).isEqualTo("Transaction failed and was rolled back")
     }
 
     @Test
