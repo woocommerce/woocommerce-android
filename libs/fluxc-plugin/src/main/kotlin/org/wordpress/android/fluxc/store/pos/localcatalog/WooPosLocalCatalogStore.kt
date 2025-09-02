@@ -209,6 +209,14 @@ class WooPosLocalCatalogStore @Inject constructor(
                 pageSize = validPageSize
             )
 
+            val serverDate = headersParser.getServerDate(response)
+
+            if (serverDate == null) {
+                return@withDefaultContext Result.failure(
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
+                )
+            }
+
             when {
                 response.isError -> {
                     Result.failure(
@@ -221,7 +229,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                         WooPosVariationsSyncResult(
                             syncedCount = 0,
                             hasMore = false,
-                            nextPage = page
+                            nextPage = page,
+                            serverDate = serverDate,
                         )
                     )
                 }
@@ -256,7 +265,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                                 page + 1
                             } else {
                                 page
-                            }
+                            },
+                            serverDate = serverDate,
                         )
                     )
                 }
