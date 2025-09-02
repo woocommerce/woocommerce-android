@@ -175,6 +175,7 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
         gsonBuilder.registerTypeHierarchyAdapter(JsonObjectOrFalse.class, new JsonObjectOrFalseDeserializer());
         gsonBuilder.registerTypeHierarchyAdapter(JsonObjectOrEmptyArray.class,
                 new JsonObjectOrEmptyArrayDeserializer());
+        gsonBuilder.registerTypeHierarchyAdapter(List.class, new ListOrObjectDeserializer());
         return gsonBuilder;
     }
 
