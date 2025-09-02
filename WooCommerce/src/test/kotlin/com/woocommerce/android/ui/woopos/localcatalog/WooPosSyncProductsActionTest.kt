@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
@@ -95,7 +96,8 @@ class WooPosSyncProductsActionTest {
             site = eq(site),
             modifiedAfterGmt = eq(modifiedAfter),
             offset = eq(0),
-            pageSize = eq(100)
+            pageSize = eq(100),
+            storeInDb = any(),
         )
         assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
     }
@@ -190,7 +192,7 @@ class WooPosSyncProductsActionTest {
         // THEN
         assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
         verify(posLocalCatalogStore, times(1))
-            .syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any())
+            .syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), any())
     }
 
     @Test
@@ -205,44 +207,47 @@ class WooPosSyncProductsActionTest {
         // THEN
         assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
         verify(posLocalCatalogStore, times(1))
-            .syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any())
+            .syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), any())
     }
 
     private suspend fun givenSinglePageCatalog(productsCount: Int = PAGE_SIZE / 2) {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), anyBoolean()))
             .thenReturn(
                 KotlinResult.success(
                     WooPosLocalCatalogSyncResult(
                         syncedCount = productsCount,
                         hasMore = false,
                         nextOffset = 0,
-                        totalPages = 1
+                        totalPages = 1,
+                        serverDate = "",
                     )
                 )
             )
     }
 
     private suspend fun givenMultiPageCatalog(page1Count: Int, page2Count: Int, page3Count: Int, totalPages: Int = 3) {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
                 KotlinResult.success(
                     WooPosLocalCatalogSyncResult(
                         syncedCount = page1Count,
                         hasMore = true,
                         nextOffset = page1Count,
-                        totalPages = totalPages
+                        totalPages = totalPages,
+                        serverDate = ""
                     )
                 )
             )
 
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(page1Count), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(page1Count), any(), any()))
             .thenReturn(
                 KotlinResult.success(
                     WooPosLocalCatalogSyncResult(
                         syncedCount = page2Count,
                         hasMore = true,
                         nextOffset = page1Count + page2Count,
-                        totalPages = totalPages
+                        totalPages = totalPages,
+                        serverDate = "",
                     )
                 )
             )
@@ -252,6 +257,7 @@ class WooPosSyncProductsActionTest {
                 any(),
                 anyOrNull(),
                 eq(page1Count + page2Count),
+                any(),
                 any()
             )
         )
@@ -261,76 +267,81 @@ class WooPosSyncProductsActionTest {
                         syncedCount = page3Count,
                         hasMore = false,
                         nextOffset = 0,
-                        totalPages = totalPages
+                        totalPages = totalPages,
+                        serverDate = "",
                     )
                 )
             )
     }
 
     private suspend fun givenEmptyCatalog() {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), any()))
             .thenReturn(
                 KotlinResult.success(
                     WooPosLocalCatalogSyncResult(
                         syncedCount = 0,
                         hasMore = false,
                         nextOffset = 0,
-                        totalPages = 1
+                        totalPages = 1,
+                        serverDate = "",
                     )
                 )
             )
     }
 
     private suspend fun givenFirstPageFails(errorMessage: String) {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), any()))
             .thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 
     private suspend fun givenFirstPageFailsWithNullMessage() {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), any()))
             .thenReturn(KotlinResult.failure(Exception()))
     }
 
     private suspend fun givenSecondPageFails(errorMessage: String) {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
                 KotlinResult.success(
                     WooPosLocalCatalogSyncResult(
                         syncedCount = 100,
                         hasMore = true,
                         nextOffset = 100,
-                        totalPages = 2
+                        totalPages = 2,
+                        serverDate = ""
                     )
                 )
             )
 
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(100), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(100), any(), any()))
             .thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 
     private suspend fun givenPageWithZeroProductsButHasMore() {
         // Note: Due to current action logic, it won't continue if syncedCount == 0
         // So we use 1 product on first page instead of 0 to demonstrate continuing
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
                 KotlinResult.success(
                     WooPosLocalCatalogSyncResult(
                         syncedCount = 0,
                         hasMore = true,
                         nextOffset = 100,
-                        totalPages = 2
+                        totalPages = 2,
+                        serverDate = "",
                     )
                 )
             )
 
-        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(100), any()))
+        whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(100), any(), any()))
             .thenReturn(
                 KotlinResult.success(
                     WooPosLocalCatalogSyncResult(
                         syncedCount = 50,
                         hasMore = false,
                         nextOffset = 0,
-                        totalPages = 2
+                        totalPages = 2,
+                        serverDate = ""
                     )
                 )
             )

@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
@@ -29,19 +29,18 @@ import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogError
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
+import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 
 @RunWith(MockitoJUnitRunner::class)
 class WooPosLocalCatalogStoreTest {
+    private val posProductRestClient: WooPosProductRestClient = mock()
 
-    @Mock
-    private lateinit var posProductRestClient: WooPosProductRestClient
+    private val posProductsDao: WooPosProductsDao = mock()
 
-    @Mock
-    private lateinit var posProductsDao: WooPosProductsDao
+    private val posVariationsDao: WooPosVariationsDao = mock()
 
-    @Mock
-    private lateinit var posVariationsDao: WooPosVariationsDao
+    private val headersParser: HeadersParser = mock()
 
     private lateinit var store: WooPosLocalCatalogStore
 
@@ -67,8 +66,15 @@ class WooPosLocalCatalogStoreTest {
             posProductRestClient = posProductRestClient,
             coroutineEngine = initCoroutineEngine(),
             posProductDao = posProductsDao,
-            posVariationsDao = posVariationsDao
+            posVariationsDao = posVariationsDao,
+            headersParser = headersParser
         )
+
+        // Set up default successful responses for common operations
+        whenever(headersParser.getServerDate<Any>(any()))
+            .thenReturn("2024-01-01T00:00:00Z")
+        whenever(headersParser.getTotalPages<Any>(any()))
+            .thenReturn(1)
     }
 
     @Test
@@ -654,6 +660,134 @@ class WooPosLocalCatalogStoreTest {
         assertThat(result.isFailure).isTrue()
         val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
         assertThat(error.message).isEqualTo("Missing job ID in response")
+    }
+
+    @Test
+    fun `when server date header is missing, then sync returns invalid response error`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
+        val response = WooResult(remoteProducts)
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(response)
+        whenever(headersParser.getServerDate(response))
+            .thenReturn(null) // Missing server date
+
+        // WHEN
+        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
+        assertThat(error).isNotNull
+    }
+
+    @Test
+    fun `when total pages header is missing, then sync returns invalid response error`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
+        val response = WooResult(remoteProducts)
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(response)
+        whenever(headersParser.getServerDate(response))
+            .thenReturn("2024-01-01T00:00:00Z")
+        whenever(headersParser.getTotalPages(response))
+            .thenReturn(null) // Missing total pages
+
+        // WHEN
+        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
+        assertThat(error).isNotNull
+    }
+
+    @Test
+    fun `when headers are present, then sync includes them in result`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
+        val response = WooResult(remoteProducts)
+        val expectedServerDate = "2024-03-15T10:30:00Z"
+        val expectedTotalPages = 3
+
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(response)
+        whenever(headersParser.getServerDate(response))
+            .thenReturn(expectedServerDate)
+        whenever(headersParser.getTotalPages(response))
+            .thenReturn(expectedTotalPages)
+
+        // WHEN
+        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+
+        // THEN
+        assertThat(syncResult.serverDate).isEqualTo(expectedServerDate)
+        assertThat(syncResult.totalPages).isEqualTo(expectedTotalPages)
+    }
+
+    @Test
+    fun `when storeInDb is false, then products are not saved to database`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(
+            createTestApiResponse(id = 1L, name = "Product 1"),
+            createTestApiResponse(id = 2L, name = "Product 2")
+        )
+        val response = WooResult(remoteProducts)
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(response)
+
+        // WHEN
+        val syncResult = store.syncRecentlyModifiedProducts(
+            site = testSite,
+            modifiedAfterGmt = validDateString,
+            offset = 0,
+            pageSize = 100,
+            storeInDb = false
+        ).getOrThrow()
+
+        // THEN
+        verifyNoInteractions(posProductsDao)
+        assertThat(syncResult.syncedCount).isEqualTo(2)
+    }
+
+    @Test
+    fun `when storeInDb is true, then products are saved to database`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(
+            createTestApiResponse(id = 1L, name = "Product 1"),
+            createTestApiResponse(id = 2L, name = "Product 2")
+        )
+        val response = WooResult(remoteProducts)
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(response)
+
+        // WHEN
+        val syncResult = store.syncRecentlyModifiedProducts(
+            site = testSite,
+            modifiedAfterGmt = validDateString,
+            offset = 0,
+            pageSize = 100,
+            storeInDb = true
+        ).getOrThrow()
+
+        // THEN
+        verify(posProductsDao).upsertProducts(any())
+        assertThat(syncResult.syncedCount).isEqualTo(2)
+    }
+
+    @Test
+    fun `when storeInDb is not specified, then defaults to storing in database`() = runTest {
+        // GIVEN
+        val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
+        val response = WooResult(remoteProducts)
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(response)
+
+        // WHEN
+        store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+
+        // THEN
+        verify(posProductsDao).upsertProducts(any())
     }
 
     private fun createTestVariationApiResponse(
