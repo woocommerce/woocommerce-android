@@ -50,8 +50,8 @@ class WooPosOrdersDataSourceTest {
             e1 to emptyList<WCMetaData>(),
             e2 to emptyList<WCMetaData>()
         )
-        val o1 = mock<Order>()
-        val o2 = mock<Order>()
+        val firstOrder = mock<Order>()
+        val secondOrder = mock<Order>()
 
         val payload = WCOrderStore.FetchOrdersResponsePayload(
             site = siteModel,
@@ -70,8 +70,8 @@ class WooPosOrdersDataSourceTest {
             )
         ).thenReturn(payload)
 
-        whenever(orderMapper.toAppModel(e1)).thenReturn(o1)
-        whenever(orderMapper.toAppModel(e2)).thenReturn(o2)
+        whenever(orderMapper.toAppModel(e1)).thenReturn(firstOrder)
+        whenever(orderMapper.toAppModel(e2)).thenReturn(secondOrder)
 
         // WHEN
         val result = sut.loadOrders()
@@ -79,7 +79,7 @@ class WooPosOrdersDataSourceTest {
         // THEN
         assertThat(result).isInstanceOf(LoadOrdersResult.Success::class.java)
         val success = result as LoadOrdersResult.Success
-        assertThat(success.orders).containsExactly(o1, o2)
+        assertThat(success.orders).containsExactly(firstOrder, secondOrder)
 
         verify(selectedSite).get()
         verify(orderRestClient).fetchOrders(
