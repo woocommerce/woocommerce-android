@@ -1,5 +1,8 @@
 package org.wordpress.android.fluxc.network.rest;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -21,9 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>> {
     private static final String PROTOCOL_CHARSET = "utf-8";
@@ -158,7 +158,8 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
         }
     }
 
-    @NonNull private static List<Header> mapHeaders(
+    @NonNull
+    private static List<Header> mapHeaders(
             @NonNull NetworkResponse response) {
         List<Header> convertedHeaders = new ArrayList<>();
         if (response.allHeaders != null) {
