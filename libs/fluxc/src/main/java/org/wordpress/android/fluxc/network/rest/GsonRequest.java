@@ -12,6 +12,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.Strictness;
 
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger;
 import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider;
@@ -172,7 +173,7 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
 
     public static GsonBuilder getDefaultGsonBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setLenient();
+        gsonBuilder.setStrictness(Strictness.LENIENT);
         gsonBuilder.registerTypeHierarchyAdapter(JsonObjectOrFalse.class, new JsonObjectOrFalseDeserializer());
         gsonBuilder.registerTypeHierarchyAdapter(JsonObjectOrEmptyArray.class,
                 new JsonObjectOrEmptyArrayDeserializer());
