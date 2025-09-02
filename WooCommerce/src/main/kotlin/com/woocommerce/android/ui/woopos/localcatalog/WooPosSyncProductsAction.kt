@@ -95,7 +95,7 @@ class WooPosSyncProductsAction @Inject constructor(
         )
     }
 
-    private class CatalogTooLargeException(
+    internal class CatalogTooLargeException(
         val totalPages: Int,
         val maxPages: Int
     ) : Exception("Catalog too large: $totalPages pages exceed maximum of $maxPages pages") {
