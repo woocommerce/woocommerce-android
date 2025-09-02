@@ -53,7 +53,7 @@ class PosLocalCatalogSyncRepository @Inject constructor(
         )
     }
 
-    @Suppress("ReturnCount", "LongMethod")
+    @Suppress("ReturnCount")
     private suspend fun performSync(
         site: SiteModel,
         pageSize: Int,
@@ -64,68 +64,92 @@ class PosLocalCatalogSyncRepository @Inject constructor(
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
-        val productSyncResult: WooPosSyncProductsResult = posSyncProductsAction.execute(
-            site,
-            modifiedAfterGmt,
-            pageSize,
-            maxPages
-        )
-
-        when (productSyncResult) {
-            is WooPosSyncProductsResult.Failed.CatalogTooLarge -> {
-                return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-                    error = "Product catalog too large: ${productSyncResult.totalPages} pages exceed maximum " +
-                        "of ${productSyncResult.maxPages} pages",
-                    totalPages = productSyncResult.totalPages,
-                    maxPages = productSyncResult.maxPages
-                )
-            }
-            is WooPosSyncProductsResult.Failed -> {
-                return PosLocalCatalogSyncResult.Failure.UnexpectedError(productSyncResult.error)
-            }
-            is WooPosSyncProductsResult.Success -> {
-                productSyncResult.serverDate?.let { serverDate ->
-                    syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
-                        syncTimestampManager.storeProductsLastSyncTimestamp(timestamp)
-                        logger.d("Stored products sync timestamp: $serverDate")
-                    }
-                }
-            }
+        val productSyncResult = syncProducts(site, modifiedAfterGmt, pageSize, maxPages)
+        if (productSyncResult is WooPosSyncProductsResult.Failed) {
+            return productSyncResult.toPosLocalCatalogSyncFailure()
         }
 
-        val variationSyncResult = posSyncVariationsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
+        val variationSyncResult = syncVariations(site, modifiedAfterGmt, pageSize, maxPages)
+        if (variationSyncResult is WooPosSyncVariationsResult.Failed) {
+            return variationSyncResult.toPosLocalCatalogSyncFailure()
+        }
 
         val syncDuration = System.currentTimeMillis() - startTime
 
-        when (variationSyncResult) {
-            is WooPosSyncVariationsResult.Failed.CatalogTooLarge -> {
-                return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-                    error = "Variations catalog too large: ${variationSyncResult.totalPages} pages exceed maximum " +
-                        "of ${variationSyncResult.maxPages} pages",
-                    totalPages = variationSyncResult.totalPages,
-                    maxPages = variationSyncResult.maxPages
-                )
-            }
-            is WooPosSyncVariationsResult.Failed -> {
-                return PosLocalCatalogSyncResult.Failure.UnexpectedError(variationSyncResult.error)
-            }
-            is WooPosSyncVariationsResult.Success -> {
-                variationSyncResult.serverDate?.let { serverDate ->
-                    syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
-                        syncTimestampManager.storeVariationsLastSyncTimestamp(timestamp)
-                        logger.d("Stored variations sync timestamp: $serverDate")
-                    }
+        return PosLocalCatalogSyncResult.Success(
+            productsSynced = (productSyncResult as WooPosSyncProductsResult.Success).productsSynced,
+            variationsSynced = (variationSyncResult as WooPosSyncVariationsResult.Success).variationsSynced,
+            syncDurationMs = syncDuration
+        )
+    }
+
+    private suspend fun syncProducts(
+        site: SiteModel,
+        modifiedAfterGmt: String?,
+        pageSize: Int,
+        maxPages: Int
+    ): WooPosSyncProductsResult {
+        val result = posSyncProductsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
+
+        if (result is WooPosSyncProductsResult.Success) {
+            result.serverDate?.let { serverDate ->
+                syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
+                    syncTimestampManager.storeProductsLastSyncTimestamp(timestamp)
+                    logger.d("Stored products sync timestamp: $serverDate")
                 }
             }
         }
 
-        val productsSynced = productSyncResult.productsSynced
-        val variationsSynced = variationSyncResult.variationsSynced
+        return result
+    }
 
-        return PosLocalCatalogSyncResult.Success(
-            productsSynced = productsSynced,
-            variationsSynced = variationsSynced,
-            syncDurationMs = syncDuration
-        )
+    private suspend fun syncVariations(
+        site: SiteModel,
+        modifiedAfterGmt: String?,
+        pageSize: Int,
+        maxPages: Int
+    ): WooPosSyncVariationsResult {
+        val result = posSyncVariationsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
+
+        if (result is WooPosSyncVariationsResult.Success) {
+            result.serverDate?.let { serverDate ->
+                syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
+                    syncTimestampManager.storeVariationsLastSyncTimestamp(timestamp)
+                    logger.d("Stored variations sync timestamp: $serverDate")
+                }
+            }
+        }
+
+        return result
+    }
+}
+
+private fun WooPosSyncProductsResult.Failed.toPosLocalCatalogSyncFailure(): PosLocalCatalogSyncResult.Failure {
+    return when (this) {
+        is WooPosSyncProductsResult.Failed.CatalogTooLarge -> {
+            PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
+                error = "Product catalog too large: $totalPages pages exceed maximum of $maxPages pages",
+                totalPages = totalPages,
+                maxPages = maxPages
+            )
+        }
+        else -> {
+            PosLocalCatalogSyncResult.Failure.UnexpectedError(error)
+        }
+    }
+}
+
+private fun WooPosSyncVariationsResult.Failed.toPosLocalCatalogSyncFailure(): PosLocalCatalogSyncResult.Failure {
+    return when (this) {
+        is WooPosSyncVariationsResult.Failed.CatalogTooLarge -> {
+            PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
+                error = "Variations catalog too large: $totalPages pages exceed maximum of $maxPages pages",
+                totalPages = totalPages,
+                maxPages = maxPages
+            )
+        }
+        else -> {
+            PosLocalCatalogSyncResult.Failure.UnexpectedError(error)
+        }
     }
 }
