@@ -1,0 +1,124 @@
+package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
+
+import com.android.volley.NetworkResponse
+import com.android.volley.VolleyError
+import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.utils.AppLogWrapper
+
+class JetpackApplicationPasswordsErrorHandlerTests {
+    private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport = mock()
+    private val appLogWrapper: AppLogWrapper = mock()
+    private val errorHandler: JetpackApplicationPasswordsErrorHandler = JetpackApplicationPasswordsErrorHandler(
+        jetpackApplicationPasswordsSupport = jetpackApplicationPasswordsSupport,
+        appLogWrapper = appLogWrapper
+    )
+
+    private val testSite = SiteModel().apply {
+        siteId = 123L
+    }
+
+    @Test
+    fun `given HTTP 401 error, when handling error, then flag site as unsupported`() {
+        // Given
+        val volleyError = VolleyError(NetworkResponse(401, null, true, 0, emptyList()))
+        val baseError = BaseNetworkError(volleyError)
+        val networkError = WPAPINetworkError(baseError)
+
+        // When
+        errorHandler.handleError(testSite, networkError)
+
+        // Then
+        verify(jetpackApplicationPasswordsSupport).flagAsUnsupported(testSite)
+    }
+
+    @Test
+    fun `given HTTP 403 error, when handling error, then flag site as unsupported`() {
+        // Given
+        val volleyError = VolleyError(NetworkResponse(403, null, true, 0, emptyList()))
+        val baseError = BaseNetworkError(volleyError)
+        val networkError = WPAPINetworkError(baseError)
+
+        // When
+        errorHandler.handleError(testSite, networkError)
+
+        // Then
+        verify(jetpackApplicationPasswordsSupport).flagAsUnsupported(testSite)
+    }
+
+    @Test
+    fun `given HTTP 429 error, when handling error, then flag site as unsupported`() {
+        // Given
+        val volleyError = VolleyError(NetworkResponse(429, null, true, 0, emptyList()))
+        val baseError = BaseNetworkError(volleyError)
+        val networkError = WPAPINetworkError(baseError)
+
+        // When
+        errorHandler.handleError(testSite, networkError)
+
+        // Then
+        verify(jetpackApplicationPasswordsSupport).flagAsUnsupported(testSite)
+    }
+
+    @Test
+    fun `given incorrect_password error code, when handling error, then flag site as unsupported`() {
+        // Given
+        val baseError = BaseNetworkError(mock<VolleyError>())
+        val networkError = WPAPINetworkError(baseError, "incorrect_password")
+
+        // When
+        errorHandler.handleError(testSite, networkError)
+
+        // Then
+        verify(jetpackApplicationPasswordsSupport).flagAsUnsupported(testSite)
+    }
+
+    @Test
+    fun `given application_passwords_disabled_for_user error code, when handling error, then flag site as unsupported`() {
+        // Given
+        val baseError = BaseNetworkError(mock<VolleyError>())
+        val networkError = WPAPINetworkError(baseError, "application_passwords_disabled_for_user")
+
+        // When
+        errorHandler.handleError(testSite, networkError)
+
+        // Then
+        verify(jetpackApplicationPasswordsSupport).flagAsUnsupported(testSite)
+    }
+
+    @Test
+    fun `given generic error, when handling error once, then do not flag site as unsupported`() {
+        // Given
+        val volleyError = VolleyError(NetworkResponse(500, null, true, 0, emptyList()))
+        val baseError = BaseNetworkError(volleyError)
+        val networkError = WPAPINetworkError(baseError, "generic_error")
+
+        // When
+        errorHandler.handleError(testSite, networkError)
+
+        // Then
+        verify(jetpackApplicationPasswordsSupport, never()).flagAsUnsupported(testSite)
+    }
+
+    @Test
+    fun `given generic error, when handling error 10 times, then flag site as unsupported`() {
+        // Given
+        val volleyError = VolleyError(NetworkResponse(500, null, true, 0, emptyList()))
+        val baseError = BaseNetworkError(volleyError)
+        val networkError = WPAPINetworkError(baseError, "generic_error")
+
+        // When
+        repeat(10) {
+            errorHandler.handleError(testSite, networkError)
+        }
+
+        // Then
+        verify(jetpackApplicationPasswordsSupport, times(1)).flagAsUnsupported(testSite)
+    }
+}

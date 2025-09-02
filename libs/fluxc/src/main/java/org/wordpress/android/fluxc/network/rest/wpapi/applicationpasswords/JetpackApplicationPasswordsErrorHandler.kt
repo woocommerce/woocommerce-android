@@ -2,13 +2,15 @@ package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class JetpackApplicationPasswordsErrorHandler @Inject constructor(
-    private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport
+    private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport,
+    private val appLogWrapper: AppLogWrapper
 ) {
     private var failuresCount: MutableMap<Long, Int> = mutableMapOf()
 
@@ -22,7 +24,7 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
             apiErrorCode == "incorrect_password" ||
             apiErrorCode == "application_passwords_disabled_for_user"
         ) {
-            AppLog.w(
+            appLogWrapper.w(
                 AppLog.T.API,
                 "Disabling Jetpack Application Passwords support for site ${siteModel.siteId} " +
                     "due to error: $httpStatusCode / $apiErrorCode"
@@ -33,10 +35,10 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
             failuresCount[siteModel.siteId] = siteFailuresCount
 
             if (siteFailuresCount >= FAILURES_THRESHOLD) {
-                AppLog.w(
+                appLogWrapper.w(
                     AppLog.T.API,
                     "Disabling Jetpack Application Passwords support for site ${siteModel.siteId} " +
-                        "after $failuresCount failures"
+                        "after $siteFailuresCount failures"
                 )
                 jetpackApplicationPasswordsSupport.flagAsUnsupported(siteModel)
             }
