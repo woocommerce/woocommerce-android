@@ -1,0 +1,48 @@
+name: Automerge Dependabot PATCH updates
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  assign-milestone:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'woocommerce/woocommerce-android'
+    env:
+      PR_URL: ${{ github.event.pull_request.html_url }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Exit if no Dependabot metadata found
+        if: steps.metadata.outputs.update-type != 'version-update:semver-patch'
+        run: |
+          echo "The update is not PATCH. Exiting."
+          exit 0
+
+      - name: Assign closest open milestone to PR
+        run: |
+          set -e
+          number=$(gh api repos/$GITHUB_REPOSITORY/milestones \
+            --jq '[.[]
+              | select(.state=="open" and .due_on!=null and (.due_on | fromdateiso8601) >= now)
+            ]
+            | sort_by(.due_on)
+            | .[0].number')
+
+          if [ -n "$number" ]; then
+            echo "Assigning milestone #$number to PR #${{ github.event.pull_request.number }}"
+            gh pr edit "${{ github.event.pull_request.number }}" --milestone "$number"
+          else
+            echo "No future open milestones found."
+          fi
+
+      - name: Approve the PR
+        run: gh pr review --approve "$PR_URL"
+
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --merge "$PR_URL"
