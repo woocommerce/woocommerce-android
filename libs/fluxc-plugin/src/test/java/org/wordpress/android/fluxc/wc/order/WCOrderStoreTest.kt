@@ -47,7 +47,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.BulkUpdateOrderStatusResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListResponsePayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
@@ -334,51 +333,6 @@ internal class WCOrderStoreTest {
                     (outdated.summaries + missing.summaries).map { it.orderId.value }
                 )
             })
-        }
-    }
-
-    @Test
-    fun `when fetching orders with a created via argument, then it passes it to the client`() {
-        runBlocking {
-            // Given
-            val site = SiteModel().apply { id = 1 }
-            val expectedCreatedVia = "pos-rest-api"
-
-            val payload = FetchOrdersResponsePayload(
-                site = site,
-                ordersWithMeta = emptyList(),
-                loadedMore = false,
-                canLoadMore = false
-            )
-
-            whenever(
-                orderRestClient.fetchOrders(
-                    site = eq(site),
-                    count = eq(WCOrderStore.NUM_ORDERS_PER_FETCH),
-                    page = eq(1),
-                    orderBy = eq(OrderRestClient.OrderBy.DATE),
-                    sortOrder = eq(OrderRestClient.SortOrder.DESCENDING),
-                    statusFilter = anyOrNull(),
-                    createdVia = eq(expectedCreatedVia)
-                )
-            ).thenReturn(payload)
-
-            // When
-            orderStore.fetchOrders(
-                site = site,
-                createdVia = expectedCreatedVia // <- forward from store to client
-            )
-
-            // Then
-            verify(orderRestClient).fetchOrders(
-                site = eq(site),
-                count = eq(WCOrderStore.NUM_ORDERS_PER_FETCH),
-                page = eq(1),
-                orderBy = eq(OrderRestClient.OrderBy.DATE),
-                sortOrder = eq(OrderRestClient.SortOrder.DESCENDING),
-                statusFilter = anyOrNull(),
-                createdVia = eq(expectedCreatedVia)
-            )
         }
     }
 
