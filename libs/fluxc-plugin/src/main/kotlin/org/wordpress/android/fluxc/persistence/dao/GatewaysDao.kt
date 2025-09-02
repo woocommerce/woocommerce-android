@@ -41,7 +41,7 @@ abstract class GatewaysDao {
     protected abstract suspend fun deleteForSite(siteId: LocalId)
 
     @Upsert
-    abstract suspend fun upsertGateways(gateways: List<GatewayEntity>)
+    protected abstract suspend fun upsertGateways(gateways: List<GatewayEntity>)
 
     @Upsert
     abstract suspend fun upsertGateway(gateway: GatewayEntity)
