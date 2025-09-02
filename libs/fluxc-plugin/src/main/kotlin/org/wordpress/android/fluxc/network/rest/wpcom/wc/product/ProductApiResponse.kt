@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.product
 
-import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
@@ -77,11 +76,11 @@ data class ProductApiResponse(
     val upsell_ids: JsonElement? = null,
     val grouped_products: JsonElement? = null,
     @SerializedName("meta_data")
-    val metadata: JsonArray? = null,
+    val metadata: List<JsonElement>? = null,
     val bundle_stock_quantity: String? = null,
     val bundle_stock_status: String? = null,
-    val bundled_items: JsonArray? = null,
-    val composite_components: JsonArray? = null,
+    val bundled_items: List<JsonElement>? = null,
+    val composite_components: List<JsonElement>? = null,
     val bundle_min_size: String? = null,
     val bundle_max_size: String? = null,
     val min_quantity: String? = null,
