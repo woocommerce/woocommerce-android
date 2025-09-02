@@ -110,7 +110,7 @@ class WooPosLocalCatalogStore @Inject constructor(
 
             if (serverDate == null) {
                 return@withDefaultContext Result.failure(
-                    WooPosLocalCatalogError.InvalidResponse("Missing header in response, Server Date: $serverDate.")
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
                 )
             }
 
@@ -150,7 +150,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                     if (totalPages == null) {
                         return@withDefaultContext Result.failure(
                             WooPosLocalCatalogError.InvalidResponse(
-                                "Missing required header in response, Total Pages: $totalPages."
+                                "Missing required header in response: Total Pages."
                             )
                         )
                     }
