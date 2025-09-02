@@ -64,7 +64,12 @@ class PosLocalCatalogSyncRepository @Inject constructor(
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
-        val productSyncResult: WooPosSyncProductsResult = posSyncProductsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
+        val productSyncResult: WooPosSyncProductsResult = posSyncProductsAction.execute(
+            site,
+            modifiedAfterGmt,
+            pageSize,
+            maxPages
+        )
 
         when (productSyncResult) {
             is WooPosSyncProductsResult.Failed.CatalogTooLarge -> {
