@@ -85,7 +85,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOvervie
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration13to14
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration14to15
@@ -141,7 +141,7 @@ const val WC_DATABASE_VERSION = 59
         ShippingMethodEntity::class,
         CustomerFromAnalyticsEntity::class,
         WCProductModel::class,
-        WCPosProductModel::class,
+        WCPosProductEntity::class,
         WCPosVariationModel::class,
         WCProductCategoryModel::class,
         WCProductVariationModel::class,

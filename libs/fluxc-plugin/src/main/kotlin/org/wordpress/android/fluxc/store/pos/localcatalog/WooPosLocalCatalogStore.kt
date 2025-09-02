@@ -7,11 +7,11 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVariationModel
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
@@ -40,7 +40,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      */
     fun observeProducts(
         siteId: LocalOrRemoteId.LocalId
-    ): Flow<Result<List<WCPosProductModel>>> =
+    ): Flow<Result<List<WCPosProductEntity>>> =
         posProductDao.observeAllProducts(siteId)
             .map { products ->
                 Result.success(products)
@@ -56,7 +56,7 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun getProduct(
         siteId: LocalOrRemoteId.LocalId,
         remoteProductId: LocalOrRemoteId.RemoteId
-    ): Result<WCPosProductModel?> =
+    ): Result<WCPosProductEntity?> =
         coroutineEngine.withDefaultContext(API, this, "getProduct") {
             val product = posProductDao.getProduct(siteId, remoteProductId)
             Result.success(product)
@@ -110,7 +110,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                 )
 
                 else -> {
-                    val products = response.model.map { it.mapToPOSModel() }
+                    val products = response.model.map { it.mapToPOSEntity() }
 
                     if (storeInDb) {
                         val upsertResult = runCatching { posProductDao.upsertProducts(products) }
