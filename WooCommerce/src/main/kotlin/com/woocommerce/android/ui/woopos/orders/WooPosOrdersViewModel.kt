@@ -18,6 +18,10 @@ class WooPosOrdersViewModel @Inject constructor(
     private val _state = MutableStateFlow(WooPosOrdersState())
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
 
+    init {
+        refreshOrders()
+    }
+
     fun onOrderSelected(orderId: Long) {
         _state.update { it.copy(selectedOrderId = orderId) }
     }
