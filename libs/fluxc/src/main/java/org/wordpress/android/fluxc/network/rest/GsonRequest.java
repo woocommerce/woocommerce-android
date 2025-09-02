@@ -171,6 +171,7 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
         return convertedHeaders;
     }
 
+    @NonNull
     public static GsonBuilder getDefaultGsonBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setStrictness(Strictness.LENIENT);
