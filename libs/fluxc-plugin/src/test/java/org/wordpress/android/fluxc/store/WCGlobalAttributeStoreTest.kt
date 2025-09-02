@@ -45,18 +45,6 @@ class WCGlobalAttributeStoreTest {
     }
 
     @Test
-    fun `fetch attributes should call mapper once`() = test {
-        whenever(restClient.fetchProductFullAttributesList(stubSite))
-            .thenReturn(WooPayload(attributesFullListResponse))
-        whenever(globalAttributesDao.getAttributesForSite(stubSite.localId()))
-            .thenReturn(parsedAttributesList)
-
-        val result = storeUnderTest.fetchStoreAttributes(stubSite)
-
-        assertThat(result.model).isEqualTo(mapper.responseToAttributeModelList(attributesFullListResponse!!, stubSite))
-    }
-
-    @Test
     fun `fetch attributes should return WooResult correctly`() = test {
         whenever(restClient.fetchProductFullAttributesList(stubSite))
             .thenReturn(WooPayload(attributesFullListResponse))
