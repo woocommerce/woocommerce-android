@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +28,7 @@ class WooPosOrdersViewModel @Inject constructor(
 
             ordersDataSource.loadOrders().collect { res ->
                 when (res) {
-                    is WooPosOrdersDataSource.OrdersResult.Cached -> {
+                    is LoadOrdersResult.Cached -> {
                         val list = res.orders
                         _state.update { prev ->
                             prev.copy(
@@ -40,7 +39,7 @@ class WooPosOrdersViewModel @Inject constructor(
                             )
                         }
                     }
-                    is WooPosOrdersDataSource.OrdersResult.Remote -> {
+                    is LoadOrdersResult.Remote -> {
                         res.ordersResult.fold(
                             onSuccess = { list ->
                                 _state.update { prev ->
