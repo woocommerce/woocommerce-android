@@ -22,7 +22,6 @@ abstract class GatewaysDao {
         SELECT * FROM GatewayEntity
         WHERE siteId = :siteId
         AND gatewayId = :gatewayId
-        LIMIT 1
         """
     )
     abstract suspend fun getGateway(siteId: LocalId, gatewayId: String): GatewayEntity?
