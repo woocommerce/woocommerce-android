@@ -36,7 +36,7 @@ class WooPosOrdersDataSourceTest {
     private val orderMapper: OrderMapper = mock()
 
     private val sut = WooPosOrdersDataSource(
-        orderStore = orderRestClient,
+        restClient = orderRestClient,
         selectedSite = selectedSite,
         orderMapper = orderMapper
     )

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -23,12 +22,12 @@ sealed class LoadOrdersResult {
 }
 
 class WooPosOrdersDataSource @Inject constructor(
-    private val orderStore: OrderRestClient,
+    private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
 ) {
     suspend fun loadOrders(): LoadOrdersResult {
-        return when (val result = fetchOrdersFromStore(1)) {
+        return when (val result = fetchOrdersFromRemote(1)) {
             is FetchOrdersResult.Error -> LoadOrdersResult.Error(result.error)
             is FetchOrdersResult.Success -> LoadOrdersResult.Success(
                 result.orders.toAppModels()
@@ -36,10 +35,10 @@ class WooPosOrdersDataSource @Inject constructor(
         }
     }
 
-    private suspend fun fetchOrdersFromStore(
+    private suspend fun fetchOrdersFromRemote(
         page: Int
     ): FetchOrdersResult {
-        val result = orderStore.fetchOrders(
+        val result = restClient.fetchOrders(
             site = selectedSite.get(),
             count = 25,
             page = page,
