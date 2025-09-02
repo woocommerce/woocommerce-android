@@ -14,7 +14,7 @@ class WooPosSyncProductsAction @Inject constructor(
 
         sealed class Failed(val error: String) : WooPosSyncProductsResult() {
             class CatalogTooLarge(val totalPages: Int, val maxPages: Int) :
-                Failed("Catalog too large: $totalPages pages exceed maximum of $maxPages pages")
+                Failed("Local Catalog too large: $totalPages pages exceed maximum of $maxPages pages")
 
             class UnexpectedError(error: String) : Failed(error)
         }
@@ -33,7 +33,7 @@ class WooPosSyncProductsAction @Inject constructor(
             syncAllPages(site, modifiedAfterGmt, pageSize, maxPages)
         }.fold(
             onSuccess = { result ->
-                logger.d("Transaction committed successfully")
+                logger.d("Local Catalog transaction committed successfully")
                 result
             },
             onFailure = { error ->
@@ -69,20 +69,20 @@ class WooPosSyncProductsAction @Inject constructor(
                     pagesSynced++
 
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
-                        logger.d("No more products to sync")
+                        logger.d("Local Catalog: No more products to sync")
                         shouldContinue = false
                     } else {
                         currentOffset = syncResult.nextOffset
                     }
                 },
                 onFailure = { error ->
-                    logger.e("Sync failed on page ${pagesSynced + 1}: ${error.message}")
+                    logger.e("Local Catalog Sync failed on page ${pagesSynced + 1}: ${error.message}")
                     throw error
                 }
             )
         }
 
-        logger.d("Products sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
+        logger.d("Local catalog sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
         return WooPosSyncProductsResult.Success(totalSyncedProducts)
     }
 
@@ -94,12 +94,12 @@ class WooPosSyncProductsAction @Inject constructor(
         if (pagesSynced == 0) {
             if (syncResult.totalPages > maxPages) {
                 logger.e(
-                    "Catalog too large: ${syncResult.totalPages} pages exceed maximum of $maxPages pages"
+                    "Local Catalog too large: ${syncResult.totalPages} pages exceed maximum of $maxPages pages"
                 )
                 throw CatalogTooLargeException(syncResult.totalPages, maxPages)
             }
         }
-        logger.d("Page ${pagesSynced + 1} synced, ${syncResult.syncedCount} products")
+        logger.d("Local Catalog page ${pagesSynced + 1} synced, ${syncResult.syncedCount} products")
     }
 
     private fun handleTransactionError(error: Throwable): WooPosSyncProductsResult {
@@ -120,7 +120,7 @@ class WooPosSyncProductsAction @Inject constructor(
     internal class CatalogTooLargeException(
         val totalPages: Int,
         val maxPages: Int
-    ) : Exception("Catalog too large: $totalPages pages exceed maximum of $maxPages pages") {
+    ) : Exception("Local Catalog too large: $totalPages pages exceed maximum of $maxPages pages") {
         fun toSyncResult(): WooPosSyncProductsResult.Failed.CatalogTooLarge {
             return WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages)
         }
