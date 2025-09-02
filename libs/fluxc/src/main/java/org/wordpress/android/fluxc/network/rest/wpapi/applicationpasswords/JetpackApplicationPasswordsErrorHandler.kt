@@ -9,7 +9,7 @@ import javax.inject.Singleton
 class JetpackApplicationPasswordsErrorHandler @Inject constructor(
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport
 ) {
-    private var failuresCount: Int = 0
+    private var failuresCount: MutableMap<Long, Int> = mutableMapOf()
 
     fun handleError(siteModel: SiteModel, error: WPAPINetworkError) {
         val httpStatusCode = error.volleyError?.networkResponse?.statusCode
@@ -24,8 +24,10 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
         ) {
             jetpackApplicationPasswordsSupport.flagAsUnsupported(siteModel)
         } else {
-            failuresCount++
-            if (failuresCount >= FAILURES_THRESHOLD) {
+            val siteFailuresCount = (failuresCount[siteModel.siteId] ?: 0) + 1
+            failuresCount[siteModel.siteId] = siteFailuresCount
+
+            if (siteFailuresCount >= FAILURES_THRESHOLD) {
                 jetpackApplicationPasswordsSupport.flagAsUnsupported(siteModel)
             }
         }
