@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductsAction.WooPosSyncProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationsAction.WooPosSyncVariationsResult
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
@@ -25,6 +26,7 @@ sealed class PosLocalCatalogSyncResult {
 @Singleton
 class PosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncProductsAction: WooPosSyncProductsAction,
+    private val posSyncVariationsAction: WooPosSyncVariationsAction,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
@@ -51,6 +53,7 @@ class PosLocalCatalogSyncRepository @Inject constructor(
         )
     }
 
+    @Suppress("ReturnCount", "LongMethod")
     private suspend fun performSync(
         site: SiteModel,
         pageSize: Int,
@@ -61,37 +64,63 @@ class PosLocalCatalogSyncRepository @Inject constructor(
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
-        val productSyncResult = posSyncProductsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
-        // TBD Local Catalog We'll want to trigger variations action here too
+        val productSyncResult: WooPosSyncProductsResult = posSyncProductsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
 
-        val syncDuration = System.currentTimeMillis() - startTime
-
-        return when (productSyncResult) {
-            is WooPosSyncProductsResult.Success -> {
-                // TBD Local Catalog we need to use store server timestamp
-                val currentTime = System.currentTimeMillis()
-                // TBD Local Catalog We need to store incremental and full sync timestamps separately
-                syncTimestampManager.storeProductsLastSyncTimestamp(currentTime)
-
-                PosLocalCatalogSyncResult.Success(
-                    productsSynced = productSyncResult.productsSynced,
-                    variationsSynced = 0,
-                    syncDurationMs = syncDuration
-                )
-            }
-
+        when (productSyncResult) {
             is WooPosSyncProductsResult.Failed.CatalogTooLarge -> {
-                PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-                    error = "Catalog too large: ${productSyncResult.totalPages} pages exceed maximum " +
+                return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
+                    error = "Product catalog too large: ${productSyncResult.totalPages} pages exceed maximum " +
                         "of ${productSyncResult.maxPages} pages",
                     totalPages = productSyncResult.totalPages,
                     maxPages = productSyncResult.maxPages
                 )
             }
-
             is WooPosSyncProductsResult.Failed -> {
-                PosLocalCatalogSyncResult.Failure.UnexpectedError(productSyncResult.error)
+                return PosLocalCatalogSyncResult.Failure.UnexpectedError(productSyncResult.error)
+            }
+            is WooPosSyncProductsResult.Success -> {
+                productSyncResult.serverDate?.let { serverDate ->
+                    syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
+                        syncTimestampManager.storeProductsLastSyncTimestamp(timestamp)
+                        logger.d("Stored products sync timestamp: $serverDate")
+                    }
+                }
             }
         }
+
+        val variationSyncResult = posSyncVariationsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
+
+        val syncDuration = System.currentTimeMillis() - startTime
+
+        when (variationSyncResult) {
+            is WooPosSyncVariationsResult.Failed.CatalogTooLarge -> {
+                return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
+                    error = "Variations catalog too large: ${variationSyncResult.totalPages} pages exceed maximum " +
+                        "of ${variationSyncResult.maxPages} pages",
+                    totalPages = variationSyncResult.totalPages,
+                    maxPages = variationSyncResult.maxPages
+                )
+            }
+            is WooPosSyncVariationsResult.Failed -> {
+                return PosLocalCatalogSyncResult.Failure.UnexpectedError(variationSyncResult.error)
+            }
+            is WooPosSyncVariationsResult.Success -> {
+                variationSyncResult.serverDate?.let { serverDate ->
+                    syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
+                        syncTimestampManager.storeVariationsLastSyncTimestamp(timestamp)
+                        logger.d("Stored variations sync timestamp: $serverDate")
+                    }
+                }
+            }
+        }
+
+        val productsSynced = productSyncResult.productsSynced
+        val variationsSynced = variationSyncResult.variationsSynced
+
+        return PosLocalCatalogSyncResult.Success(
+            productsSynced = productsSynced,
+            variationsSynced = variationsSynced,
+            syncDurationMs = syncDuration
+        )
     }
 }
