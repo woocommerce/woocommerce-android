@@ -20,8 +20,7 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
             httpStatusCode == FORBIDDEN ||
             httpStatusCode == TOO_MANY_REQUESTS ||
             apiErrorCode == "incorrect_password" ||
-            apiErrorCode == "application_passwords_disabled_for_user" ||
-            apiErrorCode == ApplicationPasswordsNetwork.APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE
+            apiErrorCode == "application_passwords_disabled_for_user"
         ) {
             AppLog.w(
                 AppLog.T.API,
