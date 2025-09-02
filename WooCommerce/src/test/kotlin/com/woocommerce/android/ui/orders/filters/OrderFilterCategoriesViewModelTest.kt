@@ -39,7 +39,7 @@ import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
-    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private lateinit var savedStateHandle: SavedStateHandle
     private val resourceProvider: ResourceProvider = mock()
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions = mock()
     private val getDateRangeFilterOptions: GetDateRangeFilterOptions = mock()
@@ -59,9 +59,11 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() = testBlocking {
+        savedStateHandle = SavedStateHandle()
         givenResourceProviderReturnsNonEmptyStrings()
         givenOrderStatusOptionsAvailable()
         givenDateRangeFiltersAvailable()
+        whenever(isSalesChannelFilterSupported.invoke()).thenReturn(false)
         initViewModel()
     }
 
@@ -156,7 +158,9 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     fun `given sales channel filter is supported, when initialized, then sales channel options include all channels`() =
         testBlocking {
             // GIVEN
+            savedStateHandle = SavedStateHandle()
             whenever(isSalesChannelFilterSupported.invoke()).thenReturn(true)
+            whenever(orderFilterRepository.getCurrentFilterSelection(any())).thenReturn(emptyList())
 
             // WHEN
             initViewModel()
@@ -179,6 +183,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     fun `given sales channel filter is not supported, when initialized, then sales channel filter is not shown`() =
         testBlocking {
             // GIVEN
+            savedStateHandle = SavedStateHandle()
             whenever(isSalesChannelFilterSupported.invoke()).thenReturn(false)
 
             // WHEN
@@ -194,7 +199,9 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     @Test
     fun `when sales channel filter is selected, then filter options are updated`() = testBlocking {
         // GIVEN
+        savedStateHandle = SavedStateHandle()
         whenever(isSalesChannelFilterSupported.invoke()).thenReturn(true)
+        whenever(orderFilterRepository.getCurrentFilterSelection(any())).thenReturn(emptyList())
         initViewModel()
 
         // WHEN
