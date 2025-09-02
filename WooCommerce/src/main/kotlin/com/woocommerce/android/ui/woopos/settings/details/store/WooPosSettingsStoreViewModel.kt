@@ -51,4 +51,9 @@ class WooPosSettingsStoreViewModel @Inject constructor(
             _state.value = _state.value.copy(receiptState = newReceiptState)
         }
     }
+
+    fun retryLoadReceiptData() {
+        _state.value = _state.value.copy(receiptState = WooPosSettingsStoreState.ReceiptState.Loading)
+        loadReceiptData()
+    }
 }

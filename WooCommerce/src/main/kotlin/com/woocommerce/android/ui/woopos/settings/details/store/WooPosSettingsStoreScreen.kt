@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -42,6 +44,7 @@ fun WooPosSettingsStoreScreen(
     val state by viewModel.state.collectAsState()
     WooPosSettingsStoreScreen(
         state = state,
+        onRetryReceiptDataLoad = { viewModel.retryLoadReceiptData() },
         modifier = modifier
     )
 }
@@ -49,6 +52,7 @@ fun WooPosSettingsStoreScreen(
 @Composable
 private fun WooPosSettingsStoreScreen(
     state: WooPosSettingsStoreState,
+    onRetryReceiptDataLoad: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -68,8 +72,12 @@ private fun WooPosSettingsStoreScreen(
         }
 
         when (val receiptState = state.receiptState) {
-            is WooPosSettingsStoreState.ReceiptState.NotSupported,
+            is WooPosSettingsStoreState.ReceiptState.NotSupported -> {
+            }
+
             is WooPosSettingsStoreState.ReceiptState.Error -> {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+                ReceiptErrorSection(onRetryReceiptDataLoad)
             }
 
             is WooPosSettingsStoreState.ReceiptState.Loading -> {
@@ -195,6 +203,20 @@ private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.Rece
     )
 }
 
+@Composable
+private fun ReceiptErrorSection(onRetry: () -> Unit) {
+    WooPosErrorScreen(
+        modifier = Modifier
+            .padding(WooPosSpacing.Large.value),
+        message = stringResource(R.string.woopos_settings_receipt_error_title),
+        reason = stringResource(R.string.woopos_settings_receipt_error_message),
+        primaryButton = Button(
+            text = stringResource(R.string.retry),
+            click = onRetry
+        )
+    )
+}
+
 @WooPosPreview
 @Composable
 fun WooPosSettingsStoreScreenPreview() {
@@ -216,7 +238,10 @@ fun WooPosSettingsStoreScreenPreview() {
             )
         )
 
-        WooPosSettingsStoreScreen(state = state)
+        WooPosSettingsStoreScreen(
+            state = state,
+            onRetryReceiptDataLoad = {}
+        )
     }
 }
 
@@ -234,6 +259,30 @@ fun WooPosSettingsStoreScreenLoadingPreview() {
             receiptState = WooPosSettingsStoreState.ReceiptState.Loading
         )
 
-        WooPosSettingsStoreScreen(state = state)
+        WooPosSettingsStoreScreen(
+            state = state,
+            onRetryReceiptDataLoad = {}
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsStoreScreenErrorPreview() {
+    WooPosTheme {
+        val state = WooPosSettingsStoreState(
+            storeInfoState = WooPosSettingsStoreState.StoreState.Loaded(
+                WooPosSettingsStoreState.StoreInfo(
+                    storeName = "My WooCommerce Store",
+                    address = "123 Main Street, City, State 12345, US"
+                )
+            ),
+            receiptState = WooPosSettingsStoreState.ReceiptState.Error
+        )
+
+        WooPosSettingsStoreScreen(
+            state = state,
+            onRetryReceiptDataLoad = {}
+        )
     }
 }

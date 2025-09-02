@@ -4577,6 +4577,8 @@
 
     <string name="woopos_settings_store_information_title">Store information</string>
     <string name="woopos_settings_receipt_information_title">Receipt information</string>
+    <string name="woopos_settings_receipt_error_title">Unable to load receipt information</string>
+    <string name="woopos_settings_receipt_error_message">There was an error loading receipt information. Please check your connection and try again.</string>
     <string name="woopos_settings_store_name_label">Store name</string>
     <string name="woopos_settings_store_address_label">Address</string>
     <string name="woopos_settings_store_phone_label">Phone</string>
