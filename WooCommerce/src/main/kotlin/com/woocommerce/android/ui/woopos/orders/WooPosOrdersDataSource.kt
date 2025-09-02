@@ -13,24 +13,26 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.O
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 
+private sealed class FetchOrdersResult {
+    data class Success(val orders: List<OrderEntity>) : FetchOrdersResult()
+    data class Error(val error: WooError) : FetchOrdersResult()
+}
+
 class WooPosOrdersDataSource @Inject constructor(
     private val orderStore: OrderRestClient,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
 ) {
     suspend fun loadOrders(): WooResult<List<Order>> {
-        val result = fetchOrdersFromStore(1)
-
-        return if (result.isError) {
-            WooResult(result.error)
-        } else {
-            WooResult(result.model.toAppModels())
+        return when (val result = fetchOrdersFromStore(1)) {
+            is FetchOrdersResult.Error -> WooResult(result.error)
+            is FetchOrdersResult.Success -> WooResult(result.orders.toAppModels())
         }
     }
 
     private suspend fun fetchOrdersFromStore(
         page: Int
-    ): WooResult<List<OrderEntity>> {
+    ): FetchOrdersResult {
         val result = orderStore.fetchOrders(
             site = selectedSite.get(),
             count = 25,
@@ -42,9 +44,11 @@ class WooPosOrdersDataSource @Inject constructor(
         )
 
         return if (result.isError) {
-            WooResult(WooError(API_ERROR, SERVER_ERROR, result.error.message))
+            FetchOrdersResult.Error(
+                WooError(API_ERROR, SERVER_ERROR, result.error.message)
+            )
         } else {
-            WooResult(result.orders)
+            FetchOrdersResult.Success(result.orders)
         }
     }
 
