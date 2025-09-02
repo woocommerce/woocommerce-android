@@ -12,6 +12,7 @@
 - [WEAR] Updated UserAgent of API requests to use `http.agent` System Property to fix performance issues related to WebView usage on app launch [https://github.com/woocommerce/woocommerce-android/pull/14431]
 - [***] POS: A new settings to customize the POS [https://github.com/woocommerce/woocommerce-android/pull/14527]
 - [*] [Login] Improved the detection of WooCommerce API version during login flow [https://github.com/woocommerce/woocommerce-android/pull/14524]
+- [*]  Add more filter options to orders filters sales channel [https://github.com/woocommerce/woocommerce-android/pull/14546]
 
 23.1
 -----
