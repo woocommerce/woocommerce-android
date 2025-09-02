@@ -193,6 +193,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @param pageSize Number of variations to fetch per page (default: 100, max: 100)
      * @return [Result] containing [WooPosVariationsSyncResult] with pagination info or error
      */
+    @Suppress("LongMethod")
     suspend fun syncRecentlyModifiedVariations(
         site: SiteModel,
         modifiedAfterGmt: String,
@@ -230,6 +231,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                             syncedCount = 0,
                             hasMore = false,
                             nextPage = page,
+                            totalPages = 0,
                             serverDate = serverDate,
                         )
                     )
@@ -257,6 +259,16 @@ class WooPosLocalCatalogStore @Inject constructor(
 
                     val hasMore = variations.size == validPageSize
 
+                    val totalPages = headersParser.getTotalPages(response)
+
+                    if (totalPages == null) {
+                        return@withDefaultContext Result.failure(
+                            WooPosLocalCatalogError.InvalidResponse(
+                                "Missing required header in response: Total Pages."
+                            )
+                        )
+                    }
+
                     Result.success(
                         WooPosVariationsSyncResult(
                             syncedCount = variations.size,
@@ -266,6 +278,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                             } else {
                                 page
                             },
+                            totalPages = totalPages,
                             serverDate = serverDate,
                         )
                     )
