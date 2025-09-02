@@ -14,6 +14,7 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
 ) {
     private var failuresCount: MutableMap<Long, Int> = mutableMapOf()
 
+    @Suppress("ComplexCondition")
     fun handleError(siteModel: SiteModel, error: WPAPINetworkError) {
         val httpStatusCode = error.volleyError?.networkResponse?.statusCode
         val apiErrorCode = error.errorCode
