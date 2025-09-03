@@ -353,7 +353,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             shouldShowProgress = true
         )
         launch {
-            val result = gatewayStore.updatePaymentGateway(
+            val result = gatewayStore.updateGateway(
                 site = selectedSite.get(),
                 gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                 enabled = true,
