@@ -43,7 +43,6 @@ class WooPosSyncVariationsAction @Inject constructor(
 
             result.fold(
                 onSuccess = { syncResult ->
-                    // Check catalog size on first page
                     if (pagesSynced == 0) {
                         if (syncResult.totalPages > maxPages) {
                             logger.e(
