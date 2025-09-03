@@ -6,7 +6,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
@@ -144,7 +143,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private val selectedPackagesFlow = MutableStateFlow<List<PackageData?>>(emptyList())
     private val customsFormDataFlow = MutableStateFlow<List<CustomsData?>>(emptyList())
-    private val shipmentWeightsFlow = MutableStateFlow<List<ShipmentWeight?>>(emptyList())
+    private val shipmentWeightsFlow = MutableStateFlow<List<Float?>>(emptyList())
     private val packageSelectionsFlow = MutableStateFlow<List<PackageSelectionState>>(emptyList())
     private val customsStatesFlow = MutableStateFlow<List<CustomsState>>(emptyList())
     private val hazmatStatesFlow = MutableStateFlow<List<HazmatState>>(emptyList())
@@ -162,8 +161,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private val selectedRatesSortOrdersFlow = MutableStateFlow<List<ShippingSortOption>>(emptyList())
     private val refreshShippingRates = MutableSharedFlow<Unit>()
-    var customWeight by mutableStateOf(emptyList<String>())
-        private set
+    val weightInputsFlow = MutableStateFlow<List<WeightInput>>(emptyList())
 
     private val cheapestComparator = Comparator<ShippingRateUI> { r1, r2 ->
         r1.defaultRate.rate.price.compareTo(r2.defaultRate.rate.price)
@@ -410,7 +408,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     packageSelected = selectedPackage,
                     shipFrom = selectedAddress.shipFrom,
                     shipTo = selectedAddress.shipTo.address,
-                    weight = shipmentWeights[selectedShipmentIndex]?.totalWeight,
+                    weight = shipmentWeights[selectedShipmentIndex],
                     currencyCode = accountSettings?.storeOptions?.currencySymbol,
                     customsData = customsFormDataFlow.value[selectedShipmentIndex],
                     hazmatSelection = hazmatStates[selectedShipmentIndex].hazmatSelection
@@ -509,20 +507,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         combine(
             shipmentItems.filter { it.isNotEmpty() && it.size > selectedShipmentIndex },
             selectedPackagesFlow.filter { it.isNotEmpty() && it.size == shipments.value.size },
-            snapshotFlow { customWeight }
+            weightInputsFlow
                 .filter { it.isNotEmpty() && it.size == shipments.value.size }
-                .debounce(TYPING_DELAY)
-        ) { shipmentItems, selectedPackage, customWeightString ->
-            if (selectedPackage.size == shipments.value.size && customWeightString.size == shipments.value.size) {
-                shipmentItems.mapIndexed { index, shipmentItemModelList ->
-                    val itemsWeight = shipmentItemModelList.sumByFloat { it.weight * it.quantity }
-                    val packageWeight = selectedPackage[index]?.weight?.toFloatOrNull()
-                    ShipmentWeight(
-                        itemsWeight = itemsWeight,
-                        packageWeight = packageWeight,
-                        customWeight = customWeightString[index].toFloatOrNull()
-                    )
-                }
+                .debounce { if (it[selectedShipmentIndex].autoFilled) 0 else TYPING_DELAY }
+        ) { shipmentItems, selectedPackage, weightInputs ->
+            if (selectedPackage.size == shipments.value.size && weightInputs.size == shipments.value.size) {
+                shipmentItems.mapIndexed { index, _ -> weightInputs[index].weight.toFloatOrNull() }
             } else {
                 null
             }
@@ -536,15 +526,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             shipmentWeightsFlow.filter { it.isNotEmpty() },
             accountSettings.map { it?.storeOptions },
             packageSelectionsFlow.filter { it.isNotEmpty() }
-        ) { packagesSelected, packageWeight, storeOptions, _ ->
+        ) { packagesSelected, shipmentWeights, storeOptions, _ ->
             packagesSelected.mapIndexed { index, selectedPackageData ->
-                val selectedPackageWeight = packageWeight[index]
-                if (selectedPackageData == null || selectedPackageWeight == null) {
+                val selectedShipmentWeight = shipmentWeights[index]
+                if (selectedPackageData == null) {
                     NotSelected
                 } else {
                     DataAvailable(
                         selectedPackage = selectedPackageData,
-                        defaultWeight = selectedPackageWeight.defaultWeight.toString(),
+                        shipmentWeight = selectedShipmentWeight.toString(),
                         weightUnit = storeOptions?.weightUnit ?: ""
                     )
                 }
@@ -763,6 +753,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 shipmentUIList = shipmentUIList,
                 totalItems = shipmentItems.value.flatten().sumByFloat { it.quantity }.toInt(),
                 totalItemsCost = shipmentItems.value.flatten().getFormattedTotalPrice(currencyFormatter),
+                weightUnit = accountSettings.storeOptions.weightUnit,
                 shippingLines = shippingLineSummary,
                 shippingAddresses = addresses,
                 uiState = uiState,
@@ -819,12 +810,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         selectedRatesFlow.updateSize { null }
         shippingRatesListFlow.updateSize { emptyMap() }
         shippingRatesStatesFlow.updateSize { ShippingRatesState.NoAvailable }
-
-        customWeight = if (customWeight.size <= shipments.size) {
-            customWeight + List(shipments.size - customWeight.size) { "" }
-        } else {
-            List(shipments.size) { "" }
-        }
+        weightInputsFlow.updateSize { WeightInput("", false) }
     }
 
     private fun updateShipment(index: Int, shipment: ShipmentUIModel) {
@@ -838,6 +824,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
         }
         shipments.value = newShipments
+        resetWeight(selectedShipmentIndex)
     }
 
     fun onShippingLabelRefunded(labelId: Long) {
@@ -961,7 +948,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
         val selectedAddress = shippingAddresses.value.getOrNull(selectedShipmentIndex)
         val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]
-        val weight = shipmentWeightsFlow.value[selectedShipmentIndex]?.totalWeight
+        val weight = shipmentWeightsFlow.value[selectedShipmentIndex]
 
         if (selectedPackage == null || selectedAddress == null || shippingRate == null || weight == null) return
 
@@ -1063,8 +1050,24 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onPackageSelected(packageData: PackageData) {
+        val index = selectedShipmentIndex
         selectedPackagesFlow.value = selectedPackagesFlow.value.toMutableList().apply {
-            set(selectedShipmentIndex, packageData)
+            set(index, packageData)
+        }
+
+        resetWeight(selectedShipmentIndex)
+    }
+
+    private fun resetWeight(shipmentIndex: Int) {
+        val selectedWeightInput = weightInputsFlow.value[shipmentIndex]
+        if (selectedWeightInput.weight.isNotEmpty() && !selectedWeightInput.autoFilled) return
+
+        val itemsWeight = shipmentItems.value[shipmentIndex].sumByFloat { it.weight * it.quantity }
+        val packageWeight = selectedPackagesFlow.value[shipmentIndex]?.weight?.toFloatOrNull() ?: 0f
+        val totalWeight = itemsWeight + packageWeight
+
+        weightInputsFlow.value = weightInputsFlow.value.toMutableList().apply {
+            set(shipmentIndex, WeightInput(weight = totalWeight.toString(), autoFilled = true))
         }
     }
 
@@ -1074,8 +1077,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    fun onCustomWeightChange(input: String) {
-        customWeight = customWeight.toMutableList().apply { set(selectedShipmentIndex, input) }
+    fun onWeightChange(input: String) {
+        weightInputsFlow.value = weightInputsFlow.value.toMutableList().apply {
+            set(selectedShipmentIndex, WeightInput(weight = input, autoFilled = false))
+        }
     }
 
     fun onEditCustomsClick() {
@@ -1263,6 +1268,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val shipmentUIList: List<ShipmentUI>,
             val totalItems: Int,
             val totalItemsCost: String,
+            val weightUnit: String,
             val shippingLines: List<ShippingLineSummaryUI>,
             val shippingAddresses: List<WooShippingAddresses>,
             val uiState: UIControlsState,
@@ -1310,21 +1316,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         data object NotSelected : PackageSelectionState()
         data class DataAvailable(
             val selectedPackage: PackageData,
-            val defaultWeight: String,
+            val shipmentWeight: String,
             val weightUnit: String
         ) : PackageSelectionState()
     }
 
-    data class ShipmentWeight(
-        val itemsWeight: Float,
-        val packageWeight: Float? = null,
-        val customWeight: Float? = null
-    ) {
-        val defaultWeight: Float
-            get() = itemsWeight + (packageWeight ?: 0f)
-        val totalWeight: Float
-            get() = customWeight ?: defaultWeight
-    }
+    data class WeightInput(val weight: String, val autoFilled: Boolean)
 
     data class UIControlsState(
         val markOrderComplete: Boolean,

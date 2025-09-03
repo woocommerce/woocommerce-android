@@ -10,21 +10,7 @@ import org.wordpress.android.fluxc.utils.toWooPayload
 import javax.inject.Inject
 
 class GatewayRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
-    suspend fun fetchGateway(
-        site: SiteModel,
-        gatewayId: String
-    ): WooPayload<GatewayResponse> {
-        val url = WOOCOMMERCE.payment_gateways.gateway(gatewayId).pathV3
-
-        val response = wooNetwork.executeGetGsonRequest(
-            site = site,
-            path = url,
-            clazz = GatewayResponse::class.java
-        )
-        return response.toWooPayload()
-    }
-
-    suspend fun updatePaymentGateway(
+    suspend fun updateGateway(
         site: SiteModel,
         gatewayId: GatewayId,
         enabled: Boolean? = null,

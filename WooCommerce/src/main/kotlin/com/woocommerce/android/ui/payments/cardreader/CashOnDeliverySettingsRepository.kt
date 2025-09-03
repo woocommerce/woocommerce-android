@@ -15,7 +15,7 @@ class CashOnDeliverySettingsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
 ) {
     suspend fun toggleCashOnDeliveryOption(shouldEnable: Boolean): WooResult<WCGatewayModel> {
-        return gatewayStore.updatePaymentGateway(
+        return gatewayStore.updateGateway(
             site = selectedSite.get(),
             gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
             enabled = shouldEnable,

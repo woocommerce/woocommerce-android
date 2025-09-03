@@ -1,5 +1,8 @@
 package org.wordpress.android.fluxc.network.rest;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -9,6 +12,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.Strictness;
 
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger;
 import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider;
@@ -21,9 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>> {
     private static final String PROTOCOL_CHARSET = "utf-8";
@@ -158,7 +159,8 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
         }
     }
 
-    @NonNull private static List<Header> mapHeaders(
+    @NonNull
+    private static List<Header> mapHeaders(
             @NonNull NetworkResponse response) {
         List<Header> convertedHeaders = new ArrayList<>();
         if (response.allHeaders != null) {
@@ -169,12 +171,14 @@ public abstract class GsonRequest<T> extends BaseRequest<ResponseWithHeaders<T>>
         return convertedHeaders;
     }
 
+    @NonNull
     public static GsonBuilder getDefaultGsonBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setLenient();
+        gsonBuilder.setStrictness(Strictness.LENIENT);
         gsonBuilder.registerTypeHierarchyAdapter(JsonObjectOrFalse.class, new JsonObjectOrFalseDeserializer());
         gsonBuilder.registerTypeHierarchyAdapter(JsonObjectOrEmptyArray.class,
                 new JsonObjectOrEmptyArrayDeserializer());
+        gsonBuilder.registerTypeHierarchyAdapter(List.class, new ListOrObjectDeserializer());
         return gsonBuilder;
     }
 
