@@ -73,7 +73,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
 
-        activity?.setTitle(R.string.beta_features)
+        activity?.setTitle(R.string.experimental_features)
     }
 
     private fun FragmentSettingsBetaBinding.handleToggleChangeFailure(switch: CompoundButton, isChecked: Boolean) {
