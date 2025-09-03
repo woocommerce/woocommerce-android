@@ -2610,6 +2610,8 @@
     <string name="plugin_state_inactive">Inactive</string>
     <string name="plugin_state_auto_managed">Auto-managed</string>
     <string name="plugins_error_message">An error occurred while loading installed plugins</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Application Passwords</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Enable application passwords to let the app directly fetch data from your WooCommerce site instead of doing so through Jetpack connection.</string>
 
     <!--
         Developer Options Screen
