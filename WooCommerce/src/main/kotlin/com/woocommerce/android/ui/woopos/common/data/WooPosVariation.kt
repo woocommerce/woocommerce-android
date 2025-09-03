@@ -35,7 +35,6 @@ data class WooPosVariation(
     )
 }
 
-
 fun ProductVariation.toWooPosVariation(): WooPosVariation {
     return WooPosVariation(
         remoteVariationId = remoteVariationId,
