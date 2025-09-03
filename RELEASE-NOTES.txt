@@ -13,6 +13,7 @@
 - [***] POS: A new settings to customize the POS [https://github.com/woocommerce/woocommerce-android/pull/14527]
 - [*] [Login] Improved the detection of WooCommerce API version during login flow [https://github.com/woocommerce/woocommerce-android/pull/14524]
 - [*] Automatically populate the weight field in the create shipment flow [https://github.com/woocommerce/woocommerce-android/pull/14525]
+- [*] Shipping Labels: Updated the disabled button text on the package selection screen [https://github.com/woocommerce/woocommerce-android/pull/14558]
 
 23.1
 -----
