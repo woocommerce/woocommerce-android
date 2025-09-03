@@ -4580,6 +4580,7 @@
     <string name="woopos_settings_store_name_label">Store name</string>
     <string name="woopos_settings_store_address_label">Address</string>
     <string name="woopos_settings_store_phone_label">Phone</string>
+    <string name="woopos_settings_store_email_label">Email</string>
     <string name="woopos_settings_refund_policy_label">Refund &amp; Returns Policy</string>
     <string name="woopos_settings_store_not_set">Not set</string>
 
