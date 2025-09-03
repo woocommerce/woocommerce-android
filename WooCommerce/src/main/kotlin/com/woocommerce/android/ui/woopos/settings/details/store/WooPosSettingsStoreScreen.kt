@@ -133,11 +133,14 @@ private fun ReceiptMenuItemShimmer() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.Large.value),
+            .padding(
+                vertical = WooPosSpacing.Medium.value,
+                horizontal = WooPosSpacing.Large.value
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         WooPosShimmerBox(
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier.size(24.dp)
         )
 
         Column(
@@ -148,7 +151,7 @@ private fun ReceiptMenuItemShimmer() {
             WooPosShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
-                    .height(24.dp)
+                    .height(28.dp)
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
@@ -156,7 +159,7 @@ private fun ReceiptMenuItemShimmer() {
             WooPosShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
-                    .height(14.dp)
+                    .height(16.dp)
             )
         }
     }
