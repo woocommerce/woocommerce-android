@@ -19,6 +19,7 @@ import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
@@ -76,18 +77,7 @@ class AccountRepository @Inject constructor(
             }
         } else {
             // Application passwords logout
-            val site = selectedSite.get()
-            appCoroutineScope.launch {
-                val result = siteStore.deleteApplicationPassword(site)
-                if (result.isError) {
-                    WooLog.e(
-                        LOGIN,
-                        "Error deleting application password: ${result.error.errorCode} > ${result.error.message}"
-                    )
-                } else {
-                    WooLog.i(LOGIN, "Application password deleted")
-                }
-            }
+            deleteApplicationPassword(selectedSite.get())
             AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
             cleanup()
             true
@@ -135,6 +125,22 @@ class AccountRepository @Inject constructor(
         dispatcher.dispatchAndAwait<Void, OnDeviceUnregistered>(
             NotificationActionBuilder.newUnregisterDeviceAction()
         )
+    }
+
+    private fun deleteApplicationPassword(site: SiteModel) {
+        appCoroutineScope.launch {
+            val result = siteStore.deleteApplicationPassword(site)
+            val siteId = site.siteId.takeIf { it != 0L }
+            if (result.isError) {
+                WooLog.e(
+                    LOGIN,
+                    "Error deleting application password: ${siteId?.let { "Site Id: $it - " }.orEmpty()}" +
+                        "${result.error.errorCode} > ${result.error.message}"
+                )
+            } else {
+                WooLog.i(LOGIN, "Application password deleted${siteId?.let { " for site Id: $it" }.orEmpty()}" )
+            }
+        }
     }
 
     sealed class CloseAccountResult {
