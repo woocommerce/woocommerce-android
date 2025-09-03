@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.orders
 
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -50,8 +50,8 @@ class WooPosOrdersDataSourceTest {
             e1 to emptyList<WCMetaData>(),
             e2 to emptyList<WCMetaData>()
         )
-        val firstOrder = mock<Order>()
-        val secondOrder = mock<Order>()
+        val firstOrder = OrderTestUtils.generateTestOrder()
+        val secondOrder = OrderTestUtils.generateTestOrder()
 
         val payload = WCOrderStore.FetchOrdersResponsePayload(
             site = siteModel,
