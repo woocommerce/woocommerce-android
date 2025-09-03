@@ -50,7 +50,7 @@ class AddressUtilsTest {
     }
 
     @Test
-    fun ` when non-2-letter arbitrary input, then it is returned as-is`() {
+    fun `when non-2-letter arbitrary input, then it is returned as-is`() {
         val input = "Neverland"
         val result = AddressUtils.getCountryLabelByCountryCode(input)
         // There is no ISO country with display name "Neverland"; should echo input
