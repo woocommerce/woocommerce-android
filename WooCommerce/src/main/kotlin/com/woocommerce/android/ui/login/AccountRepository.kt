@@ -9,11 +9,13 @@ import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
@@ -37,7 +39,8 @@ class AccountRepository @Inject constructor(
     private val zendeskSettings: ZendeskSettings,
     private val prefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
-    private val siteVisibilityDataStore: VisibleWooSitesDataStore
+    private val siteVisibilityDataStore: VisibleWooSitesDataStore,
+    private val dispatchers: CoroutineDispatchers
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -72,6 +75,7 @@ class AccountRepository @Inject constructor(
                 false
             } else {
                 AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
+                deleteApplicationPasswordsOfUserSites()
                 cleanup()
                 true
             }
@@ -125,6 +129,17 @@ class AccountRepository @Inject constructor(
         dispatcher.dispatchAndAwait<Void, OnDeviceUnregistered>(
             NotificationActionBuilder.newUnregisterDeviceAction()
         )
+    }
+
+    private suspend fun deleteApplicationPasswordsOfUserSites() {
+        val sites = withContext(dispatchers.io) {
+            siteStore.sitesAccessedViaWPComRest
+        }
+
+        // Start deleting passwords asynchronously in the background
+        sites.forEach { site ->
+            deleteApplicationPassword(site)
+        }
     }
 
     private fun deleteApplicationPassword(site: SiteModel) {
