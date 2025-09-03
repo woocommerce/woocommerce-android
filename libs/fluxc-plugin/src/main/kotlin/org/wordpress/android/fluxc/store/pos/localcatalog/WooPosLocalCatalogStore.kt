@@ -263,6 +263,7 @@ class WooPosLocalCatalogStore @Inject constructor(
 
                     if (totalPages == null) {
                         return@withDefaultContext Result.failure(
+                            WooPosLocalCatalogError.InvalidResponse(
                                 "Missing required header in response: X-WP-TotalPages."
                             )
                         )
