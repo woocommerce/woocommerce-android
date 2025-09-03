@@ -109,7 +109,7 @@ class OrderListRepository @Inject constructor(
         }
     }
 
-    fun getAllPaymentGateways(site: SiteModel): List<WCGatewayModel> {
+    suspend fun getAllPaymentGateways(site: SiteModel): List<WCGatewayModel> {
         return gatewayStore.getAllGateways(site)
     }
 

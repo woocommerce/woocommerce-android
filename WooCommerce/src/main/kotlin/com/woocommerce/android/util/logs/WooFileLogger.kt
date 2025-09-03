@@ -132,7 +132,7 @@ class WooFileLogger(
         }
     }
 
-    companion object Companion {
+    companion object {
         // Flush logs every 5 seconds when the app is in the foreground
         @VisibleForTesting
         const val FOREGROUND_FLUSH_PERIOD_MS = 5000L

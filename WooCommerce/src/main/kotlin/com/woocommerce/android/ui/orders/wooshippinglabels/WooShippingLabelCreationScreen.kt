@@ -113,8 +113,9 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onEditOriginAddress = viewModel::onEditOriginAddress,
                 onSelectedRateSortOrderChanged = viewModel::onSelectedRateSortOrderChanged,
                 onRefreshShippingRates = viewModel::onRefreshShippingRates,
-                customWeightList = viewModel.customWeight,
-                onCustomWeightChange = viewModel::onCustomWeightChange,
+                weightInputList = viewModel.weightInputsFlow.collectAsState().value,
+                weightUnit = viewState.weightUnit,
+                onWeightChange = viewModel::onWeightChange,
                 uiState = viewState.uiState,
                 onNavigateBack = viewModel::onNavigateBack,
                 onEditCustomsClick = viewModel::onEditCustomsClick,
@@ -160,8 +161,9 @@ fun WooShippingLabelCreationScreen(
     onSelectPackageClick: () -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
     onRefreshShippingRates: () -> Unit,
-    onCustomWeightChange: (String) -> Unit,
-    customWeightList: List<String>,
+    weightInputList: List<WooShippingLabelCreationViewModel.WeightInput>,
+    weightUnit: String,
+    onWeightChange: (String) -> Unit,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
     onEditCustomsClick: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -205,8 +207,9 @@ fun WooShippingLabelCreationScreen(
             onEditOriginAddress = onEditOriginAddress,
             onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
             onRefreshShippingRates = onRefreshShippingRates,
-            customWeightList = customWeightList,
-            onCustomWeightChange = onCustomWeightChange,
+            weightInputList = weightInputList,
+            weightUnit = weightUnit,
+            onWeightChange = onWeightChange,
             uiState = uiState,
             onNavigateBack = onNavigateBack,
             onEditCustomsClick = onEditCustomsClick,
@@ -260,8 +263,9 @@ private fun LabelCreationScreenWithBottomSheet(
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
     onRefreshShippingRates: () -> Unit,
-    customWeightList: List<String>,
-    onCustomWeightChange: (String) -> Unit,
+    weightInputList: List<WooShippingLabelCreationViewModel.WeightInput>,
+    weightUnit: String,
+    onWeightChange: (String) -> Unit,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
     scaffoldState: BottomSheetScaffoldState,
     onNavigateBack: () -> Unit,
@@ -403,9 +407,10 @@ private fun LabelCreationScreenWithBottomSheet(
                         onHazmatNoticeClick = onHazmatNoticeClick,
                         onEditCustomsClick = onEditCustomsClick,
                         onSelectPackageClick = onSelectPackageClick,
-                        customWeight = customWeightList[uiState.selectedIndex],
+                        weight = weightInputList[uiState.selectedIndex].weight,
+                        weightUnit = weightUnit,
+                        onWeightChange = onWeightChange,
                         uiState = uiState,
-                        onCustomWeightChange = onCustomWeightChange,
                         onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
                         onRefreshShippingRates = onRefreshShippingRates,
                         onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
@@ -448,9 +453,10 @@ private fun CreateShippingCards(
     onHazmatNoticeClick: () -> Unit = {},
     onEditCustomsClick: () -> Unit,
     onSelectPackageClick: () -> Unit,
-    customWeight: String,
+    weight: String,
+    weightUnit: String,
+    onWeightChange: (String) -> Unit,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
-    onCustomWeightChange: (String) -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
     onRefreshShippingRates: () -> Unit,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
@@ -501,11 +507,12 @@ private fun CreateShippingCards(
                     .padding(16.dp)
             )
             PackageCard(
-                modifier = Modifier.padding(16.dp),
                 packageSelectionState = shipmentUI.packageSelectionState,
                 onSelectPackageClick = onSelectPackageClick,
-                customWeight = customWeight,
-                onCustomWeightChange = onCustomWeightChange
+                weight = weight,
+                weightUnit = weightUnit,
+                onWeightChange = onWeightChange,
+                modifier = Modifier.padding(16.dp),
             )
             ShippingRatesSection(
                 shippingRatesState = shipmentUI.shippingRatesState,
@@ -609,9 +616,10 @@ private fun CustomsCard(
 @Composable
 private fun PackageCard(
     packageSelectionState: PackageSelectionState,
-    customWeight: String,
     onSelectPackageClick: () -> Unit,
-    onCustomWeightChange: (String) -> Unit,
+    weight: String,
+    weightUnit: String,
+    onWeightChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (packageSelectionState) {
@@ -624,10 +632,9 @@ private fun PackageCard(
             modifier = modifier,
             packageData = packageSelectionState.selectedPackage,
             onSelectPackageClick = onSelectPackageClick,
-            defaultWeight = packageSelectionState.defaultWeight,
-            customWeight = customWeight,
-            customWeightUnit = packageSelectionState.weightUnit,
-            onCustomWeightChange = onCustomWeightChange
+            weight = weight,
+            weightUnit = weightUnit,
+            onWeightChange = onWeightChange
         )
     }
 }
@@ -685,11 +692,10 @@ private fun SelectPackageCard(
 @Composable
 private fun PackageSelectionAvailableCard(
     packageData: PackageData,
-    defaultWeight: String,
-    customWeight: String,
-    customWeightUnit: String,
     onSelectPackageClick: () -> Unit,
-    onCustomWeightChange: (String) -> Unit,
+    weight: String,
+    weightUnit: String,
+    onWeightChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.background(color = MaterialTheme.colors.surface)) {
@@ -777,21 +783,14 @@ private fun PackageSelectionAvailableCard(
                 Box(modifier = Modifier.weight(1f)) {
                     BasicTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = customWeight,
-                        onValueChange = onCustomWeightChange,
+                        value = weight,
+                        onValueChange = onWeightChange,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         textStyle = MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.onSurface),
                     )
-                    if (customWeight.isEmpty()) {
-                        Text(
-                            text = defaultWeight,
-                            style = MaterialTheme.typography.body2,
-                            color = colorResource(id = R.color.color_on_surface_disabled)
-                        )
-                    }
                 }
                 Text(
-                    text = customWeightUnit,
+                    text = weightUnit,
                     style = MaterialTheme.typography.body2,
                     color = colorResource(id = R.color.color_on_surface_disabled)
                 )
@@ -860,8 +859,9 @@ private fun WooShippingLabelCreationScreenPreview() {
             onOriginAddressSelected = {},
             onRefreshShippingRates = {},
             onSelectedRateSortOrderChanged = {},
-            customWeightList = listOf(""),
-            onCustomWeightChange = {},
+            weightInputList = listOf(WooShippingLabelCreationViewModel.WeightInput(weight = "", autoFilled = true)),
+            weightUnit = "kg",
+            onWeightChange = {},
             onNavigateBack = {},
             onEditOriginAddress = {},
             uiState = WooShippingLabelCreationViewModel.UIControlsState(
@@ -889,9 +889,10 @@ private fun PackageNotSelectedPreview() {
         PackageCard(
             modifier = Modifier.padding(16.dp),
             packageSelectionState = NotSelected,
-            customWeight = "",
             onSelectPackageClick = {},
-            onCustomWeightChange = {}
+            weight = "",
+            weightUnit = "kg",
+            onWeightChange = {}
         )
     }
 }
@@ -901,22 +902,23 @@ private fun PackageNotSelectedPreview() {
 private fun PackageSelectedPreview() {
     WooThemeWithBackground {
         PackageCard(
-            modifier = Modifier.padding(16.dp),
             packageSelectionState = DataAvailable(
                 selectedPackage = PackageData(
                     name = "Package 1",
-                    dimensions = "10 x 10 x 10",
-                    weight = "1.5",
+                    dimensions = "1 x 1 x 1",
+                    weight = "0.5",
                     isSelected = true,
                     isLetter = false,
                     id = "1",
                 ),
-                defaultWeight = "1",
-                weightUnit = "kg",
+                shipmentWeight = "1.5",
+                weightUnit = "kg"
             ),
-            customWeight = "",
             onSelectPackageClick = {},
-            onCustomWeightChange = {}
+            weight = "1.5",
+            weightUnit = "kg",
+            onWeightChange = {},
+            modifier = Modifier.padding(16.dp),
         )
     }
 }
