@@ -44,7 +44,7 @@ class AddressUtilsTest {
     }
 
     @Test
-    fun `when ill-formed 2-letter code, then returns "Unknown Region" value`() {
+    fun `when ill-formed 2-letter code, then returns Unknown Region value`() {
         val result = AddressUtils.getCountryLabelByCountryCode("ZZ")
         assertEquals("Unknown Region", result)
     }
