@@ -63,7 +63,7 @@ class WooPosSyncVariationsActionTest {
     }
 
     @Test
-    fun `given multiple pages within limit, when sync variations called, then returns success with total count`() = 
+    fun `given multiple pages within limit, when sync variations called, then returns success with total count`() =
         runTest {
             // GIVEN
             val maxPages = 10
@@ -96,7 +96,7 @@ class WooPosSyncVariationsActionTest {
     }
 
     @Test
-    fun `given incremental sync with modifiedAfterGmt, when sync variations called, then passes filter correctly`() = 
+    fun `given incremental sync with modifiedAfterGmt, when sync variations called, then passes filter correctly`() =
         runTest {
             // GIVEN
             val modifiedAfter = "2024-01-01T00:00:00Z"
@@ -154,7 +154,7 @@ class WooPosSyncVariationsActionTest {
     }
 
     @Test
-    fun `given catalog has more pages than limit, when sync variations called, then returns CatalogTooLarge`() = 
+    fun `given catalog has more pages than limit, when sync variations called, then returns CatalogTooLarge`() =
         runTest {
             // GIVEN
             val maxPages = 2
@@ -219,7 +219,7 @@ class WooPosSyncVariationsActionTest {
     }
 
     @Test
-    fun `given page has zero variations but hasMore is true, when sync variations called, then stops fetching`() = 
+    fun `given page has zero variations but hasMore is true, when sync variations called, then stops fetching`() =
         runTest {
             // GIVEN
             val maxPages = 10
