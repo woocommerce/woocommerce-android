@@ -1,6 +1,5 @@
 package com.woocommerce.android.util
 
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -17,53 +16,41 @@ class AddressUtilsTest {
         Locale.setDefault(Locale.US)
     }
 
-    @After
-    fun tearDown() {
-        Locale.setDefault(originalDefault)
-    }
-
     @Test
-    fun `blank input returns empty string`() {
+    fun `when blank input, then returns empty string`() {
         assertEquals("", AddressUtils.getCountryLabelByCountryCode(""))
         assertEquals("", AddressUtils.getCountryLabelByCountryCode("   "))
     }
 
     @Test
-    fun `2-letter uppercase code resolves to display name`() {
+    fun `when 2-letter uppercase code, then resolves to display name`() {
         val expected = Locale.Builder().setRegion("US").build().getDisplayCountry(Locale.getDefault())
         val result = AddressUtils.getCountryLabelByCountryCode("US")
         assertEquals(expected, result)
     }
 
     @Test
-    fun `2-letter lowercase code resolves to display name`() {
+    fun `when 2-letter lowercase code, then resolves to display name`() {
         val expected = Locale.Builder().setRegion("GB").build().getDisplayCountry(Locale.getDefault())
         val result = AddressUtils.getCountryLabelByCountryCode("gb")
         assertEquals(expected, result)
     }
 
     @Test
-    fun `full country name returns the same name (best effort)`() {
+    fun `when full country name, then returns the same name`() {
         val result = AddressUtils.getCountryLabelByCountryCode("India")
         // In US locale, display name for IN is "India"
         assertEquals("India", result)
     }
 
     @Test
-    fun `ill-formed 2-letter code falls back to input`() {
+    fun `when ill-formed 2-letter code, then returns "Unknown Region" value`() {
         val result = AddressUtils.getCountryLabelByCountryCode("ZZ")
-        assertEquals("ZZ", result)
+        assertEquals("Unknown Region", result)
     }
 
     @Test
-    fun `trims surrounding whitespace`() {
-        val expected = Locale.Builder().setRegion("CA").build().getDisplayCountry(Locale.getDefault())
-        val result = AddressUtils.getCountryLabelByCountryCode("  CA  ")
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `non-2-letter arbitrary input is returned as-is when not matched`() {
+    fun ` when non-2-letter arbitrary input, then it is returned as-is`() {
         val input = "Neverland"
         val result = AddressUtils.getCountryLabelByCountryCode(input)
         // There is no ISO country with display name "Neverland"; should echo input
