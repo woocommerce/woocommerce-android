@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
@@ -14,7 +15,7 @@ class WooPosSearchByIdentifierVariationFetch @Inject constructor(
     private val errorMapper: WooPosSearchByIdentifierProductErrorMapper
 ) {
     sealed class VariationFetchResult {
-        data class Success(val variation: ProductVariation) : VariationFetchResult()
+        data class Success(val variation: WooPosVariation) : VariationFetchResult()
         data class Failure(val error: WooPosSearchByIdentifierResult.Error) : VariationFetchResult()
     }
 
@@ -34,7 +35,7 @@ class WooPosSearchByIdentifierVariationFetch @Inject constructor(
             selectedSite.get(),
             parentId,
             variationId
-        )?.toAppModel()
+        )?.toAppModel()?.toWooPosVariation()
 
         return if (variation != null) {
             variationsCache.add(parentId, variation)

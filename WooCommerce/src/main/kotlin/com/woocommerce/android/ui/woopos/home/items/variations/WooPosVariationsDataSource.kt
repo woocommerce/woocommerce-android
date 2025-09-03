@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.woopos.home.items.variations
 
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
+import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -20,11 +22,11 @@ class WooPosVariationsDataSource @Inject constructor(
     private val variationCache: WooPosVariationsLRUCache,
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig
 ) {
-    private suspend fun getCachedVariations(productId: Long): List<ProductVariation> {
+    private suspend fun getCachedVariations(productId: Long): List<WooPosVariation> {
         return variationCache.get(productId) ?: emptyList()
     }
 
-    private suspend fun updateCache(productId: Long, variations: List<ProductVariation>) {
+    private suspend fun updateCache(productId: Long, variations: List<WooPosVariation>) {
         variationCache.put(productId, variations)
     }
 
@@ -55,7 +57,9 @@ class WooPosVariationsDataSource @Inject constructor(
             filterOptions = variationFilterConfig.filters
         )
         if (result.isSuccess) {
-            val remoteVariations = handler.getVariationsFlow(productId).firstOrNull()?.applyFilter() ?: emptyList()
+            val remoteVariations = handler.getVariationsFlow(productId).firstOrNull()?.applyFilter()?.map {
+                it.toWooPosVariation()
+            } ?: emptyList()
             updateCache(productId, remoteVariations)
             emit(FetchResult.Remote(Result.success(remoteVariations)))
         } else {
@@ -69,13 +73,15 @@ class WooPosVariationsDataSource @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    suspend fun loadMore(productId: Long): Result<List<ProductVariation>> = withContext(Dispatchers.IO) {
+    suspend fun loadMore(productId: Long): Result<List<WooPosVariation>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore(
             productId,
             filterOptions = variationFilterConfig.filters
         )
         if (result.isSuccess) {
-            val fetchedVariations = handler.getVariationsFlow(productId).first().applyFilter()
+            val fetchedVariations = handler.getVariationsFlow(
+                productId
+            ).first().applyFilter().map { it.toWooPosVariation() }
             Result.success(fetchedVariations)
         } else {
             result.logFailure()
@@ -93,8 +99,8 @@ private fun Result<Unit>.logFailure() {
 }
 
 sealed class FetchResult {
-    data class Cached(val data: List<ProductVariation>) : FetchResult()
-    data class Remote(val result: Result<List<ProductVariation>>) : FetchResult()
+    data class Cached(val data: List<WooPosVariation>) : FetchResult()
+    data class Remote(val result: Result<List<WooPosVariation>>) : FetchResult()
 }
 
 private fun List<ProductVariation>.applyFilter(): List<ProductVariation> {
