@@ -121,12 +121,7 @@ private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInf
 
 @Composable
 private fun ReceiptLoadingSection() {
-    WooPosShimmerBox(
-        modifier = Modifier
-            .fillMaxWidth(0.3f)
-            .height(32.dp)
-            .padding(start = WooPosSpacing.Large.value, bottom = WooPosSpacing.Small.value)
-    )
+    SectionTitle(stringResource(R.string.woopos_settings_receipt_information_title))
 
     repeat(5) {
         ReceiptMenuItemShimmer()
