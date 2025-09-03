@@ -329,7 +329,7 @@ class WooPosSyncVariationsActionTest {
                 KotlinResult.success(
                     WooPosVariationsSyncResult(
                         syncedCount = page2Count,
-                        hasMore = page3Count > 0,
+                        hasMore = true,
                         nextPage = 3,
                         totalPages = totalPages,
                         serverDate = "2024-01-15T11:00:00Z"
