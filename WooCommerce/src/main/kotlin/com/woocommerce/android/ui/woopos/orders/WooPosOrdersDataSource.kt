@@ -3,22 +3,14 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderBy
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 
-private sealed class FetchOrdersResult {
-    data class Success(val orders: List<OrderEntity>) : FetchOrdersResult()
-    data class Error(val error: WooError) : FetchOrdersResult()
-}
-
 sealed class LoadOrdersResult {
     data class Success(val orders: List<Order>) : LoadOrdersResult()
-    data class Error(val error: WooError) : LoadOrdersResult()
+    data class Error(val message: String) : LoadOrdersResult()
 }
 
 class WooPosOrdersDataSource @Inject constructor(
@@ -27,21 +19,10 @@ class WooPosOrdersDataSource @Inject constructor(
     private val orderMapper: OrderMapper,
 ) {
     suspend fun loadOrders(): LoadOrdersResult {
-        return when (val result = fetchOrdersFromRemote(1)) {
-            is FetchOrdersResult.Error -> LoadOrdersResult.Error(result.error)
-            is FetchOrdersResult.Success -> LoadOrdersResult.Success(
-                result.orders.toAppModels()
-            )
-        }
-    }
-
-    private suspend fun fetchOrdersFromRemote(
-        page: Int
-    ): FetchOrdersResult {
         val result = restClient.fetchOrders(
             site = selectedSite.get(),
             count = 25,
-            page = page,
+            page = 1,
             orderBy = OrderBy.DATE,
             sortOrder = OrderRestClient.SortOrder.DESCENDING,
             statusFilter = null,
@@ -49,15 +30,13 @@ class WooPosOrdersDataSource @Inject constructor(
         )
 
         return if (result.isError) {
-            FetchOrdersResult.Error(
-                WooError(API_ERROR, SERVER_ERROR, result.error.message)
-            )
+            LoadOrdersResult.Error(result.error.message)
         } else {
-            FetchOrdersResult.Success(result.orders)
+            LoadOrdersResult.Success(result.orders.toAppModels())
         }
     }
 
-    private suspend fun List<OrderEntity>?.toAppModels(): List<Order> = this?.map {
+    private suspend fun List<OrderEntity>.toAppModels(): List<Order> = map {
         orderMapper.toAppModel(it)
-    } ?: emptyList()
+    }
 }

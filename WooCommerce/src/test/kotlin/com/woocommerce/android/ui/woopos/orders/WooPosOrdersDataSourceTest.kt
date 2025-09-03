@@ -17,7 +17,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -124,13 +123,7 @@ class WooPosOrdersDataSourceTest {
         // THEN
         assertThat(result).isInstanceOf(LoadOrdersResult.Error::class.java)
         val error = result as LoadOrdersResult.Error
-        assertThat(error.error).isEqualTo(
-            WooError(
-                org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR,
-                org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR,
-                orderError.message
-            )
-        )
+        assertThat(error.message).isEqualTo(orderError.message)
 
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),

@@ -35,7 +35,7 @@ class WooPosOrdersViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            error = result.error.message ?: "Unknown error"
+                            error = result.message ?: "Unknown error"
                         )
                     }
                 }
