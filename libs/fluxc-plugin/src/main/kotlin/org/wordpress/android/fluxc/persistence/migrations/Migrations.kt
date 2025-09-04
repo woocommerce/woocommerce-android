@@ -1078,3 +1078,9 @@ internal class AutoMigration32to33 : AutoMigrationSpec
     RenameTable(fromTableName = "OrderMetaData", toTableName = "MetaData")
 )
 internal class AutoMigration37to38 : AutoMigrationSpec
+
+internal val MIGRATION_61_62 = object : Migration(61, 62) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE WCPosProductEntity ADD COLUMN variations TEXT NOT NULL DEFAULT ''")
+    }
+}

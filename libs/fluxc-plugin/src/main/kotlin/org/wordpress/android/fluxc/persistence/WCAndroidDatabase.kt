@@ -111,6 +111,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_31_32
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_3_4
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_4_5
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_5_6
+import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_61_62
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_6_7
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
@@ -207,7 +208,6 @@ const val WC_DATABASE_VERSION = 62
         AutoMigration(from = 58, to = 59),
         AutoMigration(from = 59, to = 60),
         AutoMigration(from = 60, to = 61),
-        AutoMigration(from = 61, to = 62),
     ]
 )
 @TypeConverters(
@@ -285,6 +285,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
             .addMigrations(MIGRATION_27_28)
             .addMigrations(MIGRATION_30_31)
             .addMigrations(MIGRATION_31_32)
+            .addMigrations(MIGRATION_61_62)
             .build()
     }
 
