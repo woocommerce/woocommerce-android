@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Order
 
