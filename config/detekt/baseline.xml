@@ -768,10 +768,6 @@
     <ID>UnitTestNamingRule:FormattableContentMapperTest.kt$FormattableContentMapperTest$@Test fun mapsNotificationSubjectToRichFormattableContent()</ID>
     <ID>UnitTestNamingRule:FormattableContentMapperTest.kt$FormattableContentMapperTest$@Test fun mapsRewindDownloadReadyTypeToRewindDownloadReadyFormattableRangeType()</ID>
     <ID>UnitTestNamingRule:FormattableContentMapperTest.kt$FormattableContentMapperTest$@Test fun mapsScanTypeToScanFormattableRangeType()</ID>
-    <ID>UnitTestNamingRule:GatewayRestClientTest.kt$GatewayRestClientTest$@Test fun `given error response, when fetch gateway, return error`()</ID>
-    <ID>UnitTestNamingRule:GatewayRestClientTest.kt$GatewayRestClientTest$@Test fun `given error response, when update gateway, return error`()</ID>
-    <ID>UnitTestNamingRule:GatewayRestClientTest.kt$GatewayRestClientTest$@Test fun `given success response, when fetch gateway, return success`()</ID>
-    <ID>UnitTestNamingRule:GatewayRestClientTest.kt$GatewayRestClientTest$@Test fun `given success response, when update gateway, return success`()</ID>
     <ID>UnitTestNamingRule:GenerateVariationBottomSheetViewModelTest.kt$GenerateVariationBottomSheetViewModelTest$@Test fun `test onAddNewVariationClicked triggers AddNewVariation event`()</ID>
     <ID>UnitTestNamingRule:GenerateVariationBottomSheetViewModelTest.kt$GenerateVariationBottomSheetViewModelTest$@Test fun `test onGenerateAllVariationsClicked triggers GenerateAllVariations event`()</ID>
     <ID>UnitTestNamingRule:GenerateVariationCandidatesTest.kt$GenerateVariationCandidatesTest$@Test fun `should generate all variation candidates for a product with 3 attributes each with 2 terms`()</ID>
@@ -2152,10 +2148,6 @@
     <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test gateway update`()</ID>
     <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test select empty result`()</ID>
     <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test select`()</ID>
-    <ID>UnitTestNamingRule:WCGatewayStoreTest.kt$WCGatewayStoreTest$@Test fun `fetch all gateways`()</ID>
-    <ID>UnitTestNamingRule:WCGatewayStoreTest.kt$WCGatewayStoreTest$@Test fun `fetch specific gateway`()</ID>
-    <ID>UnitTestNamingRule:WCGatewayStoreTest.kt$WCGatewayStoreTest$@Test fun `get all gateways`()</ID>
-    <ID>UnitTestNamingRule:WCGatewayStoreTest.kt$WCGatewayStoreTest$@Test fun `get specific gateway`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeMapperTest.kt$WCGlobalAttributeMapperTest$@Test fun `mapToAttributeModel should never allow null values`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeMapperTest.kt$WCGlobalAttributeMapperTest$@Test fun `mapToAttributeModel should parse correctly`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeMapperTest.kt$WCGlobalAttributeMapperTest$@Test fun `mapToAttributeModelList should parse list correctly`()</ID>

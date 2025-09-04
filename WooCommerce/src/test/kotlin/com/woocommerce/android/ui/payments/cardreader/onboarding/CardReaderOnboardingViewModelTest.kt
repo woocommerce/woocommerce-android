@@ -1129,7 +1129,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     )
                 )
             whenever(
-                gatewayStore.updatePaymentGateway(
+                gatewayStore.updateGateway(
                     site = selectedSite.get(),
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,
@@ -1178,7 +1178,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     )
                 )
             whenever(
-                gatewayStore.updatePaymentGateway(
+                gatewayStore.updateGateway(
                     site = selectedSite.get(),
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,
@@ -2160,7 +2160,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     )
                 )
             whenever(
-                gatewayStore.updatePaymentGateway(
+                gatewayStore.updateGateway(
                     site = selectedSite.get(),
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,
@@ -2203,7 +2203,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     )
                 )
             whenever(
-                gatewayStore.updatePaymentGateway(
+                gatewayStore.updateGateway(
                     site = selectedSite.get(),
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,

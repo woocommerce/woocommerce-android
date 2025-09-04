@@ -27,6 +27,7 @@ class ShouldUpdateOrdersListByStoreIdTest : BaseUnitTest() {
 
     private val appPrefs = FakeAppPrefs().apply {
         orderSummaryMigrated = true
+        gatewayMigrated = true
     }
     val sut = ShouldUpdateOrdersList(lastUpdateDataStore, lisStore, appPrefs)
 
@@ -95,7 +96,7 @@ class ShouldUpdateOrdersListByStoreIdTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when fetch after migration wasn't yet done, then list should be updated`() = runTest {
+    fun `when fetch after order summary migration wasn't yet done, then list should be updated`() = runTest {
         appPrefs.orderSummaryMigrated = false
         val listDescriptor = WCOrderListDescriptor(SiteModel())
 
@@ -103,5 +104,16 @@ class ShouldUpdateOrdersListByStoreIdTest : BaseUnitTest() {
 
         assertTrue(result)
         assertTrue(appPrefs.orderSummaryMigrated)
+    }
+
+    @Test
+    fun `when fetch after gateway migration wasn't yet done, then list should be updated`() = runTest {
+        appPrefs.gatewayMigrated = false
+        val listDescriptor = WCOrderListDescriptor(SiteModel())
+
+        val result = sut.invoke(listDescriptor = listDescriptor)
+
+        assertTrue(result)
+        assertTrue(appPrefs.gatewayMigrated)
     }
 }
