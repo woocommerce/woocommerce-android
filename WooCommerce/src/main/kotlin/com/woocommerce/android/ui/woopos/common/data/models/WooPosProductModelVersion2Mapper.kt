@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.common.data.models
 
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import dagger.Reusable
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -13,6 +15,7 @@ import javax.inject.Inject
  * This is a read-only mapper since POS doesn't modify products.
  * The mapper ensures clean data handling:
  */
+@Reusable
 class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLogWrapper) {
     private val gson = Gson()
     fun fromEntity(entity: WCPosProductEntity): WooPosProductModelVersion2 {
@@ -33,7 +36,6 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
             description = entity.description,
             shortDescription = entity.shortDescription,
             isDownloadable = entity.downloadable,
-            // Parse JSON directly in mapper
             images = parseImages(entity.images),
             attributes = parseAttributes(entity.attributes),
             categories = parseCategories(entity.categories),
@@ -67,25 +69,31 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
                 val type = object : TypeToken<List<Map<String, Any?>>>() {}.type
                 val imagesList: List<Map<String, Any?>> = gson.fromJson(imagesJson, type)
                 imagesList.mapNotNull { imageMap ->
-                    // Handle both integer and double for id field
-                    val id = when (val idValue = imageMap["id"]) {
-                        is Double -> idValue.toLong()
-                        is Int -> idValue.toLong()
-                        is Long -> idValue
-                        is String -> idValue.toLongOrNull() ?: return@mapNotNull null
-                        else -> return@mapNotNull null
-                    }
-                    // API returns "src" field
-                    val url = imageMap["src"] as? String ?: imageMap["url"] as? String ?: return@mapNotNull null
-                    val name = imageMap["name"] as? String
-                    val alt = imageMap["alt"] as? String ?: ""
-                    WooPosProductModelVersion2.WooPosProductImage(id, url, name, alt)
+                    return@mapNotNull parseImage(imageMap)
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: JsonSyntaxException) {
             logger.w("Failed to parse images JSON: $imagesJson - ${e.message}")
             emptyList()
         }
+    }
+
+    private fun parseImage(imageMap: Map<String, Any?>): WooPosProductModelVersion2.WooPosProductImage? {
+        val id = when (val idValue = imageMap["id"]) {
+            is Double -> idValue.toLong()
+            is Int -> idValue.toLong()
+            is Long -> idValue
+            is String -> idValue.toLongOrNull()
+            else -> null
+        }
+        val url = imageMap["src"] as? String
+        val name = imageMap["name"] as? String ?: ""
+        val alt = imageMap["alt"] as? String ?: ""
+        if (id == null || url.isNullOrBlank()) {
+            logger.w("Failed to parse images JSON, id or url is null: $id, $url")
+            return null
+        }
+        return WooPosProductModelVersion2.WooPosProductImage(id, url, name, alt)
     }
 
     private fun parseAttributes(attributesJson: String): List<WooPosProductModelVersion2.WooPosProductAttribute> {
@@ -96,29 +104,32 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
                 val type = object : TypeToken<List<Map<String, Any?>>>() {}.type
                 val attributesList: List<Map<String, Any?>> = gson.fromJson(attributesJson, type)
                 attributesList.mapNotNull { attrMap ->
-                    // Handle both integer and double for id field
-                    val id = when (val idValue = attrMap["id"]) {
-                        is Double -> idValue.toLong()
-                        is Int -> idValue.toLong()
-                        is Long -> idValue
-                        is String -> idValue.toLongOrNull() ?: 0L
-                        else -> 0L
-                    }
-                    val name = attrMap["name"] as? String ?: return@mapNotNull null
-                    val options = when (val optionsValue = attrMap["options"]) {
-                        is List<*> -> optionsValue.filterIsInstance<String>()
-                        is String -> listOf(optionsValue)
-                        else -> emptyList()
-                    }
-                    val isVisible = attrMap["visible"] as? Boolean ?: true
-                    val isVariation = attrMap["variation"] as? Boolean ?: false
-                    WooPosProductModelVersion2.WooPosProductAttribute(id, name, options, isVisible, isVariation)
+                    return@mapNotNull parseAttribute(attrMap)
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: JsonSyntaxException) {
             logger.w("Failed to parse attributes JSON: $attributesJson - ${e.message}")
             emptyList()
         }
+    }
+
+    private fun parseAttribute(attrMap: Map<String, Any?>): WooPosProductModelVersion2.WooPosProductAttribute? {
+        val id = when (val idValue = attrMap["id"]) {
+            is Double -> idValue.toLong()
+            is Int -> idValue.toLong()
+            is Long -> idValue
+            is String -> idValue.toLongOrNull() ?: 0L
+            else -> 0L
+        }
+        val name = attrMap["name"] as? String ?: return null
+        val options = when (val optionsValue = attrMap["options"]) {
+            is List<*> -> optionsValue.filterIsInstance<String>()
+            is String -> listOf(optionsValue)
+            else -> emptyList()
+        }
+        val isVisible = attrMap["visible"] as? Boolean ?: true
+        val isVariation = attrMap["variation"] as? Boolean ?: false
+        return WooPosProductModelVersion2.WooPosProductAttribute(id, name, options, isVisible, isVariation)
     }
 
     private fun parseCategories(categoriesJson: String): List<WooPosProductModelVersion2.WooPosProductCategory> {
@@ -129,23 +140,30 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
                 val type = object : TypeToken<List<Map<String, Any?>>>() {}.type
                 val categoriesList: List<Map<String, Any?>> = gson.fromJson(categoriesJson, type)
                 categoriesList.mapNotNull { catMap ->
-                    // Handle both integer and double for id field
-                    val id = when (val idValue = catMap["id"]) {
-                        is Double -> idValue.toLong()
-                        is Int -> idValue.toLong()
-                        is Long -> idValue
-                        is String -> idValue.toLongOrNull() ?: return@mapNotNull null
-                        else -> return@mapNotNull null
-                    }
-                    val name = catMap["name"] as? String ?: return@mapNotNull null
-                    val slug = catMap["slug"] as? String ?: ""
-                    WooPosProductModelVersion2.WooPosProductCategory(id, name, slug)
+                    return@mapNotNull parseCategory(catMap)
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: JsonSyntaxException) {
             logger.w("Failed to parse categories JSON: $categoriesJson - ${e.message}")
             emptyList()
         }
+    }
+
+    private fun parseCategory(catMap: Map<String, Any?>): WooPosProductModelVersion2.WooPosProductCategory? {
+        val id = when (val idValue = catMap["id"]) {
+            is Double -> idValue.toLong()
+            is Int -> idValue.toLong()
+            is Long -> idValue
+            is String -> idValue.toLongOrNull()
+            else -> null
+        }
+        val name = catMap["name"] as? String
+        val slug = catMap["slug"] as? String ?: ""
+        if (id == null || name.isNullOrBlank()) {
+            logger.w("Failed to parse category JSON, id or name is null: $id, $name")
+            return null
+        }
+        return WooPosProductModelVersion2.WooPosProductCategory(id, name, slug)
     }
 
     private fun parseTags(tagsJson: String): List<WooPosProductModelVersion2.WooPosProductTag> {
@@ -156,23 +174,30 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
                 val type = object : TypeToken<List<Map<String, Any?>>>() {}.type
                 val tagsList: List<Map<String, Any?>> = gson.fromJson(tagsJson, type)
                 tagsList.mapNotNull { tagMap ->
-                    // Handle both integer and double for id field
-                    val id = when (val idValue = tagMap["id"]) {
-                        is Double -> idValue.toLong()
-                        is Int -> idValue.toLong()
-                        is Long -> idValue
-                        is String -> idValue.toLongOrNull() ?: return@mapNotNull null
-                        else -> return@mapNotNull null
-                    }
-                    val name = tagMap["name"] as? String ?: return@mapNotNull null
-                    val slug = tagMap["slug"] as? String ?: ""
-                    WooPosProductModelVersion2.WooPosProductTag(id, name, slug)
+                    return@mapNotNull parseTag(tagMap)
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: JsonSyntaxException) {
             logger.w("Failed to parse tags JSON: $tagsJson - ${e.message}")
             emptyList()
         }
+    }
+
+    private fun parseTag(tagMap: Map<String, Any?>): WooPosProductModelVersion2.WooPosProductTag? {
+        val id = when (val idValue = tagMap["id"]) {
+            is Double -> idValue.toLong()
+            is Int -> idValue.toLong()
+            is Long -> idValue
+            is String -> idValue.toLongOrNull()
+            else -> null
+        }
+        val name = tagMap["name"] as? String
+        val slug = tagMap["slug"] as? String ?: ""
+        if (id == null || name.isNullOrBlank()) {
+            logger.w("Failed to parse tag JSON, id or name is null: $id, $name")
+            return null
+        }
+        return WooPosProductModelVersion2.WooPosProductTag(id, name, slug)
     }
 
     fun mapPricing(

@@ -86,7 +86,7 @@ data class WooPosProductModelVersion2(
     data class WooPosProductImage(
         val id: Long,
         val url: String,
-        val name: String?,
+        val name: String,
         val alt: String?
     ) : Parcelable
 
