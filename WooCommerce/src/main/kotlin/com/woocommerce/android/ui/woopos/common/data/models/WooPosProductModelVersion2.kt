@@ -26,6 +26,7 @@ data class WooPosProductModelVersion2(
     val attributes: List<WooPosProductAttribute> = emptyList(),
     val categories: List<WooPosProductCategory> = emptyList(),
     val tags: List<WooPosProductTag> = emptyList(),
+    val variationIds: List<Long> = emptyList(),
 ) : Parcelable {
 
     sealed class WooPosPricing : Parcelable {
