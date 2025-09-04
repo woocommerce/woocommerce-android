@@ -40,7 +40,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 228
+        return 229
     }
 
     override fun getDbName(): String {
@@ -2237,6 +2237,10 @@ open class WellSqlConfig : DefaultWellConfig {
 
                 227 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
                     db.execSQL("DROP TABLE IF EXISTS WCGlobalAttributeModel")
+                }
+
+                228 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCGateways")
                 }
             }
         }

@@ -176,7 +176,8 @@ class OrderRestClient @Inject constructor(
         page: Int,
         orderBy: OrderBy,
         sortOrder: SortOrder,
-        statusFilter: String?
+        statusFilter: String?,
+        createdVia: String? = null,
     ): FetchOrdersResponsePayload {
         val url = WOOCOMMERCE.orders.pathV3
         val params = mutableMapOf(
@@ -186,7 +187,8 @@ class OrderRestClient @Inject constructor(
             "order" to sortOrder.value,
             "_fields" to ORDER_FIELDS
         ).putIfNotEmpty(
-            "status" to statusFilter
+            "status" to statusFilter,
+            "created_via" to createdVia
         )
 
         val response = wooNetwork.executeGetGsonRequest(
