@@ -317,7 +317,6 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
         assertThat(mapper.mapProductStatus("unknown")).isEqualTo(WooPosProductModelVersion2.WooPosProductStatus.UNKNOWN)
     }
 
-    // Test helper methods
 
     private fun createCompleteEntity() = WCPosProductEntity(
         localSiteId = LocalOrRemoteId.LocalId(1),
