@@ -208,6 +208,7 @@ const val WC_DATABASE_VERSION = 62
         AutoMigration(from = 58, to = 59),
         AutoMigration(from = 59, to = 60),
         AutoMigration(from = 60, to = 61),
+        AutoMigration(from = 61, to = 62),
     ]
 )
 @TypeConverters(

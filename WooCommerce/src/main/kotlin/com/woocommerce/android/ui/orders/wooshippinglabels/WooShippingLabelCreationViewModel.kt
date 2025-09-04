@@ -183,6 +183,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     init {
         launch { observeShippingLabelInformation() }
+        launch { getHazmatSelection() }
         launch { getDestinationAddress() }
         launch { trackScreenShownEvent() }
         launch { getSavedShipments() }
@@ -321,6 +322,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     )
                 }
             }
+    }
+
+    private suspend fun getHazmatSelection() {
+        shipments.filter { it.isNotEmpty() }.first().let { shipmentList ->
+            hazmatStatesFlow.value = shipmentList.map { shipment ->
+                shipment.label?.hazmatCategory?.let { Declared(it) } ?: NoSelection
+            }
+        }
     }
 
     private suspend fun getDestinationAddress() {
