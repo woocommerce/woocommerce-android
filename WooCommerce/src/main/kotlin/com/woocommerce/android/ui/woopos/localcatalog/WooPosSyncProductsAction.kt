@@ -10,7 +10,7 @@ class WooPosSyncProductsAction @Inject constructor(
     private val logger: WooPosLogWrapper,
 ) {
     sealed class WooPosSyncProductsResult {
-        data class Success(val productsSynced: Int) : WooPosSyncProductsResult()
+        data class Success(val productsSynced: Int, val serverDate: String?) : WooPosSyncProductsResult()
 
         sealed class Failed(val error: String) : WooPosSyncProductsResult() {
             class CatalogTooLarge(val totalPages: Int, val maxPages: Int) :
@@ -52,6 +52,7 @@ class WooPosSyncProductsAction @Inject constructor(
         var pagesSynced = 0
         var totalSyncedProducts = 0
         var shouldContinue = true
+        var lastServerDate: String? = null
 
         while (shouldContinue) {
             val result = posLocalCatalogStore.syncRecentlyModifiedProducts(
@@ -67,6 +68,7 @@ class WooPosSyncProductsAction @Inject constructor(
                     processPageResult(syncResult, pagesSynced, maxPages)
                     totalSyncedProducts += syncResult.syncedCount
                     pagesSynced++
+                    lastServerDate = syncResult.serverDate
 
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
                         logger.d("Local Catalog: No more products to sync")
@@ -82,8 +84,8 @@ class WooPosSyncProductsAction @Inject constructor(
             )
         }
 
-        logger.d("Local catalog sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
-        return WooPosSyncProductsResult.Success(totalSyncedProducts)
+        logger.d("Products sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
+        return WooPosSyncProductsResult.Success(totalSyncedProducts, lastServerDate)
     }
 
     private fun processPageResult(

@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.woopos.home.items.variations
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -133,7 +133,7 @@ class WooPosVariationsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateViewStateWithVariations(variations: List<ProductVariation>, productId: Long) {
+    private suspend fun updateViewStateWithVariations(variations: List<WooPosVariation>, productId: Long) {
         if (variations.isEmpty()) {
             _viewState.value = WooPosVariationsViewState.Empty()
         } else {
@@ -270,31 +270,5 @@ class WooPosVariationsViewModel @Inject constructor(
 
     private fun onEndOfVariationsListReached(productId: Long, numOfVariations: Int) {
         loadMore(productId, numOfVariations)
-    }
-}
-
-fun ProductVariation.getNameForPOS(
-    parentProduct: Product? = null,
-    resourceProvider: ResourceProvider,
-): String {
-    return parentProduct?.variationEnabledAttributes?.joinToString(", ") { attribute ->
-        val option = attributes.firstOrNull { it.name == attribute.name }
-        if (option?.option != null) {
-            "${attribute.name}: ${option.option}"
-        } else {
-            resourceProvider.getString(
-                R.string.woopos_variations_any_variation,
-                attribute.name
-            )
-        }
-    } ?: attributes.joinToString(", ") { attribute ->
-        if (attribute.option != null) {
-            "${attribute.name}: ${attribute.option}"
-        } else {
-            resourceProvider.getString(
-                R.string.woopos_variations_any_variation,
-                attribute.name!!
-            )
-        }
     }
 }

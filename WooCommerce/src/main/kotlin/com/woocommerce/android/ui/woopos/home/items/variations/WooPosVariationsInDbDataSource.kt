@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.items.variations
 
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ class WooPosVariationsInDbDataSource @Inject constructor(
     private val productStore: WCProductStore
 ) : WooPosVariationsDataSourceInterface {
 
-    private suspend fun getVariationsFromDatabase(productId: Long): List<ProductVariation> {
+    private suspend fun getVariationsFromDatabase(productId: Long): List<WooPosVariation> {
         val siteModel = selectedSite.getOrNull() ?: return emptyList()
         val siteId = LocalId(siteModel.id)
         val remoteProductId = RemoteId(productId)
@@ -32,13 +33,13 @@ class WooPosVariationsInDbDataSource @Inject constructor(
         return posLocalCatalogStore.observeVariationsForProduct(siteId, remoteProductId)
             .map { result ->
                 result.getOrNull()?.mapNotNull { variationModel ->
-                    // Convert WCPosVariationModel to ProductVariation by fetching from WCProductStore
-                    // This ensures we have all the required fields for ProductVariation
+                    // Convert WCPosVariationModel to WooPosVariation by fetching from WCProductStore
+                    // This ensures we have all the required fields for WooPosVariation
                     val fullVariation = productStore.getVariationByRemoteId(
                         siteModel,
                         productId,
                         variationModel.remoteVariationId.value
-                    )?.toAppModel()
+                    )?.toAppModel()?.toWooPosVariation()
 
                     // If the variation exists in the product store, use it
                     // Otherwise, skip this variation (it may have been deleted)
@@ -66,13 +67,13 @@ class WooPosVariationsInDbDataSource @Inject constructor(
         emit(FetchResult.Remote(Result.success(databaseVariations)))
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun loadMore(productId: Long): Result<List<ProductVariation>> = withContext(Dispatchers.IO) {
+    override suspend fun loadMore(productId: Long): Result<List<WooPosVariation>> = withContext(Dispatchers.IO) {
         // Database mode: all variations already loaded, no pagination needed
         Result.success(emptyList())
     }
 }
 
-private fun List<ProductVariation>.applyFilter(): List<ProductVariation> {
+private fun List<WooPosVariation>.applyFilter(): List<WooPosVariation> {
     return filter { !it.isDownloadable } // Keeping this filter for now, but it should be removed in the future after
     // WC 9.7.0 is released. https://a8c.slack.com/archives/C070SJRA8DP/p1736795937571479
 }
