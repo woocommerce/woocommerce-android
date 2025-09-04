@@ -31,6 +31,7 @@ class WooPosSettingsStoreViewModelTest {
             storeName = "Test Store",
             address = "123 Test St",
             phone = "+1234567890",
+            email = "test@example.com",
             refundPolicy = "30 day returns"
         )
         whenever(storeRepository.getStoreInfo()).thenReturn(storeInfo)

@@ -29,7 +29,7 @@ enum class WooPosSettingsCategory(
         WooPosSettingsDetailDestination.Hardware.Overview
     ),
     HELP(
-        R.string.woopos_get_support_title,
+        R.string.woopos_settings_help_category,
         R.string.woopos_settings_help_category_subtitle,
         Icons.AutoMirrored.Filled.Help,
         WooPosSettingsDetailDestination.Help.Overview,
