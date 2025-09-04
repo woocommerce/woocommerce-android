@@ -734,54 +734,55 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when manual weight entered, then subsequent package selection should NOT override manual weight`() = testBlocking {
-        val items = listOf(
-            ShippableItemModel(
-                itemId = 1,
-                productId = 1,
-                title = "title",
-                price = BigDecimal.ONE,
-                quantity = 1f,
-                weight = 1f,
-                currency = "USD",
-                width = 1f,
-                height = 1f,
-                length = 1f
+    fun `when manual weight entered, then subsequent package selection should NOT override manual weight`() =
+        testBlocking {
+            val items = listOf(
+                ShippableItemModel(
+                    itemId = 1,
+                    productId = 1,
+                    title = "title",
+                    price = BigDecimal.ONE,
+                    quantity = 1f,
+                    weight = 1f,
+                    currency = "USD",
+                    width = 1f,
+                    height = 1f,
+                    length = 1f
+                )
             )
-        )
-        whenever(getShipments(any())) doReturn listOf(ShipmentUIModel(localId = "0", items = items))
+            whenever(getShipments(any())) doReturn listOf(ShipmentUIModel(localId = "0", items = items))
 
-        createViewModel()
-        advanceUntilIdle()
+            createViewModel()
+            advanceUntilIdle()
 
-        val initialPackage = PackageData(
-            id = "1",
-            name = "Pkg1",
-            dimensions = "10x10x10",
-            weight = "1",
-            isSelected = true,
-            isLetter = false
-        )
-        val otherPackage = PackageData(
-            id = "2",
-            name = "Pkg2",
-            dimensions = "5x5x5",
-            weight = "0.5",
-            isSelected = true,
-            isLetter = false
-        )
+            val initialPackage = PackageData(
+                id = "1",
+                name = "Pkg1",
+                dimensions = "10x10x10",
+                weight = "1",
+                isSelected = true,
+                isLetter = false
+            )
+            val otherPackage = PackageData(
+                id = "2",
+                name = "Pkg2",
+                dimensions = "5x5x5",
+                weight = "0.5",
+                isSelected = true,
+                isLetter = false
+            )
 
-        sut.onPackageSelected(initialPackage)
-        advanceUntilIdle()
+            sut.onPackageSelected(initialPackage)
+            advanceUntilIdle()
 
-        sut.onWeightChange("7.77")
+            sut.onWeightChange("7.77")
 
-        sut.onPackageSelected(otherPackage)
-        advanceUntilIdle()
+            sut.onPackageSelected(otherPackage)
+            advanceUntilIdle()
 
-        val weight = sut.weightInputsFlow.value[0].weight
-        assertThat(weight).isEqualTo("7.77")
-    }
+            val weight = sut.weightInputsFlow.value[0].weight
+            assertThat(weight).isEqualTo("7.77")
+        }
 
     @Test
     fun `when shipment is split after package selection, then weight is reset to totalWeight of current shipment`() =
@@ -1293,6 +1294,33 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         assertThat(dataState.shipmentUIList[0].hazmatState)
             .isEqualTo(HazmatState.Declared(ShippingLabelHazmatCategory.CLASS_1))
+    }
+
+    @Test
+    fun `when initialized with selected hazmat, then show selected hazmat category`() = testBlocking {
+        val shipmentsWithHazmat = listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = shippingLabelModel.copy(hazmatCategory = null)
+            ),
+            ShipmentUIModel(
+                localId = "1",
+                items = defaultShippableItems,
+                label = shippingLabelModel.copy(hazmatCategory = ShippingLabelHazmatCategory.CLASS_3)
+            )
+        )
+        whenever(getShipments(any())) doReturn shipmentsWithHazmat
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+
+        assertThat(dataState.shipmentUIList[0].hazmatState)
+            .isEqualTo(HazmatState.NoSelection)
+        assertThat(dataState.shipmentUIList[1].hazmatState)
+            .isEqualTo(HazmatState.Declared(ShippingLabelHazmatCategory.CLASS_3))
     }
 
     @Test

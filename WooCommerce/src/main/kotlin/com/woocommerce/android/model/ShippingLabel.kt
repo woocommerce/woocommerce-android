@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import kotlinx.parcelize.IgnoredOnParcel
@@ -25,6 +26,7 @@ data class ShippingLabel(
     val currency: String = "",
     val productNames: List<String> = emptyList(),
     val productIds: List<Long> = emptyList(),
+    val hazmatCategory: ShippingLabelHazmatCategory? = null,
     val originAddress: Address? = null,
     val destinationAddress: Address? = null,
     val refund: Refund? = null,
@@ -96,6 +98,7 @@ fun ShippingLabel.toShippingLabelModel(): ShippingLabelModel {
         usedDate = null,
         refund = refund?.let { ShippingLabelModel.Refund(status = it.status, requestDate = it.refundDate) },
         products = products,
+        hazmatCategory = hazmatCategory,
         originAddress = originAddress,
         destinationAddress = destinationAddress
     )
