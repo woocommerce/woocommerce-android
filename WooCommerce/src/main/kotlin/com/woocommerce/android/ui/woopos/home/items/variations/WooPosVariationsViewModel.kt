@@ -7,6 +7,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
@@ -34,10 +35,18 @@ class WooPosVariationsViewModel @Inject constructor(
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val getProductById: WooPosGetProductById,
     private val variationsDataSource: WooPosVariationsDataSource,
+    private val variationsInDbDataSource: WooPosVariationsInDbDataSource,
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
 ) : ViewModel() {
+
+    private val currentDataSource: WooPosVariationsDataSourceInterface
+        get() = when (wooPosLocalCatalogM1Enabled()) {
+            true -> variationsInDbDataSource
+            false -> variationsDataSource
+        }
 
     private val _viewState =
         MutableStateFlow<WooPosVariationsViewState>(WooPosVariationsViewState.Loading())
@@ -60,7 +69,7 @@ class WooPosVariationsViewModel @Inject constructor(
     ) {
         this.sourceType = sourceType
         viewModelScope.launch {
-            variationsDataSource.resetState()
+            currentDataSource.resetState()
         }
         loadVariations(
             productId = productId,
@@ -82,7 +91,7 @@ class WooPosVariationsViewModel @Inject constructor(
                 WooPosVariationsViewState.Loading()
             }
 
-            variationsDataSource.fetchFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
+            currentDataSource.fetchFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
                 when (result) {
                     is FetchResult.Cached -> {
                         if (result.data.isNotEmpty()) {
@@ -167,7 +176,7 @@ class WooPosVariationsViewModel @Inject constructor(
             return
         }
 
-        if (!variationsDataSource.canLoadMore(numOfVariations)) {
+        if (!currentDataSource.canLoadMore(numOfVariations)) {
             return
         }
 
@@ -175,7 +184,7 @@ class WooPosVariationsViewModel @Inject constructor(
 
         loadMoreJob?.cancel()
         loadMoreJob = viewModelScope.launch {
-            val result = variationsDataSource.loadMore(productId)
+            val result = currentDataSource.loadMore(productId)
             _viewState.value = if (result.isSuccess) {
                 trackItemsNextPageLoaded()
                 WooPosVariationsViewState.Content(
@@ -211,14 +220,23 @@ class WooPosVariationsViewModel @Inject constructor(
             }
 
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
-                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
-                viewModelScope.launch {
-                    analyticsTracker.track(
-                        WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
-                            source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
-                            sourceType = sourceType,
-                        )
-                    )
+                when {
+                    wooPosLocalCatalogM1Enabled() -> {
+                        // Database mode: pull to refresh not needed since data comes from local database
+                        // Future enhancement:  trigger incremental sync of variations from server to database
+                        return
+                    }
+                    else -> {
+                        loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
+                        viewModelScope.launch {
+                            analyticsTracker.track(
+                                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                                    source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                                    sourceType = sourceType,
+                                )
+                            )
+                        }
+                    }
                 }
             }
 
