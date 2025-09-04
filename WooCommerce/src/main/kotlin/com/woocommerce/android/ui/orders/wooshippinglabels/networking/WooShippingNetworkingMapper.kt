@@ -262,6 +262,9 @@ class WooShippingNetworkingMapper @Inject constructor(
             refund = labelEntity.refund?.let { refund ->
                 ShippingLabelModel.Refund(status = refund.status, requestDate = refund.requestDate)
             },
+            hazmatCategory = labelEntity.hazmatCategory?.takeUnless { it.isEmpty() }?.let {
+                runCatching { ShippingLabelHazmatCategory.valueOf(it) }.getOrNull()
+            },
             originAddress = labelEntity.originAddress?.let { invoke(it) },
             destinationAddress = labelEntity.destinationAddress?.let { invoke(it) }
         )
