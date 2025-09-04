@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooExperimentalNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
+import kotlin.collections.emptyList
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderRestClientTest {
@@ -231,7 +232,7 @@ class OrderRestClientTest {
     fun `when createdVia is provided, then created_via parameter is sent to API in fetchOrders`() = runTest {
         // Given
         val expectedCreatedVia = "pos-rest-api"
-        val mockResponse = WPAPIResponse.Success(arrayOf<OrderDto>())
+        val mockResponse = WPAPIResponse.Success(arrayOf<OrderDto>(),emptyList())
 
         whenever(
             wooNetwork.executeGetGsonRequest(
