@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Bookings
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Coupons
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
@@ -18,6 +19,10 @@ class WooPosItemsTabsHelper @Inject constructor(val resourceProvider: ResourcePr
             ),
             Coupons(
                 name = resourceProvider.getString(R.string.woopos_coupons_screen_title),
+                highlightLevel = HighlightLevel.Normal
+            ),
+            Bookings(
+                name = resourceProvider.getString(R.string.woopos_bookings_title),
                 highlightLevel = HighlightLevel.Normal
             ),
         )
@@ -41,6 +46,7 @@ class WooPosItemsTabsHelper @Inject constructor(val resourceProvider: ResourcePr
             is Products -> Products(name, highlightLevel)
             is Coupons -> Coupons(name, highlightLevel)
             is Variations -> Variations(name, highlightLevel)
+            is Bookings -> Bookings(name, highlightLevel)
         }
     }
 }

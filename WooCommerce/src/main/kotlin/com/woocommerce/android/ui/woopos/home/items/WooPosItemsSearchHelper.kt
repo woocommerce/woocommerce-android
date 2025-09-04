@@ -122,6 +122,7 @@ class WooPosItemsSearchHelper @Inject constructor(
             is WooPosItemsToolbarViewState.ProductList -> R.string.woopos_search_products
             is WooPosItemsToolbarViewState.CouponList -> R.string.woopos_search_coupons
             is WooPosItemsToolbarViewState.VariationList -> error("Search is not applicable for variations list")
+            is WooPosItemsToolbarViewState.BookingsList -> error("Search is not applicable for bookings list")
         }
 
         viewStateFlow.value = viewStateFlow.value.copy(
@@ -174,6 +175,7 @@ class WooPosItemsSearchHelper @Inject constructor(
         is WooPosItemsToolbarViewState.CouponList -> false
         is WooPosItemsToolbarViewState.ProductList -> true
         is WooPosItemsToolbarViewState.VariationList -> false
+        is WooPosItemsToolbarViewState.BookingsList -> false
     }
 
     private fun getCurrentSearchVisibleState(): SearchState.Visible? {
@@ -191,6 +193,7 @@ class WooPosItemsSearchHelper @Inject constructor(
             is WooPosItemsToolbarViewState.ProductList -> this.copy(search = search)
             is WooPosItemsToolbarViewState.CouponList -> this.copy(search = search)
             is WooPosItemsToolbarViewState.VariationList -> this
+            is WooPosItemsToolbarViewState.BookingsList -> this
         }
     }
 }

@@ -131,6 +131,7 @@ class WooPosItemsViewModel @Inject constructor(
                 is WooPosItemsToolbarViewState.ProductList -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
                 is WooPosItemsToolbarViewState.CouponList -> WooPosAnalyticsEventConstant.ItemsListSource.COUPON
                 is WooPosItemsToolbarViewState.VariationList -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
+                is WooPosItemsToolbarViewState.BookingsList -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
             }
             val event = SearchButtonTapped(source = source)
             analyticsTracker.track(event)
@@ -185,6 +186,11 @@ class WooPosItemsViewModel @Inject constructor(
             is Tab.Variations -> WooPosItemsToolbarViewState.VariationList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
                 variableProductData = (state as WooPosItemsToolbarViewState.VariationList).variableProductData,
+            )
+
+            is Tab.Bookings -> WooPosItemsToolbarViewState.BookingsList(
+                tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                search = SearchState.Hidden
             )
         }
     }

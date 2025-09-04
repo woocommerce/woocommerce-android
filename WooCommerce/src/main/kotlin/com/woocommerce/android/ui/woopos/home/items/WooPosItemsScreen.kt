@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
+import com.woocommerce.android.ui.woopos.home.items.bookings.WooPosBookingsTabScreen
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
@@ -145,6 +146,12 @@ private fun MainItemsList(
                         ),
                         listState = couponsListState,
                     )
+                    
+                    ScreenState.Bookings -> WooPosBookingsTabScreen(
+                        modifier = Modifier.padding(
+                            horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                        )
+                    )
 
                     is ScreenState.Variations -> {
                         WooPosVariationsScreen(
@@ -165,6 +172,7 @@ private fun MainItemsList(
 private sealed class ScreenState {
     object Products : ScreenState()
     object Coupons : ScreenState()
+    object Bookings : ScreenState()
     object ProductsSearch : ScreenState()
     object CouponsSearch : ScreenState()
     data class Variations(val variableProductData: WooPosVariationsNavigationData) : ScreenState()
@@ -198,6 +206,8 @@ private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {
                 }
             }
         }
+        
+        is WooPosItemsToolbarViewState.BookingsList -> ScreenState.Bookings
     }
 }
 

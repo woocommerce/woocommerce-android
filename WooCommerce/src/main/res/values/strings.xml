@@ -4381,6 +4381,7 @@
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
+    <string name="woopos_bookings_title">Bookings</string>
     <string name="woopos_orders_title">Orders</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
