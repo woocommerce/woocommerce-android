@@ -95,6 +95,9 @@ data class ShippingLabelDataDTO(
 )
 
 data class StoredDataDTO(
+    @SerializedName("selected_hazmat")
+    @JsonAdapter(MapOrEmptyMapDeserializer::class)
+    val selectedHazmat: Map<String, HazmatDTO>,
     @SerializedName("selected_origin")
     @JsonAdapter(MapOrEmptyMapDeserializer::class)
     val selectedOrigin: Map<String, OriginAddressDTO>,
