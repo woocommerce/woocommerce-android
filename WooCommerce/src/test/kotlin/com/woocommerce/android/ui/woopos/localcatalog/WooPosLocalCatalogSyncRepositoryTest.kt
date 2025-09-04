@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private lateinit var sut: PosLocalCatalogSyncRepository
     private var posSyncProductsAction: WooPosSyncProductsAction = mock()
+    private var posSyncVariationsAction: WooPosSyncVariationsAction = mock()
     private var syncTimestampManager: WooPosSyncTimestampManager = mock()
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
@@ -35,6 +36,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
 
         sut = PosLocalCatalogSyncRepository(
             posSyncProductsAction = posSyncProductsAction,
+            posSyncVariationsAction = posSyncVariationsAction,
             syncTimestampManager = syncTimestampManager,
             dispatchers = dispatchers,
             logger = logger,
@@ -51,7 +53,11 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val productsSynced = 150
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced))
+            .thenReturn(
+                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+            )
+        whenever(posSyncVariationsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -65,7 +71,11 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val productsSynced = 150
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced))
+            .thenReturn(
+                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+            )
+        whenever(posSyncVariationsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -108,7 +118,11 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val productsSynced = 150
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced))
+            .thenReturn(
+                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+            )
+        whenever(posSyncVariationsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
@@ -122,7 +136,11 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val productsSynced = 150
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced))
+            .thenReturn(
+                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+            )
+        whenever(posSyncVariationsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         sut.syncLocalCatalogIncremental(site)
