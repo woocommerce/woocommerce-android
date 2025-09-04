@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.orders
 
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -17,7 +17,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -50,8 +49,8 @@ class WooPosOrdersDataSourceTest {
             e1 to emptyList<WCMetaData>(),
             e2 to emptyList<WCMetaData>()
         )
-        val o1 = mock<Order>()
-        val o2 = mock<Order>()
+        val firstOrder = OrderTestUtils.generateTestOrder()
+        val secondOrder = OrderTestUtils.generateTestOrder()
 
         val payload = WCOrderStore.FetchOrdersResponsePayload(
             site = siteModel,
@@ -70,8 +69,8 @@ class WooPosOrdersDataSourceTest {
             )
         ).thenReturn(payload)
 
-        whenever(orderMapper.toAppModel(e1)).thenReturn(o1)
-        whenever(orderMapper.toAppModel(e2)).thenReturn(o2)
+        whenever(orderMapper.toAppModel(e1)).thenReturn(firstOrder)
+        whenever(orderMapper.toAppModel(e2)).thenReturn(secondOrder)
 
         // WHEN
         val result = sut.loadOrders()
@@ -79,7 +78,7 @@ class WooPosOrdersDataSourceTest {
         // THEN
         assertThat(result).isInstanceOf(LoadOrdersResult.Success::class.java)
         val success = result as LoadOrdersResult.Success
-        assertThat(success.orders).containsExactly(o1, o2)
+        assertThat(success.orders).containsExactly(firstOrder, secondOrder)
 
         verify(selectedSite).get()
         verify(orderRestClient).fetchOrders(
@@ -124,13 +123,7 @@ class WooPosOrdersDataSourceTest {
         // THEN
         assertThat(result).isInstanceOf(LoadOrdersResult.Error::class.java)
         val error = result as LoadOrdersResult.Error
-        assertThat(error.error).isEqualTo(
-            WooError(
-                org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR,
-                org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR,
-                orderError.message
-            )
-        )
+        assertThat(error.message).isEqualTo(orderError.message)
 
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
