@@ -1079,7 +1079,7 @@ internal class AutoMigration32to33 : AutoMigrationSpec
 )
 internal class AutoMigration37to38 : AutoMigrationSpec
 
-internal val MIGRATION_61_62 = object : Migration(61, 62) {
+internal val MIGRATION_62_63 = object : Migration(62, 63) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE PosProductEntity ADD COLUMN variations TEXT NOT NULL DEFAULT ''")
     }
