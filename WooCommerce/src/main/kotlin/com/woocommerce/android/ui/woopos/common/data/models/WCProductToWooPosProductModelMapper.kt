@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data.models
 
+import com.google.gson.JsonSyntaxException
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import dagger.Reusable
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -48,7 +49,7 @@ class WCProductToWooPosProductModelMapper @Inject constructor(
                     isVariation = attribute.variation
                 )
             }
-        } catch (e: Exception) {
+        } catch (e: JsonSyntaxException) {
             logger.e("Error mapping product attributes", e)
             emptyList()
         }

@@ -61,7 +61,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         }
     }
 
-    private fun parseImages(imagesJson: String): List<WooPosProductModelVersion2.WooPosProductImage> {
+    fun parseImages(imagesJson: String): List<WooPosProductModelVersion2.WooPosProductImage> {
         return try {
             if (imagesJson.isBlank()) {
                 emptyList()
@@ -96,7 +96,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         return WooPosProductModelVersion2.WooPosProductImage(id, url, name, alt)
     }
 
-    private fun parseAttributes(attributesJson: String): List<WooPosProductModelVersion2.WooPosProductAttribute> {
+    fun parseAttributes(attributesJson: String): List<WooPosProductModelVersion2.WooPosProductAttribute> {
         return try {
             if (attributesJson.isBlank()) {
                 emptyList()
@@ -132,7 +132,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         return WooPosProductModelVersion2.WooPosProductAttribute(id, name, options, isVisible, isVariation)
     }
 
-    private fun parseCategories(categoriesJson: String): List<WooPosProductModelVersion2.WooPosProductCategory> {
+    fun parseCategories(categoriesJson: String): List<WooPosProductModelVersion2.WooPosProductCategory> {
         return try {
             if (categoriesJson.isBlank()) {
                 emptyList()
@@ -166,7 +166,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         return WooPosProductModelVersion2.WooPosProductCategory(id, name, slug)
     }
 
-    private fun parseTags(tagsJson: String): List<WooPosProductModelVersion2.WooPosProductTag> {
+    fun parseTags(tagsJson: String): List<WooPosProductModelVersion2.WooPosProductTag> {
         return try {
             if (tagsJson.isBlank()) {
                 emptyList()
