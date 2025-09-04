@@ -18,6 +18,7 @@ class JetpackApplicationPasswordsSupport @Inject constructor(
 ) {
     private val fluxCPreferences by lazy { PreferenceUtils.getFluxCPreferences(context) }
 
+    @Synchronized
     fun supportsAppPasswords(siteModel: SiteModel): Boolean {
         val siteFlag = fluxCPreferences.getStringSet(UNSUPPORTED_JETPACK_APP_PASSWORDS_SITES, null)
             ?.firstOrNull { it.startsWith("${siteModel.siteId}:") }
@@ -38,6 +39,7 @@ class JetpackApplicationPasswordsSupport @Inject constructor(
         return siteModel.isApplicationPasswordsSupported
     }
 
+    @Synchronized
     fun flagAsUnsupported(siteModel: SiteModel) {
         val unsupportedSites = fluxCPreferences.getStringSet(UNSUPPORTED_JETPACK_APP_PASSWORDS_SITES, null) ?: setOf()
         if (unsupportedSites.any { it.startsWith("${siteModel.siteId}:") }) {
