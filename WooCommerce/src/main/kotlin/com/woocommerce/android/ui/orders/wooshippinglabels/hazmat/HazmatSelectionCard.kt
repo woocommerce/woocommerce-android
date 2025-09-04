@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.hazmat
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHa
 @Composable
 fun HazmatSelectionCard(
     selectedCategory: ShippingLabelHazmatCategory,
+    onClick: OnClick? = null,
     modifier: Modifier = Modifier
 ) {
     Spacer(modifier = Modifier.height(4.dp))
@@ -28,6 +30,7 @@ fun HazmatSelectionCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .then(if (onClick == null) Modifier else Modifier.clickable { onClick() })
                 .background(
                     color = colorResource(R.color.light_colored_button_background),
                     shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
