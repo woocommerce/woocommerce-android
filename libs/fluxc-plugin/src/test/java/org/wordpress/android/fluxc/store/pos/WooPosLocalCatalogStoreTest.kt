@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
+import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
@@ -41,6 +42,8 @@ class WooPosLocalCatalogStoreTest {
     private val posVariationsDao: WooPosVariationsDao = mock()
 
     private val headersParser: HeadersParser = mock()
+
+    private val database: WCAndroidDatabase = mock()
 
     private lateinit var store: WooPosLocalCatalogStore
 
@@ -67,7 +70,8 @@ class WooPosLocalCatalogStoreTest {
             coroutineEngine = initCoroutineEngine(),
             posProductDao = posProductsDao,
             posVariationsDao = posVariationsDao,
-            headersParser = headersParser
+            headersParser = headersParser,
+            database = database,
         )
 
         // Set up default successful responses for common operations
