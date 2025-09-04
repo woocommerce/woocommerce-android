@@ -40,8 +40,9 @@ data class WooPosBooking(
         get() = when (status.lowercase()) {
             "paid" -> BookingStatus.CONFIRMED
             "unpaid" -> BookingStatus.PENDING
-            "complete" -> BookingStatus.COMPLETED
-            "cancelled" -> BookingStatus.CANCELLED
+            "pending-confirmation" -> BookingStatus.PENDING
+            "complete", "completed" -> BookingStatus.COMPLETED
+            "cancelled", "canceled" -> BookingStatus.CANCELLED
             else -> BookingStatus.PENDING
         }
     

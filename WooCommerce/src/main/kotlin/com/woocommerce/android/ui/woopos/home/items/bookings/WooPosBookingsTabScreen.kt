@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.bookings
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -31,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.ui.draw.shadow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -77,9 +79,13 @@ fun WooPosBookingsTabScreen(
     var showBookingDetails by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    val bookingsResult by viewModel.loadBookingsForWeek(selectedWeekStart).collectAsState(
+    Log.d(TAG, "WooPosBookingsTabScreen: Recomposing with selectedWeekStart=$selectedWeekStart")
+    
+    val bookingsResult by viewModel.bookingsForWeek.collectAsState(
         initial = WooPosBookingsDataSource.BookingsResult.Loading
     )
+    
+    Log.d(TAG, "WooPosBookingsTabScreen: Current result state: ${bookingsResult::class.simpleName}")
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -190,7 +196,9 @@ private fun WeekCalendarWithTimeSlots(
             
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
             
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier.padding(bottom = 80.dp) // Add bottom padding to avoid floating menu overlap
+            ) {
                 items(timeSlots) { timeSlot ->
                     TimeSlotRow(
                         timeSlot = timeSlot,
@@ -299,29 +307,45 @@ private fun BookingSlotCard(
 ) {
     Surface(
         modifier = Modifier
-            .padding(WooPosSpacing.XSmall.value.toAdaptivePadding())
+            .padding(1.dp) // Minimal padding to fit in cell
+            .size(width = 80.dp, height = 45.dp) // Constrained size to fit calendar cell
             .clickable(onClick = onClick),
-        color = when {
-            booking.isPaid -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-            else -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
+        color = when (booking.bookingStatus) {
+            com.woocommerce.android.ui.woopos.bookings.BookingStatus.CONFIRMED -> MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+            com.woocommerce.android.ui.woopos.bookings.BookingStatus.PENDING -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f)
+            com.woocommerce.android.ui.woopos.bookings.BookingStatus.COMPLETED -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.9f)
+            com.woocommerce.android.ui.woopos.bookings.BookingStatus.CANCELLED -> MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
         },
-        shape = RoundedCornerShape(WooPosCornerRadius.Small.value)
+        shape = RoundedCornerShape(8.dp), // Smaller rounded corners for compact size
+        shadowElevation = 1.dp // Smaller shadow
     ) {
-        Column(
-            modifier = Modifier.padding(WooPosSpacing.Small.value.toAdaptivePadding()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            WooPosText(
-                text = booking.customerName,
-                style = WooPosTypography.Caption,
-                color = Color.White,
-                maxLines = 1
-            )
-            WooPosText(
-                text = "$${booking.cost}",
-                style = WooPosTypography.Caption,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
+        Box {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp), // Minimal internal padding
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                WooPosText(
+                    text = "C#${booking.customerId}",
+                    style = WooPosTypography.Caption,
+                    color = Color.White,
+                    maxLines = 1
+                )
+                WooPosText(
+                    text = "$${booking.cost}",
+                    style = WooPosTypography.Caption,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+            }
+            
+            // Status badge - smaller size for compact card
+            BookingStatusBadge(
+                status = booking.bookingStatus,
+                modifier = Modifier.align(Alignment.TopEnd)
             )
         }
     }
@@ -480,6 +504,39 @@ private fun generateTimeSlots(): List<LocalTime> {
     
     return slots
 }
+
+@Composable
+private fun BookingStatusBadge(
+    status: com.woocommerce.android.ui.woopos.bookings.BookingStatus,
+    modifier: Modifier = Modifier
+) {
+    val (text, backgroundColor) = when (status) {
+        com.woocommerce.android.ui.woopos.bookings.BookingStatus.CONFIRMED -> "C" to Color(0xFF4CAF50)
+        com.woocommerce.android.ui.woopos.bookings.BookingStatus.PENDING -> "P" to Color(0xFFFF9800)
+        com.woocommerce.android.ui.woopos.bookings.BookingStatus.COMPLETED -> "✓" to Color(0xFF2196F3)
+        com.woocommerce.android.ui.woopos.bookings.BookingStatus.CANCELLED -> "X" to Color(0xFFF44336)
+    }
+    
+    Box(
+        modifier = modifier
+            .size(12.dp) // Smaller badge for compact card
+            .background(
+                backgroundColor,
+                RoundedCornerShape(50) // Circular using rounded corners
+            )
+            .padding(1.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        WooPosText(
+            text = text,
+            style = WooPosTypography.Caption,
+            color = Color.White,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+private const val TAG = "WooPosBookingsTabScreen"
 
 @WooPosPreview
 @Composable

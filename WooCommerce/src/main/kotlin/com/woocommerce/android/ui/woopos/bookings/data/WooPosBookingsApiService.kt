@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.bookings.data
 
+import android.util.Log
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.bookings.WooPosBooking
 import kotlinx.coroutines.Dispatchers
@@ -17,12 +18,15 @@ class WooPosBookingsApiService @Inject constructor(
         page: Int = 1,
         perPage: Int = 50
     ): Result<List<WooPosBooking>> = withContext(Dispatchers.IO) {
+        Log.d(TAG, "fetchBookings API call: page=$page, perPage=$perPage")
         try {
             val site = selectedSite.get()
             val params = mapOf(
                 "page" to page.toString(),
                 "per_page" to perPage.toString()
             )
+            
+            Log.d(TAG, "fetchBookings API: making request to wc-bookings/v1/bookings with params=$params")
 
             val response = wooNetwork.executeGetGsonRequest(
                 site = site,
@@ -38,11 +42,15 @@ class WooPosBookingsApiService @Inject constructor(
             }
 
             if (response.isError) {
+                Log.e(TAG, "fetchBookings API error: ${response.error?.message}")
                 return@withContext Result.failure(Exception("API Error: ${response.error?.message}"))
             }
 
-            Result.success(response.result ?: emptyList())
+            val result = response.result ?: emptyList()
+            Log.d(TAG, "fetchBookings API success: returned ${result.size} bookings")
+            Result.success(result)
         } catch (e: Exception) {
+            Log.e(TAG, "fetchBookings API exception: page=$page", e)
             Result.failure(e)
         }
     }
@@ -52,6 +60,7 @@ class WooPosBookingsApiService @Inject constructor(
         minDate: LocalDate,
         maxDate: LocalDate
     ): Result<List<BookingSlot>> = withContext(Dispatchers.IO) {
+        Log.d(TAG, "fetchBookingSlots API call: productIds=$productIds, minDate=$minDate, maxDate=$maxDate")
         try {
             val site = selectedSite.get()
             val params = mapOf(
@@ -59,6 +68,8 @@ class WooPosBookingsApiService @Inject constructor(
                 "max_date" to maxDate.toString(),
                 "product_ids" to productIds.joinToString(",")
             )
+
+            Log.d(TAG, "fetchBookingSlots API: making request to wc-bookings/v1/products/slots with params=$params")
 
             val response = wooNetwork.executeGetGsonRequest(
                 site = site,
@@ -73,11 +84,15 @@ class WooPosBookingsApiService @Inject constructor(
             }
 
             if (response.isError) {
+                Log.e(TAG, "fetchBookingSlots API error: ${response.error?.message}")
                 return@withContext Result.failure(Exception("API Error: ${response.error?.message}"))
             }
 
-            Result.success(response.result ?: emptyList())
+            val result = response.result ?: emptyList()
+            Log.d(TAG, "fetchBookingSlots API success: returned ${result.size} slots")
+            Result.success(result)
         } catch (e: Exception) {
+            Log.e(TAG, "fetchBookingSlots API exception: productIds=$productIds", e)
             Result.failure(e)
         }
     }
@@ -129,3 +144,5 @@ data class BookingSlot(
     val isAvailable: Boolean get() = available > 0
     val isBooked: Boolean get() = booked > 0
 }
+
+const val TAG = "WooPosBookingsApiService"

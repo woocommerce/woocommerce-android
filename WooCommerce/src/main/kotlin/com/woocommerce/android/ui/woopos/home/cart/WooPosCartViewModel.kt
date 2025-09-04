@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -329,21 +330,43 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleSimpleProductClicked(productId: Long): WooPosCartItemViewState {
-        val product = getProductById(productId)!!
+    private suspend fun handleSimpleProductClicked(productId: Long): WooPosCartItemViewState? {
+        Log.d(TAG, "handleSimpleProductClicked: productId=$productId")
+        val product = getProductById(productId)
+        if (product == null) {
+            Log.e(TAG, "handleSimpleProductClicked: Product with ID $productId not found")
+            return null
+        }
         val itemNumber = getItemNumber()
+        Log.d(TAG, "handleSimpleProductClicked: Found product ${product.name}, itemNumber=$itemNumber")
         return product.toCartListItem(itemNumber)
     }
 
-    private suspend fun handleVariationClicked(productId: Long, variationId: Long): WooPosCartItemViewState {
-        val product = getProductById(productId)!!
+    private suspend fun handleVariationClicked(productId: Long, variationId: Long): WooPosCartItemViewState? {
+        Log.d(TAG, "handleVariationClicked: productId=$productId, variationId=$variationId")
+        val product = getProductById(productId)
+        if (product == null) {
+            Log.e(TAG, "handleVariationClicked: Product with ID $productId not found")
+            return null
+        }
         val itemNumber = getItemNumber()
-        val productVariation = getVariationsById(productId, variationId)!!
+        val productVariation = getVariationsById(productId, variationId)
+        if (productVariation == null) {
+            Log.e(TAG, "handleVariationClicked: Variation with ID $variationId not found for product $productId")
+            return null
+        }
+        Log.d(TAG, "handleVariationClicked: Found product ${product.name} and variation ${productVariation.getNameForPOS(product, resourceProvider)}, itemNumber=$itemNumber")
         return productVariation.toCartListItem(itemNumber, product)
     }
 
-    private suspend fun handleCouponClicked(couponId: Long): WooPosCartItemViewState {
-        val coupon = getCouponById(couponId)!!
+    private suspend fun handleCouponClicked(couponId: Long): WooPosCartItemViewState? {
+        Log.d(TAG, "handleCouponClicked: couponId=$couponId")
+        val coupon = getCouponById(couponId)
+        if (coupon == null) {
+            Log.e(TAG, "handleCouponClicked: Coupon with ID $couponId not found")
+            return null
+        }
+        Log.d(TAG, "handleCouponClicked: Found coupon ${coupon.code}")
         return WooPosCartItemViewState.Coupon(
             itemNumber = getItemNumber(),
             id = couponId,
@@ -673,5 +696,9 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
         }
+    }
+    
+    companion object {
+        private const val TAG = "WooPosCartViewModel"
     }
 }
