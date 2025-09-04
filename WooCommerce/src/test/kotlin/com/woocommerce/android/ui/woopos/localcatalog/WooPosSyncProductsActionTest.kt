@@ -238,7 +238,9 @@ class WooPosSyncProductsActionTest {
 
     private suspend fun givenMultiPageCatalog(page1Count: Int, page2Count: Int, page3Count: Int, totalPages: Int = 3) {
         whenever(posLocalCatalogStore.executeInTransaction<WooPosSyncProductsResult>(any()))
-            .thenReturn(KotlinResult.success(WooPosSyncProductsResult.Success(page1Count + page2Count + page3Count, "")))
+            .thenReturn(
+                KotlinResult.success(WooPosSyncProductsResult.Success(page1Count + page2Count + page3Count, ""))
+            )
 
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
