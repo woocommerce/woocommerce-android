@@ -27,8 +27,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.formatToDDMMMYYYY
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
@@ -59,8 +57,8 @@ fun WooPosOrdersScreen(
                 onBackClicked = onBackClicked,
             )
 
-            when {
-                state.isLoading -> {
+            when (val s = state) {
+                is WooPosOrdersState.Loading -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -73,20 +71,22 @@ fun WooPosOrdersScreen(
                         )
                     }
                 }
-                state.error != null -> {
+
+                is WooPosOrdersState.Error -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         WooPosText(
-                            text = state.error ?: stringResource(R.string.error_generic),
+                            text = s.message,
                             style = WooPosTypography.BodyMedium,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(WooPosSpacing.Large.value)
                         )
                     }
                 }
-                state.orders.isEmpty() -> {
+
+                is WooPosOrdersState.Empty -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -99,10 +99,11 @@ fun WooPosOrdersScreen(
                         )
                     }
                 }
-                else -> {
+
+                is WooPosOrdersState.Content -> {
                     WooPosOrdersListPaneScreen(
-                        orders = state.orders,
-                        selectedOrderId = state.selectedOrderId,
+                        items = s.items,
+                        selectedOrderId = s.selectedOrderId,
                         onOrderSelected = viewModel::onOrderSelected,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -110,8 +111,14 @@ fun WooPosOrdersScreen(
             }
         }
 
+        // Right pane
+        val selectedItem: OrderItemViewState? = when (val s = state) {
+            is WooPosOrdersState.Content -> s.items.firstOrNull { it.id == s.selectedOrderId }
+            else -> null
+        }
+
         WooPosOrdersDetailPaneScreen(
-            order = state.selectedOrder,
+            selected = selectedItem,
             modifier = Modifier
                 .weight(0.7f)
                 .fillMaxHeight()
@@ -122,7 +129,7 @@ fun WooPosOrdersScreen(
 
 @Composable
 fun WooPosOrdersListPaneScreen(
-    orders: List<Order>,
+    items: List<OrderItemViewState>,
     selectedOrderId: Long?,
     onOrderSelected: (Long) -> Unit,
     modifier: Modifier = Modifier
@@ -131,8 +138,8 @@ fun WooPosOrdersListPaneScreen(
         modifier = modifier,
         contentPadding = PaddingValues(vertical = WooPosSpacing.XSmall.value)
     ) {
-        items(orders, key = { it.id }) { order ->
-            val isSelected = order.id == selectedOrderId
+        items(items, key = { it.id }) { item ->
+            val isSelected = item.id == selectedOrderId
             val background = if (isSelected) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
@@ -150,7 +157,7 @@ fun WooPosOrdersListPaneScreen(
                     .fillMaxWidth()
                     .clip(MaterialTheme.shapes.medium)
                     .background(background)
-                    .clickable { onOrderSelected(order.id) }
+                    .clickable { onOrderSelected(item.id) }
                     .semantics { selected = isSelected }
                     .padding(
                         horizontal = WooPosSpacing.Medium.value,
@@ -162,11 +169,12 @@ fun WooPosOrdersListPaneScreen(
                     verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
                 ) {
                     WooPosText(
-                        "Order #${order.number}",
-                        style = WooPosTypography.BodyMedium
+                        text = item.title,
+                        style = WooPosTypography.BodyMedium,
+                        color = foreground
                     )
                     WooPosText(
-                        text = order.dateCreated.formatToDDMMMYYYY(),
+                        text = item.date,
                         style = WooPosTypography.BodySmall,
                         color = foreground
                     )
@@ -175,7 +183,7 @@ fun WooPosOrdersListPaneScreen(
                 Spacer(Modifier.weight(1f))
 
                 WooPosText(
-                    text = "${order.total} ${order.currency}",
+                    text = item.total,
                     style = WooPosTypography.BodyMedium,
                     modifier = Modifier.alignByBaseline()
                 )
@@ -186,16 +194,15 @@ fun WooPosOrdersListPaneScreen(
 
 @Composable
 fun WooPosOrdersDetailPaneScreen(
-    order: Order?,
+    selected: OrderItemViewState?,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
         WooPosToolbar(
-            modifier = Modifier
-                .fillMaxWidth(),
-            titleText = "Order #${order?.number ?: "--"}",
+            modifier = Modifier.fillMaxWidth(),
+            titleText = selected?.title ?: "--",
             titleFontWeight = FontWeight.Bold
         )
 
