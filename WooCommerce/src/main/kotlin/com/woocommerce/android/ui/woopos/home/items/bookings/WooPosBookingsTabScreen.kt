@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,53 +16,55 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.woocommerce.android.ui.woopos.bookings.BookingStatus
 import com.woocommerce.android.ui.woopos.bookings.WooPosBooking
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsViewModel
+import com.woocommerce.android.ui.woopos.bookings.data.BookingSlot
+import com.woocommerce.android.ui.woopos.bookings.data.WooPosBookingsDataSource
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import java.math.BigDecimal
+import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,31 +72,43 @@ fun WooPosBookingsTabScreen(
     modifier: Modifier = Modifier,
     viewModel: WooPosBookingsViewModel = hiltViewModel()
 ) {
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    val selectedWeekStart by viewModel.selectedWeekStart.collectAsState()
     var selectedBooking by remember { mutableStateOf<WooPosBooking?>(null) }
     var showBookingDetails by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
-    val bookings = remember { generateSampleBookings() }
+    val bookingsResult by viewModel.loadBookingsForWeek(selectedWeekStart).collectAsState(
+        initial = WooPosBookingsDataSource.BookingsResult.Loading
+    )
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        CalendarView(
-            selectedDate = selectedDate,
-            onDateSelected = { selectedDate = it },
-            bookings = bookings
+        WeekNavigationHeader(
+            weekStart = selectedWeekStart,
+            onPreviousWeek = { viewModel.onWeekChanged(selectedWeekStart.minusWeeks(1)) },
+            onNextWeek = { viewModel.onWeekChanged(selectedWeekStart.plusWeeks(1)) }
         )
         
-        BookingsListForDate(
-            date = selectedDate,
-            bookings = bookings.filter { 
-                it.startTime.toLocalDate() == selectedDate 
-            },
-            onBookingClick = {
-                selectedBooking = it
-                showBookingDetails = true
+        when (val result = bookingsResult) {
+            is WooPosBookingsDataSource.BookingsResult.Loading -> {
+                LoadingView()
             }
-        )
+            is WooPosBookingsDataSource.BookingsResult.Error -> {
+                ErrorView(error = result.exception.message ?: "Unknown error")
+            }
+            is WooPosBookingsDataSource.BookingsResult.Success -> {
+                WeekCalendarWithTimeSlots(
+                    weekStart = selectedWeekStart,
+                    bookings = result.bookings,
+                    slots = result.slots,
+                    onBookingClick = { booking ->
+                        selectedBooking = booking
+                        showBookingDetails = true
+                    }
+                )
+            }
+        }
     }
 
     if (showBookingDetails && selectedBooking != null) {
@@ -106,7 +119,10 @@ fun WooPosBookingsTabScreen(
                 selectedBooking = null
             },
             onConfirmBooking = {
-                showBookingDetails = false
+                scope.launch {
+                    viewModel.confirmBooking(selectedBooking!!.id)
+                    showBookingDetails = false
+                }
             },
             onAddToCart = {
                 viewModel.onBookingPaymentClick(selectedBooking!!)
@@ -117,192 +133,17 @@ fun WooPosBookingsTabScreen(
 }
 
 @Composable
-private fun CalendarView(
-    selectedDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit,
-    bookings: List<WooPosBooking>
+private fun WeekNavigationHeader(
+    weekStart: LocalDate,
+    onPreviousWeek: () -> Unit,
+    onNextWeek: () -> Unit
 ) {
-    var currentMonth by remember { mutableStateOf(selectedDate.withDayOfMonth(1)) }
-    
     WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding()),
         elevation = WooPosElevation.Medium,
         backgroundColor = MaterialTheme.colorScheme.surface
-    ) {
-        Column(modifier = Modifier.padding(WooPosSpacing.Medium.value.toAdaptivePadding())) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
-                    Icon(Icons.Default.ChevronLeft, contentDescription = "Previous month")
-                }
-                
-                Text(
-                    text = currentMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy")),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
-                    Icon(Icons.Default.ChevronRight, contentDescription = "Next month")
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat").forEach { day ->
-                    Text(
-                        text = day,
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
-            
-            val daysInMonth = currentMonth.lengthOfMonth()
-            val firstDayOfWeek = currentMonth.dayOfWeek.value % 7
-            val totalCells = firstDayOfWeek + daysInMonth
-            val weeks = (totalCells + 6) / 7
-            
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(7),
-                modifier = Modifier.height((weeks * 48).dp),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                items((0 until weeks * 7).toList()) { index ->
-                    val dayOfMonth = index - firstDayOfWeek + 1
-                    if (dayOfMonth in 1..daysInMonth) {
-                        val date = currentMonth.withDayOfMonth(dayOfMonth)
-                        val hasBookings = bookings.any { it.startTime.toLocalDate() == date }
-                        DayCell(
-                            day = dayOfMonth,
-                            isSelected = date == selectedDate,
-                            hasBookings = hasBookings,
-                            isToday = date == LocalDate.now(),
-                            onClick = { onDateSelected(date) }
-                        )
-                    } else {
-                        Box(modifier = Modifier.size(48.dp))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun DayCell(
-    day: Int,
-    isSelected: Boolean,
-    hasBookings: Boolean,
-    isToday: Boolean,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .padding(WooPosSpacing.XSmall.value.toAdaptivePadding())
-            .clip(CircleShape)
-            .background(
-                when {
-                    isSelected -> MaterialTheme.colorScheme.primary
-                    isToday -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                    else -> Color.Transparent
-                }
-            )
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = day.toString(),
-                color = when {
-                    isSelected -> MaterialTheme.colorScheme.onPrimary
-                    isToday -> MaterialTheme.colorScheme.primary
-                    else -> MaterialTheme.colorScheme.onSurface
-                },
-                fontSize = 14.sp,
-                fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal
-            )
-            if (hasBookings) {
-                Box(
-                    modifier = Modifier
-                        .size(4.dp)
-                        .background(
-                            if (isSelected) MaterialTheme.colorScheme.onPrimary 
-                            else MaterialTheme.colorScheme.primary,
-                            CircleShape
-                        )
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun BookingsListForDate(
-    date: LocalDate,
-    bookings: List<WooPosBooking>,
-    onBookingClick: (WooPosBooking) -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = "Bookings for ${date.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))}",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Small.value.toAdaptivePadding())
-        )
-        
-        if (bookings.isEmpty()) {
-            WooPosCard(
-                modifier = Modifier.fillMaxWidth(),
-                backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-            ) {
-                Text(
-                    text = "No bookings for this date",
-                    modifier = Modifier
-                        .padding(WooPosSpacing.Large.value.toAdaptivePadding())
-                        .fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        } else {
-            bookings.forEach { booking ->
-                BookingCard(booking = booking, onClick = { onBookingClick(booking) })
-            }
-        }
-    }
-}
-
-@Composable
-private fun BookingCard(
-    booking: WooPosBooking,
-    onClick: () -> Unit
-) {
-    WooPosCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = WooPosSpacing.Small.value.toAdaptivePadding())
-            .clickable(onClick = onClick),
-        elevation = WooPosElevation.Medium
     ) {
         Row(
             modifier = Modifier
@@ -311,59 +152,217 @@ private fun BookingCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = booking.customerName,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = booking.serviceName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-                Text(
-                    text = "${booking.startTime.format(DateTimeFormatter.ofPattern("h:mm a"))} - ${booking.endTime.format(DateTimeFormatter.ofPattern("h:mm a"))}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
+            IconButton(onClick = onPreviousWeek) {
+                Icon(Icons.Default.ChevronLeft, contentDescription = "Previous week")
             }
             
-            Column(horizontalAlignment = Alignment.End) {
-                StatusChip(status = booking.status)
-                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
-                Text(
-                    text = "$${booking.price}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
-                )
+            val weekEnd = weekStart.plusDays(6)
+            WooPosText(
+                text = "${weekStart.format(DateTimeFormatter.ofPattern("MMM d"))} - ${weekEnd.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))}",
+                style = WooPosTypography.BodyMedium,
+                fontWeight = FontWeight.Bold
+            )
+            
+            IconButton(onClick = onNextWeek) {
+                Icon(Icons.Default.ChevronRight, contentDescription = "Next week")
             }
         }
     }
 }
 
 @Composable
-private fun StatusChip(status: BookingStatus) {
-    val backgroundColor = when (status) {
-        BookingStatus.CONFIRMED -> Color(0xFF4CAF50)
-        BookingStatus.PENDING -> Color(0xFFFFA726)
-        BookingStatus.COMPLETED -> Color(0xFF2196F3)
-        BookingStatus.CANCELLED -> Color(0xFFE91E63)
-    }
+private fun WeekCalendarWithTimeSlots(
+    weekStart: LocalDate,
+    bookings: List<WooPosBooking>,
+    slots: List<BookingSlot>,
+    onBookingClick: (WooPosBooking) -> Unit
+) {
+    val timeSlots = generateTimeSlots()
+    val weekDays = (0..6).map { weekStart.plusDays(it.toLong()) }
     
-    Surface(
-        color = backgroundColor.copy(alpha = 0.2f),
-        shape = RoundedCornerShape(12.dp)
+    WooPosCard(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = WooPosElevation.Medium,
+        backgroundColor = MaterialTheme.colorScheme.surface
     ) {
-        Text(
-            text = status.name.lowercase().replaceFirstChar { it.uppercase() },
-            modifier = Modifier.padding(
-                horizontal = WooPosSpacing.Small.value.toAdaptivePadding(), 
-                vertical = WooPosSpacing.XSmall.value.toAdaptivePadding()
-            ),
-            color = backgroundColor,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold
+        Column(modifier = Modifier.padding(WooPosSpacing.Medium.value.toAdaptivePadding())) {
+            DayHeaderRow(weekDays)
+            
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+            
+            LazyColumn {
+                items(timeSlots) { timeSlot ->
+                    TimeSlotRow(
+                        timeSlot = timeSlot,
+                        weekDays = weekDays,
+                        bookings = bookings,
+                        slots = slots,
+                        onBookingClick = onBookingClick
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DayHeaderRow(weekDays: List<LocalDate>) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.width(60.dp))
+        
+        weekDays.forEach { day ->
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    WooPosText(
+                        text = day.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                        style = WooPosTypography.Caption,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    WooPosText(
+                        text = day.dayOfMonth.toString(),
+                        style = WooPosTypography.BodySmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TimeSlotRow(
+    timeSlot: LocalTime,
+    weekDays: List<LocalDate>,
+    bookings: List<WooPosBooking>,
+    slots: List<BookingSlot>,
+    onBookingClick: (WooPosBooking) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .width(60.dp)
+                .height(60.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            WooPosText(
+                text = timeSlot.format(DateTimeFormatter.ofPattern("HH:mm")),
+                style = WooPosTypography.Caption,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        }
+        
+        weekDays.forEach { day ->
+            Box(
+                modifier = Modifier.weight(1f).height(60.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                val dayBookings = bookings.filter { booking ->
+                    booking.startDateTime.toLocalDate() == day &&
+                    booking.startDateTime.toLocalTime().hour == timeSlot.hour
+                }
+                
+                if (dayBookings.isNotEmpty()) {
+                    LazyRow {
+                        items(dayBookings) { booking ->
+                            BookingSlotCard(
+                                booking = booking,
+                                onClick = { onBookingClick(booking) }
+                            )
+                        }
+                    }
+                } else {
+                    val daySlot = slots.find { slot ->
+                        slot.date.startsWith(day.toString()) &&
+                        slot.date.contains("${String.format("%02d", timeSlot.hour)}:${String.format("%02d", timeSlot.minute)}")
+                    }
+                    
+                    if (daySlot?.isAvailable == true) {
+                        AvailableSlot()
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BookingSlotCard(
+    booking: WooPosBooking,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .padding(WooPosSpacing.XSmall.value.toAdaptivePadding())
+            .clickable(onClick = onClick),
+        color = when {
+            booking.isPaid -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+            else -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
+        },
+        shape = RoundedCornerShape(WooPosCornerRadius.Small.value)
+    ) {
+        Column(
+            modifier = Modifier.padding(WooPosSpacing.Small.value.toAdaptivePadding()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            WooPosText(
+                text = booking.customerName,
+                style = WooPosTypography.Caption,
+                color = Color.White,
+                maxLines = 1
+            )
+            WooPosText(
+                text = "$${booking.cost}",
+                style = WooPosTypography.Caption,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+private fun AvailableSlot() {
+    Box(
+        modifier = Modifier
+            .size(8.dp)
+            .background(
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                RoundedCornerShape(WooPosCornerRadius.Small.value)
+            )
+    )
+}
+
+@Composable
+private fun LoadingView() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun ErrorView(error: String) {
+    WooPosCard(
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+    ) {
+        WooPosText(
+            text = "Error loading bookings: $error",
+            modifier = Modifier
+                .padding(WooPosSpacing.Large.value.toAdaptivePadding())
+                .fillMaxWidth(),
+            color = MaterialTheme.colorScheme.error,
+            textAlign = TextAlign.Center,
+            style = WooPosTypography.BodyMedium
         )
     }
 }
@@ -399,19 +398,19 @@ private fun BookingDetailsDialog(
                         .padding(WooPosSpacing.Large.value.toAdaptivePadding())
                         .width(400.dp)
                 ) {
-                    Text(
+                    WooPosText(
                         text = "Booking Details",
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = WooPosTypography.BodyLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
                     )
                     
                     DetailRow("Customer", booking.customerName)
                     DetailRow("Service", booking.serviceName)
-                    DetailRow("Date", booking.startTime.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")))
-                    DetailRow("Time", "${booking.startTime.format(DateTimeFormatter.ofPattern("h:mm a"))} - ${booking.endTime.format(DateTimeFormatter.ofPattern("h:mm a"))}")
-                    DetailRow("Status", booking.status.name.lowercase().replaceFirstChar { it.uppercase() })
-                    DetailRow("Amount", "$${booking.price}")
+                    DetailRow("Date", booking.startDateTime.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")))
+                    DetailRow("Time", "${booking.startDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))} - ${booking.endDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))}")
+                    DetailRow("Status", booking.status)
+                    DetailRow("Amount", "$${booking.cost}")
                     
                     Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
                     
@@ -419,15 +418,15 @@ private fun BookingDetailsDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
                     ) {
-                        if (booking.status == BookingStatus.PENDING) {
+                        if (booking.status.equals("unpaid", ignoreCase = true)) {
                             Button(
                                 onClick = onConfirmBooking,
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF4CAF50)
+                                    containerColor = MaterialTheme.colorScheme.secondary
                                 )
                             ) {
-                                Text("Confirm", modifier = Modifier.padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()))
+                                WooPosText("Confirm", style = WooPosTypography.BodySmall, modifier = Modifier.padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()))
                             }
                         }
                         
@@ -439,7 +438,7 @@ private fun BookingDetailsDialog(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
-                                Text("Add to Cart", modifier = Modifier.padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()))
+                                WooPosText("Add to Cart", style = WooPosTypography.BodySmall, modifier = Modifier.padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()))
                             }
                         }
                     }
@@ -457,73 +456,29 @@ private fun DetailRow(label: String, value: String) {
             .padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
+        WooPosText(
             text = label,
-            style = MaterialTheme.typography.bodyMedium,
+            style = WooPosTypography.BodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
-        Text(
+        WooPosText(
             text = value,
-            style = MaterialTheme.typography.bodyMedium,
+            style = WooPosTypography.BodySmall,
             fontWeight = FontWeight.SemiBold
         )
     }
 }
 
-private fun generateSampleBookings(): List<WooPosBooking> {
-    val today = LocalDate.now()
-    return listOf(
-        WooPosBooking(
-            id = 1,
-            customerName = "John Smith",
-            serviceName = "Hair Cut & Style",
-            startTime = today.atTime(9, 0),
-            endTime = today.atTime(10, 0),
-            status = BookingStatus.CONFIRMED,
-            price = BigDecimal("45.00"),
-            isPaid = false
-        ),
-        WooPosBooking(
-            id = 2,
-            customerName = "Emma Wilson",
-            serviceName = "Color Treatment",
-            startTime = today.atTime(10, 30),
-            endTime = today.atTime(12, 0),
-            status = BookingStatus.CONFIRMED,
-            price = BigDecimal("120.00"),
-            isPaid = true
-        ),
-        WooPosBooking(
-            id = 3,
-            customerName = "Michael Brown",
-            serviceName = "Beard Trim",
-            startTime = today.atTime(14, 0),
-            endTime = today.atTime(14, 30),
-            status = BookingStatus.PENDING,
-            price = BigDecimal("25.00"),
-            isPaid = false
-        ),
-        WooPosBooking(
-            id = 4,
-            customerName = "Sarah Davis",
-            serviceName = "Full Service Package",
-            startTime = today.plusDays(1).atTime(11, 0),
-            endTime = today.plusDays(1).atTime(13, 0),
-            status = BookingStatus.CONFIRMED,
-            price = BigDecimal("180.00"),
-            isPaid = false
-        ),
-        WooPosBooking(
-            id = 5,
-            customerName = "Tom Johnson",
-            serviceName = "Hair Cut",
-            startTime = today.plusDays(2).atTime(15, 0),
-            endTime = today.plusDays(2).atTime(15, 45),
-            status = BookingStatus.CONFIRMED,
-            price = BigDecimal("35.00"),
-            isPaid = false
-        )
-    )
+private fun generateTimeSlots(): List<LocalTime> {
+    val slots = mutableListOf<LocalTime>()
+    var time = LocalTime.of(8, 0)
+    
+    while (time.isBefore(LocalTime.of(20, 0))) {
+        slots.add(time)
+        time = time.plusHours(1)
+    }
+    
+    return slots
 }
 
 @WooPosPreview
