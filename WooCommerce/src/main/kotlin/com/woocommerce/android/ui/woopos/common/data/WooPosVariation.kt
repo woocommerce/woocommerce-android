@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import java.math.BigDecimal
 
@@ -55,6 +56,38 @@ fun ProductVariation.toWooPosVariation(): WooPosVariation {
 }
 
 @Suppress("SwallowedException")
+fun WCProductVariationModel.toWooPosVariation(): WooPosVariation {
+    val attributesList = try {
+        attributeList?.map { attribute ->
+            WooPosVariation.WooPosVariationAttribute(
+                id = attribute.id,
+                name = attribute.name,
+                option = attribute.option
+            )
+        } ?: emptyList()
+    } catch (e: Exception) {
+        emptyList()
+    }
+
+    val imageModel = try {
+        if (image.isNotEmpty()) getImageModel() else null
+    } catch (e: JsonSyntaxException) {
+        null
+    }
+
+    return WooPosVariation(
+        remoteVariationId = remoteVariationId.value,
+        remoteProductId = remoteProductId.value,
+        globalUniqueId = globalUniqueId,
+        price = price.toBigDecimalOrNull(),
+        image = imageModel?.src?.let { WooPosVariation.WooPosVariationImage(it) },
+        attributes = attributesList,
+        isVisible = status == "publish",
+        isDownloadable = downloadable
+    )
+}
+
+@Suppress("SwallowedException")
 fun WCPosVariationModel.toWooPosVariation(): WooPosVariation {
     val attributesList = try {
         if (attributesJson.isNotEmpty()) {
@@ -73,7 +106,7 @@ fun WCPosVariationModel.toWooPosVariation(): WooPosVariation {
         price = price.toBigDecimalOrNull(),
         image = if (imageUrl.isNotEmpty()) WooPosVariation.WooPosVariationImage(imageUrl) else null,
         attributes = attributesList,
-        isVisible = status == "publish", // Convert status to visibility
+        isVisible = status == "publish",
         isDownloadable = downloadable
     )
 }

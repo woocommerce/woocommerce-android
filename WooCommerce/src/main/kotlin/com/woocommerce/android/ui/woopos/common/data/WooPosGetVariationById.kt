@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.data
 
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
@@ -13,6 +12,6 @@ class WooPosGetVariationById @Inject constructor(
 ) {
     suspend operator fun invoke(productId: Long, variationId: Long): WooPosVariation? = withContext(IO) {
         val siteModel = site.getOrNull() ?: return@withContext null
-        store.getVariationByRemoteId(siteModel, productId, variationId)?.toAppModel()?.toWooPosVariation()
+        store.getVariationByRemoteId(siteModel, productId, variationId)?.toWooPosVariation()
     }
 }
