@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.data.models
 
-import com.google.gson.JsonSyntaxException
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import dagger.Reusable
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -32,27 +31,10 @@ class WCProductToWooPosProductModelMapper @Inject constructor(
             isDownloadable = wcProduct.downloadable,
             lastModified = wcProduct.dateModified,
             images = wooPosProductModelMapper.parseImages(wcProduct.images),
-            attributes = mapAttributes(wcProduct),
+            attributes = wooPosProductModelMapper.parseAttributes(wcProduct.attributes),
             categories = wooPosProductModelMapper.parseCategories(wcProduct.categories),
             tags = wooPosProductModelMapper.parseTags(wcProduct.tags)
         )
-    }
-
-    private fun mapAttributes(wcProduct: WCProductModel): List<WooPosProductModelVersion2.WooPosProductAttribute> {
-        return try {
-            wcProduct.attributeList.map { attribute ->
-                WooPosProductModelVersion2.WooPosProductAttribute(
-                    id = attribute.id,
-                    name = attribute.name,
-                    options = attribute.options,
-                    isVisible = attribute.visible,
-                    isVariation = attribute.variation
-                )
-            }
-        } catch (e: JsonSyntaxException) {
-            logger.e("Error mapping product attributes", e)
-            emptyList()
-        }
     }
 
     private fun String.toBigDecimalOrNull(): BigDecimal? {
