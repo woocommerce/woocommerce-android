@@ -44,8 +44,12 @@ jobs:
 
       - name: Approve the PR
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
-        run: gh pr review --approve "$PR_URL"
+        run: |
+          set -e
+          gh pr review --approve "$PR_URL"
 
       - name: Enable auto-merge for Dependabot PRs
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
-        run: gh pr merge --auto --merge "$PR_URL"
+        run: |
+          set -e
+          gh pr merge --auto --merge "$PR_URL"
