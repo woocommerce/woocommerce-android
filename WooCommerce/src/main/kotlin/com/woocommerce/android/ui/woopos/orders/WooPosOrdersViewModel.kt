@@ -50,6 +50,8 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private fun loadOrders(loadFromCacheFirst: Boolean) {
         viewModelScope.launch {
+            var sawCacheEmission = false
+
             ordersDataSource.loadOrders(loadFromCacheFirst).collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
@@ -62,7 +64,7 @@ class WooPosOrdersViewModel @Inject constructor(
                             ?: newOrders.firstOrNull()?.id
 
                         if (newOrders.isEmpty()) {
-                            if (loadFromCacheFirst) {
+                            if (loadFromCacheFirst && !sawCacheEmission) {
                                 _state.value = WooPosOrdersState.Loading
                             } else {
                                 _state.value = WooPosOrdersState.Empty
@@ -75,6 +77,10 @@ class WooPosOrdersViewModel @Inject constructor(
                                 paginationState = WooPosPaginationState.None,
                                 listError = null
                             )
+                        }
+
+                        if (loadFromCacheFirst && !sawCacheEmission) {
+                            sawCacheEmission = true
                         }
                     }
                 }

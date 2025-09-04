@@ -45,19 +45,13 @@ class WooPosOrdersDataSourceTest {
     )
 
     @Test
-    fun `given cache and successful fetch, when loadOrders collected, then emits cache first then mapped network and stores in cache`() = runTest {
-        // GIVEN
+    fun `given loadFromCacheFirst true and cache exists, when fetch succeeds, then emit cache then mapped network and store in cache`() = runTest {
         val cachedOrder = OrderTestUtils.generateTestOrder()
         whenever(ordersCache.getAll()).thenReturn(listOf(cachedOrder))
 
-        // Network returns two entities
         val e1 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 1)
         val e2 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 2)
-        val entities = listOf(
-            e1 to emptyList<WCMetaData>(),
-            e2 to emptyList<WCMetaData>()
-        )
-
+        val entities = listOf(e1 to emptyList<WCMetaData>(), e2 to emptyList())
         val firstOrder = OrderTestUtils.generateTestOrder()
         val secondOrder = OrderTestUtils.generateTestOrder()
 
@@ -68,7 +62,6 @@ class WooPosOrdersDataSourceTest {
             site = siteModel,
             ordersWithMeta = entities
         )
-
         whenever(
             orderRestClient.fetchOrders(
                 site = eq(siteModel),
@@ -81,20 +74,14 @@ class WooPosOrdersDataSourceTest {
             )
         ).thenReturn(payload)
 
-        // WHEN
-        val emissions = sut.loadOrders().toList(mutableListOf())
+        val emissions = sut.loadOrders(loadFromCacheFirst = true).toList(mutableListOf())
 
-        // THEN
         assertThat(emissions).hasSize(2)
-        // First emission = cache
-        val first = emissions[0]
-        assertThat(first).isInstanceOf(LoadOrdersResult.Success::class.java)
-        assertThat((first as LoadOrdersResult.Success).orders).containsExactly(cachedOrder)
+        val first = emissions[0] as LoadOrdersResult.Success
+        assertThat(first.orders).containsExactly(cachedOrder)
 
-        // Second emission = network mapped
-        val second = emissions[1]
-        assertThat(second).isInstanceOf(LoadOrdersResult.Success::class.java)
-        assertThat((second as LoadOrdersResult.Success).orders).containsExactly(firstOrder, secondOrder)
+        val second = emissions[1] as LoadOrdersResult.Success
+        assertThat(second.orders).containsExactly(firstOrder, secondOrder)
 
         verify(selectedSite).get()
         verify(ordersCache).getAll()
@@ -111,8 +98,7 @@ class WooPosOrdersDataSourceTest {
     }
 
     @Test
-    fun `given cache and fetch error, when loadOrders collected, then emits cache then error without caching`() = runTest {
-        // GIVEN
+    fun `given loadFromCacheFirst true and cache exists, when fetch fails, then emit cache then error without storing`() = runTest {
         val cachedOrder = OrderTestUtils.generateTestOrder()
         whenever(ordersCache.getAll()).thenReturn(listOf(cachedOrder))
 
@@ -120,12 +106,10 @@ class WooPosOrdersDataSourceTest {
             type = WCOrderStore.OrderErrorType.GENERIC_ERROR,
             message = "generic error"
         )
-
         val payload = WCOrderStore.FetchOrdersResponsePayload(
             error = orderError,
             site = siteModel
         )
-
         whenever(
             orderRestClient.fetchOrders(
                 site = eq(siteModel),
@@ -138,19 +122,14 @@ class WooPosOrdersDataSourceTest {
             )
         ).thenReturn(payload)
 
-        // WHEN
-        val emissions = sut.loadOrders().toList(mutableListOf())
+        val emissions = sut.loadOrders(loadFromCacheFirst = true).toList(mutableListOf())
 
-        // THEN
         assertThat(emissions).hasSize(2)
+        val first = emissions[0] as LoadOrdersResult.Success
+        assertThat(first.orders).containsExactly(cachedOrder)
 
-        val first = emissions[0]
-        assertThat(first).isInstanceOf(LoadOrdersResult.Success::class.java)
-        assertThat((first as LoadOrdersResult.Success).orders).containsExactly(cachedOrder)
-
-        val second = emissions[1]
-        assertThat(second).isInstanceOf(LoadOrdersResult.Error::class.java)
-        assertThat((second as LoadOrdersResult.Error).message).isEqualTo("generic error")
+        val second = emissions[1] as LoadOrdersResult.Error
+        assertThat(second.message).isEqualTo("generic error")
 
         verify(ordersCache).getAll()
         verify(ordersCache, never()).addAll(any())
@@ -166,8 +145,7 @@ class WooPosOrdersDataSourceTest {
     }
 
     @Test
-    fun `given empty cache, when loadOrders collected, then forwards params including createdVia and emits empty then empty`() = runTest {
-        // GIVEN
+    fun `given loadFromCacheFirst true and empty cache, when fetch returns empty, then emit empty then empty`() = runTest {
         whenever(ordersCache.getAll()).thenReturn(emptyList())
 
         val payload = WCOrderStore.FetchOrdersResponsePayload(
@@ -186,23 +164,109 @@ class WooPosOrdersDataSourceTest {
             )
         ).thenReturn(payload)
 
-        // WHEN
-        val emissions = sut.loadOrders().toList(mutableListOf())
+        val emissions = sut.loadOrders(loadFromCacheFirst = true).toList(mutableListOf())
 
-        // THEN
         assertThat(emissions).hasSize(2)
 
-        val first = emissions[0]
-        assertThat(first).isInstanceOf(LoadOrdersResult.Success::class.java)
-        assertThat((first as LoadOrdersResult.Success).orders).isEmpty()
+        val first = emissions[0] as LoadOrdersResult.Success
+        assertThat(first.orders).isEmpty()
 
-        val second = emissions[1]
-        assertThat(second).isInstanceOf(LoadOrdersResult.Success::class.java)
-        assertThat((second as LoadOrdersResult.Success).orders).isEmpty()
+        val second = emissions[1] as LoadOrdersResult.Success
+        assertThat(second.orders).isEmpty()
 
         verify(selectedSite).get()
         verify(ordersCache).getAll()
         verify(ordersCache).addAll(emptyList())
+        verify(orderRestClient).fetchOrders(
+            site = eq(siteModel),
+            count = eq(25),
+            page = eq(1),
+            orderBy = any(),
+            sortOrder = any(),
+            statusFilter = anyOrNull(),
+            createdVia = eq("pos-rest-api")
+        )
+    }
+
+    @Test
+    fun `given loadFromCacheFirst false, when fetch succeeds, then emit only mapped network and do not read cache`() = runTest {
+        val e1 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 11)
+        val e2 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 22)
+        val entities = listOf(e1 to emptyList<WCMetaData>(), e2 to emptyList())
+
+        val firstOrder = OrderTestUtils.generateTestOrder()
+        val secondOrder = OrderTestUtils.generateTestOrder()
+
+        whenever(orderMapper.toAppModel(e1)).thenReturn(firstOrder)
+        whenever(orderMapper.toAppModel(e2)).thenReturn(secondOrder)
+
+        val payload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = entities
+        )
+        whenever(
+            orderRestClient.fetchOrders(
+                site = eq(siteModel),
+                count = eq(25),
+                page = eq(1),
+                orderBy = any(),
+                sortOrder = any(),
+                statusFilter = anyOrNull(),
+                createdVia = eq("pos-rest-api")
+            )
+        ).thenReturn(payload)
+
+        val emissions = sut.loadOrders(loadFromCacheFirst = false).toList(mutableListOf())
+
+        assertThat(emissions).hasSize(1)
+        val only = emissions.first() as LoadOrdersResult.Success
+        assertThat(only.orders).containsExactly(firstOrder, secondOrder)
+
+        verify(ordersCache, never()).getAll()
+        verify(ordersCache).addAll(listOf(firstOrder, secondOrder))
+        verify(selectedSite).get()
+        verify(orderRestClient).fetchOrders(
+            site = eq(siteModel),
+            count = eq(25),
+            page = eq(1),
+            orderBy = any(),
+            sortOrder = any(),
+            statusFilter = anyOrNull(),
+            createdVia = eq("pos-rest-api")
+        )
+    }
+
+    @Test
+    fun `given loadFromCacheFirst false, when fetch fails, then emit only error and do not read cache`() = runTest {
+        val orderError = WCOrderStore.OrderError(
+            type = WCOrderStore.OrderErrorType.GENERIC_ERROR,
+            message = "boom"
+        )
+        val payload = WCOrderStore.FetchOrdersResponsePayload(
+            error = orderError,
+            site = siteModel
+        )
+        whenever(
+            orderRestClient.fetchOrders(
+                site = eq(siteModel),
+                count = eq(25),
+                page = eq(1),
+                orderBy = any(),
+                sortOrder = any(),
+                statusFilter = anyOrNull(),
+                createdVia = eq("pos-rest-api")
+            )
+        ).thenReturn(payload)
+
+        val emissions = sut.loadOrders(loadFromCacheFirst = false).toList(mutableListOf())
+
+        assertThat(emissions).hasSize(1)
+        val only = emissions.first() as LoadOrdersResult.Error
+        assertThat(only.message).isEqualTo("boom")
+
+        verify(ordersCache, never()).getAll()
+        verify(ordersCache, never()).addAll(any())
+        verify(selectedSite).get()
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
             count = eq(25),
