@@ -22,7 +22,7 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
 
         val result = mapper.fromEntity(entity)
 
-        assertThat(result.id).isEqualTo(123L)
+        assertThat(result.remoteId).isEqualTo(123L)
         assertThat(result.parentId).isEqualTo(456L)
         assertThat(result.name).isEqualTo("Test Product")
         assertThat(result.sku).isEqualTo("TEST-SKU")
@@ -210,9 +210,9 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
         val result = mapper.fromEntities(entities)
 
         assertThat(result).hasSize(3)
-        assertThat(result[0].id).isEqualTo(1L)
-        assertThat(result[1].id).isEqualTo(2L)
-        assertThat(result[2].id).isEqualTo(123L)
+        assertThat(result[0].remoteId).isEqualTo(1L)
+        assertThat(result[1].remoteId).isEqualTo(2L)
+        assertThat(result[2].remoteId).isEqualTo(123L)
         assertThat(result[2].name).isEqualTo("Test Product")
     }
 

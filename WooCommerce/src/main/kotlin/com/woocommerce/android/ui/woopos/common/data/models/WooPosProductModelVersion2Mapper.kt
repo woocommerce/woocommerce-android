@@ -20,7 +20,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
     private val gson = Gson()
     fun fromEntity(entity: WCPosProductEntity): WooPosProductModelVersion2 {
         return WooPosProductModelVersion2(
-            id = entity.remoteId.value,
+            remoteId = entity.remoteId.value,
             parentId = entity.parentId,
             name = entity.name,
             sku = entity.sku,

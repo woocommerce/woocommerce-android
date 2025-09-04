@@ -10,7 +10,7 @@ import java.math.BigDecimal
  */
 @Parcelize
 data class WooPosProductModelVersion2(
-    val id: Long,
+    val remoteId: Long,
     val parentId: Long?,
     val name: String,
     val sku: String,
