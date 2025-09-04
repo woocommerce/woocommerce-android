@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 60,
-    "identityHash": "c8e33b8197848f2e327651207f15e6b6",
+    "version": 61,
+    "identityHash": "22fb1e40dd1aec1d4103ac6083e25093",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -2187,7 +2187,7 @@
       },
       {
         "tableName": "PosProductEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `sku` TEXT NOT NULL, `globalUniqueId` TEXT NOT NULL, `type` TEXT NOT NULL, `price` TEXT NOT NULL, `downloadable` INTEGER NOT NULL, `images` TEXT NOT NULL, `attributes` TEXT NOT NULL, `parentId` INTEGER NOT NULL, `status` TEXT NOT NULL, `regularPrice` TEXT NOT NULL, `salePrice` TEXT NOT NULL, `onSale` INTEGER NOT NULL, `description` TEXT NOT NULL, `shortDescription` TEXT NOT NULL, `manageStock` INTEGER NOT NULL, `stockQuantity` REAL NOT NULL, `stockStatus` TEXT NOT NULL, `backordersAllowed` INTEGER NOT NULL, `backordered` INTEGER NOT NULL, `categories` TEXT NOT NULL, `tags` TEXT NOT NULL, `dateModified` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `sku` TEXT NOT NULL, `globalUniqueId` TEXT NOT NULL, `type` TEXT NOT NULL, `price` TEXT NOT NULL, `downloadable` INTEGER NOT NULL, `images` TEXT NOT NULL, `attributes` TEXT NOT NULL, `parentId` INTEGER, `status` TEXT NOT NULL, `regularPrice` TEXT NOT NULL, `salePrice` TEXT NOT NULL, `onSale` INTEGER NOT NULL, `description` TEXT NOT NULL, `shortDescription` TEXT NOT NULL, `manageStock` INTEGER NOT NULL, `stockQuantity` REAL, `stockStatus` TEXT NOT NULL, `backordersAllowed` INTEGER NOT NULL, `backordered` INTEGER NOT NULL, `categories` TEXT NOT NULL, `tags` TEXT NOT NULL, `dateModified` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteId`))",
         "fields": [
           {
             "fieldPath": "localSiteId",
@@ -2252,8 +2252,7 @@
           {
             "fieldPath": "parentId",
             "columnName": "parentId",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "status",
@@ -2300,8 +2299,7 @@
           {
             "fieldPath": "stockQuantity",
             "columnName": "stockQuantity",
-            "affinity": "REAL",
-            "notNull": true
+            "affinity": "REAL"
           },
           {
             "fieldPath": "stockStatus",
@@ -3844,7 +3842,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c8e33b8197848f2e327651207f15e6b6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '22fb1e40dd1aec1d4103ac6083e25093')"
     ]
   }
 }

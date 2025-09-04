@@ -34,6 +34,7 @@ import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
+import org.wordpress.android.fluxc.persistence.dao.GatewaysDao
 import org.wordpress.android.fluxc.persistence.dao.GlobalAttributesDao
 import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
@@ -68,6 +69,7 @@ import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CustomerFromAnalyticsEntity
+import org.wordpress.android.fluxc.persistence.entity.GatewayEntity
 import org.wordpress.android.fluxc.persistence.entity.GlobalAddonGroupEntity
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteActionEntity
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteEntity
@@ -114,7 +116,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 60
+const val WC_DATABASE_VERSION = 61
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -160,6 +162,7 @@ const val WC_DATABASE_VERSION = 60
         WooShippingLabelEntity::class,
         WooShippingShipmentEntity::class,
         WCGlobalAttributeModel::class,
+        GatewayEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -203,6 +206,7 @@ const val WC_DATABASE_VERSION = 60
         AutoMigration(from = 57, to = 58),
         AutoMigration(from = 58, to = 59),
         AutoMigration(from = 59, to = 60),
+        AutoMigration(from = 60, to = 61),
     ]
 )
 @TypeConverters(
@@ -249,6 +253,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val orderStatusDao: OrderStatusDao
     abstract val wooShippingDao: WooShippingDao
     internal abstract val globalAttributesDao: GlobalAttributesDao
+    internal abstract val gatewaysDao: GatewaysDao
 
     companion object {
         fun buildDb(

@@ -13,11 +13,18 @@ class ShouldUpdateOrdersList @Inject constructor(
     private val listStore: ListStore,
     private val appPrefs: AppPrefsWrapper
 ) {
+    @Suppress("ReturnCount")
     suspend operator fun invoke(listDescriptor: ListDescriptor): Boolean {
         // 23-07-2025: Consider removing this in the future
         // AINFRA-986
         if (!appPrefs.orderSummaryMigrated) {
             appPrefs.orderSummaryMigrated = true
+            return true
+        }
+        // 26-08-2025: Consider removing this in the future
+        // AINFRA-1190
+        if (!appPrefs.gatewayMigrated) {
+            appPrefs.gatewayMigrated = true
             return true
         }
 
