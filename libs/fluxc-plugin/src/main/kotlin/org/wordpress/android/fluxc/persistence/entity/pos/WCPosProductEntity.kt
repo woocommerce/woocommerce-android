@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
     tableName = "PosProductEntity",
     primaryKeys = ["localSiteId", "remoteId"],
 )
-data class WCPosProductModel(
+data class WCPosProductEntity(
     val localSiteId: LocalId = LocalId(0),
     val remoteId: RemoteId = RemoteId(0),
     val name: String = "",
@@ -22,7 +22,7 @@ data class WCPosProductModel(
     val downloadable: Boolean = false,
     val images: String = "",
     val attributes: String = "",
-    val parentId: Long = 0L,
+    val parentId: Long? = null,
     val status: String = "",
     val regularPrice: String = "",
     val salePrice: String = "",
@@ -30,7 +30,7 @@ data class WCPosProductModel(
     val description: String = "",
     val shortDescription: String = "",
     val manageStock: Boolean = false,
-    val stockQuantity: Double = 0.0,
+    val stockQuantity: Double? = null,
     val stockStatus: String = "",
     val backordersAllowed: Boolean = false,
     val backordered: Boolean = false,
