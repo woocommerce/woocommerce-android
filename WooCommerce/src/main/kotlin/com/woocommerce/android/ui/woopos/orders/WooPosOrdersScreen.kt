@@ -65,7 +65,6 @@ fun WooPosOrdersScreen(
                 onBackClicked = onBackClicked,
             )
 
-            // --- Pull-to-refresh wiring (left pane content area) ---
             val refreshing =
                 when (val s = state) {
                     is WooPosOrdersState.Content -> s.pullToRefreshState == WooPosPullToRefreshState.Refreshing
