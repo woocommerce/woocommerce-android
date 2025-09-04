@@ -40,7 +40,8 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
             attributes = parseAttributes(entity.attributes),
             categories = parseCategories(entity.categories),
             tags = parseTags(entity.tags),
-            lastModified = entity.dateModified
+            lastModified = entity.dateModified,
+            variationIds = parseVariationIds(entity.variations)
         )
     }
 
@@ -198,6 +199,29 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
             return null
         }
         return WooPosProductModelVersion2.WooPosProductTag(id, name, slug)
+    }
+
+    private fun parseVariationIds(variationsJson: String): List<Long> {
+        return try {
+            if (variationsJson.isBlank()) {
+                emptyList()
+            } else {
+                val type = object : TypeToken<List<*>>() {}.type
+                val variationsList: List<*> = gson.fromJson(variationsJson, type)
+                variationsList.mapNotNull { variation ->
+                    when (variation) {
+                        is Double -> variation.toLong()
+                        is Int -> variation.toLong()
+                        is Long -> variation
+                        is String -> variation.toLongOrNull()
+                        else -> null
+                    }
+                }
+            }
+        } catch (e: JsonSyntaxException) {
+            logger.w("Failed to parse variation IDs JSON: $variationsJson - ${e.message}")
+            emptyList()
+        }
     }
 
     fun mapPricing(
