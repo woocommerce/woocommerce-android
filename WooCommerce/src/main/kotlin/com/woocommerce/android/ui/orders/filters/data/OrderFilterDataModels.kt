@@ -8,6 +8,16 @@ enum class OrderListFilterCategory {
     SALES_CHANNEL
 }
 
+enum class SalesChannel(val key: String, val apiValue: String) {
+    POS("pos", "pos-rest-api"),
+    WEB_CHECKOUT("checkout", "checkout"),
+    WP_ADMIN("admin", "admin");
+
+    companion object {
+        fun fromKey(key: String): SalesChannel? = entries.find { it.key == key }
+    }
+}
+
 enum class DateRange(val filterKey: String) {
     TODAY("Today"),
     LAST_2_DAYS("Last2Days"),

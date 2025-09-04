@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVariationModel
+import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
@@ -26,6 +27,7 @@ class WooPosLocalCatalogStore @Inject constructor(
     private val posProductDao: WooPosProductsDao,
     private val posVariationsDao: WooPosVariationsDao,
     private val headersParser: HeadersParser,
+    private val database: WCAndroidDatabase,
 ) {
     private companion object {
         private const val DEFAULT_PAGE_SIZE = 100
@@ -60,6 +62,22 @@ class WooPosLocalCatalogStore @Inject constructor(
         coroutineEngine.withDefaultContext(API, this, "getProduct") {
             val product = posProductDao.getProduct(siteId, remoteProductId)
             Result.success(product)
+        }
+
+    /**
+     * Executes a block of code within a database transaction.
+     * If the block throws an exception, the transaction is rolled back.
+     *
+     * @param [block] The code to execute within the transaction
+     * @return Result containing the result of the block or error
+     */
+    suspend fun <T> executeInTransaction(
+        block: suspend () -> T
+    ): Result<T> =
+        coroutineEngine.withDefaultContext(API, this, "executeInTransaction") {
+            runCatching {
+                database.executeInTransaction(block)
+            }
         }
 
     /**
