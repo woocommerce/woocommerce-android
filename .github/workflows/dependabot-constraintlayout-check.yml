@@ -1,13 +1,15 @@
 name: Dependabot POS Reminder
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened]
 
 jobs:
   add-pos-reminder:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+    permissions:
+      pull-requests: write
 
     steps:
       # Check if PR contains the constraintlayout dependency
