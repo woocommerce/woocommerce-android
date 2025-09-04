@@ -159,6 +159,6 @@ class WooPosProductsInMemoryCacheTest {
             description = "Description for $name",
             shortDescription = "Short description for $name",
             isDownloadable = false,
-            lastModified = Date().toString(),
+            lastModified = "2020-01-01T00:00:00Z",
         )
 }
