@@ -24,15 +24,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.ui.draw.shadow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,14 +43,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.bookings.WooPosBooking
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsViewModel
 import com.woocommerce.android.ui.woopos.bookings.data.BookingSlot
 import com.woocommerce.android.ui.woopos.bookings.data.WooPosBookingsDataSource
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -77,14 +76,16 @@ fun WooPosBookingsTabScreen(
     val selectedWeekStart by viewModel.selectedWeekStart.collectAsState()
     var selectedBooking by remember { mutableStateOf<WooPosBooking?>(null) }
     var showBookingDetails by remember { mutableStateOf(false) }
+    var isConfirmingBooking by remember { mutableStateOf(false) }
+    var confirmationMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
     Log.d(TAG, "WooPosBookingsTabScreen: Recomposing with selectedWeekStart=$selectedWeekStart")
-    
+
     val bookingsResult by viewModel.bookingsForWeek.collectAsState(
         initial = WooPosBookingsDataSource.BookingsResult.Loading
     )
-    
+
     Log.d(TAG, "WooPosBookingsTabScreen: Current result state: ${bookingsResult::class.simpleName}")
 
     Column(
@@ -95,7 +96,7 @@ fun WooPosBookingsTabScreen(
             onPreviousWeek = { viewModel.onWeekChanged(selectedWeekStart.minusWeeks(1)) },
             onNextWeek = { viewModel.onWeekChanged(selectedWeekStart.plusWeeks(1)) }
         )
-        
+
         when (val result = bookingsResult) {
             is WooPosBookingsDataSource.BookingsResult.Loading -> {
                 LoadingView()
@@ -120,14 +121,30 @@ fun WooPosBookingsTabScreen(
     if (showBookingDetails && selectedBooking != null) {
         BookingDetailsDialog(
             booking = selectedBooking!!,
-            onDismiss = { 
+            isConfirmingBooking = isConfirmingBooking,
+            confirmationMessage = confirmationMessage,
+            onDismiss = {
                 showBookingDetails = false
                 selectedBooking = null
+                confirmationMessage = null
             },
             onConfirmBooking = {
                 scope.launch {
-                    viewModel.confirmBooking(selectedBooking!!.id)
-                    showBookingDetails = false
+                    isConfirmingBooking = true
+                    confirmationMessage = null
+
+                    val result = viewModel.confirmBooking(selectedBooking!!.id)
+                    isConfirmingBooking = false
+
+                    if (result.isSuccess) {
+                        confirmationMessage = "Booking confirmed successfully!"
+                        // Close dialog after a short delay to show success message
+                        kotlinx.coroutines.delay(1500)
+                        showBookingDetails = false
+                        confirmationMessage = null
+                    } else {
+                        confirmationMessage = "Failed to confirm booking. Please try again."
+                    }
                 }
             },
             onAddToCart = {
@@ -161,14 +178,14 @@ private fun WeekNavigationHeader(
             IconButton(onClick = onPreviousWeek) {
                 Icon(Icons.Default.ChevronLeft, contentDescription = "Previous week")
             }
-            
+
             val weekEnd = weekStart.plusDays(6)
             WooPosText(
                 text = "${weekStart.format(DateTimeFormatter.ofPattern("MMM d"))} - ${weekEnd.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))}",
                 style = WooPosTypography.BodyMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             IconButton(onClick = onNextWeek) {
                 Icon(Icons.Default.ChevronRight, contentDescription = "Next week")
             }
@@ -185,7 +202,7 @@ private fun WeekCalendarWithTimeSlots(
 ) {
     val timeSlots = generateTimeSlots()
     val weekDays = (0..6).map { weekStart.plusDays(it.toLong()) }
-    
+
     WooPosCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = WooPosElevation.Medium,
@@ -193,9 +210,9 @@ private fun WeekCalendarWithTimeSlots(
     ) {
         Column(modifier = Modifier.padding(WooPosSpacing.Medium.value.toAdaptivePadding())) {
             DayHeaderRow(weekDays)
-            
+
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
-            
+
             LazyColumn(
                 modifier = Modifier.padding(bottom = 80.dp) // Add bottom padding to avoid floating menu overlap
             ) {
@@ -217,7 +234,7 @@ private fun WeekCalendarWithTimeSlots(
 private fun DayHeaderRow(weekDays: List<LocalDate>) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Box(modifier = Modifier.width(60.dp))
-        
+
         weekDays.forEach { day ->
             Box(
                 modifier = Modifier.weight(1f),
@@ -265,7 +282,7 @@ private fun TimeSlotRow(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         }
-        
+
         weekDays.forEach { day ->
             Box(
                 modifier = Modifier.weight(1f).height(60.dp),
@@ -275,7 +292,7 @@ private fun TimeSlotRow(
                     booking.startDateTime.toLocalDate() == day &&
                     booking.startDateTime.toLocalTime().hour == timeSlot.hour
                 }
-                
+
                 if (dayBookings.isNotEmpty()) {
                     LazyRow {
                         items(dayBookings) { booking ->
@@ -290,7 +307,7 @@ private fun TimeSlotRow(
                         slot.date.startsWith(day.toString()) &&
                         slot.date.contains("${String.format("%02d", timeSlot.hour)}:${String.format("%02d", timeSlot.minute)}")
                     }
-                    
+
                     if (daySlot?.isAvailable == true) {
                         AvailableSlot()
                     }
@@ -341,7 +358,7 @@ private fun BookingSlotCard(
                     maxLines = 1
                 )
             }
-            
+
             // Status badge - smaller size for compact card
             BookingStatusBadge(
                 status = booking.bookingStatus,
@@ -395,6 +412,8 @@ private fun ErrorView(error: String) {
 @Composable
 private fun BookingDetailsDialog(
     booking: WooPosBooking,
+    isConfirmingBooking: Boolean = false,
+    confirmationMessage: String? = null,
     onDismiss: () -> Unit,
     onConfirmBooking: () -> Unit,
     onAddToCart: () -> Unit
@@ -428,42 +447,75 @@ private fun BookingDetailsDialog(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
                     )
-                    
+
                     DetailRow("Customer", booking.customerName)
                     DetailRow("Service", booking.serviceName)
                     DetailRow("Date", booking.startDateTime.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")))
                     DetailRow("Time", "${booking.startDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))} - ${booking.endDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))}")
                     DetailRow("Status", booking.status)
                     DetailRow("Amount", "$${booking.cost}")
-                    
+
+                    // Show confirmation message or loading state
+                    if (isConfirmingBooking || confirmationMessage != null) {
+                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+                        if (isConfirmingBooking) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp),
+                                    strokeWidth = 2.dp
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                WooPosText(
+                                    text = "Confirming booking...",
+                                    style = WooPosTypography.BodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        } else if (confirmationMessage != null) {
+                            WooPosText(
+                                text = confirmationMessage,
+                                style = WooPosTypography.BodySmall,
+                                color = if (confirmationMessage.contains("success"))
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.error,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
-                    
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
                     ) {
-                        if (booking.status.equals("unpaid", ignoreCase = true)) {
-                            Button(
+                        // Show confirm button for bookings that need confirmation
+                        val needsConfirmation = booking.status.equals("unpaid", ignoreCase = true) ||
+                                               booking.status.equals("pending-confirmation", ignoreCase = true)
+
+                        if (needsConfirmation) {
+                            WooPosOutlinedButton(
+                                text = if (isConfirmingBooking) "Confirming..." else "Confirm",
+                                state = if (isConfirmingBooking) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
                                 onClick = onConfirmBooking,
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.secondary
-                                )
-                            ) {
-                                WooPosText("Confirm", style = WooPosTypography.BodySmall, modifier = Modifier.padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()))
-                            }
+                                modifier = Modifier.weight(1f)
+                            )
                         }
-                        
+
                         if (!booking.isPaid) {
-                            Button(
+                            WooPosButton(
+                                text = "Add to art",
+                                state = WooPosButtonState.ENABLED,
                                 onClick = onAddToCart,
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
-                            ) {
-                                WooPosText("Add to Cart", style = WooPosTypography.BodySmall, modifier = Modifier.padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()))
-                            }
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                     }
                 }
@@ -496,12 +548,12 @@ private fun DetailRow(label: String, value: String) {
 private fun generateTimeSlots(): List<LocalTime> {
     val slots = mutableListOf<LocalTime>()
     var time = LocalTime.of(8, 0)
-    
+
     while (time.isBefore(LocalTime.of(20, 0))) {
         slots.add(time)
         time = time.plusHours(1)
     }
-    
+
     return slots
 }
 
@@ -516,7 +568,7 @@ private fun BookingStatusBadge(
         com.woocommerce.android.ui.woopos.bookings.BookingStatus.COMPLETED -> "✓" to Color(0xFF2196F3)
         com.woocommerce.android.ui.woopos.bookings.BookingStatus.CANCELLED -> "X" to Color(0xFFF44336)
     }
-    
+
     Box(
         modifier = modifier
             .size(12.dp) // Smaller badge for compact card

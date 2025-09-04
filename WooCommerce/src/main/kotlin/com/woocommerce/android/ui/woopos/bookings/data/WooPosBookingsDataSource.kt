@@ -56,8 +56,26 @@ class WooPosBookingsDataSource @Inject constructor(
     }
     
     suspend fun confirmBooking(bookingId: Long): Result<WooPosBooking> {
-        return fetchBookingById(bookingId).mapCatching { booking ->
-            booking ?: throw Exception("Booking not found")
+        Log.d(TAG, "confirmBooking: bookingId=$bookingId")
+        return try {
+            // Call the API to confirm the booking
+            val result = apiService.confirmBooking(bookingId)
+            if (result.isSuccess) {
+                val confirmedBooking = result.getOrThrow()
+                Log.d(TAG, "confirmBooking: Successfully confirmed booking $bookingId, new status: ${confirmedBooking.status}")
+                
+                // Update the booking in cache if it exists
+                // Note: In a full implementation, we might want to update the cache here
+                // For now, the next data refresh will pick up the updated status
+                
+                Result.success(confirmedBooking)
+            } else {
+                Log.e(TAG, "confirmBooking: Failed to confirm booking $bookingId")
+                result
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "confirmBooking: Exception confirming booking $bookingId", e)
+            Result.failure(e)
         }
     }
     

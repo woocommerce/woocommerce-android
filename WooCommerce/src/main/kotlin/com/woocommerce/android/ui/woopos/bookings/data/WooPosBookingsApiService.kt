@@ -97,6 +97,46 @@ class WooPosBookingsApiService @Inject constructor(
         }
     }
 
+    suspend fun confirmBooking(bookingId: Long): Result<WooPosBooking> = withContext(Dispatchers.IO) {
+        Log.d(TAG, "confirmBooking API call: bookingId=$bookingId")
+        try {
+            val site = selectedSite.get()
+            val params = mapOf(
+                "status" to "confirmed"
+            )
+
+            Log.d(TAG, "confirmBooking API: making PUT request to wc-bookings/v1/bookings/$bookingId")
+
+            val response = wooNetwork.executePutGsonRequest(
+                site = site,
+                path = "wc-bookings/v1/bookings/$bookingId",
+                clazz = Map::class.java,
+                body = params
+            ).toWooPayload { bookingMap ->
+                (bookingMap as? Map<*, *>)?.let { 
+                    parseBookingFromMap(it.mapKeys { it.key.toString() }.mapValues { it.value ?: "" })
+                }
+            }
+
+            if (response.isError) {
+                Log.e(TAG, "confirmBooking API error: ${response.error?.message}")
+                return@withContext Result.failure(Exception("API Error: ${response.error?.message}"))
+            }
+
+            val result = response.result
+            if (result != null) {
+                Log.d(TAG, "confirmBooking API success: booking confirmed with status ${result.status}")
+                Result.success(result)
+            } else {
+                Log.e(TAG, "confirmBooking API error: null response")
+                Result.failure(Exception("Failed to confirm booking: null response"))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "confirmBooking API exception: bookingId=$bookingId", e)
+            Result.failure(e)
+        }
+    }
+
     private fun parseBookingFromMap(map: Map<String, Any>): WooPosBooking {
         return WooPosBooking(
             id = (map["id"] as? Number)?.toLong() ?: 0L,
