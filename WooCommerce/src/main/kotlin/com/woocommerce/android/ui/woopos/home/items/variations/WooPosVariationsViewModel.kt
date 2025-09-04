@@ -254,5 +254,3 @@ class WooPosVariationsViewModel @Inject constructor(
         loadMore(productId, numOfVariations)
     }
 }
-
-// Extension function moved to WooPosVariation.kt for consistency
