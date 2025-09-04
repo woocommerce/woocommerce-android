@@ -136,6 +136,7 @@ class WooShippingNetworkingMapper @Inject constructor(
                     requestDate = refund.requestDate?.let { Date(it) }
                 )
             },
+            hazmatCategory = null,
             originAddress = null,
             destinationAddress = null,
         )
@@ -150,6 +151,7 @@ class WooShippingNetworkingMapper @Inject constructor(
 
         return shippingLabelData.currentOrderLabels?.map { shippingLabelDTO ->
             val shipmentKey = shippingLabelDTO.shipmentId?.let { key(it) }
+            val hazmatCategory = shippingLabelData.storedData?.selectedHazmat?.get(shipmentKey)?.category
             val originAddress = shippingLabelData.storedData?.selectedOrigin?.get(shipmentKey)?.let {
                 WooShippingLabelEntity.Address(
                     company = it.company,
@@ -180,6 +182,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             }
 
             invoke(shippingLabelDTO, site, orderId).copy(
+                hazmatCategory = hazmatCategory,
                 originAddress = originAddress,
                 destinationAddress = destinationAddress
             )
@@ -195,6 +198,7 @@ class WooShippingNetworkingMapper @Inject constructor(
 
         return purchasedShippingLabelResponseDTO.labels.map { shippingLabelDTO ->
             val shipmentKey = shippingLabelDTO.shipmentId?.let { key(it) }
+            val hazmatCategory = purchasedShippingLabelResponseDTO.selectedHazmat[shipmentKey]?.category
             val originAddress = purchasedShippingLabelResponseDTO.selectedOrigin[shipmentKey]?.let {
                 WooShippingLabelEntity.Address(
                     company = it.company,
@@ -225,6 +229,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             }
 
             invoke(shippingLabelDTO, site, orderId).copy(
+                hazmatCategory = hazmatCategory,
                 originAddress = originAddress,
                 destinationAddress = destinationAddress
             )
@@ -256,6 +261,9 @@ class WooShippingNetworkingMapper @Inject constructor(
             usedDate = labelEntity.usedDate,
             refund = labelEntity.refund?.let { refund ->
                 ShippingLabelModel.Refund(status = refund.status, requestDate = refund.requestDate)
+            },
+            hazmatCategory = labelEntity.hazmatCategory?.takeUnless { it.isEmpty() }?.let {
+                runCatching { ShippingLabelHazmatCategory.valueOf(it) }.getOrNull()
             },
             originAddress = labelEntity.originAddress?.let { invoke(it) },
             destinationAddress = labelEntity.destinationAddress?.let { invoke(it) }
