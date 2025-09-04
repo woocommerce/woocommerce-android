@@ -220,7 +220,7 @@ class WooPosSyncProductsActionTest {
 
     private suspend fun givenSinglePageCatalog(productsCount: Int = PAGE_SIZE / 2) {
         whenever(posLocalCatalogStore.executeInTransaction<WooPosSyncProductsResult>(any()))
-            .thenReturn(KotlinResult.success(WooPosSyncProductsResult.Success(productsCount)))
+            .thenReturn(KotlinResult.success(WooPosSyncProductsResult.Success(productsCount, "")))
 
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
@@ -238,7 +238,9 @@ class WooPosSyncProductsActionTest {
 
     private suspend fun givenMultiPageCatalog(page1Count: Int, page2Count: Int, page3Count: Int, totalPages: Int = 3) {
         whenever(posLocalCatalogStore.executeInTransaction<WooPosSyncProductsResult>(any()))
-            .thenReturn(KotlinResult.success(WooPosSyncProductsResult.Success(page1Count + page2Count + page3Count)))
+            .thenReturn(
+                KotlinResult.success(WooPosSyncProductsResult.Success(page1Count + page2Count + page3Count, ""))
+            )
 
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
@@ -290,7 +292,7 @@ class WooPosSyncProductsActionTest {
 
     private suspend fun givenEmptyCatalog() {
         whenever(posLocalCatalogStore.executeInTransaction<WooPosSyncProductsResult>(any()))
-            .thenReturn(KotlinResult.success(WooPosSyncProductsResult.Success(0)))
+            .thenReturn(KotlinResult.success(WooPosSyncProductsResult.Success(0, "")))
 
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), any()))
             .thenReturn(
@@ -346,7 +348,7 @@ class WooPosSyncProductsActionTest {
     private suspend fun givenPageWithZeroProductsButHasMore() {
         // Mock transaction to return success - this logic is complex so return 0 for simplicity
         whenever(posLocalCatalogStore.executeInTransaction<WooPosSyncProductsResult>(any()))
-            .thenReturn(KotlinResult.success(WooPosSyncProductsResult.Success(0)))
+            .thenReturn(KotlinResult.success(WooPosSyncProductsResult.Success(0, "")))
 
         // Note: Due to current action logic, it won't continue if syncedCount == 0
         // So we use 1 product on first page instead of 0 to demonstrate continuing
