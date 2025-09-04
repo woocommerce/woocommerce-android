@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 61,
-    "identityHash": "ee8d1bcfa90facac0d3c37d8edefe464",
+    "version": 63,
+    "identityHash": "def2a644a922f410634df79ee7abc465",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -2187,7 +2187,7 @@
       },
       {
         "tableName": "PosProductEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `sku` TEXT NOT NULL, `globalUniqueId` TEXT NOT NULL, `type` TEXT NOT NULL, `price` TEXT NOT NULL, `downloadable` INTEGER NOT NULL, `images` TEXT NOT NULL, `attributes` TEXT NOT NULL, `parentId` INTEGER NOT NULL, `status` TEXT NOT NULL, `regularPrice` TEXT NOT NULL, `salePrice` TEXT NOT NULL, `onSale` INTEGER NOT NULL, `description` TEXT NOT NULL, `shortDescription` TEXT NOT NULL, `manageStock` INTEGER NOT NULL, `stockQuantity` REAL NOT NULL, `stockStatus` TEXT NOT NULL, `backordersAllowed` INTEGER NOT NULL, `backordered` INTEGER NOT NULL, `categories` TEXT NOT NULL, `tags` TEXT NOT NULL, `dateModified` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `sku` TEXT NOT NULL, `globalUniqueId` TEXT NOT NULL, `type` TEXT NOT NULL, `price` TEXT NOT NULL, `downloadable` INTEGER NOT NULL, `images` TEXT NOT NULL, `attributes` TEXT NOT NULL, `parentId` INTEGER, `status` TEXT NOT NULL, `regularPrice` TEXT NOT NULL, `salePrice` TEXT NOT NULL, `onSale` INTEGER NOT NULL, `description` TEXT NOT NULL, `shortDescription` TEXT NOT NULL, `manageStock` INTEGER NOT NULL, `stockQuantity` REAL, `stockStatus` TEXT NOT NULL, `backordersAllowed` INTEGER NOT NULL, `backordered` INTEGER NOT NULL, `categories` TEXT NOT NULL, `tags` TEXT NOT NULL, `dateModified` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteId`))",
         "fields": [
           {
             "fieldPath": "localSiteId",
@@ -2252,8 +2252,7 @@
           {
             "fieldPath": "parentId",
             "columnName": "parentId",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "status",
@@ -2300,8 +2299,7 @@
           {
             "fieldPath": "stockQuantity",
             "columnName": "stockQuantity",
-            "affinity": "REAL",
-            "notNull": true
+            "affinity": "REAL"
           },
           {
             "fieldPath": "stockStatus",
@@ -3761,6 +3759,42 @@
         }
       },
       {
+        "tableName": "WooShippingPackagesEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `storeOptions` TEXT NOT NULL, `savedPackages` TEXT NOT NULL, `carrierPackageGroups` TEXT NOT NULL, PRIMARY KEY(`localSiteId`))",
+        "fields": [
+          {
+            "fieldPath": "localSiteId",
+            "columnName": "localSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storeOptions",
+            "columnName": "storeOptions",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedPackages",
+            "columnName": "savedPackages",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "carrierPackageGroups",
+            "columnName": "carrierPackageGroups",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "localSiteId"
+          ]
+        }
+      },
+      {
         "tableName": "GlobalAttributeEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `slug` TEXT NOT NULL, `type` TEXT NOT NULL, `orderBy` TEXT NOT NULL, `hasArchives` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `remoteId`))",
         "fields": [
@@ -3849,7 +3883,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ee8d1bcfa90facac0d3c37d8edefe464')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'def2a644a922f410634df79ee7abc465')"
     ]
   }
 }
