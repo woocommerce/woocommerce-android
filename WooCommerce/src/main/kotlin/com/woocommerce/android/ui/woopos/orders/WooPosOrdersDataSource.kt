@@ -21,9 +21,11 @@ class WooPosOrdersDataSource @Inject constructor(
     private val orderMapper: OrderMapper,
     private val ordersCache: WooPosOrdersCache
 ) {
-    suspend fun loadOrders(): Flow<LoadOrdersResult> = flow {
-        val cached = ordersCache.getAll()
-        emit(LoadOrdersResult.Success(cached))
+    suspend fun loadOrders(loadFromCacheFirst: Boolean): Flow<LoadOrdersResult> = flow {
+        if (loadFromCacheFirst) {
+            val cached = ordersCache.getAll()
+            emit(LoadOrdersResult.Success(cached))
+        }
 
         val result = restClient.fetchOrders(
             site = selectedSite.get(),
@@ -40,11 +42,10 @@ class WooPosOrdersDataSource @Inject constructor(
         } else {
             val mapped = result.orders.toAppModels()
             ordersCache.addAll(mapped)
-            emit(LoadOrdersResult.Success(result.orders.toAppModels()))
+            emit(LoadOrdersResult.Success(mapped))
         }
     }
 
-    private suspend fun List<OrderEntity>?.toAppModels(): List<Order> = this?.map {
-        orderMapper.toAppModel(it)
-    } ?: emptyList()
+    private suspend fun List<OrderEntity>?.toAppModels(): List<Order> =
+        this?.map { orderMapper.toAppModel(it) } ?: emptyList()
 }

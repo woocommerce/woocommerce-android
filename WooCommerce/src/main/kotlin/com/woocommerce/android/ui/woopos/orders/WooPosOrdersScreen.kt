@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,8 +38,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -46,6 +53,7 @@ fun WooPosOrdersScreen(
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 
     Row(modifier = Modifier.fillMaxSize()) {
+        // Left pane
         Column(
             modifier = Modifier
                 .weight(0.3f)
@@ -57,57 +65,88 @@ fun WooPosOrdersScreen(
                 onBackClicked = onBackClicked,
             )
 
-            when (val s = state) {
-                is WooPosOrdersState.Loading -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        WooPosText(
-                            text = stringResource(R.string.loading),
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(WooPosSpacing.Large.value)
+            // --- Pull-to-refresh wiring (left pane content area) ---
+            val refreshing =
+                when (val s = state) {
+                    is WooPosOrdersState.Content -> s.pullToRefreshState == WooPosPullToRefreshState.Refreshing
+                    is WooPosOrdersState.Error -> s.pullToRefreshState == WooPosPullToRefreshState.Refreshing
+                    is WooPosOrdersState.Empty -> false
+                    is WooPosOrdersState.Loading -> false
+                }
+
+            val pullRefreshState = rememberPullRefreshState(
+                refreshing = refreshing,
+                onRefresh = { viewModel.refresh() }
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pullRefresh(pullRefreshState)
+            ) {
+                when (val s = state) {
+                    is WooPosOrdersState.Loading -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            WooPosText(
+                                text = stringResource(R.string.loading),
+                                style = WooPosTypography.BodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(WooPosSpacing.Large.value)
+                            )
+                        }
+                    }
+
+                    is WooPosOrdersState.Error -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            WooPosText(
+                                text = s.message,
+                                style = WooPosTypography.BodyMedium,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(WooPosSpacing.Large.value)
+                            )
+                        }
+                    }
+
+                    is WooPosOrdersState.Empty -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            WooPosText(
+                                text = "No orders found",
+                                style = WooPosTypography.BodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(WooPosSpacing.Large.value)
+                            )
+                        }
+                    }
+
+                    is WooPosOrdersState.Content -> {
+                        WooPosOrdersListPaneScreen(
+                            items = s.items,
+                            selectedOrderId = s.selectedOrderId,
+                            onOrderSelected = viewModel::onOrderSelected,
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
 
-                is WooPosOrdersState.Error -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        WooPosText(
-                            text = s.message,
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(WooPosSpacing.Large.value)
-                        )
-                    }
-                }
-
-                is WooPosOrdersState.Empty -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        WooPosText(
-                            text = "No Orders Found",
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(WooPosSpacing.Large.value)
-                        )
-                    }
-                }
-
-                is WooPosOrdersState.Content -> {
-                    WooPosOrdersListPaneScreen(
-                        items = s.items,
-                        selectedOrderId = s.selectedOrderId,
-                        onOrderSelected = viewModel::onOrderSelected,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                // PTR indicator at the top of the list area
+                PullRefreshIndicator(
+                    refreshing = refreshing,
+                    state = pullRefreshState,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = WooPosSpacing.XSmall.value),
+                    backgroundColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.primary
+                )
             }
         }
 
@@ -145,7 +184,6 @@ fun WooPosOrdersListPaneScreen(
             } else {
                 MaterialTheme.colorScheme.surface
             }
-
             val foreground = if (isSelected) {
                 MaterialTheme.colorScheme.onPrimaryContainer
             } else {
@@ -165,23 +203,11 @@ fun WooPosOrdersListPaneScreen(
                     ),
                 verticalAlignment = Alignment.Top
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
-                ) {
-                    WooPosText(
-                        text = item.title,
-                        style = WooPosTypography.BodyMedium,
-                        color = foreground
-                    )
-                    WooPosText(
-                        text = item.date,
-                        style = WooPosTypography.BodySmall,
-                        color = foreground
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+                    WooPosText(item.title, style = WooPosTypography.BodyMedium, color = foreground)
+                    WooPosText(item.date, style = WooPosTypography.BodySmall, color = foreground)
                 }
-
                 Spacer(Modifier.weight(1f))
-
                 WooPosText(
                     text = item.total,
                     style = WooPosTypography.BodyMedium,
@@ -197,25 +223,19 @@ fun WooPosOrdersDetailPaneScreen(
     selected: OrderItemViewState?,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Column(modifier = modifier.fillMaxSize()) {
         WooPosToolbar(
             modifier = Modifier.fillMaxWidth(),
             titleText = selected?.title ?: "--",
             titleFontWeight = FontWeight.Bold
         )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    start = WooPosSpacing.Large.value,
-                    end = WooPosSpacing.Large.value,
-                )
+                .padding(start = WooPosSpacing.Large.value, end = WooPosSpacing.Large.value)
         ) {
             WooPosText(
-                text = "Orders details will be displayed here",
+                text = "Order details goes here",
                 style = WooPosTypography.BodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -226,9 +246,5 @@ fun WooPosOrdersDetailPaneScreen(
 @WooPosPreview
 @Composable
 fun WooPosOrdersScreenPreview() {
-    WooPosTheme {
-        WooPosOrdersScreen(
-            onNavigationEvent = {}
-        )
-    }
+    WooPosTheme { WooPosOrdersScreen(onNavigationEvent = {}) }
 }

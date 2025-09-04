@@ -10,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,12 +21,11 @@ class WooPosOrdersViewModel @Inject constructor(
     private val _state = MutableStateFlow<WooPosOrdersState>(WooPosOrdersState.Loading)
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
 
-    // Keep the domain list & selection internally
     private var orders: List<Order> = emptyList()
     private var selectedId: Long? = null
 
     init {
-        refreshOrders()
+        loadOrders(loadFromCacheFirst = true)
     }
 
     fun onOrderSelected(orderId: Long) {
@@ -41,34 +39,38 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    fun refreshOrders() {
-        viewModelScope.launch {
-            _state.value = WooPosOrdersState.Loading
+    fun refresh() {
+        val s = _state.value
+        _state.value = when (s) {
+            is WooPosOrdersState.Content -> s.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+            else -> WooPosOrdersState.Loading
+        }
+        loadOrders(loadFromCacheFirst = false)
+    }
 
-            ordersDataSource.loadOrders().collect { result ->
+    private fun loadOrders(loadFromCacheFirst: Boolean) {
+        viewModelScope.launch {
+            ordersDataSource.loadOrders(loadFromCacheFirst).collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
-                        // If we already had content (e.g., cache emitted first) keep it and surface an error?
-                        // For now, match current behavior: show an error state.
-                        _state.value = WooPosOrdersState.Error(
-                            message = result.message
-                        )
+                        _state.value = WooPosOrdersState.Error(message = result.message)
                     }
-
                     is LoadOrdersResult.Success -> {
-                        orders = result.orders
+                        val newOrders = result.orders
+                        orders = newOrders
+                        selectedId = selectedId?.takeIf { id -> newOrders.any { it.id == id } }
+                            ?: newOrders.firstOrNull()?.id
 
-                        // Preserve previous selection if still present; otherwise pick first
-                        selectedId = selectedId?.takeIf { id -> orders.any { it.id == id } }
-                            ?: orders.firstOrNull()?.id
-
-                        if (orders.isEmpty()) {
-                            _state.value = WooPosOrdersState.Empty
+                        if (newOrders.isEmpty()) {
+                            if (loadFromCacheFirst) {
+                                _state.value = WooPosOrdersState.Loading
+                            } else {
+                                _state.value = WooPosOrdersState.Empty
+                            }
                         } else {
                             _state.value = WooPosOrdersState.Content(
-                                items = orders.toOrderItems(selectedId),
+                                items = newOrders.toOrderItems(selectedId),
                                 selectedOrderId = selectedId,
-                                // PTR/pagination are for later; set sensible defaults
                                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                                 paginationState = WooPosPaginationState.None,
                                 listError = null
@@ -81,7 +83,6 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 }
 
-/** Map domain orders to lightweight UI rows, deriving selection from a single source of truth. */
 private fun List<Order>.toOrderItems(selectedId: Long?): List<OrderItemViewState> =
     map { o ->
         OrderItemViewState(
