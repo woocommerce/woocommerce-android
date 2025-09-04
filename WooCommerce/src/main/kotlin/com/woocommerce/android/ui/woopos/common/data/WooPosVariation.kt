@@ -126,12 +126,12 @@ fun WooPosVariation.getNameForPOS(
             )
             else -> ""
         }
-    }.ifEmpty { "" }
+    }
 }
 
 fun WooPosVariation.getName(parentProduct: Product? = null): String {
     return parentProduct?.variationEnabledAttributes?.joinToString(" - ") { attribute ->
         val option = attributes.firstOrNull { it.name == attribute.name }
         option?.option ?: "Any ${attribute.name}"
-    } ?: attributes.mapNotNull { it.option }.joinToString(" - ").ifEmpty { "" }
+    } ?: attributes.mapNotNull { it.option }.joinToString(" - ")
 }
