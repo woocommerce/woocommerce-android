@@ -21,7 +21,7 @@ class WooPosOrdersDataSource @Inject constructor(
     private val orderMapper: OrderMapper,
     private val ordersCache: WooPosOrdersCache
 ) {
-    suspend fun loadOrders(): Flow<LoadOrdersResult> = flow {
+    fun loadOrders(): Flow<LoadOrdersResult> = flow {
         val cached = ordersCache.getAll()
         emit(LoadOrdersResult.Success(cached))
 
