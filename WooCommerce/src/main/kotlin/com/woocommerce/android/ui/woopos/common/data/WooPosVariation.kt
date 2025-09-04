@@ -117,20 +117,21 @@ fun WooPosVariation.getNameForPOS(
             )
         }
     } ?: attributes.joinToString(", ") { attribute ->
-        if (attribute.option != null) {
-            "${attribute.name}: ${attribute.option}"
-        } else {
-            resourceProvider.getString(
+        when {
+            attribute.option != null && attribute.name != null -> "${attribute.name}: ${attribute.option}"
+            attribute.option != null -> attribute.option
+            attribute.name != null -> resourceProvider.getString(
                 R.string.woopos_variations_any_variation,
-                attribute.name!!
+                attribute.name
             )
+            else -> ""
         }
-    }
+    }.ifEmpty { "" }
 }
 
 fun WooPosVariation.getName(parentProduct: Product? = null): String {
     return parentProduct?.variationEnabledAttributes?.joinToString(" - ") { attribute ->
         val option = attributes.firstOrNull { it.name == attribute.name }
         option?.option ?: "Any ${attribute.name}"
-    } ?: attributes.filter { it.option != null }.joinToString(" - ") { o -> o.option!! }
+    } ?: attributes.mapNotNull { it.option }.joinToString(" - ").ifEmpty { "" }
 }
