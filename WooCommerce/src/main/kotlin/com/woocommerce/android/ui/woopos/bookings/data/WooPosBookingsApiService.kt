@@ -6,13 +6,15 @@ import com.woocommerce.android.ui.woopos.bookings.WooPosBooking
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerRestClient
 import org.wordpress.android.fluxc.utils.toWooPayload
 import java.time.LocalDate
 import javax.inject.Inject
 
 class WooPosBookingsApiService @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val wooNetwork: WooNetwork
+    private val wooNetwork: WooNetwork,
+    private val customerRestClient: CustomerRestClient
 ) {
     suspend fun fetchBookings(
         page: Int = 1,
@@ -47,8 +49,15 @@ class WooPosBookingsApiService @Inject constructor(
             }
 
             val result = response.result ?: emptyList()
-            Log.d(TAG, "fetchBookings API success: returned ${result.size} bookings")
-            Result.success(result)
+            
+            // Fetch customer names for each booking
+            val bookingsWithCustomerNames = result.map { booking ->
+                val customerName = fetchCustomerName(booking.customerId.toLong())
+                booking.copy(customerName = customerName)
+            }
+            
+            Log.d(TAG, "fetchBookings API success: returned ${bookingsWithCustomerNames.size} bookings")
+            Result.success(bookingsWithCustomerNames)
         } catch (e: Exception) {
             Log.e(TAG, "fetchBookings API exception: page=$page", e)
             Result.failure(e)
@@ -125,8 +134,11 @@ class WooPosBookingsApiService @Inject constructor(
 
             val result = response.result
             if (result != null) {
-                Log.d(TAG, "confirmBooking API success: booking confirmed with status ${result.status}")
-                Result.success(result)
+                // Fetch customer name for the confirmed booking
+                val customerName = fetchCustomerName(result.customerId.toLong())
+                val bookingWithCustomerName = result.copy(customerName = customerName)
+                Log.d(TAG, "confirmBooking API success: booking confirmed with status ${bookingWithCustomerName.status}")
+                Result.success(bookingWithCustomerName)
             } else {
                 Log.e(TAG, "confirmBooking API error: null response")
                 Result.failure(Exception("Failed to confirm booking: null response"))
@@ -134,6 +146,43 @@ class WooPosBookingsApiService @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "confirmBooking API exception: bookingId=$bookingId", e)
             Result.failure(e)
+        }
+    }
+
+    suspend fun fetchCustomerName(customerId: Long): String? = withContext(Dispatchers.IO) {
+        Log.d(TAG, "fetchCustomerName API call: customerId=$customerId")
+        if (customerId == 0L) {
+            return@withContext null
+        }
+        
+        try {
+            val site = selectedSite.get()
+            val response = customerRestClient.fetchSingleCustomer(site, customerId)
+            
+            if (response.isError) {
+                Log.e(TAG, "fetchCustomerName API error: ${response.error?.message}")
+                return@withContext null
+            }
+            
+            val customer = response.result
+            val name = if (customer != null) {
+                val firstName = customer.firstName?.takeIf { it.isNotEmpty() }
+                val lastName = customer.lastName?.takeIf { it.isNotEmpty() }
+                when {
+                    firstName != null && lastName != null -> "$firstName $lastName"
+                    firstName != null -> firstName
+                    lastName != null -> lastName
+                    else -> customer.email ?: "Customer #$customerId"
+                }
+            } else {
+                null
+            }
+            
+            Log.d(TAG, "fetchCustomerName API success: customerId=$customerId, name=$name")
+            name
+        } catch (e: Exception) {
+            Log.e(TAG, "fetchCustomerName API exception: customerId=$customerId", e)
+            null
         }
     }
 
@@ -155,7 +204,8 @@ class WooPosBookingsApiService @Inject constructor(
             productId = (map["product_id"] as? Number)?.toInt() ?: 0,
             resourceId = (map["resource_id"] as? Number)?.toInt() ?: 0,
             status = map["status"] as? String ?: "unpaid",
-            localTimezone = map["local_timezone"] as? String ?: ""
+            localTimezone = map["local_timezone"] as? String ?: "",
+            customerName = null // Will be populated later with fetchCustomerName
         )
     }
 

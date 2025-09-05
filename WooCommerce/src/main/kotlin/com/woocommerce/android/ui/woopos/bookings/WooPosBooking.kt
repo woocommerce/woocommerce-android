@@ -22,7 +22,8 @@ data class WooPosBooking(
     val productId: Int,
     val resourceId: Int,
     val status: String,
-    val localTimezone: String
+    val localTimezone: String,
+    val customerName: String? = null
 ) {
     val startDateTime: LocalDateTime
         get() = Instant.ofEpochSecond(start).atZone(ZoneId.systemDefault()).toLocalDateTime()
@@ -46,8 +47,8 @@ data class WooPosBooking(
             else -> BookingStatus.PENDING
         }
     
-    val customerName: String
-        get() = "Customer #$customerId"
+    val displayCustomerName: String
+        get() = customerName ?: "Customer #$customerId"
     
     val serviceName: String
         get() = "Service #$productId"

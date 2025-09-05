@@ -268,12 +268,12 @@ private fun TimeSlotRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(80.dp)
     ) {
         Box(
             modifier = Modifier
                 .width(60.dp)
-                .height(60.dp),
+                .height(80.dp),
             contentAlignment = Alignment.Center
         ) {
             WooPosText(
@@ -285,7 +285,7 @@ private fun TimeSlotRow(
 
         weekDays.forEach { day ->
             Box(
-                modifier = Modifier.weight(1f).height(60.dp),
+                modifier = Modifier.weight(1f).height(80.dp),
                 contentAlignment = Alignment.Center
             ) {
                 val dayBookings = bookings.filter { booking ->
@@ -324,8 +324,8 @@ private fun BookingSlotCard(
 ) {
     Surface(
         modifier = Modifier
-            .padding(1.dp) // Minimal padding to fit in cell
-            .size(width = 80.dp, height = 45.dp) // Constrained size to fit calendar cell
+            .padding(2.dp)
+            .size(width = 100.dp, height = 70.dp)
             .clickable(onClick = onClick),
         color = when (booking.bookingStatus) {
             com.woocommerce.android.ui.woopos.bookings.BookingStatus.CONFIRMED -> MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
@@ -333,33 +333,34 @@ private fun BookingSlotCard(
             com.woocommerce.android.ui.woopos.bookings.BookingStatus.COMPLETED -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.9f)
             com.woocommerce.android.ui.woopos.bookings.BookingStatus.CANCELLED -> MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
         },
-        shape = RoundedCornerShape(8.dp), // Smaller rounded corners for compact size
-        shadowElevation = 1.dp // Smaller shadow
+        shape = RoundedCornerShape(8.dp),
+        shadowElevation = 2.dp
     ) {
         Box {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(4.dp), // Minimal internal padding
+                    .padding(6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
                 WooPosText(
-                    text = "C#${booking.customerId}",
+                    text = booking.displayCustomerName,
                     style = WooPosTypography.Caption,
                     color = Color.White,
-                    maxLines = 1
+                    maxLines = 2,
+                    textAlign = TextAlign.Center
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 WooPosText(
                     text = "$${booking.cost}",
-                    style = WooPosTypography.Caption,
+                    style = WooPosTypography.BodySmall,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1
                 )
             }
 
-            // Status badge - smaller size for compact card
             BookingStatusBadge(
                 status = booking.bookingStatus,
                 modifier = Modifier.align(Alignment.TopEnd)
@@ -448,7 +449,7 @@ private fun BookingDetailsDialog(
                         modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
                     )
 
-                    DetailRow("Customer", booking.customerName)
+                    DetailRow("Customer", booking.displayCustomerName)
                     DetailRow("Service", booking.serviceName)
                     DetailRow("Date", booking.startDateTime.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")))
                     DetailRow("Time", "${booking.startDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))} - ${booking.endDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))}")
@@ -511,7 +512,7 @@ private fun BookingDetailsDialog(
 
                         if (!booking.isPaid) {
                             WooPosButton(
-                                text = "Add to art",
+                                text = "Add to cart",
                                 state = WooPosButtonState.ENABLED,
                                 onClick = onAddToCart,
                                 modifier = Modifier.weight(1f)
