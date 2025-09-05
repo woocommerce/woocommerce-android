@@ -15,6 +15,7 @@
 - [*]  Add more filter options to orders filters sales channel [https://github.com/woocommerce/woocommerce-android/pull/14546]
 - [*] Automatically populate the weight field in the create shipment flow [https://github.com/woocommerce/woocommerce-android/pull/14525]
 - [*] [Shipping Labels] Fixed displaying incorrect hazardous material option for purchased labels [https://github.com/woocommerce/woocommerce-android/pull/14571]
+- [*] Shipping Labels: Enhance selected package UI in the create shipping label flow [https://github.com/woocommerce/woocommerce-android/pull/14579]
 
 23.1
 -----
