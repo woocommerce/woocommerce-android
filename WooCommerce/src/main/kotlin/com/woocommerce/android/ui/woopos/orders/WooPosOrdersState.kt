@@ -21,8 +21,7 @@ sealed class WooPosOrdersState {
         val items: List<OrderItemViewState>,
         val pullToRefreshState: WooPosPullToRefreshState,
         val paginationState: WooPosPaginationState,
-        val selectedOrderId: Long?,
-        val listError: String? = null,
+        val selectedOrderId: Long?
     ) : WooPosOrdersState()
 
     @Immutable

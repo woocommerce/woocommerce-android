@@ -24,14 +24,11 @@ class WooPosOrdersViewModel @Inject constructor(
     private var orders: List<Order> = emptyList()
     private var selectedId: Long? = null
 
-    init {
-        loadOrders()
-    }
+    init { loadOrders() }
 
     fun onOrderSelected(orderId: Long) {
         selectedId = orderId
-        val s = _state.value
-        if (s is WooPosOrdersState.Content) {
+        (state.value as? WooPosOrdersState.Content)?.let { s ->
             _state.value = s.copy(
                 items = orders.toOrderItems(selectedId),
                 selectedOrderId = selectedId
@@ -40,8 +37,7 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     fun refresh() {
-        val s = _state.value
-        _state.value = when (s) {
+        _state.value = when (val s = _state.value) {
             is WooPosOrdersState.Content -> s.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
             else -> WooPosOrdersState.Loading
         }
@@ -53,50 +49,61 @@ class WooPosOrdersViewModel @Inject constructor(
         viewModelScope.launch {
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
-                    is LoadOrdersResult.Error -> {
-                        _state.value = WooPosOrdersState.Error(message = result.message)
-                    }
+                    is LoadOrdersResult.Error ->
+                        handleError(result.message)
 
-                    is LoadOrdersResult.SuccessCache,
-                    is LoadOrdersResult.SuccessRemote -> {
-                        val newOrders = when (result) {
-                            is LoadOrdersResult.SuccessCache -> result.orders
-                            is LoadOrdersResult.SuccessRemote -> result.orders
-                            else -> emptyList()
-                        }
+                    is LoadOrdersResult.SuccessCache ->
+                        handleSuccess(result.orders, isCache = true)
 
-                        orders = newOrders
-                        selectedId = chooseSelectedId(selectedId, newOrders)
-
-                        _state.value = if (newOrders.isEmpty()) {
-                            toStateForEmpty(result)
-                        } else {
-                            WooPosOrdersState.Content(
-                                items = newOrders.toOrderItems(selectedId),
-                                selectedOrderId = selectedId,
-                                pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                                paginationState = WooPosPaginationState.None,
-                                listError = null
-                            )
-                        }
-                    }
+                    is LoadOrdersResult.SuccessRemote ->
+                        handleSuccess(result.orders, isCache = false)
                 }
             }
         }
     }
 
-    private fun chooseSelectedId(
-        current: Long?,
-        newOrders: List<Order>
-    ): Long? {
-        return current?.takeIf { id -> newOrders.any { it.id == id } }
-            ?: newOrders.firstOrNull()?.id
+    private fun handleError(message: String) {
+        _state.value = WooPosOrdersState.Error(message)
     }
 
-    private fun toStateForEmpty(result: LoadOrdersResult): WooPosOrdersState = when (result) {
-        is LoadOrdersResult.SuccessCache -> WooPosOrdersState.Loading
-        is LoadOrdersResult.SuccessRemote -> WooPosOrdersState.Empty
-        is LoadOrdersResult.Error -> WooPosOrdersState.Error(result.message)
+    private fun handleSuccess(newOrders: List<Order>, isCache: Boolean) {
+        applySelection(newOrders)
+
+        if (newOrders.isEmpty()) {
+            handleEmpty(isCache)
+        } else {
+            setContent(newOrders)
+        }
+    }
+
+    private fun handleEmpty(isCache: Boolean) {
+        if (isCache && isRefreshing() && _state.value is WooPosOrdersState.Content) {
+            return
+        }
+        _state.value = if (isCache) WooPosOrdersState.Loading else WooPosOrdersState.Empty
+    }
+
+    private fun setContent(newOrders: List<Order>) {
+        _state.value = WooPosOrdersState.Content(
+            items = newOrders.toOrderItems(selectedId),
+            selectedOrderId = selectedId,
+            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+            paginationState = WooPosPaginationState.None
+        )
+    }
+
+    private fun applySelection(newOrders: List<Order>) {
+        orders = newOrders
+        selectedId = chooseSelectedId(selectedId, newOrders)
+    }
+
+    private fun isRefreshing(): Boolean =
+        (state.value as? WooPosOrdersState.Content)
+            ?.pullToRefreshState == WooPosPullToRefreshState.Refreshing
+
+    private fun chooseSelectedId(current: Long?, newOrders: List<Order>): Long? {
+        return current?.takeIf { id -> newOrders.any { it.id == id } }
+            ?: newOrders.firstOrNull()?.id
     }
 }
 
