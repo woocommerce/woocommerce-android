@@ -109,6 +109,7 @@ fun WCPosVariationModel.toWooPosVariation(): WooPosVariation {
 }
 
 private val gson by lazy { Gson() }
+
 @Suppress("SwallowedException")
 private fun parseAttributesJson(attributesJson: String): List<WooPosVariation.WooPosVariationAttribute> {
     return try {
