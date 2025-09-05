@@ -28,8 +28,7 @@ sealed class WooPosOrdersState {
     data class Error(
         val message: String,
         val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled,
-    ) : WooPosOrdersState() {
-    }
+    ) : WooPosOrdersState()
 
     @Immutable
     data object Loading : WooPosOrdersState() {
