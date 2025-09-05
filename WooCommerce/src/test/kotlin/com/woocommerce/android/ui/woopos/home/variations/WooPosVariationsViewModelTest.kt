@@ -4,6 +4,8 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -31,6 +33,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -56,13 +59,59 @@ class WooPosVariationsViewModelTest {
         onBlocking { invoke(null) }.thenReturn("$0.00")
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val mapper: WooPosVariationMapper = mock {
+        on { fromProductVariation(any()) } doAnswer { invocation ->
+            val productVariation = invocation.arguments[0] as com.woocommerce.android.model.ProductVariation
+            WooPosVariation(
+                remoteVariationId = productVariation.remoteVariationId,
+                remoteProductId = productVariation.remoteProductId,
+                globalUniqueId = productVariation.globalUniqueId,
+                price = productVariation.price,
+                image = productVariation.image?.let { WooPosVariation.WooPosVariationImage(it.source) },
+                attributes = productVariation.attributes.map {
+                    WooPosVariation.WooPosVariationAttribute(
+                        id = it.id,
+                        name = it.name,
+                        option = it.option
+                    )
+                },
+                isVisible = productVariation.isVisible,
+                isDownloadable = productVariation.isDownloadable
+            )
+        }
+        on { getNameForPOS(any<WooPosVariation>(), anyOrNull(), any<ResourceProvider>()) } doAnswer { invocation ->
+            val variation = invocation.arguments[0] as WooPosVariation
+            val parentProduct = invocation.arguments[1] as? com.woocommerce.android.model.Product
+            // Mock the basic behavior for tests
+            if (parentProduct != null) {
+                // Use parent product's variation enabled attributes
+                parentProduct.variationEnabledAttributes?.joinToString(", ") { attribute ->
+                    val option = variation.attributes.firstOrNull { it.name == attribute.name }
+                    if (option?.option != null) {
+                        "${attribute.name}: ${option.option}"
+                    } else {
+                        "Any ${attribute.name}"
+                    }
+                } ?: "Any variation"
+            } else {
+                // No parent product, use all variation attributes
+                variation.attributes.mapNotNull { attribute ->
+                    if (attribute.name != null && attribute.option != null) {
+                        "${attribute.name}: ${attribute.option}"
+                    } else {
+                        null
+                    }
+                }.joinToString(", ").takeIf { it.isNotEmpty() } ?: "Any variation"
+            }
+        }
+    }
 
     @Test
     fun `given variations from data source, when view model created, then view state updated correctly`() = runTest {
         // GIVEN
         val variations = listOf(
-            ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(),
-            ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation()
+            ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(mapper),
+            ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation(mapper)
         )
         whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(variations)))
@@ -70,6 +119,7 @@ class WooPosVariationsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.viewState.test {
             // THEN
@@ -84,7 +134,7 @@ class WooPosVariationsViewModelTest {
     fun `given variation has zero price, when view model created, then view state updated correctly`() = runTest {
         // GIVEN
         val variations = listOf(
-            ProductTestUtils.generateProductVariation(1, 1, "0.00").toWooPosVariation(),
+            ProductTestUtils.generateProductVariation(1, 1, "0.00").toWooPosVariation(mapper),
         )
         whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(variations)))
@@ -92,6 +142,7 @@ class WooPosVariationsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.viewState.test {
             // THEN
@@ -106,7 +157,7 @@ class WooPosVariationsViewModelTest {
     fun `given variation has no price set, when view model created, then view state updated correctly`() = runTest {
         // GIVEN
         val variations = listOf(
-            ProductTestUtils.generateProductVariation(1, 1, "").toWooPosVariation(),
+            ProductTestUtils.generateProductVariation(1, 1, "").toWooPosVariation(mapper),
         )
         whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(variations)))
@@ -114,6 +165,7 @@ class WooPosVariationsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.viewState.test {
             // THEN
@@ -159,8 +211,8 @@ class WooPosVariationsViewModelTest {
     fun `given variations, when pull to refresh triggered, then fetchFirstPage is called`() = runTest {
         // GIVEN
         val variations = listOf(
-            ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(),
-            ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation()
+            ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(mapper),
+            ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation(mapper)
         )
         whenever(variationsDataSource.fetchFirstPage(any(), eq(false))).thenReturn(
             flowOf(FetchResult.Remote(Result.success(emptyList())))
@@ -185,6 +237,7 @@ class WooPosVariationsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.onUIEvent(WooPosVariationsUIEvents.PullToRefreshTriggered(123L))
 
         // THEN
@@ -201,8 +254,8 @@ class WooPosVariationsViewModelTest {
     fun `given no more variations, when end of list reached, then pagination state is none`() = runTest {
         // GIVEN
         val variations = listOf(
-            ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(),
-            ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation()
+            ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(mapper),
+            ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation(mapper)
         )
         whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(variations)))
@@ -227,7 +280,7 @@ class WooPosVariationsViewModelTest {
     fun `given variations, when load more succeeds, then pagination state is updated`() = runTest {
         // GIVEN
         val variations = listOf(
-            ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(),
+            ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(mapper),
         )
         whenever(variationsDataSource.loadMore(any())).thenReturn(Result.success(variations))
         whenever(variationsDataSource.canLoadMore(any())).thenReturn(true)
@@ -237,8 +290,8 @@ class WooPosVariationsViewModelTest {
                     FetchResult.Remote(
                         Result.success(
                             listOf(
-                                ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(),
-                                ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation()
+                                ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(mapper),
+                                ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation(mapper)
                             )
                         )
                     )
@@ -247,7 +300,9 @@ class WooPosVariationsViewModelTest {
         )
 
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.onUIEvent(WooPosVariationsUIEvents.EndOfItemsListReached(123L, 10))
+        advanceUntilIdle()
 
         // THEN
         viewModel.viewState.test {
@@ -268,8 +323,8 @@ class WooPosVariationsViewModelTest {
                     FetchResult.Remote(
                         Result.success(
                             listOf(
-                                ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(),
-                                ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation()
+                                ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(mapper),
+                                ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation(mapper)
                             )
                         )
                     )
@@ -294,8 +349,8 @@ class WooPosVariationsViewModelTest {
         runTest {
             // GIVEN
             val variations = listOf(
-                ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(),
-                ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation()
+                ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(mapper),
+                ProductTestUtils.generateProductVariation(2, 1, "20.0").toWooPosVariation(mapper)
             )
             whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
                 flowOf(FetchResult.Remote(Result.success(variations)))
@@ -303,7 +358,9 @@ class WooPosVariationsViewModelTest {
 
             // WHEN
             val viewModel = createViewModel()
+            advanceUntilIdle()
             viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
+            advanceUntilIdle()
 
             viewModel.viewState.test {
                 // THEN
@@ -321,7 +378,9 @@ class WooPosVariationsViewModelTest {
             )
 
             val viewModel = createViewModel()
+            advanceUntilIdle()
             viewModel.init(123L, sourceType = ItemsListSourceType.LIST)
+            advanceUntilIdle()
             // WHEN
             viewModel.onUIEvent(WooPosVariationsUIEvents.OnItemClicked(123L, 1L))
 
@@ -347,6 +406,7 @@ class WooPosVariationsViewModelTest {
                 flowOf(FetchResult.Remote(Result.success(emptyList())))
             )
             val viewModel = createViewModel(123L, sourceType = ItemsListSourceType.SEARCH_RESULT)
+            advanceUntilIdle()
 
             // WHEN
             viewModel.onUIEvent(WooPosVariationsUIEvents.OnItemClicked(123L, 1L))
@@ -397,7 +457,9 @@ class WooPosVariationsViewModelTest {
             )
 
             // WHEN
-            val attributeName = variableProduct.toWooPosVariation().getNameForPOS(parentProduct, resourceProvider)
+            val attributeName = variableProduct.toWooPosVariation(
+                mapper
+            ).getNameForPOS(mapper, parentProduct, resourceProvider)
 
             // Then
             assertThat(attributeName).isEqualTo("Color: Blue")
@@ -425,7 +487,8 @@ class WooPosVariationsViewModelTest {
         )
 
         // WHEN
-        val attributeName = variableProduct.toWooPosVariation().getNameForPOS(null, resourceProvider)
+        val wooPosVariation = variableProduct.toWooPosVariation(mapper)
+        val attributeName = mapper.getNameForPOS(wooPosVariation, null, resourceProvider)
 
         // THEN
         assertThat(attributeName).isEqualTo("Color: Blue, Size: M")
@@ -468,7 +531,9 @@ class WooPosVariationsViewModelTest {
             ).thenReturn("Any Material")
 
             // WHEN
-            val attributeName = variableProduct.toWooPosVariation().getNameForPOS(parentProduct, resourceProvider)
+            val attributeName = variableProduct.toWooPosVariation(
+                mapper
+            ).getNameForPOS(mapper, parentProduct, resourceProvider)
 
             // THEN
             assertThat(attributeName).isEqualTo("Any Material")
@@ -514,7 +579,9 @@ class WooPosVariationsViewModelTest {
             )
 
             // WHEN
-            val attributeName = variableProduct.toWooPosVariation().getNameForPOS(parentProduct, resourceProvider)
+            val attributeName = variableProduct.toWooPosVariation(
+                mapper
+            ).getNameForPOS(mapper, parentProduct, resourceProvider)
 
             // THEN
             assertThat(attributeName).isEqualTo("Color: Blue, Size: M")
@@ -566,7 +633,9 @@ class WooPosVariationsViewModelTest {
             ).thenReturn("Any Size")
 
             // WHEN
-            val attributeName = variableProduct.toWooPosVariation().getNameForPOS(parentProduct, resourceProvider)
+            val attributeName = variableProduct.toWooPosVariation(
+                mapper
+            ).getNameForPOS(mapper, parentProduct, resourceProvider)
 
             // THEN
             assertThat(attributeName).isEqualTo("Any Color, Any Size")
@@ -598,7 +667,9 @@ class WooPosVariationsViewModelTest {
             ).thenReturn("Any Color")
 
             // WHEN
-            val attributeName = variableProduct.toWooPosVariation().getNameForPOS(parentProduct, resourceProvider)
+            val attributeName = variableProduct.toWooPosVariation(
+                mapper
+            ).getNameForPOS(mapper, parentProduct, resourceProvider)
 
             // THEN
             assertThat(attributeName).isEqualTo("Any Color")
@@ -644,7 +715,9 @@ class WooPosVariationsViewModelTest {
             )
 
             // WHEN
-            val attributeName = variableProduct.toWooPosVariation().getNameForPOS(parentProduct, resourceProvider)
+            val attributeName = variableProduct.toWooPosVariation(
+                mapper
+            ).getNameForPOS(mapper, parentProduct, resourceProvider)
 
             // THEN
             assertThat(attributeName).isEqualTo("Color: Blue")
@@ -661,6 +734,7 @@ class WooPosVariationsViewModelTest {
             priceFormat,
             resourceProvider,
             analyticsTracker,
+            mapper,
         ).let {
             it.init(productId, sourceType = sourceType)
             it
