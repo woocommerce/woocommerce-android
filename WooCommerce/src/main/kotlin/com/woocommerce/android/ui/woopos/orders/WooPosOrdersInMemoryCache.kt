@@ -1,39 +1,19 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.model.Order
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 
 class WooPosOrdersInMemoryCache @Inject constructor() {
-    private val mutex = Mutex()
+    private val ordersCache = AtomicReference<List<Order>>(emptyList())
 
-    companion object {
-        private const val CACHE_CAPACITY = WooPosOrdersDataSource.Companion.POS_ORDERS_PAGE_SIZE
-        private const val LOAD_FACTOR = 0.75f
+    fun setAll(orders: List<Order>) {
+        ordersCache.set(orders.toList())
     }
 
-    private val ordersCache = LinkedHashMap<Long, Order>(CACHE_CAPACITY, LOAD_FACTOR, true)
+    fun getAll(): List<Order> = ordersCache.get()
 
-    suspend fun addAll(orders: List<Order>) = mutex.withLock {
-        addAllInternal(orders)
-    }
-
-    suspend fun getAll(): List<Order> = mutex.withLock {
-        ordersCache.values.toList()
-    }
-
-    suspend fun clear() = mutex.withLock {
-        ordersCache.clear()
-    }
-
-    private fun addAllInternal(orders: List<Order>) {
-        orders.forEach { order ->
-            ordersCache[order.id] = order
-            if (ordersCache.size > CACHE_CAPACITY) {
-                val keysToRemove = ordersCache.keys.take(ordersCache.size - CACHE_CAPACITY)
-                keysToRemove.forEach { ordersCache.remove(it) }
-            }
-        }
+    fun clear() {
+        ordersCache.set(emptyList())
     }
 }
