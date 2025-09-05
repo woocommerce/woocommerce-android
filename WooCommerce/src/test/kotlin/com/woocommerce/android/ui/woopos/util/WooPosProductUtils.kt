@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVe
 fun generateWooPosProduct(
     productId: Long = 1,
     productName: String = "Product 1",
+    status: WooPosProductStatus = WooPosProductStatus.PUBLISH,
     amount: String = "10.0",
     productType: WooPosProductType = WooPosProductType.SIMPLE,
     isDownloadable: Boolean = false,
@@ -22,7 +23,7 @@ fun generateWooPosProduct(
     parentId = null,
     sku = "",
     globalUniqueId = "",
-    status = WooPosProductStatus.PUBLISH,
+    status = status,
     description = "",
     shortDescription = "",
     lastModified = "",
