@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import app.cash.turbine.test
-import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
@@ -54,11 +55,11 @@ class WooPosProductsViewModelTest {
     @Before
     fun setup() {
         val products = listOf(
-            ProductTestUtils.generateProduct(
+            generateWooPosProduct(
                 productId = 1,
                 productName = "Product 1",
                 amount = "10.0",
-                productType = "simple",
+                productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
                 isDownloadable = false,
             ),
         )
@@ -77,20 +78,21 @@ class WooPosProductsViewModelTest {
     fun `given products from data source, when view model created, then view state updated correctly`() = runTest {
         // WHEN
         val products = listOf(
-            ProductTestUtils.generateProduct(
+            generateWooPosProduct(
                 productId = 1,
                 productName = "Product 1",
                 amount = "10.0",
-                productType = "simple",
+                productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
                 isDownloadable = false,
             ),
-            ProductTestUtils.generateProduct(
+            generateWooPosProduct(
                 productId = 2,
                 productName = "Product 2",
                 amount = "20.0",
-                productType = "simple",
+                productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
                 isDownloadable = false,
-            ).copy(firstImageUrl = "https://test.com")
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(0, "https://test.com", "",""))
+            )
         )
 
         whenever(productsDataSource.loadProducts(any())).thenReturn(
@@ -325,21 +327,22 @@ class WooPosProductsViewModelTest {
         runTest {
             // GIVEN
             val products = listOf(
-                ProductTestUtils.generateProduct(
+                generateWooPosProduct(
                     productId = 1,
                     productName = "Product 1",
                     amount = "10.0",
-                    productType = "simple",
+                    productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
                     isDownloadable = false,
                 ),
-                ProductTestUtils.generateProduct(
+                generateWooPosProduct(
                     productId = 2,
                     productName = "Product 2",
                     amount = "20.0",
-                    productType = "variable",
+                    productType = WooPosProductModelVersion2.WooPosProductType.VARIABLE,
                     isDownloadable = false,
-                    isVariable = true
-                ).copy(firstImageUrl = "https://test.com")
+                    images = listOf(WooPosProductModelVersion2
+                        .WooPosProductImage(0, "https://test.com", "", "")),
+                )
             )
 
             whenever(productsDataSource.loadProducts(any())).thenReturn(
@@ -371,11 +374,11 @@ class WooPosProductsViewModelTest {
             whenever(productsDataSource.loadMore()).thenReturn(
                 Result.success(
                     listOf(
-                        ProductTestUtils.generateProduct(
+                        generateWooPosProduct(
                             productId = 2,
                             productName = "Product 2",
                             amount = "20.0",
-                            productType = "simple"
+                            productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE
                         )
                     )
                 )
@@ -386,11 +389,11 @@ class WooPosProductsViewModelTest {
                     WooPosProductsDataSource.ProductsResult.Remote(
                         Result.success(
                             listOf(
-                                ProductTestUtils.generateProduct(
+                                generateWooPosProduct(
                                     productId = 1,
                                     productName = "Product 1",
                                     amount = "10.0",
-                                    productType = "simple"
+                                    productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE
                                 )
                             )
                         )
@@ -501,11 +504,11 @@ class WooPosProductsViewModelTest {
         whenever(productsDataSource.loadMore()).thenReturn(
             Result.success(
                 listOf(
-                    ProductTestUtils.generateProduct(
+                    generateWooPosProduct(
                         productId = 2,
                         productName = "Product 2",
                         amount = "20.0",
-                        productType = "simple"
+                        productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
                     )
                 )
             )
