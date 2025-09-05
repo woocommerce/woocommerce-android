@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -43,7 +43,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
             remoteVariationId = RemoteId(variationId),
             remoteProductId = RemoteId(parentId)
         )
-        val variation = wcVariation.toAppModel()
+        val variation = wcVariation.toWooPosVariation()
         val fetchResult: WCProductStore.OnVariationChanged = mock {
             on { isError }.thenReturn(false)
         }
@@ -118,14 +118,21 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         // GIVEN
         val variationId = 456L
         val parentId = 123L
-        val differentVariation: ProductVariation = mock {
-            on { remoteVariationId }.thenReturn(999L)
-        }
+        val differentVariation = WooPosVariation(
+            remoteVariationId = 999L,
+            remoteProductId = parentId,
+            globalUniqueId = "different",
+            price = null,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
         val wcVariation = WCProductVariationModel(LocalId(1)).copy(
             remoteVariationId = RemoteId(variationId),
             remoteProductId = RemoteId(parentId)
         )
-        val variation = wcVariation.toAppModel()
+        val variation = wcVariation.toWooPosVariation()
         val fetchResult: WCProductStore.OnVariationChanged = mock {
             on { isError }.thenReturn(false)
         }

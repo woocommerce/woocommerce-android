@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -30,7 +30,16 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
             on { remoteId }.thenReturn(variationId)
         }
         val parentProduct: Product = mock()
-        val variation: ProductVariation = mock()
+        val variation = WooPosVariation(
+            remoteVariationId = variationId,
+            remoteProductId = parentId,
+            globalUniqueId = "test",
+            price = null,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
 
         runBlocking {
             whenever(
@@ -108,7 +117,16 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
             on { this.parentId }.thenReturn(parentId)
             on { remoteId }.thenReturn(variationId)
         }
-        val variation: ProductVariation = mock()
+        val variation = WooPosVariation(
+            remoteVariationId = variationId,
+            remoteProductId = parentId,
+            globalUniqueId = "test",
+            price = null,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
         val expectedFailure = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
 
         runBlocking {

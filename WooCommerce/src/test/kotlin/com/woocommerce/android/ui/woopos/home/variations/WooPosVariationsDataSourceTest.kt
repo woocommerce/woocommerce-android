@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.variations
 
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
-import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
@@ -48,7 +47,7 @@ class WooPosVariationsDataSourceTest {
             isDownloadable = false,
         )
     )
-    
+
     private val sampleProducts = sampleProductVariations.map { it.toWooPosVariation() }
 
     private val additionalProductVariations = listOf(
@@ -65,7 +64,7 @@ class WooPosVariationsDataSourceTest {
             isDownloadable = false,
         ),
     )
-    
+
     private val additionalProducts = additionalProductVariations.map { it.toWooPosVariation() }
 
     private val handler: VariationListHandler = mock()
