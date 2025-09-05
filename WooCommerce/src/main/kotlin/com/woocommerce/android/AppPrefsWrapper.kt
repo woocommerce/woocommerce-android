@@ -41,6 +41,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
 
+    var jetpackAppPasswordsEnabled by AppPrefs::jetpackAppPasswordsEnabled
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
