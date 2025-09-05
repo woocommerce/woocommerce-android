@@ -40,6 +40,7 @@ open class AppPrefsWrapper @Inject constructor() {
     var isSiteWPComSuspended by AppPrefs::isSiteWPComSuspended
 
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
+    open var gatewayMigrated by AppPrefs::gatewayMigrated
 
     var jetpackAppPasswordsEnabled by AppPrefs::jetpackAppPasswordsEnabled
 

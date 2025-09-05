@@ -78,6 +78,7 @@ object AppPrefs {
         LOGIN_SITE_ADDRESS,
         DATABASE_DOWNGRADED,
         ORDER_SUMMARY_MIGRATED,
+        GATEWAY_MIGRATED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
@@ -296,6 +297,10 @@ object AppPrefs {
     var orderSummaryMigrated: Boolean
         get() = getBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, false)
         set(value) = setBoolean(DeletablePrefKey.ORDER_SUMMARY_MIGRATED, value)
+
+    var gatewayMigrated: Boolean
+        get() = getBoolean(DeletablePrefKey.GATEWAY_MIGRATED, false)
+        set(value) = setBoolean(DeletablePrefKey.GATEWAY_MIGRATED, value)
 
     var jetpackAppPasswordsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.JETPACK_APP_PASSWORDS_ENABLED, true)

@@ -30,8 +30,9 @@ class WooPosSettingsReceiptRepository @Inject constructor(
                 val settings = response.model ?: emptyMap()
                 val receiptInfo = WooPosSettingsStoreState.ReceiptInfo(
                     storeName = settings["woocommerce_pos_store_name"] ?: "",
-                    address = settings["woocommerce_pos_store_address"] ?: "",
+                    address = formatReceiptAddress(settings["woocommerce_pos_store_address"] ?: ""),
                     phone = settings["woocommerce_pos_store_phone"] ?: "",
+                    email = settings["woocommerce_pos_store_email"] ?: "",
                     refundPolicy = settings["woocommerce_pos_refund_returns_policy"] ?: ""
                 )
 
@@ -40,6 +41,10 @@ class WooPosSettingsReceiptRepository @Inject constructor(
                 WooPosReceiptDataResult.Error
             }
         }
+
+    private fun formatReceiptAddress(address: String): String {
+        return address.replace("\n", ", ").replace(Regex(",\\s*,"), ",").trim()
+    }
 
     private fun isWooCommerceVersionAtLeast10(): Boolean {
         val wooCoreVersion = getWooCoreVersion() ?: return false

@@ -19,6 +19,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
+import kotlin.collections.emptyList
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderRestClientTest {
@@ -221,6 +222,53 @@ class OrderRestClientTest {
             retries = any()
         )
 
+        assertThat(paramsCaptor.firstValue["created_via"]).isEqualTo(expectedCreatedVia)
+    }
+
+    @Test
+    fun `when createdVia is provided, then created_via parameter is sent to API in fetchOrders`() = runTest {
+        // Given
+        val expectedCreatedVia = "pos-rest-api"
+        val mockResponse = WPAPIResponse.Success(arrayOf<OrderDto>(),emptyList())
+
+        whenever(
+            wooNetwork.executeGetGsonRequest(
+                site = eq(testSite),
+                path = eq(WOOCOMMERCE.orders.pathV3),
+                clazz = eq(Array<OrderDto>::class.java),
+                params = any(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any()
+            )
+        ).thenReturn(mockResponse)
+
+        // When
+        orderRestClient.fetchOrders(
+            site = testSite,
+            count = 60,
+            page = 1,
+            orderBy = OrderRestClient.OrderBy.DATE,
+            sortOrder = OrderRestClient.SortOrder.DESCENDING,
+            statusFilter = null,
+            createdVia = expectedCreatedVia
+        )
+
+        // Then
+        val paramsCaptor = argumentCaptor<Map<String, String>>()
+        verify(wooNetwork).executeGetGsonRequest(
+            site = eq(testSite),
+            path = eq(WOOCOMMERCE.orders.pathV3),
+            clazz = eq(Array<OrderDto>::class.java),
+            params = paramsCaptor.capture(),
+            enableCaching = any(),
+            cacheTimeToLive = any(),
+            forced = any(),
+            requestTimeout = any(),
+            retries = any()
+        )
         assertThat(paramsCaptor.firstValue["created_via"]).isEqualTo(expectedCreatedVia)
     }
 }

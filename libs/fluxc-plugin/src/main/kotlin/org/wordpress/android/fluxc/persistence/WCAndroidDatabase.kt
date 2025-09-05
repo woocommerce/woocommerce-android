@@ -34,6 +34,7 @@ import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
+import org.wordpress.android.fluxc.persistence.dao.GatewaysDao
 import org.wordpress.android.fluxc.persistence.dao.GlobalAttributesDao
 import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
@@ -68,6 +69,7 @@ import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CustomerFromAnalyticsEntity
+import org.wordpress.android.fluxc.persistence.entity.GatewayEntity
 import org.wordpress.android.fluxc.persistence.entity.GlobalAddonGroupEntity
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteActionEntity
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteEntity
@@ -85,7 +87,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOvervie
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration13to14
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration14to15
@@ -109,12 +111,13 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_31_32
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_3_4
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_4_5
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_5_6
+import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_62_63
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_6_7
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 59
+const val WC_DATABASE_VERSION = 63
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -141,7 +144,7 @@ const val WC_DATABASE_VERSION = 59
         ShippingMethodEntity::class,
         CustomerFromAnalyticsEntity::class,
         WCProductModel::class,
-        WCPosProductModel::class,
+        WCPosProductEntity::class,
         WCPosVariationModel::class,
         WCProductCategoryModel::class,
         WCProductVariationModel::class,
@@ -160,6 +163,7 @@ const val WC_DATABASE_VERSION = 59
         WooShippingLabelEntity::class,
         WooShippingShipmentEntity::class,
         WCGlobalAttributeModel::class,
+        GatewayEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -202,6 +206,9 @@ const val WC_DATABASE_VERSION = 59
         AutoMigration(from = 56, to = 57),
         AutoMigration(from = 57, to = 58),
         AutoMigration(from = 58, to = 59),
+        AutoMigration(from = 59, to = 60),
+        AutoMigration(from = 60, to = 61),
+        AutoMigration(from = 61, to = 62),
     ]
 )
 @TypeConverters(
@@ -248,6 +255,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val orderStatusDao: OrderStatusDao
     abstract val wooShippingDao: WooShippingDao
     internal abstract val globalAttributesDao: GlobalAttributesDao
+    internal abstract val gatewaysDao: GatewaysDao
 
     companion object {
         fun buildDb(
@@ -278,6 +286,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
             .addMigrations(MIGRATION_27_28)
             .addMigrations(MIGRATION_30_31)
             .addMigrations(MIGRATION_31_32)
+            .addMigrations(MIGRATION_62_63)
             .build()
     }
 

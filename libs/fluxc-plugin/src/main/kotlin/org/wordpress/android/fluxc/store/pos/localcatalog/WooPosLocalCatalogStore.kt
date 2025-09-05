@@ -7,11 +7,12 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVariationModel
+import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
@@ -26,6 +27,7 @@ class WooPosLocalCatalogStore @Inject constructor(
     private val posProductDao: WooPosProductsDao,
     private val posVariationsDao: WooPosVariationsDao,
     private val headersParser: HeadersParser,
+    private val database: WCAndroidDatabase,
 ) {
     private companion object {
         private const val DEFAULT_PAGE_SIZE = 100
@@ -40,7 +42,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      */
     fun observeProducts(
         siteId: LocalOrRemoteId.LocalId
-    ): Flow<Result<List<WCPosProductModel>>> =
+    ): Flow<Result<List<WCPosProductEntity>>> =
         posProductDao.observeAllProducts(siteId)
             .map { products ->
                 Result.success(products)
@@ -56,10 +58,26 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun getProduct(
         siteId: LocalOrRemoteId.LocalId,
         remoteProductId: LocalOrRemoteId.RemoteId
-    ): Result<WCPosProductModel?> =
+    ): Result<WCPosProductEntity?> =
         coroutineEngine.withDefaultContext(API, this, "getProduct") {
             val product = posProductDao.getProduct(siteId, remoteProductId)
             Result.success(product)
+        }
+
+    /**
+     * Executes a block of code within a database transaction.
+     * If the block throws an exception, the transaction is rolled back.
+     *
+     * @param [block] The code to execute within the transaction
+     * @return Result containing the result of the block or error
+     */
+    suspend fun <T> executeInTransaction(
+        block: suspend () -> T
+    ): Result<T> =
+        coroutineEngine.withDefaultContext(API, this, "executeInTransaction") {
+            runCatching {
+                database.executeInTransaction(block)
+            }
         }
 
     /**
@@ -110,7 +128,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                 )
 
                 else -> {
-                    val products = response.model.map { it.mapToPOSModel() }
+                    val products = response.model.map { it.mapToPOSEntity() }
 
                     if (storeInDb) {
                         val upsertResult = runCatching { posProductDao.upsertProducts(products) }
@@ -193,6 +211,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @param pageSize Number of variations to fetch per page (default: 100, max: 100)
      * @return [Result] containing [WooPosVariationsSyncResult] with pagination info or error
      */
+    @Suppress("LongMethod")
     suspend fun syncRecentlyModifiedVariations(
         site: SiteModel,
         modifiedAfterGmt: String,
@@ -209,6 +228,14 @@ class WooPosLocalCatalogStore @Inject constructor(
                 pageSize = validPageSize
             )
 
+            val serverDate = headersParser.getServerDate(response)
+
+            if (serverDate == null) {
+                return@withDefaultContext Result.failure(
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
+                )
+            }
+
             when {
                 response.isError -> {
                     Result.failure(
@@ -221,7 +248,9 @@ class WooPosLocalCatalogStore @Inject constructor(
                         WooPosVariationsSyncResult(
                             syncedCount = 0,
                             hasMore = false,
-                            nextPage = page
+                            nextPage = page,
+                            totalPages = 0,
+                            serverDate = serverDate,
                         )
                     )
                 }
@@ -248,6 +277,16 @@ class WooPosLocalCatalogStore @Inject constructor(
 
                     val hasMore = variations.size == validPageSize
 
+                    val totalPages = headersParser.getTotalPages(response)
+
+                    if (totalPages == null) {
+                        return@withDefaultContext Result.failure(
+                            WooPosLocalCatalogError.InvalidResponse(
+                                "Missing required header in response: X-WP-TotalPages."
+                            )
+                        )
+                    }
+
                     Result.success(
                         WooPosVariationsSyncResult(
                             syncedCount = variations.size,
@@ -256,7 +295,9 @@ class WooPosLocalCatalogStore @Inject constructor(
                                 page + 1
                             } else {
                                 page
-                            }
+                            },
+                            totalPages = totalPages,
+                            serverDate = serverDate,
                         )
                     )
                 }

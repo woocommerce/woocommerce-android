@@ -40,6 +40,7 @@ data class WooShippingLabelEntity(
     val expiryDate: Long,
     val usedDate: Long?,
     val refund: Refund?,
+    val hazmatCategory: String?,
     val originAddress: Address?,
     val destinationAddress: Address?
 ) {

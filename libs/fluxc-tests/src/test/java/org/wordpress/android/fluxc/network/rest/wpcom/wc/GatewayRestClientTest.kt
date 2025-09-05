@@ -23,13 +23,13 @@ class GatewayRestClientTest {
     }
 
     @Test
-    fun `given success response, when fetch gateway, return success`() {
+    fun `given success response, when fetch all gateways, then return success`() {
         runBlocking {
             whenever(
                 wooNetwork.executeGetGsonRequest(
                     site = any(),
                     path = any(),
-                    clazz = any<Class<GatewayRestClient.GatewayResponse>>(),
+                    clazz = any<Class<Array<GatewayRestClient.GatewayResponse>>>(),
                     params = any(),
                     enableCaching = any(),
                     cacheTimeToLive = any(),
@@ -38,13 +38,10 @@ class GatewayRestClientTest {
                     retries = any()
                 )
             ).thenReturn(
-                WPAPIResponse.Success(mock(), emptyList())
+                WPAPIResponse.Success(arrayOf(mock()), emptyList())
             )
 
-            val actualResponse = gatewayRestClient.fetchGateway(
-                SiteModel(),
-                ""
-            )
+            val actualResponse = gatewayRestClient.fetchAllGateways(SiteModel())
 
             Assertions.assertThat(actualResponse.isError).isFalse
             Assertions.assertThat(actualResponse.result).isNotNull
@@ -52,7 +49,7 @@ class GatewayRestClientTest {
     }
 
     @Test
-    fun `given error response, when fetch gateway, return error`() {
+    fun `given error response, when fetch all gateways, then return error`() {
         runBlocking {
             val expectedError = mock<WPAPINetworkError>().apply {
                 type = mock()
@@ -73,7 +70,7 @@ class GatewayRestClientTest {
                 WPAPIResponse.Error(expectedError)
             )
 
-            val actualResponse = gatewayRestClient.fetchGateway(SiteModel(), "")
+            val actualResponse = gatewayRestClient.fetchAllGateways(SiteModel())
 
             Assertions.assertThat(actualResponse.isError).isTrue
             Assertions.assertThat(actualResponse.error).isNotNull
@@ -81,7 +78,7 @@ class GatewayRestClientTest {
     }
 
     @Test
-    fun `given success response, when update gateway, return success`() {
+    fun `given success response, when update gateway, then return success`() {
         runBlocking {
             whenever(
                 wooNetwork.executePostGsonRequest(
@@ -94,7 +91,7 @@ class GatewayRestClientTest {
                 WPAPIResponse.Success(mock(), emptyList())
             )
 
-            val actualResponse = gatewayRestClient.updatePaymentGateway(
+            val actualResponse = gatewayRestClient.updateGateway(
                 SiteModel(),
                 CASH_ON_DELIVERY,
                 enabled = false,
@@ -107,7 +104,7 @@ class GatewayRestClientTest {
     }
 
     @Test
-    fun `given error response, when update gateway, return error`() {
+    fun `given error response, when update gateway, then return error`() {
         runBlocking {
             val expectedError = mock<WPAPINetworkError>().apply {
                 type = mock()
@@ -123,7 +120,7 @@ class GatewayRestClientTest {
                 WPAPIResponse.Error(expectedError)
             )
 
-            val actualResponse = gatewayRestClient.updatePaymentGateway(
+            val actualResponse = gatewayRestClient.updateGateway(
                 SiteModel(),
                 CASH_ON_DELIVERY,
                 enabled = true,
