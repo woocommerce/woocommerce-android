@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.model.Order
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class WooPosOrdersInMemoryCache @Inject constructor() {
     private val ordersCache = AtomicReference<List<Order>>(emptyList())
 
