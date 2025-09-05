@@ -57,17 +57,13 @@ fun ProductVariation.toWooPosVariation(): WooPosVariation {
 
 @Suppress("SwallowedException")
 fun WCProductVariationModel.toWooPosVariation(): WooPosVariation {
-    val attributesList = try {
-        attributeList?.map { attribute ->
-            WooPosVariation.WooPosVariationAttribute(
-                id = attribute.id,
-                name = attribute.name,
-                option = attribute.option
-            )
-        } ?: emptyList()
-    } catch (e: Exception) {
-        emptyList()
-    }
+    val attributesList = attributeList?.map { attribute ->
+        WooPosVariation.WooPosVariationAttribute(
+            id = attribute.id,
+            name = attribute.name,
+            option = attribute.option
+        )
+    } ?: emptyList()
 
     val imageModel = try {
         if (image.isNotEmpty()) getImageModel() else null
