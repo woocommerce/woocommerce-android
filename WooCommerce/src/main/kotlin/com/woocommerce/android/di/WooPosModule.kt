@@ -1,6 +1,5 @@
 package com.woocommerce.android.di
 
-import com.woocommerce.android.ui.woopos.common.data.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsInMemoryCache
 import dagger.Binds
@@ -15,8 +14,4 @@ abstract class WooPosModule {
     @Binds
     @Singleton
     abstract fun provideWooPosProductsCache(implementation: WooPosProductsInMemoryCache): WooPosProductsCache
-
-//    @Binds
-//    @Singleton
-//    abstract fun provideWooPosOrdersCache(implementation: WooPosOrdersInMemoryCache): WooPosOrdersInMemoryCache
 }
