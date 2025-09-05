@@ -1,2 +1,0 @@
-23.1 :
-Gérez plus aisément votre boutique avec de nouvelles fonctionnalités géniales ! Supprimez instantanément les arrière-plans des images de produits avec le nouvel outil en un clic. Amélioration des étiquettes d’expédition : meilleure validation des adresses, mises en page plus épurées et gestion plus intelligente des expéditions fractionnées. Résolution des problèmes de sélection de commande et amélioration du traitement des erreurs de connexion pour des opérations plus fluides.

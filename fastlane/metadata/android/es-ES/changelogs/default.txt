@@ -1,2 +1,0 @@
-23.1:
-Hemos mejorado la gestión de tu tienda con nuevas funciones que te encantarán. Elimina los fondos de las imágenes de los productos al instante con nuestra nueva herramienta de un solo toque. Hemos mejorado las etiquetas de envío con una validación de direcciones optimizada, diseños más claros y una gestión de envíos fraccionados más inteligente. Hemos corregido los problemas de selección de pedidos y mejorado la gestión de errores de acceso para facilitar las operaciones.

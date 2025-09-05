@@ -1,2 +1,0 @@
-23.1:
-Verbessere deine Shop-Verwaltung mit aufregenden neuen Funktionen! Entferne Hintergründe im Handumdrehen aus Produktbildern mit unserem neuen Ein-Tap-Tool. Verbesserte Versandetiketten mit optimierter Adressvalidierung, saubereren Layouts und intelligenterer Handhabung aufgeteilter Sendungen. Probleme bei der Bestellauswahl wurden behoben und die Handhabung von Anmeldefehlern wurde verbessert, um reibungslosere Vorgänge zu ermöglichen.
