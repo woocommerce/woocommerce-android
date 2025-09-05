@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosOrdersCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosOrdersInMemoryCache
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
@@ -20,15 +20,18 @@ class WooPosOrdersDataSource @Inject constructor(
     private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
-    private val ordersCache: WooPosOrdersCache
+    private val ordersCache: WooPosOrdersInMemoryCache
 ) {
+    companion object {
+        const val POS_ORDERS_PAGE_SIZE = 25
+    }
     fun loadOrders(): Flow<LoadOrdersResult> = flow {
         val cached = ordersCache.getAll()
         emit(LoadOrdersResult.Success(cached))
 
         val result = restClient.fetchOrders(
             site = selectedSite.get(),
-            count = 25,
+            count = POS_ORDERS_PAGE_SIZE,
             page = 1,
             orderBy = OrderBy.DATE,
             sortOrder = OrderRestClient.SortOrder.DESCENDING,
