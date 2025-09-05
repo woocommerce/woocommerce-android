@@ -118,7 +118,7 @@ class WooShippingLabelRepository @Inject constructor(
         labelId = labelId,
     ).also {
         it.result?.shippingLabel?.let { labelDTO ->
-            // The API doesn't return the origin and destination addresses,
+            // The API doesn't return the hazmat category, origin and destination addresses,
             // we get it from the already cached labels in the database after the purchase request
             val currentLabel = wooShippingDao.getLabel(
                 selectedSite.get().localId(),
@@ -126,6 +126,7 @@ class WooShippingLabelRepository @Inject constructor(
                 labelId
             )
             val updatedLabel = mapper(labelDTO, site, orderId).copy(
+                hazmatCategory = currentLabel?.hazmatCategory,
                 originAddress = currentLabel?.originAddress,
                 destinationAddress = currentLabel?.destinationAddress
             )

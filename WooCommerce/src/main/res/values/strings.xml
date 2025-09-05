@@ -4372,6 +4372,7 @@
     <string name="woopos_settings_card_reader_documentation_title">Documentation</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Learn more about accepting mobile payments</string>
     <string name="woopos_settings_card_reader_connected_reader">Connected reader</string>
+    <string name="woopos_settings_help_category">Help</string>
     <string name="woopos_settings_help_category_subtitle">Get help and support</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Learn about which products are supported in POS</string>
     <string name="woopos_settings_help_documentation_subtitle">View guides and tutorials</string>
@@ -4582,6 +4583,7 @@
     <string name="woopos_settings_store_name_label">Store name</string>
     <string name="woopos_settings_store_address_label">Address</string>
     <string name="woopos_settings_store_phone_label">Phone</string>
+    <string name="woopos_settings_store_email_label">Email</string>
     <string name="woopos_settings_refund_policy_label">Refund &amp; Returns Policy</string>
     <string name="woopos_settings_store_not_set">Not set</string>
 
