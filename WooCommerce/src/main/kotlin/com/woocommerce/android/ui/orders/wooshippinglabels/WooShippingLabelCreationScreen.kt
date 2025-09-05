@@ -727,7 +727,7 @@ private fun PackageSelectionAvailableCard(
                     color = colorResource(id = R.color.divider_color),
                     shape = RoundedCornerShape(8.dp)
                 )
-                .padding(dimensionResource(id = R.dimen.major_125)),
+                .padding(16.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
