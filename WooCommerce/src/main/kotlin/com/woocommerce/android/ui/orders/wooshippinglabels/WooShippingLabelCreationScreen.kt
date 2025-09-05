@@ -722,9 +722,8 @@ private fun PackageSelectionAvailableCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .border(
-                    width = 1.dp,
-                    color = colorResource(id = R.color.divider_color),
+                .background(
+                    color = colorResource(R.color.light_colored_button_background),
                     shape = RoundedCornerShape(8.dp)
                 )
                 .padding(16.dp),
