@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home
 
 import android.os.Parcelable
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.bookings.WooPosBooking
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -44,5 +45,12 @@ data class WooPosHomeState(
             @IgnoredOnParcel
             val confirmButton: Int = R.string.woopos_exit_dialog_confirmation_confirm_button
         }
+
+        @Parcelize
+        data class BookingDetailsDialog(
+            val booking: @kotlinx.parcelize.RawValue WooPosBooking,
+            val isConfirmingBooking: Boolean = false,
+            val confirmationMessage: String? = null
+        ) : DialogState()
     }
 }

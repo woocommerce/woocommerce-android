@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
@@ -33,10 +34,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,6 +49,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -71,14 +69,10 @@ import java.util.Locale
 @Composable
 fun WooPosBookingsTabScreen(
     modifier: Modifier = Modifier,
-    viewModel: WooPosBookingsViewModel = hiltViewModel()
+    viewModel: WooPosBookingsViewModel = hiltViewModel(),
+    onBookingClick: (WooPosBooking) -> Unit = {}
 ) {
     val selectedWeekStart by viewModel.selectedWeekStart.collectAsState()
-    var selectedBooking by remember { mutableStateOf<WooPosBooking?>(null) }
-    var showBookingDetails by remember { mutableStateOf(false) }
-    var isConfirmingBooking by remember { mutableStateOf(false) }
-    var confirmationMessage by remember { mutableStateOf<String?>(null) }
-    val scope = rememberCoroutineScope()
 
     Log.d(TAG, "WooPosBookingsTabScreen: Recomposing with selectedWeekStart=$selectedWeekStart")
 
@@ -109,50 +103,12 @@ fun WooPosBookingsTabScreen(
                     weekStart = selectedWeekStart,
                     bookings = result.bookings,
                     slots = result.slots,
-                    onBookingClick = { booking ->
-                        selectedBooking = booking
-                        showBookingDetails = true
-                    }
+                    onBookingClick = onBookingClick
                 )
             }
         }
     }
 
-    if (showBookingDetails && selectedBooking != null) {
-        BookingDetailsDialog(
-            booking = selectedBooking!!,
-            isConfirmingBooking = isConfirmingBooking,
-            confirmationMessage = confirmationMessage,
-            onDismiss = {
-                showBookingDetails = false
-                selectedBooking = null
-                confirmationMessage = null
-            },
-            onConfirmBooking = {
-                scope.launch {
-                    isConfirmingBooking = true
-                    confirmationMessage = null
-
-                    val result = viewModel.confirmBooking(selectedBooking!!.id)
-                    isConfirmingBooking = false
-
-                    if (result.isSuccess) {
-                        confirmationMessage = "Booking confirmed successfully!"
-                        // Close dialog after a short delay to show success message
-                        kotlinx.coroutines.delay(1500)
-                        showBookingDetails = false
-                        confirmationMessage = null
-                    } else {
-                        confirmationMessage = "Failed to confirm booking. Please try again."
-                    }
-                }
-            },
-            onAddToCart = {
-                viewModel.onBookingPaymentClick(selectedBooking!!)
-                showBookingDetails = false
-            }
-        )
-    }
 }
 
 @Composable
@@ -213,16 +169,15 @@ private fun WeekCalendarWithTimeSlots(
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
 
-            LazyColumn(
-                modifier = Modifier.padding(bottom = 80.dp) // Add bottom padding to avoid floating menu overlap
-            ) {
-                items(timeSlots) { timeSlot ->
+            LazyColumn {
+                itemsIndexed(timeSlots) { index, timeSlot ->
                     TimeSlotRow(
                         timeSlot = timeSlot,
                         weekDays = weekDays,
                         bookings = bookings,
                         slots = slots,
-                        onBookingClick = onBookingClick
+                        onBookingClick = onBookingClick,
+                        isFirstTimeSlot = index == 0
                     )
                 }
             }
@@ -260,7 +215,8 @@ private fun DayHeaderRow(weekDays: List<LocalDate>) {
 @Composable
 private fun AllDayBackgroundCard(
     bookings: List<WooPosBooking>,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    showText: Boolean = true
 ) {
     val primaryBooking = bookings.first() // Use the first booking for display
     
@@ -276,33 +232,35 @@ private fun AllDayBackgroundCard(
         },
         shape = RoundedCornerShape(4.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp),
-            contentAlignment = Alignment.TopStart
-        ) {
-            Column {
-                WooPosText(
-                    text = primaryBooking.displayCustomerName,
-                    style = WooPosTypography.Caption,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    maxLines = 1
-                )
-                WooPosText(
-                    text = "$${primaryBooking.cost}",
-                    style = WooPosTypography.Caption,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1
-                )
-                if (bookings.size > 1) {
+        if (showText) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
+                contentAlignment = Alignment.TopStart
+            ) {
+                Column {
                     WooPosText(
-                        text = "+${bookings.size - 1} more",
+                        text = primaryBooking.displayCustomerName,
                         style = WooPosTypography.Caption,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                         maxLines = 1
                     )
+                    WooPosText(
+                        text = "$${primaryBooking.cost}",
+                        style = WooPosTypography.Caption,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
+                    )
+                    if (bookings.size > 1) {
+                        WooPosText(
+                            text = "+${bookings.size - 1} more",
+                            style = WooPosTypography.Caption,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            maxLines = 1
+                        )
+                    }
                 }
             }
         }
@@ -315,7 +273,8 @@ private fun TimeSlotRow(
     weekDays: List<LocalDate>,
     bookings: List<WooPosBooking>,
     slots: List<BookingSlot>,
-    onBookingClick: (WooPosBooking) -> Unit
+    onBookingClick: (WooPosBooking) -> Unit,
+    isFirstTimeSlot: Boolean = false
 ) {
     Row(
         modifier = Modifier
@@ -348,7 +307,8 @@ private fun TimeSlotRow(
                     // Show all-day booking as background
                     AllDayBackgroundCard(
                         bookings = allDayBookings,
-                        onClick = { onBookingClick(allDayBookings.first()) }
+                        onClick = { onBookingClick(allDayBookings.first()) },
+                        showText = isFirstTimeSlot
                     )
                 }
 
@@ -480,116 +440,100 @@ private fun ErrorView(error: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BookingDetailsDialog(
     booking: WooPosBooking,
+    isVisible: Boolean,
     isConfirmingBooking: Boolean = false,
     confirmationMessage: String? = null,
     onDismiss: () -> Unit,
     onConfirmBooking: () -> Unit,
     onAddToCart: () -> Unit
 ) {
-    AnimatedVisibility(
-        visible = true,
-        enter = fadeIn(),
-        exit = fadeOut()
+    WooPosDialogWrapper(
+        modifier = Modifier.width(400.dp),
+        isVisible = isVisible,
+        dialogBackgroundContentDescription = "Booking Details Dialog",
+        onDismissRequest = onDismiss
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.5f))
-                .clickable { onDismiss() },
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier.padding(WooPosSpacing.Large.value.toAdaptivePadding())
         ) {
-            WooPosCard(
-                modifier = Modifier
-                    .padding(WooPosSpacing.Large.value.toAdaptivePadding())
-                    .clickable(enabled = false) { },
-                backgroundColor = MaterialTheme.colorScheme.surface
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(WooPosSpacing.Large.value.toAdaptivePadding())
-                        .width(400.dp)
-                ) {
-                    WooPosText(
-                        text = "Booking Details",
-                        style = WooPosTypography.BodyLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
-                    )
+            WooPosText(
+                text = "Booking Details",
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+            )
 
-                    DetailRow("Customer", booking.displayCustomerName)
-                    DetailRow("Service", booking.serviceName)
-                    DetailRow("Date", booking.startDateTime.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")))
-                    DetailRow("Time", "${booking.startDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))} - ${booking.endDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))}")
-                    DetailRow("Status", booking.status)
-                    DetailRow("Amount", "$${booking.cost}")
+            DetailRow("Customer", booking.displayCustomerName)
+            DetailRow("Service", booking.serviceName)
+            DetailRow("Date", booking.startDateTime.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")))
+            DetailRow("Time", "${booking.startDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))} - ${booking.endDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))}")
+            DetailRow("Status", booking.status)
+            DetailRow("Amount", "$${booking.cost}")
 
-                    // Show confirmation message or loading state
-                    if (isConfirmingBooking || confirmationMessage != null) {
-                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            // Show confirmation message or loading state
+            if (isConfirmingBooking || confirmationMessage != null) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
-                        if (isConfirmingBooking) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
-                                    strokeWidth = 2.dp
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                WooPosText(
-                                    text = "Confirming booking...",
-                                    style = WooPosTypography.BodySmall,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        } else if (confirmationMessage != null) {
-                            WooPosText(
-                                text = confirmationMessage,
-                                style = WooPosTypography.BodySmall,
-                                color = if (confirmationMessage.contains("success"))
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.error,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
-
+                if (isConfirmingBooking) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Show confirm button for bookings that need confirmation
-                        val needsConfirmation = booking.status.equals("unpaid", ignoreCase = true) ||
-                                               booking.status.equals("pending-confirmation", ignoreCase = true)
-
-                        if (needsConfirmation) {
-                            WooPosOutlinedButton(
-                                text = if (isConfirmingBooking) "Confirming..." else "Confirm",
-                                state = if (isConfirmingBooking) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
-                                onClick = onConfirmBooking,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-
-                        if (!booking.isPaid) {
-                            WooPosButton(
-                                text = "Add to cart",
-                                state = WooPosButtonState.ENABLED,
-                                onClick = onAddToCart,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        WooPosText(
+                            text = "Confirming booking...",
+                            style = WooPosTypography.BodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
+                } else if (confirmationMessage != null) {
+                    WooPosText(
+                        text = confirmationMessage,
+                        style = WooPosTypography.BodySmall,
+                        color = if (confirmationMessage.contains("success"))
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
+            ) {
+                // Show confirm button for bookings that need confirmation
+                val needsConfirmation = booking.status.equals("unpaid", ignoreCase = true) ||
+                                       booking.status.equals("pending-confirmation", ignoreCase = true)
+
+                if (needsConfirmation) {
+                    WooPosOutlinedButton(
+                        text = if (isConfirmingBooking) "Confirming..." else "Confirm",
+                        state = if (isConfirmingBooking) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
+                        onClick = onConfirmBooking,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                if (!booking.isPaid) {
+                    WooPosButton(
+                        text = "Add to cart",
+                        state = WooPosButtonState.ENABLED,
+                        onClick = onAddToCart,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }

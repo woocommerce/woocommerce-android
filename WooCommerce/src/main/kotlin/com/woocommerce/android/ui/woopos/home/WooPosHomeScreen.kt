@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBookingDetailsDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -149,7 +150,8 @@ private fun WooPosHomeScreen(
         ) {
             WooPosHomeScreenProducts(
                 modifier = Modifier
-                    .width(productsWidthDp)
+                    .width(productsWidthDp),
+                onHomeUIEvent = onHomeUIEvent
             )
             WooPosHomeScreenCart(
                 modifier = Modifier
@@ -192,14 +194,37 @@ private fun Dialogs(
         onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
         onExit = { onHomeUIEvent(WooPosHomeUIEvent.ExitPosClicked) }
     )
+    
+    when (val bookingDialog = dialogState as? WooPosHomeState.DialogState.BookingDetailsDialog) {
+        is WooPosHomeState.DialogState.BookingDetailsDialog -> {
+            WooPosBookingDetailsDialog(
+                booking = bookingDialog.booking,
+                isVisible = true,
+                isConfirmingBooking = bookingDialog.isConfirmingBooking,
+                confirmationMessage = bookingDialog.confirmationMessage,
+                onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.BookingDetailsDialogDismissed) },
+                onConfirmBooking = { onHomeUIEvent(WooPosHomeUIEvent.ConfirmBooking) },
+                onAddToCart = { onHomeUIEvent(WooPosHomeUIEvent.BookingAddToCart(bookingDialog.booking)) }
+            )
+        }
+        else -> {}
+    }
 }
 
 @Composable
-private fun WooPosHomeScreenProducts(modifier: Modifier) {
+private fun WooPosHomeScreenProducts(
+    modifier: Modifier,
+    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
+) {
     if (isPreviewMode()) {
         WooPosItemsScreenPreview(modifier)
     } else {
-        WooPosItemsScreen(modifier = modifier)
+        WooPosItemsScreen(
+            modifier = modifier,
+            onBookingClick = { booking ->
+                onHomeUIEvent(WooPosHomeUIEvent.ShowBookingDetailsDialog(booking))
+            }
+        )
     }
 }
 

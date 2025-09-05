@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
+import com.woocommerce.android.ui.woopos.bookings.WooPosBooking
 import com.woocommerce.android.ui.woopos.home.items.bookings.WooPosBookingsTabScreen
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
@@ -39,7 +40,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WooPosItemsScreen(modifier: Modifier = Modifier) {
+fun WooPosItemsScreen(
+    modifier: Modifier = Modifier,
+    onBookingClick: (WooPosBooking) -> Unit = {}
+) {
     val productsViewState = rememberLazyListState()
     val couponsListState = rememberLazyListState()
     val productsViewModel: WooPosItemsViewModel = hiltViewModel()
@@ -49,6 +53,7 @@ fun WooPosItemsScreen(modifier: Modifier = Modifier) {
         productsViewState = productsViewState,
         couponsListState = couponsListState,
         onUIEvent = { productsViewModel.onUIEvent(it) },
+        onBookingClick = onBookingClick
     )
 }
 
@@ -60,6 +65,7 @@ private fun WooPosItemsScreen(
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
+    onBookingClick: (WooPosBooking) -> Unit = {}
 ) {
     val state = itemsStateFlow.collectAsState()
 
@@ -87,6 +93,7 @@ private fun WooPosItemsScreen(
         },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
         onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked) },
+        onBookingClick = onBookingClick
     )
 }
 
@@ -101,6 +108,7 @@ private fun MainItemsList(
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onAddCouponEvent: () -> Unit,
     onBackClicked: () -> Unit,
+    onBookingClick: (WooPosBooking) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -150,7 +158,8 @@ private fun MainItemsList(
                     ScreenState.Bookings -> WooPosBookingsTabScreen(
                         modifier = Modifier.padding(
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                        )
+                        ),
+                        onBookingClick = onBookingClick
                     )
 
                     is ScreenState.Variations -> {

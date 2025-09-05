@@ -91,6 +91,36 @@ class WooPosHomeViewModel @Inject constructor(
             is WooPosHomeUIEvent.OnBarcodeEvent -> {
                 sendEventToChildren(ParentToChildrenEvent.BarcodeEvent(event.result))
             }
+            
+            is WooPosHomeUIEvent.ShowBookingDetailsDialog -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.BookingDetailsDialog(
+                        booking = event.booking
+                    )
+                )
+            }
+            
+            WooPosHomeUIEvent.BookingDetailsDialogDismissed -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+            }
+            
+            WooPosHomeUIEvent.ConfirmBooking -> {
+                // TODO: Implement booking confirmation logic
+                // For now, just dismiss the dialog
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+            }
+            
+            is WooPosHomeUIEvent.BookingAddToCart -> {
+                // TODO: Implement add to cart logic
+                // For now, just dismiss the dialog
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+            }
         }
     }
 
