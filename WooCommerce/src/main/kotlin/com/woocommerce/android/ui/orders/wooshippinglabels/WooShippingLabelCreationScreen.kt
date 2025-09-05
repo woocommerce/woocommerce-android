@@ -722,6 +722,7 @@ private fun PackageSelectionAvailableCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable(onClick = onSelectPackageClick)
                 .background(
                     color = colorResource(R.color.light_colored_button_background),
                     shape = RoundedCornerShape(8.dp)
