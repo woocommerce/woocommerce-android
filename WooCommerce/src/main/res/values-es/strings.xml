@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-14 14:54:09+0000
+Translation-Revision-Date: 2025-08-27 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">No puedes añadir ni quitar productos.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">Has comprado una etiqueta para este envío.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">País en el que se fabricó o montó el producto.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">Más información sobre el país de origen del producto</string>
+    <string name="woo_shipping_labels_customs_description_info">Para hacer envíos a países sujetos a las normativas aduaneras de la Unión Europea (UE), debes proporcionar una descripción clara y específica de cada artículo. Por ejemplo, si envías ropa, para que se acepte la descripción, debes indicar el tipo de ropa del que se trata (camisas de hombre, chalecos para chicas, chaquetas para chicos, etc.). De lo contrario, los envíos pueden sufrir retrasos o interrupciones en la aduana.</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">Más información sobre el arancel del SA</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">Más información sobre el número de transacción internacional</string>
+    <string name="woopos_settings_refund_policy_label">Política de devoluciones y reembolsos</string>
+    <string name="woopos_settings_store_email_label">Correo electrónico</string>
+    <string name="woopos_settings_store_phone_label">Teléfono</string>
+    <string name="woopos_settings_store_address_label">Dirección</string>
+    <string name="woopos_settings_store_name_label">Nombre de la tienda</string>
+    <string name="woopos_settings_receipt_information_title">Información del recibo</string>
+    <string name="woopos_settings_store_information_title">Información de la tienda</string>
+    <string name="woopos_settings_help_get_support_subtitle">Ponte en contacto con nuestro equipo de soporte</string>
+    <string name="woo_shipping_labels_customs_description_info_button">Más información sobre la descripción de productos</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">No hemos podido encontrar un servicio de envío para la combinación de la categoría de materiales peligrosos seleccionada, el paquete seleccionado y el peso total del envío. Ajusta los datos e inténtalo de nuevo.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">No hemos podido encontrar un servicio de envío para la combinación del paquete seleccionado y el peso total del envío. Ajusta los datos e inténtalo de nuevo.</string>
+    <string name="woopos_settings_store_not_set">Sin definir</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">Descubre qué productos son compatibles con el punto de venta</string>
+    <string name="woopos_settings_help_category_subtitle">Obtén ayuda y soporte</string>
+    <string name="woopos_settings_card_reader_connected_reader">Lector conectado</string>
+    <string name="woopos_settings_card_reader_documentation_title">Documentación</string>
+    <string name="woopos_settings_card_reader_update_available">• Actualización disponible</string>
+    <string name="woopos_settings_help_documentation_subtitle">Consulta las guías y los tutoriales</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">Obtén más información sobre aceptar pagos a través de móviles</string>
+    <string name="woopos_settings_card_reader_update_button">Actualizar</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">Desconocido</string>
+    <string name="woopos_settings_card_reader_unknown_reader">Lector desconocido</string>
+    <string name="woopos_settings_card_reader_firmware_title">Firmware</string>
+    <string name="woopos_settings_card_reader_battery_title">Batería</string>
+    <string name="woopos_settings_card_reader_detail_title">Ajustes del lector de tarjetas</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">Más información sobre el escaneo de códigos de barras en el punto de venta</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">Documentación</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">Configura y prueba tu escáner de códigos de barras</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">Configuración del escáner</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">Ajustes del escáner de códigos de barras</string>
+    <string name="woopos_settings_hardware_card_readers">Lectores de tarjetas</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configura los ajustes del escáner de códigos de barras</string>
+    <string name="woopos_settings_hardware_barcode_scanners">Escáneres de códigos de barras</string>
+    <string name="woopos_settings_store_category_subtitle">Configuración y ajustes de la tienda</string>
+    <string name="woopos_settings_store_category">Tienda</string>
+    <string name="woopos_settings_title">Ajustes</string>
+    <string name="error_wordpress_com_connectivity">No podemos contactar con WordPress.com. Comprueba los ajustes de tu conexión a Internet o prueba a cambiar de red.</string>
+    <string name="logviewer_current_log_file">Actual</string>
+    <string name="logviewer_log_files_list_footer">Se guardan los registros con una antigüedad máxima de siete días.</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">Administra las conexiones del lector de tarjetas</string>
+    <string name="woopos_settings_hardware_category_subtitle">Gestiona las conexiones de hardware</string>
+    <string name="woopos_settings_hardware_category">Hardware</string>
+    <string name="logviewer_log_files_list_header">Archivos de registro por fecha de creación</string>
+    <string name="order_refunds_credit_card_refund">Tarjeta de crédito</string>
+    <string name="orderdetail_shipping_label_refunded">Has enviado correctamente una solicitud de reembolso. Puedes comprar una nueva etiqueta.</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">Número de seguimiento</string>
+    <string name="orderdetail_shipping_label_shipment_header">Envío %1$s</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">%1$d artículos</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">%1$d artículo</string>
+    <string name="user_role_access_error_user_roles_null">Esta aplicación solo es compatible con los roles de usuario de administrador y gestor de tienda. No hemos podido obtener los roles de usuario de tu cuenta. Ponte en contacto con el servicio de soporte.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">¿Sigue sin funcionar? Ponte en contacto con el servicio de atención al cliente del fabricante del dispositivo.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">Busca un icono de teclado o una barra de herramientas en la pantalla.</string>
     <string name="woopos_scanning_setup_software_keyboard_hint">Toca aquí para probar la visibilidad del teclado</string>
