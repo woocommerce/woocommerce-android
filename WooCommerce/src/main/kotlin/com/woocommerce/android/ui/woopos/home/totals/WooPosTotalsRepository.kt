@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getName
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
@@ -29,6 +30,7 @@ class WooPosTotalsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
     private val resourceProvider: ResourceProvider,
+    private val variationMapper: WooPosVariationMapper,
 ) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
@@ -118,7 +120,7 @@ class WooPosTotalsRepository @Inject constructor(
             productId = itemData.productId,
             variationId = itemData.id
         )!!
-        variationResult.getNameForPOS(productResult, resourceProvider)
+        variationResult.getNameForPOS(variationMapper, productResult, resourceProvider)
         return Order.Item.EMPTY.copy(
             itemId = 0L,
             productId = itemData.productId,
@@ -129,7 +131,7 @@ class WooPosTotalsRepository @Inject constructor(
             attributesList = variationResult.attributes
                 .filterNot { it.name.isNullOrEmpty() || it.option.isNullOrEmpty() }
                 .map { Order.Item.Attribute(it.name!!, it.option!!) },
-            name = variationResult.getName(productResult),
+            name = variationResult.getName(variationMapper, productResult),
         )
     }
 

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,9 +26,10 @@ class WooPosSearchByIdentifierResultConverterTest {
     private lateinit var sut: WooPosSearchByIdentifierResultConverter
     private val productsCache: WooPosProductsCache = mock()
     private val variationProcess: WooPosSearchByIdentifierProcessVariationResult = mock()
+    private val variationMapper: WooPosVariationMapper = mock()
 
     private val testProduct = ProductTestUtils.generateProduct()
-    private val testVariation = ProductTestUtils.generateProductVariation().toWooPosVariation()
+    private val testVariation = ProductTestUtils.generateProductVariation().toWooPosVariation(variationMapper)
 
     @Before
     fun setup() {

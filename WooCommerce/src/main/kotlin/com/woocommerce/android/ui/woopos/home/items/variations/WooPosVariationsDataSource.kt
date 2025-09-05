@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.variations
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.util.WooLog
@@ -20,7 +21,8 @@ import javax.inject.Singleton
 class WooPosVariationsDataSource @Inject constructor(
     private val handler: VariationListHandler,
     private val variationCache: WooPosVariationsLRUCache,
-    private val variationFilterConfig: WooPosVariationsTypesFilterConfig
+    private val variationFilterConfig: WooPosVariationsTypesFilterConfig,
+    private val mapper: WooPosVariationMapper
 ) {
     private suspend fun getCachedVariations(productId: Long): List<WooPosVariation> {
         return variationCache.get(productId) ?: emptyList()
@@ -58,7 +60,7 @@ class WooPosVariationsDataSource @Inject constructor(
         )
         if (result.isSuccess) {
             val remoteVariations = handler.getVariationsFlow(productId).firstOrNull()?.applyFilter()?.map {
-                it.toWooPosVariation()
+                it.toWooPosVariation(mapper)
             } ?: emptyList()
             updateCache(productId, remoteVariations)
             emit(FetchResult.Remote(Result.success(remoteVariations)))
@@ -81,7 +83,7 @@ class WooPosVariationsDataSource @Inject constructor(
         if (result.isSuccess) {
             val fetchedVariations = handler.getVariationsFlow(
                 productId
-            ).first().applyFilter().map { it.toWooPosVariation() }
+            ).first().applyFilter().map { it.toWooPosVariation(mapper) }
             Result.success(fetchedVariations)
         } else {
             result.logFailure()

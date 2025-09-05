@@ -3,9 +3,9 @@ package com.woocommerce.android.ui.woopos.home.items.variations
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -37,6 +37,7 @@ class WooPosVariationsViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val mapper: WooPosVariationMapper,
 ) : ViewModel() {
 
     private val _viewState =
@@ -99,7 +100,11 @@ class WooPosVariationsViewModel @Inject constructor(
                                         items = variations.map {
                                             WooPosItemSelectionViewState.Product.Variation(
                                                 id = it.remoteVariationId,
-                                                name = it.getNameForPOS(getProductById(productId), resourceProvider),
+                                                name = it.getNameForPOS(
+                                                    mapper,
+                                                    getProductById(productId),
+                                                    resourceProvider
+                                                ),
                                                 productId = it.remoteProductId,
                                                 price = priceFormat(it.price),
                                                 imageUrl = it.image?.source
@@ -132,7 +137,11 @@ class WooPosVariationsViewModel @Inject constructor(
                 items = variations.map {
                     WooPosItemSelectionViewState.Product.Variation(
                         id = it.remoteVariationId,
-                        name = it.getNameForPOS(getProductById(productId), resourceProvider),
+                        name = it.getNameForPOS(
+                            mapper,
+                            getProductById(productId),
+                            resourceProvider
+                        ),
                         productId = it.remoteProductId,
                         price = priceFormat(it.price),
                         imageUrl = it.image?.source
@@ -182,7 +191,11 @@ class WooPosVariationsViewModel @Inject constructor(
                     items = result.getOrThrow().map {
                         WooPosItemSelectionViewState.Product.Variation(
                             id = it.remoteVariationId,
-                            name = it.getNameForPOS(getProductById(productId), resourceProvider),
+                            name = it.getNameForPOS(
+                                mapper,
+                                getProductById(productId),
+                                resourceProvider
+                            ),
                             productId = it.remoteProductId,
                             price = priceFormat(it.price),
                             imageUrl = it.image?.source

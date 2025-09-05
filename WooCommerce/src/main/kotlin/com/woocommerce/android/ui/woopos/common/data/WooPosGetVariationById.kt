@@ -9,9 +9,10 @@ import javax.inject.Inject
 class WooPosGetVariationById @Inject constructor(
     private val store: WCProductStore,
     private val site: SelectedSite,
+    private val mapper: WooPosVariationMapper,
 ) {
     suspend operator fun invoke(productId: Long, variationId: Long): WooPosVariation? = withContext(IO) {
         val siteModel = site.getOrNull() ?: return@withContext null
-        store.getVariationByRemoteId(siteModel, productId, variationId)?.toWooPosVariation()
+        store.getVariationByRemoteId(siteModel, productId, variationId)?.toWooPosVariation(mapper)
     }
 }
