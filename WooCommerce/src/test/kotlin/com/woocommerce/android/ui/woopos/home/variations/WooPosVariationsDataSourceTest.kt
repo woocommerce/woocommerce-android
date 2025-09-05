@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.woopos.home.variations
 
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
+import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
@@ -26,7 +28,7 @@ class WooPosVariationsDataSourceTest {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private val sampleProducts = listOf(
+    private val sampleProductVariations = listOf(
         ProductTestUtils.generateProductVariation(
             productId = 1,
             variationId = 2,
@@ -46,8 +48,10 @@ class WooPosVariationsDataSourceTest {
             isDownloadable = false,
         )
     )
+    
+    private val sampleProducts = sampleProductVariations.map { it.toWooPosVariation() }
 
-    private val additionalProducts = listOf(
+    private val additionalProductVariations = listOf(
         ProductTestUtils.generateProductVariation(
             productId = 4,
             variationId = 5,
@@ -61,6 +65,8 @@ class WooPosVariationsDataSourceTest {
             isDownloadable = false,
         ),
     )
+    
+    private val additionalProducts = additionalProductVariations.map { it.toWooPosVariation() }
 
     private val handler: VariationListHandler = mock()
     private val variationsCache: WooPosVariationsLRUCache = mock()
@@ -70,7 +76,7 @@ class WooPosVariationsDataSourceTest {
         // GIVEN
         val productId = 1L
         whenever(handler.canLoadMore(5)).thenReturn(true)
-        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
+        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProductVariations))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
@@ -95,7 +101,7 @@ class WooPosVariationsDataSourceTest {
         // GIVEN
         val productId = 1L
         whenever(handler.canLoadMore(5)).thenReturn(true)
-        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
+        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProductVariations))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
@@ -116,7 +122,7 @@ class WooPosVariationsDataSourceTest {
         // GIVEN
         val productId = 1L
         whenever(handler.canLoadMore(5)).thenReturn(true)
-        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
+        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProductVariations))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
@@ -140,7 +146,7 @@ class WooPosVariationsDataSourceTest {
         // GIVEN
         val productId = 1L
         whenever(handler.canLoadMore(5)).thenReturn(true)
-        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
+        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProductVariations))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val exception = Exception("Remote load failed")
         val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
@@ -177,8 +183,8 @@ class WooPosVariationsDataSourceTest {
         val productId = 1L
         whenever(handler.canLoadMore(5)).thenReturn(true)
         whenever(handler.getVariationsFlow(productId)).thenReturn(
-            flowOf(sampleProducts),
-            flowOf(sampleProducts + additionalProducts)
+            flowOf(sampleProductVariations),
+            flowOf(sampleProductVariations + additionalProductVariations)
         )
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts + additionalProducts)
         whenever(handler.loadMore(productId)).thenReturn(Result.success(Unit))
@@ -204,7 +210,7 @@ class WooPosVariationsDataSourceTest {
         // GIVEN
         val productId = 1L
         whenever(handler.canLoadMore(5)).thenReturn(true)
-        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
+        whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProductVariations))
         val exception = Exception("Load more failed")
         whenever(
             handler.loadMore(
