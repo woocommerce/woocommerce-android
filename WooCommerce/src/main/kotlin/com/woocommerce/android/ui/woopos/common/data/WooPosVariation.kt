@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data
 
+import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.R
@@ -107,10 +108,10 @@ fun WCPosVariationModel.toWooPosVariation(): WooPosVariation {
     )
 }
 
+private val gson by lazy { Gson() }
 @Suppress("SwallowedException")
 private fun parseAttributesJson(attributesJson: String): List<WooPosVariation.WooPosVariationAttribute> {
     return try {
-        val gson = com.google.gson.Gson()
         val type = object : TypeToken<List<AttributeJsonItem>>() {}.type
         val items: List<AttributeJsonItem> = gson.fromJson(attributesJson, type)
         items.map { item ->
