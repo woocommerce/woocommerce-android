@@ -19,13 +19,13 @@ internal val MIGRATION_3_4 = object : Migration(3, 4) {
                                 `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                 `localSiteId` INTEGER NOT NULL,
                                 `remoteOrderId` INTEGER NOT NULL,
-                                `number` TEXT NOT NULL, 
+                                `number` TEXT NOT NULL,
                                 `status` TEXT NOT NULL,
                                 `currency` TEXT NOT NULL,
                                 `orderKey` TEXT NOT NULL,
                                 `dateCreated` TEXT NOT NULL,
                                 `dateModified` TEXT NOT NULL,
-                                `total` TEXT NOT NULL, 
+                                `total` TEXT NOT NULL,
                                 `totalTax` TEXT NOT NULL,
                                 `shippingTotal` TEXT NOT NULL,
                                 `paymentMethod` TEXT NOT NULL,
@@ -67,7 +67,7 @@ internal val MIGRATION_3_4 = object : Migration(3, 4) {
             // language=RoomSql
             execSQL(
                 """
-                            CREATE UNIQUE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_remoteOrderId` 
+                            CREATE UNIQUE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_remoteOrderId`
                             ON `OrderEntity` (`localSiteId`, `remoteOrderId`);
                     """.trimIndent()
             )
@@ -139,7 +139,7 @@ internal val MIGRATION_5_6 = object : Migration(5, 6) {
             execSQL(
                 // language=RoomSql
                 """
-                            CREATE UNIQUE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_remoteOrderId` 
+                            CREATE UNIQUE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_remoteOrderId`
                             ON `OrderEntity` (`localSiteId`, `remoteOrderId`);
                     """.trimIndent()
             )
@@ -273,11 +273,11 @@ internal val MIGRATION_8_9 = object : Migration(8, 9) {
             execSQL(
                 // language=RoomSql
                 """CREATE TABLE IF NOT EXISTS `CouponEmails` (
-                    `couponId` INTEGER NOT NULL, 
-                    `siteId` INTEGER NOT NULL, 
-                    `email` TEXT NOT NULL, 
-                    PRIMARY KEY(`couponId`, `siteId`, `email`), 
-                    FOREIGN KEY(`couponId`, `siteId`) 
+                    `couponId` INTEGER NOT NULL,
+                    `siteId` INTEGER NOT NULL,
+                    `email` TEXT NOT NULL,
+                    PRIMARY KEY(`couponId`, `siteId`, `email`),
+                    FOREIGN KEY(`couponId`, `siteId`)
                     REFERENCES `Coupons`(`id`, `siteId`) ON UPDATE NO ACTION ON DELETE CASCADE )
                 """.trimIndent()
             )
@@ -289,10 +289,10 @@ internal val MIGRATION_8_9 = object : Migration(8, 9) {
                     `productId` INTEGER NOT NULL,
                     `isExcluded` INTEGER NOT NULL,
                     PRIMARY KEY(`couponId`,`productId`),
-                    FOREIGN KEY(`couponId`,`siteId`) 
-                    REFERENCES `Coupons`(`id`,`siteId`) 
+                    FOREIGN KEY(`couponId`,`siteId`)
+                    REFERENCES `Coupons`(`id`,`siteId`)
                     ON UPDATE NO ACTION ON DELETE CASCADE ,
-                    FOREIGN KEY(`productId`,`siteId`) 
+                    FOREIGN KEY(`productId`,`siteId`)
                     REFERENCES `Products`(`id`,`siteId`) ON UPDATE NO ACTION ON DELETE CASCADE )
                 """.trimIndent()
             )
@@ -305,10 +305,10 @@ internal val MIGRATION_8_9 = object : Migration(8, 9) {
                     `productCategoryId` INTEGER NOT NULL,
                     `isExcluded` INTEGER NOT NULL,
                     PRIMARY KEY(`couponId`, `productCategoryId`),
-                    FOREIGN KEY(`couponId`, `siteId`) REFERENCES `Coupons`(`id`, `siteId`) 
+                    FOREIGN KEY(`couponId`, `siteId`) REFERENCES `Coupons`(`id`, `siteId`)
                     ON UPDATE NO ACTION ON DELETE CASCADE ,
-                    FOREIGN KEY(`productCategoryId`, `siteId`) 
-                    REFERENCES `ProductCategories`(`id`, `siteId`) 
+                    FOREIGN KEY(`productCategoryId`, `siteId`)
+                    REFERENCES `ProductCategories`(`id`, `siteId`)
                     ON UPDATE NO ACTION ON DELETE CASCADE )
                 """.trimIndent()
             )
@@ -321,35 +321,35 @@ internal val MIGRATION_8_9 = object : Migration(8, 9) {
 
             execSQL(
                 // language=RoomSql
-                """CREATE INDEX IF NOT EXISTS `index_CouponEmails_couponId_siteId_email` 
+                """CREATE INDEX IF NOT EXISTS `index_CouponEmails_couponId_siteId_email`
                     ON `CouponEmails` (`couponId`, `siteId`, `email`)
                 """.trimIndent()
             )
 
             execSQL(
                 // language=RoomSql
-                """CREATE INDEX IF NOT EXISTS `index_CouponsAndProducts_couponId_siteId` 
+                """CREATE INDEX IF NOT EXISTS `index_CouponsAndProducts_couponId_siteId`
                     ON `CouponsAndProducts` (`couponId`, `siteId`)
                 """.trimIndent()
             )
 
             execSQL(
                 // language=RoomSql
-                """CREATE INDEX IF NOT EXISTS `index_CouponsAndProducts_productId_siteId` 
+                """CREATE INDEX IF NOT EXISTS `index_CouponsAndProducts_productId_siteId`
                     ON `CouponsAndProducts` (`productId`, `siteId`)
                 """.trimIndent()
             )
 
             execSQL(
                 // language=RoomSql
-                """CREATE INDEX IF NOT EXISTS `index_CouponsAndProductCategories_couponId_siteId` 
+                """CREATE INDEX IF NOT EXISTS `index_CouponsAndProductCategories_couponId_siteId`
                     ON `CouponsAndProductCategories` (`couponId`, `siteId`)
                 """.trimIndent()
             )
 
             execSQL(
                 // language=RoomSql
-                """CREATE INDEX IF NOT EXISTS `index_CouponsAndProductCategories_productCategoryId_siteId` 
+                """CREATE INDEX IF NOT EXISTS `index_CouponsAndProductCategories_productCategoryId_siteId`
                     ON `CouponsAndProductCategories` (`productCategoryId`, `siteId`)
                 """.trimIndent()
             )
@@ -364,7 +364,7 @@ internal val MIGRATION_9_10 = object : Migration(9, 10) {
             execSQL("DROP TABLE OrderEntity")
             execSQL(
                 // language=RoomSql
-                """ 
+                """
                         CREATE TABLE IF NOT EXISTS OrderEntity (
                         `localSiteId` INTEGER NOT NULL,
                         `orderId` INTEGER NOT NULL,
@@ -418,7 +418,7 @@ internal val MIGRATION_9_10 = object : Migration(9, 10) {
             execSQL(
                 // language=RoomSql
                 """
-                        CREATE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_orderId` 
+                        CREATE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_orderId`
                         ON `OrderEntity` (`localSiteId`, `orderId`);
                     """.trimIndent()
             )
@@ -586,7 +586,7 @@ internal val MIGRATION_15_16 = object : Migration(15, 16) {
             execSQL(
                 // language=RoomSql
                 """
-                    CREATE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_orderId` 
+                    CREATE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_orderId`
                     ON `OrderEntity` (`localSiteId`, `orderId`);
                 """.trimIndent()
             )
@@ -737,7 +737,7 @@ internal val MIGRATION_22_23 = object : Migration(22, 23) {
             execSQL(
                 // language=RoomSql
                 """
-                    CREATE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_orderId` 
+                    CREATE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_orderId`
                     ON `OrderEntity` (`localSiteId`, `orderId`);
                 """.trimIndent()
             )
@@ -1078,3 +1078,9 @@ internal class AutoMigration32to33 : AutoMigrationSpec
     RenameTable(fromTableName = "OrderMetaData", toTableName = "MetaData")
 )
 internal class AutoMigration37to38 : AutoMigrationSpec
+
+internal val MIGRATION_62_63 = object : Migration(62, 63) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE PosProductEntity ADD COLUMN variations TEXT NOT NULL DEFAULT ''")
+    }
+}

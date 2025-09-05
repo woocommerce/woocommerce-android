@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 63,
-    "identityHash": "7c4f4ec2c824fb53fb671f268430484f",
+    "version": 64,
+    "identityHash": "c10399e20f850a169d96cac1e3b92dfd",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3765,6 +3765,42 @@
         }
       },
       {
+        "tableName": "WooShippingPackagesEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `storeOptions` TEXT NOT NULL, `savedPackages` TEXT NOT NULL, `carrierPackageGroups` TEXT NOT NULL, PRIMARY KEY(`localSiteId`))",
+        "fields": [
+          {
+            "fieldPath": "localSiteId",
+            "columnName": "localSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storeOptions",
+            "columnName": "storeOptions",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedPackages",
+            "columnName": "savedPackages",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "carrierPackageGroups",
+            "columnName": "carrierPackageGroups",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "localSiteId"
+          ]
+        }
+      },
+      {
         "tableName": "GlobalAttributeEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `slug` TEXT NOT NULL, `type` TEXT NOT NULL, `orderBy` TEXT NOT NULL, `hasArchives` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `remoteId`))",
         "fields": [
@@ -3853,7 +3889,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7c4f4ec2c824fb53fb671f268430484f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c10399e20f850a169d96cac1e3b92dfd')"
     ]
   }
 }
