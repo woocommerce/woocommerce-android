@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
@@ -69,6 +70,10 @@ fun WCProductVariationModel.toWooPosVariation(): WooPosVariation {
     val imageModel = try {
         if (image.isNotEmpty()) getImageModel() else null
     } catch (e: JsonSyntaxException) {
+        WooLog.w(
+            WooLog.T.POS,
+            "Failed to parse image from JSON attributes for variation ${remoteVariationId.value}: ${e.message}"
+        )
         null
     }
 
@@ -93,6 +98,7 @@ fun WCPosVariationModel.toWooPosVariation(): WooPosVariation {
             emptyList()
         }
     } catch (e: JsonSyntaxException) {
+        WooLog.w(WooLog.T.POS, "Failed to parse attributes JSON for variation ${remoteVariationId.value}: ${e.message}")
         emptyList()
     }
 
@@ -123,6 +129,7 @@ private fun parseAttributesJson(attributesJson: String): List<WooPosVariation.Wo
             )
         }
     } catch (e: JsonSyntaxException) {
+        WooLog.w(WooLog.T.POS, "Failed to parse attributes JSON: ${e.message}")
         emptyList()
     }
 }
