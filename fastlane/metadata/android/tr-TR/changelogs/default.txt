@@ -1,0 +1,2 @@
+23.1:
+Heyecan verici yeni özelliklerle mağaza yönetimi deneyiminizi geliştirin! Yeni tek dokunuşlu aracımız ile ürün görsellerindeki arka planları anında kaldırın. Daha iyi adres doğrulama, daha temiz düzenler ve daha akıllı bölünmüş gönderim işleme ile iyileştirilmiş gönderim etiketleri. Sabit sipariş seçimi sorunları ve daha sorunsuz işlemler için gelişmiş oturum açma hatası işleme.
