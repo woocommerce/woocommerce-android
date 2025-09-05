@@ -27,23 +27,17 @@ sealed class WooPosOrdersState {
     @Immutable
     data class Error(
         val message: String,
-        val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
+        val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled,
     ) : WooPosOrdersState() {
-        val items: List<OrderItemViewState> = emptyList()
-        val paginationState: WooPosPaginationState = WooPosPaginationState.None
     }
 
     @Immutable
     data object Loading : WooPosOrdersState() {
-        val items: List<OrderItemViewState> = emptyList()
         val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
-        val paginationState: WooPosPaginationState = WooPosPaginationState.None
     }
 
     @Immutable
     data object Empty : WooPosOrdersState() {
-        val items: List<OrderItemViewState> = emptyList()
         val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled
-        val paginationState: WooPosPaginationState = WooPosPaginationState.None
     }
 }
