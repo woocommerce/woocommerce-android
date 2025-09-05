@@ -258,6 +258,58 @@ private fun DayHeaderRow(weekDays: List<LocalDate>) {
 }
 
 @Composable
+private fun AllDayBackgroundCard(
+    bookings: List<WooPosBooking>,
+    onClick: () -> Unit
+) {
+    val primaryBooking = bookings.first() // Use the first booking for display
+    
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(onClick = onClick),
+        color = when (primaryBooking.bookingStatus) {
+            com.woocommerce.android.ui.woopos.bookings.BookingStatus.CONFIRMED -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            com.woocommerce.android.ui.woopos.bookings.BookingStatus.PENDING -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+            com.woocommerce.android.ui.woopos.bookings.BookingStatus.COMPLETED -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
+            com.woocommerce.android.ui.woopos.bookings.BookingStatus.CANCELLED -> MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
+        },
+        shape = RoundedCornerShape(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            contentAlignment = Alignment.TopStart
+        ) {
+            Column {
+                WooPosText(
+                    text = primaryBooking.displayCustomerName,
+                    style = WooPosTypography.Caption,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    maxLines = 1
+                )
+                WooPosText(
+                    text = "$${primaryBooking.cost}",
+                    style = WooPosTypography.Caption,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+                if (bookings.size > 1) {
+                    WooPosText(
+                        text = "+${bookings.size - 1} more",
+                        style = WooPosTypography.Caption,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        maxLines = 1
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun TimeSlotRow(
     timeSlot: LocalTime,
     weekDays: List<LocalDate>,
@@ -285,31 +337,50 @@ private fun TimeSlotRow(
 
         weekDays.forEach { day ->
             Box(
-                modifier = Modifier.weight(1f).height(80.dp),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.weight(1f).height(80.dp)
             ) {
-                val dayBookings = bookings.filter { booking ->
-                    booking.startDateTime.toLocalDate() == day &&
-                    booking.startDateTime.toLocalTime().hour == timeSlot.hour
+                // All-day bookings as background
+                val allDayBookings = bookings.filter { booking ->
+                    booking.allDay && booking.startDateTime.toLocalDate() == day
+                }
+                
+                if (allDayBookings.isNotEmpty()) {
+                    // Show all-day booking as background
+                    AllDayBackgroundCard(
+                        bookings = allDayBookings,
+                        onClick = { onBookingClick(allDayBookings.first()) }
+                    )
                 }
 
-                if (dayBookings.isNotEmpty()) {
-                    LazyRow {
-                        items(dayBookings) { booking ->
-                            BookingSlotCard(
-                                booking = booking,
-                                onClick = { onBookingClick(booking) }
-                            )
-                        }
-                    }
-                } else {
-                    val daySlot = slots.find { slot ->
-                        slot.date.startsWith(day.toString()) &&
-                        slot.date.contains("${String.format("%02d", timeSlot.hour)}:${String.format("%02d", timeSlot.minute)}")
+                // Regular bookings on top
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val dayBookings = bookings.filter { booking ->
+                        booking.startDateTime.toLocalDate() == day &&
+                        !booking.allDay &&
+                        booking.startDateTime.toLocalTime().hour == timeSlot.hour
                     }
 
-                    if (daySlot?.isAvailable == true) {
-                        AvailableSlot()
+                    if (dayBookings.isNotEmpty()) {
+                        LazyRow {
+                            items(dayBookings) { booking ->
+                                BookingSlotCard(
+                                    booking = booking,
+                                    onClick = { onBookingClick(booking) }
+                                )
+                            }
+                        }
+                    } else {
+                        val daySlot = slots.find { slot ->
+                            slot.date.startsWith(day.toString()) &&
+                            slot.date.contains("${String.format("%02d", timeSlot.hour)}:${String.format("%02d", timeSlot.minute)}")
+                        }
+
+                        if (daySlot?.isAvailable == true) {
+                            AvailableSlot()
+                        }
                     }
                 }
             }
