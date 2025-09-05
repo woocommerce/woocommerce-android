@@ -17,6 +17,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionStat
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.bookings.data.WooPosBookingsRepository
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,6 +33,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
+    private val bookingsRepository: WooPosBookingsRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedStateHandle.getStateFlow(
@@ -107,16 +110,58 @@ class WooPosHomeViewModel @Inject constructor(
             }
             
             WooPosHomeUIEvent.ConfirmBooking -> {
-                // TODO: Implement booking confirmation logic
-                // For now, just dismiss the dialog
-                _state.value = _state.value.copy(
-                    dialogState = DialogState.Hidden
-                )
+                val currentDialog = _state.value.dialogState as? DialogState.BookingDetailsDialog
+                if (currentDialog != null) {
+                    // Set loading state
+                    _state.value = _state.value.copy(
+                        dialogState = currentDialog.copy(
+                            isConfirmingBooking = true,
+                            confirmationMessage = null
+                        )
+                    )
+                    
+                    // Perform confirmation in background
+                    viewModelScope.launch {
+                        val result = bookingsRepository.confirmBooking(currentDialog.booking.id)
+                        
+                        if (result.isSuccess) {
+                            // Show success message
+                            _state.value = _state.value.copy(
+                                dialogState = currentDialog.copy(
+                                    isConfirmingBooking = false,
+                                    confirmationMessage = "Booking confirmed successfully!"
+                                )
+                            )
+                            
+                            // Auto-dismiss after 1.5 seconds
+                            kotlinx.coroutines.delay(1500)
+                            _state.value = _state.value.copy(
+                                dialogState = DialogState.Hidden
+                            )
+                        } else {
+                            // Show error message
+                            _state.value = _state.value.copy(
+                                dialogState = currentDialog.copy(
+                                    isConfirmingBooking = false,
+                                    confirmationMessage = "Failed to confirm booking. Please try again."
+                                )
+                            )
+                        }
+                    }
+                }
             }
             
             is WooPosHomeUIEvent.BookingAddToCart -> {
-                // TODO: Implement add to cart logic
-                // For now, just dismiss the dialog
+                val booking = event.booking
+                val bookingItem = WooPosItemsViewModel.ItemClickedData.Product.Simple(booking.productId.toLong())
+                
+                sendEventToChildren(
+                    ItemClickedInItemsList(
+                        itemData = bookingItem,
+                        eventForTracking = null
+                    )
+                )
+                
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
                 )
