@@ -16,6 +16,15 @@ class WooPosBookingsApiService @Inject constructor(
     private val wooNetwork: WooNetwork,
     private val customerRestClient: CustomerRestClient
 ) {
+    // Customer cache to avoid multiple API calls for the same customer
+    private val customerCache = mutableMapOf<Long, String?>()
+    
+    // Clear customer cache (useful for testing or when customer data might have changed)
+    fun clearCustomerCache() {
+        Log.d(TAG, "Clearing customer cache with ${customerCache.size} entries")
+        customerCache.clear()
+    }
+    
     suspend fun fetchBookings(
         page: Int = 1,
         perPage: Int = 50
@@ -50,13 +59,30 @@ class WooPosBookingsApiService @Inject constructor(
 
             val result = response.result ?: emptyList()
             
-            // Fetch customer names for each booking
+            // Get unique customer IDs that we haven't cached yet
+            val uniqueCustomerIds = result
+                .map { it.customerId.toLong() }
+                .filter { it != 0L && !customerCache.containsKey(it) }
+                .distinct()
+            
+            // Batch fetch customer names for unique IDs
+            if (uniqueCustomerIds.isNotEmpty()) {
+                Log.d(TAG, "fetchBookings: Fetching customer names for ${uniqueCustomerIds.size} unique customers")
+                uniqueCustomerIds.forEach { customerId ->
+                    val customerName = fetchCustomerNameInternal(customerId)
+                    customerCache[customerId] = customerName
+                }
+            }
+            
+            // Apply cached customer names to bookings
             val bookingsWithCustomerNames = result.map { booking ->
-                val customerName = fetchCustomerName(booking.customerId.toLong())
+                val customerName = if (booking.customerId != 0) {
+                    customerCache[booking.customerId.toLong()]
+                } else null
                 booking.copy(customerName = customerName)
             }
             
-            Log.d(TAG, "fetchBookings API success: returned ${bookingsWithCustomerNames.size} bookings")
+            Log.d(TAG, "fetchBookings API success: returned ${bookingsWithCustomerNames.size} bookings with customer names from cache")
             Result.success(bookingsWithCustomerNames)
         } catch (e: Exception) {
             Log.e(TAG, "fetchBookings API exception: page=$page", e)
@@ -134,8 +160,15 @@ class WooPosBookingsApiService @Inject constructor(
 
             val result = response.result
             if (result != null) {
-                // Fetch customer name for the confirmed booking
-                val customerName = fetchCustomerName(result.customerId.toLong())
+                // Get customer name from cache or fetch if not cached
+                val customerId = result.customerId.toLong()
+                val customerName = if (customerId != 0L) {
+                    customerCache[customerId] ?: run {
+                        val name = fetchCustomerNameInternal(customerId)
+                        customerCache[customerId] = name
+                        name
+                    }
+                } else null
                 val bookingWithCustomerName = result.copy(customerName = customerName)
                 Log.d(TAG, "confirmBooking API success: booking confirmed with status ${bookingWithCustomerName.status}")
                 Result.success(bookingWithCustomerName)
@@ -149,8 +182,8 @@ class WooPosBookingsApiService @Inject constructor(
         }
     }
 
-    suspend fun fetchCustomerName(customerId: Long): String? = withContext(Dispatchers.IO) {
-        Log.d(TAG, "fetchCustomerName API call: customerId=$customerId")
+    private suspend fun fetchCustomerNameInternal(customerId: Long): String? = withContext(Dispatchers.IO) {
+        Log.d(TAG, "fetchCustomerNameInternal API call: customerId=$customerId")
         if (customerId == 0L) {
             return@withContext null
         }
@@ -160,7 +193,7 @@ class WooPosBookingsApiService @Inject constructor(
             val response = customerRestClient.fetchSingleCustomer(site, customerId)
             
             if (response.isError) {
-                Log.e(TAG, "fetchCustomerName API error: ${response.error?.message}")
+                Log.e(TAG, "fetchCustomerNameInternal API error: ${response.error?.message}")
                 return@withContext null
             }
             
@@ -178,10 +211,10 @@ class WooPosBookingsApiService @Inject constructor(
                 null
             }
             
-            Log.d(TAG, "fetchCustomerName API success: customerId=$customerId, name=$name")
+            Log.d(TAG, "fetchCustomerNameInternal API success: customerId=$customerId, name=$name")
             name
         } catch (e: Exception) {
-            Log.e(TAG, "fetchCustomerName API exception: customerId=$customerId", e)
+            Log.e(TAG, "fetchCustomerNameInternal API exception: customerId=$customerId", e)
             null
         }
     }
