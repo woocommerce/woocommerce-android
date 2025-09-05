@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-11 15:54:04+0000
+Translation-Revision-Date: 2025-08-26 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">Du kan inte flytta produkter till eller från den.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">Du har köpt en etikett för den här försändelsen.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">Land där produkten tillverkades eller monterades.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">Mer information om produktens ursprungsland</string>
+    <string name="woo_shipping_labels_customs_description_info">Vid frakt till länder som följer EU:s tullregler måste du ange en tydlig och specifik beskrivning för varje artikel. Om du till exempel skickar kläder måste du ange vilken typ av kläder det handlar om (t.ex. herrskjortor, västar för flickor, jackor för pojkar) för att beskrivningen ska vara godtagbar. Annars kan leveranserna försenas eller avbrytas i tullen.</string>
+    <string name="woo_shipping_labels_customs_description_info_button">Mer information om produktbeskrivning</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">Mer information om HS-tariff</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">Mer information om ITN</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">Vi kunde inte hitta någon frakttjänst för kombinationen av den valda kategorin för farligt material, det valda paketet och den totala vikten på försändelsen. Justera dina val och försök igen.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">Vi kunde inte hitta någon frakttjänst för kombinationen av det valda paketet och den totala vikten på försändelsen. Justera dina val och försök igen.</string>
+    <string name="woopos_settings_store_not_set">Inte inställd</string>
+    <string name="woopos_settings_refund_policy_label">Återbetalnings- och returpolicy</string>
+    <string name="woopos_settings_store_email_label">E-post</string>
+    <string name="woopos_settings_store_phone_label">Telefon</string>
+    <string name="woopos_settings_store_address_label">Adress</string>
+    <string name="woopos_settings_store_name_label">Butiksnamn</string>
+    <string name="woopos_settings_receipt_information_title">Kvittoinformation</string>
+    <string name="woopos_settings_store_information_title">Butiksinformation</string>
+    <string name="woopos_settings_help_get_support_subtitle">Kontakta vårt supportteam</string>
+    <string name="woopos_settings_help_documentation_subtitle">Visa guider och handledning</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">Läs om vilka produkter som stöds i POS</string>
+    <string name="woopos_settings_help_category_subtitle">Skaffa hjälp och support</string>
+    <string name="woopos_settings_card_reader_connected_reader">Ansluten läsare</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">Lär dig mer om att ta emot mobila betalningar</string>
+    <string name="woopos_settings_card_reader_documentation_title">Dokumentation</string>
+    <string name="woopos_settings_card_reader_update_available">• Uppdatering tillgänglig</string>
+    <string name="woopos_settings_card_reader_update_button">Uppdatera</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">Okänd</string>
+    <string name="woopos_settings_card_reader_unknown_reader">Okänd läsare</string>
+    <string name="woopos_settings_card_reader_firmware_title">Firmware</string>
+    <string name="woopos_settings_card_reader_battery_title">Batteri</string>
+    <string name="woopos_settings_card_reader_detail_title">Kortläsarinställningar</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">Läs mer om streckkodsskanning i POS</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">Dokumentation</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">Konfigurera och testa din streckkodsskanner</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">Skannerkonfiguration</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">Streckkodsskannerinställningar</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">Hantera kortläsaranslutningar</string>
+    <string name="woopos_settings_hardware_card_readers">Kortläsare</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">Konfigurera streckkodsskannerinställningar</string>
+    <string name="woopos_settings_hardware_barcode_scanners">Streckkodsläsare</string>
+    <string name="woopos_settings_store_category_subtitle">Butikskonfiguration och inställningar</string>
+    <string name="woopos_settings_store_category">Butik</string>
+    <string name="woopos_settings_hardware_category_subtitle">Hantera hårdvaruanslutningar</string>
+    <string name="woopos_settings_hardware_category">Hårdvara</string>
+    <string name="woopos_settings_title">Inställningar</string>
+    <string name="error_wordpress_com_connectivity">Vi har problem med att nå WordPress.com. Kontrollera dina internetanslutningsinställningar eller prova att byta nätverk.</string>
+    <string name="logviewer_current_log_file">Nuvarande</string>
+    <string name="logviewer_log_files_list_footer">Upp till sju dagar med loggar sparas.</string>
+    <string name="logviewer_log_files_list_header">Loggfiler efter skapandedatum</string>
+    <string name="order_refunds_credit_card_refund">Kreditkort</string>
+    <string name="orderdetail_shipping_label_refunded">Du har nu skickat in en begäran om återbetalning. Du kan köpa en ny etikett.</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">Spårningsnummer</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">%1$d objekt</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">%1$d objekt</string>
+    <string name="orderdetail_shipping_label_shipment_header">Försändelse %1$s</string>
+    <string name="user_role_access_error_user_roles_null">Den här appen har endast stöd för användarrollerna Administratör och Butikschef. Vi kunde inte hämta användarrollerna för ditt konto. Kontakta supporten.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">Fungerar det fortfarande inte? Kontakta enhetstillverkarens kundtjänst.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">Gå till enhetens inställningar, sök efter ”tangentbord” och aktivera sedan ”Visa tangentbord på skärmen när fysiskt tangentbord är anslutet”. Den här inställningen kan finnas i appinställningarna för tangentbordet.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">Leta efter en tangentbordsikon eller ett verktygsfält på skärmen.</string>

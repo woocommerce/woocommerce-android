@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.splash
 
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -23,6 +24,7 @@ import kotlin.test.Test
 @ExperimentalCoroutinesApi
 class WooPosSplashViewModelTest {
     private val productsDataSource: WooPosProductsDataSource = mock()
+    private val ordersCache: WooPosOrdersInMemoryCache = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val popularProductsProvider: WooPosPopularProductsProvider = mock()
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
@@ -110,6 +112,15 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
+    fun `when sut is created, then should clear orders cache`() = runTest {
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(ordersCache).clear()
+    }
+
+    @Test
     fun `given product population fails, should still update state to Loaded`() = runTest {
         // GIVEN
         whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
@@ -145,6 +156,7 @@ class WooPosSplashViewModelTest {
         productsDataSource,
         popularProductsProvider,
         analyticsTracker,
-        posCanBeLaunchedInTab
+        posCanBeLaunchedInTab,
+        ordersCache
     )
 }

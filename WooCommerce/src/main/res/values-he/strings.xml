@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-12 13:54:04+0000
+Translation-Revision-Date: 2025-08-26 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">לא ניתן להעביר מוצרים לתוך המשלוח או מחוץ למשלוח.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">רכשת תווית עבור המשלוח הזה.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">המדינה שבה המוצר נוצר או הורכב.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">מידע נוסף על ארץ המוצא של המוצא</string>
+    <string name="woo_shipping_labels_customs_description_info">במשלוח למדינות שעונות על כללי המכס של האיחוד האירופי, עליך לספק תיאור ברור וספציפי לגבי כל פריט. לדוגמה, אם המשלוח כולל בגדים, יש לציין את סוגי הבגדים במשלוח (למשל, חולצות גברים, אפודות של נשים, ג\'קטים של ילדים) כדי שהתיאור יענה על הדרישות. אחרת, ייתכן שמשלוחים יעוכבו או ייחסמו במכס.</string>
+    <string name="woo_shipping_labels_customs_description_info_button">מידע נוסף על תיאור המוצא</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">מידע נוסף על תעריף HS</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">מידע נוסף על ITN</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">לא מצאנו שירות משלוחים עבור השילוב של קטגוריית HZMAT שנבחרה, החבילה שנבחרה ומשקל המשלוח הכולל. יש להתאים את הקלט ולנסות שוב.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">לא מצאנו שירות משלוחים עבור השילוב של החבילה שנבחרה ומשקל המשלוח הכולל. יש להתאים את הקלט ולנסות שוב.</string>
+    <string name="woopos_settings_store_not_set">לא הוגדר</string>
+    <string name="woopos_settings_refund_policy_label">מדיניות החזרים כספיים והחזרות</string>
+    <string name="woopos_settings_store_email_label">אימייל</string>
+    <string name="woopos_settings_store_phone_label">טלפון</string>
+    <string name="woopos_settings_store_address_label">כתובת</string>
+    <string name="woopos_settings_store_name_label">שם החנות</string>
+    <string name="woopos_settings_receipt_information_title">פרטי הקבלה</string>
+    <string name="woopos_settings_store_information_title">פרטי החנות</string>
+    <string name="woopos_settings_help_get_support_subtitle">ניתן לפנות אל צוות התמיכה שלנו</string>
+    <string name="woopos_settings_help_documentation_subtitle">להציג מדריכים והדרכות</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">לקבל מידע לגבי המוצרים הנתמכים ב-POS</string>
+    <string name="woopos_settings_help_category_subtitle">לקבל עזרה ותמיכה</string>
+    <string name="woopos_settings_card_reader_connected_reader">הקורא מחובר</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">למידע נוסף על קבלת תשלומים באמצעות המכשיר הנייד</string>
+    <string name="woopos_settings_card_reader_documentation_title">תיעוד</string>
+    <string name="woopos_settings_card_reader_update_available">• עדכון זמין</string>
+    <string name="woopos_settings_card_reader_update_button">לעדכן</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">לא ידוע</string>
+    <string name="woopos_settings_card_reader_unknown_reader">קורא לא מוכר</string>
+    <string name="woopos_settings_card_reader_firmware_title">קושחה</string>
+    <string name="woopos_settings_card_reader_battery_title">סוללה</string>
+    <string name="woopos_settings_card_reader_detail_title">הגדרות קורא הכרטיסים</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">למידע נוסף בנושא סריקת ברקוד ב-POS</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">תיעוד</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">להגדיר ולבדוק את סורק הברקוד</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">הגדרת הסורק</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">הגדרות של סורק הברקוד</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">לנהל את החיבורים של קורא הכרטיסים</string>
+    <string name="woopos_settings_hardware_card_readers">קוראי כרטיסים</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">לקבוע את ההגדרות של סורק הברקוד</string>
+    <string name="woopos_settings_hardware_barcode_scanners">סורקי ברקוד</string>
+    <string name="woopos_settings_store_category_subtitle">תצורה והגדרות של החנות</string>
+    <string name="woopos_settings_store_category">חנות</string>
+    <string name="woopos_settings_hardware_category_subtitle">לנהל את החיבורים של החומרה</string>
+    <string name="woopos_settings_hardware_category">חומרה</string>
+    <string name="woopos_settings_title">הגדרות</string>
+    <string name="error_wordpress_com_connectivity">נתקלנו בבעיה עם החיבור אל WordPress.com. יש לבדוק את הגדרות החיבור לאינטרנט או להחליף רשת.</string>
+    <string name="logviewer_current_log_file">נוכחי</string>
+    <string name="logviewer_log_files_list_footer">אנחנו שומרים קובצי יומן עד שבעה ימים אחורה.</string>
+    <string name="logviewer_log_files_list_header">קובצי יומן לפי תאריך יצירה</string>
+    <string name="order_refunds_credit_card_refund">כרטיס אשראי</string>
+    <string name="orderdetail_shipping_label_refunded">שלחת בהצלחה בקשה להחזר כספי. אפשר לרכוש תווית חדשה.</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">מספר מעקב</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">⁦%1$d⁩ פריטים</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">פריט ⁦%1$d⁩</string>
+    <string name="orderdetail_shipping_label_shipment_header">משלוח ⁦%1$s⁩</string>
+    <string name="user_role_access_error_user_roles_null">האפליקציה הזאת תומכת רק בתפקידי משתמש של \'מנהל מערכת\' ו\'מנהל חנות\'. לא הצלחנו להביא את תפקידי המשתמשים עבור החשבון שלך. כדאי לפנות לתמיכה.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">עדיין לא עובד? יש לפנות לתמיכת הלקוחות של יצרן המכשיר.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">יש לעבור אל הגדרות המכשיר, לחפש את \'מקלדת\' ולהפעיל את האפשרות \'להציג את המקלדת שעל המסך כאשר מקלדת פיזית מחוברת\' (Show on-screen keyboard when physical keyboard connected). ייתכן שההגדרה הזאת נמצאת בהגדרות של אפליקציית המקלדת.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">כדאי לחפש סמל או סרגל כלים של המקלדת על המסך.</string>

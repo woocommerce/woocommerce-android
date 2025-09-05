@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-12 11:54:05+0000
+Translation-Revision-Date: 2025-08-26 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">商品を出し入れできません。</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">この配送のラベルを購入しました。</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">商品製造国または商品の組み立てが行われた国。</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">商品製造国に関する詳細</string>
+    <string name="woo_shipping_labels_customs_description_info">欧州連合 (EU) の関税法規則に従う国に発送する場合、すべての品目について明確で具体的な説明を記載する必要があります。 たとえば衣類を送る場合、どのようなタイプの衣類であるか (例: 男性用シャツ、女児用ベスト、男児用上着など) を明記しなければ認められません。 これを怠ると、配送が税関で遅延または中断されることがあります。</string>
+    <string name="woo_shipping_labels_customs_description_info_button">商品説明に関する詳細</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">HS コードに関する詳細</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">ITN に関する詳細</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">指定された HAZMAT カテゴリー、指定された貨物、配送総重量の組み合わせに対応する配送サービスが見つかりませんでした。 入力内容を調整して再度お試しください。</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">指定された貨物と配送総重量の組み合わせに対応する配送サービスが見つかりませんでした。 入力内容を調整して再度お試しください。</string>
+    <string name="woopos_settings_store_not_set">未設定</string>
+    <string name="woopos_settings_refund_policy_label">返金および返品ポリシー</string>
+    <string name="woopos_settings_store_email_label">メールアドレス</string>
+    <string name="woopos_settings_store_phone_label">電話</string>
+    <string name="woopos_settings_store_address_label">住所</string>
+    <string name="woopos_settings_store_name_label">ストア名</string>
+    <string name="woopos_settings_receipt_information_title">領収書情報</string>
+    <string name="woopos_settings_store_information_title">ストア情報</string>
+    <string name="woopos_settings_help_get_support_subtitle">サポートチームにお問い合わせください</string>
+    <string name="woopos_settings_help_documentation_subtitle">ガイドとチュートリアルを表示</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">POS 対象の商品についてさらに詳しく</string>
+    <string name="woopos_settings_help_category_subtitle">ヘルプとサポートを利用</string>
+    <string name="woopos_settings_card_reader_connected_reader">接続済み Reader</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">モバイルでの支払いの承認についてさらに詳しく</string>
+    <string name="woopos_settings_card_reader_documentation_title">ドキュメント</string>
+    <string name="woopos_settings_card_reader_update_available">• 利用可能な更新があります</string>
+    <string name="woopos_settings_card_reader_update_button">更新</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">不明</string>
+    <string name="woopos_settings_card_reader_unknown_reader">不明な Reader</string>
+    <string name="woopos_settings_card_reader_firmware_title">ファームウェア</string>
+    <string name="woopos_settings_card_reader_battery_title">バッテリー</string>
+    <string name="woopos_settings_card_reader_detail_title">カードリーダー設定</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">POS のバーコードスキャンについてさらに詳しく</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">ドキュメント</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">バーコードスキャナーの設定とテスト</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">スキャナー設定</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">バーコードスキャナー設定</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">カードリーダーの接続を管理</string>
+    <string name="woopos_settings_hardware_card_readers">カードリーダー</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">バーコードスキャナー設定を構成</string>
+    <string name="woopos_settings_hardware_barcode_scanners">バーコードスキャナー</string>
+    <string name="woopos_settings_store_category_subtitle">ストアの構成と設定</string>
+    <string name="woopos_settings_store_category">ストア</string>
+    <string name="woopos_settings_hardware_category_subtitle">ハードウェアの接続を管理</string>
+    <string name="woopos_settings_hardware_category">ハードウェア</string>
+    <string name="woopos_settings_title">設定</string>
+    <string name="error_wordpress_com_connectivity">WordPress.com にアクセスできません。 インターネット接続の設定を確認するか、ネットワークの切り替えを試してください。</string>
+    <string name="logviewer_current_log_file">現在</string>
+    <string name="logviewer_log_files_list_footer">最大7日間分のログが保存されます。</string>
+    <string name="logviewer_log_files_list_header">ログファイル (作成日順)</string>
+    <string name="order_refunds_credit_card_refund">クレジットカード</string>
+    <string name="orderdetail_shipping_label_refunded">返金のリクエストが正常に送信されました。 新しいラベルを購入できます。</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">追跡番号</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">%1$d個のアイテム</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">%1$d個のアイテム</string>
+    <string name="orderdetail_shipping_label_shipment_header">配送 %1$s</string>
+    <string name="user_role_access_error_user_roles_null">このアプリでサポートされているユーザー権限グループは、管理者とショップマネージャーのみです。 アカウントのユーザーロールを取得できませんでした。 サポートにご連絡ください。</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">それでも問題が解消されない場合は、 お使いのデバイスのメーカーのカスタマーサポートに連絡してください。</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">デバイス設定に移動し、「キーボード」を検索して、「物理的なキーボードが接続されたときにオンスクリーンキーボードを表示」を有効にします。 この設定はキーボードアプリの設定にある場合があります。</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">画面でキーボードアイコンまたはツールバーを探します。</string>

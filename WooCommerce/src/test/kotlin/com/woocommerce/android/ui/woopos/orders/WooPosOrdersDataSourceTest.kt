@@ -5,6 +5,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -12,6 +13,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -33,24 +35,34 @@ class WooPosOrdersDataSourceTest {
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock { on { get() }.thenReturn(siteModel) }
     private val orderMapper: OrderMapper = mock()
+    private val ordersCache: WooPosOrdersInMemoryCache = mock()
 
     private val sut = WooPosOrdersDataSource(
         restClient = orderRestClient,
         selectedSite = selectedSite,
-        orderMapper = orderMapper
+        orderMapper = orderMapper,
+        ordersCache = ordersCache
     )
 
     @Test
-    fun `given rest client returns entities, when loadOrders called, then should map them to app models`() = runTest {
+    fun `given cache and successful fetch, when loadOrders collected, then emits cache first then mapped network and stores in cache`() = runTest {
         // GIVEN
+        val cachedOrder = OrderTestUtils.generateTestOrder()
+        whenever(ordersCache.getAll()).thenReturn(listOf(cachedOrder))
+
+        // Network returns two entities
         val e1 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 1)
         val e2 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 2)
         val entities = listOf(
             e1 to emptyList<WCMetaData>(),
             e2 to emptyList<WCMetaData>()
         )
+
         val firstOrder = OrderTestUtils.generateTestOrder()
         val secondOrder = OrderTestUtils.generateTestOrder()
+
+        whenever(orderMapper.toAppModel(e1)).thenReturn(firstOrder)
+        whenever(orderMapper.toAppModel(e2)).thenReturn(secondOrder)
 
         val payload = WCOrderStore.FetchOrdersResponsePayload(
             site = siteModel,
@@ -69,18 +81,24 @@ class WooPosOrdersDataSourceTest {
             )
         ).thenReturn(payload)
 
-        whenever(orderMapper.toAppModel(e1)).thenReturn(firstOrder)
-        whenever(orderMapper.toAppModel(e2)).thenReturn(secondOrder)
-
         // WHEN
-        val result = sut.loadOrders()
+        val emissions = sut.loadOrders().toList(mutableListOf())
 
         // THEN
-        assertThat(result).isInstanceOf(LoadOrdersResult.Success::class.java)
-        val success = result as LoadOrdersResult.Success
-        assertThat(success.orders).containsExactly(firstOrder, secondOrder)
+        assertThat(emissions).hasSize(2)
+        // First emission = cache
+        val first = emissions[0]
+        assertThat(first).isInstanceOf(LoadOrdersResult.Success::class.java)
+        assertThat((first as LoadOrdersResult.Success).orders).containsExactly(cachedOrder)
+
+        // Second emission = network mapped
+        val second = emissions[1]
+        assertThat(second).isInstanceOf(LoadOrdersResult.Success::class.java)
+        assertThat((second as LoadOrdersResult.Success).orders).containsExactly(firstOrder, secondOrder)
 
         verify(selectedSite).get()
+        verify(ordersCache).getAll()
+        verify(ordersCache).setAll(listOf(firstOrder, secondOrder))
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
             count = eq(25),
@@ -93,8 +111,11 @@ class WooPosOrdersDataSourceTest {
     }
 
     @Test
-    fun `given store returns error, when loadOrders called, then should return error result`() = runTest {
+    fun `given cache and fetch error, when loadOrders collected, then emits cache then error without caching`() = runTest {
         // GIVEN
+        val cachedOrder = OrderTestUtils.generateTestOrder()
+        whenever(ordersCache.getAll()).thenReturn(listOf(cachedOrder))
+
         val orderError = WCOrderStore.OrderError(
             type = WCOrderStore.OrderErrorType.GENERIC_ERROR,
             message = "generic error"
@@ -118,13 +139,21 @@ class WooPosOrdersDataSourceTest {
         ).thenReturn(payload)
 
         // WHEN
-        val result = sut.loadOrders()
+        val emissions = sut.loadOrders().toList(mutableListOf())
 
         // THEN
-        assertThat(result).isInstanceOf(LoadOrdersResult.Error::class.java)
-        val error = result as LoadOrdersResult.Error
-        assertThat(error.message).isEqualTo(orderError.message)
+        assertThat(emissions).hasSize(2)
 
+        val first = emissions[0]
+        assertThat(first).isInstanceOf(LoadOrdersResult.Success::class.java)
+        assertThat((first as LoadOrdersResult.Success).orders).containsExactly(cachedOrder)
+
+        val second = emissions[1]
+        assertThat(second).isInstanceOf(LoadOrdersResult.Error::class.java)
+        assertThat((second as LoadOrdersResult.Error).message).isEqualTo("generic error")
+
+        verify(ordersCache).getAll()
+        verify(ordersCache, never()).setAll(any())
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
             count = eq(25),
@@ -137,13 +166,14 @@ class WooPosOrdersDataSourceTest {
     }
 
     @Test
-    fun `given default site and pagination, when loadOrders called, then should forward params including createdVia`() = runTest {
+    fun `given empty cache, when loadOrders collected, then forwards params including createdVia and emits empty then empty`() = runTest {
         // GIVEN
+        whenever(ordersCache.getAll()).thenReturn(emptyList())
+
         val payload = WCOrderStore.FetchOrdersResponsePayload(
             site = siteModel,
             ordersWithMeta = emptyList()
         )
-
         whenever(
             orderRestClient.fetchOrders(
                 site = eq(siteModel),
@@ -157,14 +187,22 @@ class WooPosOrdersDataSourceTest {
         ).thenReturn(payload)
 
         // WHEN
-        val result = sut.loadOrders()
+        val emissions = sut.loadOrders().toList(mutableListOf())
 
         // THEN
-        assertThat(result).isInstanceOf(LoadOrdersResult.Success::class.java)
-        val success = result as LoadOrdersResult.Success
-        assertThat(success.orders).isEmpty()
+        assertThat(emissions).hasSize(2)
+
+        val first = emissions[0]
+        assertThat(first).isInstanceOf(LoadOrdersResult.Success::class.java)
+        assertThat((first as LoadOrdersResult.Success).orders).isEmpty()
+
+        val second = emissions[1]
+        assertThat(second).isInstanceOf(LoadOrdersResult.Success::class.java)
+        assertThat((second as LoadOrdersResult.Success).orders).isEmpty()
 
         verify(selectedSite).get()
+        verify(ordersCache).getAll()
+        verify(ordersCache).setAll(emptyList())
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
             count = eq(25),
