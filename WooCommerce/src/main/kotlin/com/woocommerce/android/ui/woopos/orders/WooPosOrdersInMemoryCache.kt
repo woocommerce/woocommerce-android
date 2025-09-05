@@ -1,7 +1,6 @@
-package com.woocommerce.android.ui.woopos.common.data
+package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource.Companion.POS_ORDERS_PAGE_SIZE
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -10,7 +9,7 @@ class WooPosOrdersInMemoryCache @Inject constructor() {
     private val mutex = Mutex()
 
     companion object {
-        private const val CACHE_CAPACITY = POS_ORDERS_PAGE_SIZE
+        private const val CACHE_CAPACITY = WooPosOrdersDataSource.Companion.POS_ORDERS_PAGE_SIZE
         private const val LOAD_FACTOR = 0.75f
     }
 

@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.common.data.WooPosOrdersInMemoryCache
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
