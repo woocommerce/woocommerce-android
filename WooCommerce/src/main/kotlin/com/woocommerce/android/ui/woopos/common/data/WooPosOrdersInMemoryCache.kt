@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.data
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCache
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCache.Companion.MAX_CACHE_SIZE
+import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosOrdersCache
+import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosOrdersCache.Companion.MAX_CACHE_SIZE
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
