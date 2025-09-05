@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.data
 
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -16,15 +16,16 @@ class WooPosPopularProductsProvider @Inject constructor(
     private val productStore: WCProductStore,
     private val productsCache: WooPosProductsCache,
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
+    private val productMapper: WCProductToWooPosProductModelMapper,
 ) {
     companion object {
         private const val MAX_POPULAR_PRODUCTS = 10
     }
 
     private val mutex = Mutex()
-    private val popularProductsCache = mutableListOf<Product>()
+    private val popularProductsCache = mutableListOf<WooPosProductModelVersion2>()
 
-    suspend fun getPopularProducts(): List<Product> = mutex.withLock { popularProductsCache }
+    suspend fun getPopularProducts(): List<WooPosProductModelVersion2> = mutex.withLock { popularProductsCache }
 
     suspend fun addPopularItemsToCache() = mutex.withLock {
         productsCache.addAll(popularProductsCache)
@@ -44,7 +45,7 @@ class WooPosPopularProductsProvider @Inject constructor(
             Result.failure(Exception(result.error.message))
         } else {
             val products = result.model ?: emptyList()
-            var productsAppModel = products.map { it.toAppModel() }
+            val productsAppModel = products.map { productMapper.map(it) }
 
             popularProductsCache.clear()
             popularProductsCache.addAll(productsAppModel)

@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data
 
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -8,7 +8,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.mock
 import java.math.BigDecimal
 import java.util.Date
 
@@ -147,10 +146,19 @@ class WooPosProductsInMemoryCacheTest {
     private fun createTestProduct(
         id: Long,
         name: String = "Test Product $id"
-    ): Product = mock {
-        on { remoteId }.thenReturn(id)
-        on { this.name }.thenReturn(name)
-        on { price }.thenReturn(BigDecimal.TEN)
-        on { dateCreated }.thenReturn(Date())
-    }
+    ): WooPosProductModelVersion2 =
+        WooPosProductModelVersion2(
+            remoteId = id,
+            parentId = null,
+            name = name,
+            sku = "SKU-$id",
+            pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(price = BigDecimal.TEN),
+            globalUniqueId = "global-$id",
+            type = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
+            status = WooPosProductModelVersion2.WooPosProductStatus.PUBLISH,
+            description = "Description for $name",
+            shortDescription = "Short description for $name",
+            isDownloadable = false,
+            lastModified = "2020-01-01T00:00:00Z",
+        )
 }
