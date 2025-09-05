@@ -25,7 +25,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private var selectedId: Long? = null
 
     init {
-        loadOrders(loadFromCacheFirst = true)
+        loadOrders()
     }
 
     fun onOrderSelected(orderId: Long) {
@@ -45,32 +45,33 @@ class WooPosOrdersViewModel @Inject constructor(
             is WooPosOrdersState.Content -> s.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
             else -> WooPosOrdersState.Loading
         }
-        loadOrders(loadFromCacheFirst = false)
+        ordersDataSource.clearCache()
+        loadOrders()
     }
 
-    private fun loadOrders(loadFromCacheFirst: Boolean) {
+    private fun loadOrders() {
         viewModelScope.launch {
-            var sawCacheEmission = false
-
-            ordersDataSource.loadOrders(loadFromCacheFirst).collect { result ->
+            ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
                         _state.value = WooPosOrdersState.Error(message = result.message)
                     }
-                    is LoadOrdersResult.Success -> {
-                        val newOrders = result.orders
-                        orders = newOrders
-                        selectedId = selectedId?.takeIf { id -> newOrders.any { it.id == id } }
-                            ?: newOrders.firstOrNull()?.id
 
-                        if (newOrders.isEmpty()) {
-                            if (loadFromCacheFirst && !sawCacheEmission) {
-                                _state.value = WooPosOrdersState.Loading
-                            } else {
-                                _state.value = WooPosOrdersState.Empty
-                            }
+                    is LoadOrdersResult.SuccessCache,
+                    is LoadOrdersResult.SuccessRemote -> {
+                        val newOrders = when (result) {
+                            is LoadOrdersResult.SuccessCache  -> result.orders
+                            is LoadOrdersResult.SuccessRemote -> result.orders
+                            else -> emptyList()
+                        }
+
+                        orders = newOrders
+                        selectedId = chooseSelectedId(selectedId, newOrders)
+
+                        _state.value = if (newOrders.isEmpty()) {
+                            toStateForEmpty(result)
                         } else {
-                            _state.value = WooPosOrdersState.Content(
+                            WooPosOrdersState.Content(
                                 items = newOrders.toOrderItems(selectedId),
                                 selectedOrderId = selectedId,
                                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
@@ -78,14 +79,24 @@ class WooPosOrdersViewModel @Inject constructor(
                                 listError = null
                             )
                         }
-
-                        if (loadFromCacheFirst && !sawCacheEmission) {
-                            sawCacheEmission = true
-                        }
                     }
                 }
             }
         }
+    }
+
+    private fun chooseSelectedId(
+        current: Long?,
+        newOrders: List<Order>
+    ): Long? {
+        return current?.takeIf { id -> newOrders.any { it.id == id } }
+            ?: newOrders.firstOrNull()?.id
+    }
+
+    private fun toStateForEmpty(result: LoadOrdersResult): WooPosOrdersState = when (result) {
+        is LoadOrdersResult.SuccessCache  -> WooPosOrdersState.Loading
+        is LoadOrdersResult.SuccessRemote -> WooPosOrdersState.Empty
+        is LoadOrdersResult.Error         -> WooPosOrdersState.Error(result.message)
     }
 }
 

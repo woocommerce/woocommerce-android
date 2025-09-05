@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosOrdersCache
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -36,7 +35,7 @@ class WooPosOrdersDataSourceTest {
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock { on { get() }.thenReturn(siteModel) }
     private val orderMapper: OrderMapper = mock()
-    private val ordersCache: WooPosOrdersCache = mock()
+    private val ordersCache: WooPosOrdersInMemoryCache = mock()
 
     private val sut = WooPosOrdersDataSource(
         restClient = orderRestClient,
@@ -86,7 +85,7 @@ class WooPosOrdersDataSourceTest {
 
         verify(selectedSite).get()
         verify(ordersCache).getAll()
-        verify(ordersCache).addAll(listOf(firstOrder, secondOrder))
+        verify(ordersCache).setAll(listOf(firstOrder, secondOrder))
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
             count = eq(25),
@@ -133,7 +132,7 @@ class WooPosOrdersDataSourceTest {
         assertThat(second.message).isEqualTo("generic error")
 
         verify(ordersCache).getAll()
-        verify(ordersCache, never()).addAll(any())
+        verify(ordersCache, never()).setAll(any())
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
             count = eq(25),
@@ -177,7 +176,7 @@ class WooPosOrdersDataSourceTest {
 
         verify(selectedSite).get()
         verify(ordersCache).getAll()
-        verify(ordersCache).addAll(emptyList())
+        verify(ordersCache).setAll(emptyList())
         verify(orderRestClient).fetchOrders(
             site = eq(siteModel),
             count = eq(25),
