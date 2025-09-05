@@ -112,7 +112,7 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
-    fun `when sut is created, should clear orders cache`() = runTest {
+    fun `when sut is created, then should clear orders cache`() = runTest {
         // WHEN
         createSut()
 
