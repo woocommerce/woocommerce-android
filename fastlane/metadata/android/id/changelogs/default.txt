@@ -1,0 +1,2 @@
+23.1:
+Tingkatkan pengalaman manajemen toko Anda dengan sejumlah fitur baru yang menarik! Hapus latar belakang dari gambar produk secara instan menggunakan alat baru kami hanya dengan sekali ketuk. Label pengiriman ditingkatkan dengan validasi alamat yang lebih baik, tata letak yang lebih bersih, dan penanganan pengiriman terpisah yang lebih cerdas. Kendala pemilihan pesanan sudah diatasi dan penanganan kesalahan login sudah ditingkatkan sehigga operasi lebih lancar.

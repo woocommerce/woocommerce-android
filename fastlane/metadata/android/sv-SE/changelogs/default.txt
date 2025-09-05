@@ -1,0 +1,2 @@
+23.1:
+Vi har förbättrat din butikshanteringsupplevelse med spännande nya funktioner. Ta bort bakgrunder från produktbilder omedelbart med vårt nya verktyg som bara kräver en knapptryckning. Vi har förbättrat fraktetiketterna med bättre adressvalidering, renare layouter och smartare hantering av uppdelade försändelser. Vi har åtgärdat problemen med beställningsval och förbättrat hanteringen av inloggningsfel för smidigare användning.

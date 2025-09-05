@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-12 11:54:11+0000
+Translation-Revision-Date: 2025-08-25 12:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">Ürünleri bunun içine veya dışına taşıyamazsınız.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">Bu gönderim için bir etiket satın aldınız.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">Ürünün üretildiği veya monte edildiği ülke.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">Ürünün menşe ülkesi hakkında daha fazla bilgi</string>
+    <string name="woo_shipping_labels_customs_description_info">Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğenin net ve özel bir açıklamasını sağlamalısınız. Örneğin, kıyafet gönderiyorsanız, açıklamanın kabul edilebilir olması için bunun ne tür bir kıyafet olduğunu (ör. erkek gömleği, kadın yeleği, erkek ceketi) belirtmeniz gerekiyor. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>
+    <string name="woo_shipping_labels_customs_description_info_button">Ürün açıklaması hakkında daha fazla bilgi</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">HS tarifesi hakkında daha fazla bilgi</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">ITN hakkında daha fazla bilgi</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">Seçilen Tehlikeli Maddeler kategorisi, seçilen paket ve toplam gönderim ağırlığı kombinasyonunun gönderim hizmeti bulunamadı. Lütfen girdinizi ayarlayın ve yeniden deneyin.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">Seçilen paket ve toplam gönderim ağırlığı kombinasyonunun gönderim hizmeti bulunamadı. Lütfen girdinizi ayarlayın ve yeniden deneyin.</string>
+    <string name="woopos_settings_store_not_set">Ayarlanmadı</string>
+    <string name="woopos_settings_refund_policy_label">Geri Ödeme ve İade Politikası</string>
+    <string name="woopos_settings_store_email_label">E-posta</string>
+    <string name="woopos_settings_store_phone_label">Telefon</string>
+    <string name="woopos_settings_store_address_label">Adres</string>
+    <string name="woopos_settings_store_name_label">Mağaza adı</string>
+    <string name="woopos_settings_receipt_information_title">Makbuz bilgileri</string>
+    <string name="woopos_settings_store_information_title">Mağaza Bilgileri</string>
+    <string name="woopos_settings_help_get_support_subtitle">Destek ekibimizle iletişime geçin</string>
+    <string name="woopos_settings_help_documentation_subtitle">Kılavuzları ve eğitimleri görüntüle</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">POS\'ta hangi ürünlerin desteklendiği hakkında bilgi edinin</string>
+    <string name="woopos_settings_help_category_subtitle">Yardım ve destek alın</string>
+    <string name="woopos_settings_card_reader_connected_reader">Bağlı okuyucu</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">Mobil ödemeleri kabul etme hakkında daha fazla bilgi edinin</string>
+    <string name="woopos_settings_card_reader_documentation_title">Belgeler</string>
+    <string name="woopos_settings_card_reader_update_available">• Güncelleme var</string>
+    <string name="woopos_settings_card_reader_update_button">Güncelle</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">Bilinmiyor</string>
+    <string name="woopos_settings_card_reader_unknown_reader">Bilinmeyen Okuyucu</string>
+    <string name="woopos_settings_card_reader_firmware_title">Ürün Yazılımı</string>
+    <string name="woopos_settings_card_reader_battery_title">Pil</string>
+    <string name="woopos_settings_card_reader_detail_title">Kart Okuyucu Ayarları</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">POS\'ta barkod taraması hakkında daha fazla bilgi edinin</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">Belgeler</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">Barkod tarayıcınızı yapılandırın ve test edin</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">Tarayıcı Kurulumu</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">Barkod Tarayıcı Ayarları</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">Kart okuyucu bağlantılarını yönetin</string>
+    <string name="woopos_settings_hardware_card_readers">Kart Okuyucular</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">Barkod tarayıcı ayarlarını yapılandırın</string>
+    <string name="woopos_settings_hardware_barcode_scanners">Barkod tarayıcılar</string>
+    <string name="woopos_settings_store_category_subtitle">Mağaza yapılandırması ve ayarları</string>
+    <string name="woopos_settings_store_category">Mağaza</string>
+    <string name="woopos_settings_hardware_category_subtitle">Donanım bağlantılarını yönetin</string>
+    <string name="woopos_settings_hardware_category">Donanım</string>
+    <string name="woopos_settings_title">Ayarlar</string>
+    <string name="error_wordpress_com_connectivity">WordPress.com\'a ulaşmakta sorun yaşıyoruz. Lütfen internet bağlantısı ayarlarınızı kontrol edin veya ağları değiştirmeyi deneyin.</string>
+    <string name="logviewer_current_log_file">Mevcut</string>
+    <string name="logviewer_log_files_list_footer">Yedi güne kadar olan kayıtlar saklanır.</string>
+    <string name="logviewer_log_files_list_header">Oluşturma tarihine göre günlük dosyaları</string>
+    <string name="order_refunds_credit_card_refund">Kredi kartı</string>
+    <string name="orderdetail_shipping_label_refunded">İade için başarıyla bir talep gönderdiniz. Yeni bir etiket satın alabilirsiniz.</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">İzleme numarası</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">%1$d öğe</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">%1$d öğe</string>
+    <string name="orderdetail_shipping_label_shipment_header">%1$s gönderimi</string>
+    <string name="user_role_access_error_user_roles_null">Bu uygulama yalnızca Yönetici ve Mağaza Yöneticisi kullanıcı rollerini destekler. Hesabınız için kullanıcı rollerini alamadık. Lütfen destek ekibiyle iletişime geçin.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">Hala çalışmıyor mu? Cihaz üreticinizin müşteri desteğine başvurun.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">Cihaz ayarlarına gidin, \"klavye\" terimini arayın ve \"Fiziksel klavye bağlandığında ekranda klavye göster\" seçeneğini etkinleştirin. Bu ayar, klavye uygulama ayarlarınızda olabilir.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">Ekranda bir klavye ikonu veya araç çubuğu arayın.</string>
