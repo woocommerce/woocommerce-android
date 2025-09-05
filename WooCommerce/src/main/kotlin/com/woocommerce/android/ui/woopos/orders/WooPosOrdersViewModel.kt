@@ -60,7 +60,7 @@ class WooPosOrdersViewModel @Inject constructor(
                     is LoadOrdersResult.SuccessCache,
                     is LoadOrdersResult.SuccessRemote -> {
                         val newOrders = when (result) {
-                            is LoadOrdersResult.SuccessCache  -> result.orders
+                            is LoadOrdersResult.SuccessCache -> result.orders
                             is LoadOrdersResult.SuccessRemote -> result.orders
                             else -> emptyList()
                         }
@@ -94,9 +94,9 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private fun toStateForEmpty(result: LoadOrdersResult): WooPosOrdersState = when (result) {
-        is LoadOrdersResult.SuccessCache  -> WooPosOrdersState.Loading
+        is LoadOrdersResult.SuccessCache -> WooPosOrdersState.Loading
         is LoadOrdersResult.SuccessRemote -> WooPosOrdersState.Empty
-        is LoadOrdersResult.Error         -> WooPosOrdersState.Error(result.message)
+        is LoadOrdersResult.Error -> WooPosOrdersState.Error(result.message)
     }
 }
 
