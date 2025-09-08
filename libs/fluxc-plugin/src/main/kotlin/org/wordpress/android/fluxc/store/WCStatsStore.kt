@@ -23,7 +23,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient.OrderStatsApiUnit
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.VisitorStatsSummaryApiResponse
 import org.wordpress.android.fluxc.persistence.WCStatsSqlUtils
-import org.wordpress.android.fluxc.persistence.WCVisitorStatsSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.NewVisitorStatsDao
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.entity.VisitorSummaryStatsEntity
 import org.wordpress.android.fluxc.persistence.entity.toDomainModel
@@ -35,12 +35,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WCStatsStore @Inject constructor(
+class WCStatsStore @Inject internal constructor(
     dispatcher: Dispatcher,
     private val wcOrderStatsClient: OrderStatsRestClient,
     private val bundleStatsRestClient: BundleStatsRestClient,
     private val coroutineEngine: CoroutineEngine,
-    private val visitorSummaryStatsDao: VisitorSummaryStatsDao
+    private val visitorSummaryStatsDao: VisitorSummaryStatsDao,
+    private val newVisitorStatsDao: NewVisitorStatsDao,
 ) : Store(dispatcher) {
     companion object {
         private const val DATE_FORMAT_DAY = "yyyy-MM-dd"
@@ -191,9 +192,11 @@ class WCStatsStore @Inject constructor(
         date: String? = null,
         isCustomField: Boolean = false
     ): Map<String, Int> {
-        val rawStats = WCVisitorStatsSqlUtils.getNewRawVisitorStatsForSiteGranularityQuantityAndDate(
-            site, granularity, quantity, date, isCustomField
-        )
+        val rawStats = if (isCustomField) {
+            newVisitorStatsDao.getCustomStat(site.localId(), granularity, quantity, date)
+        } else {
+            newVisitorStatsDao.getDefaultStat(site.localId(), granularity)
+        }
         rawStats?.let { visitorStatsModel ->
             val periodIndex = visitorStatsModel.getIndexForField(WCNewVisitorStatsModel.VisitorStatsField.PERIOD)
             val fieldIndex = visitorStatsModel.getIndexForField(WCNewVisitorStatsModel.VisitorStatsField.VISITORS)
@@ -218,8 +221,8 @@ class WCStatsStore @Inject constructor(
     ): Map<String, Int> {
         val quantity = getVisitorStatsQuantity(granularity, startDate, endDate)
         val date = DateUtils.getDateTimeForSite(site, DATE_FORMAT_DAY, endDate)
-        val rawStats = WCVisitorStatsSqlUtils.getNewRawVisitorStatsForSiteGranularityQuantityAndDate(
-            site, granularity, quantity.toString(), date, true
+        val rawStats = newVisitorStatsDao.getCustomStat(
+            site.localId(), granularity, quantity.toString(), date
         )
         rawStats?.let { visitorStatsModel ->
             val periodIndex = visitorStatsModel.getIndexForField(WCNewVisitorStatsModel.VisitorStatsField.PERIOD)
@@ -353,7 +356,7 @@ class WCStatsStore @Inject constructor(
                     it.causeOfChange = WCStatsAction.FETCH_NEW_VISITOR_STATS
                 }
             } else {
-                WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(result.stats)
+                newVisitorStatsDao.insertOrUpdateStat(result.stats)
                 OnWCStatsChanged(
                     payload.granularity,
                     result.stats.quantity,

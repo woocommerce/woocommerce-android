@@ -22,7 +22,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.WCVisitorStatsSummary
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
@@ -35,7 +34,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStats
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.VisitorStatsSummaryApiResponse
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WCVisitorStatsSqlUtils
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsResponsePayload
@@ -71,11 +69,8 @@ class WCStatsStoreTest {
     fun setUp() {
         val config = SingleStoreWellSqlConfigForTests(
             context,
-            listOf(
-                WCRevenueStatsModel::class.java,
-                WCNewVisitorStatsModel::class.java
-            ),
-            WellSqlConfig.ADDON_WOOCOMMERCE
+            listOf(WCRevenueStatsModel::class.java),
+            WellSqlConfig.Companion.ADDON_WOOCOMMERCE
         )
         WellSql.init(config)
         config.reset()
@@ -85,7 +80,8 @@ class WCStatsStoreTest {
             wcOrderStatsClient = mockOrderStatsRestClient,
             bundleStatsRestClient = mockBundleStatsRestClient,
             coroutineEngine = initCoroutineEngine(),
-            visitorSummaryStatsDao = databaseRule.db.visitorSummaryStatsDao
+            visitorSummaryStatsDao = databaseRule.db.visitorSummaryStatsDao,
+            newVisitorStatsDao = databaseRule.db.newVisitorStatsDao,
         )
     }
 
@@ -822,8 +818,8 @@ class WCStatsStoreTest {
         // Test Scenario - 1: Generate default visitor stats i.e. isCustomField - false
         // Get visitor Stats of the same site and granularity and assert not null
         val defaultDayVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel()
-        val site = SiteModel().apply { id = defaultDayVisitorStatsModel.localSiteId }
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultDayVisitorStatsModel)
+        val site = SiteModel().apply { id = defaultDayVisitorStatsModel.localSiteId.value }
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultDayVisitorStatsModel)
 
         val defaultDayVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.DAYS)
         assertTrue(defaultDayVisitorStats.isNotEmpty())
@@ -833,8 +829,8 @@ class WCStatsStoreTest {
         val defaultDayVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
             endDate = "2019-08-02"
         )
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultDayVisitorStatsModel2)
-        val defaultDayVisitorStats2 = wcStatsStore.getNewVisitorStats(site, StatsGranularity.DAYS)
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultDayVisitorStatsModel2)
+        val defaultDayVisitorStats2 = wcStatsStore.getNewVisitorStats(site, WCStatsStore.StatsGranularity.DAYS)
         assertTrue(defaultDayVisitorStats2.isNotEmpty())
 
         // Test Scenario - 3: Generate custom stats for same site i.e. isCustomField - true
@@ -842,7 +838,7 @@ class WCStatsStoreTest {
         val customDayVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
             quantity = "1", endDate = "2019-08-06", startDate = "2019-08-06"
         )
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customDayVisitorStatsModel)
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(customDayVisitorStatsModel)
 
         val customDayVisitorStats = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.DAYS, customDayVisitorStatsModel.quantity,
@@ -885,7 +881,7 @@ class WCStatsStoreTest {
             granularity = StatsGranularity.WEEKS.toString()
         )
 
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customWeekVisitorStatsModel)
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(customWeekVisitorStatsModel)
 
         val customWeekVisitorStats = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
@@ -908,7 +904,7 @@ class WCStatsStoreTest {
             quantity = "1", endDate = "2019-02-01", startDate = "2019-02-01"
         )
 
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customWeekVisitorStatsModel2)
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(customWeekVisitorStatsModel2)
 
         val customWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.WEEKS, customWeekVisitorStatsModel2.quantity,
@@ -926,8 +922,8 @@ class WCStatsStoreTest {
         val defaultWeekVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
             granularity = StatsGranularity.WEEKS.toString()
         )
-        val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId }
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultWeekVisitorStatsModel)
+        val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId.value }
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultWeekVisitorStatsModel)
 
         val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.WEEKS)
         assertTrue(defaultWeekVisitorStats.isNotEmpty())
@@ -941,8 +937,8 @@ class WCStatsStoreTest {
         val defaultWeekVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
             granularity = StatsGranularity.WEEKS.toString(), endDate = "2019-03-20"
         )
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultWeekVisitorStatsModel2)
-        val defaultWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(site, StatsGranularity.WEEKS)
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultWeekVisitorStatsModel2)
+        val defaultWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(site, WCStatsStore.StatsGranularity.WEEKS)
         assertTrue(defaultWeekVisitorStats2.isNotEmpty())
 
         // Test Scenario - 3: Generate custom stats for same site i.e. isCustomField - true
@@ -951,7 +947,7 @@ class WCStatsStoreTest {
             granularity = StatsGranularity.WEEKS.toString(), quantity = "1",
             endDate = "2019-08-01", startDate = "2019-08-01"
         )
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customWeekVisitorStatsModel)
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(customWeekVisitorStatsModel)
 
         val customWeekVisitorStats = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
@@ -995,7 +991,7 @@ class WCStatsStoreTest {
             granularity = StatsGranularity.MONTHS.toString()
         )
 
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customMonthVisitorStatsModel)
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(customMonthVisitorStatsModel)
 
         val customMonthVisitorStats = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.MONTHS, customMonthVisitorStatsModel.quantity,
@@ -1018,7 +1014,7 @@ class WCStatsStoreTest {
             quantity = "1", endDate = "2019-08-01", startDate = "2019-08-01"
         )
 
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customMonthVisitorStatsModel2)
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(customMonthVisitorStatsModel2)
 
         val customMonthVisitorStats2 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.MONTHS, customMonthVisitorStatsModel2.quantity,
@@ -1037,8 +1033,8 @@ class WCStatsStoreTest {
             granularity = StatsGranularity.WEEKS.toString(),
             data = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/wrong-visitor-stats-data.json")
         )
-        val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId }
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultWeekVisitorStatsModel)
+        val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId.value }
+        databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultWeekVisitorStatsModel)
 
         val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.WEEKS)
         assertTrue(defaultWeekVisitorStats.isNotEmpty())
