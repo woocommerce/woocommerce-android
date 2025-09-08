@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 
 sealed class WooPosSearchByIdentifierResult {
     data class Success(val product: WooPosProductModelVersion2) : WooPosSearchByIdentifierResult()
-    data class VariationSuccess(val variation: ProductVariation, val parentProduct: WooPosProductModelVersion2) :
+    data class VariationSuccess(val variation: WooPosVariation, val parentProduct: WooPosProductModelVersion2) :
         WooPosSearchByIdentifierResult()
 
     data class Failure(val error: Error) : WooPosSearchByIdentifierResult()

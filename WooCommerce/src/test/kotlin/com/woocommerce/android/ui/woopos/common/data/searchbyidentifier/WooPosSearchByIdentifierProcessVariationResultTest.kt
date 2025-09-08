@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.runBlocking
@@ -27,9 +27,17 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         val parentId = 123L
         val variationId = 456L
         val product: WooPosProductModelVersion2 = generateWooPosProduct(productId = variationId, parentId = parentId)
-
         val parentProduct: WooPosProductModelVersion2 = generateWooPosProduct()
-        val variation: ProductVariation = mock()
+        val variation = WooPosVariation(
+            remoteVariationId = variationId,
+            remoteProductId = parentId,
+            globalUniqueId = "test",
+            price = null,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
 
         runBlocking {
             whenever(
@@ -98,8 +106,16 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         val parentId = 123L
         val variationId = 456L
         val product: WooPosProductModelVersion2 = generateWooPosProduct(productId = variationId, parentId = parentId)
-
-        val variation: ProductVariation = mock()
+        val variation = WooPosVariation(
+            remoteVariationId = variationId,
+            remoteProductId = parentId,
+            globalUniqueId = "test",
+            price = null,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
         val expectedFailure = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
 
         runBlocking {

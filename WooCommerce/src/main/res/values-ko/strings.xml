@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-13 09:54:07+0000
+Translation-Revision-Date: 2025-08-26 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">상품을 가져오거나 내보내실 수 없습니다.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">이 배송을 위한 레이블을 구매하셨습니다.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">상품이 제조 또는 조립된 국가입니다.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">상품 원산지 국가에 대한 자세한 내용</string>
+    <string name="woo_shipping_labels_customs_description_info">EU(유럽연합) 세관 규칙을 따르는 국가로 배송할 때는 아이템마다 명확하고 구체적인 설명을 제공해야 합니다. 예를 들어, 의류를 발송하는 경우 설명이 수락될 수 있으려면 의류 유형을 표시해야 합니다(예: 남성용 셔츠, 여아용 조끼, 남아용 재킷). 그렇게 하지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>
+    <string name="woo_shipping_labels_customs_description_info_button">상품 설명에 대한 자세한 내용</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">HS 관세에 대한 자세한 내용</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">ITN에 대한 자세한 내용</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">선택한 HAZMAT 카테고리와 총 배송 무게의 조합에 적합한 배송 서비스를 찾을 수 없습니다. 입력을 조정하고 다시 시도하세요.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">선택한 패키지와 총 배송 무게의 조합에 적합한 배송 서비스를 찾을 수 없습니다. 입력을 조정하고 다시 시도하세요.</string>
+    <string name="woopos_settings_store_not_set">설정 안 함</string>
+    <string name="woopos_settings_refund_policy_label">환불 및 반품 정책</string>
+    <string name="woopos_settings_store_email_label">이메일</string>
+    <string name="woopos_settings_store_phone_label">전화</string>
+    <string name="woopos_settings_store_address_label">주소</string>
+    <string name="woopos_settings_store_name_label">스토어 이름</string>
+    <string name="woopos_settings_receipt_information_title">영수증 정보</string>
+    <string name="woopos_settings_store_information_title">스토어 정보</string>
+    <string name="woopos_settings_help_get_support_subtitle">지원팀에 문의</string>
+    <string name="woopos_settings_help_documentation_subtitle">가이드 및 튜토리얼 보기</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">POS에서 지원되는 제품에 대해 알아보기</string>
+    <string name="woopos_settings_help_category_subtitle">도움말 및 지원</string>
+    <string name="woopos_settings_card_reader_connected_reader">연결한 리더</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">모바일 결제 수락 및 카드 리더 주문에 대해 더 알아보기</string>
+    <string name="woopos_settings_card_reader_documentation_title">설명서</string>
+    <string name="woopos_settings_card_reader_update_available">• 업데이트 사용 가능</string>
+    <string name="woopos_settings_card_reader_update_button">업데이트</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">알 수 없음</string>
+    <string name="woopos_settings_card_reader_unknown_reader">알 수 없는 리더</string>
+    <string name="woopos_settings_card_reader_firmware_title">펌웨어</string>
+    <string name="woopos_settings_card_reader_battery_title">배터리</string>
+    <string name="woopos_settings_card_reader_detail_title">카드 리더 설정</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">POS의 바코드 스캔에 대해 더 알아보기</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">설명서</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">바코드 스캐너 구성 및 테스트</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">스캐너 설정</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">바코드 스캐너 설정</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">카드 판독기 관리</string>
+    <string name="woopos_settings_hardware_card_readers">카드 리더</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">바코드 스캐너 설정 구성</string>
+    <string name="woopos_settings_hardware_barcode_scanners">바코드 스캐너</string>
+    <string name="woopos_settings_store_category_subtitle">스토어 구성 및 설정</string>
+    <string name="woopos_settings_store_category">스토어</string>
+    <string name="woopos_settings_hardware_category_subtitle">하드웨어 연결 관리</string>
+    <string name="woopos_settings_hardware_category">하드웨어</string>
+    <string name="woopos_settings_title">설정</string>
+    <string name="error_wordpress_com_connectivity">WordPress.com에 연결하는 데 문제가 있습니다. 인터넷 연결 설정을 확인하거나 네트워크를 전환해 보세요.</string>
+    <string name="logviewer_current_log_file">현재</string>
+    <string name="logviewer_log_files_list_footer">최대 7일 상당의 로그가 저장됩니다.</string>
+    <string name="logviewer_log_files_list_header">생성 날짜별 로그 파일</string>
+    <string name="order_refunds_credit_card_refund">신용카드</string>
+    <string name="orderdetail_shipping_label_refunded">환불 요청이 제출되었습니다. 새 레이블을 구매할 수 있습니다.</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">추적 번호</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">%1$d개 아이템</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">%1$d개 아이템</string>
+    <string name="orderdetail_shipping_label_shipment_header">배송 %1$s</string>
+    <string name="user_role_access_error_user_roles_null">이 앱에서는 관리자와 상점 관리자 사용자 역할만 지원됩니다. 계정에 대한 사용자 역할을 가져올 수 없습니다. 지원팀에 문의하세요.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">여전히 작동하지 않나요? 기기 제조업체에 고객 지원을 문의하세요.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">기기 설정으로 이동하여 \"키보드\"를 검색한 다음에 \"실제 키보드가 연결되었을 때 화면 키보드 표시\"를 활성화합니다. 이 설정은 키보드 앱 설정에 있을 수 있습니다.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">화면에서 키보드 아이콘 또는 도구 모음을 찾습니다.</string>
