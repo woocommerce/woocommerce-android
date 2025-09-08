@@ -157,7 +157,6 @@ class WCStatsStore @Inject constructor(
 
     // OnChanged events
     class OnWCStatsChanged(
-        val rowsAffected: Int,
         val granularity: StatsGranularity,
         val quantity: String? = null,
         val date: String? = null,
@@ -349,14 +348,13 @@ class WCStatsStore @Inject constructor(
                 endDate = endDate
             )
             return@withDefaultContext if (result.isError || result.stats == null) {
-                OnWCStatsChanged(0, payload.granularity).also {
+                OnWCStatsChanged(payload.granularity).also {
                     it.error = result.error
                     it.causeOfChange = WCStatsAction.FETCH_NEW_VISITOR_STATS
                 }
             } else {
-                val rowsAffected = WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(result.stats)
+                WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(result.stats)
                 OnWCStatsChanged(
-                    rowsAffected,
                     payload.granularity,
                     result.stats.quantity,
                     result.stats.date,

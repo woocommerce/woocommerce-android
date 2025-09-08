@@ -72,7 +72,6 @@ class StatsRepositoryTests : BaseUnitTest() {
             val startDate = "2024-01-25 00:00:00"
             val endDate = "2024-01-25 23:59:59"
             val visitorStatsResponse = WCStatsStore.OnWCStatsChanged(
-                rowsAffected = 2,
                 granularity = granularity,
                 quantity = quantity,
                 date = startDate
@@ -114,7 +113,7 @@ class StatsRepositoryTests : BaseUnitTest() {
         val granularity = WCStatsStore.StatsGranularity.DAYS
         val startDate = "2024-01-25 00:00:00"
         val endDate = "2024-01-25 23:59:59"
-        val visitorStatsResponse = WCStatsStore.OnWCStatsChanged(0, granularity).also {
+        val visitorStatsResponse = WCStatsStore.OnWCStatsChanged(granularity).also {
             it.error = WCStatsStore.OrderStatsError()
             it.causeOfChange = WCStatsAction.FETCH_NEW_VISITOR_STATS
         }
@@ -153,7 +152,6 @@ class StatsRepositoryTests : BaseUnitTest() {
         val granularity = WCStatsStore.StatsGranularity.DAYS
         val startDate = "2024-01-25 00:00:00"
         val visitorStatsResponse = WCStatsStore.OnWCStatsChanged(
-            rowsAffected = 2,
             granularity = granularity,
             quantity = "5",
             date = startDate
