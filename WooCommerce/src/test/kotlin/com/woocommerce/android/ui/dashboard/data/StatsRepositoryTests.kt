@@ -68,12 +68,13 @@ class StatsRepositoryTests : BaseUnitTest() {
     fun `when visitors and revenue requests succeed then a success response is returned containing both value`() =
         testBlocking {
             val granularity = WCStatsStore.StatsGranularity.DAYS
+            val quantity = "5"
             val startDate = "2024-01-25 00:00:00"
             val endDate = "2024-01-25 23:59:59"
             val visitorStatsResponse = WCStatsStore.OnWCStatsChanged(
                 rowsAffected = 2,
                 granularity = granularity,
-                quantity = "5",
+                quantity = quantity,
                 date = startDate
             )
 
@@ -87,6 +88,8 @@ class StatsRepositoryTests : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(defaultSiteModel)
             whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(null)
             whenever(wcStatsStore.fetchNewVisitorStats(any())).thenReturn(visitorStatsResponse)
+            whenever(wcStatsStore.getNewVisitorStats(defaultSiteModel, granularity, quantity, startDate, false))
+                .thenReturn(emptyMap())
             whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
             whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))
                 .thenReturn(WCRevenueStatsModel())

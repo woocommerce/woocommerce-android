@@ -185,7 +185,7 @@ class WCStatsStore @Inject constructor(
      * Returns the visitor data by date for the given [site] and [granularity].
      * The returned map has the format: "2018-05-01" -> 15
      */
-    fun getNewVisitorStats(
+    suspend fun getNewVisitorStats(
         site: SiteModel,
         granularity: StatsGranularity,
         quantity: String? = null,
@@ -211,7 +211,7 @@ class WCStatsStore @Inject constructor(
         return mapOf()
     }
 
-    fun getNewVisitorStats(
+    suspend fun getNewVisitorStats(
         granularity: StatsGranularity,
         startDate: String,
         endDate: String,
