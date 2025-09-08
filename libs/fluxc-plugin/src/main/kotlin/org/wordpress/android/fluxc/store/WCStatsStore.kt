@@ -150,7 +150,7 @@ class WCStatsStore @Inject constructor(
         GENERIC_ERROR;
 
         companion object {
-            private val reverseMap = OrderStatsErrorType.values().associateBy(OrderStatsErrorType::name)
+            private val reverseMap = entries.associateBy(OrderStatsErrorType::name)
             fun fromString(type: String) = reverseMap[type.uppercase(Locale.US)] ?: GENERIC_ERROR
         }
     }
