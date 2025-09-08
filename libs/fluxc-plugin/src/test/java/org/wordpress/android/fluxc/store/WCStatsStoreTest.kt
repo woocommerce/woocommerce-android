@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.wc.stats
+package org.wordpress.android.fluxc.store
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
@@ -37,7 +37,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.VisitorStats
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.WCVisitorStatsSqlUtils
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
-import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsResponsePayload
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -45,6 +44,7 @@ import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.utils.DateUtils
 import org.wordpress.android.fluxc.utils.SiteUtils.getCurrentDateTimeForSite
+import org.wordpress.android.fluxc.wc.stats.WCStatsTestUtils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -1113,8 +1113,8 @@ class WCStatsStoreTest {
 
         assertFalse(result.isError)
         assertTrue(result.model != null)
-        assertEquals(result.model!!.itemsSold, totals.itemsSold)
-        assertEquals(result.model!!.netRevenue, totals.netRevenue)
+        assertEquals(result.model.itemsSold, totals.itemsSold)
+        assertEquals(result.model.netRevenue, totals.netRevenue)
     }
 
     @Test

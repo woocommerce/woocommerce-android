@@ -16,6 +16,7 @@ object WCStatsTestUtils {
     /**
      * Generates a sample [WCRevenueStatsModel]
      */
+    @Suppress("MagicNumber")
     fun generateSampleRevenueStatsModel(
         localSiteId: Int = 6,
         interval: String = StatsGranularity.DAYS.toString(),
@@ -35,6 +36,7 @@ object WCStatsTestUtils {
     /**
      * Generates a sample [WCNewVisitorStatsModel]
      */
+    @Suppress("LongParameterList")
     fun generateSampleNewVisitorStatsModel(
         localSiteId: Int = 6,
         granularity: String = StatsGranularity.DAYS.toString(),
