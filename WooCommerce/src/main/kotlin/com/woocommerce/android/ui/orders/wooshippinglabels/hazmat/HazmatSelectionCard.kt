@@ -22,8 +22,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHa
 @Composable
 fun HazmatSelectionCard(
     selectedCategory: ShippingLabelHazmatCategory,
+    modifier: Modifier = Modifier,
     onClick: OnClick? = null,
-    modifier: Modifier = Modifier
 ) {
     Spacer(modifier = Modifier.height(4.dp))
     Box(modifier = modifier) {
