@@ -17,8 +17,6 @@ sealed class WPAPIResponse<T> {
 
 /**
  * The networking mode that was used to make the request.
- *
- * This is used for tracking purposes, and used only with the Woo experimental networking mode.
  */
 sealed interface WPAPINetworkingMode {
     data object ApplicationPasswords : WPAPINetworkingMode

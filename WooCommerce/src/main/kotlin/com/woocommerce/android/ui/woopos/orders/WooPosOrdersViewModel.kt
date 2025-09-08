@@ -30,25 +30,28 @@ class WooPosOrdersViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            when (val result = ordersDataSource.loadOrders()) {
-                is LoadOrdersResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            error = result.message ?: "Unknown error"
-                        )
+            ordersDataSource.loadOrders().collect { result ->
+                when (result) {
+                    is LoadOrdersResult.Error -> {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.message
+                            )
+                        }
                     }
-                }
-                is LoadOrdersResult.Success -> {
-                    val list = result.orders
-                    _state.update { prev ->
-                        prev.copy(
-                            isLoading = false,
-                            orders = list,
-                            selectedOrderId = prev.selectedOrderId?.takeIf { id ->
-                                list.any { o -> o.id == id }
-                            } ?: list.firstOrNull()?.id
-                        )
+
+                    is LoadOrdersResult.Success -> {
+                        val list = result.orders
+                        _state.update { prev ->
+                            prev.copy(
+                                isLoading = false,
+                                orders = list,
+                                selectedOrderId = prev.selectedOrderId?.takeIf { id ->
+                                    list.any { o -> o.id == id }
+                                } ?: list.firstOrNull()?.id
+                            )
+                        }
                     }
                 }
             }

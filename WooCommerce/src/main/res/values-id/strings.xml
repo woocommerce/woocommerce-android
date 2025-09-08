@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-12 11:54:05+0000
+Translation-Revision-Date: 2025-08-27 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">Anda tidak dapat memindahkan produk ke dalam atau ke luar.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">Anda membeli label untuk pengiriman ini.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">Negara tempat pembuatan atau perakitan produk.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">Info selengkapnya tentang negara asal produk</string>
+    <string name="woo_shipping_labels_customs_description_info">Ketika melakukan pengiriman ke negara-negara yang menerapkan aturan bea cukai Uni Eropa (UE), Anda harus memberikan deskripsi yang jelas dan spesifik tentang setiap barang. Contohnya, jika Anda mengirim pakaian, Anda harus menerangkan jenis pakaiannya (misalnya, baju pria, rompi wanita, jaket anak) agar deskripsinya memadai. Jika tidak, pengiriman akan tertunda atau tertahan di otoritas bea cukai.</string>
+    <string name="woo_shipping_labels_customs_description_info_button">Info selengkapnya tentang deskripsi produk</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">Info selengkapnya tentang tarif HS</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">Info selengkapnya tentang ITN</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">Kami tidak dapat menemukan layanan pengiriman untuk kombinasi paket kategori iHAZMAT yang dipilih, paket yang dipilih, dan total berat pengiriman. Sesuaikan informasi yang Anda masukkan dan coba lagi.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">Kami tidak dapat menemukan layanan pengiriman untuk kombinasi paket yang dipilih dan total berat pengiriman. Sesuaikan informasi yang Anda masukkan dan coba lagi.</string>
+    <string name="woopos_settings_store_not_set">Tidak ditentukan</string>
+    <string name="woopos_settings_refund_policy_label">Kebijakan Pengembalian Dana &amp; Barang</string>
+    <string name="woopos_settings_store_email_label">Email</string>
+    <string name="woopos_settings_store_phone_label">Telepon</string>
+    <string name="woopos_settings_store_address_label">Alamat</string>
+    <string name="woopos_settings_store_name_label">Nama toko</string>
+    <string name="woopos_settings_receipt_information_title">Informasi tanda terima</string>
+    <string name="woopos_settings_store_information_title">Informasi toko</string>
+    <string name="woopos_settings_help_get_support_subtitle">Hubungi tim dukungan kami</string>
+    <string name="woopos_settings_help_documentation_subtitle">Lihat panduan dan tutorial</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">Pelajari tentang produk yang didukung di POS</string>
+    <string name="woopos_settings_help_category_subtitle">Dapatkan bantuan dan dukungan</string>
+    <string name="woopos_settings_card_reader_connected_reader">Pembaca terhubung</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">Pelajari selengkapnya tentang menerima pembayaran dengan perangkat seluler</string>
+    <string name="woopos_settings_card_reader_documentation_title">Dokumentasi</string>
+    <string name="woopos_settings_card_reader_update_available">• Pembaruan tersedia</string>
+    <string name="woopos_settings_card_reader_update_button">Perbarui</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">Tidak diketahui</string>
+    <string name="woopos_settings_card_reader_unknown_reader">Pembaca Tidak Dikenal</string>
+    <string name="woopos_settings_card_reader_firmware_title">Firmware</string>
+    <string name="woopos_settings_card_reader_battery_title">Baterai</string>
+    <string name="woopos_settings_card_reader_detail_title">Pengaturan Pembaca Kartu</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">Pelajari selengkapnya tentang pemindaian kode batang pada POS</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">Dokumentasi</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">Konfigurasi dan uji pemindai kode batang Anda</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">Pengaturan Pemindai</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">Pengaturan Pemindai Kode Batang</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">Kelola koneksi pembaca kartu</string>
+    <string name="woopos_settings_hardware_card_readers">Pembaca Kartu</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">Konfigurasi pengaturan pemindai kode batang</string>
+    <string name="woopos_settings_hardware_barcode_scanners">Pemindai kode batang</string>
+    <string name="woopos_settings_store_category_subtitle">Konfigurasi dan pengaturan toko</string>
+    <string name="woopos_settings_store_category">Toko</string>
+    <string name="woopos_settings_hardware_category_subtitle">Kelola koneksi perangkat keras</string>
+    <string name="woopos_settings_hardware_category">Perangkat Keras</string>
+    <string name="woopos_settings_title">Pengaturan</string>
+    <string name="error_wordpress_com_connectivity">Kami mengalami masalah saat menghubungi WordPress.com. Periksa pengaturan koneksi internet Anda atau coba ubah jaringan.</string>
+    <string name="logviewer_current_log_file">Saat ini</string>
+    <string name="logviewer_log_files_list_footer">Catatan log hingga tujuh hari disimpan.</string>
+    <string name="logviewer_log_files_list_header">Catat file berdasarkan tanggal pembuatan</string>
+    <string name="order_refunds_credit_card_refund">Kartu kredit</string>
+    <string name="orderdetail_shipping_label_refunded">Anda berhasil mengajukan permintaan pengembalian dana. Anda dapat membeli label baru.</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">Nomor pelacakan</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">%1$d barang</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">%1$d barang</string>
+    <string name="orderdetail_shipping_label_shipment_header">Pengiriman %1$s</string>
+    <string name="user_role_access_error_user_roles_null">Aplikasi ini hanya mendukung peran pengguna Administrator dan Manajer Toko. Kami tidak dapat mengambil peran pengguna untuk akun Anda. Hubungi dukungan.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">Masih belum berhasil? Hubungi dukungan pelanggan dari produsen perangkat Anda.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">Buka pengaturan perangkat, cari \"keyboard\", lalu aktifkan \"Tampilkan keyboard di layar saat keyboard fisik terhubung\". Pengaturan ini mungkin ada di pengaturan aplikasi keyboard Anda.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">Cari ikon keyboard atau bilah peralatan di layar.</string>

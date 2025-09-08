@@ -8,11 +8,13 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
+import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -28,7 +30,6 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
@@ -69,6 +70,7 @@ class WooPosCartViewModel @Inject constructor(
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
     private val barcodeEventTracker: WooPosBarcodeEventTracker,
+    private val variationMapper: WooPosVariationMapper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -589,7 +591,7 @@ class WooPosCartViewModel @Inject constructor(
             imageUrl = firstImageUrl,
         )
 
-    private suspend fun ProductVariation.toCartListItem(
+    private suspend fun WooPosVariation.toCartListItem(
         itemNumber: Int,
         product: Product
     ): WooPosCartItemViewState.Product.Variation =
@@ -598,7 +600,7 @@ class WooPosCartViewModel @Inject constructor(
             id = product.remoteId,
             variationId = this.remoteVariationId,
             name = product.name,
-            description = getNameForPOS(product, resourceProvider),
+            description = getNameForPOS(variationMapper, product, resourceProvider),
             price = formatPrice(price),
             imageUrl = image?.source,
         )
@@ -635,7 +637,7 @@ class WooPosCartViewModel @Inject constructor(
                     id = variation.remoteProductId,
                     variationId = variation.remoteVariationId,
                     name = this.parentProduct.name,
-                    description = variation.getNameForPOS(this.parentProduct, resourceProvider),
+                    description = variation.getNameForPOS(variationMapper, this.parentProduct, resourceProvider),
                     price = formatPrice(variation.price),
                     imageUrl = variation.image?.source
                 )

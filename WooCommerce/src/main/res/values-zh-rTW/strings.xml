@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-14 14:54:09+0000
+Translation-Revision-Date: 2025-08-26 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">無法移入或移出商品。</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">商品製造或組裝的國家/地區。</string>
+    <string name="woo_shipping_labels_customs_description_info">運送到遵循歐盟 (EU) 海關規定的國家/地區時，請針對各個項目提供清楚明確的描述。 舉例來說，若要寄送衣服，請指明衣服種類 (例如，男性襯衫、女童背心、男童外套)，海關才會採納相關資訊， 否則貨件可能會在海關檢查時遭遇延誤或中斷。</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">已購買這批貨件的標籤。</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">更多商品來源國家/地區資訊</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">更多 HS 關稅資訊</string>
+    <string name="woopos_settings_store_not_set">未設定</string>
+    <string name="woopos_settings_refund_policy_label">退款和退貨政策</string>
+    <string name="woopos_settings_store_email_label">電子郵件</string>
+    <string name="woopos_settings_store_phone_label">電話</string>
+    <string name="woopos_settings_store_address_label">地址</string>
+    <string name="woopos_settings_store_name_label">商店名稱</string>
+    <string name="woopos_settings_receipt_information_title">收據資訊</string>
+    <string name="woopos_settings_store_information_title">商店資訊</string>
+    <string name="woo_shipping_labels_customs_description_info_button">更多商品說明資訊</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">更多 ITN 資訊</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">所選的危險物品分類、包裹與貨件總重的組合，沒有適用的貨運服務。 請調整輸入內容，然後再試一次。</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">所選包裹與貨件總重的組合，沒有適用的貨運服務。 請調整輸入內容，然後再試一次。</string>
+    <string name="woopos_settings_help_get_support_subtitle">請聯絡我們的支援團隊</string>
+    <string name="woopos_settings_card_reader_connected_reader">連接的讀卡機</string>
+    <string name="woopos_settings_card_reader_documentation_title">文件</string>
+    <string name="woopos_settings_card_reader_update_available">• 有可用更新</string>
+    <string name="woopos_settings_help_documentation_subtitle">檢視指引和教學課程</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">了解 POS 支援的商品類型</string>
+    <string name="woopos_settings_help_category_subtitle">獲得說明與支援</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">深入了解如何接受行動支付</string>
+    <string name="woopos_settings_card_reader_update_button">更新</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">不明</string>
+    <string name="woopos_settings_card_reader_battery_title">電池</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">文件</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">設定並測試條碼掃描器</string>
+    <string name="woopos_settings_card_reader_unknown_reader">不明的讀卡機</string>
+    <string name="woopos_settings_card_reader_firmware_title">韌體</string>
+    <string name="woopos_settings_card_reader_detail_title">讀卡機設定</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">深入了解 POS 的條碼掃瞄功能</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">設定掃描器</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">條碼掃描器設定</string>
+    <string name="woopos_settings_hardware_card_readers">讀卡機</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">設定條碼掃描器設定</string>
+    <string name="woopos_settings_store_category_subtitle">商店組態和設定</string>
+    <string name="woopos_settings_store_category">商店</string>
+    <string name="woopos_settings_hardware_category">硬體</string>
+    <string name="woopos_settings_title">設定</string>
+    <string name="logviewer_current_log_file">目前</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">管理讀卡機連線</string>
+    <string name="woopos_settings_hardware_barcode_scanners">條碼掃描器</string>
+    <string name="woopos_settings_hardware_category_subtitle">管理硬體連線</string>
+    <string name="error_wordpress_com_connectivity">無法連線 WordPress.com。 請檢查網際網路連線設定，或嘗試切換網路。</string>
+    <string name="logviewer_log_files_list_footer">最多可儲存七天的記錄。</string>
+    <string name="logviewer_log_files_list_header">依建立日期排列記錄檔案</string>
+    <string name="order_refunds_credit_card_refund">信用卡</string>
+    <string name="orderdetail_shipping_label_refunded">你已成功提交退款要求。 你可以購買新標籤。</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">追蹤號碼</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">%1$d 個項目</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">%1$d 個項目</string>
+    <string name="orderdetail_shipping_label_shipment_header">貨件 %1$s</string>
+    <string name="user_role_access_error_user_roles_null">此應用程式只支援「管理員」和「商店經理」使用者角色。 無法擷取帳號角色， 請聯絡支援團隊。</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">還是行不通？ 請聯絡裝置製造商的顧客支援服務。</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">前往裝置設定，搜尋「鍵盤」，然後啟用「連接實體鍵盤時，顯示螢幕小鍵盤」。 此設定可能位於鍵盤應用程式設定。</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">尋找畫面上的鍵盤圖示或工具列。</string>

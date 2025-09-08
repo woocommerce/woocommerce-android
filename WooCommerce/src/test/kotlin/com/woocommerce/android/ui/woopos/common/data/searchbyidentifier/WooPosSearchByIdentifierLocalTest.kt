@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -11,6 +10,7 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -42,7 +42,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "1234567890123"
         val product = createProduct(globalUniqueId = identifier)
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
+        whenever(variationsCache.getAll()).thenReturn(emptyList())
 
         // WHEN
         val result = sut(identifier)
@@ -56,7 +56,7 @@ class WooPosSearchByIdentifierLocalTest {
         // GIVEN
         val identifier = "NOTFOUND"
         whenever(productsCache.getAll()).thenReturn(emptyList())
-        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
+        whenever(variationsCache.getAll()).thenReturn(emptyList())
 
         // WHEN
         val result = sut(identifier)
@@ -71,7 +71,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "ABC123"
         val product = createProduct(globalUniqueId = "abc123")
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
+        whenever(variationsCache.getAll()).thenReturn(emptyList())
 
         // WHEN
         val result = sut(identifier)
@@ -87,12 +87,16 @@ class WooPosSearchByIdentifierLocalTest {
         val productId = 1L
         val variationId = 10L
         val product = createProduct(remoteId = productId).copy(type = ProductType.VARIABLE.value)
-        val variation: ProductVariation = mock {
-            on { remoteVariationId }.thenReturn(variationId)
-            on { remoteProductId }.thenReturn(productId)
-            on { globalUniqueId }.thenReturn(identifier)
-            on { sku }.thenReturn("")
-        }
+        val variation = WooPosVariation(
+            remoteVariationId = variationId,
+            remoteProductId = productId,
+            globalUniqueId = identifier,
+            price = BigDecimal.TEN,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
         whenever(productsCache.getAll()).thenReturn(listOf(product))
         whenever(productsCache.getProductById(productId)).thenReturn(product)
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
@@ -112,18 +116,26 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "MATCH-VAR"
         val productId = 1L
         val product = createProduct(remoteId = productId).copy(type = ProductType.VARIABLE.value)
-        val variation1: ProductVariation = mock {
-            on { remoteVariationId }.thenReturn(10L)
-            on { remoteProductId }.thenReturn(productId)
-            on { globalUniqueId }.thenReturn("OTHER-VAR")
-            on { sku }.thenReturn("OTHER-SKU")
-        }
-        val variation2: ProductVariation = mock {
-            on { remoteVariationId }.thenReturn(20L)
-            on { remoteProductId }.thenReturn(productId)
-            on { globalUniqueId }.thenReturn(identifier)
-            on { sku }.thenReturn("")
-        }
+        val variation1 = WooPosVariation(
+            remoteVariationId = 10L,
+            remoteProductId = productId,
+            globalUniqueId = "OTHER-VAR",
+            price = BigDecimal.TEN,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
+        val variation2 = WooPosVariation(
+            remoteVariationId = 20L,
+            remoteProductId = productId,
+            globalUniqueId = identifier,
+            price = BigDecimal.TEN,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
         whenever(productsCache.getAll()).thenReturn(listOf(product))
         whenever(productsCache.getProductById(productId)).thenReturn(product)
         whenever(variationsCache.getAll()).thenReturn(listOf(variation1, variation2))
@@ -143,12 +155,16 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "VAR-UPPER"
         val productId = 1L
         val product = createProduct(remoteId = productId).copy(type = ProductType.VARIABLE.value)
-        val variation: ProductVariation = mock {
-            on { remoteVariationId }.thenReturn(10L)
-            on { remoteProductId }.thenReturn(productId)
-            on { globalUniqueId }.thenReturn("var-upper")
-            on { sku }.thenReturn("")
-        }
+        val variation = WooPosVariation(
+            remoteVariationId = 10L,
+            remoteProductId = productId,
+            globalUniqueId = "var-upper",
+            price = BigDecimal.TEN,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
         whenever(productsCache.getAll()).thenReturn(listOf(product))
         whenever(productsCache.getProductById(productId)).thenReturn(product)
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
@@ -167,12 +183,16 @@ class WooPosSearchByIdentifierLocalTest {
         // GIVEN
         val identifier = "VAR123456"
         val productId = 1L
-        val variation: ProductVariation = mock {
-            on { remoteVariationId }.thenReturn(10L)
-            on { remoteProductId }.thenReturn(productId)
-            on { globalUniqueId }.thenReturn(identifier)
-            on { sku }.thenReturn("")
-        }
+        val variation = WooPosVariation(
+            remoteVariationId = 10L,
+            remoteProductId = productId,
+            globalUniqueId = identifier,
+            price = BigDecimal.TEN,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
 
         whenever(productsCache.getAll()).thenReturn(emptyList())
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))

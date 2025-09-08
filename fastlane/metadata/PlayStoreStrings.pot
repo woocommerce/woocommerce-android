@@ -12,20 +12,20 @@ msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
 msgctxt "wear_release_note"
-msgid "Our latest update brings a refreshed look and feel, aligning the app with the new WooCommerce branding. Enjoy a fresh, modern design!"
+msgid "This update makes the Wear app run more smoothly with faster startup times and improved reliability, giving you a better experience managing your store from your wrist."
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_232"
+msgid ""
+"23.2:\n"
+"We’ve improved your WooCommerce app with new POS customization settings, clearer shipping label updates, smarter order filters, and automatic shipment weight entry. You’ll also find better handling of in-progress labels, fractional stock display, and enhanced login reliability for a smoother store management experience.\n"
+msgstr ""
+
 msgctxt "release_note_231"
 msgid ""
 "23.1:\n"
 "Enhanced your store management experience with exciting new features! Remove backgrounds from product images instantly with our new one-tap tool. Improved shipping labels with better address validation, cleaner layouts, and smarter split shipment handling. Fixed order selection issues and enhanced login error handling for smoother operations.\n"
-msgstr ""
-
-msgctxt "release_note_230"
-msgid ""
-"23.0:\n"
-"Psst... Excuse me, do you have a moment to talk about Woo Point of Sale? 💰 It now takes center stage with a shiny new POS tab in the main navigation—one tap and you’re selling in the UK and US, with improved external barcode scanner support 📦 for smoother checkouts. We’ve also refreshed the UI with sleek Material 3 touches ✨ and packed in small improvements and fixes you’ll want to explore.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

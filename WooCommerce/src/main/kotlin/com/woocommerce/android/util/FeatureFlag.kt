@@ -16,7 +16,8 @@ enum class FeatureFlag {
     WOO_POS_HISTORICAL_ORDERS_M1,
     WOO_POS_LOCAL_CATALOG_M1,
     HIDE_SITES_FROM_SITE_PICKER,
-    AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL;
+    AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL,
+    APP_PASSWORDS_FOR_JETPACK_SITES;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -29,7 +30,8 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
             AI_PRODUCT_IMAGE_BACKGROUND_REMOVAL,
-            WOO_POS_LOCAL_CATALOG_M1 -> PackageUtils.isDebugBuild()
+            WOO_POS_LOCAL_CATALOG_M1,
+            APP_PASSWORDS_FOR_JETPACK_SITES -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             BULK_UPDATE_ORDERS_STATUS,
