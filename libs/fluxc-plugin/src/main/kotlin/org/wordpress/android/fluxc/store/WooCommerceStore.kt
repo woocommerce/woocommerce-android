@@ -41,7 +41,6 @@ import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.tools.CoroutineEngine
-import org.wordpress.android.fluxc.utils.PreferenceUtils
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
@@ -109,23 +108,6 @@ open class WooCommerceStore @Inject internal constructor(
 
     @Suppress("ReturnCount")
     suspend fun fetchWooCommerceSite(site: SiteModel): WooResult<SiteModel> {
-        // Check if the site supports application passwords or not
-        // TODO remove this check after finishing the application passwords experiment
-        suspend fun fetchAppPasswordsSupportIfNeeded(site: SiteModel) {
-            val sharedPrefs = PreferenceUtils.getFluxCPreferences(appContext)
-            val sharedPrefKey = "application_passwords_check_done"
-            val checkDone = sharedPrefs.getBoolean(sharedPrefKey, false)
-            if (site.applicationPasswordsAuthorizeUrl != null || checkDone) return
-
-            fetchSupportedApiVersion(site, false).let {
-                if (!it.isError) {
-                    sharedPrefs.edit()
-                        .putBoolean(sharedPrefKey, true)
-                        .apply()
-                }
-            }
-        }
-
         val fetchResult = siteStore.fetchSite(site)
 
         val updatedSite = withContext(Dispatchers.IO) {
@@ -141,8 +123,6 @@ open class WooCommerceStore @Inject internal constructor(
         if (fetchResult.rowsAffected > 0) {
             emitChange(OnSiteChanged(1, listOf(updatedSite)))
         }
-
-        fetchAppPasswordsSupportIfNeeded(updatedSite)
 
         return WooResult(updatedSite)
     }

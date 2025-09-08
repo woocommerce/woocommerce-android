@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
+import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -10,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -24,12 +28,26 @@ class WooPosSearchByIdentifierResultConverterTest {
     private lateinit var sut: WooPosSearchByIdentifierResultConverter
     private val productsCache: WooPosProductsCache = mock()
     private val variationProcess: WooPosSearchByIdentifierProcessVariationResult = mock()
+    private val variationMapper: WooPosVariationMapper = mock()
 
     private val testProduct = ProductTestUtils.generateProduct()
-    private val testVariation = ProductTestUtils.generateProductVariation()
+    private val testProductVariation = ProductTestUtils.generateProductVariation()
+    private val testVariation by lazy { testProductVariation.toWooPosVariation(variationMapper) }
 
     @Before
     fun setup() {
+        whenever(variationMapper.fromProductVariation(any())).thenReturn(
+            WooPosVariation(
+                remoteVariationId = 1L,
+                remoteProductId = 1L,
+                globalUniqueId = "test-unique-id",
+                price = java.math.BigDecimal("10.0"),
+                image = null,
+                attributes = emptyList(),
+                isVisible = true,
+                isDownloadable = false
+            )
+        )
         sut = WooPosSearchByIdentifierResultConverter(productsCache, variationProcess)
     }
 

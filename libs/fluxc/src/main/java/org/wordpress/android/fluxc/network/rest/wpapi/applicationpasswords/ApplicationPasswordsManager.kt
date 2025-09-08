@@ -19,6 +19,7 @@ private const val UNAUTHORIZED = 401
 private const val CONFLICT = 409
 private const val NOT_FOUND = 404
 private const val APPLICATION_PASSWORDS_DISABLED_ERROR_CODE = "application_passwords_disabled"
+private const val APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE = "application_passwords_disabled_for_user"
 
 @Singleton
 internal class ApplicationPasswordsManager @Inject constructor(
@@ -162,7 +163,8 @@ internal class ApplicationPasswordsManager @Inject constructor(
                     }
 
                     statusCode == NOT_FOUND ||
-                        errorCode == APPLICATION_PASSWORDS_DISABLED_ERROR_CODE -> {
+                        errorCode == APPLICATION_PASSWORDS_DISABLED_ERROR_CODE ||
+                        errorCode == APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE -> {
                         appLogWrapper.w(
                             MAIN,
                             "Application Password feature not supported, " +
@@ -236,8 +238,8 @@ internal class ApplicationPasswordsManager @Inject constructor(
                 val error = payload.error
                 appLogWrapper.w(
                     AppLog.T.MAIN, "Application password deletion failed, error: " +
-                    "${error.type} ${error.message}\n" +
-                    "${error.volleyError?.toString()}"
+                        "${error.type} ${error.message}\n" +
+                        "${error.volleyError?.toString()}"
                 )
                 ApplicationPasswordDeletionResult.Failure(error)
             }

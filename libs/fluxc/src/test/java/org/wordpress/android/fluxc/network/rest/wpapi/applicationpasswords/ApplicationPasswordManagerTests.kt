@@ -14,7 +14,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
-import java.util.*
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -34,7 +33,10 @@ class ApplicationPasswordManagerTests {
     private val mJetpackApplicationPasswordsRestClient: JetpackApplicationPasswordsRestClient = mock()
     private val mWpApiApplicationPasswordsRestClient: WPApiApplicationPasswordsRestClient = mock()
 
-    private val applicationPasswordsConfiguration = ApplicationPasswordsConfiguration(Optional.of(applicationName))
+    private val applicationPasswordsConfiguration = object : ApplicationPasswordsConfiguration {
+        override val applicationName: String = this@ApplicationPasswordManagerTests.applicationName
+        override suspend fun isEnabledForJetpackAccess() = true
+    }
 
     private lateinit var mApplicationPasswordsManager: ApplicationPasswordsManager
 
@@ -149,6 +151,29 @@ class ApplicationPasswordManagerTests {
             }
             val networkError = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.SERVER_ERROR)).apply {
                 apiError = "application_passwords_disabled"
+            }
+
+            whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
+            whenever(mJetpackApplicationPasswordsRestClient.fetchWPAdminUsername(site))
+                .thenReturn(UsernameFetchPayload(testCredentials.userName))
+            whenever(mJetpackApplicationPasswordsRestClient.createApplicationPassword(site, applicationName))
+                .thenReturn(ApplicationPasswordCreationPayload(networkError))
+
+            val result = mApplicationPasswordsManager.getApplicationCredentials(
+                testSite
+            )
+
+            assertEquals(ApplicationPasswordCreationResult.NotSupported(networkError), result)
+        }
+
+    @Test
+    fun `when a jetpack site returns application_passwords_disabled_for_user, then return feature not available`() =
+        runTest {
+            val site = testSite.apply {
+                origin = SiteModel.ORIGIN_WPCOM_REST
+            }
+            val networkError = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.SERVER_ERROR)).apply {
+                apiError = "application_passwords_disabled_for_user"
             }
 
             whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)

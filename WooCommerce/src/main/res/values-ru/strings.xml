@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-14 14:54:09+0000
+Translation-Revision-Date: 2025-08-26 13:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">Вы не можете перемещать сюда товары или удалять их отсюда.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">Вы приобрели этикетку для этой доставки.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">Страна производства или сборки товара.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">Подробнее о стране происхождения товара</string>
+    <string name="woo_shipping_labels_customs_description_info">Отправляя товары в страны, где действуют таможенные правила Европейского союза (ЕС), вы должны точно и понятно описать каждую позицию. Так, при отправке одежды необходимо указать её тип (например, мужские рубашки, жилет для девочки, куртка для мальчика), чтобы описание считалось приемлемым. В противном случае доставка может быть приостановлена или задержана таможней.</string>
+    <string name="woo_shipping_labels_customs_description_info_button">Подробнее об описании товара</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">Подробнее о тарифе HS</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">Подробнее об ITN</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">Не удалось найти службу доставки по комбинации заданной категории опасных веществ, указанных данных упаковки и общего веса посылки. Уточните данные и повторите попытку.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">Не удалось найти службу доставки по комбинации указанных данных упаковки и общего веса посылки. Уточните данные и повторите попытку.</string>
+    <string name="woopos_settings_store_not_set">Не указано</string>
+    <string name="woopos_settings_refund_policy_label">Правила возмещения средств и возврата товаров</string>
+    <string name="woopos_settings_store_email_label">Адрес эл. почты</string>
+    <string name="woopos_settings_store_phone_label">Телефон</string>
+    <string name="woopos_settings_store_address_label">Адрес</string>
+    <string name="woopos_settings_store_name_label">Название магазина</string>
+    <string name="woopos_settings_receipt_information_title">Данные чека</string>
+    <string name="woopos_settings_store_information_title">Сведения о магазине</string>
+    <string name="woopos_settings_help_get_support_subtitle">Обратитесь в службу поддержки</string>
+    <string name="woopos_settings_help_documentation_subtitle">Руководства и обучающие материалы</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">Товары, поддерживаемые в POS</string>
+    <string name="woopos_settings_help_category_subtitle">Помощь и техническая поддержка</string>
+    <string name="woopos_settings_card_reader_connected_reader">Подключённое устройство чтения</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">Подробнее о приёме мобильных платежей</string>
+    <string name="woopos_settings_card_reader_documentation_title">Документация</string>
+    <string name="woopos_settings_card_reader_update_available">• Доступно обновление</string>
+    <string name="woopos_settings_card_reader_update_button">Обновить</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">Неизвестно</string>
+    <string name="woopos_settings_card_reader_unknown_reader">Неизвестное устройство чтения</string>
+    <string name="woopos_settings_card_reader_firmware_title">Прошивка</string>
+    <string name="woopos_settings_card_reader_battery_title">Аккумулятор</string>
+    <string name="woopos_settings_card_reader_detail_title">Настройки устройства чтения карт</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">Подробнее о сканировании штрихкодов в POS</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">Документация</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">Настройте и протестируйте сканер штрихкодов</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">Настройка сканера</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">Настройка сканера штрихкодов</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">Управление подключениями устройства чтения карт</string>
+    <string name="woopos_settings_hardware_card_readers">Устройства чтения карт</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">Настроить параметры сканера штрихкодов</string>
+    <string name="woopos_settings_hardware_barcode_scanners">Сканеры штрихкодов</string>
+    <string name="woopos_settings_store_category_subtitle">Конфигурация и настройки магазина</string>
+    <string name="woopos_settings_store_category">Магазин</string>
+    <string name="woopos_settings_hardware_category_subtitle">Управление подключениями оборудования</string>
+    <string name="woopos_settings_hardware_category">Оборудование</string>
+    <string name="woopos_settings_title">Настройки</string>
+    <string name="error_wordpress_com_connectivity">Не удаётся подключиться к WordPress.com. Проверьте настройки подключения к Интернету или попробуйте сменить подключение.</string>
+    <string name="logviewer_current_log_file">Текущее</string>
+    <string name="logviewer_log_files_list_footer">Журналы хранятся в течение 7 дней.</string>
+    <string name="logviewer_log_files_list_header">Файлы журнала по дате создания</string>
+    <string name="order_refunds_credit_card_refund">Банковская карта</string>
+    <string name="orderdetail_shipping_label_refunded">Запрос на возврат средств успешно отправлен. Вы можете приобрести новую этикетку.</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">Номер отправления</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">Товары (%1$d)</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">Товары (%1$d)</string>
+    <string name="orderdetail_shipping_label_shipment_header">Доставка %1$s</string>
+    <string name="user_role_access_error_user_roles_null">Это приложение поддерживает только роли администратора и менеджера магазина. Не удалось получить роли пользователей вашей учётной записи. Обратитесь в службу поддержки.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">Не получилось? Обратитесь в службу поддержки производителя устройства.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">Найдите значок клавиатуры или панель инструментов на экране.</string>
     <string name="woopos_scanning_setup_software_keyboard_hint">Нажмите здесь, чтобы проверить отображение клавиатуры</string>

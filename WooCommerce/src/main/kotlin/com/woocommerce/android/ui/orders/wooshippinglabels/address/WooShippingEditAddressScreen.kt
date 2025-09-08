@@ -309,7 +309,6 @@ fun WooShippingEditAddressScreen(
                         error = editableAddress.postalCode.error,
                         isRequired = editableAddress.postalCode.isRequired,
                         keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
                         ),
                         keyboardActions = KeyboardActions(

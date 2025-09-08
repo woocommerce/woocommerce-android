@@ -72,7 +72,6 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.products.MutableMultipleSelectionPredicate
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -244,10 +243,7 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-
-        if (FeatureFlag.BULK_UPDATE_ORDERS_STATUS.isEnabled()) {
-            addSelectionTracker()
-        }
+        addSelectionTracker()
     }
 
     private fun addSelectionTracker() {

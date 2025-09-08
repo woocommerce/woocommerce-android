@@ -121,8 +121,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             AppPrefs.setImageOptimizationEnabled(isChecked)
         }
 
-        updateStoreSettings()
-
         binding.optionHelpAndSupport.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
             startActivity(HelpActivity.createIntent(requireActivity(), HelpOrigin.SETTINGS, null))
@@ -303,18 +301,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     override fun handleApplicationPasswordsSettings() {
         binding.optionNotifications.hide()
     }
-
-    private fun updateStoreSettings() {
-        generateBetaFeaturesTitleList()
-            .joinToString(", ")
-            .takeIf { it.isNotEmpty() }
-            ?.let { binding.optionBetaFeatures.optionValue = it }
-    }
-
-    private fun generateBetaFeaturesTitleList() =
-        mutableListOf<String>().apply {
-            add(getString(R.string.beta_features_add_ons))
-        }
 
     private fun showThemeChooser() {
         val currentTheme = AppPrefs.getAppTheme()

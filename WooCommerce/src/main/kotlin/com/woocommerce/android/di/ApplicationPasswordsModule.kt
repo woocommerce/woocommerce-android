@@ -1,14 +1,12 @@
 package com.woocommerce.android.di
 
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
-import com.woocommerce.android.util.DeviceInfo
+import com.woocommerce.android.applicationpasswords.WooApplicationPasswordsConfiguration
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsListener
 
 @Module
@@ -19,10 +17,8 @@ interface ApplicationPasswordsModule {
         notifier: ApplicationPasswordsNotifier
     ): ApplicationPasswordsListener
 
-    companion object {
-        @Provides
-        @ApplicationPasswordsClientId
-        fun providesApplicationPasswordClientId() =
-            "${BuildConfig.APPLICATION_ID}.app-client.${DeviceInfo.name.replace(' ', '-')}"
-    }
+    @Binds
+    fun bindApplicationPasswordsConfiguration(
+        configuration: WooApplicationPasswordsConfiguration
+    ): ApplicationPasswordsConfiguration
 }

@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 23.2
+We’ve improved your WooCommerce app with new POS customization settings, clearer shipping label updates, smarter order filters, and automatic shipment weight entry. You’ll also find better handling of in-progress labels, fractional stock display, and enhanced login reliability for a smoother store management experience.
+
 ## 23.1
 Enhanced your store management experience with exciting new features! Remove backgrounds from product images instantly with our new one-tap tool. Improved shipping labels with better address validation, cleaner layouts, and smarter split shipment handling. Fixed order selection issues and enhanced login error handling for smoother operations.
 
