@@ -38,16 +38,17 @@ class WooPosSearchProductsDataSource @Inject constructor(
         sortProducts(productsCache.getAll().filter(searchPredicate(query))).take(PAGE_SIZE)
     }
 
-    suspend fun searchRemoteProducts(query: String): Result<List<WooPosProductModelVersion2>> = withContext(Dispatchers.IO) {
-        searchResultsIndex.clearCache()
+    suspend fun searchRemoteProducts(query: String): Result<List<WooPosProductModelVersion2>> =
+        withContext(Dispatchers.IO) {
+            searchResultsIndex.clearCache()
 
-        performRemoteSearch(query).fold(
-            onSuccess = { result ->
-                Result.success(result.products.sortedBy { it.name.lowercase() })
-            },
-            onFailure = { error -> Result.failure(error) }
-        )
-    }
+            performRemoteSearch(query).fold(
+                onSuccess = { result ->
+                    Result.success(result.products.sortedBy { it.name.lowercase() })
+                },
+                onFailure = { error -> Result.failure(error) }
+            )
+        }
 
     suspend fun loadMore(query: String): Result<List<WooPosProductModelVersion2>> {
         if (!canLoadMore.get()) {

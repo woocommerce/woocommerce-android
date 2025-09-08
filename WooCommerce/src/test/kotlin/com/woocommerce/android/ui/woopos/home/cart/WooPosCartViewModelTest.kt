@@ -159,7 +159,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
@@ -194,7 +194,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(
@@ -244,7 +244,7 @@ class WooPosCartViewModelTest {
                 productId = 23L,
                 productName = "title",
                 amount = "10.0",
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
             )
 
             val parentToChildrenMutableSharedFlow = MutableSharedFlow<ParentToChildrenEvent>()
@@ -317,7 +317,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
@@ -415,7 +415,7 @@ class WooPosCartViewModelTest {
                 productId = 23L,
                 productName = "title",
                 amount = "10.0",
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
             )
 
             val parentToChildrenMutableSharedFlow = MutableSharedFlow<ParentToChildrenEvent>()
@@ -466,19 +466,19 @@ class WooPosCartViewModelTest {
                 productId = 1L,
                 productName = "title",
                 amount = "10.0",
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
             )
             val product2 = generateWooPosProduct(
                 productId = 2L,
                 productName = "title",
                 amount = "10.0",
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
             )
             val product3 = generateWooPosProduct(
                 productId = 3L,
                 productName = "title",
                 amount = "10.0",
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
             )
 
             val parentToChildrenMutableSharedFlow = MutableSharedFlow<ParentToChildrenEvent>()
@@ -556,7 +556,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
@@ -622,7 +622,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
@@ -682,7 +682,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
@@ -752,7 +752,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         parentToChildrenEventsMutableFlow.emit(
@@ -793,7 +793,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         parentToChildrenEventsMutableFlow.emit(
@@ -867,7 +867,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
@@ -895,7 +895,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
@@ -926,7 +926,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
@@ -1136,7 +1136,7 @@ class WooPosCartViewModelTest {
                 productId = 23L,
                 productName = "Scanned Product",
                 amount = "10.0",
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
             )
 
             whenever(searchByIdentifier(eq("123456789"))).thenReturn(
@@ -1174,7 +1174,7 @@ class WooPosCartViewModelTest {
                 productId = 23L,
                 productName = "Scanned Product",
                 amount = "10.0",
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
             )
 
             whenever(searchByIdentifier(eq("123456789"))).thenReturn(
@@ -1283,14 +1283,14 @@ class WooPosCartViewModelTest {
                 productId = 23L,
                 productName = "Existing Product",
                 amount = "10.0",
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
             )
 
             val scannedProduct = generateWooPosProduct(
                 productId = 42L,
                 productName = "Scanned Product",
                 amount = "10.0",
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url2", name = "",  alt = ""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url2", name = "", alt = ""))
             )
 
             whenever(getProductById(eq(existingProduct.remoteId))).thenReturn(existingProduct)
@@ -1451,7 +1451,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
@@ -1482,7 +1482,7 @@ class WooPosCartViewModelTest {
             productId = productId,
             productName = "title",
             amount = "10.0",
-            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "",  alt = ""))
+            images = listOf(WooPosProductModelVersion2.WooPosProductImage(1L, url = "url", name = "", alt = ""))
         )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
