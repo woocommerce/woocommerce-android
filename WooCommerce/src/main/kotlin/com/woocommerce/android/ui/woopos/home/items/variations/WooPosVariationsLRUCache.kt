@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.variations
 
 import android.util.LruCache
-import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -13,22 +13,22 @@ class WooPosVariationsLRUCache @Inject constructor() {
         private const val VARIATION_CACHE_MAX_SIZE = 50
     }
 
-    private val cache = LruCache<Long, List<ProductVariation>>(VARIATION_CACHE_MAX_SIZE)
+    private val cache = LruCache<Long, List<WooPosVariation>>(VARIATION_CACHE_MAX_SIZE)
     private val mutex = Mutex()
 
-    suspend fun get(key: Long): List<ProductVariation>? {
+    suspend fun get(key: Long): List<WooPosVariation>? {
         return mutex.withLock {
             cache.get(key)
         }
     }
 
-    suspend fun put(key: Long, value: List<ProductVariation>) {
+    suspend fun put(key: Long, value: List<WooPosVariation>) {
         mutex.withLock {
             cache.put(key, value)
         }
     }
 
-    suspend fun add(key: Long, value: ProductVariation) {
+    suspend fun add(key: Long, value: WooPosVariation) {
         mutex.withLock {
             val list = cache.get(key)
             if (list != null) {
@@ -48,7 +48,7 @@ class WooPosVariationsLRUCache @Inject constructor() {
         }
     }
 
-    suspend fun getAll(): List<ProductVariation> {
+    suspend fun getAll(): List<WooPosVariation> {
         return mutex.withLock {
             cache.snapshot().values.flatten()
         }

@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-14 14:54:09+0000
+Translation-Revision-Date: 2025-08-27 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">Je kan er geen producten in plaatsen of uit verwijderen.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">Je hebt een label aangeschaft voor deze verzending.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">Meer informatie over het land van herkomst van het product</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">Het land waarin het product is geproduceerd of samengesteld.</string>
+    <string name="woo_shipping_labels_customs_description_info">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je een duidelijke, specifieke beschrijving van elk artikel opgeven. Als je bijvoorbeeld kleding verzendt, moet je in de beschrijving duidelijk aangeven wat voor soort kleding het is (bijv. herenshirt, damesvest, kinderjas). Anders kunnen verzendingen vertraging oplopen of stil komen te staan bij de douane.</string>
+    <string name="woo_shipping_labels_customs_description_info_button">Meer informatie over de productbeschrijving</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">Meer informatie over HS Tariff</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">Meer informatie over ITN</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">We kunnen geen bezorgservice vinden voor de combinatie van de geselecteerde categorie Gevaarlijke goederen, het geselecteerde pakket en het totaalgewicht van de verzending. Pas je invoer aan en probeer het nogmaals.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">We kunnen geen bezorgservice vinden voor de combinatie van het geselecteerde pakket en het totaalgewicht van de verzending. Pas je invoer aan en probeer het nogmaals.</string>
+    <string name="woopos_settings_store_not_set">Niet ingesteld</string>
+    <string name="woopos_settings_refund_policy_label">Terugbetaal- en retourneringsbeleid</string>
+    <string name="woopos_settings_store_email_label">E-mail</string>
+    <string name="woopos_settings_store_phone_label">Telefoon</string>
+    <string name="woopos_settings_store_address_label">Adres</string>
+    <string name="woopos_settings_store_name_label">Winkelnaam</string>
+    <string name="woopos_settings_store_information_title">Winkelinformatie</string>
+    <string name="woopos_settings_receipt_information_title">Gegevens betalingsbewijs</string>
+    <string name="woopos_settings_help_get_support_subtitle">Neem contact op met ons ondersteuningsteam</string>
+    <string name="woopos_settings_help_documentation_subtitle">Bekijk handleidingen en tutorials</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">Bekijk welke producten worden ondersteund in POS</string>
+    <string name="woopos_settings_card_reader_connected_reader">Verbonden lezer</string>
+    <string name="woopos_settings_card_reader_documentation_title">Documentatie</string>
+    <string name="woopos_settings_card_reader_update_available">• Update beschikbaar</string>
+    <string name="woopos_settings_help_category_subtitle">Krijg hulp en ondersteuning</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">Meer informatie over het aannemen van mobiele betalingen</string>
+    <string name="woopos_settings_card_reader_update_button">Updaten</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">Onbekend</string>
+    <string name="woopos_settings_card_reader_unknown_reader">Onbekende lezer</string>
+    <string name="woopos_settings_card_reader_battery_title">Batterij</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">Documentatie</string>
+    <string name="woopos_settings_card_reader_firmware_title">Firmware</string>
+    <string name="woopos_settings_card_reader_detail_title">Kaartlezerinstellingen</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">Meer informatie over streepjescodes scannen in POS</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">Configureer en test je streepjescodescanner</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">Scanner ingesteld</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">Instellen streepjescodescanner</string>
+    <string name="woopos_settings_hardware_card_readers">Kaartlezers</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">Instellingen streepjescodescanner configureren</string>
+    <string name="woopos_settings_store_category_subtitle">Winkelconfiguratie en -instellingen</string>
+    <string name="woopos_settings_store_category">Winkel</string>
+    <string name="woopos_settings_hardware_category">Hardware</string>
+    <string name="woopos_settings_title">Instellingen</string>
+    <string name="error_wordpress_com_connectivity">We kunnen WordPress.com niet bereiken. Controleer je instellingen voor internetverbinding of probeer van netwerk te wisselen.</string>
+    <string name="logviewer_current_log_file">Huidig</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">Kaartlezerverbindingen beheren</string>
+    <string name="woopos_settings_hardware_barcode_scanners">Streepjescodescanners</string>
+    <string name="woopos_settings_hardware_category_subtitle">Hardwareverbindingen beheren</string>
+    <string name="logviewer_log_files_list_footer">Logs worden tot zeven dagen lang bewaard.</string>
+    <string name="logviewer_log_files_list_header">Logbestanden op aanmaakdatum</string>
+    <string name="order_refunds_credit_card_refund">Creditcard</string>
+    <string name="orderdetail_shipping_label_refunded">Je aanvraag voor terugbetaling is ingediend. Je kan een nieuw label aanschaffen.</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">Trackingnummer</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">%1$d artikelen</string>
+    <string name="orderdetail_shipping_label_shipment_header">Verzending %1$s</string>
+    <string name="user_role_access_error_user_roles_null">Deze app ondersteunt alleen de gebruikersrollen Beheerder en Winkelmanager. We konden de gebruikersrollen voor je account niet ophalen. Neem contact op met de ondersteuning.</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">%1$d artikel</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">Werkt het nog steeds niet? Neem contact op met de klantenondersteuning van de fabrikant van je apparaat.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">Ga naar apparaatinstellingen, zoek op \'toetsenbord\' en schakel vervolgens \'Toon toetsenbord op scherm wanneer fysiek toetsenbord is aangesloten\' in. Deze instelling kan in de instellingen van je toetsenbord-app staan.</string>
     <string name="woopos_scanning_setup_software_keyboard_hint">Tik hier om de zichtbaarheid van het toetsenbord te testen</string>

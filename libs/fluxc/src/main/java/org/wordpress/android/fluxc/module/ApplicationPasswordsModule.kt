@@ -8,7 +8,4 @@ import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.Appli
 interface ApplicationPasswordsModule {
     @BindsOptionalOf
     fun bindOptionalApplicationPasswordsListener(): ApplicationPasswordsListener
-    @BindsOptionalOf
-    @ApplicationPasswordsClientId
-    fun bindOptionalApplicationPasswordsClientId(): String
 }

@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-11 15:54:04+0000
+Translation-Revision-Date: 2025-08-25 14:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_purchased_message_desc">لا يمكنك نقل المنتجات إليه أو الخروج منه.</string>
+    <string name="woo_shipping_split_shipment_purchased_message_title">لقد اشتريت ملصقًا لهذه الشحنة.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info">البلد الذي تم تصنيع المنتج أو تجميعه فيه.</string>
+    <string name="woo_shipping_labels_customs_origin_country_info_button">المزيد من المعلومات حول بلد منشأ المنتج</string>
+    <string name="woo_shipping_labels_customs_description_info">عند الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي، يجب عليك تقديم وصف صريح ومحدد حول كل عنصر. على سبيل المثال، إذا كنت ترسل ملابس، فيجب عليك تحديد نوع الملابس (مثل: قمصان الرجال وسترات النساء التحتية وسترات الأولاد) لكي يصبح الوصف مقبولاً. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
+    <string name="woo_shipping_labels_customs_description_info_button">المزيد من المعلومات حول وصف المنتج</string>
+    <string name="woo_shipping_labels_customs_hs_tariff_info_button">المزيد من المعلومات حول تعريف النظام المنسق</string>
+    <string name="woo_shipping_labels_customs_itn_info_button">المزيد من المعلومات حول رقم المعاملة</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">تعذر علينا العثور على خدمة الشحن لمجموعة من تصنيفات المواد الخطرة المحددة، والطرود المحددة، وإجمالي وزن الشحنة. يرجى ضبط إدخالك والمحاولة مجددًا.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_empty">تعذر علينا العثور على خدمة الشحن لمجموعة من الطرود المحددة وإجمالي وزن الشحنة. يرجى ضبط إدخالك والمحاولة مجددًا.</string>
+    <string name="woopos_settings_store_not_set">لم يتم التعيين</string>
+    <string name="woopos_settings_refund_policy_label">سياسة الاسترداد والإرجاع</string>
+    <string name="woopos_settings_store_email_label">البريد الإلكتروني</string>
+    <string name="woopos_settings_store_phone_label">الهاتف</string>
+    <string name="woopos_settings_store_address_label">العنوان</string>
+    <string name="woopos_settings_store_name_label">اسم المتجر</string>
+    <string name="woopos_settings_receipt_information_title">معلومات الإيصال</string>
+    <string name="woopos_settings_store_information_title">معلومات الدفع المخزنة</string>
+    <string name="woopos_settings_help_get_support_subtitle">اتصل بفريق الدعم لدينا</string>
+    <string name="woopos_settings_help_documentation_subtitle">عرض الأدلة والبرامج التعليمية</string>
+    <string name="woopos_settings_help_product_limitations_subtitle">تعرف على المنتجات المدعومة في نقطة البيع</string>
+    <string name="woopos_settings_help_category_subtitle">احصل على المساعدة والدعم</string>
+    <string name="woopos_settings_card_reader_connected_reader">تم توصيل القارئ</string>
+    <string name="woopos_settings_card_reader_documentation_subtitle">تعرف على المزيد حول قبول المدفوعات باستخدام الهاتف المحمول</string>
+    <string name="woopos_settings_card_reader_documentation_title">توثيق</string>
+    <string name="woopos_settings_card_reader_update_available">• يوجد تحديث متوفر</string>
+    <string name="woopos_settings_card_reader_update_button">تحديث</string>
+    <string name="woopos_settings_card_reader_unknown_firmware">غير معروف</string>
+    <string name="woopos_settings_card_reader_unknown_reader">قارئ غير معروف</string>
+    <string name="woopos_settings_card_reader_firmware_title">البرنامج الثابت</string>
+    <string name="woopos_settings_card_reader_battery_title">البطارية</string>
+    <string name="woopos_settings_card_reader_detail_title">إعدادات قارئ البطاقات</string>
+    <string name="woopos_settings_barcode_scanner_documentation_subtitle">تعرف على المزيد حول فحص الرمز الشريطي في نقطة البيع</string>
+    <string name="woopos_settings_barcode_scanner_documentation_title">توثيق</string>
+    <string name="woopos_settings_barcode_scanner_setup_subtitle">قم بتكوين الماسح الضوئي للرمز الشريطي الخاص بك واختباره</string>
+    <string name="woopos_settings_barcode_scanner_setup_title">إعداد الماسح الضوئي</string>
+    <string name="woopos_settings_barcode_scanner_detail_title">إعدادات الماسح الضوئي للرمز الشريطي</string>
+    <string name="woopos_settings_hardware_card_readers_subtitle">إدارة عمليات ربط قارئ البطاقات</string>
+    <string name="woopos_settings_hardware_card_readers">أدوات قراءة البطاقات</string>
+    <string name="woopos_settings_hardware_barcode_scanners_subtitle">تكوين إعدادات الماسح الضوئي للرمز الشريطي</string>
+    <string name="woopos_settings_hardware_barcode_scanners">الماسحات الضوئية للرمز الشريطي</string>
+    <string name="woopos_settings_store_category_subtitle">تكوين المتجر وإعداداته</string>
+    <string name="woopos_settings_store_category">المتجر</string>
+    <string name="woopos_settings_hardware_category_subtitle">إدارة عمليات ربط الأجهزة</string>
+    <string name="woopos_settings_hardware_category">الأجهزة</string>
+    <string name="woopos_settings_title">الإعدادات</string>
+    <string name="error_wordpress_com_connectivity">نواجه مشكلة في الوصول إلى WordPress.com. يرجى التحقق من إعدادات الاتصال بالإنترنت أو محاولة تبديل الشبكات.</string>
+    <string name="logviewer_current_log_file">الحالي</string>
+    <string name="logviewer_log_files_list_footer">يتم تخزين سجلات لمدّة تصل إلى سبعة أيام.</string>
+    <string name="logviewer_log_files_list_header">تسجيل الملفات حسب تاريخ إنشائها</string>
+    <string name="order_refunds_credit_card_refund">بطاقة ائتمان</string>
+    <string name="orderdetail_shipping_label_refunded">أرسلتَ طلب استرداد الأموال بنجاح. يمكنك شراء ملصق جديد.</string>
+    <string name="orderdetail_shipping_label_shipment_tracking_number">رقم التتبع</string>
+    <string name="orderdetail_shipping_label_shipment_items_multiple">⁦%1$d⁩ من العناصر</string>
+    <string name="orderdetail_shipping_label_shipment_items_one">⁦%1$d⁩ من العناصر</string>
+    <string name="orderdetail_shipping_label_shipment_header">الشحنة ⁦%1$s⁩</string>
+    <string name="user_role_access_error_user_roles_null">يدعم هذا التطبيق رُتب أعضاء المسؤول ومدير المتجر فقط. تعذر علينا إحضار رُتب الأعضاء لحسابك. يرجى الاتصال بالدعم.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_three">لا يعمل حتى الآن؟ اتصل بدعم عملاء الشركة المصنعة لجهازك.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">انتقل إلى إعدادات الجهاز، وابحث عن \"لوحة المفاتيح\"، ثم فعِّل إعداد \"إظهار لوحة المفاتيح على الشاشة عند اتصال لوحة المفاتيح الفعلية\". قد يكون هذا الإعداد ضمن إعدادات تطبيق لوحة المفاتيح.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">ابحث عن أيقونة لوحة المفاتيح أو شريط الأدوات على الشاشة.</string>
