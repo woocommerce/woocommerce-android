@@ -9,7 +9,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import java.math.BigDecimal
-import java.util.Date
 
 @ExperimentalCoroutinesApi
 class WooPosProductsInMemoryCacheTest {

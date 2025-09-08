@@ -91,7 +91,7 @@ class WooPosProductsViewModelTest {
                 amount = "20.0",
                 productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
                 isDownloadable = false,
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(0, "https://test.com", "",""))
+                images = listOf(WooPosProductModelVersion2.WooPosProductImage(0, "https://test.com", "", ""))
             )
         )
 
@@ -340,8 +340,10 @@ class WooPosProductsViewModelTest {
                     amount = "20.0",
                     productType = WooPosProductModelVersion2.WooPosProductType.VARIABLE,
                     isDownloadable = false,
-                    images = listOf(WooPosProductModelVersion2
-                        .WooPosProductImage(0, "https://test.com", "", "")),
+                    images = listOf(
+                        WooPosProductModelVersion2
+                            .WooPosProductImage(0, "https://test.com", "", "")
+                    ),
                 )
             )
 

@@ -81,7 +81,7 @@ data class WooPosProductModelVersion2(
         PENDING(CoreProductStatus.PENDING.value),
         PRIVATE(CoreProductStatus.PRIVATE.value),
         TRASH(CoreProductStatus.TRASH.value),
-        UNKNOWN("unknown");
+        UNKNOWN("unknown")
     }
 
     @Parcelize
