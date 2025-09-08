@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -30,11 +31,9 @@ fun HazmatSelectionCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large)))
                 .then(if (onClick == null) Modifier else Modifier.clickable { onClick() })
-                .background(
-                    color = colorResource(R.color.light_colored_button_background),
-                    shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
-                )
+                .background(color = colorResource(R.color.light_colored_button_background))
                 .padding(16.dp)
         ) {
             Text(
