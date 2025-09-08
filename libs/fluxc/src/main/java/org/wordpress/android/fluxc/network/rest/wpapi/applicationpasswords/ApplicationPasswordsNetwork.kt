@@ -105,15 +105,11 @@ class ApplicationPasswordsNetwork @Inject constructor(
             }
 
             is ApplicationPasswordCreationResult.NotSupported -> {
+                val networkError = credentialsResult.originalError.toWPAPINetworkError()
                 if (listener.isPresent) {
-                    listener.get().onFeatureUnavailable(site, credentialsResult.originalError.toWPAPINetworkError())
+                    listener.get().onFeatureUnavailable(site, networkError)
                 }
-                return WPAPIResponse.Error(
-                    WPAPINetworkError(
-                        baseError = credentialsResult.originalError.toWPAPINetworkError(),
-                        errorCode = APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE
-                    )
-                )
+                return WPAPIResponse.Error(networkError)
             }
         }
 
@@ -187,10 +183,6 @@ class ApplicationPasswordsNetwork @Inject constructor(
         clazz: Class<T>,
         params: Map<String, String>
     ) = executeGsonRequest(site, HttpMethod.DELETE, path, clazz, params)
-
-    companion object {
-        const val APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE = "application_passwords_not_supported"
-    }
 }
 
 private fun BaseNetworkError.toWPAPINetworkError(): WPAPINetworkError {

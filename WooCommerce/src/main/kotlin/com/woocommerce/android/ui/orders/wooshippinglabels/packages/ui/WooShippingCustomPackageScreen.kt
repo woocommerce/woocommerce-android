@@ -238,7 +238,15 @@ fun WooShippingCustomPackageCreationScreen(
             enabled = isAddPackageEnabled,
             onClick = { onAddPackageClick(isSaveAsTemplateChecked) }
         ) {
-            Text(stringResource(id = R.string.woo_shipping_labels_package_creation_add_package))
+            Text(
+                stringResource(
+                    id = if (isAddPackageEnabled) {
+                        R.string.woo_shipping_labels_package_creation_add_package
+                    } else {
+                        R.string.woo_shipping_labels_package_creation_add_package_details
+                    }
+                )
+            )
         }
     }
 }

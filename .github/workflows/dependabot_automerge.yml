@@ -28,16 +28,16 @@ jobs:
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
         run: |
           set -e
-          number=$(gh api repos/$GITHUB_REPOSITORY/milestones \
+          title=$(gh api repos/$GITHUB_REPOSITORY/milestones \
             --jq '[.[]
               | select(.state=="open" and .due_on!=null and (.due_on | fromdateiso8601) >= now)
             ]
             | sort_by(.due_on)
-            | .[0].number')
+            | .[0].title')
 
-          if [ -n "$number" ]; then
-            echo "Assigning milestone #$number to PR #${{ github.event.pull_request.number }}"
-            gh pr edit "${{ github.event.pull_request.number }}" --milestone "$number"
+          if [ -n "$title" ]; then
+            echo "Assigning milestone '$title' to PR #${{ github.event.pull_request.number }}"
+            gh pr edit "${{ github.event.pull_request.number }}" --milestone "$title"
           else
             echo "No future open milestones found."
           fi

@@ -2505,9 +2505,7 @@
     <string name="settings">Settings</string>
     <string name="privacy_settings">Privacy settings</string>
     <string name="send_feedback">Send feedback</string>
-    <string name="beta_features">Beta features</string>
-    <string name="beta_features_add_ons">View Add-ons</string>
-    <string name="beta_features_simple_payments">Simple payments</string>
+    <string name="experimental_features">Experimental features</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_close_account">Close Account</string>
     <string name="settings_close_account_dialog_title">Confirm Close Account</string>
@@ -2612,6 +2610,8 @@
     <string name="plugin_state_inactive">Inactive</string>
     <string name="plugin_state_auto_managed">Auto-managed</string>
     <string name="plugins_error_message">An error occurred while loading installed plugins</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Application Passwords</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Enable application passwords to let the app directly fetch data from your WooCommerce site instead of doing so through Jetpack connection.</string>
 
     <!--
         Developer Options Screen
@@ -4655,6 +4655,7 @@
     <string name="woo_shipping_labels_package_creation_invalid_dimension">Package dimensions should all be larger than 0.</string>
     <string name="woo_shipping_labels_package_creation_save_package_option">Save this as a new package template</string>
     <string name="woo_shipping_labels_package_creation_add_package">Add Package</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Add Package Details</string>
     <string name="woo_shipping_labels_package_creation_empty_button">Create a custom package</string>
     <string name="woo_shipping_labels_package_creation_empty_carrier_message">No carrier information found</string>
     <string name="woo_shipping_labels_package_creation_empty_saved_message">No saved packages yet</string>

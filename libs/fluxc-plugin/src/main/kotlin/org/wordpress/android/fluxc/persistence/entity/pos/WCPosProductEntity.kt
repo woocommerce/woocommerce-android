@@ -36,5 +36,6 @@ data class WCPosProductEntity(
     val backordered: Boolean = false,
     val categories: String = "",
     val tags: String = "",
-    val dateModified: String = ""
+    val dateModified: String = "",
+    val variations: String = "",
 )

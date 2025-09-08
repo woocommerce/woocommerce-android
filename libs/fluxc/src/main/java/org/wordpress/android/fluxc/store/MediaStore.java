@@ -801,7 +801,7 @@ public class MediaStore extends Store {
         if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
             mWPComV2MediaRestClient.uploadMedia(payload.site, payload.media);
         } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
-                   && mApplicationPasswordsConfiguration.isEnabled()) {
+                   && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
             mApplicationPasswordsMediaRestClient.uploadMedia(payload.site, payload.media);
         } else {
             mMediaXmlrpcClient.uploadMedia(payload.site, payload.media);
@@ -823,7 +823,7 @@ public class MediaStore extends Store {
         if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
             mWPComV2MediaRestClient.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
         } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
-                   && mApplicationPasswordsConfiguration.isEnabled()) {
+                   && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
             mApplicationPasswordsMediaRestClient.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
         } else {
             mMediaXmlrpcClient.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
@@ -869,7 +869,7 @@ public class MediaStore extends Store {
         if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
             mWPComV2MediaRestClient.cancelUpload(media);
         } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
-                   && mApplicationPasswordsConfiguration.isEnabled()) {
+                   && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
             mApplicationPasswordsMediaRestClient.cancelUpload(media);
         } else {
             mMediaXmlrpcClient.cancelUpload(media);

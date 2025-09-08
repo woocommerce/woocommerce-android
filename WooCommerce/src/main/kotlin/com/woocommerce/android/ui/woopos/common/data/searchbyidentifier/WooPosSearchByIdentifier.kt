@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -75,7 +75,7 @@ class WooPosSearchByIdentifier @Inject constructor(
             }
     }
 
-    private fun meetsVariationFilterRequirements(variation: ProductVariation): Boolean {
+    private fun meetsVariationFilterRequirements(variation: WooPosVariation): Boolean {
         val requiredStatus = variationFilterConfig.filters[VariationFilterOption.STATUS]
         val hasValidStatus = when (requiredStatus) {
             WooPosVariationsTypesFilterConfig.VARIATION_STATUS_PUBLISH -> variation.isVisible
