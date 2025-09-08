@@ -207,7 +207,8 @@ class WCStatsStore @Inject constructor(
                     dataList = visitorStatsModel.dataList
                 )
             }
-        } ?: return mapOf()
+        }
+        return mapOf()
     }
 
     fun getNewVisitorStats(
@@ -233,7 +234,8 @@ class WCStatsStore @Inject constructor(
                     dataList = visitorStatsModel.dataList
                 )
             }
-        } ?: return mapOf()
+        }
+        return mapOf()
     }
 
     private fun getVisitorsMap(
