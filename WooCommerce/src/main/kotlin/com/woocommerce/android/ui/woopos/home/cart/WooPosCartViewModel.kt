@@ -7,7 +7,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -15,6 +14,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -581,19 +581,19 @@ class WooPosCartViewModel @Inject constructor(
             }
         }
 
-    private suspend fun Product.toCartListItem(itemNumber: Int): WooPosCartItemViewState.Product.Simple =
+    private suspend fun WooPosProductModelVersion2.toCartListItem(itemNumber: Int): WooPosCartItemViewState.Product.Simple =
         WooPosCartItemViewState.Product.Simple(
             itemNumber = itemNumber,
             id = this.remoteId,
             name = name,
             description = null,
-            price = formatPrice(price),
+            price = formatPrice(pricing.displayPrice),
             imageUrl = firstImageUrl,
         )
 
     private suspend fun WooPosVariation.toCartListItem(
         itemNumber: Int,
-        product: Product
+        product: WooPosProductModelVersion2
     ): WooPosCartItemViewState.Product.Variation =
         WooPosCartItemViewState.Product.Variation(
             itemNumber = itemNumber,
@@ -626,7 +626,7 @@ class WooPosCartViewModel @Inject constructor(
                     id = product.remoteId,
                     name = product.name,
                     description = null,
-                    price = formatPrice(product.price),
+                    price = formatPrice(product.pricing.displayPrice),
                     imageUrl = product.firstImageUrl
                 )
             }
