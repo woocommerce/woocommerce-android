@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -33,6 +34,7 @@ class WooPosTotalsRepositoryTest {
     private val selectedSite: SelectedSite = mock()
     private val orderMapper: OrderMapper = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val variationMapper: WooPosVariationMapper = mock()
 
     private lateinit var repository: WooPosTotalsRepository
 
@@ -233,5 +235,6 @@ class WooPosTotalsRepositoryTest {
         selectedSite,
         orderMapper,
         resourceProvider,
+        variationMapper,
     )
 }
