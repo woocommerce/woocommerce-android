@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -17,7 +17,7 @@ class WooPosSearchResultsIndexTest {
 
     private lateinit var searchResultsIndex: WooPosSearchResultsIndex
     private val productsCache: WooPosProductsCache = mock()
-    private val mockProducts = listOf<Product>(mock(), mock(), mock())
+    private val mockProducts = listOf(generateWooPosProduct(), generateWooPosProduct(), generateWooPosProduct())
 
     @Before
     fun setUp() = runTest {
