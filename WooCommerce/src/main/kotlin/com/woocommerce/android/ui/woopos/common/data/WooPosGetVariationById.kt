@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.data
 
-import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
@@ -11,8 +9,10 @@ import javax.inject.Inject
 class WooPosGetVariationById @Inject constructor(
     private val store: WCProductStore,
     private val site: SelectedSite,
+    private val mapper: WooPosVariationMapper,
 ) {
-    suspend operator fun invoke(productId: Long, variationId: Long): ProductVariation? = withContext(IO) {
-        store.getVariationByRemoteId(site.getOrNull()!!, productId, variationId)?.toAppModel()
+    suspend operator fun invoke(productId: Long, variationId: Long): WooPosVariation? = withContext(IO) {
+        val siteModel = site.getOrNull() ?: return@withContext null
+        store.getVariationByRemoteId(siteModel, productId, variationId)?.toWooPosVariation(mapper)
     }
 }

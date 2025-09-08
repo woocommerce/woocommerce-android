@@ -15,6 +15,9 @@ updates:
           - "com.google.devtools.ksp*"
         exclude-patterns:
           - "org.jetbrains.kotlinx*"
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 30
     ignore:
       # Bumping 2.26.3 to 2.27.2 will break the mocks. For more details, see
       # https://github.com/wiremock/wiremock/issues/1345#issuecomment-656060968

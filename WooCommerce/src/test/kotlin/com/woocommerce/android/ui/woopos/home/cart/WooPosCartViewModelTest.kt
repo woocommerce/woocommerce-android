@@ -5,14 +5,16 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
+import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -45,6 +47,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -107,6 +110,28 @@ class WooPosCartViewModelTest {
 
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
+    private val variationMapper: WooPosVariationMapper = mock {
+        on { fromProductVariation(any()) } doAnswer { invocation ->
+            val productVariation = invocation.arguments[0] as ProductVariation
+            WooPosVariation(
+                remoteVariationId = productVariation.remoteVariationId,
+                remoteProductId = productVariation.remoteProductId,
+                globalUniqueId = productVariation.globalUniqueId,
+                price = productVariation.price,
+                image = productVariation.image?.let { WooPosVariation.WooPosVariationImage(it.source) },
+                attributes = productVariation.attributes.map {
+                    WooPosVariation.WooPosVariationAttribute(
+                        id = it.id,
+                        name = it.name,
+                        option = it.option
+                    )
+                },
+                isVisible = productVariation.isVisible,
+                isDownloadable = productVariation.isDownloadable
+            )
+        }
+    }
+
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
@@ -150,7 +175,7 @@ class WooPosCartViewModelTest {
             productId = 23L,
             variationId = 24L,
             amount = "10.0"
-        )
+        ).toWooPosVariation(variationMapper)
         val product = ProductTestUtils.generateProduct(
             productId = 23L,
             productName = "title",
@@ -1348,15 +1373,11 @@ class WooPosCartViewModelTest {
         // GIVEN
         val productId = 100L
         val variationId = 200L
-        val variation: ProductVariation = mock {
-            on { remoteVariationId }.thenReturn(variationId)
-            on { remoteProductId }.thenReturn(productId)
-            on { getName() }.thenReturn("Red Hoodie - Size L")
-            on { price }.thenReturn(BigDecimal("45.0"))
-            on { stockStatus }.thenReturn(ProductStockStatus.InStock)
-            on { image }.thenReturn(null)
-            on { attributes }.thenReturn(emptyArray())
-        }
+        val variation = ProductTestUtils.generateProductVariation(
+            productId = productId,
+            variationId = variationId,
+            amount = "45.0"
+        ).toWooPosVariation(variationMapper)
 
         val product = ProductTestUtils.generateProduct(
             productId = productId,
@@ -1460,6 +1481,7 @@ class WooPosCartViewModelTest {
             wooPosLogWrapper,
             soundHelper,
             barcodeEventTracker,
+            variationMapper,
             savedState,
         )
     }

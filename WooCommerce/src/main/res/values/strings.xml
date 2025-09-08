@@ -926,6 +926,8 @@
     <string name="orderfilters_date_range_filter_last_7_days">Last 7 days</string>
     <string name="orderfilters_date_range_filter_last_30_days">Last 30 days</string>
     <string name="orderfilters_sales_channel_filter_point_of_sale">Point of Sale</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Web checkout</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
     <string name="orderfilters_date_range_filter_custom_range">Custom Range</string>
     <string name="orderfilters_date_range_picker_title">Select dates</string>
     <string name="orderfilters_date_range_start_date">Start Date</string>
@@ -2503,9 +2505,7 @@
     <string name="settings">Settings</string>
     <string name="privacy_settings">Privacy settings</string>
     <string name="send_feedback">Send feedback</string>
-    <string name="beta_features">Beta features</string>
-    <string name="beta_features_add_ons">View Add-ons</string>
-    <string name="beta_features_simple_payments">Simple payments</string>
+    <string name="experimental_features">Experimental features</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_close_account">Close Account</string>
     <string name="settings_close_account_dialog_title">Confirm Close Account</string>
@@ -2610,6 +2610,8 @@
     <string name="plugin_state_inactive">Inactive</string>
     <string name="plugin_state_auto_managed">Auto-managed</string>
     <string name="plugins_error_message">An error occurred while loading installed plugins</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Application Passwords</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Enable application passwords to let the app directly fetch data from your WooCommerce site instead of doing so through Jetpack connection.</string>
 
     <!--
         Developer Options Screen
@@ -4370,6 +4372,7 @@
     <string name="woopos_settings_card_reader_documentation_title">Documentation</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Learn more about accepting mobile payments</string>
     <string name="woopos_settings_card_reader_connected_reader">Connected reader</string>
+    <string name="woopos_settings_help_category">Help</string>
     <string name="woopos_settings_help_category_subtitle">Get help and support</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Learn about which products are supported in POS</string>
     <string name="woopos_settings_help_documentation_subtitle">View guides and tutorials</string>
@@ -4580,6 +4583,7 @@
     <string name="woopos_settings_store_name_label">Store name</string>
     <string name="woopos_settings_store_address_label">Address</string>
     <string name="woopos_settings_store_phone_label">Phone</string>
+    <string name="woopos_settings_store_email_label">Email</string>
     <string name="woopos_settings_refund_policy_label">Refund &amp; Returns Policy</string>
     <string name="woopos_settings_store_not_set">Not set</string>
 

@@ -14,7 +14,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
-import java.util.*
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -34,7 +33,10 @@ class ApplicationPasswordManagerTests {
     private val mJetpackApplicationPasswordsRestClient: JetpackApplicationPasswordsRestClient = mock()
     private val mWpApiApplicationPasswordsRestClient: WPApiApplicationPasswordsRestClient = mock()
 
-    private val applicationPasswordsConfiguration = ApplicationPasswordsConfiguration(Optional.of(applicationName))
+    private val applicationPasswordsConfiguration = object : ApplicationPasswordsConfiguration {
+        override val applicationName: String = this@ApplicationPasswordManagerTests.applicationName
+        override suspend fun isEnabledForJetpackAccess() = true
+    }
 
     private lateinit var mApplicationPasswordsManager: ApplicationPasswordsManager
 

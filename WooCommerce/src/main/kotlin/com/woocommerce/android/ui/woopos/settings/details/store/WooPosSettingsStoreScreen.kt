@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Receipt
@@ -120,12 +121,7 @@ private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInf
 
 @Composable
 private fun ReceiptLoadingSection() {
-    WooPosShimmerBox(
-        modifier = Modifier
-            .fillMaxWidth(0.3f)
-            .height(32.dp)
-            .padding(start = WooPosSpacing.Large.value, bottom = WooPosSpacing.Small.value)
-    )
+    SectionTitle(stringResource(R.string.woopos_settings_receipt_information_title))
 
     repeat(5) {
         ReceiptMenuItemShimmer()
@@ -137,11 +133,14 @@ private fun ReceiptMenuItemShimmer() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.Large.value),
+            .padding(
+                vertical = WooPosSpacing.Medium.value,
+                horizontal = WooPosSpacing.Large.value
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         WooPosShimmerBox(
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier.size(24.dp)
         )
 
         Column(
@@ -152,7 +151,7 @@ private fun ReceiptMenuItemShimmer() {
             WooPosShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
-                    .height(24.dp)
+                    .height(28.dp)
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
@@ -160,7 +159,7 @@ private fun ReceiptMenuItemShimmer() {
             WooPosShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
-                    .height(14.dp)
+                    .height(16.dp)
             )
         }
     }
@@ -189,6 +188,12 @@ private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.Rece
     )
 
     WooPosSettingsDetailsMenuItem(
+        icon = Icons.Default.Email,
+        title = stringResource(R.string.woopos_settings_store_email_label),
+        subtitle = receiptInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
+    )
+
+    WooPosSettingsDetailsMenuItem(
         icon = Icons.Default.Receipt,
         title = stringResource(R.string.woopos_settings_refund_policy_label),
         subtitle = receiptInfo.refundPolicy.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
@@ -211,6 +216,7 @@ fun WooPosSettingsStoreScreenPreview() {
                     storeName = "My WooCommerce Store",
                     address = "123 Main Street, City, State 12345, US",
                     phone = "+1 555 1234 1234",
+                    email = "store@example.com",
                     refundPolicy = "Returns accepted within 30 days"
                 )
             )

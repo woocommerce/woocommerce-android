@@ -11,25 +11,27 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.test
 
 @RunWith(RobolectricTestRunner::class)
-class WooExperimentalNetworkTest {
-    private val testSite = SiteModel()
+class WooNetworkTest {
+    private val testSite = SiteModel().apply {
+        url = "https://example.com"
+    }
     private val testPath = "path"
+    private val applicationPasswordsConfiguration = FakeApplicationPasswordsConfiguration()
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork = mock()
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork = mock()
-    private val applicationPasswordsStore: ApplicationPasswordsStore = mock()
     private val siteSqlUtils: SiteSqlUtils = mock()
 
-    private val sut = WooExperimentalNetwork(
+    private val sut = WooNetwork(
+        applicationPasswordsConfiguration = applicationPasswordsConfiguration,
         applicationPasswordsNetwork = applicationPasswordsNetwork,
         jetpackTunnelWPAPINetwork = jetpackTunnelWPAPINetwork,
-        applicationPasswordsStore = applicationPasswordsStore,
         siteSqlUtils = siteSqlUtils
     )
 
@@ -59,7 +61,14 @@ class WooExperimentalNetworkTest {
         test {
             testSite.origin = SiteModel.ORIGIN_WPCOM_REST
             testSite.applicationPasswordsAuthorizeUrl = "authorize_url"
-            givenAppPasswordsResponse(WPAPIResponse.Error(WPAPINetworkError(mock(), "error")))
+            givenAppPasswordsResponse(
+                WPAPIResponse.Error(
+                    WPAPINetworkError(
+                        mock(),
+                        "error"
+                    )
+                )
+            )
             val sampleResponse = SampleResponse("value")
             givenJetpackTunnelResponse(WPAPIResponse.Success(sampleResponse, emptyList()))
 
@@ -88,6 +97,28 @@ class WooExperimentalNetworkTest {
 
             assertThat((response as WPAPIResponse.Success).data).isEqualTo(sampleResponse)
         }
+
+    @Test
+    fun `when app passwords are disabled for jetpack access, then always use jetpack tunnel`() = test {
+        applicationPasswordsConfiguration.isEnabledForJetpackAccessValue = false
+        testSite.origin = SiteModel.ORIGIN_WPCOM_REST
+        testSite.applicationPasswordsAuthorizeUrl = "authorize_url"
+        val sampleResponse = SampleResponse("value")
+        givenJetpackTunnelResponse(WPAPIResponse.Success(sampleResponse, emptyList()))
+
+        val response = sut.executeGetGsonRequest(
+            site = testSite,
+            path = testPath,
+            clazz = SampleResponse::class.java
+        )
+
+        assertThat((response as WPAPIResponse.Success).data).isEqualTo(sampleResponse)
+        verify(applicationPasswordsNetwork, never()).executeGetGsonRequest(
+            site = testSite,
+            path = testPath,
+            clazz = SampleResponse::class.java
+        )
+    }
 
     @Test
     fun `when detecting that a site doesn't support app passwords, then update cached site with correct status`() =
@@ -139,4 +170,13 @@ class WooExperimentalNetworkTest {
     }
 
     private data class SampleResponse(val value: String)
+
+    private class FakeApplicationPasswordsConfiguration : ApplicationPasswordsConfiguration {
+        var isEnabledForJetpackAccessValue: Boolean = true
+
+        override val applicationName: String
+            get() = "WooCommerce"
+
+        override suspend fun isEnabledForJetpackAccess(): Boolean = isEnabledForJetpackAccessValue
+    }
 }
