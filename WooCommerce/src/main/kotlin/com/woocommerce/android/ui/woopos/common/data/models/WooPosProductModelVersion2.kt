@@ -30,6 +30,9 @@ data class WooPosProductModelVersion2(
     val variationIds: List<Long> = emptyList(),
 ) : Parcelable {
 
+    val variationEnabledAttributes
+        get() = attributes.filter { it.isVariation }
+
     sealed class WooPosPricing : Parcelable {
         @Parcelize
         data object NoPricing : WooPosPricing()
