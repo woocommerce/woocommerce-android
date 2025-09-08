@@ -3,7 +3,6 @@ package org.wordpress.android.fluxc.wc.stats
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
-import junit.framework.TestCase.assertFalse
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
@@ -29,7 +28,6 @@ import org.wordpress.android.fluxc.model.WCVisitorStatsSummary
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStatsApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStatsRestClient
@@ -51,6 +49,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.hamcrest.CoreMatchers.`is` as isEqual
 
@@ -604,13 +603,13 @@ class WCStatsStoreTest {
             WCStatsTestUtils.generateSampleRevenueStatsModel(
                 interval = StatsGranularity.WEEKS.toString(), startDate = "2019-07-07", endDate = "2019-07-09"
             )
-        val curretnWeekGranularity = StatsGranularity.valueOf(
+        val currentWeekGranularity = StatsGranularity.valueOf(
             currentWeekStatsModel.interval.uppercase(
                 Locale.getDefault()
             )
         )
         val currentWeekPayload = FetchRevenueStatsResponsePayload(
-            site, curretnWeekGranularity, currentWeekStatsModel
+            site, currentWeekGranularity, currentWeekStatsModel
         )
         whenever(
             mockOrderStatsRestClient.fetchRevenueStats(
@@ -627,7 +626,7 @@ class WCStatsStoreTest {
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
                 site,
-                curretnWeekGranularity,
+                currentWeekGranularity,
                 currentWeekStatsModel.startDate,
                 currentWeekStatsModel.endDate
             )
@@ -1160,7 +1159,7 @@ class WCStatsStoreTest {
                 date = "2024-03-01",
                 force = false
             )
-        ).thenReturn(WooPayload(WooError(GENERIC_ERROR, GenericErrorType.UNKNOWN)))
+        ).thenReturn(WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN)))
 
         val result = wcStatsStore.fetchVisitorStatsSummary(
             site = site,
