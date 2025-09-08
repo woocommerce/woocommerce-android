@@ -175,7 +175,7 @@ class WCStatsStore @Inject constructor(
             WCStatsAction.FETCH_REVENUE_STATS_AVAILABILITY ->
                 fetchRevenueStatsAvailability(action.payload as FetchRevenueStatsAvailabilityPayload)
             WCStatsAction.FETCHED_REVENUE_STATS_AVAILABILITY -> handleFetchRevenueStatsAvailabilityCompleted(
-                    action.payload as FetchRevenueStatsAvailabilityResponsePayload
+                action.payload as FetchRevenueStatsAvailabilityResponsePayload
             )
             WCStatsAction.FETCH_NEW_VISITOR_STATS -> Unit // Do nothing
         }
@@ -340,13 +340,13 @@ class WCStatsStore @Inject constructor(
         val quantity = getVisitorStatsQuantity(payload.granularity, startDate, endDate)
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchNewVisitorStats") {
             val result = wcOrderStatsClient.fetchNewVisitorStats(
-                    site = payload.site,
-                    granularity = payload.granularity,
-                    date = DateUtils.getDateTimeForSite(payload.site, DATE_FORMAT_DAY, endDate),
-                    quantity = quantity,
-                    force = payload.forced,
-                    startDate = startDate,
-                    endDate = endDate
+                site = payload.site,
+                granularity = payload.granularity,
+                date = DateUtils.getDateTimeForSite(payload.site, DATE_FORMAT_DAY, endDate),
+                quantity = quantity,
+                force = payload.forced,
+                startDate = startDate,
+                endDate = endDate
             )
             return@withDefaultContext if (result.isError || result.stats == null) {
                 OnWCStatsChanged(0, payload.granularity).also {
@@ -356,11 +356,11 @@ class WCStatsStore @Inject constructor(
             } else {
                 val rowsAffected = WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(result.stats)
                 OnWCStatsChanged(
-                        rowsAffected,
-                        payload.granularity,
-                        result.stats.quantity,
-                        result.stats.date,
-                        result.stats.isCustomField
+                    rowsAffected,
+                    payload.granularity,
+                    result.stats.quantity,
+                    result.stats.date,
+                    result.stats.isCustomField
                 ).also {
                     it.causeOfChange = WCStatsAction.FETCH_NEW_VISITOR_STATS
                 }
@@ -498,11 +498,11 @@ class WCStatsStore @Inject constructor(
         val onStatsChanged = with(payload) {
             if (isError) {
                 return@with OnWCRevenueStatsChanged(
-                        0, granularity = StatsGranularity.YEARS, availability = payload.available
+                    0, granularity = StatsGranularity.YEARS, availability = payload.available
                 ).also { it.error = payload.error }
             } else {
                 return@with OnWCRevenueStatsChanged(
-                        0, granularity = StatsGranularity.YEARS, availability = payload.available
+                    0, granularity = StatsGranularity.YEARS, availability = payload.available
                 )
             }
         }
@@ -541,7 +541,8 @@ class WCStatsStore @Inject constructor(
         endDate: String
     ): WCRevenueStatsModel? {
         return WCStatsSqlUtils.getRevenueStatsForSiteIntervalAndDate(
-                site, granularity, startDate, endDate)
+            site, granularity, startDate, endDate
+        )
     }
 
     fun getRawRevenueStatsFromRangeId(
