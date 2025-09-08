@@ -2,13 +2,14 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -45,7 +46,8 @@ class WooPosCartItemsUpdaterTest {
         formatPrice = formatPrice,
         productsCache = productsCache,
         wooPosLogWrapper = logger,
-        crashLogger = crashLogger
+        crashLogger = crashLogger,
+
     )
 
     @Test
@@ -67,7 +69,7 @@ class WooPosCartItemsUpdaterTest {
             basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
-        val cachedProduct = mock<Product>()
+        val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
@@ -82,7 +84,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Name",
-                price = BigDecimal("10.0")
+                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
     }
@@ -108,7 +110,7 @@ class WooPosCartItemsUpdaterTest {
             basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
-        val cachedProduct = mock<Product>()
+        val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
@@ -123,7 +125,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Variation",
-                price = BigDecimal("10.0")
+                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
     }
@@ -179,7 +181,7 @@ class WooPosCartItemsUpdaterTest {
             basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
-        val cachedProduct = mock<Product>()
+        val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
@@ -199,7 +201,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Product 1",
-                price = BigDecimal("10.0")
+                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
         verify(productsCache).deleteProduct(2L)
@@ -224,7 +226,7 @@ class WooPosCartItemsUpdaterTest {
             basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
-        val cachedProduct = mock<Product>()
+        val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
@@ -245,7 +247,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Product",
-                price = BigDecimal("10.0")
+                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
         verify(productsCache).deleteProduct(1L)
@@ -320,7 +322,7 @@ class WooPosCartItemsUpdaterTest {
             basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
-        val cachedProduct = mock<Product>()
+        val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
@@ -330,7 +332,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Name",
-                price = BigDecimal("10.0")
+                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
     }
