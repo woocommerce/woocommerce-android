@@ -6,16 +6,15 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.WCStatsAction
 import org.wordpress.android.fluxc.annotations.action.Action
-import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider.crashLogger
+import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundleStats
 import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
 import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.WCVisitorStatsSummary
-import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -28,12 +27,9 @@ import org.wordpress.android.fluxc.persistence.WCVisitorStatsSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.entity.VisitorSummaryStatsEntity
 import org.wordpress.android.fluxc.persistence.entity.toDomainModel
-import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.DateUtils
 import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.AppLog.T
-import org.wordpress.android.util.AppLog.T.API
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -59,11 +55,11 @@ class WCStatsStore @Inject constructor(
         companion object {
             fun fromOrderStatsApiUnit(apiUnit: OrderStatsApiUnit): StatsGranularity {
                 return when (apiUnit) {
-                    OrderStatsApiUnit.HOUR -> StatsGranularity.HOURS
-                    OrderStatsApiUnit.DAY -> StatsGranularity.DAYS
-                    OrderStatsApiUnit.WEEK -> StatsGranularity.WEEKS
-                    OrderStatsApiUnit.MONTH -> StatsGranularity.MONTHS
-                    OrderStatsApiUnit.YEAR -> StatsGranularity.YEARS
+                    OrderStatsApiUnit.HOUR -> HOURS
+                    OrderStatsApiUnit.DAY -> DAYS
+                    OrderStatsApiUnit.WEEK -> WEEKS
+                    OrderStatsApiUnit.MONTH -> MONTHS
+                    OrderStatsApiUnit.YEAR -> YEARS
                 }
             }
 
@@ -142,7 +138,10 @@ class WCStatsStore @Inject constructor(
         }
     }
 
-    class OrderStatsError(val type: OrderStatsErrorType = GENERIC_ERROR, val message: String = "") : OnChangedError
+    class OrderStatsError(
+        val type: OrderStatsErrorType = OrderStatsErrorType.GENERIC_ERROR,
+        val message: String = ""
+    ) : OnChangedError
 
     enum class OrderStatsErrorType {
         RESPONSE_NULL,
@@ -167,7 +166,7 @@ class WCStatsStore @Inject constructor(
         var causeOfChange: WCStatsAction? = null
     }
 
-    override fun onRegister() = AppLog.d(T.API, "WCStatsStore onRegister")
+    override fun onRegister() = AppLog.d(AppLog.T.API, "WCStatsStore onRegister")
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     override fun onAction(action: Action<*>) {
@@ -251,7 +250,7 @@ class WCStatsStore @Inject constructor(
             val visits = if (visitsRawValue is Number) {
                 visitsRawValue.toInt()
             } else {
-                crashLogger?.recordException(
+                FluxCCrashLoggerProvider.crashLogger?.recordException(
                     exception = NumberFormatException("$visitsRawValue is not a valid number"),
                     category = null
                 )
@@ -268,7 +267,7 @@ class WCStatsStore @Inject constructor(
         endDate: String,
         interval: String,
     ): WooResult<WCBundleStats> {
-        return coroutineEngine.withDefaultContext(T.API, this, "fetchProductBundlesStats") {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchProductBundlesStats") {
             val response = bundleStatsRestClient.fetchBundleStats(
                 site = site,
                 startDate = startDate,
@@ -289,7 +288,7 @@ class WCStatsStore @Inject constructor(
                     WooResult(bundleStats)
                 }
 
-                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN))
+                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN))
             }
         }
     }
@@ -300,7 +299,7 @@ class WCStatsStore @Inject constructor(
         endDate: String,
         quantity: Int
     ): WooResult<List<WCProductBundleItemReport>> {
-        return coroutineEngine.withDefaultContext(T.API, this, "fetchProductBundlesReport") {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchProductBundlesReport") {
             val response = bundleStatsRestClient.fetchBundleReport(
                 site = site,
                 startDate = startDate,
@@ -325,7 +324,7 @@ class WCStatsStore @Inject constructor(
                     WooResult(bundleStats)
                 }
 
-                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN))
+                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN))
             }
         }
     }
@@ -337,7 +336,7 @@ class WCStatsStore @Inject constructor(
         val startDate = payload.startDate
         val endDate = payload.endDate
         val quantity = getVisitorStatsQuantity(payload.granularity, startDate, endDate)
-        return coroutineEngine.withDefaultContext(T.API, this, "fetchNewVisitorStats") {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchNewVisitorStats") {
             val result = wcOrderStatsClient.fetchNewVisitorStats(
                     site = payload.site,
                     granularity = payload.granularity,
@@ -408,7 +407,7 @@ class WCStatsStore @Inject constructor(
         val startDate = payload.startDate
         val endDate = payload.endDate
 
-        return coroutineEngine.withDefaultContext(API, this, "fetchRevenueStats") {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchRevenueStats") {
             val result = wcOrderStatsClient.fetchRevenueStats(
                 site = payload.site,
                 granularity = payload.granularity,
@@ -450,7 +449,7 @@ class WCStatsStore @Inject constructor(
             visitors = visitors
         )
 
-        return coroutineEngine.withDefaultContext(T.API, this, "fetchVisitorStatsSummary") {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchVisitorStatsSummary") {
             val response = wcOrderStatsClient.fetchVisitorStatsSummary(
                 site = site,
                 granularity = granularity,
@@ -467,7 +466,7 @@ class WCStatsStore @Inject constructor(
                     WooResult(entity.toDomainModel())
                 }
 
-                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
+                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN))
             }
         }
     }
