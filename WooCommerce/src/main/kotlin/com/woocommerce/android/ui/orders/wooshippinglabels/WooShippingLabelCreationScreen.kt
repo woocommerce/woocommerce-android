@@ -49,6 +49,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -722,11 +723,9 @@ private fun PackageSelectionAvailableCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
                 .clickable(onClick = onSelectPackageClick)
-                .background(
-                    color = colorResource(R.color.light_colored_button_background),
-                    shape = RoundedCornerShape(8.dp)
-                )
+                .background(color = colorResource(R.color.light_colored_button_background))
                 .padding(16.dp),
         ) {
             Row(
