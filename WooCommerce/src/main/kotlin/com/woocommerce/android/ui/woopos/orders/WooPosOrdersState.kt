@@ -37,7 +37,8 @@ sealed class WooPosOrdersState {
     }
 
     @Immutable
-    data object Empty : WooPosOrdersState() {
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled
-    }
+    data class Empty(
+        override val pullToRefreshState: WooPosPullToRefreshState =
+            WooPosPullToRefreshState.Enabled
+    ) : WooPosOrdersState()
 }

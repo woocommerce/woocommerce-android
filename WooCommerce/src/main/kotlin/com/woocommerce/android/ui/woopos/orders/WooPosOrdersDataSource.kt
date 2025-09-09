@@ -27,7 +27,9 @@ class WooPosOrdersDataSource @Inject constructor(
     }
     fun loadOrders(): Flow<LoadOrdersResult> = flow {
         val cached = ordersCache.getAll()
-        emit(LoadOrdersResult.SuccessCache(cached))
+        if (cached.isNotEmpty()) {
+            emit(LoadOrdersResult.SuccessCache(cached))
+        }
 
         val result = restClient.fetchOrders(
             site = selectedSite.get(),
