@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
@@ -63,6 +64,7 @@ import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -92,6 +94,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
         private const val UNAUTHORIZED_STATUS_CODE = 401
         private const val CARD_READER_USAGE_THIRTY_DAYS = 30
+        private const val POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS = 20L
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -158,6 +161,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var backgroundUpdatesDisabled: BackgroundUpdatesDisabled
 
     @Inject lateinit var edgeToEdgeEnabler: ApplicationEdgeToEdgeEnabler
+
+    @Inject lateinit var posLocalCatalogScheduler: WooPosLocalCatalogSyncScheduler
 
     private var connectionReceiverRegistered = false
 
@@ -238,6 +243,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         // Schedule worker to refresh FCM token periodically
         FCMRefreshWorker.schedule(application)
+
+        posLocalCatalogScheduler.schedulePeriodicFullCatalogSync()
+        triggerLocalCatalogSyncOnSiteChange()
     }
 
     @Suppress("DEPRECATION")
@@ -386,6 +394,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // to prevent duplicate install events being called
                 prefs.setLastAppVersionCode(versionCode)
             }
+
             oldVersionCode < versionCode -> {
                 // Track upgrade event only if oldVersionCode is not -1, to prevent
                 // duplicate upgrade events being called
@@ -397,6 +406,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // is greater than the stored version code
                 prefs.setLastAppVersionCode(versionCode)
             }
+
             versionCode == PackageUtils.PACKAGE_VERSION_CODE_DEFAULT -> {
                 // we are not able to read the current app version code
                 // track this event along with the last stored version code
@@ -420,6 +430,17 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         if (userAccountFetched) {
             appCoroutineScope.launch {
                 registerDevice(IF_NEEDED)
+            }
+        }
+    }
+
+    fun triggerLocalCatalogSyncOnSiteChange() {
+        appCoroutineScope.launch {
+            selectedSite.observe().collect { selectedSite ->
+                if (selectedSite != null) {
+                    delay(POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS)
+                    posLocalCatalogScheduler.triggerManualFullCatalogSync()
+                }
             }
         }
     }
