@@ -83,7 +83,7 @@ class WooPosVariationsViewModelTest {
         }
         on { getNameForPOS(any<WooPosVariation>(), anyOrNull(), any<ResourceProvider>()) } doAnswer { invocation ->
             val variation = invocation.arguments[0] as WooPosVariation
-            val parentProduct = invocation.arguments[1] as? com.woocommerce.android.model.Product
+            val parentProduct = invocation.arguments[1] as? WooPosProductModel
             // Mock the basic behavior for tests
             if (parentProduct != null) {
                 // Use parent product's variation enabled attributes

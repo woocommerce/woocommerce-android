@@ -17,7 +17,11 @@ class WooPosSearchResultsIndexTest {
 
     private lateinit var searchResultsIndex: WooPosSearchResultsIndex
     private val productsCache: WooPosProductsCache = mock()
-    private val mockProducts = listOf(generateWooPosProduct(), generateWooPosProduct(), generateWooPosProduct())
+    private val mockProducts = listOf(
+        generateWooPosProduct(productId = 1),
+        generateWooPosProduct(productId = 2),
+        generateWooPosProduct(productId = 3)
+    )
 
     @Before
     fun setUp() = runTest {
@@ -25,7 +29,6 @@ class WooPosSearchResultsIndexTest {
 
         // Setup mock products
         mockProducts.forEachIndexed { index, product ->
-            whenever(product.remoteId).thenReturn((index + 1).toLong())
             whenever(productsCache.getProductById((index + 1).toLong())).thenReturn(product)
         }
     }

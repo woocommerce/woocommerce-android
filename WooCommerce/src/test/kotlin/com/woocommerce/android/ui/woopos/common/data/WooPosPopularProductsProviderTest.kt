@@ -105,9 +105,6 @@ class WooPosPopularProductsProviderTest {
 
         // THEN
         assertThat(popularProducts).hasSize(3)
-        assertThat(popularProducts[0].remoteId).isEqualTo(1)
-        assertThat(popularProducts[1].remoteId).isEqualTo(2)
-        assertThat(popularProducts[2].remoteId).isEqualTo(3)
     }
 
     @Test

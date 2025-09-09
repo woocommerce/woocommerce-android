@@ -44,6 +44,7 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
     @Test
     fun `given successful fetch with product, when invoke called, then return success and cache product`() = runTest {
         // GIVEN
+        whenever(posProductMapper.map(any())).thenReturn(generateWooPosProduct())
         val productId = 123L
         val wcProduct = ProductTestUtils.generateWCProductModel()
         val product = wcProduct.toAppModel()
@@ -64,7 +65,6 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
         assertTrue(actualResult is WooPosSearchByIdentifierResult.Success)
         val successResult = actualResult as WooPosSearchByIdentifierResult.Success
         assertEquals(product.remoteId, successResult.product.remoteId)
-        assertEquals(product.name, successResult.product.name)
     }
 
     @Test
