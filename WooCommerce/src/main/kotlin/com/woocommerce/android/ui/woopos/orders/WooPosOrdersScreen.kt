@@ -53,116 +53,139 @@ fun WooPosOrdersScreen(
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 
     Row(modifier = Modifier.fillMaxSize()) {
-        // Left pane
-        Column(
+        WooPosOrdersLeftPane(
+            state = state,
+            onBackClicked = onBackClicked,
+            onRefresh = viewModel::refresh,
+            onOrderSelected = viewModel::onOrderSelected,
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surface)
-        ) {
-            WooPosToolbar(
-                titleText = stringResource(R.string.woopos_orders_title),
-                onBackClicked = onBackClicked,
-            )
+        )
 
-            val refreshing =
-                when (val s = state) {
-                    is WooPosOrdersState.Content -> s.pullToRefreshState == WooPosPullToRefreshState.Refreshing
-                    is WooPosOrdersState.Error -> s.pullToRefreshState == WooPosPullToRefreshState.Refreshing
-                    is WooPosOrdersState.Empty -> false
-                    is WooPosOrdersState.Loading -> false
-                }
-
-            val pullRefreshState = rememberPullRefreshState(
-                refreshing = refreshing,
-                onRefresh = { viewModel.refresh() }
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .pullRefresh(pullRefreshState)
-            ) {
-                when (val s = state) {
-                    is WooPosOrdersState.Loading -> {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            WooPosText(
-                                text = stringResource(R.string.loading),
-                                style = WooPosTypography.BodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(WooPosSpacing.Large.value)
-                            )
-                        }
-                    }
-
-                    is WooPosOrdersState.Error -> {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            WooPosText(
-                                text = s.message,
-                                style = WooPosTypography.BodyMedium,
-                                color = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.padding(WooPosSpacing.Large.value)
-                            )
-                        }
-                    }
-
-                    is WooPosOrdersState.Empty -> {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            WooPosText(
-                                text = "No orders found",
-                                style = WooPosTypography.BodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(WooPosSpacing.Large.value)
-                            )
-                        }
-                    }
-
-                    is WooPosOrdersState.Content -> {
-                        WooPosOrdersListPaneScreen(
-                            items = s.items,
-                            selectedOrderId = s.selectedOrderId,
-                            onOrderSelected = viewModel::onOrderSelected,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-
-                // PTR indicator at the top of the list area
-                PullRefreshIndicator(
-                    refreshing = refreshing,
-                    state = pullRefreshState,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = WooPosSpacing.XSmall.value),
-                    backgroundColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-
-        // Right pane
-        val selectedItem: OrderItemViewState? = when (val s = state) {
-            is WooPosOrdersState.Content -> s.items.firstOrNull { it.id == s.selectedOrderId }
-            else -> null
-        }
-
-        WooPosOrdersDetailPaneScreen(
-            selected = selectedItem,
+        WooPosOrdersRightPane(
+            state = state,
             modifier = Modifier
                 .weight(0.7f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
         )
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun WooPosOrdersLeftPane(
+    state: WooPosOrdersState,
+    onBackClicked: () -> Unit,
+    onRefresh: () -> Unit,
+    onOrderSelected: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        WooPosToolbar(
+            titleText = stringResource(R.string.woopos_orders_title),
+            onBackClicked = onBackClicked,
+        )
+
+        val refreshing = when (state) {
+            is WooPosOrdersState.Content -> state.pullToRefreshState == WooPosPullToRefreshState.Refreshing
+            is WooPosOrdersState.Error -> state.pullToRefreshState == WooPosPullToRefreshState.Refreshing
+            is WooPosOrdersState.Empty -> false
+            is WooPosOrdersState.Loading -> false
+        }
+
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = refreshing,
+            onRefresh = onRefresh
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
+        ) {
+            when (state) {
+                is WooPosOrdersState.Loading -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        WooPosText(
+                            text = stringResource(R.string.loading),
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(WooPosSpacing.Large.value)
+                        )
+                    }
+                }
+
+                is WooPosOrdersState.Error -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        WooPosText(
+                            text = state.message,
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(WooPosSpacing.Large.value)
+                        )
+                    }
+                }
+
+                is WooPosOrdersState.Empty -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        WooPosText(
+                            text = "No orders found",
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(WooPosSpacing.Large.value)
+                        )
+                    }
+                }
+
+                is WooPosOrdersState.Content -> {
+                    WooPosOrdersListPaneScreen(
+                        items = state.items,
+                        selectedOrderId = state.selectedOrderId,
+                        onOrderSelected = onOrderSelected,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
+            PullRefreshIndicator(
+                refreshing = refreshing,
+                state = pullRefreshState,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = WooPosSpacing.XSmall.value),
+                backgroundColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+private fun WooPosOrdersRightPane(
+    state: WooPosOrdersState,
+    modifier: Modifier = Modifier
+) {
+    val selectedItem: OrderItemViewState? = when (state) {
+        is WooPosOrdersState.Content -> state.items.firstOrNull { it.id == state.selectedOrderId }
+        else -> null
+    }
+
+    WooPosOrdersDetailPaneScreen(
+        selected = selectedItem,
+        modifier = modifier.fillMaxSize()
+    )
 }
 
 @Composable
