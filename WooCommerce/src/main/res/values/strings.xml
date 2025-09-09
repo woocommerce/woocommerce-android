@@ -4655,6 +4655,7 @@
     <string name="woo_shipping_labels_package_creation_invalid_dimension">Package dimensions should all be larger than 0.</string>
     <string name="woo_shipping_labels_package_creation_save_package_option">Save this as a new package template</string>
     <string name="woo_shipping_labels_package_creation_add_package">Add Package</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Add Package Details</string>
     <string name="woo_shipping_labels_package_creation_empty_button">Create a custom package</string>
     <string name="woo_shipping_labels_package_creation_empty_carrier_message">No carrier information found</string>
     <string name="woo_shipping_labels_package_creation_empty_saved_message">No saved packages yet</string>

@@ -167,6 +167,29 @@ class ApplicationPasswordManagerTests {
         }
 
     @Test
+    fun `when a jetpack site returns application_passwords_disabled_for_user, then return feature not available`() =
+        runTest {
+            val site = testSite.apply {
+                origin = SiteModel.ORIGIN_WPCOM_REST
+            }
+            val networkError = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.SERVER_ERROR)).apply {
+                apiError = "application_passwords_disabled_for_user"
+            }
+
+            whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
+            whenever(mJetpackApplicationPasswordsRestClient.fetchWPAdminUsername(site))
+                .thenReturn(UsernameFetchPayload(testCredentials.userName))
+            whenever(mJetpackApplicationPasswordsRestClient.createApplicationPassword(site, applicationName))
+                .thenReturn(ApplicationPasswordCreationPayload(networkError))
+
+            val result = mApplicationPasswordsManager.getApplicationCredentials(
+                testSite
+            )
+
+            assertEquals(ApplicationPasswordCreationResult.NotSupported(networkError), result)
+        }
+
+    @Test
     fun `when a non-jetpack site returns 404, then return feature not available`() =
         runTest {
             val site = testSite.apply {
