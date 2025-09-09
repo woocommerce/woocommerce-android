@@ -15,11 +15,12 @@ data class OrderItemViewState(
 
 @Immutable
 sealed class WooPosOrdersState {
+    abstract val pullToRefreshState: WooPosPullToRefreshState
 
     @Immutable
     data class Content(
         val items: List<OrderItemViewState>,
-        val pullToRefreshState: WooPosPullToRefreshState,
+        override val pullToRefreshState: WooPosPullToRefreshState,
         val paginationState: WooPosPaginationState,
         val selectedOrderId: Long?
     ) : WooPosOrdersState()
@@ -27,16 +28,16 @@ sealed class WooPosOrdersState {
     @Immutable
     data class Error(
         val message: String,
-        val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled,
+        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled,
     ) : WooPosOrdersState()
 
     @Immutable
     data object Loading : WooPosOrdersState() {
-        val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
+        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
 
     @Immutable
     data object Empty : WooPosOrdersState() {
-        val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled
+        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled
     }
 }
