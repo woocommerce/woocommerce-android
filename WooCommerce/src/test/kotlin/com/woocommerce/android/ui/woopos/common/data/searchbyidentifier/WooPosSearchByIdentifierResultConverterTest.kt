@@ -4,7 +4,7 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
@@ -71,7 +71,7 @@ class WooPosSearchByIdentifierResultConverterTest {
     @Test
     fun `given variation product success result, when converting, should process variation`() = runTest {
         // GIVEN
-        val variationProduct = testProduct.copy(type = WooPosProductModelVersion2.WooPosProductType.VARIATION)
+        val variationProduct = testProduct.copy(type = WooPosProductModel.WooPosProductType.VARIATION)
         val successResult = WooPosSearchByIdentifierResult.Success(variationProduct)
         val variationSuccessResult = WooPosSearchByIdentifierResult.VariationSuccess(testVariation, testProduct)
         val searchFunction: suspend () -> WooPosSearchByIdentifierResult = { successResult }

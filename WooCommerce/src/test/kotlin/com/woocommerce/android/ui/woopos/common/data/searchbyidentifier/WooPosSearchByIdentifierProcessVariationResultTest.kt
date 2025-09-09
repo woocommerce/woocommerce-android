@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -26,8 +26,8 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         // GIVEN
         val parentId = 123L
         val variationId = 456L
-        val product: WooPosProductModelVersion2 = generateWooPosProduct(productId = variationId, parentId = parentId)
-        val parentProduct: WooPosProductModelVersion2 = generateWooPosProduct()
+        val product: WooPosProductModel = generateWooPosProduct(productId = variationId, parentId = parentId)
+        val parentProduct: WooPosProductModel = generateWooPosProduct()
         val variation = WooPosVariation(
             remoteVariationId = variationId,
             remoteProductId = parentId,
@@ -58,7 +58,7 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
     @Test
     fun `given product with invalid parent id, when invoke called, then return product not found failure`() = runTest {
         // GIVEN
-        val product: WooPosProductModelVersion2 = generateWooPosProduct(productId = 456L, parentId = 0L)
+        val product: WooPosProductModel = generateWooPosProduct(productId = 456L, parentId = 0L)
 
         // WHEN
         val result = sut(product)
@@ -75,7 +75,7 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         // GIVEN
         val parentId = 123L
         val variationId = 456L
-        val product: WooPosProductModelVersion2 = generateWooPosProduct(productId = variationId, parentId = parentId)
+        val product: WooPosProductModel = generateWooPosProduct(productId = variationId, parentId = parentId)
 
         runBlocking {
             whenever(
@@ -105,7 +105,7 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         // GIVEN
         val parentId = 123L
         val variationId = 456L
-        val product: WooPosProductModelVersion2 = generateWooPosProduct(productId = variationId, parentId = parentId)
+        val product: WooPosProductModel = generateWooPosProduct(productId = variationId, parentId = parentId)
         val variation = WooPosVariation(
             remoteVariationId = variationId,
             remoteProductId = parentId,
@@ -137,7 +137,7 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         // GIVEN
         val parentId = 123L
         val variationId = 456L
-        val product: WooPosProductModelVersion2 = generateWooPosProduct(productId = variationId, parentId = parentId)
+        val product: WooPosProductModel = generateWooPosProduct(productId = variationId, parentId = parentId)
 
         val variationResult = WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
             WooPosSearchByIdentifierResult.Error.UnknownError("Variation not found for ID: $variationId")

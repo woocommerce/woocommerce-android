@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -147,7 +147,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             }
 
             childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
-            var result: Result<List<WooPosProductModelVersion2>>
+            var result: Result<List<WooPosProductModel>>
             val searchTimeMillis = measureTimeMillis {
                 result = dataSource.searchRemoteProducts(query)
             }
@@ -286,7 +286,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         }
     }
 
-    private suspend fun List<WooPosProductModelVersion2>.toContentState(
+    private suspend fun List<WooPosProductModel>.toContentState(
         searchQuery: String,
         paginationState: WooPosPaginationState = WooPosPaginationState.None,
     ) = WooPosItemsSearchViewState.Content(
@@ -295,8 +295,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
         paginationState = paginationState,
     )
 
-    private suspend fun WooPosProductModelVersion2.toViewModelProduct(): WooPosItemSelectionViewState.Product =
-        if (type == WooPosProductModelVersion2.WooPosProductType.VARIABLE) {
+    private suspend fun WooPosProductModel.toViewModelProduct(): WooPosItemSelectionViewState.Product =
+        if (type == WooPosProductModel.WooPosProductType.VARIABLE) {
             WooPosItemSelectionViewState.Product.Variable(
                 id = this.remoteId,
                 name = this.name,

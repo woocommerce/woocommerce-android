@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -582,7 +582,7 @@ class WooPosCartViewModel @Inject constructor(
             }
         }
 
-    private suspend fun WooPosProductModelVersion2.toCartListItem(itemNumber: Int): Product.Simple = Product.Simple(
+    private suspend fun WooPosProductModel.toCartListItem(itemNumber: Int): Product.Simple = Product.Simple(
         itemNumber = itemNumber,
         id = this.remoteId,
         name = name,
@@ -593,7 +593,7 @@ class WooPosCartViewModel @Inject constructor(
 
     private suspend fun WooPosVariation.toCartListItem(
         itemNumber: Int,
-        product: WooPosProductModelVersion2
+        product: WooPosProductModel
     ): Product.Variation =
         Product.Variation(
             itemNumber = itemNumber,

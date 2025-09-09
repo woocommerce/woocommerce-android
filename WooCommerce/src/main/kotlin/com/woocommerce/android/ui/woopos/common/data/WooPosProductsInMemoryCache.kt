@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data
 
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache.Companion.MAX_CACHE_SIZE
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -16,13 +16,13 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
         private const val LOAD_FACTOR = 0.75f
     }
 
-    private val productsCache = LinkedHashMap<Long, WooPosProductModelVersion2>(INITIAL_CAPACITY, LOAD_FACTOR, true)
+    private val productsCache = LinkedHashMap<Long, WooPosProductModel>(INITIAL_CAPACITY, LOAD_FACTOR, true)
 
-    override suspend fun addAll(products: List<WooPosProductModelVersion2>) = mutex.withLock {
+    override suspend fun addAll(products: List<WooPosProductModel>) = mutex.withLock {
         addAllInternal(products)
     }
 
-    override suspend fun updateProduct(product: WooPosProductModelVersion2) = mutex.withLock {
+    override suspend fun updateProduct(product: WooPosProductModel) = mutex.withLock {
         productsCache[product.remoteId] = product
     }
 
@@ -32,11 +32,11 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
         }
     }
 
-    override suspend fun getAll(): List<WooPosProductModelVersion2> = mutex.withLock {
+    override suspend fun getAll(): List<WooPosProductModel> = mutex.withLock {
         return productsCache.values.toList()
     }
 
-    override suspend fun getProductById(productId: Long): WooPosProductModelVersion2? = mutex.withLock {
+    override suspend fun getProductById(productId: Long): WooPosProductModel? = mutex.withLock {
         return productsCache[productId]
     }
 
@@ -47,7 +47,7 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
         productsCache.clear()
     }
 
-    private fun addAllInternal(products: List<WooPosProductModelVersion2>) {
+    private fun addAllInternal(products: List<WooPosProductModel>) {
         products.forEach { product ->
             productsCache[product.remoteId] = product
             if (productsCache.size > MAX_CACHE_SIZE) {
