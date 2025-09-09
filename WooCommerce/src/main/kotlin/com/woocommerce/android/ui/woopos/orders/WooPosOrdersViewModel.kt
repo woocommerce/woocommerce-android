@@ -45,6 +45,10 @@ class WooPosOrdersViewModel @Inject constructor(
         loadOrders()
     }
 
+    fun isRefreshing(): Boolean =
+        (state.value as? WooPosOrdersState.Content)
+            ?.pullToRefreshState == WooPosPullToRefreshState.Refreshing
+
     private fun loadOrders() {
         viewModelScope.launch {
             ordersDataSource.loadOrders().collect { result ->
@@ -96,10 +100,6 @@ class WooPosOrdersViewModel @Inject constructor(
         orders = newOrders
         selectedId = chooseSelectedId(selectedId, newOrders)
     }
-
-    private fun isRefreshing(): Boolean =
-        (state.value as? WooPosOrdersState.Content)
-            ?.pullToRefreshState == WooPosPullToRefreshState.Refreshing
 
     private fun chooseSelectedId(current: Long?, newOrders: List<Order>): Long? {
         return current?.takeIf { id -> newOrders.any { it.id == id } }

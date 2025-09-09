@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -57,6 +56,7 @@ fun WooPosOrdersScreen(
             state = state,
             onBackClicked = onBackClicked,
             onRefresh = viewModel::refresh,
+            isRefreshing = viewModel.isRefreshing(),
             onOrderSelected = viewModel::onOrderSelected,
             modifier = Modifier
                 .weight(0.3f)
@@ -80,6 +80,7 @@ private fun WooPosOrdersLeftPane(
     state: WooPosOrdersState,
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
+    isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -89,15 +90,8 @@ private fun WooPosOrdersLeftPane(
             onBackClicked = onBackClicked,
         )
 
-        val refreshing = when (state) {
-            is WooPosOrdersState.Content -> state.pullToRefreshState == WooPosPullToRefreshState.Refreshing
-            is WooPosOrdersState.Error -> state.pullToRefreshState == WooPosPullToRefreshState.Refreshing
-            is WooPosOrdersState.Empty -> false
-            is WooPosOrdersState.Loading -> false
-        }
-
         val pullRefreshState = rememberPullRefreshState(
-            refreshing = refreshing,
+            refreshing = isRefreshing,
             onRefresh = onRefresh
         )
 
@@ -160,7 +154,7 @@ private fun WooPosOrdersLeftPane(
             }
 
             PullRefreshIndicator(
-                refreshing = refreshing,
+                refreshing = isRefreshing,
                 state = pullRefreshState,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
