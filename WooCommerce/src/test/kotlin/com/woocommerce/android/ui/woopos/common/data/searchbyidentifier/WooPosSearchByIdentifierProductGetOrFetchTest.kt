@@ -4,6 +4,8 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -24,11 +26,18 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
     private val productStore: WCProductStore = mock()
     private val productsCache: WooPosProductsCache = mock()
     private val site: SiteModel = mock()
+    private val posProductMapper: WCProductToWooPosProductModelMapper = mock()
     private val errorMapper: WooPosSearchByIdentifierProductErrorMapper = WooPosSearchByIdentifierProductErrorMapper()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierProductGetOrFetch(selectedSite, productStore, productsCache, errorMapper)
+        sut = WooPosSearchByIdentifierProductGetOrFetch(
+            selectedSite,
+            productStore,
+            productsCache,
+            errorMapper,
+            posProductMapper
+        )
         whenever(selectedSite.get()).thenReturn(site)
     }
 
@@ -62,7 +71,7 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
     fun `given product found in cache, when invoke called, then return cached product without fetching`() = runTest {
         // GIVEN
         val productId = 123L
-        val cachedProduct = ProductTestUtils.generateProduct(productId)
+        val cachedProduct = generateWooPosProduct(productId)
         whenever(productsCache.getProductById(productId)).thenReturn(cachedProduct)
 
         // WHEN
@@ -75,30 +84,31 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
     }
 
     @Test
-    fun `given successful fetch but product not found in store, when invoke called, then return failure with unknown error`() = runTest {
-        // GIVEN
-        val productId = 123L
-        val result: WCProductStore.OnProductChanged = mock {
-            on { isError }.thenReturn(false)
+    fun `given successful fetch but product not found in store, when invoke called, then return failure with unknown error`() =
+        runTest {
+            // GIVEN
+            val productId = 123L
+            val result: WCProductStore.OnProductChanged = mock {
+                on { isError }.thenReturn(false)
+            }
+
+            whenever(
+                productStore.fetchSingleProduct(any())
+            ).thenReturn(result)
+
+            whenever(productStore.getProduct(site, productId)).thenReturn(null)
+
+            // WHEN
+            val actualResult = sut(productId)
+
+            // THEN
+            assertEquals(
+                WooPosSearchByIdentifierResult.Failure(
+                    WooPosSearchByIdentifierResult.Error.UnknownError("Product not found for ID: $productId")
+                ),
+                actualResult
+            )
         }
-
-        whenever(
-            productStore.fetchSingleProduct(any())
-        ).thenReturn(result)
-
-        whenever(productStore.getProduct(site, productId)).thenReturn(null)
-
-        // WHEN
-        val actualResult = sut(productId)
-
-        // THEN
-        assertEquals(
-            WooPosSearchByIdentifierResult.Failure(
-                WooPosSearchByIdentifierResult.Error.UnknownError("Product not found for ID: $productId")
-            ),
-            actualResult
-        )
-    }
 
     @Test
     fun `given fetch error, when invoke called, then return failure with mapped error`() = runTest {

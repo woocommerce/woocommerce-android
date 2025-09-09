@@ -2,8 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -229,7 +228,7 @@ class WooPosProductsViewModel @Inject constructor(
             is WooPosProductsViewState.Empty -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
         }
 
-    private suspend fun List<Product>.toContentState(
+    private suspend fun List<WooPosProductModelVersion2>.toContentState(
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) = WooPosProductsViewState.Content(
         items = map { it.toItemSelectionViewState() },
@@ -237,21 +236,21 @@ class WooPosProductsViewModel @Inject constructor(
         pullToRefreshState = WooPosPullToRefreshState.Enabled,
     )
 
-    private suspend fun Product.toItemSelectionViewState(): WooPosItemSelectionViewState {
+    private suspend fun WooPosProductModelVersion2.toItemSelectionViewState(): WooPosItemSelectionViewState {
         return if (this.isVariable()) {
             WooPosItemSelectionViewState.Product.Variable(
                 id = this.remoteId,
                 name = this.name,
-                price = priceFormat(this.price),
+                price = priceFormat(this.pricing.displayPrice),
                 imageUrl = this.firstImageUrl,
-                numOfVariations = this.numVariations,
+                numOfVariations = this.variationIds.size,
                 variationIds = this.variationIds
             )
         } else {
             WooPosItemSelectionViewState.Product.Simple(
                 id = this.remoteId,
                 name = this.name,
-                price = priceFormat(this.price),
+                price = priceFormat(this.pricing.displayPrice),
                 imageUrl = this.firstImageUrl,
             )
         }
@@ -316,7 +315,7 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
     }
 
-    private fun Product.isVariable() =
-        productType == ProductType.VARIABLE ||
-            productType == ProductType.VARIATION
+    private fun WooPosProductModelVersion2.isVariable() =
+        type == WooPosProductModelVersion2.WooPosProductType.VARIABLE ||
+            type == WooPosProductModelVersion2.WooPosProductType.VARIATION
 }

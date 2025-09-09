@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.common.data.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import java.math.BigDecimal
 
 /**
@@ -61,26 +62,26 @@ data class WooPosProductModelVersion2(
             get() = displayPrice?.toPlainString() ?: ""
     }
 
-    enum class WooPosProductType {
-        SIMPLE,
-        VARIABLE,
-        GROUPED,
-        EXTERNAL,
-        VARIATION,
-        SUBSCRIPTION,
-        VARIABLE_SUBSCRIPTION,
-        CUSTOM,
-        BUNDLE,
-        COMPOSITE
+    enum class WooPosProductType(val value: String) {
+        SIMPLE("simple"),
+        VARIABLE("variable"),
+        GROUPED("grouped"),
+        EXTERNAL("external"),
+        VARIATION("variation"),
+        SUBSCRIPTION("subscription"),
+        VARIABLE_SUBSCRIPTION("variable-subscription"),
+        CUSTOM("custom"),
+        BUNDLE("bundle"),
+        COMPOSITE("composite"),
     }
 
-    enum class WooPosProductStatus {
-        PUBLISH,
-        DRAFT,
-        PENDING,
-        PRIVATE,
-        TRASH,
-        UNKNOWN
+    enum class WooPosProductStatus(val value: String) {
+        PUBLISH(CoreProductStatus.PUBLISH.value),
+        DRAFT(CoreProductStatus.DRAFT.value),
+        PENDING(CoreProductStatus.PENDING.value),
+        PRIVATE(CoreProductStatus.PRIVATE.value),
+        TRASH(CoreProductStatus.TRASH.value),
+        UNKNOWN("unknown")
     }
 
     @Parcelize
