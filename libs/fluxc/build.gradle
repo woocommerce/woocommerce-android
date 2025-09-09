@@ -65,6 +65,7 @@ android.buildTypes.all { buildType ->
 dependencies {
     implementation libs.androidx.exifinterface
     implementation libs.androidx.security.crypto
+    implementation libs.androidx.core.ktx
 
     implementation(libs.wordpress.utils) {
         // Using official volley package
