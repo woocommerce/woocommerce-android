@@ -64,7 +64,7 @@ class JetpackApplicationPasswordsSupport @Inject constructor(
 
     companion object {
         @VisibleForTesting
-        internal const val FLAG_REFRESH_DURATION_DAYS = 7
+        internal const val FLAG_REFRESH_DURATION_DAYS = 14
 
         @VisibleForTesting
         internal const val UNSUPPORTED_JETPACK_APP_PASSWORDS_SITES = "unsupported_jetpack_app_passwords_sites"
