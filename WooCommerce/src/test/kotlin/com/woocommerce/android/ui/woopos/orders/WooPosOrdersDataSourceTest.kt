@@ -149,7 +149,7 @@ class WooPosOrdersDataSourceTest {
     }
 
     @Test
-    fun `when cache empty and fetch returns empty, then emit SuccessCache empty then SuccessRemote empty and store empty`() = runTest {
+    fun `when cache empty and fetch returns empty, then SuccessRemote empty and store empty`() = runTest {
         whenever(ordersCache.getAll()).thenReturn(emptyList())
 
         val payload = WCOrderStore.FetchOrdersResponsePayload(
@@ -170,13 +170,10 @@ class WooPosOrdersDataSourceTest {
 
         val emissions = sut.loadOrders().toList(mutableListOf())
 
-        assertThat(emissions).hasSize(2)
+        assertThat(emissions).hasSize(1)
 
-        val first = emissions[0] as LoadOrdersResult.SuccessCache
+        val first = emissions[0] as LoadOrdersResult.SuccessRemote
         assertThat(first.orders).isEmpty()
-
-        val second = emissions[1] as LoadOrdersResult.SuccessRemote
-        assertThat(second.orders).isEmpty()
 
         verify(selectedSite).get()
         verify(ordersCache).getAll()
