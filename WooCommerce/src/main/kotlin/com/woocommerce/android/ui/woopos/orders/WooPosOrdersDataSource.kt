@@ -10,10 +10,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.O
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 
-sealed interface LoadOrdersResult {
-    data class SuccessCache(val orders: List<Order>) : LoadOrdersResult
-    data class SuccessRemote(val orders: List<Order>) : LoadOrdersResult
-    data class Error(val message: String) : LoadOrdersResult
+sealed class LoadOrdersResult {
+    data class SuccessCache(val orders: List<Order>) : LoadOrdersResult()
+    data class SuccessRemote(val orders: List<Order>) : LoadOrdersResult()
+    data class Error(val message: String) : LoadOrdersResult()
 }
 
 class WooPosOrdersDataSource @Inject constructor(
