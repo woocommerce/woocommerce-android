@@ -70,7 +70,6 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -220,8 +219,7 @@ class OrderDetailViewModel @Inject constructor(
     private var pluginsInformation: Map<String, WooPlugin> = HashMap()
 
     private val isRevampWooShippingEnabled: Boolean
-        get() = FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() &&
-            shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
+        get() = shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
 
     init {
         productImageMap.subscribeToOnProductFetchedEvents(this)
