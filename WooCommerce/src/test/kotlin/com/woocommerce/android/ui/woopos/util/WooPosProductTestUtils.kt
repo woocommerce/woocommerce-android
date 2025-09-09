@@ -28,4 +28,3 @@ fun generateWooPosProduct(
     images = images,
     variationIds = variationIds,
 )
-
