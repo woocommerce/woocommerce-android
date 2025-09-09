@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -36,8 +36,8 @@ class WooPosProductsListCacheTest {
 
     @Test
     fun `when products are stored, getProductList returns products from cache`() = runTest {
-        val product1 = mock<Product>()
-        val product2 = mock<Product>()
+        val product1 = generateWooPosProduct()
+        val product2 = generateWooPosProduct()
 
         whenever(productsCache.getProductById(1L)).thenReturn(product1)
         whenever(productsCache.getProductById(2L)).thenReturn(product2)
@@ -50,9 +50,9 @@ class WooPosProductsListCacheTest {
 
     @Test
     fun `when adding more products, duplicates are removed`() = runTest {
-        val product1 = mock<Product>()
-        val product2 = mock<Product>()
-        val product3 = mock<Product>()
+        val product1 = generateWooPosProduct()
+        val product2 = generateWooPosProduct()
+        val product3 = generateWooPosProduct()
 
         whenever(productsCache.getProductById(1L)).thenReturn(product1)
         whenever(productsCache.getProductById(2L)).thenReturn(product2)
@@ -74,7 +74,7 @@ class WooPosProductsListCacheTest {
 
     @Test
     fun `when cache is cleared, getProductList returns empty list`() = runTest {
-        val product1 = mock<Product>()
+        val product1 = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(product1)
 
         productListIndex.storeProductList(listOf(1L))
