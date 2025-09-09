@@ -65,6 +65,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -436,12 +437,14 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     fun triggerLocalCatalogSyncOnSiteChange() {
         appCoroutineScope.launch {
-            selectedSite.observe().collect { selectedSite ->
-                if (selectedSite != null) {
-                    delay(POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS)
-                    posLocalCatalogScheduler.triggerManualFullCatalogSync()
+            selectedSite.observe()
+                .drop(1) // invoke only on site change not on app initialization
+                .collect { selectedSite ->
+                    if (selectedSite != null) {
+                        delay(POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS)
+                        posLocalCatalogScheduler.triggerManualFullCatalogSync()
+                    }
                 }
-            }
         }
     }
 
