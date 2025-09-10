@@ -18,7 +18,7 @@ class WooPosLocalCatalogSyncWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val accountRepository: AccountRepository,
     private val selectedSite: SelectedSite,
-    private val syncRepository: PosLocalCatalogSyncRepository,
+    private val syncRepository: WooPosLocalCatalogSyncRepository,
     private val logger: WooPosLogWrapper,
     private val featureFlagM1Enabled: WooPosLocalCatalogM1Enabled,
 ) : CoroutineWorker(appContext, workerParams) {

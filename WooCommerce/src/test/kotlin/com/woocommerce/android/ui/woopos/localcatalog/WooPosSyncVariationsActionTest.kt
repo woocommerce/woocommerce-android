@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncRepository.Companion.PAGE_SIZE
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository.Companion.PAGE_SIZE
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationsAction.WooPosSyncVariationsResult
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat

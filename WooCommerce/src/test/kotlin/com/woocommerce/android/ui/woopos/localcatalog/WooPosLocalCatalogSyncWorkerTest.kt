@@ -26,7 +26,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var workerParams: WorkerParameters = mock()
     private var accountRepository: AccountRepository = mock()
     private var selectedSite: SelectedSite = mock()
-    private var syncRepository: PosLocalCatalogSyncRepository = mock()
+    private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()

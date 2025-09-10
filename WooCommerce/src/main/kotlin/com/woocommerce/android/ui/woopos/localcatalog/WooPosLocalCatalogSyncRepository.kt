@@ -24,7 +24,7 @@ sealed class PosLocalCatalogSyncResult {
 }
 
 @Singleton
-class PosLocalCatalogSyncRepository @Inject constructor(
+class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncProductsAction: WooPosSyncProductsAction,
     private val posSyncVariationsAction: WooPosSyncVariationsAction,
     private val syncTimestampManager: WooPosSyncTimestampManager,
