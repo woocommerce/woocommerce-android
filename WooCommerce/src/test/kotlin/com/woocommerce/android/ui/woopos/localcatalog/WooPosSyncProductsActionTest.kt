@@ -15,8 +15,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
-import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogSyncResult
 import kotlin.Result as KotlinResult
 
 class WooPosSyncProductsActionTest {
@@ -225,7 +225,7 @@ class WooPosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
                         syncedCount = productsCount,
                         hasMore = false,
                         nextOffset = 0,
@@ -245,7 +245,7 @@ class WooPosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
                         syncedCount = page1Count,
                         hasMore = true,
                         nextOffset = page1Count,
@@ -258,7 +258,7 @@ class WooPosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(page1Count), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
                         syncedCount = page2Count,
                         hasMore = true,
                         nextOffset = page1Count + page2Count,
@@ -279,7 +279,7 @@ class WooPosSyncProductsActionTest {
         )
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
                         syncedCount = page3Count,
                         hasMore = false,
                         nextOffset = 0,
@@ -297,7 +297,7 @@ class WooPosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
                         syncedCount = 0,
                         hasMore = false,
                         nextOffset = 0,
@@ -331,7 +331,7 @@ class WooPosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
                         syncedCount = 100,
                         hasMore = true,
                         nextOffset = 100,
@@ -355,7 +355,7 @@ class WooPosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
                         syncedCount = 0,
                         hasMore = true,
                         nextOffset = 100,
@@ -368,7 +368,7 @@ class WooPosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(100), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
                         syncedCount = 50,
                         hasMore = false,
                         nextOffset = 0,
@@ -388,7 +388,7 @@ class WooPosSyncProductsActionTest {
         whenever(posLocalCatalogStore.syncRecentlyModifiedProducts(any(), anyOrNull(), eq(0), any(), any()))
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
                         syncedCount = PAGE_SIZE,
                         hasMore = true,
                         nextOffset = PAGE_SIZE,

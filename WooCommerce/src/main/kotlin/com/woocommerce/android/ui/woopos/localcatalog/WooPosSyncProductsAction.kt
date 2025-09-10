@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
@@ -91,7 +92,7 @@ class WooPosSyncProductsAction @Inject constructor(
     }
 
     private fun processPageResult(
-        syncResult: org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogSyncResult,
+        syncResult: WooPosLocalCatalogFetchProductsResult,
         pagesSynced: Int,
         maxPages: Int
     ) {

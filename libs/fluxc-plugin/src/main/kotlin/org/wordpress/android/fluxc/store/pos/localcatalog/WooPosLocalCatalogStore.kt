@@ -81,7 +81,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
-     * Syncs recently modified products with pagination support.
+     * Fetch recently modified products with pagination support.
      *
      * @param [site] The site to sync products for
      * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT)
@@ -89,13 +89,12 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @param [pageSize] Number of products to fetch per page (default: 100, max: 100)
      * @return Result containing SyncResponse with pagination info or error
      */
-    suspend fun syncRecentlyModifiedProducts(
+    suspend fun fetchRecentlyModifiedProducts(
         site: SiteModel,
         modifiedAfterGmt: String?,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-        storeInDb: Boolean = true
-    ): Result<WooPosLocalCatalogSyncResult> =
+    ): Result<WooPosLocalCatalogFetchProductsResult> =
         coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
@@ -118,7 +117,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 response.isError -> Result.failure(mapResponseError(response.error))
 
                 response.model.isNullOrEmpty() -> Result.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
+                        products = emptyList(),
                         syncedCount = 0,
                         hasMore = false,
                         nextOffset = offset,
@@ -129,19 +129,6 @@ class WooPosLocalCatalogStore @Inject constructor(
 
                 else -> {
                     val products = response.model.map { it.mapToPOSEntity() }
-
-                    if (storeInDb) {
-                        val upsertResult = runCatching { posProductDao.upsertProducts(products) }
-
-                        if (upsertResult.isFailure) {
-                            return@withDefaultContext Result.failure(
-                                WooPosLocalCatalogError.DatabaseError(
-                                    errorMessage = "Failed to save products to database",
-                                    throwable = upsertResult.exceptionOrNull()
-                                )
-                            )
-                        }
-                    }
 
                     val hasMore = products.size == validPageSize
 
@@ -156,7 +143,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                     }
 
                     Result.success(
-                        WooPosLocalCatalogSyncResult(
+                        WooPosLocalCatalogFetchProductsResult(
+                            products = products,
                             syncedCount = products.size,
                             hasMore = hasMore,
                             nextOffset = if (hasMore) offset + products.size else offset,
@@ -167,6 +155,9 @@ class WooPosLocalCatalogStore @Inject constructor(
                 }
             }
         }
+
+    suspend fun upsertProducts(products: List<WCPosProductEntity>): Result<Unit> =
+        runCatching { posProductDao.upsertProducts(products) }
 
     /**
      * Observes all variations for a given product from the local database.
