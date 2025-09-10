@@ -12,8 +12,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
+class WooPosLocalCatalogSyncWorker
+@AssistedInject
 @Suppress("LongParameterList")
-class WooPosLocalCatalogSyncWorker @AssistedInject constructor(
+constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val accountRepository: AccountRepository,
