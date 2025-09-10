@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import javax.inject.Inject
 
 class WooPosSearchByIdentifierResultConverter @Inject constructor(
@@ -15,7 +16,7 @@ class WooPosSearchByIdentifierResultConverter @Inject constructor(
         return when (result) {
             is WooPosSearchByIdentifierResult.Success -> {
                 val product = result.product
-                if (product.type.value.equals("variation", ignoreCase = true)) {
+                if (product.type == WooPosProductModelVersion2.WooPosProductType.VARIATION) {
                     variationProcess(product)
                 } else {
                     productsCache.addAll(listOf(product))
