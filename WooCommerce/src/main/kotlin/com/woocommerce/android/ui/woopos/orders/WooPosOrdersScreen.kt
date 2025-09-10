@@ -53,7 +53,7 @@ fun WooPosOrdersScreen(
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 
     Row(modifier = Modifier.fillMaxSize()) {
-        WooPosOrdersLeftPane(
+        OrdersList(
             state = state,
             onBackClicked = onBackClicked,
             onRefresh = viewModel::onRefresh,
@@ -65,7 +65,7 @@ fun WooPosOrdersScreen(
                 .background(MaterialTheme.colorScheme.surface)
         )
 
-        WooPosOrdersRightPane(
+        OrderDetails(
             state = state,
             modifier = Modifier
                 .weight(0.7f)
@@ -77,7 +77,7 @@ fun WooPosOrdersScreen(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun WooPosOrdersLeftPane(
+private fun OrdersList(
     state: WooPosOrdersState,
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
@@ -171,7 +171,7 @@ private fun WooPosOrdersLeftPane(
 }
 
 @Composable
-private fun WooPosOrdersRightPane(
+private fun OrderDetails(
     state: WooPosOrdersState,
     modifier: Modifier = Modifier
 ) {
