@@ -35,7 +35,7 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    fun refresh() {
+    fun onRefresh() {
         val currentState = _state.value
         _state.value = when (currentState) {
             is WooPosOrdersState.Content -> currentState.copy(

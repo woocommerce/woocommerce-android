@@ -56,7 +56,7 @@ fun WooPosOrdersScreen(
         WooPosOrdersLeftPane(
             state = state,
             onBackClicked = onBackClicked,
-            onRefresh = viewModel::refresh,
+            onRefresh = viewModel::onRefresh,
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
             modifier = Modifier

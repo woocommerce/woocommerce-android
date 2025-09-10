@@ -143,7 +143,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel.refresh()
+        viewModel.onRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -195,7 +195,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel.refresh()
+        viewModel.onRefresh()
         advanceUntilIdle()
 
         // THEN
