@@ -4,10 +4,10 @@ import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.CarrierType
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.PackageDAO
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity.CarrierType
+import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity.Package
 
 @Parcelize
 data class PackageData(
@@ -68,18 +68,18 @@ data class PackageData(
          */
         const val DEFAULT_HEIGHT = 5.0
 
-        fun fromPackageDAO(dao: PackageDAO, isSelected: Boolean = false) = PackageData(
-            id = dao.id,
-            name = dao.name,
-            dimensions = dao.dimensions,
-            weight = dao.weight,
+        fun fromPackageEntity(entity: Package, isSelected: Boolean = false) = PackageData(
+            id = entity.id ?: EMPTY.id,
+            name = entity.name ?: EMPTY.name,
+            dimensions = entity.dimensions ?: EMPTY.dimensions,
+            weight = entity.weight ?: EMPTY.weight,
             isSelected = isSelected,
-            isUserDefined = dao.isUserDefined,
-            isLetter = dao.isLetter,
-            dimensionUnit = dao.dimensionUnit,
-            weightUnit = dao.weightUnit,
-            groupName = dao.groupName,
-            isStarred = dao.saved
+            isUserDefined = entity.isUserDefined,
+            isLetter = entity.isLetter,
+            dimensionUnit = entity.dimensionUnit ?: EMPTY.dimensionUnit,
+            weightUnit = entity.weightUnit ?: EMPTY.weightUnit,
+            groupName = entity.groupName,
+            isStarred = entity.saved
         )
     }
 }
