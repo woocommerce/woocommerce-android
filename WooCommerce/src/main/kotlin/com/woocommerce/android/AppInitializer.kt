@@ -246,7 +246,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         FCMRefreshWorker.schedule(application)
 
         posLocalCatalogScheduler.schedulePeriodicFullCatalogSync()
-        triggerLocalCatalogSyncOnSiteChange()
+        observeSiteChangesForCatalogSync()
     }
 
     @Suppress("DEPRECATION")
@@ -435,7 +435,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
-    fun triggerLocalCatalogSyncOnSiteChange() {
+    fun observeSiteChangesForCatalogSync() {
         appCoroutineScope.launch {
             selectedSite.observe()
                 .drop(1) // invoke only on site change not on app initialization
