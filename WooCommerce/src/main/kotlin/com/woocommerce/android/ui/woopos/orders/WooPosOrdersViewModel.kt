@@ -35,10 +35,6 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    fun isRefreshing(): Boolean =
-        (state.value as? WooPosOrdersState.Content)
-            ?.pullToRefreshState == WooPosPullToRefreshState.Refreshing
-
     fun refresh() {
         val currentState = _state.value
         _state.value = when (currentState) {
@@ -63,10 +59,7 @@ class WooPosOrdersViewModel @Inject constructor(
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
-                        _state.value = WooPosOrdersState.Error(
-                            message = result.message,
-                            pullToRefreshState = WooPosPullToRefreshState.Disabled
-                        )
+                        _state.value = WooPosOrdersState.Error(message = result.message)
                     }
 
                     is LoadOrdersResult.SuccessCache -> {

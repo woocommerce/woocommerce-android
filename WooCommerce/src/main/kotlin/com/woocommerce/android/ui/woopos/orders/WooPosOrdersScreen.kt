@@ -57,7 +57,7 @@ fun WooPosOrdersScreen(
             state = state,
             onBackClicked = onBackClicked,
             onRefresh = viewModel::refresh,
-            isRefreshing = viewModel.isRefreshing(),
+            isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
             modifier = Modifier
                 .weight(0.3f)
