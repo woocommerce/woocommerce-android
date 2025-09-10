@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.data
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -16,16 +16,16 @@ class WooPosPopularProductsProvider @Inject constructor(
     private val productStore: WCProductStore,
     private val productsCache: WooPosProductsCache,
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
-    private val productMapper: WCProductToWooPosProductModelMapper,
+    private val productMapper: WooPosWCProductToWooPosProductModelMapper,
 ) {
     companion object {
         private const val MAX_POPULAR_PRODUCTS = 10
     }
 
     private val mutex = Mutex()
-    private val popularProductsCache = mutableListOf<WooPosProductModelVersion2>()
+    private val popularProductsCache = mutableListOf<WooPosProductModel>()
 
-    suspend fun getPopularProducts(): List<WooPosProductModelVersion2> = mutex.withLock { popularProductsCache }
+    suspend fun getPopularProducts(): List<WooPosProductModel> = mutex.withLock { popularProductsCache }
 
     suspend fun addPopularItemsToCache() = mutex.withLock {
         productsCache.addAll(popularProductsCache)

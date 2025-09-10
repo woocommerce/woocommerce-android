@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data
 
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -145,16 +145,16 @@ class WooPosProductsInMemoryCacheTest {
     private fun createTestProduct(
         id: Long,
         name: String = "Test Product $id"
-    ): WooPosProductModelVersion2 =
-        WooPosProductModelVersion2(
+    ): WooPosProductModel =
+        WooPosProductModel(
             remoteId = id,
             parentId = null,
             name = name,
             sku = "SKU-$id",
-            pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(price = BigDecimal.TEN),
+            pricing = WooPosProductModel.WooPosPricing.RegularPricing(price = BigDecimal.TEN),
             globalUniqueId = "global-$id",
-            type = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
-            status = WooPosProductModelVersion2.WooPosProductStatus.PUBLISH,
+            type = WooPosProductModel.WooPosProductType.SIMPLE,
+            status = WooPosProductModel.WooPosProductStatus.PUBLISH,
             description = "Description for $name",
             shortDescription = "Short description for $name",
             isDownloadable = false,

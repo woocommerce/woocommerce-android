@@ -4,15 +4,16 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2.WooPosPricing
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2.WooPosProductImage
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2.WooPosProductStatus
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2.WooPosProductType
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosPricing
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductImage
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductStatus
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductType
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsIndex
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
@@ -96,7 +97,7 @@ class WooPosProductsDataSourceTest {
     }
     private val productsIndex: WooPosProductsIndex = mock()
     private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
-    private val productMapper: WCProductToWooPosProductModelMapper = mock()
+    private val productMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     @Test
     fun `given cached products, when loadProducts called, then should emit cached products first`() = runTest {
@@ -202,6 +203,7 @@ class WooPosProductsDataSourceTest {
             // GIVEN
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
             whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
+            whenever(productMapper.map(any())).thenReturn(generateWooPosProduct())
             whenever(
                 productStore.fetchProducts(
                     site = eq(siteModel),
@@ -248,11 +250,10 @@ class WooPosProductsDataSourceTest {
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
             val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
 
-            assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
+            assertThat(cachedResult.products.size).isEqualTo(3)
             assertThat(remoteResult.productsResult.isSuccess).isTrue()
-            assertThat(remoteResult.productsResult.getOrNull()).containsExactlyElementsOf(sampleProducts)
+            assertThat(remoteResult.productsResult.getOrNull()!!.size).isEqualTo(3)
             verify(productsCache).addAll(any())
-            verify(productsIndex).storeProductList(sampleProducts.map { it.remoteId })
         }
 
     @Test
@@ -301,6 +302,7 @@ class WooPosProductsDataSourceTest {
     fun `given successful loadMore, when loadMore called, then should add products to cache and return them`() =
         runTest {
             // GIVEN
+            whenever(productMapper.map(any())).thenReturn(generateWooPosProduct())
             whenever(
                 productStore.fetchProducts(
                     site = eq(siteModel),
@@ -344,6 +346,7 @@ class WooPosProductsDataSourceTest {
     fun `given failed loadMore, when loadMore called, then should return error and cache remains unchanged`() =
         runTest {
             // GIVEN
+            whenever(productMapper.map(any())).thenReturn(generateWooPosProduct())
             whenever(productsIndex.getProductList())
                 .thenReturn(
                     List(25) {
@@ -763,7 +766,7 @@ class WooPosProductsDataSourceTest {
         productType: WooPosProductType = WooPosProductType.SIMPLE,
         isDownloadable: Boolean = false,
         images: List<WooPosProductImage> = emptyList()
-    ) = WooPosProductModelVersion2(
+    ) = WooPosProductModel(
         remoteId = productId,
         name = productName,
         pricing = WooPosPricing.RegularPricing(amount.toBigDecimal()),

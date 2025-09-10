@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.home.cart
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
@@ -84,7 +84,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Name",
-                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
+                pricing = WooPosProductModel.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
     }
@@ -125,7 +125,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Variation",
-                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
+                pricing = WooPosProductModel.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
     }
@@ -201,7 +201,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Product 1",
-                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
+                pricing = WooPosProductModel.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
         verify(productsCache).deleteProduct(2L)
@@ -247,7 +247,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Product",
-                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
+                pricing = WooPosProductModel.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
         verify(productsCache).deleteProduct(1L)
@@ -332,7 +332,7 @@ class WooPosCartItemsUpdaterTest {
         verify(productsCache).updateProduct(
             cachedProduct.copy(
                 name = "Updated Name",
-                pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(BigDecimal("10.0"))
+                pricing = WooPosProductModel.WooPosPricing.RegularPricing(BigDecimal("10.0"))
             )
         )
     }

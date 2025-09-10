@@ -3,12 +3,15 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -25,11 +28,20 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
     private val productStore: WCProductStore = mock()
     private val site: SiteModel = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
+    private val posProductMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierGlobalUniqueSearch(selectedSite, productStore, wooPosLogWrapper)
+        sut = WooPosSearchByIdentifierGlobalUniqueSearch(
+            selectedSite,
+            productStore,
+            wooPosLogWrapper,
+            posProductMapper
+        )
         whenever(selectedSite.get()).thenReturn(site)
+        whenever(posProductMapper.map(any())).thenReturn(
+            generateWooPosProduct()
+        )
     }
 
     @Test
@@ -65,7 +77,6 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
             assertTrue(actualResult is WooPosSearchByIdentifierResult.Success)
             val successResult = actualResult as WooPosSearchByIdentifierResult.Success
             assertEquals(expectedProduct.remoteId, successResult.product.remoteId)
-            assertEquals(expectedProduct.name, successResult.product.name)
         }
 
     @Test

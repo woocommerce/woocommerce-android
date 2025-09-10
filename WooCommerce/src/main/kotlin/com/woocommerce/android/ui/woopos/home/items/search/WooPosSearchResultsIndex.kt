@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -22,7 +22,7 @@ class WooPosSearchResultsIndex @Inject constructor(
         paginatedResults = (paginatedResults + productIds).distinct()
     }
 
-    suspend fun getSearchResults(query: String): List<WooPosProductModelVersion2> = mutex.withLock {
+    suspend fun getSearchResults(query: String): List<WooPosProductModel> = mutex.withLock {
         if (currentSearchQuery != query.lowercase()) {
             return emptyList()
         }

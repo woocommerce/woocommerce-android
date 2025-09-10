@@ -11,7 +11,7 @@ import java.math.BigDecimal
  * and the view layer, ensuring all required data is present and properly typed.
  */
 @Parcelize
-data class WooPosProductModelVersion2(
+data class WooPosProductModel(
     val remoteId: Long,
     val parentId: Long?,
     val name: String,

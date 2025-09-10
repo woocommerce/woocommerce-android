@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -228,7 +228,7 @@ class WooPosProductsViewModel @Inject constructor(
             is WooPosProductsViewState.Empty -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
         }
 
-    private suspend fun List<WooPosProductModelVersion2>.toContentState(
+    private suspend fun List<WooPosProductModel>.toContentState(
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) = WooPosProductsViewState.Content(
         items = map { it.toItemSelectionViewState() },
@@ -236,7 +236,7 @@ class WooPosProductsViewModel @Inject constructor(
         pullToRefreshState = WooPosPullToRefreshState.Enabled,
     )
 
-    private suspend fun WooPosProductModelVersion2.toItemSelectionViewState(): WooPosItemSelectionViewState {
+    private suspend fun WooPosProductModel.toItemSelectionViewState(): WooPosItemSelectionViewState {
         return if (this.isVariable()) {
             WooPosItemSelectionViewState.Product.Variable(
                 id = this.remoteId,
@@ -315,7 +315,7 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
     }
 
-    private fun WooPosProductModelVersion2.isVariable() =
-        type == WooPosProductModelVersion2.WooPosProductType.VARIABLE ||
-            type == WooPosProductModelVersion2.WooPosProductType.VARIATION
+    private fun WooPosProductModel.isVariable() =
+        type == WooPosProductModel.WooPosProductType.VARIABLE ||
+            type == WooPosProductModel.WooPosProductType.VARIATION
 }

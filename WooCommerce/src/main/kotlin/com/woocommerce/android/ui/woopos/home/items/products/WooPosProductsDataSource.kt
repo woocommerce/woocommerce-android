@@ -4,8 +4,8 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,7 +30,7 @@ class WooPosProductsDataSource @Inject constructor(
     private val productsCache: WooPosProductsCache,
     private val productsIndex: WooPosProductsIndex,
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
-    private val posProductMapper: WCProductToWooPosProductModelMapper,
+    private val posProductMapper: WooPosWCProductToWooPosProductModelMapper,
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)
@@ -58,7 +58,7 @@ class WooPosProductsDataSource @Inject constructor(
         val pageOneResult = pageOne.await()
         val pageTwoResult = pageTwo.await()
 
-        fun List<WCProductModel>?.toAppModels(): List<WooPosProductModelVersion2> =
+        fun List<WCProductModel>?.toAppModels(): List<WooPosProductModel> =
             this?.map { posProductMapper.map(it) } ?: emptyList()
 
         when {
@@ -98,7 +98,7 @@ class WooPosProductsDataSource @Inject constructor(
         }
     }.flowOn(Dispatchers.IO).take(2)
 
-    suspend fun loadMore(): Result<List<WooPosProductModelVersion2>> = withContext(Dispatchers.IO) {
+    suspend fun loadMore(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
         if (!canLoadMore.get()) {
             return@withContext Result.success(productsIndex.getProductList())
         }
@@ -112,11 +112,11 @@ class WooPosProductsDataSource @Inject constructor(
         }
     }
 
-    private fun sortProducts(products: List<WooPosProductModelVersion2>): List<WooPosProductModelVersion2> {
+    private fun sortProducts(products: List<WooPosProductModel>): List<WooPosProductModel> {
         return products.sortedBy { it.name.lowercase() }
     }
 
-    private suspend fun fetchProducts(): Result<List<WooPosProductModelVersion2>> {
+    private suspend fun fetchProducts(): Result<List<WooPosProductModel>> {
         val result = fetchProductsFromStore(
             offset = offset.get(),
             pageSize = NORMAL_PAGE_SIZE
@@ -157,8 +157,8 @@ class WooPosProductsDataSource @Inject constructor(
     }
 
     sealed class ProductsResult {
-        data class Cached(val products: List<WooPosProductModelVersion2>) : ProductsResult()
-        data class Remote(val productsResult: Result<List<WooPosProductModelVersion2>>) : ProductsResult()
+        data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
+        data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
     }
 
     companion object {

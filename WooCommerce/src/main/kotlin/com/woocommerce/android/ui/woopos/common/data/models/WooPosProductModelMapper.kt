@@ -16,10 +16,10 @@ import javax.inject.Inject
  * The mapper ensures clean data handling:
  */
 @Reusable
-class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLogWrapper) {
+class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper) {
     private val gson = Gson()
-    fun fromEntity(entity: WCPosProductEntity): WooPosProductModelVersion2 {
-        return WooPosProductModelVersion2(
+    fun fromEntity(entity: WCPosProductEntity): WooPosProductModel {
+        return WooPosProductModel(
             remoteId = entity.remoteId.value,
             parentId = entity.parentId,
             name = entity.name,
@@ -45,7 +45,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         )
     }
 
-    fun fromEntities(entities: List<WCPosProductEntity>): List<WooPosProductModelVersion2> {
+    fun fromEntities(entities: List<WCPosProductEntity>): List<WooPosProductModel> {
         return entities.map { fromEntity(it) }
     }
 
@@ -62,7 +62,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         }
     }
 
-    fun parseImages(imagesJson: String): List<WooPosProductModelVersion2.WooPosProductImage> {
+    fun parseImages(imagesJson: String): List<WooPosProductModel.WooPosProductImage> {
         return try {
             if (imagesJson.isBlank()) {
                 emptyList()
@@ -79,7 +79,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         }
     }
 
-    private fun parseImage(imageMap: Map<String, Any?>): WooPosProductModelVersion2.WooPosProductImage? {
+    private fun parseImage(imageMap: Map<String, Any?>): WooPosProductModel.WooPosProductImage? {
         val id = when (val idValue = imageMap["id"]) {
             is Double -> idValue.toLong()
             is Int -> idValue.toLong()
@@ -94,10 +94,10 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
             logger.w("Failed to parse images JSON, id or url is null: $id, $url")
             return null
         }
-        return WooPosProductModelVersion2.WooPosProductImage(id, url, name, alt)
+        return WooPosProductModel.WooPosProductImage(id, url, name, alt)
     }
 
-    fun parseAttributes(attributesJson: String): List<WooPosProductModelVersion2.WooPosProductAttribute> {
+    fun parseAttributes(attributesJson: String): List<WooPosProductModel.WooPosProductAttribute> {
         return try {
             if (attributesJson.isBlank()) {
                 emptyList()
@@ -114,7 +114,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         }
     }
 
-    private fun parseAttribute(attrMap: Map<String, Any?>): WooPosProductModelVersion2.WooPosProductAttribute? {
+    private fun parseAttribute(attrMap: Map<String, Any?>): WooPosProductModel.WooPosProductAttribute? {
         val id = when (val idValue = attrMap["id"]) {
             is Double -> idValue.toLong()
             is Int -> idValue.toLong()
@@ -130,10 +130,10 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         }
         val isVisible = attrMap["visible"] as? Boolean ?: true
         val isVariation = attrMap["variation"] as? Boolean ?: false
-        return WooPosProductModelVersion2.WooPosProductAttribute(id, name, options, isVisible, isVariation)
+        return WooPosProductModel.WooPosProductAttribute(id, name, options, isVisible, isVariation)
     }
 
-    fun parseCategories(categoriesJson: String): List<WooPosProductModelVersion2.WooPosProductCategory> {
+    fun parseCategories(categoriesJson: String): List<WooPosProductModel.WooPosProductCategory> {
         return try {
             if (categoriesJson.isBlank()) {
                 emptyList()
@@ -150,7 +150,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         }
     }
 
-    private fun parseCategory(catMap: Map<String, Any?>): WooPosProductModelVersion2.WooPosProductCategory? {
+    private fun parseCategory(catMap: Map<String, Any?>): WooPosProductModel.WooPosProductCategory? {
         val id = when (val idValue = catMap["id"]) {
             is Double -> idValue.toLong()
             is Int -> idValue.toLong()
@@ -164,10 +164,10 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
             logger.w("Failed to parse category JSON, id or name is null: $id, $name")
             return null
         }
-        return WooPosProductModelVersion2.WooPosProductCategory(id, name, slug)
+        return WooPosProductModel.WooPosProductCategory(id, name, slug)
     }
 
-    fun parseTags(tagsJson: String): List<WooPosProductModelVersion2.WooPosProductTag> {
+    fun parseTags(tagsJson: String): List<WooPosProductModel.WooPosProductTag> {
         return try {
             if (tagsJson.isBlank()) {
                 emptyList()
@@ -184,7 +184,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         }
     }
 
-    private fun parseTag(tagMap: Map<String, Any?>): WooPosProductModelVersion2.WooPosProductTag? {
+    private fun parseTag(tagMap: Map<String, Any?>): WooPosProductModel.WooPosProductTag? {
         val id = when (val idValue = tagMap["id"]) {
             is Double -> idValue.toLong()
             is Int -> idValue.toLong()
@@ -198,7 +198,7 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
             logger.w("Failed to parse tag JSON, id or name is null: $id, $name")
             return null
         }
-        return WooPosProductModelVersion2.WooPosProductTag(id, name, slug)
+        return WooPosProductModel.WooPosProductTag(id, name, slug)
     }
 
     private fun parseVariationIds(variationsJson: String): List<Long> {
@@ -229,51 +229,51 @@ class WooPosProductModelVersion2Mapper @Inject constructor(val logger: WooPosLog
         regularPrice: BigDecimal?,
         salePrice: BigDecimal?,
         isOnSale: Boolean
-    ): WooPosProductModelVersion2.WooPosPricing {
+    ): WooPosProductModel.WooPosPricing {
         return when {
             isOnSale && salePrice != null && regularPrice != null -> {
-                WooPosProductModelVersion2.WooPosPricing.SalePricing(regularPrice, salePrice)
+                WooPosProductModel.WooPosPricing.SalePricing(regularPrice, salePrice)
             }
 
             isOnSale && salePrice != null && price != null -> {
-                WooPosProductModelVersion2.WooPosPricing.SalePricing(price, salePrice)
+                WooPosProductModel.WooPosPricing.SalePricing(price, salePrice)
             }
 
             regularPrice != null -> {
-                WooPosProductModelVersion2.WooPosPricing.RegularPricing(regularPrice)
+                WooPosProductModel.WooPosPricing.RegularPricing(regularPrice)
             }
 
             price != null -> {
-                WooPosProductModelVersion2.WooPosPricing.RegularPricing(price)
+                WooPosProductModel.WooPosPricing.RegularPricing(price)
             }
 
-            else -> WooPosProductModelVersion2.WooPosPricing.NoPricing
+            else -> WooPosProductModel.WooPosPricing.NoPricing
         }
     }
 
-    fun mapProductType(type: String): WooPosProductModelVersion2.WooPosProductType {
+    fun mapProductType(type: String): WooPosProductModel.WooPosProductType {
         return when (type.lowercase()) {
-            "simple" -> WooPosProductModelVersion2.WooPosProductType.SIMPLE
-            "variable" -> WooPosProductModelVersion2.WooPosProductType.VARIABLE
-            "grouped" -> WooPosProductModelVersion2.WooPosProductType.GROUPED
-            "external" -> WooPosProductModelVersion2.WooPosProductType.EXTERNAL
-            "variation" -> WooPosProductModelVersion2.WooPosProductType.VARIATION
-            "subscription" -> WooPosProductModelVersion2.WooPosProductType.SUBSCRIPTION
-            "variable-subscription" -> WooPosProductModelVersion2.WooPosProductType.VARIABLE_SUBSCRIPTION
-            "bundle" -> WooPosProductModelVersion2.WooPosProductType.BUNDLE
-            "composite" -> WooPosProductModelVersion2.WooPosProductType.COMPOSITE
-            else -> WooPosProductModelVersion2.WooPosProductType.CUSTOM
+            "simple" -> WooPosProductModel.WooPosProductType.SIMPLE
+            "variable" -> WooPosProductModel.WooPosProductType.VARIABLE
+            "grouped" -> WooPosProductModel.WooPosProductType.GROUPED
+            "external" -> WooPosProductModel.WooPosProductType.EXTERNAL
+            "variation" -> WooPosProductModel.WooPosProductType.VARIATION
+            "subscription" -> WooPosProductModel.WooPosProductType.SUBSCRIPTION
+            "variable-subscription" -> WooPosProductModel.WooPosProductType.VARIABLE_SUBSCRIPTION
+            "bundle" -> WooPosProductModel.WooPosProductType.BUNDLE
+            "composite" -> WooPosProductModel.WooPosProductType.COMPOSITE
+            else -> WooPosProductModel.WooPosProductType.CUSTOM
         }
     }
 
-    fun mapProductStatus(status: String): WooPosProductModelVersion2.WooPosProductStatus {
+    fun mapProductStatus(status: String): WooPosProductModel.WooPosProductStatus {
         return when (status.lowercase()) {
-            "publish" -> WooPosProductModelVersion2.WooPosProductStatus.PUBLISH
-            "draft" -> WooPosProductModelVersion2.WooPosProductStatus.DRAFT
-            "pending" -> WooPosProductModelVersion2.WooPosProductStatus.PENDING
-            "private" -> WooPosProductModelVersion2.WooPosProductStatus.PRIVATE
-            "trash" -> WooPosProductModelVersion2.WooPosProductStatus.TRASH
-            else -> WooPosProductModelVersion2.WooPosProductStatus.UNKNOWN
+            "publish" -> WooPosProductModel.WooPosProductStatus.PUBLISH
+            "draft" -> WooPosProductModel.WooPosProductStatus.DRAFT
+            "pending" -> WooPosProductModel.WooPosProductStatus.PENDING
+            "private" -> WooPosProductModel.WooPosProductStatus.PRIVATE
+            "trash" -> WooPosProductModel.WooPosProductStatus.TRASH
+            else -> WooPosProductModel.WooPosProductStatus.UNKNOWN
         }
     }
 }

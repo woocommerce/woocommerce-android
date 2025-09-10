@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import app.cash.turbine.test
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -59,7 +59,7 @@ class WooPosProductsViewModelTest {
                 productId = 1,
                 productName = "Product 1",
                 amount = "10.0",
-                productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
+                productType = WooPosProductModel.WooPosProductType.SIMPLE,
                 isDownloadable = false,
             ),
         )
@@ -82,16 +82,16 @@ class WooPosProductsViewModelTest {
                 productId = 1,
                 productName = "Product 1",
                 amount = "10.0",
-                productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
+                productType = WooPosProductModel.WooPosProductType.SIMPLE,
                 isDownloadable = false,
             ),
             generateWooPosProduct(
                 productId = 2,
                 productName = "Product 2",
                 amount = "20.0",
-                productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
+                productType = WooPosProductModel.WooPosProductType.SIMPLE,
                 isDownloadable = false,
-                images = listOf(WooPosProductModelVersion2.WooPosProductImage(0, "https://test.com", "", ""))
+                images = listOf(WooPosProductModel.WooPosProductImage(0, "https://test.com", "", ""))
             )
         )
 
@@ -331,17 +331,17 @@ class WooPosProductsViewModelTest {
                     productId = 1,
                     productName = "Product 1",
                     amount = "10.0",
-                    productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
+                    productType = WooPosProductModel.WooPosProductType.SIMPLE,
                     isDownloadable = false,
                 ),
                 generateWooPosProduct(
                     productId = 2,
                     productName = "Product 2",
                     amount = "20.0",
-                    productType = WooPosProductModelVersion2.WooPosProductType.VARIABLE,
+                    productType = WooPosProductModel.WooPosProductType.VARIABLE,
                     isDownloadable = false,
                     images = listOf(
-                        WooPosProductModelVersion2
+                        WooPosProductModel
                             .WooPosProductImage(0, "https://test.com", "", "")
                     ),
                 )
@@ -380,7 +380,7 @@ class WooPosProductsViewModelTest {
                             productId = 2,
                             productName = "Product 2",
                             amount = "20.0",
-                            productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE
+                            productType = WooPosProductModel.WooPosProductType.SIMPLE
                         )
                     )
                 )
@@ -395,7 +395,7 @@ class WooPosProductsViewModelTest {
                                     productId = 1,
                                     productName = "Product 1",
                                     amount = "10.0",
-                                    productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE
+                                    productType = WooPosProductModel.WooPosProductType.SIMPLE
                                 )
                             )
                         )
@@ -510,7 +510,7 @@ class WooPosProductsViewModelTest {
                         productId = 2,
                         productName = "Product 2",
                         amount = "20.0",
-                        productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
+                        productType = WooPosProductModel.WooPosProductType.SIMPLE,
                     )
                 )
             )

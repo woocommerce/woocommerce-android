@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.test.runTest
@@ -120,8 +120,8 @@ class WooPosSearchByIdentifierTest {
         // GIVEN
         val identifier = "123456"
         val product = generateWooPosProduct(
-            productType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
-            status = WooPosProductModelVersion2.WooPosProductStatus.PUBLISH
+            productType = WooPosProductModel.WooPosProductType.SIMPLE,
+            status = WooPosProductModel.WooPosProductStatus.PUBLISH
         )
 
         whenever(localSearcher(identifier))
@@ -139,7 +139,7 @@ class WooPosSearchByIdentifierTest {
     fun `given product has invalid status, when search called, then return product not supported`() = runTest {
         // GIVEN
         val identifier = "123456"
-        val product = generateWooPosProduct(status = WooPosProductModelVersion2.WooPosProductStatus.DRAFT)
+        val product = generateWooPosProduct(status = WooPosProductModel.WooPosProductStatus.DRAFT)
 
         whenever(localSearcher(identifier))
             .thenReturn(WooPosSearchByIdentifierResult.Success(product))
@@ -179,7 +179,7 @@ class WooPosSearchByIdentifierTest {
     fun `given variable product, when search called, then return product not supported`() = runTest {
         // GIVEN
         val identifier = "123456"
-        val product = generateWooPosProduct(productType = WooPosProductModelVersion2.WooPosProductType.VARIABLE)
+        val product = generateWooPosProduct(productType = WooPosProductModel.WooPosProductType.VARIABLE)
 
         whenever(localSearcher(identifier))
             .thenReturn(WooPosSearchByIdentifierResult.Success(product))

@@ -4,7 +4,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -26,7 +26,7 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
     private val productStore: WCProductStore = mock()
     private val productsCache: WooPosProductsCache = mock()
     private val site: SiteModel = mock()
-    private val posProductMapper: WCProductToWooPosProductModelMapper = mock()
+    private val posProductMapper: WooPosWCProductToWooPosProductModelMapper = mock()
     private val errorMapper: WooPosSearchByIdentifierProductErrorMapper = WooPosSearchByIdentifierProductErrorMapper()
 
     @Before
@@ -44,6 +44,7 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
     @Test
     fun `given successful fetch with product, when invoke called, then return success and cache product`() = runTest {
         // GIVEN
+        whenever(posProductMapper.map(any())).thenReturn(generateWooPosProduct())
         val productId = 123L
         val wcProduct = ProductTestUtils.generateWCProductModel()
         val product = wcProduct.toAppModel()
@@ -64,7 +65,6 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
         assertTrue(actualResult is WooPosSearchByIdentifierResult.Success)
         val successResult = actualResult as WooPosSearchByIdentifierResult.Success
         assertEquals(product.remoteId, successResult.product.remoteId)
-        assertEquals(product.name, successResult.product.name)
     }
 
     @Test

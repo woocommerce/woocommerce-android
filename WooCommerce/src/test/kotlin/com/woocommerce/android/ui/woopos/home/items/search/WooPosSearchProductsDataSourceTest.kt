@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,7 +37,7 @@ class WooPosSearchProductsDataSourceTest {
     private val selectedSite: SelectedSite = mock()
     private val searchPredicate: WooPosProductSearchPredicate = mock()
     private val siteModel: SiteModel = mock()
-    private val posProductModelMapper: WCProductToWooPosProductModelMapper = mock()
+    private val posProductModelMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     private lateinit var sut: WooPosSearchProductsDataSource
 

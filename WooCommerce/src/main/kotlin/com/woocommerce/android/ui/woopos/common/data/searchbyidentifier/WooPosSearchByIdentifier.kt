@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.DownloadableOptions
@@ -52,7 +52,7 @@ class WooPosSearchByIdentifier @Inject constructor(
         }
     }
 
-    private fun meetsFilterRequirements(product: WooPosProductModelVersion2): Boolean {
+    private fun meetsFilterRequirements(product: WooPosProductModel): Boolean {
         val hasValidStatus = product.status.value == filterConfig.filters[ProductFilterOption.STATUS]
 
         val meetsDownloadableRequirement = !product.isDownloadable ||

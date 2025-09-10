@@ -1,30 +1,33 @@
 package com.woocommerce.android.ui.woopos.util
 
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 
 fun generateWooPosProduct(
     productId: Long = 1,
     parentId: Long? = null,
     productName: String = "Product 1",
-    status: WooPosProductModelVersion2.WooPosProductStatus = WooPosProductModelVersion2.WooPosProductStatus.PUBLISH,
+    status: WooPosProductModel.WooPosProductStatus = WooPosProductModel.WooPosProductStatus.PUBLISH,
     amount: String = "10.0",
-    productType: WooPosProductModelVersion2.WooPosProductType = WooPosProductModelVersion2.WooPosProductType.SIMPLE,
+    globalUniqueId: String = "",
+    productType: WooPosProductModel.WooPosProductType = WooPosProductModel.WooPosProductType.SIMPLE,
     isDownloadable: Boolean = false,
-    images: List<WooPosProductModelVersion2.WooPosProductImage> = emptyList(),
+    images: List<WooPosProductModel.WooPosProductImage> = emptyList(),
     variationIds: List<Long> = emptyList(),
-) = WooPosProductModelVersion2(
+    attributes: List<WooPosProductModel.WooPosProductAttribute> = emptyList(),
+) = WooPosProductModel(
     remoteId = productId,
     name = productName,
-    pricing = WooPosProductModelVersion2.WooPosPricing.RegularPricing(amount.toBigDecimal()),
+    pricing = WooPosProductModel.WooPosPricing.RegularPricing(amount.toBigDecimal()),
     type = productType,
     isDownloadable = isDownloadable,
     parentId = parentId,
     sku = "",
-    globalUniqueId = "",
+    globalUniqueId = globalUniqueId,
     status = status,
     description = "",
     shortDescription = "",
     lastModified = "",
     images = images,
     variationIds = variationIds,
+    attributes = attributes,
 )
