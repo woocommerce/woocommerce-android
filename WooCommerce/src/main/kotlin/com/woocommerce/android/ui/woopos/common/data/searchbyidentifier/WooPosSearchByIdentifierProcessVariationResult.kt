@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
@@ -9,11 +9,11 @@ class WooPosSearchByIdentifierProcessVariationResult @Inject constructor(
     private val variationFetch: WooPosSearchByIdentifierVariationFetch,
     private val productGetOrFetch: WooPosSearchByIdentifierProductGetOrFetch
 ) {
-    suspend operator fun invoke(product: Product): WooPosSearchByIdentifierResult = coroutineScope {
+    suspend operator fun invoke(product: WooPosProductModelVersion2): WooPosSearchByIdentifierResult = coroutineScope {
         val parentId = product.parentId
         val variationId = product.remoteId
 
-        if (parentId <= 0) {
+        if (parentId == null || parentId <= 0) {
             return@coroutineScope WooPosSearchByIdentifierResult.Failure(
                 WooPosSearchByIdentifierResult.Error.NotFound
             )
