@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import com.woocommerce.android.util.WooLog
@@ -118,7 +117,7 @@ class WooPosVariationMapper @Inject constructor(
         }
     }
 
-    fun getName(variation: WooPosVariation, parentProduct: Product? = null): String {
+    fun getName(variation: WooPosVariation, parentProduct: WooPosProductModelVersion2? = null): String {
         return parentProduct?.variationEnabledAttributes?.joinToString(" - ") { attribute ->
             val option = variation.attributes.firstOrNull { it.name == attribute.name }
             option?.option ?: "Any ${attribute.name}"
@@ -172,5 +171,5 @@ fun WooPosVariation.getNameForPOS(
     resourceProvider: ResourceProvider,
 ): String = mapper.getNameForPOS(this, parentProduct, resourceProvider)
 
-fun WooPosVariation.getName(mapper: WooPosVariationMapper, parentProduct: Product? = null): String =
+fun WooPosVariation.getName(mapper: WooPosVariationMapper, parentProduct: WooPosProductModelVersion2? = null): String =
     mapper.getName(this, parentProduct)
