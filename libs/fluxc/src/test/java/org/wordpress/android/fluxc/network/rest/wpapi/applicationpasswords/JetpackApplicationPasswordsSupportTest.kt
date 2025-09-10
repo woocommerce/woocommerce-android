@@ -198,7 +198,7 @@ class JetpackApplicationPasswordsSupportTest {
         // Given
         val testSite = createSite()
         val currentTime = System.currentTimeMillis()
-        val flagTime = currentTime - 8.days.inWholeMilliseconds
+        val flagTime = currentTime - (FLAG_REFRESH_DURATION_DAYS + 1).days.inWholeMilliseconds
         sharedPreferences.edit()
             .putStringSet(UNSUPPORTED_JETPACK_APP_PASSWORDS_SITES, setOf("$testSiteId:$flagTime"))
             .apply()
