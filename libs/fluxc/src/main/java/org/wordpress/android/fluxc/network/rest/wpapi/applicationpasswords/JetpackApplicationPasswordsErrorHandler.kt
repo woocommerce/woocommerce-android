@@ -2,26 +2,34 @@ package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork.Companion.APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
+import java.util.Optional
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class JetpackApplicationPasswordsErrorHandler @Inject constructor(
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport,
-    private val appLogWrapper: AppLogWrapper
+    private val appLogWrapper: AppLogWrapper,
+    private val listener: Optional<ApplicationPasswordsListener>
 ) {
     private var failuresCount: MutableMap<Long, Int> = mutableMapOf()
 
     @Suppress("ComplexCondition")
     fun handleError(siteModel: SiteModel, error: WPAPINetworkError) {
+        if (!jetpackApplicationPasswordsSupport.supportsAppPasswords(siteModel)) {
+            // Site already flagged
+            return
+        }
+
+        val isAppPasswordsGenerationError = error.errorCode?.startsWith(
+            ApplicationPasswordsNetwork.APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX
+        ) == true
+
         val httpStatusCode = error.volleyError?.networkResponse?.statusCode
-        val apiErrorCode = if (
-            error.errorCode?.startsWith(APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX) == true
-        ) {
-            error.errorCode.removePrefix(APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX)
+        val apiErrorCode = if (isAppPasswordsGenerationError) {
+            error.errorCode.removePrefix(ApplicationPasswordsNetwork.APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX)
         } else {
             error.errorCode
         }
@@ -38,6 +46,11 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
                     "due to error: $httpStatusCode / $apiErrorCode"
             )
             jetpackApplicationPasswordsSupport.flagAsUnsupported(siteModel)
+            trackFlaggingEvent(
+                isAppPasswordsGenerationError = isAppPasswordsGenerationError,
+                cause = JetpackSiteFlaggedAsUnsupported.Cause.MAJOR_ERROR,
+                error = error
+            )
         } else {
             val siteFailuresCount = (failuresCount[siteModel.siteId] ?: 0) + 1
             failuresCount[siteModel.siteId] = siteFailuresCount
@@ -49,7 +62,32 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
                         "after $siteFailuresCount failures"
                 )
                 jetpackApplicationPasswordsSupport.flagAsUnsupported(siteModel)
+                trackFlaggingEvent(
+                    isAppPasswordsGenerationError = isAppPasswordsGenerationError,
+                    cause = JetpackSiteFlaggedAsUnsupported.Cause.GENERAL_FAILURES_THRESHOLD_REACHED,
+                    error = error
+                )
             }
+        }
+    }
+
+    private fun trackFlaggingEvent(
+        isAppPasswordsGenerationError: Boolean,
+        cause: JetpackSiteFlaggedAsUnsupported.Cause,
+        error: WPAPINetworkError
+    ) {
+        if (listener.isPresent) {
+            listener.get().onJetpackSiteFlaggedAsUnsupported(
+                JetpackSiteFlaggedAsUnsupported(
+                    flow = if (isAppPasswordsGenerationError) {
+                        JetpackSiteFlaggedAsUnsupported.Flow.APP_PASSWORD_GENERATION
+                    } else {
+                        JetpackSiteFlaggedAsUnsupported.Flow.API_REQUEST
+                    },
+                    cause = cause,
+                    error = error
+                )
+            )
         }
     }
 
