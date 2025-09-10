@@ -13,7 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPackagesFromStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchShippingPackages
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.ObserveShippingPackages
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CustomPackageCreationRequestData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
@@ -27,7 +28,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -39,12 +42,15 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
-    private val fetchPackages: FetchPackagesFromStore,
+    observeShippingPackages: ObserveShippingPackages,
+    private val fetchShippingPackages: FetchShippingPackages,
     private val updateSavedCarrierPackages: UpdateSavedCarrierPackages,
     private val packageRepository: WooShippingLabelPackageRepository,
     private val tracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelPackageCreationFragmentArgs by savedState.navArgs()
+    private val shippingPackagesFlow = observeShippingPackages()
+        .shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
@@ -72,20 +78,16 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         )
 
     init {
-        loadData()
-    }
-
-    private fun loadData(): Job {
-        return launch {
-            tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to VALUE_STARTED))
-            fetchPackages().let { response ->
-                _viewState.update { viewState -> viewState.copy(packagesState = response) }
-                if (response is PackagesState.Data) {
+        tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to VALUE_STARTED))
+        launch {
+            shippingPackagesFlow.collectLatest { packages ->
+                _viewState.update { viewState -> viewState.copy(packagesState = packages) }
+                if (packages is PackagesState.Data) {
                     tracker.track(AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP, mapOf(KEY_STATE to "loading_success"))
-                } else if (response is PackagesState.Error) {
+                } else if (packages is PackagesState.Error) {
                     tracker.track(
                         AnalyticsEvent.WCS_PACKAGE_SELECTION_STEP,
-                        mapOf(KEY_STATE to "loading_failed", KEY_ERROR to response.error)
+                        mapOf(KEY_STATE to "loading_failed", KEY_ERROR to packages.error)
                     )
                 }
             }
@@ -148,7 +150,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     fun onRetryClick() {
         triggerEvent(ShowLoadingDialog(true))
         launch {
-            loadData().join()
+            fetchShippingPackages()
             triggerEvent(ShowLoadingDialog(false))
         }
     }
@@ -333,7 +335,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
         return response.takeIf { it.isError.not() }
             ?.model?.firstOrNull()
-            ?.let { PackageData.fromPackageDAO(it) }
+            ?.let { PackageData.fromPackageEntity(it) }
             ?.let { Result.success(it) }
             ?: Result.failure(Throwable(response.error.type.toString()))
     }

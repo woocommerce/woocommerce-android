@@ -67,7 +67,7 @@ class WooPosProductRestClient @Inject constructor(
         val url = "/wc-analytics/variations"
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
-            "paged" to page.toString(),
+            "page" to page.toString(),
             "_fields" to VARIATIONS_FIELDS
         ).also {
             if (modifiedAfter.isNullOrBlank().not()) {
