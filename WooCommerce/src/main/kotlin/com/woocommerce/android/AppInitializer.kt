@@ -95,7 +95,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
         private const val UNAUTHORIZED_STATUS_CODE = 401
         private const val CARD_READER_USAGE_THIRTY_DAYS = 30
-        private const val POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS = 20L
+        private const val POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS = 20000L
     }
 
     @Inject lateinit var crashLogging: CrashLogging
