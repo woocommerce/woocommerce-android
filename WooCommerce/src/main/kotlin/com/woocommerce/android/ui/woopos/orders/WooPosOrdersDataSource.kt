@@ -11,7 +11,8 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 
 sealed class LoadOrdersResult {
-    data class Success(val orders: List<Order>) : LoadOrdersResult()
+    data class SuccessCache(val orders: List<Order>) : LoadOrdersResult()
+    data class SuccessRemote(val orders: List<Order>) : LoadOrdersResult()
     data class Error(val message: String) : LoadOrdersResult()
 }
 
@@ -26,7 +27,9 @@ class WooPosOrdersDataSource @Inject constructor(
     }
     fun loadOrders(): Flow<LoadOrdersResult> = flow {
         val cached = ordersCache.getAll()
-        emit(LoadOrdersResult.Success(cached))
+        if (cached.isNotEmpty()) {
+            emit(LoadOrdersResult.SuccessCache(cached))
+        }
 
         val result = restClient.fetchOrders(
             site = selectedSite.get(),
@@ -43,11 +46,13 @@ class WooPosOrdersDataSource @Inject constructor(
         } else {
             val mapped = result.orders.toAppModels()
             ordersCache.setAll(mapped)
-            emit(LoadOrdersResult.Success(result.orders.toAppModels()))
+            emit(LoadOrdersResult.SuccessRemote(result.orders.toAppModels()))
         }
     }
 
+    fun clearCache() = ordersCache.clear()
+
     private suspend fun List<OrderEntity>.toAppModels(): List<Order> = map {
         orderMapper.toAppModel(it)
-    } ?: emptyList()
+    }
 }
