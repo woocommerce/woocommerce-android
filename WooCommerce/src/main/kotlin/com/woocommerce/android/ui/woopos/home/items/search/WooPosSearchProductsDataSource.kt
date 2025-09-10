@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
 import com.woocommerce.android.WooException
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
+import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,7 +21,8 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val productsCache: WooPosProductsCache,
     private val searchResultsIndex: WooPosSearchResultsIndex,
     private val searchPredicate: WooPosProductSearchPredicate,
-    private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig
+    private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
+    private val posProductModelMapper: WCProductToWooPosProductModelMapper,
 ) {
     companion object {
         private const val PAGE_SIZE = 15
@@ -33,22 +34,23 @@ class WooPosSearchProductsDataSource @Inject constructor(
     val hasMorePages: Boolean
         get() = canLoadMore.get()
 
-    suspend fun searchLocalProducts(query: String): List<Product> = withContext(Dispatchers.IO) {
+    suspend fun searchLocalProducts(query: String): List<WooPosProductModelVersion2> = withContext(Dispatchers.IO) {
         sortProducts(productsCache.getAll().filter(searchPredicate(query))).take(PAGE_SIZE)
     }
 
-    suspend fun searchRemoteProducts(query: String): Result<List<Product>> = withContext(Dispatchers.IO) {
-        searchResultsIndex.clearCache()
+    suspend fun searchRemoteProducts(query: String): Result<List<WooPosProductModelVersion2>> =
+        withContext(Dispatchers.IO) {
+            searchResultsIndex.clearCache()
 
-        performRemoteSearch(query).fold(
-            onSuccess = { result ->
-                Result.success(result.products.sortedBy { it.name.lowercase() })
-            },
-            onFailure = { error -> Result.failure(error) }
-        )
-    }
+            performRemoteSearch(query).fold(
+                onSuccess = { result ->
+                    Result.success(result.products.sortedBy { it.name.lowercase() })
+                },
+                onFailure = { error -> Result.failure(error) }
+            )
+        }
 
-    suspend fun loadMore(query: String): Result<List<Product>> {
+    suspend fun loadMore(query: String): Result<List<WooPosProductModelVersion2>> {
         if (!canLoadMore.get()) {
             return Result.success(searchResultsIndex.getSearchResults(query))
         }
@@ -88,7 +90,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
             } else {
                 val searchResult = result.model!!
                 val products = searchResult.products
-                    .map { product -> product.toAppModel() }
+                    .map { product -> posProductModelMapper.map(product) }
                     .sortedBy { it.name.lowercase() }
 
                 canLoadMore.set(searchResult.canLoadMore)
@@ -106,17 +108,17 @@ class WooPosSearchProductsDataSource @Inject constructor(
         }
     }
 
-    private fun sortProducts(products: List<Product>): List<Product> {
+    private fun sortProducts(products: List<WooPosProductModelVersion2>): List<WooPosProductModelVersion2> {
         return products.sortedBy { it.name.lowercase() }
     }
 
     sealed class ProductsResult {
-        data class Cached(val products: List<Product>) : ProductsResult()
-        data class Remote(val productsResult: Result<List<Product>>) : ProductsResult()
+        data class Cached(val products: List<WooPosProductModelVersion2>) : ProductsResult()
+        data class Remote(val productsResult: Result<List<WooPosProductModelVersion2>>) : ProductsResult()
     }
 
     data class SearchResult(
-        val products: List<Product>,
+        val products: List<WooPosProductModelVersion2>,
         val canLoadMore: Boolean
     )
 }

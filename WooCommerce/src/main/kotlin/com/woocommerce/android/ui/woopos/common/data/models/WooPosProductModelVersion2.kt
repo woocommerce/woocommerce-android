@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data.models
 
 import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import java.math.BigDecimal
@@ -29,6 +30,11 @@ data class WooPosProductModelVersion2(
     val tags: List<WooPosProductTag> = emptyList(),
     val variationIds: List<Long> = emptyList(),
 ) : Parcelable {
+
+    @IgnoredOnParcel
+    val variationEnabledAttributes by lazy {
+        attributes.filter { it.isVariation }
+    }
 
     sealed class WooPosPricing : Parcelable {
         @Parcelize

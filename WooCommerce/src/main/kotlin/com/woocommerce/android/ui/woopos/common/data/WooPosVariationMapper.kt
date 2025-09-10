@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelVersion2
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -91,7 +92,7 @@ class WooPosVariationMapper @Inject constructor(
 
     fun getNameForPOS(
         variation: WooPosVariation,
-        parentProduct: Product? = null,
+        parentProduct: WooPosProductModelVersion2? = null,
         resourceProvider: ResourceProvider,
     ): String {
         return parentProduct?.variationEnabledAttributes?.joinToString(", ") { attribute ->
@@ -167,7 +168,7 @@ fun WCPosVariationModel.toWooPosVariation(mapper: WooPosVariationMapper): WooPos
 
 fun WooPosVariation.getNameForPOS(
     mapper: WooPosVariationMapper,
-    parentProduct: Product? = null,
+    parentProduct: WooPosProductModelVersion2? = null,
     resourceProvider: ResourceProvider,
 ): String = mapper.getNameForPOS(this, parentProduct, resourceProvider)
 
