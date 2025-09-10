@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
@@ -23,7 +23,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
     private val wooPosLogWrapper: WooPosLogWrapper,
-    private val posProductMapper: WCProductToWooPosProductModelMapper,
+    private val posProductMapper: WooPosWCProductToWooPosProductModelMapper,
 ) {
     suspend operator fun invoke(globalUniqueId: String): WooPosSearchByIdentifierResult {
         val result = productStore.searchProducts(

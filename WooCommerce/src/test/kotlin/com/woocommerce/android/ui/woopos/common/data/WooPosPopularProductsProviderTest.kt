@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -30,7 +30,7 @@ class WooPosPopularProductsProviderTest {
         on { filters }.thenReturn(emptyMap())
         on { includeTypes }.thenReturn(emptyList())
     }
-    private val productMapper: WCProductToWooPosProductModelMapper = mock()
+    private val productMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     private val sampleProducts = listOf(
         WCProductModel().copy(

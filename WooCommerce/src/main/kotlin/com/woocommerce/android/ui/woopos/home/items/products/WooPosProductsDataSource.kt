@@ -4,8 +4,8 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,7 +30,7 @@ class WooPosProductsDataSource @Inject constructor(
     private val productsCache: WooPosProductsCache,
     private val productsIndex: WooPosProductsIndex,
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
-    private val posProductMapper: WCProductToWooPosProductModelMapper,
+    private val posProductMapper: WooPosWCProductToWooPosProductModelMapper,
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)

@@ -4,12 +4,12 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosPricing
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductImage
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductStatus
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductType
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsIndex
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -97,7 +97,7 @@ class WooPosProductsDataSourceTest {
     }
     private val productsIndex: WooPosProductsIndex = mock()
     private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
-    private val productMapper: WCProductToWooPosProductModelMapper = mock()
+    private val productMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     @Test
     fun `given cached products, when loadProducts called, then should emit cached products first`() = runTest {

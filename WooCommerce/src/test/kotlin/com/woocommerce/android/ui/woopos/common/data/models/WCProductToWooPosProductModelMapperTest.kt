@@ -13,8 +13,8 @@ import java.math.BigDecimal
 class WCProductToWooPosProductModelMapperTest {
     private val logger: WooPosLogWrapper = mock()
     private val wooPosProductModelMapper = WooPosProductModelMapper(logger)
-    private val sut: WCProductToWooPosProductModelMapper =
-        WCProductToWooPosProductModelMapper(wooPosProductModelMapper, logger)
+    private val sut: WooPosWCProductToWooPosProductModelMapper =
+        WooPosWCProductToWooPosProductModelMapper(wooPosProductModelMapper, logger)
 
     @Test
     fun `when mapping WCProductModel, then all attributes are correctly mapped`() {

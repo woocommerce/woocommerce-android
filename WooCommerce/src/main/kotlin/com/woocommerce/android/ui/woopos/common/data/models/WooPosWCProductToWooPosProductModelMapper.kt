@@ -7,7 +7,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @Reusable
-class WCProductToWooPosProductModelMapper @Inject constructor(
+class WooPosWCProductToWooPosProductModelMapper @Inject constructor(
     private val wooPosProductModelMapper: WooPosProductModelMapper,
     private val logger: WooPosLogWrapper
 ) {

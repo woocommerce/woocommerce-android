@@ -4,8 +4,8 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,7 +22,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val searchResultsIndex: WooPosSearchResultsIndex,
     private val searchPredicate: WooPosProductSearchPredicate,
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
-    private val posProductModelMapper: WCProductToWooPosProductModelMapper,
+    private val posProductModelMapper: WooPosWCProductToWooPosProductModelMapper,
 ) {
     companion object {
         private const val PAGE_SIZE = 15

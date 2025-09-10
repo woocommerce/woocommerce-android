@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.data
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
@@ -12,7 +12,7 @@ class WooPosGetProductById @Inject constructor(
     private val selectedSite: SelectedSite,
     private val cache: WooPosProductsCache,
     private val productRestClient: ProductRestClient,
-    private val productMapper: WCProductToWooPosProductModelMapper,
+    private val productMapper: WooPosWCProductToWooPosProductModelMapper,
 ) {
     suspend operator fun invoke(productId: Long): WooPosProductModel? = withContext(IO) {
         val cachedProduct = cache.getProductById(productId)

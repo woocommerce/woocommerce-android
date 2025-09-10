@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.ui.woopos.common.data.models.WCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.test.runTest
@@ -28,7 +28,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
     private val productStore: WCProductStore = mock()
     private val site: SiteModel = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
-    private val posProductMapper: WCProductToWooPosProductModelMapper = mock()
+    private val posProductMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     @Before
     fun setup() {
