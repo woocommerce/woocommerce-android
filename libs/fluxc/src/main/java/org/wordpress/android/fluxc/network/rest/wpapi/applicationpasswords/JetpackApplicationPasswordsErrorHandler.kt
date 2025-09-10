@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork.Companion.APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
@@ -17,7 +18,13 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
     @Suppress("ComplexCondition")
     fun handleError(siteModel: SiteModel, error: WPAPINetworkError) {
         val httpStatusCode = error.volleyError?.networkResponse?.statusCode
-        val apiErrorCode = error.errorCode
+        val apiErrorCode = if (
+            error.errorCode?.startsWith(APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX) == true
+        ) {
+            error.errorCode.removePrefix(APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX)
+        } else {
+            error.errorCode
+        }
 
         if (httpStatusCode == UNAUTHORIZED ||
             httpStatusCode == FORBIDDEN ||
