@@ -31,7 +31,7 @@ class WooPosSyncVariationsAction @Inject constructor(
         var pagesSynced = 0
         var totalSyncedVariations = 0
         var shouldContinue = true
-        var lastServerDate: String? = null
+        var firstServerDate: String? = null
 
         while (shouldContinue) {
             val result = posLocalCatalogStore.syncRecentlyModifiedVariations(
@@ -51,12 +51,12 @@ class WooPosSyncVariationsAction @Inject constructor(
                             )
                             return WooPosSyncVariationsResult.Failed.CatalogTooLarge(syncResult.totalPages, maxPages)
                         }
+                        firstServerDate = syncResult.serverDate
                     }
 
                     logger.d("Variations page ${pagesSynced + 1} synced, ${syncResult.syncedCount} variations")
                     totalSyncedVariations += syncResult.syncedCount
                     pagesSynced++
-                    lastServerDate = syncResult.serverDate
 
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
                         logger.d("No more variations to sync")
@@ -73,6 +73,6 @@ class WooPosSyncVariationsAction @Inject constructor(
         }
 
         logger.d("Variations sync completed, $totalSyncedVariations variations synced across $pagesSynced pages")
-        return WooPosSyncVariationsResult.Success(totalSyncedVariations, lastServerDate)
+        return WooPosSyncVariationsResult.Success(totalSyncedVariations, firstServerDate)
     }
 }
