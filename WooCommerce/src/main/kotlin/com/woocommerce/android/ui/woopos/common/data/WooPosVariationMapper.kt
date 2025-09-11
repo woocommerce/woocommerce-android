@@ -74,7 +74,7 @@ class WooPosVariationMapper @Inject constructor(
     }
 
     @Suppress("SwallowedException")
-    fun fromWCPosVariationModel(model: WooPosVariationEntity): WooPosVariation {
+    fun fromWooPosVariationEntity(model: WooPosVariationEntity): WooPosVariation {
         val attributesList = parseAttributesJson(model.attributesJson)
 
         return WooPosVariation(
@@ -163,7 +163,7 @@ fun WCProductVariationModel.toWooPosVariation(mapper: WooPosVariationMapper): Wo
     mapper.fromWCProductVariationModel(this)
 
 fun WooPosVariationEntity.toWooPosVariation(mapper: WooPosVariationMapper): WooPosVariation =
-    mapper.fromWCPosVariationModel(this)
+    mapper.fromWooPosVariationEntity(this)
 
 fun WooPosVariation.getNameForPOS(
     mapper: WooPosVariationMapper,
