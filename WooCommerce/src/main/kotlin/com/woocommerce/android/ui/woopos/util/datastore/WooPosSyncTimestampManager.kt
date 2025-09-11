@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.woopos.util.datastore
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.temporal.TemporalAccessor
 import java.util.Locale
 import javax.inject.Inject
 
@@ -13,7 +13,6 @@ class WooPosSyncTimestampManager @Inject constructor(
     private val timestampRepository: WooPosSyncTimestampRepository,
     private val logger: WooPosLogWrapper
 ) {
-    private val gmtFormatter = DateTimeFormatter.ofPattern(GMT_DATE_FORMAT, Locale.US).withZone(ZoneOffset.UTC)
 
     suspend fun storeProductsLastSyncTimestamp(timestamp: Long) {
         timestampRepository.storeProductsLastSyncTimestamp(timestamp)
@@ -37,7 +36,7 @@ class WooPosSyncTimestampManager @Inject constructor(
     }
 
     fun formatTimestampForApi(timestamp: Long): String {
-        return gmtFormatter.format(Instant.ofEpochMilli(timestamp))
+        return defaultApiDateFormatter.format(Instant.ofEpochMilli(timestamp))
     }
 
     fun parseTimestampFromApi(dateFromApi: String): Long? {
@@ -45,16 +44,33 @@ class WooPosSyncTimestampManager @Inject constructor(
     }
 
     private fun parseGmtTimestamp(dateFromApi: String): Long? {
-        return try {
-            val localDateTime = LocalDateTime.parse(dateFromApi, gmtFormatter)
-            return localDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()
-        } catch (e: DateTimeParseException) {
-            logger.e("Failed to parse GMT timestamp: '$dateFromApi'", e)
-            null
+        for (formatter in PARSING_FORMATTERS) {
+            try {
+                val temporal: TemporalAccessor = formatter.parse(dateFromApi)
+                return Instant.from(temporal).toEpochMilli()
+            } catch (_: Exception) {
+                continue
+            }
         }
+
+        logger.e(
+            "Failed to parse GMT timestamp: '$dateFromApi' with any supported format",
+            DateTimeParseException("None of the supported formats could parse the date", dateFromApi, 0)
+        )
+        return null
     }
 
     private companion object {
-        const val GMT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+        private const val DEFAULT_API_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+        private val defaultApiDateFormatter = DateTimeFormatter.ofPattern(DEFAULT_API_DATE_FORMAT, Locale.US)
+            .withZone(ZoneOffset.UTC)
+
+        private val PARSING_FORMATTERS = listOf(
+            defaultApiDateFormatter,
+            DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US).withZone(ZoneOffset.UTC),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).withZone(ZoneOffset.UTC),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US).withZone(ZoneOffset.UTC),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).withZone(ZoneOffset.UTC)
+        )
     }
 }

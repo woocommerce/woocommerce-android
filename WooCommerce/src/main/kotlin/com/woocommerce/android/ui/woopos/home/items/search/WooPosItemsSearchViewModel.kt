@@ -2,8 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -148,7 +147,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             }
 
             childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
-            var result: Result<List<Product>>
+            var result: Result<List<WooPosProductModel>>
             val searchTimeMillis = measureTimeMillis {
                 result = dataSource.searchRemoteProducts(query)
             }
@@ -287,7 +286,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         }
     }
 
-    private suspend fun List<Product>.toContentState(
+    private suspend fun List<WooPosProductModel>.toContentState(
         searchQuery: String,
         paginationState: WooPosPaginationState = WooPosPaginationState.None,
     ) = WooPosItemsSearchViewState.Content(
@@ -296,21 +295,21 @@ class WooPosItemsSearchViewModel @Inject constructor(
         paginationState = paginationState,
     )
 
-    private suspend fun Product.toViewModelProduct(): WooPosItemSelectionViewState.Product =
-        if (productType == ProductType.VARIABLE) {
+    private suspend fun WooPosProductModel.toViewModelProduct(): WooPosItemSelectionViewState.Product =
+        if (type == WooPosProductModel.WooPosProductType.VARIABLE) {
             WooPosItemSelectionViewState.Product.Variable(
                 id = this.remoteId,
                 name = this.name,
-                price = priceFormat(this.price),
+                price = priceFormat(this.pricing.displayPrice),
                 imageUrl = this.firstImageUrl,
-                numOfVariations = this.numVariations,
+                numOfVariations = this.variationIds.size,
                 variationIds = this.variationIds
             )
         } else {
             WooPosItemSelectionViewState.Product.Simple(
                 id = this.remoteId,
                 name = this.name,
-                price = priceFormat(this.price),
+                price = priceFormat(this.pricing.displayPrice),
                 imageUrl = this.firstImageUrl,
             )
         }

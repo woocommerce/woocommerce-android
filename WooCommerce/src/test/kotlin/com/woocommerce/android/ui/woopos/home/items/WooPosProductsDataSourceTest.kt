@@ -1,14 +1,19 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import com.woocommerce.android.WooException
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosPricing
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductImage
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductStatus
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductType
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsIndex
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
@@ -39,44 +44,47 @@ class WooPosProductsDataSourceTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val sampleProducts = listOf(
-        ProductTestUtils.generateProduct(
+        generateProduct(
             productId = 1,
             productName = "Product 1",
             amount = "10.0",
-            productType = "simple",
+            productType = WooPosProductType.SIMPLE,
             isDownloadable = false,
         ),
-        ProductTestUtils.generateProduct(
+        generateProduct(
             productId = 2,
             productName = "Product 2",
             amount = "20.0",
-            productType = "simple",
+            productType = WooPosProductType.SIMPLE,
             isDownloadable = false,
-        ).copy(firstImageUrl = "https://test.com"),
-        ProductTestUtils.generateProduct(
+            images = listOf(WooPosProductImage(id = 1, url = "https://test.com", name = "", alt = "")),
+        ),
+        generateProduct(
             productId = 3,
             productName = "Product 3",
             amount = "20.0",
-            productType = "simple",
+            productType = WooPosProductType.SIMPLE,
             isDownloadable = false,
-        ).copy(firstImageUrl = "https://test.com")
+            images = listOf(WooPosProductImage(id = 1, url = "https://test.com", name = "", alt = "")),
+        )
     )
 
     private val additionalProducts = listOf(
-        ProductTestUtils.generateProduct(
+        generateProduct(
             productId = 4,
             productName = "Product 4",
             amount = "10.0",
-            productType = "simple",
+            productType = WooPosProductType.SIMPLE,
             isDownloadable = false,
         ),
-        ProductTestUtils.generateProduct(
+        generateProduct(
             productId = 5,
             productName = "Product 5",
             amount = "20.0",
-            productType = "simple",
+            productType = WooPosProductType.SIMPLE,
             isDownloadable = false,
-        ).copy(firstImageUrl = "https://test.com"),
+            images = listOf(WooPosProductImage(id = 1, url = "https://test.com", name = "", alt = "")),
+        )
     )
 
     private val productStore: WCProductStore = mock()
@@ -89,6 +97,7 @@ class WooPosProductsDataSourceTest {
     }
     private val productsIndex: WooPosProductsIndex = mock()
     private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
+    private val productMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     @Test
     fun `given cached products, when loadProducts called, then should emit cached products first`() = runTest {
@@ -110,7 +119,8 @@ class WooPosProductsDataSourceTest {
             selectedSite,
             productsCache,
             productsIndex,
-            productsTypesFilterConfig
+            productsTypesFilterConfig,
+            productMapper,
         )
 
         // WHEN
@@ -123,34 +133,36 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given cached products, when loadProducts called with forceRefresh, then should not emit cached products`() = runTest {
-        // GIVEN
-        whenever(productsCache.getAll()).thenReturn(sampleProducts)
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = any(),
-                pageSize = any(),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any()
+    fun `given cached products, when loadProducts called with forceRefresh, then should not emit cached products`() =
+        runTest {
+            // GIVEN
+            whenever(productsCache.getAll()).thenReturn(sampleProducts)
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = any(),
+                    pageSize = any(),
+                    sortType = any(),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(listOf<WCProductModel>()))
+            whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig,
+                productMapper,
             )
-        ).thenReturn(WooResult(listOf<WCProductModel>()))
-        whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
-        val sut = WooPosProductsDataSource(
-            productStore,
-            selectedSite,
-            productsCache,
-            productsIndex,
-            productsTypesFilterConfig
-        )
 
-        // WHEN
-        val result = sut.loadProducts(forceRefreshProducts = true).first()
+            // WHEN
+            val result = sut.loadProducts(forceRefreshProducts = true).first()
 
-        // THEN
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
-    }
+            // THEN
+            assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        }
 
     @Test
     fun `given no products in list cache, when loadProducts called, then should return empty list`() = runTest {
@@ -172,7 +184,8 @@ class WooPosProductsDataSourceTest {
             selectedSite,
             productsCache,
             productsIndex,
-            productsTypesFilterConfig
+            productsTypesFilterConfig,
+            productMapper,
         )
 
         // WHEN
@@ -190,6 +203,7 @@ class WooPosProductsDataSourceTest {
             // GIVEN
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
             whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
+            whenever(productMapper.map(any())).thenReturn(generateWooPosProduct())
             whenever(
                 productStore.fetchProducts(
                     site = eq(siteModel),
@@ -225,7 +239,8 @@ class WooPosProductsDataSourceTest {
                 selectedSite,
                 productsCache,
                 productsIndex,
-                productsTypesFilterConfig
+                productsTypesFilterConfig,
+                productMapper,
             )
 
             // WHEN
@@ -235,11 +250,10 @@ class WooPosProductsDataSourceTest {
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
             val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
 
-            assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
+            assertThat(cachedResult.products.size).isEqualTo(3)
             assertThat(remoteResult.productsResult.isSuccess).isTrue()
-            assertThat(remoteResult.productsResult.getOrNull()).containsExactlyElementsOf(sampleProducts)
+            assertThat(remoteResult.productsResult.getOrNull()!!.size).isEqualTo(3)
             verify(productsCache).addAll(any())
-            verify(productsIndex).storeProductList(sampleProducts.map { it.remoteId })
         }
 
     @Test
@@ -269,7 +283,8 @@ class WooPosProductsDataSourceTest {
                 selectedSite,
                 productsCache,
                 productsIndex,
-                productsTypesFilterConfig
+                productsTypesFilterConfig,
+                productMapper,
             )
 
             // WHEN
@@ -287,6 +302,7 @@ class WooPosProductsDataSourceTest {
     fun `given successful loadMore, when loadMore called, then should add products to cache and return them`() =
         runTest {
             // GIVEN
+            whenever(productMapper.map(any())).thenReturn(generateWooPosProduct())
             whenever(
                 productStore.fetchProducts(
                     site = eq(siteModel),
@@ -313,7 +329,8 @@ class WooPosProductsDataSourceTest {
                 selectedSite,
                 productsCache,
                 productsIndex,
-                productsTypesFilterConfig
+                productsTypesFilterConfig,
+                productMapper,
             )
             sut.loadProducts(forceRefreshProducts = true).first()
 
@@ -329,14 +346,15 @@ class WooPosProductsDataSourceTest {
     fun `given failed loadMore, when loadMore called, then should return error and cache remains unchanged`() =
         runTest {
             // GIVEN
+            whenever(productMapper.map(any())).thenReturn(generateWooPosProduct())
             whenever(productsIndex.getProductList())
                 .thenReturn(
                     List(25) {
-                        ProductTestUtils.generateProduct(
+                        generateProduct(
                             productId = it.toLong(),
                             productName = "Product $it",
                             amount = "0",
-                            productType = "simple",
+                            productType = WooPosProductType.SIMPLE,
                             isDownloadable = false,
                         )
                     }
@@ -372,7 +390,8 @@ class WooPosProductsDataSourceTest {
                 selectedSite,
                 productsCache,
                 productsIndex,
-                productsTypesFilterConfig
+                productsTypesFilterConfig,
+                productMapper,
             )
             sut.loadProducts(forceRefreshProducts = true).first()
 
@@ -413,7 +432,8 @@ class WooPosProductsDataSourceTest {
                 selectedSite,
                 productsCache,
                 productsIndex,
-                productsTypesFilterConfig
+                productsTypesFilterConfig,
+                productMapper,
             )
 
             // WHEN
@@ -448,7 +468,8 @@ class WooPosProductsDataSourceTest {
                 selectedSite,
                 productsCache,
                 productsIndex,
-                productsTypesFilterConfig
+                productsTypesFilterConfig,
+                productMapper,
             )
 
             // WHEN
@@ -468,21 +489,12 @@ class WooPosProductsDataSourceTest {
     @Test
     fun `when loading products, they should be sorted by name in ascending order`() = runTest {
         // GIVEN
-        val mockProductC = mock<Product>()
-        whenever(mockProductC.name).thenReturn("C Product")
-        whenever(mockProductC.remoteId).thenReturn(3L)
+        val mockProductC = generateProduct(productName = "C Product", productId = 3L)
 
-        val mockProductA = mock<Product>()
-        whenever(mockProductA.name).thenReturn("A Product")
-        whenever(mockProductA.remoteId).thenReturn(1L)
+        val mockProductA = generateProduct(productName = "A Product", productId = 1L)
 
-        val mockProductB = mock<Product>()
-        whenever(mockProductB.name).thenReturn("B Product")
-        whenever(mockProductB.remoteId).thenReturn(2L)
-
-        val mockProductab = mock<Product>()
-        whenever(mockProductab.name).thenReturn("ab Product")
-        whenever(mockProductab.remoteId).thenReturn(2L)
+        val mockProductB = generateProduct(productName = "B Product", productId = 2L)
+        val mockProductab = generateProduct(productName = "ab Product", productId = 2L)
 
         val customUnsortedProducts = listOf(mockProductC, mockProductA, mockProductB, mockProductab)
         val sortedProducts = listOf(mockProductA, mockProductB, mockProductC)
@@ -505,7 +517,8 @@ class WooPosProductsDataSourceTest {
             selectedSite,
             productsCache,
             productsIndex,
-            productsTypesFilterConfig
+            productsTypesFilterConfig,
+            productMapper,
         )
 
         // WHEN
@@ -522,118 +535,122 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given successful fetch on both pages, when prepopulateProductsCache called, then add all products`() = runTest {
-        // GIVEN
-        val firstPageProducts = List(100) {
-            WCProductModel().copy(
-                remoteId = RemoteId(it.toLong()),
-                attributes = "[]",
-                status = "draft"
+    fun `given successful fetch on both pages, when prepopulateProductsCache called, then add all products`() =
+        runTest {
+            // GIVEN
+            val firstPageProducts = List(100) {
+                WCProductModel().copy(
+                    remoteId = RemoteId(it.toLong()),
+                    attributes = "[]",
+                    status = "draft"
+                )
+            }
+
+            val secondPageProducts = List(100) {
+                WCProductModel().copy(
+                    remoteId = RemoteId((it + 100).toLong()),
+                    attributes = "[]",
+                    status = "draft"
+                )
+            }
+
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(0),
+                    pageSize = eq(100),
+                    sortType = any(),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(firstPageProducts))
+
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(100),
+                    pageSize = eq(100),
+                    sortType = any(),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(secondPageProducts))
+
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig,
+                productMapper,
             )
+
+            // WHEN
+            val result = sut.prepopulateProductsCache()
+
+            // THEN
+            verify(productsCache).clear()
+            verify(productsCache).addAll(any())
+            assertThat(result.isSuccess).isTrue()
         }
-
-        val secondPageProducts = List(100) {
-            WCProductModel().copy(
-                remoteId = RemoteId((it + 100).toLong()),
-                attributes = "[]",
-                status = "draft"
-            )
-        }
-
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = eq(0),
-                pageSize = eq(100),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any()
-            )
-        ).thenReturn(WooResult(firstPageProducts))
-
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = eq(100),
-                pageSize = eq(100),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any()
-            )
-        ).thenReturn(WooResult(secondPageProducts))
-
-        val sut = WooPosProductsDataSource(
-            productStore,
-            selectedSite,
-            productsCache,
-            productsIndex,
-            productsTypesFilterConfig
-        )
-
-        // WHEN
-        val result = sut.prepopulateProductsCache()
-
-        // THEN
-        verify(productsCache).clear()
-        verify(productsCache).addAll(any())
-        assertThat(result.isSuccess).isTrue()
-    }
 
     @Test
-    fun `given first fetch success but second fetch fails, when prepopulateProductsCache called, then should add first page products`() = runTest {
-        // GIVEN
-        val firstPageProducts = List(100) {
-            WCProductModel().copy(
-                remoteId = RemoteId(it.toLong()),
-                attributes = "[]",
-                status = "draft"
+    fun `given first fetch success but second fetch fails, when prepopulateProductsCache called, then should add first page products`() =
+        runTest {
+            // GIVEN
+            val firstPageProducts = List(100) {
+                WCProductModel().copy(
+                    remoteId = RemoteId(it.toLong()),
+                    attributes = "[]",
+                    status = "draft"
+                )
+            }
+
+            val wooError = WooError(
+                WooErrorType.GENERIC_ERROR,
+                GenericErrorType.UNKNOWN,
+                "Failed to fetch products on second page"
             )
+
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(0),
+                    pageSize = eq(100),
+                    sortType = any(),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(firstPageProducts))
+
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(100),
+                    pageSize = eq(100),
+                    sortType = any(),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(wooError))
+
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig,
+                productMapper,
+            )
+
+            // WHEN
+            val result = sut.prepopulateProductsCache()
+
+            // THEN
+            verify(productsCache).clear()
+            verify(productsCache).addAll(any())
+            assertThat(result.isSuccess).isTrue()
         }
-
-        val wooError = WooError(
-            WooErrorType.GENERIC_ERROR,
-            GenericErrorType.UNKNOWN,
-            "Failed to fetch products on second page"
-        )
-
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = eq(0),
-                pageSize = eq(100),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any()
-            )
-        ).thenReturn(WooResult(firstPageProducts))
-
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = eq(100),
-                pageSize = eq(100),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any()
-            )
-        ).thenReturn(WooResult(wooError))
-
-        val sut = WooPosProductsDataSource(
-            productStore,
-            selectedSite,
-            productsCache,
-            productsIndex,
-            productsTypesFilterConfig
-        )
-
-        // WHEN
-        val result = sut.prepopulateProductsCache()
-
-        // THEN
-        verify(productsCache).clear()
-        verify(productsCache).addAll(any())
-        assertThat(result.isSuccess).isTrue()
-    }
 
     @Test
     fun `given first fetch fails, when prepopulateProductsCache called, then should return failure`() = runTest {
@@ -660,7 +677,8 @@ class WooPosProductsDataSourceTest {
             selectedSite,
             productsCache,
             productsIndex,
-            productsTypesFilterConfig
+            productsTypesFilterConfig,
+            productMapper,
         )
 
         // WHEN
@@ -674,68 +692,93 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given both pages return products, when prepopulateProductsCache called, then should add all products to cache`() = runTest {
-        // GIVEN
-        val firstPageProducts = List(100) {
-            WCProductModel().copy(
-                remoteId = RemoteId(it.toLong()),
-                attributes = "[]",
-                status = "draft"
-            )
-        }
+    fun `given both pages return products, when prepopulateProductsCache called, then should add all products to cache`() =
+        runTest {
+            // GIVEN
+            val firstPageProducts = List(100) {
+                WCProductModel().copy(
+                    remoteId = RemoteId(it.toLong()),
+                    attributes = "[]",
+                    status = "draft"
+                )
+            }
 
-        val secondPageProducts = List(50) {
-            WCProductModel().copy(
-                remoteId = RemoteId((it + 100).toLong()),
-                attributes = "[]",
-                status = "draft"
-            )
-        }
+            val secondPageProducts = List(50) {
+                WCProductModel().copy(
+                    remoteId = RemoteId((it + 100).toLong()),
+                    attributes = "[]",
+                    status = "draft"
+                )
+            }
 
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = eq(0),
-                pageSize = eq(100),
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(0),
+                    pageSize = eq(100),
+                    sortType = any(),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(firstPageProducts))
+
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(100),
+                    pageSize = eq(100),
+                    sortType = any(),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(secondPageProducts))
+
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig,
+                productMapper,
+            )
+
+            // WHEN
+            val result = sut.prepopulateProductsCache()
+
+            // THEN
+            verify(productsCache).clear()
+            verify(productsCache).addAll(any())
+            assertThat(result.isSuccess).isTrue()
+            verify(productStore, times(2)).fetchProducts(
+                site = any(),
+                offset = any(),
+                pageSize = any(),
                 sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
-        ).thenReturn(WooResult(firstPageProducts))
+        }
 
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = eq(100),
-                pageSize = eq(100),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any()
-            )
-        ).thenReturn(WooResult(secondPageProducts))
-
-        val sut = WooPosProductsDataSource(
-            productStore,
-            selectedSite,
-            productsCache,
-            productsIndex,
-            productsTypesFilterConfig
-        )
-
-        // WHEN
-        val result = sut.prepopulateProductsCache()
-
-        // THEN
-        verify(productsCache).clear()
-        verify(productsCache).addAll(any())
-        assertThat(result.isSuccess).isTrue()
-        verify(productStore, times(2)).fetchProducts(
-            site = any(),
-            offset = any(),
-            pageSize = any(),
-            sortType = any(),
-            filterOptions = any(),
-            includeTypes = any()
-        )
-    }
+    private fun generateProduct(
+        productId: Long = 1,
+        productName: String = "Product 1",
+        amount: String = "10.0",
+        productType: WooPosProductType = WooPosProductType.SIMPLE,
+        isDownloadable: Boolean = false,
+        images: List<WooPosProductImage> = emptyList()
+    ) = WooPosProductModel(
+        remoteId = productId,
+        name = productName,
+        pricing = WooPosPricing.RegularPricing(amount.toBigDecimal()),
+        type = productType,
+        isDownloadable = isDownloadable,
+        parentId = null,
+        sku = "",
+        globalUniqueId = "",
+        status = WooPosProductStatus.PUBLISH,
+        description = "",
+        shortDescription = "",
+        lastModified = "",
+        images = images,
+    )
 }

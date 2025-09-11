@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
-import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import org.junit.Before
 import org.junit.Test
@@ -15,7 +15,7 @@ class WooPosProductSearchPredicateTest {
     private lateinit var searchPredicate: WooPosProductSearchPredicate
 
     private val mockProduct by lazy {
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 1L,
             productName = "Test Product"
         )

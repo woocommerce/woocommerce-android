@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.DownloadableOptions
@@ -52,15 +52,15 @@ class WooPosSearchByIdentifier @Inject constructor(
         }
     }
 
-    private fun meetsFilterRequirements(product: Product): Boolean {
-        val hasValidStatus = product.status?.value == filterConfig.filters[ProductFilterOption.STATUS]
+    private fun meetsFilterRequirements(product: WooPosProductModel): Boolean {
+        val hasValidStatus = product.status.value == filterConfig.filters[ProductFilterOption.STATUS]
 
         val meetsDownloadableRequirement = !product.isDownloadable ||
             filterConfig.filters[ProductFilterOption.DOWNLOADABLE] != DownloadableOptions.FALSE.toString()
 
         val hasValidType = filterConfig.includeTypes
             .filterNot { it == WCProductStore.IncludeType.Variable }
-            .any { it.toString().equals(product.type, ignoreCase = true) }
+            .any { it.value.equals(product.type.value, ignoreCase = true) }
 
         return (hasValidStatus && meetsDownloadableRequirement && hasValidType)
             .also { meetsRequirements ->

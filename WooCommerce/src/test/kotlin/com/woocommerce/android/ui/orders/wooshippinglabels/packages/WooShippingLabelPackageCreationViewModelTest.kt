@@ -14,8 +14,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingL
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackagesState.Data
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowPackageTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ViewState
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPackagesFromStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.PackageDAO
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.ObserveShippingPackages
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier.DHL
@@ -28,6 +27,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -44,13 +44,14 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: WooShippingLabelPackageCreationViewModel
     private val resourceProvider: ResourceProvider = mock()
-    private val fetchPackages: FetchPackagesFromStore = mock()
+    private val observeShippingPackages: ObserveShippingPackages = mock()
     private val packageRepository: WooShippingLabelPackageRepository = mock()
     private val selectedSite: SelectedSite = mock {
         on { getOrNull() } doReturn SiteModel().apply { siteId = 123 }
@@ -80,7 +81,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             savedState,
             selectedSite,
             resourceProvider,
-            fetchPackages,
+            observeShippingPackages,
+            mock(),
             updateSavedCarrierPackages,
             packageRepository,
             tracker
@@ -174,7 +176,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             whenever(packageRepository.createCustomPackage(any(), any())).thenReturn(
                 WooResult(
                     listOf(
-                        PackageDAO(
+                        WooShippingPackagesEntity.Package(
                             id = "1",
                             name = "Saved Package 1",
                             dimensions = "dimensions",
@@ -302,11 +304,13 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             isSelected = false,
             isLetter = true,
         )
-        whenever(fetchPackages()).thenReturn(
-            Data(
-                storeOptions = StoreOptionsForPackages.DEFAULT,
-                carrierPackages = emptyMap(),
-                savedPackages = listOf(package1, package2)
+        whenever(observeShippingPackages()).thenReturn(
+            flowOf(
+                Data(
+                    storeOptions = StoreOptionsForPackages.DEFAULT,
+                    carrierPackages = emptyMap(),
+                    savedPackages = listOf(package1, package2)
+                )
             )
         )
 
@@ -314,7 +318,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             savedState,
             selectedSite,
             resourceProvider,
-            fetchPackages,
+            observeShippingPackages,
+            mock(),
             updateSavedCarrierPackages,
             packageRepository,
             tracker
@@ -356,11 +361,13 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 )
             )
         )
-        whenever(fetchPackages()).thenReturn(
-            Data(
-                storeOptions = StoreOptionsForPackages.DEFAULT,
-                carrierPackages = carrierPackages,
-                savedPackages = emptyList()
+        whenever(observeShippingPackages()).thenReturn(
+            flowOf(
+                Data(
+                    storeOptions = StoreOptionsForPackages.DEFAULT,
+                    carrierPackages = carrierPackages,
+                    savedPackages = emptyList()
+                )
             )
         )
 
@@ -368,7 +375,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             savedState,
             selectedSite,
             resourceProvider,
-            fetchPackages,
+            observeShippingPackages,
+            mock(),
             updateSavedCarrierPackages,
             packageRepository,
             tracker
@@ -441,11 +449,13 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 )
             )
         )
-        whenever(fetchPackages()).thenReturn(
-            Data(
-                storeOptions = StoreOptionsForPackages.DEFAULT,
-                carrierPackages = carrierPackages,
-                savedPackages = emptyList()
+        whenever(observeShippingPackages()).thenReturn(
+            flowOf(
+                Data(
+                    storeOptions = StoreOptionsForPackages.DEFAULT,
+                    carrierPackages = carrierPackages,
+                    savedPackages = emptyList()
+                )
             )
         )
 
@@ -453,7 +463,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             savedState,
             selectedSite,
             resourceProvider,
-            fetchPackages,
+            observeShippingPackages,
+            mock(),
             updateSavedCarrierPackages,
             packageRepository,
             tracker
@@ -498,11 +509,13 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            whenever(fetchPackages()).thenReturn(
-                Data(
-                    storeOptions = StoreOptionsForPackages.DEFAULT,
-                    carrierPackages = initialCarrierPackages,
-                    savedPackages = emptyList()
+            whenever(observeShippingPackages()).thenReturn(
+                flowOf(
+                    Data(
+                        storeOptions = StoreOptionsForPackages.DEFAULT,
+                        carrierPackages = initialCarrierPackages,
+                        savedPackages = emptyList()
+                    )
                 )
             )
 
@@ -510,7 +523,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
                 savedState,
                 selectedSite,
                 resourceProvider,
-                fetchPackages,
+                observeShippingPackages,
+                mock(),
                 updateSavedCarrierPackages,
                 packageRepository,
                 tracker
@@ -560,11 +574,13 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
         val initialSavedPackages = emptyList<PackageData>()
 
-        whenever(fetchPackages()).thenReturn(
-            Data(
-                storeOptions = StoreOptionsForPackages.DEFAULT,
-                carrierPackages = initialCarrierPackages,
-                savedPackages = initialSavedPackages
+        whenever(observeShippingPackages()).thenReturn(
+            flowOf(
+                Data(
+                    storeOptions = StoreOptionsForPackages.DEFAULT,
+                    carrierPackages = initialCarrierPackages,
+                    savedPackages = initialSavedPackages
+                )
             )
         )
 
@@ -572,7 +588,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             savedState,
             selectedSite,
             resourceProvider,
-            fetchPackages,
+            observeShippingPackages,
+            mock(),
             updateSavedCarrierPackages,
             packageRepository,
             tracker
@@ -609,11 +626,13 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
         val initialSavedPackages = listOf(packageToUnstar)
 
-        whenever(fetchPackages()).thenReturn(
-            Data(
-                storeOptions = StoreOptionsForPackages.DEFAULT,
-                carrierPackages = initialCarrierPackages,
-                savedPackages = initialSavedPackages
+        whenever(observeShippingPackages()).thenReturn(
+            flowOf(
+                Data(
+                    storeOptions = StoreOptionsForPackages.DEFAULT,
+                    carrierPackages = initialCarrierPackages,
+                    savedPackages = initialSavedPackages
+                )
             )
         )
 
@@ -621,7 +640,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             savedState,
             selectedSite,
             resourceProvider,
-            fetchPackages,
+            observeShippingPackages,
+            mock(),
             updateSavedCarrierPackages,
             packageRepository,
             tracker
@@ -657,11 +677,13 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
         val initialSavedPackages = listOf(packageToUnstar)
 
-        whenever(fetchPackages()).thenReturn(
-            Data(
-                storeOptions = StoreOptionsForPackages.DEFAULT,
-                carrierPackages = initialCarrierPackages,
-                savedPackages = initialSavedPackages
+        whenever(observeShippingPackages()).thenReturn(
+            flowOf(
+                Data(
+                    storeOptions = StoreOptionsForPackages.DEFAULT,
+                    carrierPackages = initialCarrierPackages,
+                    savedPackages = initialSavedPackages
+                )
             )
         )
         val wooError = WooError(type = WooErrorType.API_ERROR, original = GenericErrorType.UNKNOWN)
@@ -672,7 +694,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             savedState,
             selectedSite,
             resourceProvider,
-            fetchPackages,
+            observeShippingPackages,
+            mock(),
             updateSavedCarrierPackages,
             packageRepository,
             tracker
@@ -705,11 +728,13 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
         val initialSavedPackages = listOf(packageToRemove)
 
-        whenever(fetchPackages()).thenReturn(
-            Data(
-                storeOptions = StoreOptionsForPackages.DEFAULT,
-                carrierPackages = initialCarrierPackages,
-                savedPackages = initialSavedPackages
+        whenever(observeShippingPackages()).thenReturn(
+            flowOf(
+                Data(
+                    storeOptions = StoreOptionsForPackages.DEFAULT,
+                    carrierPackages = initialCarrierPackages,
+                    savedPackages = initialSavedPackages
+                )
             )
         )
 
@@ -717,7 +742,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             savedState,
             selectedSite,
             resourceProvider,
-            fetchPackages,
+            observeShippingPackages,
+            mock(),
             updateSavedCarrierPackages,
             packageRepository,
             tracker

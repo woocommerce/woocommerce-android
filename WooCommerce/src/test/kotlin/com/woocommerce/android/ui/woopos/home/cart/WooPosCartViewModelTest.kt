@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingD
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosBarcodeEventTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -72,6 +74,13 @@ class WooPosCartViewModelTest {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
         on { events }.thenReturn(parentToChildrenMutableSharedFlow)
     }
+
+    private val mockedEventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart =
+        WooPosAnalyticsEvent.Event.ItemAddedToCart(
+            item = WooPosItemsViewModel.ItemClickedData.Product.Simple(1L),
+            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+        )
     private val getProductById: WooPosGetProductById = mock()
     private val getCouponById: WooPosGetCouponById = mock {
         onBlocking { invoke(any()) }.thenReturn(
@@ -80,7 +89,11 @@ class WooPosCartViewModelTest {
                 "coupon_code",
                 productIds = emptyList(),
                 categoryIds = emptyList(),
-                restrictions = mock()
+                restrictions = Coupon.CouponRestrictions(
+                    excludedProductIds = emptyList(),
+                    excludedCategoryIds = emptyList(),
+                    restrictedEmails = emptyList()
+                )
             )
         )
     }
@@ -142,11 +155,12 @@ class WooPosCartViewModelTest {
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
         // GIVEN
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
@@ -158,7 +172,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
@@ -176,11 +190,12 @@ class WooPosCartViewModelTest {
             variationId = 24L,
             amount = "10.0"
         ).toWooPosVariation(variationMapper)
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(
             getVariationsById(eq(variation.remoteProductId), eq(variation.remoteVariationId))
@@ -196,7 +211,7 @@ class WooPosCartViewModelTest {
                     id = variation.remoteVariationId,
                     productId = variation.remoteProductId
                 ),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
@@ -225,11 +240,12 @@ class WooPosCartViewModelTest {
     fun `given product in cart, when product remove button clicked in cart, then should remove product from cart`() =
         runTest {
             // GIVEN
-            val product = ProductTestUtils.generateProduct(
+            val product = generateWooPosProduct(
                 productId = 23L,
                 productName = "title",
-                amount = "10.0"
-            ).copy(firstImageUrl = "url")
+                amount = "10.0",
+                images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+            )
 
             val parentToChildrenMutableSharedFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenMutableSharedFlow)
@@ -242,7 +258,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.remoteId
                     ),
-                    eventForTracking = mock()
+                    eventForTracking = mockedEventForTracking
                 )
             )
 
@@ -297,11 +313,12 @@ class WooPosCartViewModelTest {
     @Test
     fun `given items in cart, when item remove button clicked in cart, then should track event`() = runTest {
         // GIVEN
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
@@ -394,11 +411,12 @@ class WooPosCartViewModelTest {
     fun `given non empty cart in_progress, when vm created, then toolbar state should contain shopping cart itemsCart title and no clear all`() =
         runTest {
             // GIVEN
-            val product = ProductTestUtils.generateProduct(
+            val product = generateWooPosProduct(
                 productId = 23L,
                 productName = "title",
-                amount = "10.0"
-            ).copy(firstImageUrl = "url")
+                amount = "10.0",
+                images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+            )
 
             val parentToChildrenMutableSharedFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenMutableSharedFlow)
@@ -413,7 +431,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.remoteId
                     ),
-                    eventForTracking = mock()
+                    eventForTracking = mockedEventForTracking
                 )
             )
 
@@ -444,21 +462,24 @@ class WooPosCartViewModelTest {
     fun `given non empty cart in process, when 2 items added and the first removed and third item added, then third will have item number 2`() =
         runTest {
             // GIVEN
-            val product1 = ProductTestUtils.generateProduct(
+            val product1 = generateWooPosProduct(
                 productId = 1L,
                 productName = "title",
-                amount = "10.0"
-            ).copy(firstImageUrl = "url")
-            val product2 = ProductTestUtils.generateProduct(
+                amount = "10.0",
+                images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+            )
+            val product2 = generateWooPosProduct(
                 productId = 2L,
                 productName = "title",
-                amount = "10.0"
-            ).copy(firstImageUrl = "url")
-            val product3 = ProductTestUtils.generateProduct(
+                amount = "10.0",
+                images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+            )
+            val product3 = generateWooPosProduct(
                 productId = 3L,
                 productName = "title",
-                amount = "10.0"
-            ).copy(firstImageUrl = "url")
+                amount = "10.0",
+                images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+            )
 
             val parentToChildrenMutableSharedFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenMutableSharedFlow)
@@ -475,7 +496,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product1.remoteId
                     ),
-                    eventForTracking = mock()
+                    eventForTracking = mockedEventForTracking
                 )
             )
             parentToChildrenMutableSharedFlow.emit(
@@ -483,7 +504,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product2.remoteId
                     ),
-                    eventForTracking = mock()
+                    eventForTracking = mockedEventForTracking
                 )
             )
 
@@ -505,7 +526,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product3.remoteId
                     ),
-                    eventForTracking = mock()
+                    eventForTracking = mockedEventForTracking
                 )
             )
 
@@ -531,11 +552,12 @@ class WooPosCartViewModelTest {
     @Test
     fun `given empty cart, when product tapped, then should track start of customer interaction event`() = runTest {
         // GIVEN
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         createSut()
@@ -546,7 +568,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
@@ -596,11 +618,12 @@ class WooPosCartViewModelTest {
     @Test
     fun `given non-empty cart, when all items removed individually, then state should be empty`() = runTest {
         // GIVEN
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
@@ -611,7 +634,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
@@ -655,29 +678,29 @@ class WooPosCartViewModelTest {
     @Test
     fun `when item added to cart, then should track analytics event`() = runTest {
         // GIVEN
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
         sut.state.captureValues()
 
         // WHEN
-        val itemAddedToCartEvent = mock<WooPosAnalyticsEvent.Event.ItemAddedToCart>()
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                eventForTracking = itemAddedToCartEvent
+                eventForTracking = mockedEventForTracking
             )
         )
 
         // THEN
-        verify(analyticsTracker).track(itemAddedToCartEvent)
+        verify(analyticsTracker).track(mockedEventForTracking)
     }
 
     @Test
@@ -690,7 +713,7 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
-                eventForTracking = mock(),
+                eventForTracking = mockedEventForTracking,
             )
         )
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
@@ -715,26 +738,27 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L, couponCode = ""),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
@@ -761,20 +785,21 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L, couponCode = ""),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
@@ -795,7 +820,7 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
@@ -838,11 +863,12 @@ class WooPosCartViewModelTest {
     @Test
     fun `given empty cart, when product added to cart, then checkout button should be visible`() = runTest {
         // GIVEN
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
         val states = sut.state.captureValues()
@@ -853,7 +879,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
@@ -865,11 +891,12 @@ class WooPosCartViewModelTest {
     @Test
     fun `given empty cart, when coupon and product added to cart, then checkout button should be visible`() = runTest {
         // GIVEN
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
@@ -883,7 +910,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
@@ -895,11 +922,12 @@ class WooPosCartViewModelTest {
     @Test
     fun `given cart with products and coupon, when products removed, then checkout button disappears`() = runTest {
         // GIVEN
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
@@ -910,7 +938,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
 
@@ -1040,7 +1068,7 @@ class WooPosCartViewModelTest {
         ).doSuspendableAnswer {
             delay(1)
             WooPosSearchByIdentifierResult.Success(
-                ProductTestUtils.generateProduct(
+                generateWooPosProduct(
                     amount = "10.0"
                 )
             )
@@ -1073,7 +1101,7 @@ class WooPosCartViewModelTest {
         ).doSuspendableAnswer {
             delay(1)
             WooPosSearchByIdentifierResult.Success(
-                ProductTestUtils.generateProduct(
+                generateWooPosProduct(
                     amount = "10.0"
                 )
             )
@@ -1104,11 +1132,12 @@ class WooPosCartViewModelTest {
     fun `given empty cart, when barcode scanned and product found, then loading item is replaced with product`() =
         runTest {
             // GIVEN
-            val product = ProductTestUtils.generateProduct(
+            val product = generateWooPosProduct(
                 productId = 23L,
                 productName = "Scanned Product",
-                amount = "10.0"
-            ).copy(firstImageUrl = "url")
+                amount = "10.0",
+                images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+            )
 
             whenever(searchByIdentifier(eq("123456789"))).thenReturn(
                 WooPosSearchByIdentifierResult.Success(product)
@@ -1141,11 +1170,12 @@ class WooPosCartViewModelTest {
     fun `when barcode scanned and product found, then track item added to cart event`() =
         runTest {
             // GIVEN
-            val product = ProductTestUtils.generateProduct(
+            val product = generateWooPosProduct(
                 productId = 23L,
                 productName = "Scanned Product",
-                amount = "10.0"
-            ).copy(firstImageUrl = "url")
+                amount = "10.0",
+                images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+            )
 
             whenever(searchByIdentifier(eq("123456789"))).thenReturn(
                 WooPosSearchByIdentifierResult.Success(product)
@@ -1249,17 +1279,19 @@ class WooPosCartViewModelTest {
     fun `given cart with items, when barcode scanned and product found, then product is added to existing items`() =
         runTest {
             // GIVEN
-            val existingProduct = ProductTestUtils.generateProduct(
+            val existingProduct = generateWooPosProduct(
                 productId = 23L,
                 productName = "Existing Product",
-                amount = "10.0"
-            ).copy(firstImageUrl = "url")
+                amount = "10.0",
+                images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+            )
 
-            val scannedProduct = ProductTestUtils.generateProduct(
+            val scannedProduct = generateWooPosProduct(
                 productId = 42L,
                 productName = "Scanned Product",
-                amount = "10.0"
-            ).copy(firstImageUrl = "url2")
+                amount = "10.0",
+                images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url2", name = "", alt = ""))
+            )
 
             whenever(getProductById(eq(existingProduct.remoteId))).thenReturn(existingProduct)
             whenever(searchByIdentifier(eq("123456789"))).thenReturn(
@@ -1272,7 +1304,7 @@ class WooPosCartViewModelTest {
             parentToChildrenMutableSharedFlow.emit(
                 ParentToChildrenEvent.ItemClickedInItemsList(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(id = existingProduct.remoteId),
-                    eventForTracking = mock()
+                    eventForTracking = mockedEventForTracking
                 )
             )
 
@@ -1379,7 +1411,7 @@ class WooPosCartViewModelTest {
             amount = "45.0"
         ).toWooPosVariation(variationMapper)
 
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = productId,
             productName = "Red Hoodie",
             amount = "45.0"
@@ -1415,11 +1447,12 @@ class WooPosCartViewModelTest {
     }
 
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = 23L,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
@@ -1429,7 +1462,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
         return Pair(sut, states)
@@ -1439,17 +1472,18 @@ class WooPosCartViewModelTest {
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId, couponCode = ""),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             ),
         )
     }
 
     private suspend fun simulateProductClicked(productId: Long = 1L) {
-        val product = ProductTestUtils.generateProduct(
+        val product = generateWooPosProduct(
             productId = productId,
             productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+            amount = "10.0",
+            images = listOf(WooPosProductModel.WooPosProductImage(1L, url = "url", name = "", alt = ""))
+        )
 
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
 
@@ -1458,7 +1492,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = productId
                 ),
-                eventForTracking = mock()
+                eventForTracking = mockedEventForTracking
             )
         )
     }
@@ -1520,35 +1554,36 @@ class WooPosCartViewModelTest {
     }
 
     @Test
-    fun `given barcode without terminator, when scanned, then error item added to cart with correct message`() = runTest {
-        // GIVEN
-        val barcodeWithoutTerminator = "1234567890"
-        val errorMessage = "Scanner did not send end-of-line character"
-        whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_no_terminator))
-            .thenReturn(errorMessage)
+    fun `given barcode without terminator, when scanned, then error item added to cart with correct message`() =
+        runTest {
+            // GIVEN
+            val barcodeWithoutTerminator = "1234567890"
+            val errorMessage = "Scanner did not send end-of-line character"
+            whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_no_terminator))
+                .thenReturn(errorMessage)
 
-        val sut = createSut()
-        val states = sut.state.captureValues()
+            val sut = createSut()
+            val states = sut.state.captureValues()
 
-        // WHEN
-        sut.onUIEvent(
-            WooPosCartUIEvent.OnBarcodeEvent(
-                BarcodeInputDetector.BarcodeResult.Error(
-                    barcode = barcodeWithoutTerminator,
-                    scanDurationMs = 100L,
-                    failureReason = BarcodeInputDetector.FailureReason.NO_TERMINATOR
+            // WHEN
+            sut.onUIEvent(
+                WooPosCartUIEvent.OnBarcodeEvent(
+                    BarcodeInputDetector.BarcodeResult.Error(
+                        barcode = barcodeWithoutTerminator,
+                        scanDurationMs = 100L,
+                        failureReason = BarcodeInputDetector.FailureReason.NO_TERMINATOR
+                    )
                 )
             )
-        )
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        // THEN
-        val finalItemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
-        assertThat(finalItemsInCart).hasSize(1)
-        assertThat(finalItemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Error::class.java)
-        val errorItem = finalItemsInCart.first() as WooPosCartItemViewState.Error
-        assertThat(errorItem.name).isEqualTo(barcodeWithoutTerminator)
-        assertThat(errorItem.message).isEqualTo(errorMessage)
-        verify(soundHelper).playBarcodeScanFailure()
-    }
+            // THEN
+            val finalItemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+            assertThat(finalItemsInCart).hasSize(1)
+            assertThat(finalItemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Error::class.java)
+            val errorItem = finalItemsInCart.first() as WooPosCartItemViewState.Error
+            assertThat(errorItem.name).isEqualTo(barcodeWithoutTerminator)
+            assertThat(errorItem.message).isEqualTo(errorMessage)
+            verify(soundHelper).playBarcodeScanFailure()
+        }
 }

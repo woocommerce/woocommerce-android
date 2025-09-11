@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -23,6 +24,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -81,7 +83,7 @@ class WooPosVariationsViewModelTest {
         }
         on { getNameForPOS(any<WooPosVariation>(), anyOrNull(), any<ResourceProvider>()) } doAnswer { invocation ->
             val variation = invocation.arguments[0] as WooPosVariation
-            val parentProduct = invocation.arguments[1] as? com.woocommerce.android.model.Product
+            val parentProduct = invocation.arguments[1] as? WooPosProductModel
             // Mock the basic behavior for tests
             if (parentProduct != null) {
                 // Use parent product's variation enabled attributes
@@ -429,20 +431,20 @@ class WooPosVariationsViewModelTest {
     fun `given variable product, getNameForPOS returns correct name when parent product has variation enabled attributes`() =
         runTest {
             // GIVEN
-            val parentProduct = ProductTestUtils.generateProduct(
-                1,
-                isVariable = true,
-                productAttributes = """[
-                                {
-                                    "id": 1,
-                                    "name":"Color",
-                                    "position":0",
-                                    "visible":"true",
-                                    "variation":"true",
-                                    "options": ["Blue","Green","Red"]
-                                }
-                            ]"""
+            val parentProduct = generateWooPosProduct(
+                productId = 1L,
+                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                attributes = listOf(
+                    WooPosProductModel.WooPosProductAttribute(
+                        1,
+                        "Color",
+                        listOf("Blue", "Green", "Red"),
+                        isVisible = true,
+                        isVariation = true
+                    )
+                )
             )
+
             val variableProduct = ProductTestUtils.generateProductVariation(
                 1,
                 1,
@@ -498,17 +500,20 @@ class WooPosVariationsViewModelTest {
     fun `given parent product with non-matching attributes, when getNameForPOS is called, then it returns 'Any {attribute}'`() =
         runTest {
             // GIVEN
-            val parentProduct = ProductTestUtils.generateProduct(
-                1,
-                productAttributes = """[
-            {
-                "id": 3,
-                "name": "Material",
-                "variation": true,
-                "options": ["Cotton", "Polyester"]
-            }
-        ]"""
+            val parentProduct = generateWooPosProduct(
+                productId = 1L,
+                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                attributes = listOf(
+                    WooPosProductModel.WooPosProductAttribute(
+                        3,
+                        "Material",
+                        listOf("Cotton", "Polyester"),
+                        isVisible = true,
+                        isVariation = true
+                    )
+                )
             )
+
             val variableProduct = ProductTestUtils.generateProductVariation(
                 1,
                 1,
@@ -543,23 +548,27 @@ class WooPosVariationsViewModelTest {
     fun `given matching attributes in parent product and variation, when getNameForPOS is called, then it returns the correct attribute names`() =
         runTest {
             // GIVEN
-            val parentProduct = ProductTestUtils.generateProduct(
-                1,
-                productAttributes = """[
-            {
-                "id": 1,
-                "name": "Color",
-                "variation": true,
-                "options": ["Blue", "Green", "Red"]
-            },
-            {
-                "id": 2,
-                "name": "Size",
-                "variation": true,
-                "options": ["S", "M", "L"]
-            }
-        ]"""
+            val parentProduct = generateWooPosProduct(
+                productId = 1L,
+                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                attributes = listOf(
+                    WooPosProductModel.WooPosProductAttribute(
+                        1,
+                        "Color",
+                        listOf("Blue", "Green", "Red"),
+                        isVisible = true,
+                        isVariation = true
+                    ),
+                    WooPosProductModel.WooPosProductAttribute(
+                        2,
+                        "Size",
+                        listOf("S", "M", "L"),
+                        isVisible = true,
+                        isVariation = true
+                    )
+                )
             )
+
             val variableProduct = ProductTestUtils.generateProductVariation(
                 1,
                 1,
@@ -591,23 +600,27 @@ class WooPosVariationsViewModelTest {
     fun `given attributes with missing options, when getNameForPOS is called, then it returns 'Any {attribute}'`() =
         runTest {
             // GIVEN
-            val parentProduct = ProductTestUtils.generateProduct(
-                1,
-                productAttributes = """[
-            {
-                "id": 1,
-                "name": "Color",
-                "variation": true,
-                "options": ["Blue", "Green", "Red"]
-            },
-            {
-                "id": 2,
-                "name": "Size",
-                "variation": true,
-                "options": ["S", "M", "L"]
-            }
-        ]"""
+            val parentProduct = generateWooPosProduct(
+                productId = 1L,
+                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                attributes = listOf(
+                    WooPosProductModel.WooPosProductAttribute(
+                        1,
+                        "Color",
+                        listOf("Blue", "Green", "Red"),
+                        isVisible = true,
+                        isVariation = true
+                    ),
+                    WooPosProductModel.WooPosProductAttribute(
+                        2,
+                        "Size",
+                        listOf("S", "M", "L"),
+                        isVisible = true,
+                        isVariation = true
+                    )
+                )
             )
+
             val variableProduct = ProductTestUtils.generateProductVariation(
                 1,
                 1,
@@ -645,17 +658,20 @@ class WooPosVariationsViewModelTest {
     fun `given variation with no attributes, when getNameForPOS is called, then it returns 'Any {attribute}'`() =
         runTest {
             // GIVEN
-            val parentProduct = ProductTestUtils.generateProduct(
-                1,
-                productAttributes = """[
-            {
-                "id": 1,
-                "name": "Color",
-                "variation": true,
-                "options": ["Blue", "Green", "Red"]
-            }
-        ]"""
+            val parentProduct = generateWooPosProduct(
+                productId = 1L,
+                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                attributes = listOf(
+                    WooPosProductModel.WooPosProductAttribute(
+                        1,
+                        "Color",
+                        listOf("Blue", "Green", "Red"),
+                        isVisible = true,
+                        isVariation = true
+                    ),
+                )
             )
+
             val variableProduct = ProductTestUtils.generateProductVariation(
                 1,
                 1,
@@ -679,23 +695,27 @@ class WooPosVariationsViewModelTest {
     fun `given non-variation-enabled attributes in variation, when getNameForPOS is called, then it ignores those attributes`() =
         runTest {
             // GIVEN
-            val parentProduct = ProductTestUtils.generateProduct(
-                1,
-                productAttributes = """[
-            {
-                "id": 1,
-                "name": "Color",
-                "variation": true,
-                "options": ["Blue", "Green", "Red"]
-            },
-            {
-                "id": 2,
-                "name": "Material",
-                "variation": false,
-                "options": ["Cotton", "Polyester"]
-            }
-        ]"""
+            val parentProduct = generateWooPosProduct(
+                productId = 1L,
+                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                attributes = listOf(
+                    WooPosProductModel.WooPosProductAttribute(
+                        1,
+                        "Color",
+                        listOf("Blue", "Green", "Red"),
+                        isVisible = true,
+                        isVariation = true
+                    ),
+                    WooPosProductModel.WooPosProductAttribute(
+                        2,
+                        "Size",
+                        listOf("S", "M", "L"),
+                        isVisible = true,
+                        isVariation = false
+                    )
+                )
             )
+
             val variableProduct = ProductTestUtils.generateProductVariation(
                 1,
                 1,

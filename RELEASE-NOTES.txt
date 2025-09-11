@@ -3,7 +3,8 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 23.3
 -----
-
+- [Internal] Migration to POS specific product model [https://github.com/woocommerce/woocommerce-android/pull/14598]
+- [*] Enhance the shipping label creation screen by making the selected hazardous box tappable [https://github.com/woocommerce/woocommerce-android/pull/14576]
 
 23.2
 -----
@@ -16,6 +17,7 @@
 - [WEAR] Updated UserAgent of API requests to use `http.agent` System Property to fix performance issues related to WebView usage on app launch [https://github.com/woocommerce/woocommerce-android/pull/14431]
 - [***] POS: A new settings to customize the POS [https://github.com/woocommerce/woocommerce-android/pull/14527]
 - [*] [Login] Improved the detection of WooCommerce API version during login flow [https://github.com/woocommerce/woocommerce-android/pull/14524]
+- [*] Shipping Labels: Adds caching to the "Select a Package" screen [https://github.com/woocommerce/woocommerce-android/pull/14541]
 - [*]  Add more filter options to orders filters sales channel [https://github.com/woocommerce/woocommerce-android/pull/14546]
 - [*] Automatically populate the weight field in the create shipment flow [https://github.com/woocommerce/woocommerce-android/pull/14525]
 - [*] [Shipping Labels] Fixed displaying incorrect hazardous material option for purchased labels [https://github.com/woocommerce/woocommerce-android/pull/14571]

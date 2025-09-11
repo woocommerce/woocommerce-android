@@ -71,6 +71,7 @@ internal fun HazmatCard(
         if (selectedCategory != null) {
             HazmatSelectionCard(
                 selectedCategory = selectedCategory,
+                onClick = onClick,
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
             )
         }
