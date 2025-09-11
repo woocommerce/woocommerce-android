@@ -245,7 +245,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         // Schedule worker to refresh FCM token periodically
         FCMRefreshWorker.schedule(application)
 
-        posLocalCatalogScheduler.schedulePeriodicFullCatalogSync()
+        // Delay POS catalog sync initialization to ensure WorkManager is ready
+        appCoroutineScope.launch {
+            posLocalCatalogScheduler.schedulePeriodicFullCatalogSync()
+        }
         observeSiteChangesForCatalogSync()
     }
 
