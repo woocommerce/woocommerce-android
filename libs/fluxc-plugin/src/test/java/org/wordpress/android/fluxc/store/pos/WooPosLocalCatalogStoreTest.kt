@@ -26,8 +26,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProdu
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogError
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.utils.HeadersParser
@@ -817,7 +817,7 @@ class WooPosLocalCatalogStoreTest {
         variationId: Long,
         name: String,
         price: String = "19.99"
-    ) = WCPosVariationModel(
+    ) = WooPosVariationEntity(
         localSiteId = testSiteId,
         remoteProductId = testRemoteId,
         remoteVariationId = RemoteId(variationId),

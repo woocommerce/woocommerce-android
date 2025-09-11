@@ -12,8 +12,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToWooPOS
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog.T.API
@@ -178,7 +178,7 @@ class WooPosLocalCatalogStore @Inject constructor(
     fun observeVariationsForProduct(
         siteId: LocalOrRemoteId.LocalId,
         productId: LocalOrRemoteId.RemoteId
-    ): Flow<Result<List<WCPosVariationModel>>> =
+    ): Flow<Result<List<WooPosVariationEntity>>> =
         posVariationsDao.observeVariationsForProduct(siteId, productId)
             .map { variations ->
                 Result.success(variations)
@@ -196,7 +196,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         siteId: LocalOrRemoteId.LocalId,
         productId: LocalOrRemoteId.RemoteId,
         variationId: LocalOrRemoteId.RemoteId
-    ): Result<WCPosVariationModel?> =
+    ): Result<WooPosVariationEntity?> =
         coroutineEngine.withDefaultContext(API, this, "getVariation") {
             val variation = posVariationsDao.getVariation(siteId, productId, variationId)
             Result.success(variation)
