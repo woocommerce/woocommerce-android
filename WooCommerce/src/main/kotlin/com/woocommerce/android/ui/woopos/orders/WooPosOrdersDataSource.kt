@@ -16,6 +16,11 @@ sealed class LoadOrdersResult {
     data class Error(val message: String) : LoadOrdersResult()
 }
 
+sealed class SearchOrdersResult {
+    data class Success(val orders: List<Order>) : SearchOrdersResult()
+    data class Error(val message: String) : SearchOrdersResult()
+}
+
 class WooPosOrdersDataSource @Inject constructor(
     private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
@@ -43,14 +48,13 @@ class WooPosOrdersDataSource @Inject constructor(
         }
     }
 
-    suspend fun searchOrders(searchQuery: String): LoadOrdersResult {
+    suspend fun searchOrders(searchQuery: String): SearchOrdersResult {
         val result = fetchOrdersFromRemote(searchQuery = searchQuery, page = 1)
 
         return if (result.isError) {
-            LoadOrdersResult.Error(result.error?.message ?: "Unknown error")
+            SearchOrdersResult.Error(result.error?.message ?: "Unknown error")
         } else {
-            val mapped = result.orders.toAppModels()
-            LoadOrdersResult.SuccessRemote(mapped)
+            SearchOrdersResult.Success(result.orders.toAppModels())
         }
     }
 

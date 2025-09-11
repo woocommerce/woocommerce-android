@@ -33,6 +33,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -59,6 +62,7 @@ fun WooPosOrdersScreen(
             onRefresh = viewModel::onRefresh,
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
+            onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
@@ -83,13 +87,35 @@ private fun OrdersList(
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        WooPosToolbar(
-            titleText = stringResource(R.string.woopos_orders_title),
-            onBackClicked = onBackClicked,
-        )
+        when (state.searchInputState) {
+            is WooPosSearchInputState.Open -> {
+                WooPosSearchInput(
+                    state = state.searchInputState,
+                    onEvent = onSearchEvent,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            is WooPosSearchInputState.Closed -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    WooPosToolbar(
+                        titleText = stringResource(R.string.woopos_orders_title),
+                        onBackClicked = onBackClicked,
+                        modifier = Modifier.weight(1f)
+                    )
+                    WooPosSearchInput(
+                        state = state.searchInputState,
+                        onEvent = onSearchEvent
+                    )
+                }
+            }
+        }
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isRefreshing,
