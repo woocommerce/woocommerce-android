@@ -159,6 +159,10 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun upsertProducts(products: List<WCPosProductEntity>): Result<Unit> =
         runCatching { posProductDao.upsertProducts(products) }
 
+
+    suspend fun upsertVariations(variations: List<WCPosVariationModel>): Result<Unit> =
+        runCatching { posVariationsDao.upsertVariations(variations) }
+
     /**
      * Observes all variations for a given product from the local database.
      *
@@ -194,23 +198,26 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
-     * Syncs recently modified variations with pagination support.
+     * Fetches recently modified variations with pagination support.
      *
      * @param site The site to sync variations for
      * @param modifiedAfterGmt ISO 8601 formatted date string (GMT)
      * @param page Starting page for pagination (1-based)
      * @param pageSize Number of variations to fetch per page (default: 100, max: 100)
-     * @return [Result] containing [WooPosVariationsSyncResult] with pagination info or error
+     * @return [Result] containing [WooPosVariationsFetchResult] with pagination info or error
      */
     @Suppress("LongMethod")
-    suspend fun syncRecentlyModifiedVariations(
+    suspend fun fetchRecentlyModifiedVariations(
         site: SiteModel,
-        modifiedAfterGmt: String,
+        modifiedAfterGmt: String?,
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-    ): Result<WooPosVariationsSyncResult> =
-        coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedVariations") {
+    ): Result<WooPosVariationsFetchResult> =
+        coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedVariations") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
+            if (page < 1) {
+                throw IllegalArgumentException("Page number must be 1 or greater")
+            }
 
             val response = posProductRestClient.fetchVariations(
                 site = site,
@@ -236,7 +243,8 @@ class WooPosLocalCatalogStore @Inject constructor(
 
                 response.model.isNullOrEmpty() -> {
                     Result.success(
-                        WooPosVariationsSyncResult(
+                        WooPosVariationsFetchResult(
+                            variations = emptyList(),
                             syncedCount = 0,
                             hasMore = false,
                             nextPage = page,
@@ -253,19 +261,6 @@ class WooPosLocalCatalogStore @Inject constructor(
                         variationResponse.mapToPosVariationModel(siteId)
                     }
 
-                    val upsertResult = runCatching {
-                        posVariationsDao.upsertVariations(variations)
-                    }
-
-                    if (upsertResult.isFailure) {
-                        return@withDefaultContext Result.failure(
-                            WooPosLocalCatalogError.DatabaseError(
-                                errorMessage = "Failed to save variations to database",
-                                throwable = upsertResult.exceptionOrNull()
-                            )
-                        )
-                    }
-
                     val hasMore = variations.size == validPageSize
 
                     val totalPages = headersParser.getTotalPages(response)
@@ -279,7 +274,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                     }
 
                     Result.success(
-                        WooPosVariationsSyncResult(
+                        WooPosVariationsFetchResult(
+                            variations = variations,
                             syncedCount = variations.size,
                             hasMore = hasMore,
                             nextPage = if (hasMore) {
