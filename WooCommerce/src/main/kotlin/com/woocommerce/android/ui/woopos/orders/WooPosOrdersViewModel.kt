@@ -28,6 +28,7 @@ class WooPosOrdersViewModel @Inject constructor(
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
 
     private var searchJob: Job? = null
+    private var loadingJob: Job? = null
 
     private val currentSearchQuery: String?
         get() = (
@@ -137,7 +138,8 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private fun performSearch(query: String) {
-        searchJob?.cancel()
+        cancelJobs()
+
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY_MS)
             _state.value = WooPosOrdersState.Loading(searchInputState = _state.value.searchInputState)
@@ -164,7 +166,8 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private fun loadOrders() {
-        viewModelScope.launch {
+        cancelJobs()
+        loadingJob = viewModelScope.launch {
             val currentState = _state.value
             _state.value = WooPosOrdersState.Loading(searchInputState = currentState.searchInputState)
             ordersDataSource.loadOrders().collect { result ->
@@ -192,6 +195,11 @@ class WooPosOrdersViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun cancelJobs() {
+        searchJob?.cancel()
+        loadingJob?.cancel()
     }
 
     private fun updateContentState(orders: List<Order>) {
