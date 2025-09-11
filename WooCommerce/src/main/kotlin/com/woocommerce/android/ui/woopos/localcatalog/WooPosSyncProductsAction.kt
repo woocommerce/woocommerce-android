@@ -69,12 +69,12 @@ class WooPosSyncProductsAction @Inject constructor(
         var currentOffset = 0
         var pagesSynced = 0
         var totalSyncedProducts = 0
-        var shouldContinue = true
         var firstPageServerDate: String? = null
+        var totalPages = maxPages
 
         val products = mutableListOf<WCPosProductEntity>()
 
-        while (shouldContinue) {
+        while (pagesSynced < totalPages) {
             val result = posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 site = site,
                 pageSize = pageSize,
@@ -89,12 +89,12 @@ class WooPosSyncProductsAction @Inject constructor(
                         firstPageServerDate = syncResult.serverDate
                     }
                     products.addAll(syncResult.products)
+                    totalPages = syncResult.totalPages
                     totalSyncedProducts += syncResult.syncedCount
                     pagesSynced++
 
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
                         logger.d("Local Catalog: No more products to sync")
-                        shouldContinue = false
                     } else {
                         currentOffset = syncResult.nextOffset
                     }
