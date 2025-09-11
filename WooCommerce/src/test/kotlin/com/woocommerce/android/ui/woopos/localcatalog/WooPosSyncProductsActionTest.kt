@@ -127,7 +127,7 @@ class WooPosSyncProductsActionTest {
     fun `when catalog has one page more than limit, then returns CatalogTooLarge`() = runTest {
         // GIVEN
         val maxPages = 2
-        givenCatalogTooLarge(totalPages = 3, maxPages = maxPages)
+        givenCatalogTooLarge(totalPages = 3)
 
         // WHEN
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
@@ -359,8 +359,7 @@ class WooPosSyncProductsActionTest {
         )
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    private suspend fun givenCatalogTooLarge(totalPages: Int, maxPages: Int) {
+    private suspend fun givenCatalogTooLarge(totalPages: Int) {
         val mockProducts = createMockProducts(1, PAGE_SIZE)
 
         mockFetchRecentlyModifiedProductsSuccess(
