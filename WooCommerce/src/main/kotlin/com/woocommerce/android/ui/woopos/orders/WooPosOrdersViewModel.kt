@@ -30,8 +30,11 @@ class WooPosOrdersViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     private val currentSearchQuery: String?
-        get() = ((_state.value.searchInputState as? WooPosSearchInputState.Open)?.input
-            as? WooPosSearchInputState.Open.Input.Query)?.query
+        get() = (
+            (
+                _state.value.searchInputState as? WooPosSearchInputState.Open
+                )?.input as? WooPosSearchInputState.Open.Input.Query
+            )?.query
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY_MS = 300L
