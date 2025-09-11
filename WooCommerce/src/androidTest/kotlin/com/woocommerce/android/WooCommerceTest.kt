@@ -1,7 +1,6 @@
 package com.woocommerce.android
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.yarolegovich.wellsql.WellSql
 import dagger.android.AndroidInjector
@@ -19,24 +18,13 @@ interface WooCommerceTest
 open class BaseWooCommerce : Application(), HasAndroidInjector, Configuration.Provider {
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setWorkerFactory(
-                EntryPoints.get(
-                    this,
-                    HiltWorkerFactoryEntryPoint::class.java
-                ).workerFactory()
-            )
+            .setMinimumLoggingLevel(android.util.Log.INFO)
             .build()
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface AndroidInjectorEntryPoint {
         fun injector(): DispatchingAndroidInjector<Any>
-    }
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface HiltWorkerFactoryEntryPoint {
-        fun workerFactory(): HiltWorkerFactory
     }
 
     override fun onCreate() {
