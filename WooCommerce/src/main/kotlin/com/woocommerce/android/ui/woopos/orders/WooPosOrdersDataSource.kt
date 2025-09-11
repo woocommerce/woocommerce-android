@@ -32,7 +32,7 @@ class WooPosOrdersDataSource @Inject constructor(
             emit(LoadOrdersResult.SuccessCache(cached))
         }
 
-        val result = fetchOrdersFromRemote(searchQuery = null)
+        val result = fetchOrdersFromRemote(searchQuery = null, page = 1)
 
         if (result.isError) {
             emit(LoadOrdersResult.Error(result.error?.message ?: "Unknown error"))
@@ -44,7 +44,7 @@ class WooPosOrdersDataSource @Inject constructor(
     }
 
     suspend fun searchOrders(searchQuery: String): LoadOrdersResult {
-        val result = fetchOrdersFromRemote(searchQuery = searchQuery)
+        val result = fetchOrdersFromRemote(searchQuery = searchQuery, page = 1)
 
         return if (result.isError) {
             LoadOrdersResult.Error(result.error?.message ?: "Unknown error")
@@ -54,17 +54,19 @@ class WooPosOrdersDataSource @Inject constructor(
         }
     }
 
-    private suspend fun fetchOrdersFromRemote(searchQuery: String?) =
-        restClient.fetchOrders(
-            site = selectedSite.get(),
-            count = POS_ORDERS_PAGE_SIZE,
-            page = 1,
-            orderBy = OrderBy.DATE,
-            sortOrder = OrderRestClient.SortOrder.DESCENDING,
-            statusFilter = null,
-            createdVia = "pos-rest-api",
-            searchQuery = searchQuery,
-        )
+    private suspend fun fetchOrdersFromRemote(
+        page: Int,
+        searchQuery: String?
+    ) = restClient.fetchOrders(
+        site = selectedSite.get(),
+        count = POS_ORDERS_PAGE_SIZE,
+        page = page,
+        orderBy = OrderBy.DATE,
+        sortOrder = OrderRestClient.SortOrder.DESCENDING,
+        statusFilter = null,
+        createdVia = "pos-rest-api",
+        searchQuery = searchQuery,
+    )
 
     fun clearCache() = ordersCache.clear()
 
