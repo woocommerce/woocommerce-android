@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
     tableName = "PosProductEntity",
     primaryKeys = ["localSiteId", "remoteId"],
 )
-data class WCPosProductEntity(
+data class WooPosProductEntity(
     val localSiteId: LocalId = LocalId(0),
     val remoteId: RemoteId = RemoteId(0),
     val name: String = "",

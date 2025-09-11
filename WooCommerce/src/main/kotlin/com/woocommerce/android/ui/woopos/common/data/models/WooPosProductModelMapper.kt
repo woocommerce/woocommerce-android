@@ -5,7 +5,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import dagger.Reusable
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @Reusable
 class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper) {
     private val gson = Gson()
-    fun fromEntity(entity: WCPosProductEntity): WooPosProductModel {
+    fun fromEntity(entity: WooPosProductEntity): WooPosProductModel {
         return WooPosProductModel(
             remoteId = entity.remoteId.value,
             parentId = entity.parentId,
@@ -45,7 +45,7 @@ class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper)
         )
     }
 
-    fun fromEntities(entities: List<WCPosProductEntity>): List<WooPosProductModel> {
+    fun fromEntities(entities: List<WooPosProductEntity>): List<WooPosProductModel> {
         return entities.map { fromEntity(it) }
     }
 

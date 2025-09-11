@@ -12,7 +12,7 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -440,7 +440,7 @@ class WooPosVariationsDaoTest {
         status: String = "publish",
         lastUpdated: String = "2024-01-01T10:00:00Z",
         downloadable: Boolean = false
-    ) = WCPosVariationModel(
+    ) = WooPosVariationEntity(
         localSiteId = LocalId(siteId),
         remoteProductId = RemoteId(productId),
         remoteVariationId = RemoteId(variationId),
