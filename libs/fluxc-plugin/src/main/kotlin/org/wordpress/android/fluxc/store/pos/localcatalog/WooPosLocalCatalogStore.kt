@@ -128,7 +128,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                 )
 
                 else -> {
-                    val products = response.model.map { it.mapToPOSEntity() }
+                    val products = response.model.map { it.mapToPOSEntity(site.localId()) }
 
                     if (storeInDb) {
                         val upsertResult = runCatching { posProductDao.upsertProducts(products) }

@@ -7,9 +7,9 @@ import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
 
 @Suppress("CyclomaticComplexMethod")
-fun ProductApiResponse.mapToPOSEntity(): WCPosProductEntity =
+fun ProductApiResponse.mapToPOSEntity(localSiteId: LocalOrRemoteId.LocalId): WCPosProductEntity =
     WCPosProductEntity(
-        localSiteId = LocalOrRemoteId.LocalId(this.localSiteId),
+        localSiteId = localSiteId,
         remoteId = LocalOrRemoteId.RemoteId(this.id ?: 0),
         name = this.name ?: "",
         dateModified = this.date_modified ?: "",

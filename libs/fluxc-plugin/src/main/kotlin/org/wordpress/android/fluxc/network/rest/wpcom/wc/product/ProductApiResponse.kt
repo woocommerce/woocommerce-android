@@ -11,7 +11,6 @@ typealias ProductDto = ProductApiResponse
 @Suppress("ConstructorParameterNaming")
 data class ProductApiResponse(
     val id: Long? = null,
-    val localSiteId: Int = 0,
     val name: String? = null,
     val slug: String? = null,
     val permalink: String? = null,
