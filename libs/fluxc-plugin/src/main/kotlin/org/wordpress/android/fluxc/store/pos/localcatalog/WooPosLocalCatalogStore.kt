@@ -159,7 +159,6 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun upsertProducts(products: List<WCPosProductEntity>): Result<Unit> =
         runCatching { posProductDao.upsertProducts(products) }
 
-
     suspend fun upsertVariations(variations: List<WCPosVariationModel>): Result<Unit> =
         runCatching { posVariationsDao.upsertVariations(variations) }
 
@@ -214,10 +213,8 @@ class WooPosLocalCatalogStore @Inject constructor(
         pageSize: Int = DEFAULT_PAGE_SIZE,
     ): Result<WooPosVariationsFetchResult> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedVariations") {
+            require(page > 0) { "Page number must be 1 or greater" }
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
-            if (page < 1) {
-                throw IllegalArgumentException("Page number must be 1 or greater")
-            }
 
             val response = posProductRestClient.fetchVariations(
                 site = site,
