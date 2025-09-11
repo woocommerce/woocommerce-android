@@ -5,6 +5,7 @@
 -----
 - [Internal] Migration to POS specific product model [https://github.com/woocommerce/woocommerce-android/pull/14598]
 - [*] Enhance the shipping label creation screen by making the selected hazardous box tappable [https://github.com/woocommerce/woocommerce-android/pull/14576]
+- [*] Shipping Labels: Enhance selected package UI in the create shipping label flow [https://github.com/woocommerce/woocommerce-android/pull/14579]
 
 23.2
 -----
