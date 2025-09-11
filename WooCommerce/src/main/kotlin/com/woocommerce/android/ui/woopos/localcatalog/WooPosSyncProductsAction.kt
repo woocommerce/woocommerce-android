@@ -68,9 +68,8 @@ class WooPosSyncProductsAction @Inject constructor(
     ): Pair<List<WCPosProductEntity>, String> {
         var currentOffset = 0
         var pagesSynced = 0
-        var totalSyncedProducts = 0
-        var firstPageServerDate: String? = null
         var totalPages = maxPages
+        var firstPageServerDate: String? = null
 
         val products = mutableListOf<WCPosProductEntity>()
 
@@ -90,7 +89,6 @@ class WooPosSyncProductsAction @Inject constructor(
                     }
                     products.addAll(syncResult.products)
                     totalPages = syncResult.totalPages
-                    totalSyncedProducts += syncResult.syncedCount
                     pagesSynced++
 
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
@@ -106,7 +104,7 @@ class WooPosSyncProductsAction @Inject constructor(
             )
         }
 
-        logger.d("Local catalog sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
+        logger.d("Local catalog sync completed, products synced across $pagesSynced pages")
         return Pair(
             products.toList(),
             requireNotNull(firstPageServerDate, { "Can't be null since we throw an exception in the store layer." })
