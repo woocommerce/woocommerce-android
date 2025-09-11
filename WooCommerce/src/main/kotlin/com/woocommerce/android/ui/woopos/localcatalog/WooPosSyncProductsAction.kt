@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetc
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
+private typealias ServerDate = String
 class WooPosSyncProductsAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
@@ -65,7 +66,7 @@ class WooPosSyncProductsAction @Inject constructor(
         modifiedAfterGmt: String?,
         pageSize: Int,
         maxPages: Int
-    ): Pair<List<WCPosProductEntity>, String> {
+    ): Pair<List<WCPosProductEntity>, ServerDate> {
         var currentOffset = 0
         var pagesSynced = 0
         var totalPages = maxPages
