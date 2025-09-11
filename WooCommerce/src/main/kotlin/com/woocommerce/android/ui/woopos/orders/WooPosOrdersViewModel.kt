@@ -7,6 +7,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +21,9 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private val _state = MutableStateFlow<WooPosOrdersState>(WooPosOrdersState.Loading)
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
+    private var loadMoreOrdersJob: Job? = null
+    private var loadOrdersJob: Job? = null
+    private var loadMoreAfterLoadCompletes = false
 
     init {
         loadOrders()
@@ -54,10 +58,44 @@ class WooPosOrdersViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun onEndOfOrdersListReached() {}
+    @Suppress("ReturnCount")
+    fun onEndOfOrdersListReached() {
+        val currentState = _state.value
+        if (currentState !is WooPosOrdersState.Content) {
+            return
+        }
+
+        if (loadOrdersJob?.isActive == true) {
+            loadMoreAfterLoadCompletes = true
+            _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+            return
+        }
+
+        if (loadMoreOrdersJob?.isActive == true) {
+            return
+        }
+
+        if (!ordersDataSource.hasMorePages) {
+            return
+        }
+
+        _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+
+        loadMoreOrdersJob?.cancel()
+        loadMoreOrdersJob = viewModelScope.launch {
+            val result = ordersDataSource.loadMore()
+            if (result.isSuccess) {
+                updateContentState(result.getOrThrow())
+            } else {
+                _state.value = currentState.copy(paginationState = WooPosPaginationState.Error)
+            }
+        }
+    }
 
     private fun loadOrders() {
-        viewModelScope.launch {
+        loadOrdersJob?.cancel()
+        loadMoreOrdersJob?.cancel()
+        loadOrdersJob = viewModelScope.launch {
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
@@ -74,8 +112,21 @@ class WooPosOrdersViewModel @Inject constructor(
                         } else {
                             updateContentState(result.orders)
                         }
+
+                        if (loadMoreAfterLoadCompletes) {
+                            queueLoadMoreAfterLoadCompletes()
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    private fun queueLoadMoreAfterLoadCompletes() {
+        loadOrdersJob?.invokeOnCompletion { throwable ->
+            if (throwable == null && _state.value is WooPosOrdersState.Content) {
+                loadMoreAfterLoadCompletes = false
+                onEndOfOrdersListReached()
             }
         }
     }
