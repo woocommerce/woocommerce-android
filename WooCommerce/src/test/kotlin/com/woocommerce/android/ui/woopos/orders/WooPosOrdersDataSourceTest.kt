@@ -188,4 +188,117 @@ class WooPosOrdersDataSourceTest {
             createdVia = eq("pos-rest-api")
         )
     }
+
+    @Test
+    fun `given search query, when searchOrders succeeds, then return SearchOrdersResult Success with mapped orders`() = runTest {
+        // GIVEN
+        val query = "test order"
+        val e1 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 11)
+        val e2 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 22)
+        val entities = listOf(e1 to emptyList<WCMetaData>(), e2 to emptyList())
+        val mapped1 = OrderTestUtils.generateTestOrder()
+        val mapped2 = OrderTestUtils.generateTestOrder()
+        whenever(orderMapper.toAppModel(e1)).thenReturn(mapped1)
+        whenever(orderMapper.toAppModel(e2)).thenReturn(mapped2)
+
+        val payload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = entities
+        )
+        whenever(
+            orderRestClient.fetchOrders(
+                site = siteModel,
+                count = WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE,
+                page = 1,
+                orderBy = OrderRestClient.OrderBy.DATE,
+                sortOrder = OrderRestClient.SortOrder.DESCENDING,
+                statusFilter = null,
+                createdVia = "pos-rest-api",
+                searchQuery = query
+            )
+        ).thenReturn(payload)
+
+        // WHEN
+        val result = sut.searchOrders(query)
+
+        // THEN
+        assertThat(result).isInstanceOf(SearchOrdersResult.Success::class.java)
+        val success = result as SearchOrdersResult.Success
+        assertThat(success.orders).containsExactly(mapped1, mapped2)
+
+        verify(orderRestClient).fetchOrders(
+            site = siteModel,
+            count = WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE,
+            page = 1,
+            orderBy = OrderRestClient.OrderBy.DATE,
+            sortOrder = OrderRestClient.SortOrder.DESCENDING,
+            statusFilter = null,
+            createdVia = "pos-rest-api",
+            searchQuery = query
+        )
+    }
+
+    @Test
+    fun `given search query, when searchOrders fails, then return SearchOrdersResult Error`() = runTest {
+        // GIVEN
+        val query = "test order"
+        val orderError = WCOrderStore.OrderError(
+            type = WCOrderStore.OrderErrorType.GENERIC_ERROR,
+            message = "search error"
+        )
+        val payload = WCOrderStore.FetchOrdersResponsePayload(
+            error = orderError,
+            site = siteModel
+        )
+        whenever(
+            orderRestClient.fetchOrders(
+                site = siteModel,
+                count = WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE,
+                page = 1,
+                orderBy = OrderRestClient.OrderBy.DATE,
+                sortOrder = OrderRestClient.SortOrder.DESCENDING,
+                statusFilter = null,
+                createdVia = "pos-rest-api",
+                searchQuery = query
+            )
+        ).thenReturn(payload)
+
+        // WHEN
+        val result = sut.searchOrders(query)
+
+        // THEN
+        assertThat(result).isInstanceOf(SearchOrdersResult.Error::class.java)
+        val error = result as SearchOrdersResult.Error
+        assertThat(error.message).isEqualTo("search error")
+    }
+
+    @Test
+    fun `given empty search query, when searchOrders returns no results, then return SearchOrdersResult Success with empty list`() = runTest {
+        // GIVEN
+        val query = ""
+        val payload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = emptyList()
+        )
+        whenever(
+            orderRestClient.fetchOrders(
+                site = siteModel,
+                count = WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE,
+                page = 1,
+                orderBy = OrderRestClient.OrderBy.DATE,
+                sortOrder = OrderRestClient.SortOrder.DESCENDING,
+                statusFilter = null,
+                createdVia = "pos-rest-api",
+                searchQuery = query
+            )
+        ).thenReturn(payload)
+
+        // WHEN
+        val result = sut.searchOrders(query)
+
+        // THEN
+        assertThat(result).isInstanceOf(SearchOrdersResult.Success::class.java)
+        val success = result as SearchOrdersResult.Success
+        assertThat(success.orders).isEmpty()
+    }
 }
