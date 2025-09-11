@@ -73,8 +73,8 @@ class ApplicationPasswordsNotifier @Inject constructor(
             properties = mapOf(
                 AnalyticsTracker.KEY_FLOW to event.flow.name.lowercase(),
                 AnalyticsTracker.KEY_CAUSE to event.cause.name.lowercase(),
-                "api_error_code" to event.error.errorCode,
-                "http_status_code" to event.error.volleyError?.networkResponse?.statusCode,
+                "api_error_code" to event.apiErrorCode,
+                "http_status_code" to event.httpStatusCode,
             )
         )
     }

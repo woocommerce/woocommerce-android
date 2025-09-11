@@ -194,7 +194,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
          * A prefix that we use to allow differentiating errors caused by app passwords generation
          * from other regular API errors.
          */
-        const val APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX = "app_passwords_generation_failure_"
+        const val APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX = "app_passwords_generation_failure:"
     }
 }
 

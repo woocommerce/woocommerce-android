@@ -49,7 +49,8 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
             trackFlaggingEvent(
                 isAppPasswordsGenerationError = isAppPasswordsGenerationError,
                 cause = JetpackSiteFlaggedAsUnsupported.Cause.MAJOR_ERROR,
-                error = error
+                apiErrorCode = apiErrorCode,
+                httpStatusCode = httpStatusCode
             )
         } else {
             val siteFailuresCount = (failuresCount[siteModel.siteId] ?: 0) + 1
@@ -65,7 +66,8 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
                 trackFlaggingEvent(
                     isAppPasswordsGenerationError = isAppPasswordsGenerationError,
                     cause = JetpackSiteFlaggedAsUnsupported.Cause.GENERAL_FAILURES_THRESHOLD_REACHED,
-                    error = error
+                    apiErrorCode = apiErrorCode,
+                    httpStatusCode = httpStatusCode
                 )
             }
         }
@@ -74,7 +76,8 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
     private fun trackFlaggingEvent(
         isAppPasswordsGenerationError: Boolean,
         cause: JetpackSiteFlaggedAsUnsupported.Cause,
-        error: WPAPINetworkError
+        apiErrorCode: String?,
+        httpStatusCode: Int?
     ) {
         if (listener.isPresent) {
             listener.get().onJetpackSiteFlaggedAsUnsupported(
@@ -85,7 +88,8 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
                         JetpackSiteFlaggedAsUnsupported.Flow.API_REQUEST
                     },
                     cause = cause,
-                    error = error
+                    apiErrorCode = apiErrorCode,
+                    httpStatusCode = httpStatusCode
                 )
             )
         }

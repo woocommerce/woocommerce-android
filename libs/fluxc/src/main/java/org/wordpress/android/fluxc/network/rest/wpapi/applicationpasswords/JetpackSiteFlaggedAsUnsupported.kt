@@ -1,11 +1,10 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
-import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
-
 data class JetpackSiteFlaggedAsUnsupported(
     val flow: Flow,
     val cause: Cause,
-    val error: WPAPINetworkError
+    val apiErrorCode: String?,
+    val httpStatusCode: Int?,
 ) {
     enum class Flow {
         APP_PASSWORD_GENERATION,
