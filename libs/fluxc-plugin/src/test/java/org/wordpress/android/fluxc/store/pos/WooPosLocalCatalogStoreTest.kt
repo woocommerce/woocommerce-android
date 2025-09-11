@@ -26,8 +26,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProdu
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogError
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.utils.HeadersParser
@@ -827,7 +827,7 @@ class WooPosLocalCatalogStoreTest {
     )
 
     object ProductTestData {
-        fun coffeMug(siteId: LocalId) = WCPosProductEntity(
+        fun coffeMug(siteId: LocalId) = WooPosProductEntity(
             localSiteId = siteId,
             remoteId = RemoteId(1L),
             name = "Coffee Mug",
@@ -836,7 +836,7 @@ class WooPosLocalCatalogStoreTest {
             images = ""
         )
 
-        fun laptopStand(siteId: LocalId) = WCPosProductEntity(
+        fun laptopStand(siteId: LocalId) = WooPosProductEntity(
             localSiteId = siteId,
             remoteId = RemoteId(2L),
             name = "Laptop Stand",
@@ -850,7 +850,7 @@ class WooPosLocalCatalogStoreTest {
             remoteId: Long,
             name: String,
             price: String = "29.99"
-        ) = WCPosProductEntity(
+        ) = WooPosProductEntity(
             localSiteId = siteId,
             remoteId = RemoteId(remoteId),
             name = name,

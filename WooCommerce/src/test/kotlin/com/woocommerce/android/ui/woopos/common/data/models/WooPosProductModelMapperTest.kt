@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -44,7 +44,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
     @Test
     fun `given entity with pricing information, when mapping to model, then pricing is handled correctly`() {
         // Regular pricing only
-        var entity = WCPosProductEntity(
+        var entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             regularPrice = "25.99",
             onSale = false
@@ -55,7 +55,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
         assertThat(regularPricing.price).isEqualTo(BigDecimal("25.99"))
 
         // Sale pricing
-        entity = WCPosProductEntity(
+        entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             regularPrice = "29.99",
             salePrice = "19.99",
@@ -68,7 +68,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
         assertThat(salePricing.salePrice).isEqualTo(BigDecimal("19.99"))
 
         // No pricing
-        entity = WCPosProductEntity(
+        entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             price = "",
             regularPrice = "",
@@ -82,7 +82,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
 
     @Test
     fun `given entity with invalid price format, when mapping to model, then pricing defaults to NoPricing`() {
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             price = "invalid",
             regularPrice = "not-a-number",
@@ -99,7 +99,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
     @Test
     fun `given entity with JSON images, when mapping to model, then images are parsed correctly`() {
         val imagesJson = """[{"id": 1, "src": "https://example.com/image.jpg", "name": "Image 1", "alt": "Alt text"}]"""
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             images = imagesJson
         )
@@ -117,7 +117,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
 
     @Test
     fun `given entity with malformed JSON, when mapping to model, then returns empty collections gracefully`() {
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             images = "malformed json",
             attributes = "invalid json",
@@ -135,7 +135,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
 
     @Test
     fun `given entity with empty JSON collections, when mapping to model, then returns empty lists`() {
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             images = "",
             attributes = "",
@@ -155,7 +155,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
     fun `given entity with valid JSON attributes, when mapping to model, then attributes are parsed correctly`() {
         val attributesJson =
             """[{"id": 1, "name": "Color", "options": ["Red", "Blue"], "visible": true, "variation": false}]"""
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             attributes = attributesJson
         )
@@ -174,7 +174,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
 
     @Test
     fun `given product model with JSON collections, when accessing multiple times, then returns same parsed data`() {
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             images = """[{"id": 1, "src": "test.jpg"}]""",
             attributes = """[{"id": 2, "name": "Size"}]"""
@@ -232,7 +232,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
         )
 
         testCases.forEach { (typeString, expectedType) ->
-            val entity = WCPosProductEntity(
+            val entity = WooPosProductEntity(
                 remoteId = LocalOrRemoteId.RemoteId(123),
                 type = typeString
             )
@@ -255,7 +255,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
         )
 
         testCases.forEach { (statusString, expectedStatus) ->
-            val entity = WCPosProductEntity(
+            val entity = WooPosProductEntity(
                 remoteId = LocalOrRemoteId.RemoteId(123),
                 status = statusString
             )
@@ -317,7 +317,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
         assertThat(mapper.mapProductStatus("unknown")).isEqualTo(WooPosProductModel.WooPosProductStatus.UNKNOWN)
     }
 
-    private fun createCompleteEntity() = WCPosProductEntity(
+    private fun createCompleteEntity() = WooPosProductEntity(
         localSiteId = LocalOrRemoteId.LocalId(1),
         remoteId = LocalOrRemoteId.RemoteId(123),
         name = "Test Product",
@@ -342,7 +342,7 @@ class WooPosProductModelMapperTest : BaseUnitTest() {
         dateModified = "2023-01-01T00:00:00"
     )
 
-    private fun createMinimalEntity(id: Long) = WCPosProductEntity(
+    private fun createMinimalEntity(id: Long) = WooPosProductEntity(
         remoteId = LocalOrRemoteId.RemoteId(id)
     )
 }

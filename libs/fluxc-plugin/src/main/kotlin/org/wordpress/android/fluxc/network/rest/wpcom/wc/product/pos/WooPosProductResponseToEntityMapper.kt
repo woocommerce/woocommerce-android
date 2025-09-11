@@ -3,12 +3,12 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.pos.WooPosVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 
 @Suppress("CyclomaticComplexMethod")
-fun ProductApiResponse.mapToPOSEntity(localSiteId: LocalOrRemoteId.LocalId): WCPosProductEntity =
-    WCPosProductEntity(
+fun ProductApiResponse.mapToWooPOSEntity(localSiteId: LocalOrRemoteId.LocalId): WooPosProductEntity =
+    WooPosProductEntity(
         localSiteId = localSiteId,
         remoteId = LocalOrRemoteId.RemoteId(this.id ?: 0),
         name = this.name ?: "",
