@@ -5,6 +5,7 @@
 -----
 - [Internal] Migration to POS specific product model [https://github.com/woocommerce/woocommerce-android/pull/14598]
 - [*] Enhance the shipping label creation screen by making the selected hazardous box tappable [https://github.com/woocommerce/woocommerce-android/pull/14576]
+- [*] Shipping Labels: Enhance selected package UI in the create shipping label flow [https://github.com/woocommerce/woocommerce-android/pull/14579]
 
 23.2
 -----
@@ -22,7 +23,6 @@
 - [*] Automatically populate the weight field in the create shipment flow [https://github.com/woocommerce/woocommerce-android/pull/14525]
 - [*] [Shipping Labels] Fixed displaying incorrect hazardous material option for purchased labels [https://github.com/woocommerce/woocommerce-android/pull/14571]
 - [*] Shipping Labels: Updated the disabled button text on the package selection screen [https://github.com/woocommerce/woocommerce-android/pull/14558]
-- [*] Shipping Labels: Enhance selected package UI in the create shipping label flow [https://github.com/woocommerce/woocommerce-android/pull/14579]
 
 23.1
 -----
