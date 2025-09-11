@@ -98,7 +98,12 @@ class WooPosOrdersViewModel @Inject constructor(
                         isLoading = false,
                     )
                 )
-                performSearch(event.query)
+
+                if (event.query.isEmpty()) {
+                    loadOrders()
+                } else {
+                    performSearch(event.query)
+                }
             }
 
             is WooPosSearchUIEvent.Clear -> {
@@ -109,7 +114,7 @@ class WooPosOrdersViewModel @Inject constructor(
                         requestFocus = true
                     )
                 )
-                performSearch("")
+                loadOrders()
             }
 
             is WooPosSearchUIEvent.Close -> {
@@ -131,8 +136,8 @@ class WooPosOrdersViewModel @Inject constructor(
     private fun performSearch(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            _state.value = WooPosOrdersState.Loading(searchInputState = _state.value.searchInputState)
             delay(SEARCH_DEBOUNCE_DELAY_MS)
+            _state.value = WooPosOrdersState.Loading(searchInputState = _state.value.searchInputState)
             val result = ordersDataSource.searchOrders(query)
             when (result) {
                 is SearchOrdersResult.Error -> {
@@ -157,7 +162,8 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private fun loadOrders() {
         viewModelScope.launch {
-            _state.value = WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
+            val currentState = _state.value
+            _state.value = WooPosOrdersState.Loading(searchInputState = currentState.searchInputState)
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
