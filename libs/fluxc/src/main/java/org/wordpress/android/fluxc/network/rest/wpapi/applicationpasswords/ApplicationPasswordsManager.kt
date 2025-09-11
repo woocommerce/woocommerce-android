@@ -152,8 +152,8 @@ internal class ApplicationPasswordsManager @Inject constructor(
                 }
                 when {
                     statusCode == CONFLICT -> {
-                        appLogWrapper.w(MAIN, "Application Password already exists")
-                        when (val deletionResult = deleteApplicationCredentials(site)) {
+                        appLogWrapper.w(AppLog.T.MAIN, "Application Password already exists")
+                        when (val deletionResult = deleteConflictedApplicationPassword(site)) {
                             ApplicationPasswordDeletionResult.Success ->
                                 createApplicationPassword(site, username)
 
@@ -175,7 +175,7 @@ internal class ApplicationPasswordsManager @Inject constructor(
 
                     else -> {
                         appLogWrapper.w(
-                            MAIN,
+                            AppLog.T.MAIN,
                             "Application Password creation failed ${payload.error.type}"
                         )
                         ApplicationPasswordCreationResult.Failure(payload.error)
@@ -189,70 +189,28 @@ internal class ApplicationPasswordsManager @Inject constructor(
         site: SiteModel
     ): ApplicationPasswordDeletionResult {
         val credentials = applicationPasswordsStore.getCredentials(site)
+        if (credentials == null) return ApplicationPasswordDeletionResult.Success
 
-        val payload = if (credentials == null) {
-            // If we don't have any saved credentials, let's fetch the UUID then delete the password using
-            // either the WP.com token or the self-hosted credentials.
-            val uuid = fetchApplicationPasswordUUID(site).let {
-                if (it.isError) return ApplicationPasswordDeletionResult.Failure(it.error)
-                it.uuid
-            }
+        val payload = wpApiApplicationPasswordsRestClient.deleteApplicationPassword(
+            site = site,
+            credentials = credentials
+        )
 
-            if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
-                jetpackApplicationPasswordsRestClient.deleteApplicationPassword(
-                    site = site,
-                    uuid = uuid
-                )
-            } else {
-                wpApiApplicationPasswordsRestClient.deleteApplicationPassword(
-                    site = site,
-                    uuid = uuid
-                )
-            }
-        } else {
-            // If we have an Application Password, we can use it itself for the delete request.
-            wpApiApplicationPasswordsRestClient.deleteApplicationPassword(
-                site = site,
-                credentials = credentials
-            )
-        }
-
-        return when {
-            !payload.isError -> {
-                if (payload.isDeleted) {
+        return payload.toResult().also {
+            when (it) {
+                is ApplicationPasswordDeletionResult.Success -> {
                     appLogWrapper.d(AppLog.T.MAIN, "Application password deleted")
                     applicationPasswordsStore.deleteCredentials(site)
-                    ApplicationPasswordDeletionResult.Success
-                } else {
-                    appLogWrapper.w(AppLog.T.MAIN, "Application password deletion failed")
-                    ApplicationPasswordDeletionResult.Failure(
-                        BaseNetworkError(
-                            GenericErrorType.UNKNOWN,
-                            "Deletion not confirmed by API"
-                        )
+                }
+
+                is ApplicationPasswordDeletionResult.Failure -> {
+                    appLogWrapper.w(
+                        AppLog.T.MAIN, "Application password deletion failed, error: " +
+                                "${it.error.type} ${it.error.message}\n" +
+                                "${it.error.volleyError?.toString()}"
                     )
                 }
             }
-
-            else -> {
-                val error = payload.error
-                appLogWrapper.w(
-                    AppLog.T.MAIN, "Application password deletion failed, error: " +
-                        "${error.type} ${error.message}\n" +
-                        "${error.volleyError?.toString()}"
-                )
-                ApplicationPasswordDeletionResult.Failure(error)
-            }
-        }
-    }
-
-    private suspend fun fetchApplicationPasswordUUID(
-        site: SiteModel
-    ): ApplicationPasswordUUIDFetchPayload {
-        return if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
-            jetpackApplicationPasswordsRestClient.fetchApplicationPasswordUUID(site, applicationName)
-        } else {
-            wpApiApplicationPasswordsRestClient.fetchApplicationPasswordUUID(site, applicationName)
         }
     }
 
@@ -261,4 +219,61 @@ internal class ApplicationPasswordsManager @Inject constructor(
             applicationPasswordsStore.deleteCredentials(site)
         }
     }
+
+    private suspend fun deleteConflictedApplicationPassword(
+        site: SiteModel
+    ): ApplicationPasswordDeletionResult {
+        suspend fun fetchApplicationPasswordUUID(
+            site: SiteModel
+        ): ApplicationPasswordUUIDFetchPayload {
+            return if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
+                jetpackApplicationPasswordsRestClient.fetchApplicationPasswordUUID(site, applicationName)
+            } else {
+                wpApiApplicationPasswordsRestClient.fetchApplicationPasswordUUID(site, applicationName)
+            }
+        }
+
+        val uuid = fetchApplicationPasswordUUID(site).let {
+            if (it.isError) return ApplicationPasswordDeletionResult.Failure(it.error)
+            it.uuid
+        }
+
+        val result = if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
+            jetpackApplicationPasswordsRestClient.deleteApplicationPassword(
+                site = site,
+                uuid = uuid
+            )
+        } else {
+            wpApiApplicationPasswordsRestClient.deleteApplicationPassword(
+                site = site,
+                uuid = uuid
+            )
+        }
+
+        return result.toResult().also {
+            if (it is ApplicationPasswordDeletionResult.Failure) {
+                appLogWrapper.w(
+                    AppLog.T.MAIN, "Conflicted application password deletion failed, error: " +
+                        "${it.error.type} ${it.error.message}\n" +
+                        "${it.error.volleyError?.toString()}"
+                )
+            } else {
+                appLogWrapper.d(AppLog.T.MAIN, "Conflicted application password deleted")
+            }
+        }
+    }
+
+    private fun ApplicationPasswordDeletionPayload.toResult(): ApplicationPasswordDeletionResult =
+        if (isError) {
+            ApplicationPasswordDeletionResult.Failure(error)
+        } else if (isDeleted) {
+            ApplicationPasswordDeletionResult.Success
+        } else {
+            ApplicationPasswordDeletionResult.Failure(
+                BaseNetworkError(
+                    GenericErrorType.UNKNOWN,
+                    "Deletion not confirmed by API"
+                )
+            )
+        }
 }
