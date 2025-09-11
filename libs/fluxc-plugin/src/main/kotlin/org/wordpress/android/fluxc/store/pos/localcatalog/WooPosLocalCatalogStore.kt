@@ -95,7 +95,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         offset: Int = 0,
         pageSize: Int = DEFAULT_PAGE_SIZE,
     ): Result<WooPosLocalCatalogFetchProductsResult> =
-        coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedProducts") {
+        coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
             val response = posProductRestClient.fetchProducts(
