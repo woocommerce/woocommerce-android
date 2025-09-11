@@ -54,6 +54,8 @@ class WooPosOrdersViewModel @Inject constructor(
         loadOrders()
     }
 
+    fun onEndOfOrdersListReached() {}
+
     private fun loadOrders() {
         viewModelScope.launch {
             ordersDataSource.loadOrders().collect { result ->

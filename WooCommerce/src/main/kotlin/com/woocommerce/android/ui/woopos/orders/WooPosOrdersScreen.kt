@@ -15,14 +15,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,8 +43,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -59,6 +68,7 @@ fun WooPosOrdersScreen(
             onRefresh = viewModel::onRefresh,
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
+            onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
@@ -83,6 +93,7 @@ private fun OrdersList(
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
+    onEndOfOrdersListReached: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -148,10 +159,17 @@ private fun OrdersList(
                 }
 
                 is WooPosOrdersState.Content -> {
+                    val isLoadingMore = state.paginationState == WooPosPaginationState.Loading
+                    val canLoadMore = state.paginationState == WooPosPaginationState.None &&
+                        state.pullToRefreshState != WooPosPullToRefreshState.Refreshing
+
                     WooPosOrdersListPaneScreen(
                         items = state.items,
                         selectedOrderId = state.selectedOrderId,
                         onOrderSelected = onOrderSelected,
+                        onEndOfOrdersListReached = onEndOfOrdersListReached,
+                        canLoadMore = canLoadMore && state.pullToRefreshState != WooPosPullToRefreshState.Refreshing,
+                        isLoadingMore = isLoadingMore,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -191,9 +209,32 @@ fun WooPosOrdersListPaneScreen(
     items: List<OrderItemViewState>,
     selectedOrderId: Long?,
     onOrderSelected: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onEndOfOrdersListReached: () -> Unit,
+    canLoadMore: Boolean,
+    isLoadingMore: Boolean,
+    loadMoreBuffer: Int = 5,
 ) {
+    val listState = rememberLazyListState()
+
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val info = listState.layoutInfo
+            val total = info.totalItemsCount
+            if (total == 0) return@derivedStateOf false
+            val lastVisible = (info.visibleItemsInfo.lastOrNull()?.index ?: -1)
+            lastVisible >= total - 1 - loadMoreBuffer
+        }
+    }
+    LaunchedEffect(canLoadMore, isLoadingMore, listState) {
+        snapshotFlow { shouldLoadMore.value }
+            .distinctUntilChanged()
+            .filter { it && canLoadMore && !isLoadingMore }
+            .collect { onEndOfOrdersListReached() }
+    }
+
     LazyColumn(
+        state = listState,
         modifier = modifier,
         contentPadding = PaddingValues(vertical = WooPosSpacing.XSmall.value)
     ) {
