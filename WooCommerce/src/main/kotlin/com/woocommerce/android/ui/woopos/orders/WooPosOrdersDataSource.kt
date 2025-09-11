@@ -25,30 +25,46 @@ class WooPosOrdersDataSource @Inject constructor(
     companion object {
         const val POS_ORDERS_PAGE_SIZE = 25
     }
+
     fun loadOrders(): Flow<LoadOrdersResult> = flow {
         val cached = ordersCache.getAll()
         if (cached.isNotEmpty()) {
             emit(LoadOrdersResult.SuccessCache(cached))
         }
 
-        val result = restClient.fetchOrders(
+        val result = fetchOrdersFromRemote(searchQuery = null)
+
+        if (result.isError) {
+            emit(LoadOrdersResult.Error(result.error?.message ?: "Unknown error"))
+        } else {
+            val mapped = result.orders.toAppModels()
+            ordersCache.setAll(mapped)
+            emit(LoadOrdersResult.SuccessRemote(mapped))
+        }
+    }
+
+    suspend fun searchOrders(searchQuery: String): LoadOrdersResult {
+        val result = fetchOrdersFromRemote(searchQuery = searchQuery)
+
+        return if (result.isError) {
+            LoadOrdersResult.Error(result.error?.message ?: "Unknown error")
+        } else {
+            val mapped = result.orders.toAppModels()
+            LoadOrdersResult.SuccessRemote(mapped)
+        }
+    }
+
+    private suspend fun fetchOrdersFromRemote(searchQuery: String?) =
+        restClient.fetchOrders(
             site = selectedSite.get(),
             count = POS_ORDERS_PAGE_SIZE,
             page = 1,
             orderBy = OrderBy.DATE,
             sortOrder = OrderRestClient.SortOrder.DESCENDING,
             statusFilter = null,
-            createdVia = "pos-rest-api"
+            createdVia = "pos-rest-api",
+            searchQuery = searchQuery,
         )
-
-        if (result.isError) {
-            emit(LoadOrdersResult.Error(result.error.message))
-        } else {
-            val mapped = result.orders.toAppModels()
-            ordersCache.setAll(mapped)
-            emit(LoadOrdersResult.SuccessRemote(result.orders.toAppModels()))
-        }
-    }
 
     fun clearCache() = ordersCache.clear()
 
