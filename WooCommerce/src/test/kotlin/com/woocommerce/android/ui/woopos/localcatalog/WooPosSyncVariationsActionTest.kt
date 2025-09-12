@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncRepository.Companion.PAGE_SIZE
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository.Companion.PAGE_SIZE
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationsAction.WooPosSyncVariationsResult
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -253,12 +253,12 @@ class WooPosSyncVariationsActionTest {
     fun `given multiple pages synced, when sync variations called, then returns last server date`() = runTest {
         // GIVEN
         val maxPages = 10
-        val lastServerDate = "2024-01-15T15:45:00Z"
+        val firstServerDate = "2024-01-15T15:45:00Z"
         givenMultiPageCatalog(
             page1Count = 100,
             page2Count = 50,
             page3Count = 0,
-            serverDate3 = lastServerDate
+            serverDate = firstServerDate
         )
 
         // WHEN
@@ -266,7 +266,7 @@ class WooPosSyncVariationsActionTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Success).serverDate).isEqualTo(lastServerDate)
+        assertThat((result as WooPosSyncVariationsResult.Success).serverDate).isEqualTo(firstServerDate)
     }
 
     @Test
@@ -309,7 +309,7 @@ class WooPosSyncVariationsActionTest {
         page2Count: Int,
         page3Count: Int,
         totalPages: Int = 3,
-        serverDate3: String = "2024-01-15T12:00:00Z"
+        serverDate: String = "2024-01-15T12:00:00Z"
     ) {
         whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
             .thenReturn(
@@ -319,7 +319,7 @@ class WooPosSyncVariationsActionTest {
                         hasMore = true,
                         nextPage = 2,
                         totalPages = totalPages,
-                        serverDate = "2024-01-15T10:00:00Z"
+                        serverDate = serverDate
                     )
                 )
             )
@@ -332,7 +332,7 @@ class WooPosSyncVariationsActionTest {
                         hasMore = true,
                         nextPage = 3,
                         totalPages = totalPages,
-                        serverDate = "2024-01-15T11:00:00Z"
+                        serverDate = "2024-01-15T11:00:00Z",
                     )
                 )
             )
@@ -345,7 +345,7 @@ class WooPosSyncVariationsActionTest {
                         hasMore = false,
                         nextPage = 3,
                         totalPages = totalPages,
-                        serverDate = serverDate3
+                        serverDate = "2024-01-15T11:00:00Z",
                     )
                 )
             )

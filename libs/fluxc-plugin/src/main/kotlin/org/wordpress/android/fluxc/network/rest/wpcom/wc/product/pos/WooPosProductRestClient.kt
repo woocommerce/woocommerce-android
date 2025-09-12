@@ -68,8 +68,9 @@ class WooPosProductRestClient @Inject constructor(
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
             "page" to page.toString(),
-            "_fields" to VARIATIONS_FIELDS
-        ).also {
+            "_fields" to VARIATIONS_FIELDS,
+            "orderby" to "modified",
+            ).also {
             if (modifiedAfter.isNullOrBlank().not()) {
                 it["modified_after"] = modifiedAfter
             }
@@ -156,7 +157,7 @@ class WooPosProductRestClient @Inject constructor(
             "per_page" to pageSize.toString(),
             "offset" to offset.toString(),
             "_fields" to fields,
-
+            "orderby" to "modified",
             ).also {
             modifiedAfter?.let { modified ->
                 it["modified_after"] = modified
