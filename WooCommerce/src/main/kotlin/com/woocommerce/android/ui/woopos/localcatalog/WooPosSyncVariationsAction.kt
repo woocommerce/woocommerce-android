@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosVariationsFetchResult
 import javax.inject.Inject
@@ -65,13 +65,13 @@ class WooPosSyncVariationsAction @Inject constructor(
         modifiedAfterGmt: String?,
         pageSize: Int,
         maxPages: Int
-    ): Pair<List<WCPosVariationModel>, String> {
+    ): Pair<List<WooPosVariationEntity>, String> {
         var currentPage = 1
         var pagesSynced = 0
         var totalPages = maxPages
         var firstPageServerDate: String? = null
 
-        val variations = mutableListOf<WCPosVariationModel>()
+        val variations = mutableListOf<WooPosVariationEntity>()
 
         while (pagesSynced < totalPages) {
             val result = posLocalCatalogStore.fetchRecentlyModifiedVariations(

@@ -10,7 +10,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 /**
- * Mapper for converting WCPosProductEntity (database layer) to WooPosProductModel (domain layer).
+ * Mapper for converting WooPosProductEntity (database layer) to WooPosProductModel (domain layer).
  *
  * This is a read-only mapper since POS doesn't modify products.
  * The mapper ensures clean data handling:
