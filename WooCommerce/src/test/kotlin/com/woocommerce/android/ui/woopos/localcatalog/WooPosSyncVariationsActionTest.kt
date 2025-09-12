@@ -117,7 +117,7 @@ class WooPosSyncVariationsActionTest {
             verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(
                 site = eq(site),
                 modifiedAfterGmt = eq(modifiedAfter),
-                page = eq(0),
+                page = eq(1),
                 pageSize = eq(100)
             )
             assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
@@ -136,7 +136,7 @@ class WooPosSyncVariationsActionTest {
         verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(
             site = eq(site),
             modifiedAfterGmt = eq(null),
-            page = eq(0),
+            page = eq(1),
             pageSize = eq(100)
         )
         assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
@@ -286,9 +286,9 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(0), any())
         verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any())
         verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any())
+        verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(3), any())
         assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
     }
 
