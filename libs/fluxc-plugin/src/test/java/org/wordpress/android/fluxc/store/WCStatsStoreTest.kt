@@ -815,13 +815,16 @@ class WCStatsStoreTest {
     @Test
     @Suppress("LongMethod")
     fun testGetVisitorStatsForCurrentDayGranularity() = test {
-        // Test Scenario - 1: Generate default visitor stats i.e. isCustomField - false
+        // Test Scenario - 1: Generate default visitor stats
         // Get visitor Stats of the same site and granularity and assert not null
         val defaultDayVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel()
         val site = SiteModel().apply { id = defaultDayVisitorStatsModel.localSiteId.value }
         databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultDayVisitorStatsModel)
 
-        val defaultDayVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.DAYS)
+        val defaultDayVisitorStats = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.DAYS, defaultDayVisitorStatsModel.quantity,
+            defaultDayVisitorStatsModel.endDate
+        )
         assertTrue(defaultDayVisitorStats.isNotEmpty())
 
         // Test Scenario - 2: Generate default visitor stats with a different date
@@ -830,10 +833,13 @@ class WCStatsStoreTest {
             endDate = "2019-08-02"
         )
         databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultDayVisitorStatsModel2)
-        val defaultDayVisitorStats2 = wcStatsStore.getNewVisitorStats(site, WCStatsStore.StatsGranularity.DAYS)
+        val defaultDayVisitorStats2 = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.DAYS, defaultDayVisitorStatsModel2.quantity,
+            defaultDayVisitorStatsModel2.endDate
+        )
         assertTrue(defaultDayVisitorStats2.isNotEmpty())
 
-        // Test Scenario - 3: Generate custom stats for same site i.e. isCustomField - true
+        // Test Scenario - 3: Generate custom stats for same site
         // Get visitor Stats of the same site and granularity and assert not null
         val customDayVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
             quantity = "1", endDate = "2019-08-06", startDate = "2019-08-06"
@@ -842,7 +848,7 @@ class WCStatsStoreTest {
 
         val customDayVisitorStats = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.DAYS, customDayVisitorStatsModel.quantity,
-            customDayVisitorStatsModel.endDate, customDayVisitorStatsModel.isCustomField
+            customDayVisitorStatsModel.endDate
         )
         assertTrue(customDayVisitorStats.isNotEmpty())
 
@@ -854,7 +860,7 @@ class WCStatsStoreTest {
         )
         val customDayVisitorStats2 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.DAYS, customDayVisitorStatsModel2.quantity,
-            customDayVisitorStatsModel2.endDate, customDayVisitorStatsModel2.isCustomField
+            customDayVisitorStatsModel2.endDate
         )
         assertTrue(customDayVisitorStats2.isEmpty())
 
@@ -867,12 +873,12 @@ class WCStatsStoreTest {
 
         val customDayVisitorStats3 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.DAYS, customDayVisitorStatsModel3.quantity,
-            customDayVisitorStatsModel3.endDate, customDayVisitorStatsModel3.isCustomField
+            customDayVisitorStatsModel3.endDate
         )
         assertTrue(customDayVisitorStats3.isEmpty())
 
         // Test Scenario - 6: Generate custom visitor stats for same site with different granularity (WEEKS),
-        // same date(2019-01-01), same quantity (1) i.e. isCustomField - true
+        // same date(2019-01-01), same quantity (1)
         // Get visitor Stats and assert Not Null
         // Now if another query ran for granularity - DAYS, with same date and same quantity: assert null
         val customWeekVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
@@ -885,18 +891,18 @@ class WCStatsStoreTest {
 
         val customWeekVisitorStats = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
-            customWeekVisitorStatsModel.endDate, customWeekVisitorStatsModel.isCustomField
+            customWeekVisitorStatsModel.endDate
         )
         assertTrue(customWeekVisitorStats.isNotEmpty())
 
         val customDayVisitorStats4 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.DAYS, customDayVisitorStatsModel.quantity,
-            customDayVisitorStatsModel.endDate, customDayVisitorStatsModel.isCustomField
+            customDayVisitorStatsModel.endDate
         )
         assertTrue(customDayVisitorStats4.isEmpty())
 
         // Test Scenario - 7: Generate custom stats for different site(8) with same granularity(WEEKS),
-        // same date(2019-01-01), same quantity(1) i.e. isCustomField - true
+        // same date(2019-01-01), same quantity(1)
         // Get visitor Stats and assert Not Null
         // Now if scenario 4 is run again it should assert NOT NULL, since the stats is for different sites
         val customWeekVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
@@ -908,7 +914,7 @@ class WCStatsStoreTest {
 
         val customWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.WEEKS, customWeekVisitorStatsModel2.quantity,
-            customWeekVisitorStatsModel2.endDate, customWeekVisitorStatsModel2.isCustomField
+            customWeekVisitorStatsModel2.endDate
         )
         assertTrue(customWeekVisitorStats2.isNotEmpty())
         assertTrue(customWeekVisitorStats.isNotEmpty())
@@ -917,7 +923,7 @@ class WCStatsStoreTest {
     @Test
     @Suppress("LongMethod")
     fun testGetVisitorStatsForThisWeekGranularity() = test {
-        // Test Scenario - 1: Generate default visitor stats i.e. isCustomField - false
+        // Test Scenario - 1: Generate default visitor stats
         // Get visitor Stats of the same site and granularity and assert not null
         val defaultWeekVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
             granularity = StatsGranularity.WEEKS.toString()
@@ -925,11 +931,17 @@ class WCStatsStoreTest {
         val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId.value }
         databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultWeekVisitorStatsModel)
 
-        val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.WEEKS)
+        val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.WEEKS, defaultWeekVisitorStatsModel.quantity,
+            defaultWeekVisitorStatsModel.endDate
+        )
         assertTrue(defaultWeekVisitorStats.isNotEmpty())
 
         // query for days granularity. the visitor stats should be empty
-        val defaultDayVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.DAYS)
+        val defaultDayVisitorStats = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.DAYS, defaultWeekVisitorStatsModel.quantity,
+            defaultWeekVisitorStatsModel.endDate
+        )
         assertTrue(defaultDayVisitorStats.isEmpty())
 
         // Test Scenario - 2: Generate default visitor stats with a different date
@@ -938,10 +950,13 @@ class WCStatsStoreTest {
             granularity = StatsGranularity.WEEKS.toString(), endDate = "2019-03-20"
         )
         databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultWeekVisitorStatsModel2)
-        val defaultWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(site, WCStatsStore.StatsGranularity.WEEKS)
+        val defaultWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.WEEKS, defaultWeekVisitorStatsModel2.quantity,
+            defaultWeekVisitorStatsModel2.endDate
+        )
         assertTrue(defaultWeekVisitorStats2.isNotEmpty())
 
-        // Test Scenario - 3: Generate custom stats for same site i.e. isCustomField - true
+        // Test Scenario - 3: Generate custom stats for same site
         // Get visitor Stats of the same site and granularity and assert not null
         val customWeekVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
             granularity = StatsGranularity.WEEKS.toString(), quantity = "1",
@@ -951,7 +966,7 @@ class WCStatsStoreTest {
 
         val customWeekVisitorStats = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
-            customWeekVisitorStatsModel.endDate, customWeekVisitorStatsModel.isCustomField
+            customWeekVisitorStatsModel.endDate
         )
         assertTrue(customWeekVisitorStats.isNotEmpty())
 
@@ -964,7 +979,7 @@ class WCStatsStoreTest {
         )
         val customWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.WEEKS, customWeekVisitorStatsModel2.quantity,
-            customWeekVisitorStatsModel2.endDate, customWeekVisitorStatsModel2.isCustomField
+            customWeekVisitorStatsModel2.endDate
         )
         assertTrue(customWeekVisitorStats2.isEmpty())
 
@@ -978,12 +993,12 @@ class WCStatsStoreTest {
 
         val customWeekVisitorStats3 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.WEEKS, customWeekVisitorStatsModel3.quantity,
-            customWeekVisitorStatsModel3.endDate, customWeekVisitorStatsModel3.isCustomField
+            customWeekVisitorStatsModel3.endDate
         )
         assertTrue(customWeekVisitorStats3.isEmpty())
 
         // Test Scenario - 6: Generate custom visitor stats for same site with different granularity (MONTHS),
-        // same date(2019-01-01), same quantity (1) i.e. isCustomField - true
+        // same date(2019-01-01), same quantity (1)
         // Get visitor Stats and assert Not Null
         // Now if another query ran for granularity - WEEKS, with same date and same quantity: assert null
         val customMonthVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
@@ -995,18 +1010,18 @@ class WCStatsStoreTest {
 
         val customMonthVisitorStats = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.MONTHS, customMonthVisitorStatsModel.quantity,
-            customMonthVisitorStatsModel.endDate, customMonthVisitorStatsModel.isCustomField
+            customMonthVisitorStatsModel.endDate
         )
         assertTrue(customMonthVisitorStats.isNotEmpty())
 
         val customWeekVisitorStats4 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
-            customWeekVisitorStatsModel.endDate, customWeekVisitorStatsModel.isCustomField
+            customWeekVisitorStatsModel.endDate
         )
         assertTrue(customWeekVisitorStats4.isEmpty())
 
         // Test Scenario - 7: Generate custom stats for different site(8) with same granularity(MONTHS),
-        // same date(2019-01-01), same quantity(1) i.e. isCustomField - true
+        // same date(2019-01-01), same quantity(1)
         // Get visitor Stats and assert Not Null
         // Now if scenario 4 is run again it should assert NOT NULL, since the stats is for different sites
         val customMonthVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
@@ -1018,7 +1033,7 @@ class WCStatsStoreTest {
 
         val customMonthVisitorStats2 = wcStatsStore.getNewVisitorStats(
             site, StatsGranularity.MONTHS, customMonthVisitorStatsModel2.quantity,
-            customMonthVisitorStatsModel2.endDate, customMonthVisitorStatsModel2.isCustomField
+            customMonthVisitorStatsModel2.endDate
         )
         assertTrue(customMonthVisitorStats2.isNotEmpty())
         assertTrue(customMonthVisitorStats.isNotEmpty())
@@ -1036,7 +1051,10 @@ class WCStatsStoreTest {
         val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId.value }
         databaseRule.db.newVisitorStatsDao.insertOrUpdateStat(defaultWeekVisitorStatsModel)
 
-        val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.WEEKS)
+        val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.WEEKS, defaultWeekVisitorStatsModel.quantity,
+            defaultWeekVisitorStatsModel.endDate
+        )
         assertTrue(defaultWeekVisitorStats.isNotEmpty())
         assertEquals(defaultWeekVisitorStats["2019-06-23"], 10)
         assertEquals(defaultWeekVisitorStats["2019-06-22"], 20)

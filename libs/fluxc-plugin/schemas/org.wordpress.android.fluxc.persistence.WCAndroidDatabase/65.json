@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 65,
-    "identityHash": "393a829a0cfa848a8a963eebab583366",
+    "identityHash": "2d180f4d4c2ccaf6305a746959d1289d",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3888,7 +3888,7 @@
       },
       {
         "tableName": "NewVisitorStatsEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `granularity` TEXT NOT NULL, `date` TEXT NOT NULL, `startDate` TEXT NOT NULL, `endDate` TEXT NOT NULL, `quantity` TEXT NOT NULL, `isCustomField` INTEGER NOT NULL, `fields` TEXT NOT NULL, `data` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `granularity`, `date`, `quantity`, `isCustomField`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `granularity` TEXT NOT NULL, `date` TEXT NOT NULL, `startDate` TEXT NOT NULL, `endDate` TEXT NOT NULL, `quantity` TEXT NOT NULL, `fields` TEXT NOT NULL, `data` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `granularity`, `date`, `quantity`))",
         "fields": [
           {
             "fieldPath": "localSiteId",
@@ -3927,12 +3927,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "isCustomField",
-            "columnName": "isCustomField",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "fields",
             "columnName": "fields",
             "affinity": "TEXT",
@@ -3951,15 +3945,14 @@
             "localSiteId",
             "granularity",
             "date",
-            "quantity",
-            "isCustomField"
+            "quantity"
           ]
         }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '393a829a0cfa848a8a963eebab583366')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2d180f4d4c2ccaf6305a746959d1289d')"
     ]
   }
 }

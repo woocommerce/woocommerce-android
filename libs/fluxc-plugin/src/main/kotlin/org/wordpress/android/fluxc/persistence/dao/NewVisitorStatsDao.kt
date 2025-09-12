@@ -16,23 +16,8 @@ internal abstract class NewVisitorStatsDao {
         SELECT * FROM NewVisitorStatsEntity
         WHERE localSiteId = :siteId
         AND granularity = :granularity
-        AND isCustomField = 0
-        LIMIT 1
-        """
-    )
-    abstract suspend fun getDefaultStat(
-        siteId: LocalId,
-        granularity: StatsGranularity,
-    ): WCNewVisitorStatsModel?
-
-    @Query(
-        """
-        SELECT * FROM NewVisitorStatsEntity
-        WHERE localSiteId = :siteId
-        AND granularity = :granularity
         AND date = :date
         AND quantity = :quantity
-        AND isCustomField = 1
         """
     )
     abstract suspend fun getCustomStat(
@@ -44,19 +29,14 @@ internal abstract class NewVisitorStatsDao {
 
     @Transaction
     open suspend fun insertOrUpdateStat(entity: WCNewVisitorStatsModel) {
-        return if (entity.isCustomField) {
-            deleteStatForSite(entity.localSiteId)
-            insertStat(entity)
-        } else {
-            insertStat(entity)
-        }
+        deleteStatForSite(entity.localSiteId)
+        insertStat(entity)
     }
 
     @Query(
         """
         DELETE FROM NewVisitorStatsEntity
         WHERE localSiteId = :siteId
-        AND isCustomField = 1
         """
     )
     protected abstract suspend fun deleteStatForSite(siteId: LocalId): Int

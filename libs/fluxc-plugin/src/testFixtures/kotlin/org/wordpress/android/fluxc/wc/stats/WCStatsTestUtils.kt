@@ -56,7 +56,6 @@ object WCStatsTestUtils {
             data = data,
             date = endDate,
             startDate = startDate ?: "",
-            isCustomField = startDate != null,
         )
     }
 }

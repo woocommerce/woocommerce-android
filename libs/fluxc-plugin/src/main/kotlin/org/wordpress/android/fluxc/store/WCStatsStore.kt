@@ -161,7 +161,6 @@ class WCStatsStore @Inject internal constructor(
         val granularity: StatsGranularity,
         val quantity: String? = null,
         val date: String? = null,
-        val isCustomField: Boolean = false
     ) : OnChanged<OrderStatsError>() {
         var causeOfChange: WCStatsAction? = null
     }
@@ -189,14 +188,9 @@ class WCStatsStore @Inject internal constructor(
         site: SiteModel,
         granularity: StatsGranularity,
         quantity: String? = null,
-        date: String? = null,
-        isCustomField: Boolean = false
+        date: String? = null
     ): Map<String, Int> {
-        val rawStats = if (isCustomField) {
-            newVisitorStatsDao.getCustomStat(site.localId(), granularity, quantity, date)
-        } else {
-            newVisitorStatsDao.getDefaultStat(site.localId(), granularity)
-        }
+        val rawStats = newVisitorStatsDao.getCustomStat(site.localId(), granularity, quantity, date)
         rawStats?.let { visitorStatsModel ->
             val periodIndex = visitorStatsModel.getIndexForField(WCNewVisitorStatsModel.VisitorStatsField.PERIOD)
             val fieldIndex = visitorStatsModel.getIndexForField(WCNewVisitorStatsModel.VisitorStatsField.VISITORS)
@@ -361,7 +355,6 @@ class WCStatsStore @Inject internal constructor(
                     payload.granularity,
                     result.stats.quantity,
                     result.stats.date,
-                    result.stats.isCustomField
                 ).also {
                     it.causeOfChange = WCStatsAction.FETCH_NEW_VISITOR_STATS
                 }

@@ -101,7 +101,6 @@ class StatsRepository @Inject constructor(
                 result.granularity,
                 result.quantity,
                 result.date,
-                result.isCustomField
             ).let {
                 Result.success(it.values.sum())
             }

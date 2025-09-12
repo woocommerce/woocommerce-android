@@ -8,7 +8,7 @@ import java.util.Locale
 
 @Entity(
     tableName = "NewVisitorStatsEntity",
-    primaryKeys = ["localSiteId", "granularity", "date", "quantity", "isCustomField"],
+    primaryKeys = ["localSiteId", "granularity", "date", "quantity"],
 )
 data class WCNewVisitorStatsModel(
     val localSiteId: LocalId,
@@ -17,7 +17,6 @@ data class WCNewVisitorStatsModel(
     val startDate: String, // The start date of the data
     val endDate: String, // The end date of the data
     val quantity: String, // The quantity based on unit. i.e. 30 days, 17 weeks, 12 months, 2 years
-    val isCustomField: Boolean, // to check if the data is for custom stats or default stats
     val fields: String, // JSON - A map of numerical index to stat name, used to lookup the stat in the data object
     val data: String, // JSON - A list of lists; each nested list contains the data for a time period
 ) {

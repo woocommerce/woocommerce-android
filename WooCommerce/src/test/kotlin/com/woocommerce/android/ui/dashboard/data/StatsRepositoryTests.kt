@@ -87,7 +87,7 @@ class StatsRepositoryTests : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(defaultSiteModel)
             whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(null)
             whenever(wcStatsStore.fetchNewVisitorStats(any())).thenReturn(visitorStatsResponse)
-            whenever(wcStatsStore.getNewVisitorStats(defaultSiteModel, granularity, quantity, startDate, false))
+            whenever(wcStatsStore.getNewVisitorStats(defaultSiteModel, granularity, quantity, startDate))
                 .thenReturn(emptyMap())
             whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
             whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))

@@ -210,7 +210,6 @@ class OrderStatsRestClient @Inject constructor(
                     date = date,
                     endDate = endDate ?: "",
                     startDate = startDate ?: "",
-                    isCustomField = startDate != null,
                 )
 
                 FetchNewVisitorStatsResponsePayload(site, granularity, model)
