@@ -139,7 +139,7 @@ class WooPosLocalCatalogStoreTest {
     }
 
     @Test
-    fun `when syncing products, then saves products to local catalog and returns sync summary`() = runTest {
+    fun `when fetching products, then returns fetch summary`() = runTest {
         // GIVEN
         val remoteProducts = arrayOf(
             createTestApiResponse(id = 1L, name = "Coffee Mug"),
@@ -149,17 +149,17 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(remoteProducts))
 
         // WHEN
-        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
 
         // THEN
-        verify(posProductsDao).upsertProducts(any())
+        assertThat(syncResult.products.size).isEqualTo(remoteProducts.size)
         assertThat(syncResult.syncedCount).isEqualTo(2)
         assertThat(syncResult.hasMore).isFalse()
         assertThat(syncResult.nextOffset).isEqualTo(0)
     }
 
     @Test
-    fun `given full page of products, when syncing, then indicates more products available`() = runTest {
+    fun `given full page of products, when fetching, then indicates more products available`() = runTest {
         // GIVEN
         val fullPageOfProducts = Array(100) { index ->
             createTestApiResponse(id = index.toLong() + 1, name = "Product ${index + 1}")
@@ -168,7 +168,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(fullPageOfProducts))
 
         // WHEN
-        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.hasMore).isTrue()
@@ -177,16 +177,15 @@ class WooPosLocalCatalogStoreTest {
     }
 
     @Test
-    fun `given no remote products, when syncing, then completes without saving anything`() = runTest {
+    fun `given no remote products, when fetching, then completes`() = runTest {
         // GIVEN
         whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
             .thenReturn(WooResult(emptyArray()))
 
         // WHEN
-        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
 
         // THEN
-        verifyNoInteractions(posProductsDao)
         assertThat(syncResult.syncedCount).isEqualTo(0)
         assertThat(syncResult.hasMore).isFalse()
         assertThat(syncResult.nextOffset).isEqualTo(0)
@@ -204,33 +203,13 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(connectivityError))
 
         // WHEN
-        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
         val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Connection failed")
         verifyNoInteractions(posProductsDao)
-    }
-
-    @Test
-    fun `given database storage fails, when syncing, then throws database error`() = runTest {
-        // GIVEN
-        val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product 1"))
-        val storageException = RuntimeException("Disk full")
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
-            .thenReturn(WooResult(remoteProducts))
-        whenever(posProductsDao.upsertProducts(any()))
-            .thenThrow(storageException)
-
-        // WHEN
-        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as WooPosLocalCatalogError.DatabaseError
-        assertThat(error.errorMessage).contains("Failed to save products to database")
-        assertThat(error.throwable).isEqualTo(storageException)
     }
 
     @Test
@@ -241,7 +220,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(remoteProducts))
 
         // WHEN
-        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 500)
+        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 500)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
@@ -258,7 +237,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(partialPageProducts))
 
         // WHEN
-        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.hasMore).isFalse()
@@ -274,7 +253,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(remoteProducts))
 
         // WHEN
-        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, -5)
+        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, -5)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
@@ -293,7 +272,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(timeoutError))
 
         // WHEN
-        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -677,7 +656,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(null) // Missing server date
 
         // WHEN
-        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -698,7 +677,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(null) // Missing total pages
 
         // WHEN
-        val result = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -722,76 +701,11 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(expectedTotalPages)
 
         // WHEN
-        val syncResult = store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.serverDate).isEqualTo(expectedServerDate)
         assertThat(syncResult.totalPages).isEqualTo(expectedTotalPages)
-    }
-
-    @Test
-    fun `when storeInDb is false, then products are not saved to database`() = runTest {
-        // GIVEN
-        val remoteProducts = arrayOf(
-            createTestApiResponse(id = 1L, name = "Product 1"),
-            createTestApiResponse(id = 2L, name = "Product 2")
-        )
-        val response = WooResult(remoteProducts)
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
-            .thenReturn(response)
-
-        // WHEN
-        val syncResult = store.syncRecentlyModifiedProducts(
-            site = testSite,
-            modifiedAfterGmt = validDateString,
-            offset = 0,
-            pageSize = 100,
-            storeInDb = false
-        ).getOrThrow()
-
-        // THEN
-        verifyNoInteractions(posProductsDao)
-        assertThat(syncResult.syncedCount).isEqualTo(2)
-    }
-
-    @Test
-    fun `when storeInDb is true, then products are saved to database`() = runTest {
-        // GIVEN
-        val remoteProducts = arrayOf(
-            createTestApiResponse(id = 1L, name = "Product 1"),
-            createTestApiResponse(id = 2L, name = "Product 2")
-        )
-        val response = WooResult(remoteProducts)
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
-            .thenReturn(response)
-
-        // WHEN
-        val syncResult = store.syncRecentlyModifiedProducts(
-            site = testSite,
-            modifiedAfterGmt = validDateString,
-            offset = 0,
-            pageSize = 100,
-            storeInDb = true
-        ).getOrThrow()
-
-        // THEN
-        verify(posProductsDao).upsertProducts(any())
-        assertThat(syncResult.syncedCount).isEqualTo(2)
-    }
-
-    @Test
-    fun `when storeInDb is not specified, then defaults to storing in database`() = runTest {
-        // GIVEN
-        val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
-        val response = WooResult(remoteProducts)
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
-            .thenReturn(response)
-
-        // WHEN
-        store.syncRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
-
-        // THEN
-        verify(posProductsDao).upsertProducts(any())
     }
 
     private fun createTestVariationApiResponse(

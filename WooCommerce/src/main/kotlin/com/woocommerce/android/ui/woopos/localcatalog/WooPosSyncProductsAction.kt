@@ -2,9 +2,12 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
+private typealias ServerDate = String
 class WooPosSyncProductsAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
@@ -26,15 +29,31 @@ class WooPosSyncProductsAction @Inject constructor(
         pageSize: Int,
         maxPages: Int
     ): WooPosSyncProductsResult {
+        val fetchResult = runCatching {
+            fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
+        }
+
+        if (fetchResult.isFailure) {
+            val error = fetchResult.exceptionOrNull()
+            logger.e("Failed to fetch products: ${error?.message}")
+            return when (error) {
+                is CatalogTooLargeException -> error.toSyncResult()
+                else -> WooPosSyncProductsResult.Failed.UnexpectedError(
+                    error?.message ?: "Failed to fetch products"
+                )
+            }
+        }
+
+        val (products, serverDate) = fetchResult.getOrThrow()
         return posLocalCatalogStore.executeInTransaction {
             // TBD local catalog We need to either remove products that are no longer present on the server
             // or delete all products before we start inserting (low performance)
             // or soft-delete all products before we start inserting
-            syncAllPages(site, modifiedAfterGmt, pageSize, maxPages)
+            posLocalCatalogStore.upsertProducts(products)
         }.fold(
-            onSuccess = { result ->
+            onSuccess = {
                 logger.d("Local Catalog transaction committed successfully")
-                result
+                WooPosSyncProductsResult.Success(products.size, serverDate)
             },
             onFailure = { error ->
                 handleTransactionError(error)
@@ -42,25 +61,25 @@ class WooPosSyncProductsAction @Inject constructor(
         )
     }
 
-    private suspend fun syncAllPages(
+    private suspend fun fetchAllPages(
         site: SiteModel,
         modifiedAfterGmt: String?,
         pageSize: Int,
         maxPages: Int
-    ): WooPosSyncProductsResult {
+    ): Pair<List<WCPosProductEntity>, ServerDate> {
         var currentOffset = 0
         var pagesSynced = 0
-        var totalSyncedProducts = 0
-        var shouldContinue = true
+        var totalPages = maxPages
         var firstPageServerDate: String? = null
 
-        while (shouldContinue) {
-            val result = posLocalCatalogStore.syncRecentlyModifiedProducts(
+        val products = mutableListOf<WCPosProductEntity>()
+
+        while (pagesSynced < totalPages) {
+            val result = posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 site = site,
                 pageSize = pageSize,
                 modifiedAfterGmt = modifiedAfterGmt,
                 offset = currentOffset,
-                storeInDb = true
             )
 
             result.fold(
@@ -69,12 +88,12 @@ class WooPosSyncProductsAction @Inject constructor(
                     if (pagesSynced == 0) {
                         firstPageServerDate = syncResult.serverDate
                     }
-                    totalSyncedProducts += syncResult.syncedCount
+                    products.addAll(syncResult.products)
+                    totalPages = syncResult.totalPages
                     pagesSynced++
 
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
                         logger.d("Local Catalog: No more products to sync")
-                        shouldContinue = false
                     } else {
                         currentOffset = syncResult.nextOffset
                     }
@@ -86,12 +105,15 @@ class WooPosSyncProductsAction @Inject constructor(
             )
         }
 
-        logger.d("Local catalog sync completed, $totalSyncedProducts products synced across $pagesSynced pages")
-        return WooPosSyncProductsResult.Success(totalSyncedProducts, firstPageServerDate)
+        logger.d("Local catalog sync completed, products synced across $pagesSynced pages")
+        return Pair(
+            products.toList(),
+            requireNotNull(firstPageServerDate, { "Can't be null since we throw an exception in the store layer." })
+        )
     }
 
     private fun processPageResult(
-        syncResult: org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogSyncResult,
+        syncResult: WooPosLocalCatalogFetchProductsResult,
         pagesSynced: Int,
         maxPages: Int
     ) {
@@ -112,6 +134,7 @@ class WooPosSyncProductsAction @Inject constructor(
                 logger.e("Local Catalog too large, transaction rolled back")
                 error.toSyncResult()
             }
+
             else -> {
                 logger.e("Local Catalog Transaction failed and was rolled back: ${error.message}")
                 WooPosSyncProductsResult.Failed.UnexpectedError(
