@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
 import app.cash.turbine.test
-import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
@@ -51,11 +52,11 @@ class WooPosItemsSearchViewModelTest {
     private val mockAnalyticsTracker: WooPosItemsSearchAnalyticsTracker = mock()
 
     private val defaultQuery = "test query"
-    private val defaultProduct = ProductTestUtils.generateProduct(
+    private val defaultProduct = generateWooPosProduct(
         productId = 1,
         productName = "Test Product",
         amount = "10.0",
-        productType = "simple"
+        productType = WooPosProductModel.WooPosProductType.SIMPLE
     )
 
     @Before
@@ -280,13 +281,12 @@ class WooPosItemsSearchViewModelTest {
         runTest {
             // GIVEN
             val variableProduct =
-                ProductTestUtils.generateProduct(
+                generateWooPosProduct(
                     productId = 1,
                     productName = "Variable Product",
                     amount = "10.0",
-                    productType = "variable",
-                    isVariable = true,
-                    variationIds = "[101,102,103]"
+                    productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                    variationIds = listOf(101L, 102L, 103L)
                 )
 
             mockSuccessfulSearch(defaultQuery, listOf(variableProduct))
@@ -312,11 +312,11 @@ class WooPosItemsSearchViewModelTest {
     @Test
     fun `given content state and more pages available, when end of list reached, then load more data`() = runTest {
         // GIVEN
-        val additionalProduct = ProductTestUtils.generateProduct(
+        val additionalProduct = generateWooPosProduct(
             productId = 2,
             productName = "Test Product 2",
             amount = "20.0",
-            productType = "simple"
+            productType = WooPosProductModel.WooPosProductType.SIMPLE
         )
 
         mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
@@ -346,11 +346,11 @@ class WooPosItemsSearchViewModelTest {
     fun `given content state and more pages available, when end of list reached, then track ItemsNextPageLoaded event`() =
         runTest {
             // GIVEN
-            val additionalProduct = ProductTestUtils.generateProduct(
+            val additionalProduct = generateWooPosProduct(
                 productId = 2,
                 productName = "Test Product 2",
                 amount = "20.0",
-                productType = "simple"
+                productType = WooPosProductModel.WooPosProductType.SIMPLE
             )
 
             mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
@@ -393,18 +393,18 @@ class WooPosItemsSearchViewModelTest {
     @Test
     fun `given cached products, when search performed, then cached results shown while loading`() = runTest {
         // GIVEN
-        val cachedProduct = ProductTestUtils.generateProduct(
+        val cachedProduct = generateWooPosProduct(
             productId = 1,
             productName = "Cached Product",
             amount = "10.0",
-            productType = "simple"
+            productType = WooPosProductModel.WooPosProductType.SIMPLE
         )
 
-        val remoteProduct = ProductTestUtils.generateProduct(
+        val remoteProduct = generateWooPosProduct(
             productId = 2,
             productName = "Remote Product",
             amount = "20.0",
-            productType = "simple"
+            productType = WooPosProductModel.WooPosProductType.SIMPLE
         )
 
         mockCachedThenRemoteSearch(defaultQuery, cachedProduct, remoteProduct)
@@ -437,11 +437,11 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
         val products = listOf(
-            ProductTestUtils.generateProduct(
+            generateWooPosProduct(
                 productId = 1,
                 productName = "Test Product",
                 amount = "10.0",
-                productType = "simple"
+                productType = WooPosProductModel.WooPosProductType.SIMPLE
             )
         )
 
@@ -479,11 +479,11 @@ class WooPosItemsSearchViewModelTest {
         // GIVEN
         val query = "test query"
         val products = listOf(
-            ProductTestUtils.generateProduct(
+            generateWooPosProduct(
                 productId = 1,
                 productName = "Test Product",
                 amount = "10.0",
-                productType = "simple"
+                productType = WooPosProductModel.WooPosProductType.SIMPLE
             )
         )
 
@@ -517,11 +517,11 @@ class WooPosItemsSearchViewModelTest {
             // GIVEN
             val query = "test query"
             val products = listOf(
-                ProductTestUtils.generateProduct(
+                generateWooPosProduct(
                     productId = 1,
                     productName = "Test Product",
                     amount = "10.0",
-                    productType = "simple"
+                    productType = WooPosProductModel.WooPosProductType.SIMPLE
                 )
             )
 
@@ -557,11 +557,11 @@ class WooPosItemsSearchViewModelTest {
         // GIVEN
         val query = "test query"
         val products = listOf(
-            ProductTestUtils.generateProduct(
+            generateWooPosProduct(
                 productId = 1,
                 productName = "Test Product",
                 amount = "10.0",
-                productType = "simple"
+                productType = WooPosProductModel.WooPosProductType.SIMPLE
             )
         )
 
@@ -784,7 +784,7 @@ class WooPosItemsSearchViewModelTest {
             )
         }
 
-    private fun mockSuccessfulSearch(query: String, products: List<com.woocommerce.android.model.Product>) {
+    private fun mockSuccessfulSearch(query: String, products: List<WooPosProductModel>) {
         wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(emptyList())
         wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(Result.success(products))
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
@@ -800,7 +800,7 @@ class WooPosItemsSearchViewModelTest {
         )
     }
 
-    private suspend fun mockSuccessfulPagination(query: String, products: List<com.woocommerce.android.model.Product>) {
+    private suspend fun mockSuccessfulPagination(query: String, products: List<WooPosProductModel>) {
         whenever(mockDataSource.hasMorePages).thenReturn(true)
         whenever(mockDataSource.loadMore(query)).thenReturn(
             Result.success(products)
@@ -816,8 +816,8 @@ class WooPosItemsSearchViewModelTest {
 
     private fun mockCachedThenRemoteSearch(
         query: String,
-        cachedProduct: com.woocommerce.android.model.Product,
-        remoteProduct: com.woocommerce.android.model.Product
+        cachedProduct: WooPosProductModel,
+        remoteProduct: WooPosProductModel
     ) {
         wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(listOf(cachedProduct))
         wheneverBlocking {

@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -36,12 +37,13 @@ class WooPosSearchProductsDataSourceTest {
     private val selectedSite: SelectedSite = mock()
     private val searchPredicate: WooPosProductSearchPredicate = mock()
     private val siteModel: SiteModel = mock()
+    private val posProductModelMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     private lateinit var sut: WooPosSearchProductsDataSource
 
-    private val product1 = ProductTestUtils.generateProduct(productId = 1)
-    private val product2 = ProductTestUtils.generateProduct(productId = 2)
-    private val product3 = ProductTestUtils.generateProduct(productId = 3)
+    private val product1 = generateWooPosProduct(productId = 1)
+    private val product2 = generateWooPosProduct(productId = 2)
+    private val product3 = generateWooPosProduct(productId = 3)
     private val products = listOf(product1, product2, product3)
     private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
 
@@ -57,6 +59,7 @@ class WooPosSearchProductsDataSourceTest {
             searchResultsIndex = searchResultsIndex,
             searchPredicate = searchPredicate,
             productsTypesFilterConfig = productsTypesFilterConfig,
+            posProductModelMapper = posProductModelMapper,
         )
     }
 
@@ -78,7 +81,7 @@ class WooPosSearchProductsDataSourceTest {
         runTest {
             // GIVEN
             val query = "test"
-            val manyProducts = (1..20).map { ProductTestUtils.generateProduct(productId = it.toLong()) }
+            val manyProducts = (1..20).map { generateWooPosProduct(productId = it.toLong()) }
             whenever(wooPosProductsCache.getAll()).thenReturn(manyProducts)
 
             // WHEN

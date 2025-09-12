@@ -20,7 +20,8 @@ class WooPosSyncTimestampManagerTest {
     private val logger: WooPosLogWrapper = mock()
 
     private lateinit var manager: WooPosSyncTimestampManager
-    private val gmtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.US).withZone(ZoneOffset.UTC)
+    private val gmtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
+        .withZone(ZoneOffset.UTC)
 
     @Before
     fun setup() {
@@ -187,7 +188,7 @@ class WooPosSyncTimestampManagerTest {
 
         // THEN
         assertThat(result).isNull()
-        verify(logger).e(eq("Failed to parse GMT timestamp: '2024-15-45T25:70:90'"), any())
+        verify(logger).e(eq("Failed to parse GMT timestamp: '2024-15-45T25:70:90' with any supported format"), any())
     }
 
     @Test
@@ -214,7 +215,7 @@ class WooPosSyncTimestampManagerTest {
 
         // THEN
         assertThat(result).isNull()
-        verify(logger).e(eq("Failed to parse GMT timestamp: ''"), any())
+        verify(logger).e(eq("Failed to parse GMT timestamp: '' with any supported format"), any())
     }
 
     @Test
@@ -227,19 +228,78 @@ class WooPosSyncTimestampManagerTest {
 
         // THEN
         assertThat(result).isNull()
-        verify(logger).e(eq("Failed to parse GMT timestamp: '   '"), any())
+        verify(logger).e(eq("Failed to parse GMT timestamp: '   ' with any supported format"), any())
     }
 
     @Test
-    fun `given timestamp with timezone suffix, when parsing from API, then null is returned`() {
+    fun `given timestamp with timezone suffix Z, when parsing from API, then correct timestamp is returned`() {
         // GIVEN
         val timestampWithTZ = "2024-01-15T10:30:00Z"
+        val expectedTimestamp = LocalDateTime.parse("2024-01-15T10:30:00", gmtFormatter)
+            .toInstant(ZoneOffset.UTC).toEpochMilli()
 
         // WHEN
         val result = manager.parseTimestampFromApi(timestampWithTZ)
 
         // THEN
+        assertThat(result).isEqualTo(expectedTimestamp)
+    }
+
+    @Test
+    fun `given RFC 2822 format timestamp, when parsing from API, then correct timestamp is returned`() {
+        // GIVEN
+        val rfc2822Timestamp = "Tue, 09 Sep 2025 08:40:42 GMT"
+        // Create expected timestamp: September 9, 2025 08:40:42 GMT
+        val expectedTimestamp = LocalDateTime.of(2025, 9, 9, 8, 40, 42)
+            .toInstant(ZoneOffset.UTC).toEpochMilli()
+
+        // WHEN
+        val result = manager.parseTimestampFromApi(rfc2822Timestamp)
+
+        // THEN
+        assertThat(result).isEqualTo(expectedTimestamp)
+    }
+
+    @Test
+    fun `given timestamp with milliseconds, when parsing from API, then correct timestamp is returned`() {
+        // GIVEN
+        val timestampWithMillis = "2024-01-15T10:30:00.123"
+        // Expected timestamp should preserve milliseconds
+        val expectedTimestamp = LocalDateTime.of(2024, 1, 15, 10, 30, 0, 123_000_000)
+            .toInstant(ZoneOffset.UTC).toEpochMilli()
+
+        // WHEN
+        val result = manager.parseTimestampFromApi(timestampWithMillis)
+
+        // THEN
+        assertThat(result).isEqualTo(expectedTimestamp)
+    }
+
+    @Test
+    fun `given timestamp with milliseconds and Z, when parsing from API, then correct timestamp is returned`() {
+        // GIVEN
+        val timestampWithMillisAndZ = "2024-01-15T10:30:00.456Z"
+        // Expected timestamp should preserve milliseconds
+        val expectedTimestamp = LocalDateTime.of(2024, 1, 15, 10, 30, 0, 456_000_000)
+            .toInstant(ZoneOffset.UTC).toEpochMilli()
+
+        // WHEN
+        val result = manager.parseTimestampFromApi(timestampWithMillisAndZ)
+
+        // THEN
+        assertThat(result).isEqualTo(expectedTimestamp)
+    }
+
+    @Test
+    fun `given completely invalid format, when parsing from API, then null is returned and error logged`() {
+        // GIVEN
+        val invalidFormat = "not-a-valid-timestamp"
+
+        // WHEN
+        val result = manager.parseTimestampFromApi(invalidFormat)
+
+        // THEN
         assertThat(result).isNull()
-        verify(logger).e(eq("Failed to parse GMT timestamp: '2024-01-15T10:30:00Z'"), any())
+        verify(logger).e(eq("Failed to parse GMT timestamp: 'not-a-valid-timestamp' with any supported format"), any())
     }
 }

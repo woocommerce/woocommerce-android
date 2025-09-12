@@ -1,6 +1,9 @@
 package org.wordpress.android.fluxc.store.pos.localcatalog
 
-data class WooPosVariationsSyncResult(
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
+
+data class WooPosVariationsFetchResult(
+    val variations: List<WooPosVariationEntity>,
     val syncedCount: Int,
     val hasMore: Boolean,
     val nextPage: Int,

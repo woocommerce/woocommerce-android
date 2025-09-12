@@ -12,9 +12,9 @@ import java.math.BigDecimal
 
 class WCProductToWooPosProductModelMapperTest {
     private val logger: WooPosLogWrapper = mock()
-    private val wooPosProductModelMapper = WooPosProductModelVersion2Mapper(logger)
-    private val sut: WCProductToWooPosProductModelMapper =
-        WCProductToWooPosProductModelMapper(wooPosProductModelMapper, logger)
+    private val wooPosProductModelMapper = WooPosProductModelMapper(logger)
+    private val sut: WooPosWCProductToWooPosProductModelMapper =
+        WooPosWCProductToWooPosProductModelMapper(wooPosProductModelMapper, logger)
 
     @Test
     fun `when mapping WCProductModel, then all attributes are correctly mapped`() {
@@ -47,11 +47,11 @@ class WCProductToWooPosProductModelMapperTest {
         assertThat(result.isDownloadable).isTrue()
         assertThat(result.lastModified).isEqualTo("2024-01-15T10:00:00Z")
 
-        assertThat(result.type).isEqualTo(WooPosProductModelVersion2.WooPosProductType.SIMPLE)
-        assertThat(result.status).isEqualTo(WooPosProductModelVersion2.WooPosProductStatus.PUBLISH)
+        assertThat(result.type).isEqualTo(WooPosProductModel.WooPosProductType.SIMPLE)
+        assertThat(result.status).isEqualTo(WooPosProductModel.WooPosProductStatus.PUBLISH)
 
-        assertThat(result.pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.SalePricing::class.java)
-        val pricing = result.pricing as WooPosProductModelVersion2.WooPosPricing.SalePricing
+        assertThat(result.pricing).isInstanceOf(WooPosProductModel.WooPosPricing.SalePricing::class.java)
+        val pricing = result.pricing as WooPosProductModel.WooPosPricing.SalePricing
         assertThat(pricing.regularPrice).isEqualTo(BigDecimal("24.99"))
         assertThat(pricing.salePrice).isEqualTo(BigDecimal("19.99"))
 
@@ -137,7 +137,7 @@ class WCProductToWooPosProductModelMapperTest {
 
         val result = sut.map(wcProduct)
 
-        assertThat(result.pricing).isEqualTo(WooPosProductModelVersion2.WooPosPricing.NoPricing)
+        assertThat(result.pricing).isEqualTo(WooPosProductModel.WooPosPricing.NoPricing)
     }
 
     @Test
@@ -153,8 +153,8 @@ class WCProductToWooPosProductModelMapperTest {
 
         val result = sut.map(wcProduct)
 
-        assertThat(result.pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.RegularPricing::class.java)
-        val pricing = result.pricing as WooPosProductModelVersion2.WooPosPricing.RegularPricing
+        assertThat(result.pricing).isInstanceOf(WooPosProductModel.WooPosPricing.RegularPricing::class.java)
+        val pricing = result.pricing as WooPosProductModel.WooPosPricing.RegularPricing
         assertThat(pricing.price).isEqualTo(BigDecimal("29.99"))
     }
 

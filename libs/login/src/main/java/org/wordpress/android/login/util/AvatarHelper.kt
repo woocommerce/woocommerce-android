@@ -16,52 +16,58 @@ import com.gravatar.types.Email
 import org.wordpress.android.login.R
 
 object AvatarHelper {
-    @JvmStatic fun loadAvatarFromEmail(
+    @JvmStatic
+    fun loadAvatarFromEmail(
         fragment: Fragment,
         email: String?,
         avatarView: ImageView,
         listener: AvatarRequestListener
     ) {
         val avatarSize = fragment.resources.getDimensionPixelSize(R.dimen.avatar_sz_login)
-        val avatarUrl = email?.let { AvatarUrl(Email(email),
-                AvatarQueryOptions(preferredSize = avatarSize, defaultAvatarOption = Status404)).url().toString() }
+        val avatarUrl = email?.let {
+            AvatarUrl(
+                Email(email),
+                AvatarQueryOptions(preferredSize = avatarSize, defaultAvatarOption = Status404)
+            ).url().toString()
+        }
         loadAvatarFromUrl(fragment, avatarUrl, avatarView, listener)
     }
 
-    @JvmStatic fun loadAvatarFromUrl(
+    @JvmStatic
+    fun loadAvatarFromUrl(
         fragment: Fragment,
         avatarUrl: String?,
         avatarView: ImageView,
         listener: AvatarRequestListener
     ) {
         Glide.with(fragment)
-                .load(avatarUrl)
-                .apply(RequestOptions.circleCropTransform())
-                .apply(RequestOptions.placeholderOf(R.drawable.ic_user_circle_no_padding_grey_24dp))
-                .apply(RequestOptions.errorOf(R.drawable.ic_user_circle_no_padding_grey_24dp))
-                .listener(object : RequestListener<Drawable?> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable?>,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        listener.onRequestFinished()
-                        return false
-                    }
+            .load(avatarUrl)
+            .apply(RequestOptions.circleCropTransform())
+            .apply(RequestOptions.placeholderOf(R.drawable.ic_user_circle_no_padding_grey_24dp))
+            .apply(RequestOptions.errorOf(R.drawable.ic_user_circle_no_padding_grey_24dp))
+            .listener(object : RequestListener<Drawable?> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable?>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    listener.onRequestFinished()
+                    return false
+                }
 
-                    override fun onResourceReady(
-                        drawable: Drawable,
-                        model: Any,
-                        target: Target<Drawable?>,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        listener.onRequestFinished()
-                        return false
-                    }
-                })
-                .into(avatarView)
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable?>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    listener.onRequestFinished()
+                    return false
+                }
+            })
+            .into(avatarView)
     }
 
     interface AvatarRequestListener {

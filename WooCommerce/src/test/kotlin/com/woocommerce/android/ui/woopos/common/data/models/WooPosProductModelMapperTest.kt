@@ -7,14 +7,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
+class WooPosProductModelMapperTest : BaseUnitTest() {
 
     private val logger: WooPosLogWrapper = mock()
-    private val mapper: WooPosProductModelVersion2Mapper = WooPosProductModelVersion2Mapper(logger)
+    private val mapper: WooPosProductModelMapper = WooPosProductModelMapper(logger)
 
     @Test
     fun `given complete entity, when mapping to model, then all fields are mapped correctly`() {
@@ -27,10 +27,10 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
         assertThat(result.name).isEqualTo("Test Product")
         assertThat(result.sku).isEqualTo("TEST-SKU")
         assertThat(result.globalUniqueId).isEqualTo("global-123")
-        assertThat(result.type).isEqualTo(WooPosProductModelVersion2.WooPosProductType.SIMPLE)
-        assertThat(result.status).isEqualTo(WooPosProductModelVersion2.WooPosProductStatus.PUBLISH)
-        assertThat(result.pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.SalePricing::class.java)
-        val salePricing = result.pricing as WooPosProductModelVersion2.WooPosPricing.SalePricing
+        assertThat(result.type).isEqualTo(WooPosProductModel.WooPosProductType.SIMPLE)
+        assertThat(result.status).isEqualTo(WooPosProductModel.WooPosProductStatus.PUBLISH)
+        assertThat(result.pricing).isInstanceOf(WooPosProductModel.WooPosPricing.SalePricing::class.java)
+        val salePricing = result.pricing as WooPosProductModel.WooPosPricing.SalePricing
         assertThat(salePricing.regularPrice).isEqualTo(BigDecimal("29.99"))
         assertThat(salePricing.salePrice).isEqualTo(BigDecimal("19.99"))
         assertThat(result.pricing.isOnSale).isTrue()
@@ -44,45 +44,45 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
     @Test
     fun `given entity with pricing information, when mapping to model, then pricing is handled correctly`() {
         // Regular pricing only
-        var entity = WCPosProductEntity(
+        var entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             regularPrice = "25.99",
             onSale = false
         )
         var result = mapper.fromEntity(entity)
-        assertThat(result.pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.RegularPricing::class.java)
-        val regularPricing = result.pricing as WooPosProductModelVersion2.WooPosPricing.RegularPricing
+        assertThat(result.pricing).isInstanceOf(WooPosProductModel.WooPosPricing.RegularPricing::class.java)
+        val regularPricing = result.pricing as WooPosProductModel.WooPosPricing.RegularPricing
         assertThat(regularPricing.price).isEqualTo(BigDecimal("25.99"))
 
         // Sale pricing
-        entity = WCPosProductEntity(
+        entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             regularPrice = "29.99",
             salePrice = "19.99",
             onSale = true
         )
         result = mapper.fromEntity(entity)
-        assertThat(result.pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.SalePricing::class.java)
-        val salePricing = result.pricing as WooPosProductModelVersion2.WooPosPricing.SalePricing
+        assertThat(result.pricing).isInstanceOf(WooPosProductModel.WooPosPricing.SalePricing::class.java)
+        val salePricing = result.pricing as WooPosProductModel.WooPosPricing.SalePricing
         assertThat(salePricing.regularPrice).isEqualTo(BigDecimal("29.99"))
         assertThat(salePricing.salePrice).isEqualTo(BigDecimal("19.99"))
 
         // No pricing
-        entity = WCPosProductEntity(
+        entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             price = "",
             regularPrice = "",
             salePrice = ""
         )
         result = mapper.fromEntity(entity)
-        assertThat(result.pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.NoPricing::class.java)
+        assertThat(result.pricing).isInstanceOf(WooPosProductModel.WooPosPricing.NoPricing::class.java)
         assertThat(result.pricing.displayPrice).isNull()
         assertThat(result.pricing.hasPrice).isFalse()
     }
 
     @Test
     fun `given entity with invalid price format, when mapping to model, then pricing defaults to NoPricing`() {
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             price = "invalid",
             regularPrice = "not-a-number",
@@ -91,7 +91,7 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
 
         val result = mapper.fromEntity(entity)
 
-        assertThat(result.pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.NoPricing::class.java)
+        assertThat(result.pricing).isInstanceOf(WooPosProductModel.WooPosPricing.NoPricing::class.java)
         assertThat(result.pricing.displayPrice).isNull()
         assertThat(result.pricing.hasPrice).isFalse()
     }
@@ -99,7 +99,7 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
     @Test
     fun `given entity with JSON images, when mapping to model, then images are parsed correctly`() {
         val imagesJson = """[{"id": 1, "src": "https://example.com/image.jpg", "name": "Image 1", "alt": "Alt text"}]"""
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             images = imagesJson
         )
@@ -117,7 +117,7 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
 
     @Test
     fun `given entity with malformed JSON, when mapping to model, then returns empty collections gracefully`() {
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             images = "malformed json",
             attributes = "invalid json",
@@ -135,7 +135,7 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
 
     @Test
     fun `given entity with empty JSON collections, when mapping to model, then returns empty lists`() {
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             images = "",
             attributes = "",
@@ -155,7 +155,7 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
     fun `given entity with valid JSON attributes, when mapping to model, then attributes are parsed correctly`() {
         val attributesJson =
             """[{"id": 1, "name": "Color", "options": ["Red", "Blue"], "visible": true, "variation": false}]"""
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             attributes = attributesJson
         )
@@ -174,7 +174,7 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
 
     @Test
     fun `given product model with JSON collections, when accessing multiple times, then returns same parsed data`() {
-        val entity = WCPosProductEntity(
+        val entity = WooPosProductEntity(
             remoteId = LocalOrRemoteId.RemoteId(123),
             images = """[{"id": 1, "src": "test.jpg"}]""",
             attributes = """[{"id": 2, "name": "Size"}]"""
@@ -219,20 +219,20 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
     @Test
     fun `given different product types, when mapping to model, then types are parsed correctly`() {
         val testCases = mapOf(
-            "simple" to WooPosProductModelVersion2.WooPosProductType.SIMPLE,
-            "variable" to WooPosProductModelVersion2.WooPosProductType.VARIABLE,
-            "grouped" to WooPosProductModelVersion2.WooPosProductType.GROUPED,
-            "external" to WooPosProductModelVersion2.WooPosProductType.EXTERNAL,
-            "variation" to WooPosProductModelVersion2.WooPosProductType.VARIATION,
-            "subscription" to WooPosProductModelVersion2.WooPosProductType.SUBSCRIPTION,
-            "variable-subscription" to WooPosProductModelVersion2.WooPosProductType.VARIABLE_SUBSCRIPTION,
-            "bundle" to WooPosProductModelVersion2.WooPosProductType.BUNDLE,
-            "composite" to WooPosProductModelVersion2.WooPosProductType.COMPOSITE,
-            "unknown" to WooPosProductModelVersion2.WooPosProductType.CUSTOM
+            "simple" to WooPosProductModel.WooPosProductType.SIMPLE,
+            "variable" to WooPosProductModel.WooPosProductType.VARIABLE,
+            "grouped" to WooPosProductModel.WooPosProductType.GROUPED,
+            "external" to WooPosProductModel.WooPosProductType.EXTERNAL,
+            "variation" to WooPosProductModel.WooPosProductType.VARIATION,
+            "subscription" to WooPosProductModel.WooPosProductType.SUBSCRIPTION,
+            "variable-subscription" to WooPosProductModel.WooPosProductType.VARIABLE_SUBSCRIPTION,
+            "bundle" to WooPosProductModel.WooPosProductType.BUNDLE,
+            "composite" to WooPosProductModel.WooPosProductType.COMPOSITE,
+            "unknown" to WooPosProductModel.WooPosProductType.CUSTOM
         )
 
         testCases.forEach { (typeString, expectedType) ->
-            val entity = WCPosProductEntity(
+            val entity = WooPosProductEntity(
                 remoteId = LocalOrRemoteId.RemoteId(123),
                 type = typeString
             )
@@ -246,16 +246,16 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
     @Test
     fun `given different product statuses, when mapping to model, then statuses are parsed correctly`() {
         val testCases = mapOf(
-            "publish" to WooPosProductModelVersion2.WooPosProductStatus.PUBLISH,
-            "draft" to WooPosProductModelVersion2.WooPosProductStatus.DRAFT,
-            "pending" to WooPosProductModelVersion2.WooPosProductStatus.PENDING,
-            "private" to WooPosProductModelVersion2.WooPosProductStatus.PRIVATE,
-            "trash" to WooPosProductModelVersion2.WooPosProductStatus.TRASH,
-            "unknown" to WooPosProductModelVersion2.WooPosProductStatus.UNKNOWN
+            "publish" to WooPosProductModel.WooPosProductStatus.PUBLISH,
+            "draft" to WooPosProductModel.WooPosProductStatus.DRAFT,
+            "pending" to WooPosProductModel.WooPosProductStatus.PENDING,
+            "private" to WooPosProductModel.WooPosProductStatus.PRIVATE,
+            "trash" to WooPosProductModel.WooPosProductStatus.TRASH,
+            "unknown" to WooPosProductModel.WooPosProductStatus.UNKNOWN
         )
 
         testCases.forEach { (statusString, expectedStatus) ->
-            val entity = WCPosProductEntity(
+            val entity = WooPosProductEntity(
                 remoteId = LocalOrRemoteId.RemoteId(123),
                 status = statusString
             )
@@ -275,8 +275,8 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
             salePrice = BigDecimal("19.99"),
             isOnSale = true
         )
-        assertThat(pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.SalePricing::class.java)
-        val salePricing = pricing as WooPosProductModelVersion2.WooPosPricing.SalePricing
+        assertThat(pricing).isInstanceOf(WooPosProductModel.WooPosPricing.SalePricing::class.java)
+        val salePricing = pricing as WooPosProductModel.WooPosPricing.SalePricing
         assertThat(salePricing.regularPrice).isEqualTo(BigDecimal("29.99"))
         assertThat(salePricing.salePrice).isEqualTo(BigDecimal("19.99"))
 
@@ -287,8 +287,8 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
             salePrice = null,
             isOnSale = false
         )
-        assertThat(pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.RegularPricing::class.java)
-        val regularPricing = pricing as WooPosProductModelVersion2.WooPosPricing.RegularPricing
+        assertThat(pricing).isInstanceOf(WooPosProductModel.WooPosPricing.RegularPricing::class.java)
+        val regularPricing = pricing as WooPosProductModel.WooPosPricing.RegularPricing
         assertThat(regularPricing.price).isEqualTo(BigDecimal("25.99"))
 
         // Test no pricing
@@ -298,26 +298,26 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
             salePrice = null,
             isOnSale = false
         )
-        assertThat(pricing).isInstanceOf(WooPosProductModelVersion2.WooPosPricing.NoPricing::class.java)
+        assertThat(pricing).isInstanceOf(WooPosProductModel.WooPosPricing.NoPricing::class.java)
     }
 
     @Test
     fun `when mapProductType is called with type strings, then returns correct product types`() {
-        assertThat(mapper.mapProductType("simple")).isEqualTo(WooPosProductModelVersion2.WooPosProductType.SIMPLE)
-        assertThat(mapper.mapProductType("SIMPLE")).isEqualTo(WooPosProductModelVersion2.WooPosProductType.SIMPLE)
-        assertThat(mapper.mapProductType("variable")).isEqualTo(WooPosProductModelVersion2.WooPosProductType.VARIABLE)
-        assertThat(mapper.mapProductType("unknown")).isEqualTo(WooPosProductModelVersion2.WooPosProductType.CUSTOM)
+        assertThat(mapper.mapProductType("simple")).isEqualTo(WooPosProductModel.WooPosProductType.SIMPLE)
+        assertThat(mapper.mapProductType("SIMPLE")).isEqualTo(WooPosProductModel.WooPosProductType.SIMPLE)
+        assertThat(mapper.mapProductType("variable")).isEqualTo(WooPosProductModel.WooPosProductType.VARIABLE)
+        assertThat(mapper.mapProductType("unknown")).isEqualTo(WooPosProductModel.WooPosProductType.CUSTOM)
     }
 
     @Test
     fun `when mapProductStatus is called with status strings, then returns correct product statuses`() {
-        assertThat(mapper.mapProductStatus("publish")).isEqualTo(WooPosProductModelVersion2.WooPosProductStatus.PUBLISH)
-        assertThat(mapper.mapProductStatus("PUBLISH")).isEqualTo(WooPosProductModelVersion2.WooPosProductStatus.PUBLISH)
-        assertThat(mapper.mapProductStatus("draft")).isEqualTo(WooPosProductModelVersion2.WooPosProductStatus.DRAFT)
-        assertThat(mapper.mapProductStatus("unknown")).isEqualTo(WooPosProductModelVersion2.WooPosProductStatus.UNKNOWN)
+        assertThat(mapper.mapProductStatus("publish")).isEqualTo(WooPosProductModel.WooPosProductStatus.PUBLISH)
+        assertThat(mapper.mapProductStatus("PUBLISH")).isEqualTo(WooPosProductModel.WooPosProductStatus.PUBLISH)
+        assertThat(mapper.mapProductStatus("draft")).isEqualTo(WooPosProductModel.WooPosProductStatus.DRAFT)
+        assertThat(mapper.mapProductStatus("unknown")).isEqualTo(WooPosProductModel.WooPosProductStatus.UNKNOWN)
     }
 
-    private fun createCompleteEntity() = WCPosProductEntity(
+    private fun createCompleteEntity() = WooPosProductEntity(
         localSiteId = LocalOrRemoteId.LocalId(1),
         remoteId = LocalOrRemoteId.RemoteId(123),
         name = "Test Product",
@@ -342,7 +342,7 @@ class WooPosProductModelVersion2MapperTest : BaseUnitTest() {
         dateModified = "2023-01-01T00:00:00"
     )
 
-    private fun createMinimalEntity(id: Long) = WCPosProductEntity(
+    private fun createMinimalEntity(id: Long) = WooPosProductEntity(
         remoteId = LocalOrRemoteId.RemoteId(id)
     )
 }

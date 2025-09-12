@@ -1,5 +1,6 @@
 package com.woocommerce.android.support
 
+import com.woocommerce.android.applicationpasswords.IsAppPasswordsSupportedForJetpackSite
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.TicketCustomField
 import com.woocommerce.android.support.zendesk.TicketType
@@ -25,6 +26,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
@@ -46,7 +48,10 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private lateinit var requestProvider: RequestProvider
     private lateinit var envDataSource: ZendeskEnvironmentDataSource
     private lateinit var siteStore: SiteStore
-    private val ssrFetcher: WCSSRModelCachingFetcher = mock()
+    private val ssrFetcher: WCSSRModelCachingFetcher = mock {
+        onBlocking { load(any()) } doReturn WooResult(model = null)
+    }
+    private val isAppPasswordsSupportedForJetpackSite: IsAppPasswordsSupportedForJetpackSite = mock()
 
     @Before
     fun setup() {
@@ -693,6 +698,36 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             }
         }
 
+    @Test
+    fun `given jetpack site supports app passwords, when creating the request, then include corresponding tag`() =
+        testBlocking {
+            val site = SiteModel().apply {
+                origin = SiteModel.ORIGIN_WPCOM_REST
+                setIsJetpackConnected(true)
+            }
+            given(isAppPasswordsSupportedForJetpackSite.invoke(site)).willReturn(true)
+
+            val captor = argumentCaptor<CreateRequest>()
+            createSUT()
+
+            // when
+            sut.createRequest(
+                context = mock(),
+                origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                ticketType = TicketType.MobileApp,
+                selectedSite = site,
+                subject = "subject",
+                description = "description",
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
+            ).first()
+
+            // then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            val tags = captor.firstValue.tags
+            assertThat(tags).contains(ZendeskTags.jetpackSiteUsingAppPasswords)
+        }
+
     private fun createSUT() {
         sut = ZendeskTicketRepository(
             zendeskSettings = zendeskSettings,
@@ -700,7 +735,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             siteStore = siteStore,
             dispatchers = coroutinesTestRule.testDispatchers,
             mock(),
-            ssrFetcher
+            ssrFetcher,
+            isAppPasswordsSupportedForJetpackSite = isAppPasswordsSupportedForJetpackSite
         )
     }
 

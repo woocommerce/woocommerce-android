@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorScreen
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem.ProductListItem
 import com.woocommerce.android.ui.products.selector.SelectionState
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
@@ -16,7 +17,10 @@ import org.junit.Test
 @HiltAndroidTest
 class ProductSelectorScreenTest {
 
-    @get:Rule
+    @get:Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
     val rule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
