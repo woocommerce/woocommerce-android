@@ -346,7 +346,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(emptyArray()))
 
         // WHEN
-        val syncResult = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100).getOrThrow()
 
         // THEN
         verifyNoInteractions(posVariationsDao)
@@ -367,7 +367,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(networkError))
 
         // WHEN
-        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+        val result = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -384,7 +384,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(variations))
 
         // WHEN
-        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+        val result = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
@@ -406,7 +406,7 @@ class WooPosLocalCatalogStoreTest {
             .thenThrow(RuntimeException("Database error"))
 
         // WHEN
-        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+        val result = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -421,7 +421,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(variations))
 
         // WHEN
-        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+        val result = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
@@ -454,7 +454,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(variations))
 
         // WHEN
-        store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 200)
+        store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 200)
 
         // THEN
         verify(posProductRestClient).fetchVariations(testSite, validDateString, 1, 100)
