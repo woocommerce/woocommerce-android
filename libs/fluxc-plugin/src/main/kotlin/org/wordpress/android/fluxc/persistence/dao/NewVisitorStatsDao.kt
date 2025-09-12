@@ -28,7 +28,7 @@ internal abstract class NewVisitorStatsDao {
     ): WCNewVisitorStatsModel?
 
     @Transaction
-    open suspend fun insertOrUpdateStat(entity: WCNewVisitorStatsModel) {
+    open suspend fun replaceStat(entity: WCNewVisitorStatsModel) {
         deleteStatForSite(entity.localSiteId)
         insertStat(entity)
     }

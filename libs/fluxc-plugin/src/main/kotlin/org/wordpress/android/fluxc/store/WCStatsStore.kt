@@ -350,7 +350,7 @@ class WCStatsStore @Inject internal constructor(
                     it.causeOfChange = WCStatsAction.FETCH_NEW_VISITOR_STATS
                 }
             } else {
-                newVisitorStatsDao.insertOrUpdateStat(result.stats)
+                newVisitorStatsDao.replaceStat(result.stats)
                 OnWCStatsChanged(
                     payload.granularity,
                     result.stats.quantity,

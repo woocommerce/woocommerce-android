@@ -30,9 +30,9 @@ class NewVisitorStatsDaoTest {
     }
 
     @Test
-    fun `when insert stat, then get stat returns by quantity and date`() = runTest {
+    fun `when replace stat, then get stat returns by quantity and date`() = runTest {
         val stat = statDay1Site1
-        dao.insertOrUpdateStat(stat)
+        dao.replaceStat(stat)
 
         val retrieved = dao.getStat(
             stat.localSiteId,
@@ -45,11 +45,11 @@ class NewVisitorStatsDaoTest {
     }
 
     @Test
-    fun `when insert stat again for same site, then previous stat is deleted`() = runTest {
-        // Insert first stat
-        dao.insertOrUpdateStat(statDay1Site1)
-        // Now insert a second stat for same site (should clear stat rows for that site)
-        dao.insertOrUpdateStat(statDay2Site1)
+    fun `when replace stat again for same site, then previous stat is deleted`() = runTest {
+        // Replace first stat
+        dao.replaceStat(statDay1Site1)
+        // Now replace a second stat for same site (should clear stat rows for that site)
+        dao.replaceStat(statDay2Site1)
 
         // First one should not be found anymore
         val first = dao.getStat(
