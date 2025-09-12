@@ -30,44 +30,44 @@ class NewVisitorStatsDaoTest {
     }
 
     @Test
-    fun `when insert custom stat, then getCustomStat returns by quantity and date`() = runTest {
-        val custom = customDay1Site1
-        dao.insertOrUpdateStat(custom)
+    fun `when insert stat, then get stat returns by quantity and date`() = runTest {
+        val stat = statDay1Site1
+        dao.insertOrUpdateStat(stat)
 
-        val retrieved = dao.getCustomStat(
-            custom.localSiteId,
+        val retrieved = dao.getStat(
+            stat.localSiteId,
             StatsGranularity.DAYS,
-            custom.quantity,
-            custom.date
+            stat.quantity,
+            stat.date
         )
 
-        assertThat(retrieved).isEqualTo(custom)
+        assertThat(retrieved).isEqualTo(stat)
     }
 
     @Test
-    fun `when insert custom stat again for same site, then previous custom is deleted`() = runTest {
-        // Insert first custom
-        dao.insertOrUpdateStat(customDay1Site1)
-        // Now insert a second custom for same site (should clear previous custom rows for that site)
-        dao.insertOrUpdateStat(customDay2Site1)
+    fun `when insert stat again for same site, then previous stat is deleted`() = runTest {
+        // Insert first stat
+        dao.insertOrUpdateStat(statDay1Site1)
+        // Now insert a second stat for same site (should clear stat rows for that site)
+        dao.insertOrUpdateStat(statDay2Site1)
 
         // First one should not be found anymore
-        val first = dao.getCustomStat(
+        val first = dao.getStat(
             siteId1,
             StatsGranularity.DAYS,
-            customDay1Site1.quantity,
-            customDay1Site1.date
+            statDay1Site1.quantity,
+            statDay1Site1.date
         )
         // Second one should be present
-        val second = dao.getCustomStat(
+        val second = dao.getStat(
             siteId1,
             StatsGranularity.DAYS,
-            customDay2Site1.quantity,
-            customDay2Site1.date
+            statDay2Site1.quantity,
+            statDay2Site1.date
         )
 
         assertThat(first).isNull()
-        assertThat(second).isEqualTo(customDay2Site1)
+        assertThat(second).isEqualTo(statDay2Site1)
     }
 
     companion object {
@@ -77,7 +77,7 @@ class NewVisitorStatsDaoTest {
         private const val FIELDS = "[\"period\",\"visitors\"]"
         private const val DATA = "[[\"2019-08-01\",1]]"
 
-        private val customDay1Site1 = WCNewVisitorStatsModel(
+        private val statDay1Site1 = WCNewVisitorStatsModel(
             localSiteId = siteId1,
             granularity = StatsGranularity.DAYS.toString(),
             date = "2019-08-10",
@@ -87,7 +87,7 @@ class NewVisitorStatsDaoTest {
             fields = FIELDS,
             data = DATA
         )
-        private val customDay2Site1 = WCNewVisitorStatsModel(
+        private val statDay2Site1 = WCNewVisitorStatsModel(
             localSiteId = siteId1,
             granularity = StatsGranularity.DAYS.toString(),
             date = "2019-08-11",

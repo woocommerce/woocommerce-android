@@ -839,7 +839,7 @@ class WCStatsStoreTest {
         )
         assertTrue(defaultDayVisitorStats2.isNotEmpty())
 
-        // Test Scenario - 3: Generate custom stats for same site
+        // Test Scenario - 3: Generate stats for same site
         // Get visitor Stats of the same site and granularity and assert not null
         val customDayVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
             quantity = "1", endDate = "2019-08-06", startDate = "2019-08-06"
@@ -901,7 +901,7 @@ class WCStatsStoreTest {
         )
         assertTrue(customDayVisitorStats4.isEmpty())
 
-        // Test Scenario - 7: Generate custom stats for different site(8) with same granularity(WEEKS),
+        // Test Scenario - 7: Generate stats for different site(8) with same granularity(WEEKS),
         // same date(2019-01-01), same quantity(1)
         // Get visitor Stats and assert Not Null
         // Now if scenario 4 is run again it should assert NOT NULL, since the stats is for different sites
@@ -956,7 +956,7 @@ class WCStatsStoreTest {
         )
         assertTrue(defaultWeekVisitorStats2.isNotEmpty())
 
-        // Test Scenario - 3: Generate custom stats for same site
+        // Test Scenario - 3: Generate stats for same site
         // Get visitor Stats of the same site and granularity and assert not null
         val customWeekVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
             granularity = StatsGranularity.WEEKS.toString(), quantity = "1",
@@ -1020,7 +1020,7 @@ class WCStatsStoreTest {
         )
         assertTrue(customWeekVisitorStats4.isEmpty())
 
-        // Test Scenario - 7: Generate custom stats for different site(8) with same granularity(MONTHS),
+        // Test Scenario - 7: Generate stats for different site(8) with same granularity(MONTHS),
         // same date(2019-01-01), same quantity(1)
         // Get visitor Stats and assert Not Null
         // Now if scenario 4 is run again it should assert NOT NULL, since the stats is for different sites

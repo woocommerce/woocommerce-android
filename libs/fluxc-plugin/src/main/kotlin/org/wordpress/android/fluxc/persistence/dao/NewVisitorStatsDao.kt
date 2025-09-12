@@ -20,7 +20,7 @@ internal abstract class NewVisitorStatsDao {
         AND quantity = :quantity
         """
     )
-    abstract suspend fun getCustomStat(
+    abstract suspend fun getStat(
         siteId: LocalId,
         granularity: StatsGranularity,
         quantity: String?,

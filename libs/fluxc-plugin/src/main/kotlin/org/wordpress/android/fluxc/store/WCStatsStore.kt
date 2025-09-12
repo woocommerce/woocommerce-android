@@ -190,7 +190,7 @@ class WCStatsStore @Inject internal constructor(
         quantity: String? = null,
         date: String? = null
     ): Map<String, Int> {
-        val rawStats = newVisitorStatsDao.getCustomStat(site.localId(), granularity, quantity, date)
+        val rawStats = newVisitorStatsDao.getStat(site.localId(), granularity, quantity, date)
         rawStats?.let { visitorStatsModel ->
             val periodIndex = visitorStatsModel.getIndexForField(WCNewVisitorStatsModel.VisitorStatsField.PERIOD)
             val fieldIndex = visitorStatsModel.getIndexForField(WCNewVisitorStatsModel.VisitorStatsField.VISITORS)
@@ -215,7 +215,7 @@ class WCStatsStore @Inject internal constructor(
     ): Map<String, Int> {
         val quantity = getVisitorStatsQuantity(granularity, startDate, endDate)
         val date = DateUtils.getDateTimeForSite(site, DATE_FORMAT_DAY, endDate)
-        val rawStats = newVisitorStatsDao.getCustomStat(
+        val rawStats = newVisitorStatsDao.getStat(
             site.localId(), granularity, quantity.toString(), date
         )
         rawStats?.let { visitorStatsModel ->
