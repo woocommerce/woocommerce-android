@@ -39,10 +39,6 @@ class InitializationRule : TestRule {
                 )
                 try {
                     instrumentation.runOnMainSync {
-                        androidx.work.WorkManager.initialize(
-                            application,
-                            (application as androidx.work.Configuration.Provider).workManagerConfiguration
-                        )
                         entryPoint.initializer().init(application)
                     }
                     base.evaluate()
