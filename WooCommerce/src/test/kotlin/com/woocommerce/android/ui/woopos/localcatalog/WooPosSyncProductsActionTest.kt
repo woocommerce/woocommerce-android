@@ -19,7 +19,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import kotlin.Result
@@ -375,7 +375,7 @@ class WooPosSyncProductsActionTest {
     @Suppress("LongParameterList")
     private suspend fun mockFetchRecentlyModifiedProductsSuccess(
         offset: Int,
-        mockProducts: List<WCPosProductEntity>,
+        mockProducts: List<WooPosProductEntity>,
         totalPages: Int,
         nextOffset: Int,
         syncedCount: Int,
@@ -398,9 +398,9 @@ class WooPosSyncProductsActionTest {
             )
     }
 
-    private fun createMockProducts(start: Int = 1, end: Int): List<WCPosProductEntity> {
+    private fun createMockProducts(start: Int = 1, end: Int): List<WooPosProductEntity> {
         return (start..end).map {
-            WCPosProductEntity(
+            WooPosProductEntity(
                 remoteId = LocalOrRemoteId.RemoteId(it.toLong()),
                 name = "Product $it"
             )

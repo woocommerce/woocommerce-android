@@ -156,10 +156,10 @@ class WooPosLocalCatalogStore @Inject constructor(
             }
         }
 
-    suspend fun upsertProducts(products: List<WCPosProductEntity>): Result<Unit> =
+    suspend fun upsertProducts(products: List<WooPosProductEntity>): Result<Unit> =
         runCatching { posProductDao.upsertProducts(products) }
 
-    suspend fun upsertVariations(variations: List<WCPosVariationModel>): Result<Unit> =
+    suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
         runCatching { posVariationsDao.upsertVariations(variations) }
 
     /**

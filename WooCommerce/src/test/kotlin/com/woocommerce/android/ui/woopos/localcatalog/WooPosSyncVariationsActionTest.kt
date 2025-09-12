@@ -20,7 +20,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosVariationsFetchResult
 import kotlin.Result as KotlinResult
@@ -504,9 +504,9 @@ class WooPosSyncVariationsActionTest {
             )
     }
 
-    private fun createMockVariations(startId: Int, count: Int): List<WCPosVariationModel> {
+    private fun createMockVariations(startId: Int, count: Int): List<WooPosVariationEntity> {
         return (startId until startId + count).map { id ->
-            WCPosVariationModel(
+            WooPosVariationEntity(
                 localSiteId = LocalId(1),
                 remoteProductId = RemoteId(100),
                 remoteVariationId = RemoteId(id.toLong()),

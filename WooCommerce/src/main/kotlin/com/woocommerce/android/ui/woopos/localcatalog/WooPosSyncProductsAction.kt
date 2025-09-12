@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
@@ -66,13 +66,13 @@ class WooPosSyncProductsAction @Inject constructor(
         modifiedAfterGmt: String?,
         pageSize: Int,
         maxPages: Int
-    ): Pair<List<WCPosProductEntity>, ServerDate> {
+    ): Pair<List<WooPosProductEntity>, ServerDate> {
         var currentOffset = 0
         var pagesSynced = 0
         var totalPages = maxPages
         var firstPageServerDate: String? = null
 
-        val products = mutableListOf<WCPosProductEntity>()
+        val products = mutableListOf<WooPosProductEntity>()
 
         while (pagesSynced < totalPages) {
             val result = posLocalCatalogStore.fetchRecentlyModifiedProducts(
