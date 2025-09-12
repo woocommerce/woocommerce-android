@@ -346,7 +346,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(emptyArray()))
 
         // WHEN
-        val syncResult = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100).getOrThrow()
 
         // THEN
         verifyNoInteractions(posVariationsDao)
@@ -367,50 +367,13 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(networkError))
 
         // WHEN
-        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+        val result = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
         val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error.errorMessage).contains("Network error")
         verifyNoInteractions(posVariationsDao)
-    }
-
-    @Test
-    fun `given valid variation API response, when sync variations called, then variations saved to database`() = runTest {
-        // GIVEN
-        val variations = arrayOf(createTestVariationApiResponse())
-        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
-            .thenReturn(WooResult(variations))
-
-        // WHEN
-        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
-
-        // THEN
-        assertThat(result.isSuccess).isTrue()
-        result.getOrNull()?.let { syncResult ->
-            assertThat(syncResult.syncedCount).isEqualTo(1)
-            assertThat(syncResult.hasMore).isFalse()
-            assertThat(syncResult.nextPage).isEqualTo(1)
-        }
-        verify(posVariationsDao).upsertVariations(any())
-    }
-
-    @Test
-    fun `given database error during variation sync, when sync called, then database error returned`() = runTest {
-        // GIVEN
-        val variations = arrayOf(createTestVariationApiResponse())
-        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
-            .thenReturn(WooResult(variations))
-        whenever(posVariationsDao.upsertVariations(any()))
-            .thenThrow(RuntimeException("Database error"))
-
-        // WHEN
-        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(WooPosLocalCatalogError.DatabaseError::class.java)
     }
 
     @Test
@@ -421,7 +384,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(variations))
 
         // WHEN
-        val result = store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+        val result = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
@@ -454,7 +417,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(variations))
 
         // WHEN
-        store.syncRecentlyModifiedVariations(testSite, validDateString, 1, 200)
+        store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 200)
 
         // THEN
         verify(posProductRestClient).fetchVariations(testSite, validDateString, 1, 100)
