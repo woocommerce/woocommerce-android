@@ -147,7 +147,7 @@ class JetpackApplicationPasswordsErrorHandlerTests {
         // Then
         verify(listener).onJetpackSiteFlaggedAsUnsupported(
             JetpackSiteFlaggedAsUnsupported(
-                flow = JetpackSiteFlaggedAsUnsupported.Flow.APP_PASSWORD_GENERATION,
+                scenario = JetpackSiteFlaggedAsUnsupported.Scenario.APP_PASSWORD_GENERATION,
                 cause = JetpackSiteFlaggedAsUnsupported.Cause.MAJOR_ERROR,
                 apiErrorCode = "application_passwords_disabled_for_user",
                 httpStatusCode = 500,
@@ -168,7 +168,7 @@ class JetpackApplicationPasswordsErrorHandlerTests {
         // Then
         verify(listener).onJetpackSiteFlaggedAsUnsupported(
             JetpackSiteFlaggedAsUnsupported(
-                flow = JetpackSiteFlaggedAsUnsupported.Flow.API_REQUEST,
+                scenario = JetpackSiteFlaggedAsUnsupported.Scenario.API_REQUEST,
                 cause = JetpackSiteFlaggedAsUnsupported.Cause.MAJOR_ERROR,
                 apiErrorCode = "incorrect_password",
                 httpStatusCode = 401

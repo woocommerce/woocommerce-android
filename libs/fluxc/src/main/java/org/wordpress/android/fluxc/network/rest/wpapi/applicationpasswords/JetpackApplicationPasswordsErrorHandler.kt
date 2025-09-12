@@ -83,10 +83,10 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
         if (listener.isPresent) {
             listener.get().onJetpackSiteFlaggedAsUnsupported(
                 JetpackSiteFlaggedAsUnsupported(
-                    flow = if (isAppPasswordsGenerationError) {
-                        JetpackSiteFlaggedAsUnsupported.Flow.APP_PASSWORD_GENERATION
+                    scenario = if (isAppPasswordsGenerationError) {
+                        JetpackSiteFlaggedAsUnsupported.Scenario.APP_PASSWORD_GENERATION
                     } else {
-                        JetpackSiteFlaggedAsUnsupported.Flow.API_REQUEST
+                        JetpackSiteFlaggedAsUnsupported.Scenario.API_REQUEST
                     },
                     cause = cause,
                     apiErrorCode = apiErrorCode,
