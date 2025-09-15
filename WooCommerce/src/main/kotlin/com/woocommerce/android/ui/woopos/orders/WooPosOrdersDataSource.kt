@@ -28,7 +28,7 @@ class WooPosOrdersDataSource @Inject constructor(
     private val ordersCache: WooPosOrdersInMemoryCache
 ) {
     private val canLoadMore = AtomicBoolean(false)
-    private val offset = AtomicInteger(0)
+    private val page = AtomicInteger(0)
 
     val hasMorePages: Boolean
         get() = canLoadMore.get()
@@ -38,6 +38,7 @@ class WooPosOrdersDataSource @Inject constructor(
     }
 
     fun loadOrders(): Flow<LoadOrdersResult> = flow {
+        page.set(1)
         val cached = ordersCache.getAll()
         if (cached.isNotEmpty()) {
             emit(LoadOrdersResult.SuccessCache(cached))
@@ -46,7 +47,7 @@ class WooPosOrdersDataSource @Inject constructor(
         val result = restClient.fetchOrders(
             site = selectedSite.get(),
             count = POS_ORDERS_PAGE_SIZE,
-            page = 1,
+            page = page.get(),
             orderBy = OrderBy.DATE,
             sortOrder = OrderRestClient.SortOrder.DESCENDING,
             statusFilter = null,
@@ -58,6 +59,8 @@ class WooPosOrdersDataSource @Inject constructor(
         } else {
             val mapped = result.orders.toAppModels()
             ordersCache.setAll(mapped)
+            canLoadMore.set(result.canLoadMore)
+            page.addAndGet(1)
             emit(LoadOrdersResult.SuccessRemote(result.orders.toAppModels()))
         }
     }
@@ -66,7 +69,7 @@ class WooPosOrdersDataSource @Inject constructor(
         val result = restClient.fetchOrders(
             site = selectedSite.get(),
             count = POS_ORDERS_PAGE_SIZE,
-            page = offset.get(),
+            page = page.get(),
             orderBy = OrderBy.DATE,
             sortOrder = OrderRestClient.SortOrder.DESCENDING,
             statusFilter = null,
@@ -77,7 +80,7 @@ class WooPosOrdersDataSource @Inject constructor(
             return@withContext Result.failure(result.error.toThrowable())
         } else {
             canLoadMore.set(result.canLoadMore)
-            offset.addAndGet(POS_ORDERS_PAGE_SIZE)
+            page.addAndGet(1)
 
             val mapped = result.orders.toAppModels()
             return@withContext Result.success(mapped)
