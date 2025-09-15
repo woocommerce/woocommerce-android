@@ -101,7 +101,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 if (listener.isPresent) {
                     listener.get().onPasswordGenerationFailed(credentialsResult.error.toWPAPINetworkError())
                 }
-                return WPAPIResponse.Error(credentialsResult.error.toWPAPINetworkError())
+                return WPAPIResponse.Error(credentialsResult.error.toWPAPINetworkError().asGenerationFailure())
             }
 
             is ApplicationPasswordCreationResult.NotSupported -> {
@@ -109,7 +109,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 if (listener.isPresent) {
                     listener.get().onFeatureUnavailable(site, networkError)
                 }
-                return WPAPIResponse.Error(networkError)
+                return WPAPIResponse.Error(networkError.asGenerationFailure())
             }
         }
 
@@ -183,6 +183,19 @@ class ApplicationPasswordsNetwork @Inject constructor(
         clazz: Class<T>,
         params: Map<String, String>
     ) = executeGsonRequest(site, HttpMethod.DELETE, path, clazz, params)
+
+    private fun WPAPINetworkError.asGenerationFailure(): WPAPINetworkError {
+        val newErrorCode = "$APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX${errorCode.orEmpty()}"
+        return WPAPINetworkError(this, newErrorCode)
+    }
+
+    companion object {
+        /**
+         * A prefix that we use to allow differentiating errors caused by app passwords generation
+         * from other regular API errors.
+         */
+        const val APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX = "app_passwords_generation_failure:"
+    }
 }
 
 private fun BaseNetworkError.toWPAPINetworkError(): WPAPINetworkError {

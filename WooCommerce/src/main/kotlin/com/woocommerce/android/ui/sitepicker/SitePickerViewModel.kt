@@ -516,11 +516,13 @@ class SitePickerViewModel @Inject constructor(
                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
                 launch {
                     val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
+                    val siteVerificationModel = siteVerificationResult.model
                     when {
                         siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
-                        siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
+                        siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                             experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
-                            selectedSite.set(it.site)
+                            selectedSite.set(siteVerificationModel.siteModel)
+                            trackAppPasswordsSupport(siteVerificationModel.siteModel)
                             userEligibilityFetcher.fetchUserInfo().fold(
                                 onSuccess = {
                                     sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
@@ -542,6 +544,12 @@ class SitePickerViewModel @Inject constructor(
                     }
                 }
             }
+    }
+
+    private fun trackAppPasswordsSupport(site: SiteModel) {
+        if (site.isApplicationPasswordsSupported) {
+            analyticsTrackerWrapper.track(AnalyticsEvent.JETPACK_SITE_ELIGIBLE_FOR_APP_PASSWORD_SUPPORT)
+        }
     }
 
     private fun onSiteVerificationError(

@@ -250,6 +250,8 @@ class AnalyticsTracker private constructor(
         const val KEY_TIME_TAKEN = "time_taken"
         const val KEY_IS_EDITING = "is_editing"
         const val KEY_POS_ONBOARDING_STATE = "onboarding_state"
+        const val KEY_API_ERROR_CODE = "api_error_code"
+        const val KEY_HTTP_STATUS_CODE = "http_status_code"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_DEVICE_TYPE_REGULAR = "regular"
