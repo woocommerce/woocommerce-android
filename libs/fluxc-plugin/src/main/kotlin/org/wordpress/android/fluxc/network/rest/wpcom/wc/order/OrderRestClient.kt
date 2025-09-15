@@ -1283,6 +1283,7 @@ class OrderRestClient @Inject constructor(
             "fee_lines",
             "tax_lines",
             "id",
+            "customer_id",
             "line_items",
             "number",
             "payment_method",
