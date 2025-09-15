@@ -2,10 +2,10 @@ package com.woocommerce.android.wear.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.wear.compose.foundation.pager.rememberPagerState
 import com.google.android.horologist.compose.pager.PagerScreen
 import com.woocommerce.android.wear.ui.orders.list.OrdersListScreen
 import com.woocommerce.android.wear.ui.stats.StoreStatsScreen
