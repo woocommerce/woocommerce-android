@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.variations
 
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
@@ -36,8 +35,8 @@ class WooPosVariationsInDbDataSource @Inject constructor(
         return posLocalCatalogStore.observeVariationsForProduct(siteId, remoteProductId)
             .map { result ->
                 result.getOrNull()?.mapNotNull { variationModel ->
-                    // Convert WCPosVariationModel to ProductVariation by fetching from WCProductStore
-                    // This ensures we have all the required fields for ProductVariation
+                    // Convert WCPosVariationModel to WooPosVariation by fetching from WCProductStore
+                    // This ensures we have all the required fields for WooPosVariation
                     val fullVariation = productStore.getVariationByRemoteId(
                         siteModel,
                         productId,
