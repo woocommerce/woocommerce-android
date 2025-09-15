@@ -19,7 +19,8 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
     }
 
     private fun isCurrentSiteCIAB(): Boolean {
-        TODO()
+        val site = selectedSite.getOrNull() ?: return false
+        return site.isGardenSite && site.gardenName == CIAB_GARDEN_NAME
     }
 
     companion object Companion {
