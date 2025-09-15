@@ -67,6 +67,8 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.products.MutableMultipleSelectionPredicate
@@ -76,9 +78,9 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
@@ -111,6 +113,9 @@ class OrderListFragment :
 
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
+
+    @Inject
+    internal lateinit var orderFiltersRepository: OrderFiltersRepository
 
     private var tracker: SelectionTracker<Long>? = null
     private var actionMode: ActionMode? = null
@@ -904,6 +909,9 @@ class OrderListFragment :
                 openSpecificOrder(it, true)
             }
         }
+        handleResult<Long>("customer_filter") { customerId ->
+            applyCustomerFilter(customerId)
+        }
         handleDialogResult<OrderStatusUpdateSource>(
             key = OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT,
             entryId = R.id.orders,
@@ -913,6 +921,15 @@ class OrderListFragment :
                 newStatus = Order.Status.fromValue(it.newStatus)
             )
         }
+    }
+
+    fun applyCustomerFilter(customerId: Long) {
+        searchQuery = ""
+        orderFiltersRepository.setSelectedFilters(
+            OrderListFilterCategory.CUSTOMER,
+            listOf(customerId.toString())
+        )
+        viewModel.loadOrders()
     }
 
     private fun showOrderFilters() {

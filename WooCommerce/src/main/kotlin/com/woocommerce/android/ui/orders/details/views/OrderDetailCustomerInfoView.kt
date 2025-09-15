@@ -191,21 +191,22 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     private fun showViewOrdersButton(order: Order) {
-        val hasCustomerIdentifier = order.customer?.customerId != null && order.customer.customerId > 0 ||
-            !order.customer?.email.isNullOrEmpty() ||
-            order.billingAddress.email.isNotEmpty()
+        val hasCustomerId = order.customer?.customerId != null && order.customer.customerId > 0
 
-        if (hasCustomerIdentifier) {
+        if (hasCustomerId) {
             binding.customerInfoViewOrdersBtn.visibility = VISIBLE
             binding.customerInfoViewOrdersBtn.setOnClickListener {
-                // TODO: Implement view customer orders functionality
-                // Priority: 1. customerId, 2. customer.email, 3. billingAddress.email
-                // On tablets: filter the left pane order list
-                // On phones: navigate to filtered order list
+                viewCustomerOrdersListener?.invoke(order)
             }
         } else {
             binding.customerInfoViewOrdersBtn.visibility = GONE
         }
+    }
+
+    private var viewCustomerOrdersListener: ((Order) -> Unit)? = null
+
+    fun setOnViewCustomerOrdersListener(listener: (Order) -> Unit) {
+        viewCustomerOrdersListener = listener
     }
 
     private fun showBillingAddressPhoneInfo(order: Order) {

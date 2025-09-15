@@ -251,6 +251,10 @@ class OrderDetailFragment :
             viewModel.onTrashOrderClicked()
         }
 
+        binding.orderDetailCustomerInfo.setOnViewCustomerOrdersListener { order ->
+            onViewCustomerOrdersClicked(order)
+        }
+
         ViewCompat.setTransitionName(
             binding.scrollView,
             getString(R.string.order_card_detail_transition_name)
@@ -880,6 +884,21 @@ class OrderDetailFragment :
         ).also {
             it.addCallback(dismissCallback)
             it.show()
+        }
+    }
+
+    private fun onViewCustomerOrdersClicked(order: Order) {
+        val customerId = order.customer?.customerId?.takeIf { it > 0 } ?: return
+
+        if (requireContext().isTwoPanesShouldBeUsed) {
+            val orderListFragment = parentFragment?.parentFragment as? OrderListFragment
+            orderListFragment?.applyCustomerFilter(customerId)
+        } else {
+            findNavController().popBackStack(R.id.orders, false)
+            findNavController().currentBackStackEntry?.savedStateHandle?.set(
+                "customer_filter",
+                customerId
+            )
         }
     }
 
