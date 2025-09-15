@@ -9,13 +9,16 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.NotificationAction
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.OnApplicationPasswordDeleted
 import org.wordpress.android.fluxc.store.account.CloseAccountStore
 import kotlin.test.Test
 
@@ -32,6 +35,9 @@ class AccountRepositoryTest : BaseUnitTest() {
         registerActionHandler(AccountAction.SIGN_OUT) {
             emitChange(AccountStore.OnAccountChanged())
         }
+        registerActionHandler(NotificationAction.UNREGISTER_DEVICE) {
+            emitChange(NotificationStore.OnDeviceUnregistered())
+        }
     }
     private val appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
 
@@ -44,7 +50,8 @@ class AccountRepositoryTest : BaseUnitTest() {
         zendeskSettings = zendeskSettings,
         prefs = appPrefs,
         appCoroutineScope = appCoroutineScope,
-        siteVisibilityDataStore = visibleWooSitesDataStore
+        siteVisibilityDataStore = visibleWooSitesDataStore,
+        dispatchers = coroutinesTestRule.testDispatchers
     )
 
     @Test
@@ -60,4 +67,22 @@ class AccountRepositoryTest : BaseUnitTest() {
 
         assertThat(deviceUnregistered).isTrue()
     }
+
+    @Test
+    fun `given signed in using wordpress_com, when logout is called, then remove app passwords of user sites`() =
+        testBlocking {
+            given(accountStore.hasAccessToken()).willReturn(true)
+            val sites = List(3) { SiteModel().apply { siteId = it.toLong() } }
+            given(siteStore.sitesAccessedViaWPComRest).willReturn(sites)
+            val sitesDeleted = mutableListOf<SiteModel>()
+            given(siteStore.deleteApplicationPassword(any())).willAnswer {
+                val site = it.getArgument(0) as SiteModel
+                sitesDeleted.add(site)
+                return@willAnswer OnApplicationPasswordDeleted(site)
+            }
+
+            repository.logout()
+
+            assertThat(sitesDeleted).containsExactlyElementsOf(sites)
+        }
 }

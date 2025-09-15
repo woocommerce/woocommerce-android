@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsListener
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackSiteFlaggedAsUnsupported
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -63,6 +64,18 @@ class ApplicationPasswordsNotifier @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
             properties = mapOf(AnalyticsTracker.KEY_SCENARIO to scenario.name.lowercase())
+        )
+    }
+
+    override fun onJetpackSiteFlaggedAsUnsupported(event: JetpackSiteFlaggedAsUnsupported) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.JETPACK_SITE_FLAGGED_UNSUPPORTED_FOR_APP_PASSWORDS,
+            properties = mapOf(
+                AnalyticsTracker.KEY_FLOW to event.scenario.name.lowercase(),
+                AnalyticsTracker.KEY_CAUSE to event.cause.name.lowercase(),
+                AnalyticsTracker.KEY_API_ERROR_CODE to event.apiErrorCode,
+                AnalyticsTracker.KEY_HTTP_STATUS_CODE to event.httpStatusCode,
+            )
         )
     }
 

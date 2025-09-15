@@ -5,4 +5,5 @@ enum class RemoteFeatureFlag(val remoteKey: String) {
     LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES("woo_notification_1d_before_free_trial_expires"),
     LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES("woo_notification_1d_after_free_trial_expires"),
     WOO_POS("woo_pos"),
+    APP_PASSWORDS_FOR_JETPACK_SITES("woo_app_passwords_for_jetpack_sites")
 }

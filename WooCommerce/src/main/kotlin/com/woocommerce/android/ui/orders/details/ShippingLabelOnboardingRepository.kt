@@ -4,7 +4,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 
 class ShippingLabelOnboardingRepository @Inject constructor(
@@ -52,11 +51,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
                 it.isOperational &&
                     pluginVersion.semverCompareTo(SUPPORTED_WC_SHIPPING_VERSION) >= 0
             }?.let {
-                return if (FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled()) {
-                    ShippingLabelSupport.WC_SHIPPING_SUPPORTED
-                } else {
-                    ShippingLabelSupport.WCS_SUPPORTED
-                }
+                return ShippingLabelSupport.WC_SHIPPING_SUPPORTED
             }
 
         orderDetailRepository.getWooServicesPluginInfo()

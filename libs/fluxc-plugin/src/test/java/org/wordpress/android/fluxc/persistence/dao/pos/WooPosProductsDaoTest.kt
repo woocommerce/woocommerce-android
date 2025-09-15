@@ -12,7 +12,7 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -265,7 +265,7 @@ class WooPosProductsDaoTest {
         attributes: String = "",
         images: String = "",
         dateModified: String = "2024-01-01T10:00:00Z"
-    ) = WCPosProductEntity(
+    ) = WooPosProductEntity(
         localSiteId = LocalId(siteId),
         remoteId = RemoteId(remoteId),
         name = name,

@@ -120,7 +120,15 @@ fun WooShippingCarrierPackageScreen(
             enabled = isAddPackageEnabled,
             onClick = onAddPackageClick
         ) {
-            Text(stringResource(id = R.string.woo_shipping_labels_package_creation_add_package))
+            Text(
+                stringResource(
+                    id = if (isAddPackageEnabled) {
+                        R.string.woo_shipping_labels_package_creation_add_package
+                    } else {
+                        R.string.shipping_label_select_package_button
+                    }
+                )
+            )
         }
     }
 }

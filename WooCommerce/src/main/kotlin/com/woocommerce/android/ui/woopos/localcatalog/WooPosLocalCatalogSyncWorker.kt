@@ -7,17 +7,22 @@ import androidx.work.WorkerParameters
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-class WooPosLocalCatalogSyncWorker @AssistedInject constructor(
+class WooPosLocalCatalogSyncWorker
+@AssistedInject
+@Suppress("LongParameterList")
+constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val accountRepository: AccountRepository,
     private val selectedSite: SelectedSite,
-    private val syncRepository: PosLocalCatalogSyncRepository,
+    private val syncRepository: WooPosLocalCatalogSyncRepository,
     private val logger: WooPosLogWrapper,
+    private val featureFlagM1Enabled: WooPosLocalCatalogM1Enabled,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -26,6 +31,10 @@ class WooPosLocalCatalogSyncWorker @AssistedInject constructor(
 
     @Suppress("ReturnCount")
     override suspend fun doWork(): Result {
+        if (!featureFlagM1Enabled.invoke()) {
+            logger.d("Feature flag disabled, skipping local catalog sync")
+            return Result.failure()
+        }
         if (!accountRepository.isUserLoggedIn()) {
             logger.d("User not logged in, skipping local catalog sync")
             return Result.failure()

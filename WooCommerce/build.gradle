@@ -19,7 +19,9 @@ fladle {
     variant = "vanillaDebug"
     serviceAccountCredentials = rootProject.file(".configure-files/firebase.secrets.json")
     testTargets = [
-            "notPackage com.woocommerce.android.e2e.tests.screenshot"
+            "notPackage com.woocommerce.android.e2e.tests.screenshot",
+            "notClass com.woocommerce.android.e2e.tests.ui.OrdersRealAPI",
+            "notClass com.woocommerce.android.e2e.tests.ui.ProductsRealAPI"
     ]
     devices = [
             ["model": "MediumPhone.arm", "version": "35"]
@@ -292,10 +294,7 @@ dependencies {
     implementation(libs.bumptech.glide.main)
     ksp(libs.bumptech.glide.compiler)
     implementation(libs.bumptech.glide.volley.integration)
-    implementation libs.avif
-    implementation(libs.bumptech.glide.avif.integration) {
-        exclude group: 'org.aomedia.avif.android', module: 'avif'
-    }
+    implementation(libs.bumptech.glide.avif.integration)
     implementation(libs.google.play.app.update)
     implementation(libs.google.play.review)
 

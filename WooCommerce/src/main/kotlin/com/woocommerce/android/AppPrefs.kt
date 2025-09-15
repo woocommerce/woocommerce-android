@@ -134,7 +134,8 @@ object AppPrefs {
         CUSTOM_FIELDS_TOP_BANNER_DISMISSED,
         BLAZE_CAMPAIGN_SELECTED_OBJECTIVE,
         BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED,
-        IS_SITE_WPCOM_SUSPENDED
+        IS_SITE_WPCOM_SUSPENDED,
+        JETPACK_APP_PASSWORDS_ENABLED
     }
 
     /**
@@ -300,6 +301,10 @@ object AppPrefs {
     var gatewayMigrated: Boolean
         get() = getBoolean(DeletablePrefKey.GATEWAY_MIGRATED, false)
         set(value) = setBoolean(DeletablePrefKey.GATEWAY_MIGRATED, value)
+
+    var jetpackAppPasswordsEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.JETPACK_APP_PASSWORDS_ENABLED, true)
+        set(value) = setBoolean(DeletablePrefKey.JETPACK_APP_PASSWORDS_ENABLED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

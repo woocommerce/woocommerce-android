@@ -4,6 +4,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,8 @@ import javax.inject.Singleton
 class WooPosVariationsInDbDataSource @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
-    private val productStore: WCProductStore
+    private val productStore: WCProductStore,
+    private val mapper: WooPosVariationMapper
 ) : WooPosVariationsDataSourceInterface {
 
     private suspend fun getVariationsFromDatabase(productId: Long): List<WooPosVariation> {
@@ -44,7 +46,7 @@ class WooPosVariationsInDbDataSource @Inject constructor(
 
                     // If the variation exists in the product store, convert to WooPosVariation
                     // Otherwise, skip this variation (it may have been deleted)
-                    fullVariation?.toWooPosVariation()
+                    fullVariation?.toWooPosVariation(mapper)
                 } ?: emptyList()
             }
             .firstOrNull() ?: emptyList()

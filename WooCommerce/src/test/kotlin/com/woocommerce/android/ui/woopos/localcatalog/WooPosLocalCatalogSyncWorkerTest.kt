@@ -6,6 +6,7 @@ import androidx.work.WorkerParameters
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -25,9 +26,10 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var workerParams: WorkerParameters = mock()
     private var accountRepository: AccountRepository = mock()
     private var selectedSite: SelectedSite = mock()
-    private var syncRepository: PosLocalCatalogSyncRepository = mock()
+    private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
+    private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
 
     private val successResponse = PosLocalCatalogSyncResult.Success(
         productsSynced = 10,
@@ -41,7 +43,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     )
 
     @Before
-    fun setup() {
+    fun setup() = testBlocking {
         site = SiteModel().apply {
             id = 1
             siteId = 123L
@@ -50,6 +52,9 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
+        whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
+        whenever(syncRepository.syncLocalCatalogFull(site))
+            .thenReturn(successResponse)
     }
 
     private fun createWorker(): WooPosLocalCatalogSyncWorker {
@@ -60,17 +65,13 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             selectedSite = selectedSite,
             syncRepository = syncRepository,
             logger = logger,
+            featureFlagM1Enabled = featureFlagM1Enabled,
         )
     }
 
     @Test
     fun `given user logged in and site available, when sync succeeds, then returns success`() = testBlocking {
         // GIVEN
-        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-        whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(syncRepository.syncLocalCatalogFull(site))
-            .thenReturn(successResponse)
-
         val worker = createWorker()
 
         // WHEN
@@ -78,6 +79,20 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
+    }
+
+    @Test
+    fun `when feature flag disabled, then returns failure`() = testBlocking {
+        // GIVEN
+        whenever(featureFlagM1Enabled.invoke()).thenReturn(false)
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
     }
 
     @Test
@@ -110,7 +125,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when sync fails with catalog too large, then returns failure without retry`() = testBlocking {
+    fun `when sync fails with catalog too large, then returns failure without failure`() = testBlocking {
         // GIVEN
         whenever(syncRepository.syncLocalCatalogFull(site))
             .thenReturn(catalogTooLargeResponse)

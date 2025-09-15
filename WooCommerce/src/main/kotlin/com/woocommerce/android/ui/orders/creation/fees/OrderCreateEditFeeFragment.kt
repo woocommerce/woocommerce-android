@@ -26,9 +26,9 @@ import com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeViewMod
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.internal.format
 import org.wordpress.android.util.ActivityUtils
 import java.math.BigDecimal
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,7 +38,8 @@ class OrderCreateEditFeeFragment :
     private val sharedViewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val editFeeViewModel by viewModels<OrderCreateEditFeeViewModel>()
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     private var doneMenuItem: MenuItem? = null
 
@@ -91,7 +92,8 @@ class OrderCreateEditFeeFragment :
     private fun styleCalculatedFee(feeAmount: BigDecimal): SpannableString {
         val formattedFeeAmount = currencyFormatter.formatCurrency(amount = feeAmount)
 
-        val text = format(
+        val text = String.format(
+            Locale.US,
             getString(R.string.order_creation_fee_percentage_calculated_amount),
             formattedFeeAmount
         )
