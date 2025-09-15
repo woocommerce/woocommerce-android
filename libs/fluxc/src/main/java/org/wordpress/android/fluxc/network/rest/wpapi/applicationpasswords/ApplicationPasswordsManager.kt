@@ -18,8 +18,6 @@ import javax.inject.Singleton
 private const val UNAUTHORIZED = 401
 private const val CONFLICT = 409
 private const val NOT_FOUND = 404
-private const val APPLICATION_PASSWORDS_DISABLED_ERROR_CODE = "application_passwords_disabled"
-private const val APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE = "application_passwords_disabled_for_user"
 
 @Singleton
 internal class ApplicationPasswordsManager @Inject constructor(
@@ -276,4 +274,9 @@ internal class ApplicationPasswordsManager @Inject constructor(
                 )
             )
         }
+
+    companion object {
+        const val APPLICATION_PASSWORDS_DISABLED_ERROR_CODE = "application_passwords_disabled"
+        const val APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE = "application_passwords_disabled_for_user"
+    }
 }

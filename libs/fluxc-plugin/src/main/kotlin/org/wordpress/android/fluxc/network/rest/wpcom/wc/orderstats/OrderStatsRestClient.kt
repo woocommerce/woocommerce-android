@@ -201,19 +201,16 @@ class OrderStatsRestClient @Inject constructor(
         return when (response) {
             is WPComGsonRequestBuilder.Response.Success -> {
                 val statsData = response.data
-                val model = WCNewVisitorStatsModel().apply {
-                    this.localSiteId = site.id
-                    this.granularity = granularity.toString()
-                    this.fields = statsData.fields.toString()
-                    this.data = statsData.data.toString()
-                    this.quantity = quantity.toString()
-                    this.date = date
-                    endDate?.let { this.endDate = it }
-                    startDate?.let {
-                        this.startDate = startDate
-                        this.isCustomField = true
-                    }
-                }
+                val model = WCNewVisitorStatsModel(
+                    localSiteId = site.localId(),
+                    granularity = granularity.toString(),
+                    fields = statsData.fields.toString(),
+                    data = statsData.data.toString(),
+                    quantity = quantity.toString(),
+                    date = date,
+                    endDate = endDate ?: "",
+                    startDate = startDate ?: "",
+                )
 
                 FetchNewVisitorStatsResponsePayload(site, granularity, model)
             }

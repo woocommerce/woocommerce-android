@@ -1,10 +1,8 @@
-package org.wordpress.android.fluxc.wc.stats
+package org.wordpress.android.fluxc.store
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
-import junit.framework.TestCase.assertFalse
-import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
@@ -24,13 +22,11 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.WCVisitorStatsSummary
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStatsApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStatsRestClient
@@ -38,27 +34,27 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStats
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.VisitorStatsSummaryApiResponse
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WCVisitorStatsSqlUtils
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
-import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsResponsePayload
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.utils.DateUtils
 import org.wordpress.android.fluxc.utils.SiteUtils.getCurrentDateTimeForSite
+import org.wordpress.android.fluxc.wc.stats.WCStatsTestUtils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.hamcrest.CoreMatchers.`is` as isEqual
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "UnitTestNamingRule")
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCStatsStoreTest {
-
     private val context = ApplicationProvider.getApplicationContext<Application>()
 
     @Rule
@@ -72,12 +68,9 @@ class WCStatsStoreTest {
     @Before
     fun setUp() {
         val config = SingleStoreWellSqlConfigForTests(
-                context,
-                listOf(
-                    WCRevenueStatsModel::class.java,
-                    WCNewVisitorStatsModel::class.java
-                ),
-                WellSqlConfig.ADDON_WOOCOMMERCE
+            context,
+            listOf(WCRevenueStatsModel::class.java),
+            WellSqlConfig.Companion.ADDON_WOOCOMMERCE
         )
         WellSql.init(config)
         config.reset()
@@ -87,7 +80,8 @@ class WCStatsStoreTest {
             wcOrderStatsClient = mockOrderStatsRestClient,
             bundleStatsRestClient = mockBundleStatsRestClient,
             coroutineEngine = initCoroutineEngine(),
-            visitorSummaryStatsDao = databaseRule.db.visitorSummaryStatsDao
+            visitorSummaryStatsDao = databaseRule.db.visitorSummaryStatsDao,
+            newVisitorStatsDao = databaseRule.db.newVisitorStatsDao,
         )
     }
 
@@ -377,9 +371,20 @@ class WCStatsStoreTest {
     }
 
     @Test
-    fun testFetchCurrentDayRevenueStatsDate() = runBlocking {
+    @Suppress("LongMethod")
+    fun testFetchCurrentDayRevenueStatsDate() = test {
         val plus12SiteDate = SiteModel().apply { timezone = "12" }.let {
-            whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any())
+            whenever(
+                mockOrderStatsRestClient.fetchRevenueStats(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
             ).thenReturn(FetchRevenueStatsResponsePayload(it, StatsGranularity.DAYS, WCRevenueStatsModel()))
             val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
             val endDate = DateUtils.getEndDateForSite(it)
@@ -390,8 +395,16 @@ class WCStatsStoreTest {
 
             // The date value passed to the network client should match the current date on the site
             val dateArgument = argumentCaptor<String>()
-            verify(mockOrderStatsRestClient).fetchRevenueStats(any(), any(),
-                    dateArgument.capture(), any(), any(), any(), any(), any())
+            verify(mockOrderStatsRestClient).fetchRevenueStats(
+                any(),
+                any(),
+                dateArgument.capture(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
             return@let siteDate
@@ -400,7 +413,17 @@ class WCStatsStoreTest {
         reset(mockOrderStatsRestClient)
 
         val minus12SiteDate = SiteModel().apply { timezone = "-12" }.let {
-            whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any())
+            whenever(
+                mockOrderStatsRestClient.fetchRevenueStats(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
             ).thenReturn(FetchRevenueStatsResponsePayload(it, StatsGranularity.DAYS, WCRevenueStatsModel()))
             val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
             val endDate = DateUtils.getEndDateForSite(it)
@@ -411,8 +434,16 @@ class WCStatsStoreTest {
 
             // The date value passed to the network client should match the current date on the site
             val dateArgument = argumentCaptor<String>()
-            verify(mockOrderStatsRestClient).fetchRevenueStats(any(), any(), dateArgument.capture(), any(),
-                    any(), any(), any(), any())
+            verify(mockOrderStatsRestClient).fetchRevenueStats(
+                any(),
+                any(),
+                dateArgument.capture(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
             return@let siteDate
@@ -426,9 +457,20 @@ class WCStatsStoreTest {
     }
 
     @Test
-    fun testFetchCurrentDayRevenueStatsDateSpecificEndDate() = runBlocking {
+    @Suppress("LongMethod")
+    fun testFetchCurrentDayRevenueStatsDateSpecificEndDate() = test {
         val plus12SiteDate = SiteModel().apply { timezone = "12" }.let {
-            whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any())
+            whenever(
+                mockOrderStatsRestClient.fetchRevenueStats(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
             ).thenReturn(FetchRevenueStatsResponsePayload(it, StatsGranularity.DAYS, WCRevenueStatsModel()))
             val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
             val endDate = DateUtils.formatDate("yyyy-MM-dd", Date())
@@ -440,8 +482,16 @@ class WCStatsStoreTest {
 
             // The date value passed to the network client should match the current date on the site
             val dateArgument = argumentCaptor<String>()
-            verify(mockOrderStatsRestClient).fetchRevenueStats(any(), any(),
-                    dateArgument.capture(), any(), any(), any(), any(), any())
+            verify(mockOrderStatsRestClient).fetchRevenueStats(
+                any(),
+                any(),
+                dateArgument.capture(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
             return@let siteDate
@@ -450,7 +500,17 @@ class WCStatsStoreTest {
         reset(mockOrderStatsRestClient)
 
         val minus12SiteDate = SiteModel().apply { timezone = "-12" }.let {
-            whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any())
+            whenever(
+                mockOrderStatsRestClient.fetchRevenueStats(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
             ).thenReturn(FetchRevenueStatsResponsePayload(it, StatsGranularity.DAYS, WCRevenueStatsModel()))
             val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
             val endDate = DateUtils.getEndDateForSite(it)
@@ -461,8 +521,16 @@ class WCStatsStoreTest {
 
             // The date value passed to the network client should match the current date on the site
             val dateArgument = argumentCaptor<String>()
-            verify(mockOrderStatsRestClient).fetchRevenueStats(any(), any(), dateArgument.capture(), any(),
-                    any(), any(), any(), any())
+            verify(mockOrderStatsRestClient).fetchRevenueStats(
+                any(),
+                any(),
+                dateArgument.capture(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
             return@let siteDate
@@ -477,7 +545,7 @@ class WCStatsStoreTest {
 
     @Test
     @Suppress("LongMethod")
-    fun testGetRevenueAndOrderStatsForSite() = runBlocking {
+    fun testGetRevenueAndOrderStatsForSite() = test {
         // revenue stats model for current day
         val currentDayStatsModel = WCStatsTestUtils.generateSampleRevenueStatsModel()
         val site = SiteModel().apply { id = currentDayStatsModel.localSiteId }
@@ -486,31 +554,41 @@ class WCStatsStoreTest {
                 Locale.getDefault()
             )
         )
-        whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(
-                        FetchRevenueStatsResponsePayload(
-                                site,
-                                currentDayGranularity,
-                                currentDayStatsModel
-                        )
-                )
+        whenever(
+            mockOrderStatsRestClient.fetchRevenueStats(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(
+            FetchRevenueStatsResponsePayload(
+                site,
+                currentDayGranularity,
+                currentDayStatsModel
+            )
+        )
         wcStatsStore.fetchRevenueStats(
-                FetchRevenueStatsPayload(
-                        site,
-                        currentDayGranularity,
-                        currentDayStatsModel.startDate,
-                        currentDayStatsModel.endDate
-                )
+            FetchRevenueStatsPayload(
+                site,
+                currentDayGranularity,
+                currentDayStatsModel.startDate,
+                currentDayStatsModel.endDate
+            )
         )
 
         // verify that the revenue stats & order count is not empty
         val currentDayRevenueStats = wcStatsStore.getGrossRevenueStats(
-                site, StatsGranularity.valueOf(currentDayStatsModel.interval.uppercase(Locale.getDefault())),
-                currentDayStatsModel.startDate, currentDayStatsModel.endDate
+            site, StatsGranularity.valueOf(currentDayStatsModel.interval.uppercase(Locale.getDefault())),
+            currentDayStatsModel.startDate, currentDayStatsModel.endDate
         )
         val currentDayOrderStats = wcStatsStore.getOrderCountStats(
-                site, StatsGranularity.valueOf(currentDayStatsModel.interval.uppercase(Locale.getDefault())),
-                currentDayStatsModel.startDate, currentDayStatsModel.endDate
+            site, StatsGranularity.valueOf(currentDayStatsModel.interval.uppercase(Locale.getDefault())),
+            currentDayStatsModel.startDate, currentDayStatsModel.endDate
         )
 
         assertTrue(currentDayRevenueStats.isNotEmpty())
@@ -518,36 +596,46 @@ class WCStatsStoreTest {
 
         // revenue stats model for this week
         val currentWeekStatsModel =
-                WCStatsTestUtils.generateSampleRevenueStatsModel(
-                        interval = StatsGranularity.WEEKS.toString(), startDate = "2019-07-07", endDate = "2019-07-09"
-                )
-        val curretnWeekGranularity = StatsGranularity.valueOf(
+            WCStatsTestUtils.generateSampleRevenueStatsModel(
+                interval = StatsGranularity.WEEKS.toString(), startDate = "2019-07-07", endDate = "2019-07-09"
+            )
+        val currentWeekGranularity = StatsGranularity.valueOf(
             currentWeekStatsModel.interval.uppercase(
                 Locale.getDefault()
             )
         )
         val currentWeekPayload = FetchRevenueStatsResponsePayload(
-                site, curretnWeekGranularity, currentWeekStatsModel
+            site, currentWeekGranularity, currentWeekStatsModel
         )
-        whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(currentWeekPayload)
+        whenever(
+            mockOrderStatsRestClient.fetchRevenueStats(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(currentWeekPayload)
         wcStatsStore.fetchRevenueStats(
-                FetchRevenueStatsPayload(
-                        site,
-                        curretnWeekGranularity,
-                        currentWeekStatsModel.startDate,
-                        currentWeekStatsModel.endDate
-                )
+            FetchRevenueStatsPayload(
+                site,
+                currentWeekGranularity,
+                currentWeekStatsModel.startDate,
+                currentWeekStatsModel.endDate
+            )
         )
 
         // verify that the revenue stats & order count is not empty
         val currentWeekRevenueStats = wcStatsStore.getGrossRevenueStats(
-                site, StatsGranularity.valueOf(currentWeekStatsModel.interval.uppercase(Locale.getDefault())),
-                currentWeekStatsModel.startDate, currentWeekStatsModel.endDate
+            site, StatsGranularity.valueOf(currentWeekStatsModel.interval.uppercase(Locale.getDefault())),
+            currentWeekStatsModel.startDate, currentWeekStatsModel.endDate
         )
         val currentWeekOrderStats = wcStatsStore.getOrderCountStats(
-                site, StatsGranularity.valueOf(currentWeekStatsModel.interval.uppercase(Locale.getDefault())),
-                currentWeekStatsModel.startDate, currentWeekStatsModel.endDate
+            site, StatsGranularity.valueOf(currentWeekStatsModel.interval.uppercase(Locale.getDefault())),
+            currentWeekStatsModel.startDate, currentWeekStatsModel.endDate
         )
 
         assertTrue(currentWeekRevenueStats.isNotEmpty())
@@ -555,36 +643,46 @@ class WCStatsStoreTest {
 
         // revenue stats model for this month
         val currentMonthStatsModel =
-                WCStatsTestUtils.generateSampleRevenueStatsModel(
-                        interval = StatsGranularity.MONTHS.toString(), startDate = "2019-07-01", endDate = "2019-07-09"
-                )
+            WCStatsTestUtils.generateSampleRevenueStatsModel(
+                interval = StatsGranularity.MONTHS.toString(), startDate = "2019-07-01", endDate = "2019-07-09"
+            )
         val currentMonthGranularity = StatsGranularity.valueOf(
             currentMonthStatsModel.interval.uppercase(
                 Locale.getDefault()
             )
         )
         val currentMonthPayload = FetchRevenueStatsResponsePayload(
-                site, currentMonthGranularity, currentMonthStatsModel
+            site, currentMonthGranularity, currentMonthStatsModel
         )
-        whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(currentMonthPayload)
+        whenever(
+            mockOrderStatsRestClient.fetchRevenueStats(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(currentMonthPayload)
         wcStatsStore.fetchRevenueStats(
-                FetchRevenueStatsPayload(
-                        site,
-                        currentMonthGranularity,
-                        currentMonthStatsModel.startDate,
-                        currentMonthStatsModel.endDate
-                )
+            FetchRevenueStatsPayload(
+                site,
+                currentMonthGranularity,
+                currentMonthStatsModel.startDate,
+                currentMonthStatsModel.endDate
+            )
         )
 
         // verify that the revenue stats & order count is not empty
         val currentMonthRevenueStats = wcStatsStore.getGrossRevenueStats(
-                site, StatsGranularity.valueOf(currentMonthStatsModel.interval.uppercase(Locale.getDefault())),
-                currentMonthStatsModel.startDate, currentMonthStatsModel.endDate
+            site, StatsGranularity.valueOf(currentMonthStatsModel.interval.uppercase(Locale.getDefault())),
+            currentMonthStatsModel.startDate, currentMonthStatsModel.endDate
         )
         val currentMonthOrderStats = wcStatsStore.getOrderCountStats(
-                site, StatsGranularity.valueOf(currentMonthStatsModel.interval.uppercase(Locale.getDefault())),
-                currentMonthStatsModel.startDate, currentMonthStatsModel.endDate
+            site, StatsGranularity.valueOf(currentMonthStatsModel.interval.uppercase(Locale.getDefault())),
+            currentMonthStatsModel.startDate, currentMonthStatsModel.endDate
         )
 
         assertTrue(currentMonthRevenueStats.isNotEmpty())
@@ -593,7 +691,7 @@ class WCStatsStoreTest {
         // current day stats for alternate site
         val site2 = SiteModel().apply { id = 8 }
         val altSiteOrderStatsModel = WCStatsTestUtils.generateSampleRevenueStatsModel(
-                localSiteId = site2.id, interval = StatsGranularity.DAYS.toString()
+            localSiteId = site2.id, interval = StatsGranularity.DAYS.toString()
         )
         val allSiteCurrentDayGranularity = StatsGranularity.valueOf(
             altSiteOrderStatsModel.interval.uppercase(
@@ -601,27 +699,37 @@ class WCStatsStoreTest {
             )
         )
         val allSiteCurrentDayPayload = FetchRevenueStatsResponsePayload(
-                site, allSiteCurrentDayGranularity, altSiteOrderStatsModel
+            site, allSiteCurrentDayGranularity, altSiteOrderStatsModel
         )
-        whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(allSiteCurrentDayPayload)
+        whenever(
+            mockOrderStatsRestClient.fetchRevenueStats(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(allSiteCurrentDayPayload)
         wcStatsStore.fetchRevenueStats(
-                FetchRevenueStatsPayload(
-                        site,
-                        allSiteCurrentDayGranularity,
-                        altSiteOrderStatsModel.startDate,
-                        altSiteOrderStatsModel.endDate
-                )
+            FetchRevenueStatsPayload(
+                site,
+                allSiteCurrentDayGranularity,
+                altSiteOrderStatsModel.startDate,
+                altSiteOrderStatsModel.endDate
+            )
         )
 
         // verify that the revenue stats & order count is not empty
         val altSiteCurrentDayRevenueStats = wcStatsStore.getGrossRevenueStats(
-                site, StatsGranularity.valueOf(altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())),
-                altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
+            site, StatsGranularity.valueOf(altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())),
+            altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
         )
         val altSiteCurrentDayOrderStats = wcStatsStore.getOrderCountStats(
-                site, StatsGranularity.valueOf(altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())),
-                altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
+            site, StatsGranularity.valueOf(altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())),
+            altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
         )
 
         assertTrue(altSiteCurrentDayRevenueStats.isNotEmpty())
@@ -631,54 +739,74 @@ class WCStatsStoreTest {
         val nonExistentSite = SiteModel().apply { id = 88 }
         val nonExistentSiteGranularity = StatsGranularity.valueOf(altSiteOrderStatsModel.interval)
         val nonExistentPayload = FetchRevenueStatsResponsePayload(
-                nonExistentSite, nonExistentSiteGranularity, altSiteOrderStatsModel
+            nonExistentSite, nonExistentSiteGranularity, altSiteOrderStatsModel
         )
-        whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(nonExistentPayload)
+        whenever(
+            mockOrderStatsRestClient.fetchRevenueStats(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(nonExistentPayload)
         wcStatsStore.fetchRevenueStats(
-                FetchRevenueStatsPayload(
-                        site,
-                        nonExistentSiteGranularity,
-                        altSiteOrderStatsModel.startDate,
-                        altSiteOrderStatsModel.endDate
-                )
+            FetchRevenueStatsPayload(
+                site,
+                nonExistentSiteGranularity,
+                altSiteOrderStatsModel.startDate,
+                altSiteOrderStatsModel.endDate
+            )
         )
 
         // verify that the revenue stats & order count is empty
         val nonExistentRevenueStats = wcStatsStore.getGrossRevenueStats(
-                nonExistentSite, StatsGranularity.valueOf(
+            nonExistentSite, StatsGranularity.valueOf(
                 altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())
             ),
-                altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
+            altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
         )
         val nonExistentOrderStats = wcStatsStore.getOrderCountStats(
-                nonExistentSite, StatsGranularity.valueOf(
+            nonExistentSite, StatsGranularity.valueOf(
                 altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())
             ),
-                altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
+            altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
         )
 
         assertTrue(nonExistentRevenueStats.isEmpty())
         assertTrue(nonExistentOrderStats.isEmpty())
 
         // missing data
-        whenever(mockOrderStatsRestClient.fetchRevenueStats(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(nonExistentPayload)
+        whenever(
+            mockOrderStatsRestClient.fetchRevenueStats(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(nonExistentPayload)
         wcStatsStore.fetchRevenueStats(
-                FetchRevenueStatsPayload(
-                    site = site,
-                    granularity = StatsGranularity.YEARS,
-                    startDate = "2019-01-01",
-                    endDate = "2019-01-07"
-                )
+            FetchRevenueStatsPayload(
+                site = site,
+                granularity = StatsGranularity.YEARS,
+                startDate = "2019-01-01",
+                endDate = "2019-01-07"
+            )
         )
 
         // verify that the revenue stats & order count is empty
         val missingRevenueStats = wcStatsStore.getGrossRevenueStats(
-                site, StatsGranularity.YEARS, "2019-01-01", "2019-01-07"
+            site, StatsGranularity.YEARS, "2019-01-01", "2019-01-07"
         )
         val missingOrderStats = wcStatsStore.getOrderCountStats(
-                site, StatsGranularity.YEARS, "2019-01-01", "2019-01-07"
+            site, StatsGranularity.YEARS, "2019-01-01", "2019-01-07"
         )
         assertTrue(missingRevenueStats.isEmpty())
         assertTrue(missingOrderStats.isEmpty())
@@ -686,35 +814,41 @@ class WCStatsStoreTest {
 
     @Test
     @Suppress("LongMethod")
-    fun testGetVisitorStatsForCurrentDayGranularity() {
-        // Test Scenario - 1: Generate default visitor stats i.e. isCustomField - false
+    fun testGetVisitorStatsForCurrentDayGranularity() = test {
+        // Test Scenario - 1: Generate default visitor stats
         // Get visitor Stats of the same site and granularity and assert not null
         val defaultDayVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel()
-        val site = SiteModel().apply { id = defaultDayVisitorStatsModel.localSiteId }
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultDayVisitorStatsModel)
+        val site = SiteModel().apply { id = defaultDayVisitorStatsModel.localSiteId.value }
+        databaseRule.db.newVisitorStatsDao.replaceStat(defaultDayVisitorStatsModel)
 
-        val defaultDayVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.DAYS)
+        val defaultDayVisitorStats = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.DAYS, defaultDayVisitorStatsModel.quantity,
+            defaultDayVisitorStatsModel.endDate
+        )
         assertTrue(defaultDayVisitorStats.isNotEmpty())
 
         // Test Scenario - 2: Generate default visitor stats with a different date
         // Get visitor of the same site and granularity and assert not null
         val defaultDayVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                endDate = "2019-08-02"
+            endDate = "2019-08-02"
         )
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultDayVisitorStatsModel2)
-        val defaultDayVisitorStats2 = wcStatsStore.getNewVisitorStats(site, StatsGranularity.DAYS)
+        databaseRule.db.newVisitorStatsDao.replaceStat(defaultDayVisitorStatsModel2)
+        val defaultDayVisitorStats2 = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.DAYS, defaultDayVisitorStatsModel2.quantity,
+            defaultDayVisitorStatsModel2.endDate
+        )
         assertTrue(defaultDayVisitorStats2.isNotEmpty())
 
-        // Test Scenario - 3: Generate custom stats for same site i.e. isCustomField - true
+        // Test Scenario - 3: Generate stats for same site
         // Get visitor Stats of the same site and granularity and assert not null
         val customDayVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                quantity = "1", endDate = "2019-08-06", startDate = "2019-08-06"
+            quantity = "1", endDate = "2019-08-06", startDate = "2019-08-06"
         )
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customDayVisitorStatsModel)
+        databaseRule.db.newVisitorStatsDao.replaceStat(customDayVisitorStatsModel)
 
         val customDayVisitorStats = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.DAYS, customDayVisitorStatsModel.quantity,
-                customDayVisitorStatsModel.endDate, customDayVisitorStatsModel.isCustomField
+            site, StatsGranularity.DAYS, customDayVisitorStatsModel.quantity,
+            customDayVisitorStatsModel.endDate
         )
         assertTrue(customDayVisitorStats.isNotEmpty())
 
@@ -722,11 +856,11 @@ class WCStatsStoreTest {
         // for same site, same quantity, different date
         // Get visitor Stats of the same site and granularity and assert null
         val customDayVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                quantity = "1", endDate = "2019-01-01", startDate = "2019-01-01"
+            quantity = "1", endDate = "2019-01-01", startDate = "2019-01-01"
         )
         val customDayVisitorStats2 = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.DAYS, customDayVisitorStatsModel2.quantity,
-                customDayVisitorStatsModel2.endDate, customDayVisitorStatsModel2.isCustomField
+            site, StatsGranularity.DAYS, customDayVisitorStatsModel2.quantity,
+            customDayVisitorStatsModel2.endDate
         )
         assertTrue(customDayVisitorStats2.isEmpty())
 
@@ -734,53 +868,53 @@ class WCStatsStoreTest {
         // for same site, different quantity, different date
         // Get visitor Stats of the same site and granularity and assert null
         val customDayVisitorStatsModel3 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                quantity = "1", endDate = "2019-01-01", startDate = "2019-01-01"
+            quantity = "1", endDate = "2019-01-01", startDate = "2019-01-01"
         )
 
         val customDayVisitorStats3 = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.DAYS, customDayVisitorStatsModel3.quantity,
-                customDayVisitorStatsModel3.endDate, customDayVisitorStatsModel3.isCustomField
+            site, StatsGranularity.DAYS, customDayVisitorStatsModel3.quantity,
+            customDayVisitorStatsModel3.endDate
         )
         assertTrue(customDayVisitorStats3.isEmpty())
 
         // Test Scenario - 6: Generate custom visitor stats for same site with different granularity (WEEKS),
-        // same date(2019-01-01), same quantity (1) i.e. isCustomField - true
+        // same date(2019-01-01), same quantity (1)
         // Get visitor Stats and assert Not Null
         // Now if another query ran for granularity - DAYS, with same date and same quantity: assert null
         val customWeekVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                quantity = "1",
-                endDate = "2019-02-01", startDate = "2019-02-01",
-                granularity = StatsGranularity.WEEKS.toString()
+            quantity = "1",
+            endDate = "2019-02-01", startDate = "2019-02-01",
+            granularity = StatsGranularity.WEEKS.toString()
         )
 
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customWeekVisitorStatsModel)
+        databaseRule.db.newVisitorStatsDao.replaceStat(customWeekVisitorStatsModel)
 
         val customWeekVisitorStats = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
-                customWeekVisitorStatsModel.endDate, customWeekVisitorStatsModel.isCustomField
+            site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
+            customWeekVisitorStatsModel.endDate
         )
         assertTrue(customWeekVisitorStats.isNotEmpty())
 
         val customDayVisitorStats4 = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.DAYS, customDayVisitorStatsModel.quantity,
-                customDayVisitorStatsModel.endDate, customDayVisitorStatsModel.isCustomField
+            site, StatsGranularity.DAYS, customDayVisitorStatsModel.quantity,
+            customDayVisitorStatsModel.endDate
         )
         assertTrue(customDayVisitorStats4.isEmpty())
 
-        // Test Scenario - 7: Generate custom stats for different site(8) with same granularity(WEEKS),
-        // same date(2019-01-01), same quantity(1) i.e. isCustomField - true
+        // Test Scenario - 7: Generate stats for different site(8) with same granularity(WEEKS),
+        // same date(2019-01-01), same quantity(1)
         // Get visitor Stats and assert Not Null
         // Now if scenario 4 is run again it should assert NOT NULL, since the stats is for different sites
         val customWeekVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                localSiteId = 8, granularity = StatsGranularity.WEEKS.toString(),
-                quantity = "1", endDate = "2019-02-01", startDate = "2019-02-01"
+            localSiteId = 8, granularity = StatsGranularity.WEEKS.toString(),
+            quantity = "1", endDate = "2019-02-01", startDate = "2019-02-01"
         )
 
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customWeekVisitorStatsModel2)
+        databaseRule.db.newVisitorStatsDao.replaceStat(customWeekVisitorStatsModel2)
 
         val customWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.WEEKS, customWeekVisitorStatsModel2.quantity,
-                customWeekVisitorStatsModel2.endDate, customWeekVisitorStatsModel2.isCustomField
+            site, StatsGranularity.WEEKS, customWeekVisitorStatsModel2.quantity,
+            customWeekVisitorStatsModel2.endDate
         )
         assertTrue(customWeekVisitorStats2.isNotEmpty())
         assertTrue(customWeekVisitorStats.isNotEmpty())
@@ -788,42 +922,51 @@ class WCStatsStoreTest {
 
     @Test
     @Suppress("LongMethod")
-    fun testGetVisitorStatsForThisWeekGranularity() {
-        // Test Scenario - 1: Generate default visitor stats i.e. isCustomField - false
+    fun testGetVisitorStatsForThisWeekGranularity() = test {
+        // Test Scenario - 1: Generate default visitor stats
         // Get visitor Stats of the same site and granularity and assert not null
         val defaultWeekVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                granularity = StatsGranularity.WEEKS.toString()
+            granularity = StatsGranularity.WEEKS.toString()
         )
-        val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId }
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultWeekVisitorStatsModel)
+        val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId.value }
+        databaseRule.db.newVisitorStatsDao.replaceStat(defaultWeekVisitorStatsModel)
 
-        val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.WEEKS)
+        val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.WEEKS, defaultWeekVisitorStatsModel.quantity,
+            defaultWeekVisitorStatsModel.endDate
+        )
         assertTrue(defaultWeekVisitorStats.isNotEmpty())
 
         // query for days granularity. the visitor stats should be empty
-        val defaultDayVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.DAYS)
+        val defaultDayVisitorStats = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.DAYS, defaultWeekVisitorStatsModel.quantity,
+            defaultWeekVisitorStatsModel.endDate
+        )
         assertTrue(defaultDayVisitorStats.isEmpty())
 
         // Test Scenario - 2: Generate default visitor stats with a different date
         // Get visitor of the same site and granularity and assert not null
         val defaultWeekVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                granularity = StatsGranularity.WEEKS.toString(), endDate = "2019-03-20"
+            granularity = StatsGranularity.WEEKS.toString(), endDate = "2019-03-20"
         )
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultWeekVisitorStatsModel2)
-        val defaultWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(site, StatsGranularity.WEEKS)
+        databaseRule.db.newVisitorStatsDao.replaceStat(defaultWeekVisitorStatsModel2)
+        val defaultWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.WEEKS, defaultWeekVisitorStatsModel2.quantity,
+            defaultWeekVisitorStatsModel2.endDate
+        )
         assertTrue(defaultWeekVisitorStats2.isNotEmpty())
 
-        // Test Scenario - 3: Generate custom stats for same site i.e. isCustomField - true
+        // Test Scenario - 3: Generate stats for same site
         // Get visitor Stats of the same site and granularity and assert not null
         val customWeekVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                granularity = StatsGranularity.WEEKS.toString(), quantity = "1",
-                endDate = "2019-08-01", startDate = "2019-08-01"
+            granularity = StatsGranularity.WEEKS.toString(), quantity = "1",
+            endDate = "2019-08-01", startDate = "2019-08-01"
         )
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customWeekVisitorStatsModel)
+        databaseRule.db.newVisitorStatsDao.replaceStat(customWeekVisitorStatsModel)
 
         val customWeekVisitorStats = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
-                customWeekVisitorStatsModel.endDate, customWeekVisitorStatsModel.isCustomField
+            site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
+            customWeekVisitorStatsModel.endDate
         )
         assertTrue(customWeekVisitorStats.isNotEmpty())
 
@@ -831,12 +974,12 @@ class WCStatsStoreTest {
         // for same site, same quantity, different date
         // Get visitor Stats of the same site and granularity and assert null
         val customWeekVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                granularity = StatsGranularity.WEEKS.toString(), quantity = "1",
-                endDate = "2019-07-01", startDate = "2019-07-01"
+            granularity = StatsGranularity.WEEKS.toString(), quantity = "1",
+            endDate = "2019-07-01", startDate = "2019-07-01"
         )
         val customWeekVisitorStats2 = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.WEEKS, customWeekVisitorStatsModel2.quantity,
-                customWeekVisitorStatsModel2.endDate, customWeekVisitorStatsModel2.isCustomField
+            site, StatsGranularity.WEEKS, customWeekVisitorStatsModel2.quantity,
+            customWeekVisitorStatsModel2.endDate
         )
         assertTrue(customWeekVisitorStats2.isEmpty())
 
@@ -844,59 +987,60 @@ class WCStatsStoreTest {
         // for same site, different quantity, different date
         // Get visitor Stats of the same site and granularity and assert null
         val customWeekVisitorStatsModel3 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                granularity = StatsGranularity.WEEKS.toString(), quantity = "1",
-                endDate = "2019-07-01", startDate = "2019-07-01"
+            granularity = StatsGranularity.WEEKS.toString(), quantity = "1",
+            endDate = "2019-07-01", startDate = "2019-07-01"
         )
 
         val customWeekVisitorStats3 = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.WEEKS, customWeekVisitorStatsModel3.quantity,
-                customWeekVisitorStatsModel3.endDate, customWeekVisitorStatsModel3.isCustomField
+            site, StatsGranularity.WEEKS, customWeekVisitorStatsModel3.quantity,
+            customWeekVisitorStatsModel3.endDate
         )
         assertTrue(customWeekVisitorStats3.isEmpty())
 
         // Test Scenario - 6: Generate custom visitor stats for same site with different granularity (MONTHS),
-        // same date(2019-01-01), same quantity (1) i.e. isCustomField - true
+        // same date(2019-01-01), same quantity (1)
         // Get visitor Stats and assert Not Null
         // Now if another query ran for granularity - WEEKS, with same date and same quantity: assert null
         val customMonthVisitorStatsModel = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                quantity = "1", endDate = "2019-08-01", startDate = "2019-08-01",
-                granularity = StatsGranularity.MONTHS.toString())
+            quantity = "1", endDate = "2019-08-01", startDate = "2019-08-01",
+            granularity = StatsGranularity.MONTHS.toString()
+        )
 
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customMonthVisitorStatsModel)
+        databaseRule.db.newVisitorStatsDao.replaceStat(customMonthVisitorStatsModel)
 
         val customMonthVisitorStats = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.MONTHS, customMonthVisitorStatsModel.quantity,
-                customMonthVisitorStatsModel.endDate, customMonthVisitorStatsModel.isCustomField
+            site, StatsGranularity.MONTHS, customMonthVisitorStatsModel.quantity,
+            customMonthVisitorStatsModel.endDate
         )
         assertTrue(customMonthVisitorStats.isNotEmpty())
 
         val customWeekVisitorStats4 = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
-                customWeekVisitorStatsModel.endDate, customWeekVisitorStatsModel.isCustomField
+            site, StatsGranularity.WEEKS, customWeekVisitorStatsModel.quantity,
+            customWeekVisitorStatsModel.endDate
         )
         assertTrue(customWeekVisitorStats4.isEmpty())
 
-        // Test Scenario - 7: Generate custom stats for different site(8) with same granularity(MONTHS),
-        // same date(2019-01-01), same quantity(1) i.e. isCustomField - true
+        // Test Scenario - 7: Generate stats for different site(8) with same granularity(MONTHS),
+        // same date(2019-01-01), same quantity(1)
         // Get visitor Stats and assert Not Null
         // Now if scenario 4 is run again it should assert NOT NULL, since the stats is for different sites
         val customMonthVisitorStatsModel2 = WCStatsTestUtils.generateSampleNewVisitorStatsModel(
-                localSiteId = 8, granularity = StatsGranularity.MONTHS.toString(),
-                quantity = "1", endDate = "2019-08-01", startDate = "2019-08-01"
+            localSiteId = 8, granularity = StatsGranularity.MONTHS.toString(),
+            quantity = "1", endDate = "2019-08-01", startDate = "2019-08-01"
         )
 
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(customMonthVisitorStatsModel2)
+        databaseRule.db.newVisitorStatsDao.replaceStat(customMonthVisitorStatsModel2)
 
         val customMonthVisitorStats2 = wcStatsStore.getNewVisitorStats(
-                site, StatsGranularity.MONTHS, customMonthVisitorStatsModel2.quantity,
-                customMonthVisitorStatsModel2.endDate, customMonthVisitorStatsModel2.isCustomField
+            site, StatsGranularity.MONTHS, customMonthVisitorStatsModel2.quantity,
+            customMonthVisitorStatsModel2.endDate
         )
         assertTrue(customMonthVisitorStats2.isNotEmpty())
         assertTrue(customMonthVisitorStats.isNotEmpty())
     }
 
     @Test
-    fun testGetNewVisitorStatsWithInvalidData() {
+    fun testGetNewVisitorStatsWithInvalidData() = test {
         // wrong-visitor-stats-data.json includes different wrong formatted data to ensure
         // that getNewVisitorStats is resilient and can recover from unexpected data
         //
@@ -904,20 +1048,23 @@ class WCStatsStoreTest {
             granularity = StatsGranularity.WEEKS.toString(),
             data = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/wrong-visitor-stats-data.json")
         )
-        val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId }
-        WCVisitorStatsSqlUtils.insertOrUpdateNewVisitorStats(defaultWeekVisitorStatsModel)
+        val site = SiteModel().apply { id = defaultWeekVisitorStatsModel.localSiteId.value }
+        databaseRule.db.newVisitorStatsDao.replaceStat(defaultWeekVisitorStatsModel)
 
-        val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(site, StatsGranularity.WEEKS)
+        val defaultWeekVisitorStats = wcStatsStore.getNewVisitorStats(
+            site, StatsGranularity.WEEKS, defaultWeekVisitorStatsModel.quantity,
+            defaultWeekVisitorStatsModel.endDate
+        )
         assertTrue(defaultWeekVisitorStats.isNotEmpty())
-        assertEquals(defaultWeekVisitorStats["2019-06-23"],10)
-        assertEquals(defaultWeekVisitorStats["2019-06-22"],20)
-        assertEquals(defaultWeekVisitorStats["2019-07-16"],0)
-        assertEquals(defaultWeekVisitorStats["2019-07-17"],0)
-        assertEquals(defaultWeekVisitorStats["2019-07-18"],0)
+        assertEquals(defaultWeekVisitorStats["2019-06-23"], 10)
+        assertEquals(defaultWeekVisitorStats["2019-06-22"], 20)
+        assertEquals(defaultWeekVisitorStats["2019-07-16"], 0)
+        assertEquals(defaultWeekVisitorStats["2019-07-17"], 0)
+        assertEquals(defaultWeekVisitorStats["2019-07-18"], 0)
     }
 
     @Test
-    fun testFetchBundlesErrorResponse() = runBlocking {
+    fun testFetchBundlesErrorResponse() = test {
         val error = WooError(
             type = WooErrorType.INVALID_RESPONSE,
             original = GenericErrorType.INVALID_RESPONSE,
@@ -941,7 +1088,7 @@ class WCStatsStoreTest {
     }
 
     @Test
-    fun testFetchBundlesNullResponse() = runBlocking {
+    fun testFetchBundlesNullResponse() = test {
         val response: WooPayload<BundleStatsApiResponse> = WooPayload(null)
 
         whenever(mockBundleStatsRestClient.fetchBundleStats(any(), any(), any(), any()))
@@ -960,7 +1107,7 @@ class WCStatsStoreTest {
     }
 
     @Test
-    fun testFetchBundlesSuccessResponse() = runBlocking {
+    fun testFetchBundlesSuccessResponse() = test {
         val totals = BundleStatsTotals(
             itemsSold = 5,
             netRevenue = 1000.00
@@ -980,12 +1127,12 @@ class WCStatsStoreTest {
 
         assertFalse(result.isError)
         assertTrue(result.model != null)
-        assertEquals(result.model!!.itemsSold, totals.itemsSold)
-        assertEquals(result.model!!.netRevenue, totals.netRevenue)
+        assertEquals(result.model.itemsSold, totals.itemsSold)
+        assertEquals(result.model.netRevenue, totals.netRevenue)
     }
 
     @Test
-    fun testSuccessfulFetchingVisitorSummaryStats() = runBlocking {
+    fun testSuccessfulFetchingVisitorSummaryStats() = test {
         val site = SiteModel().apply { id = 0 }
         val apiResponse = VisitorStatsSummaryApiResponse(
             date = "2024-03-01",
@@ -1017,7 +1164,7 @@ class WCStatsStoreTest {
     }
 
     @Test
-    fun testFailedFetchingVisitorSummaryStats() = runBlocking {
+    fun testFailedFetchingVisitorSummaryStats() = test {
         val site = SiteModel().apply { id = 0 }
         whenever(
             mockOrderStatsRestClient.fetchVisitorStatsSummary(
@@ -1026,7 +1173,7 @@ class WCStatsStoreTest {
                 date = "2024-03-01",
                 force = false
             )
-        ).thenReturn(WooPayload(WooError(GENERIC_ERROR, GenericErrorType.UNKNOWN)))
+        ).thenReturn(WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN)))
 
         val result = wcStatsStore.fetchVisitorStatsSummary(
             site = site,
