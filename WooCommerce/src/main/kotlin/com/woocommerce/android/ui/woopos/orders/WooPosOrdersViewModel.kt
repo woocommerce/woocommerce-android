@@ -132,20 +132,25 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private fun updateContentState(orders: List<Order>) {
-        val currentSelectedId = (_state.value as? WooPosOrdersState.Content)?.selectedOrderId
-        val newSelectedId = currentSelectedId?.takeIf { id -> orders.any { it.id == id } }
-            ?: orders.firstOrNull()?.id
+        val currentState = _state.value as? WooPosOrdersState.Content
+        val currentItems = currentState?.items ?: emptyList()
+        val currentSelectedId = currentState?.selectedOrderId
+
+        val updatedItems = currentItems + orders.map { order ->
+            OrderItemViewState(
+                id = order.id,
+                title = "Order #${order.number}",
+                date = order.dateCreated.formatToDDMMMYYYY(),
+                total = "${order.total} ${order.currency}",
+                isSelected = order.id == currentSelectedId
+            )
+        }
+
+        val newSelectedId = currentSelectedId?.takeIf { id -> updatedItems.any { it.id == id } }
+            ?: updatedItems.firstOrNull()?.id
 
         _state.value = WooPosOrdersState.Content(
-            items = orders.map { order ->
-                OrderItemViewState(
-                    id = order.id,
-                    title = "Order #${order.number}",
-                    date = order.dateCreated.formatToDDMMMYYYY(),
-                    total = "${order.total} ${order.currency}",
-                    isSelected = order.id == newSelectedId
-                )
-            },
+            items = updatedItems,
             selectedOrderId = newSelectedId,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = WooPosPaginationState.None
