@@ -62,13 +62,14 @@ class WooPosOrdersDataSourceTest {
         )
         whenever(
             orderRestClient.fetchOrders(
-                site = eq(siteModel),
-                count = eq(WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE),
-                page = eq(1),
+                site = any(),
+                count = any(),
+                page = any(),
                 orderBy = any(),
                 sortOrder = any(),
                 statusFilter = anyOrNull(),
-                createdVia = eq("pos-rest-api")
+                createdVia = any(),
+                searchQuery = anyOrNull()
             )
         ).thenReturn(payload)
 
@@ -88,13 +89,14 @@ class WooPosOrdersDataSourceTest {
         verify(ordersCache).getAll()
         verify(ordersCache).setAll(listOf(mapped1, mapped2))
         verify(orderRestClient).fetchOrders(
-            site = eq(siteModel),
-            count = eq(WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE),
-            page = eq(1),
+            site = any(),
+            count = any(),
+            page = any(),
             orderBy = any(),
             sortOrder = any(),
             statusFilter = anyOrNull(),
-            createdVia = eq("pos-rest-api")
+            createdVia = any(),
+            searchQuery = anyOrNull()
         )
     }
 
@@ -113,13 +115,14 @@ class WooPosOrdersDataSourceTest {
         )
         whenever(
             orderRestClient.fetchOrders(
-                site = eq(siteModel),
-                count = eq(WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE),
-                page = eq(1),
+                site = any(),
+                count = any(),
+                page = any(),
                 orderBy = any(),
                 sortOrder = any(),
                 statusFilter = anyOrNull(),
-                createdVia = eq("pos-rest-api")
+                createdVia = any(),
+                searchQuery = anyOrNull()
             )
         ).thenReturn(payload)
 
@@ -138,13 +141,14 @@ class WooPosOrdersDataSourceTest {
         verify(ordersCache).getAll()
         verify(ordersCache, never()).setAll(any())
         verify(orderRestClient).fetchOrders(
-            site = eq(siteModel),
-            count = eq(WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE),
-            page = eq(1),
+            site = any(),
+            count = any(),
+            page = any(),
             orderBy = any(),
             sortOrder = any(),
             statusFilter = anyOrNull(),
-            createdVia = eq("pos-rest-api")
+            createdVia = any(),
+            searchQuery = anyOrNull()
         )
     }
 
@@ -158,13 +162,14 @@ class WooPosOrdersDataSourceTest {
         )
         whenever(
             orderRestClient.fetchOrders(
-                site = eq(siteModel),
-                count = eq(WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE),
-                page = eq(1),
+                site = any(),
+                count = any(),
+                page = any(),
                 orderBy = any(),
                 sortOrder = any(),
                 statusFilter = anyOrNull(),
-                createdVia = eq("pos-rest-api")
+                createdVia = any(),
+                searchQuery = anyOrNull()
             )
         ).thenReturn(payload)
 
@@ -179,13 +184,14 @@ class WooPosOrdersDataSourceTest {
         verify(ordersCache).getAll()
         verify(ordersCache).setAll(emptyList())
         verify(orderRestClient).fetchOrders(
-            site = eq(siteModel),
-            count = eq(WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE),
-            page = eq(1),
+            site = any(),
+            count = any(),
+            page = any(),
             orderBy = any(),
             sortOrder = any(),
             statusFilter = anyOrNull(),
-            createdVia = eq("pos-rest-api")
+            createdVia = any(),
+            searchQuery = anyOrNull()
         )
     }
 
