@@ -61,6 +61,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class SitePickerViewModelTest : BaseUnitTest() {
@@ -809,7 +810,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given initiated, when isPrimaryBtnVisible and loading state, then primary button view is not displayed`() =
+    fun `given initiated, when fetching sites, then primary button view is not displayed when showing skeleton`() =
         runTest {
             Dispatchers.setMain(StandardTestDispatcher())
             val expectedSites = defaultExpectedSiteList.map { it.apply { setIsJetpackCPConnected(true) } }
@@ -817,15 +818,29 @@ class SitePickerViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             val states = viewModel.sitePickerViewStateData.liveData.captureValues()
 
-            // Make primary button visible after initialization. This may happen in low memory condition.
-            viewModel.sitePickerViewState = viewModel.sitePickerViewState.copy(isPrimaryBtnVisible = true)
-
             advanceUntilIdle()
 
             states.forEach { state ->
                 if (state.isSkeletonViewVisible) {
                     assertFalse(state.isPrimaryBtnVisible)
                 }
+            }
+            Dispatchers.resetMain()
+        }
+
+    @Test
+    fun `given initiated, when fetching sites, then primary button view is shown during loading`() =
+        runTest {
+            Dispatchers.setMain(StandardTestDispatcher())
+            val expectedSites = defaultExpectedSiteList
+            whenSitesAreFetched(sitesFromDb = expectedSites)
+            whenViewModelIsCreated()
+            val states = viewModel.sitePickerViewStateData.liveData.captureValues().drop(1)
+
+            advanceUntilIdle()
+
+            states.forEach { state ->
+                assertTrue(state.isPrimaryBtnVisible)
             }
             Dispatchers.resetMain()
         }

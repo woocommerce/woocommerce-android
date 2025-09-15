@@ -153,7 +153,7 @@ class SitePickerViewModel @Inject constructor(
     private suspend fun fetchSitesFromApi(showSkeleton: Boolean) {
         sitePickerViewState = sitePickerViewState.copy(
             isSkeletonViewVisible = showSkeleton,
-            isPrimaryBtnVisible = false
+            isPrimaryBtnVisible = !showSkeleton
         )
 
         val startTime = System.currentTimeMillis()
