@@ -1,22 +1,28 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncRepository.Companion.PAGE_SIZE
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository.Companion.PAGE_SIZE
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationsAction.WooPosSyncVariationsResult
+import com.woocommerce.android.util.InlineClassesAnswer
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
-import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosVariationsSyncResult
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosVariationsFetchResult
 import kotlin.Result as KotlinResult
 
 class WooPosSyncVariationsActionTest {
@@ -27,12 +33,13 @@ class WooPosSyncVariationsActionTest {
     private var logger: WooPosLogWrapper = mock()
 
     @Before
-    fun setup() {
+    fun setup() = runBlocking {
         sut = WooPosSyncVariationsAction(posLocalCatalogStore, logger)
         site = SiteModel().apply {
             id = 1
             siteId = 123L
         }
+        givenTransactionSuccess()
     }
 
     @Test
@@ -107,7 +114,7 @@ class WooPosSyncVariationsActionTest {
             val result = sut.execute(site, modifiedAfterGmt = modifiedAfter, pageSize = 100, maxPages = maxPages)
 
             // THEN
-            verify(posLocalCatalogStore).syncRecentlyModifiedVariations(
+            verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(
                 site = eq(site),
                 modifiedAfterGmt = eq(modifiedAfter),
                 page = eq(1),
@@ -117,7 +124,7 @@ class WooPosSyncVariationsActionTest {
         }
 
     @Test
-    fun `given null modifiedAfterGmt, when sync variations called, then passes empty string as filter`() = runTest {
+    fun `given null modifiedAfterGmt, when sync variations called, then passes null as filter`() = runTest {
         // GIVEN
         val maxPages = 10
         givenSinglePageCatalog(variationsCount = 30)
@@ -126,9 +133,9 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        verify(posLocalCatalogStore).syncRecentlyModifiedVariations(
+        verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(
             site = eq(site),
-            modifiedAfterGmt = eq(""),
+            modifiedAfterGmt = eq(null),
             page = eq(1),
             pageSize = eq(100)
         )
@@ -215,7 +222,7 @@ class WooPosSyncVariationsActionTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Failed.UnexpectedError::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Failed).error).isEqualTo("Unknown error")
+        assertThat((result as WooPosSyncVariationsResult.Failed).error).isEqualTo("Failed to fetch variations")
     }
 
     @Test
@@ -231,7 +238,7 @@ class WooPosSyncVariationsActionTest {
             // THEN
             assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
             verify(posLocalCatalogStore, times(1))
-                .syncRecentlyModifiedVariations(any(), anyOrNull(), any(), any())
+                .fetchRecentlyModifiedVariations(any(), anyOrNull(), any(), any())
         }
 
     @Test
@@ -246,19 +253,19 @@ class WooPosSyncVariationsActionTest {
         // THEN
         assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
         verify(posLocalCatalogStore, times(1))
-            .syncRecentlyModifiedVariations(any(), anyOrNull(), any(), any())
+            .fetchRecentlyModifiedVariations(any(), anyOrNull(), any(), any())
     }
 
     @Test
-    fun `given multiple pages synced, when sync variations called, then returns last server date`() = runTest {
+    fun `given multiple pages synced, when sync variations called, then returns first server date`() = runTest {
         // GIVEN
         val maxPages = 10
-        val lastServerDate = "2024-01-15T15:45:00Z"
+        val firstServerDate = "2024-01-15T15:45:00Z"
         givenMultiPageCatalog(
             page1Count = 100,
             page2Count = 50,
             page3Count = 0,
-            serverDate3 = lastServerDate
+            serverDate = firstServerDate
         )
 
         // WHEN
@@ -266,22 +273,22 @@ class WooPosSyncVariationsActionTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Success).serverDate).isEqualTo(lastServerDate)
+        assertThat((result as WooPosSyncVariationsResult.Success).serverDate).isEqualTo(firstServerDate)
     }
 
     @Test
-    fun `given pagination uses page numbers, when sync variations called, then increments page correctly`() = runTest {
+    fun `given pagination uses offsets, when sync variations called, then increments offset correctly`() = runTest {
         // GIVEN
         val maxPages = 10
-        givenThreePageCatalogWithPageNumbers()
+        givenThreePageCatalogWithOffsets()
 
         // WHEN
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        verify(posLocalCatalogStore).syncRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any())
-        verify(posLocalCatalogStore).syncRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any())
-        verify(posLocalCatalogStore).syncRecentlyModifiedVariations(any(), anyOrNull(), eq(3), any())
+        verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any())
+        verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any())
+        verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(3), any())
         assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
     }
 
@@ -290,17 +297,21 @@ class WooPosSyncVariationsActionTest {
         variationsCount: Int = PAGE_SIZE / 2,
         serverDate: String = "2024-01-15T10:00:00Z"
     ) {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = variationsCount,
-                        hasMore = false,
-                        nextPage = 1,
-                        totalPages = 1,
-                        serverDate = serverDate
+        val variations = createMockVariations(1, variationsCount)
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = variations,
+                            syncedCount = variationsCount,
+                            hasMore = false,
+                            nextPage = 2,
+                            totalPages = 1,
+                            serverDate = serverDate
+                        )
                     )
-                )
+                }
             )
     }
 
@@ -309,157 +320,226 @@ class WooPosSyncVariationsActionTest {
         page2Count: Int,
         page3Count: Int,
         totalPages: Int = 3,
-        serverDate3: String = "2024-01-15T12:00:00Z"
+        serverDate: String = "2024-01-15T12:00:00Z"
     ) {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = page1Count,
-                        hasMore = true,
-                        nextPage = 2,
-                        totalPages = totalPages,
-                        serverDate = "2024-01-15T10:00:00Z"
+        val variations1 = createMockVariations(1, page1Count)
+        val variations2 = createMockVariations(page1Count + 1, page2Count)
+        val variations3 = createMockVariations(page1Count + page2Count + 1, page3Count)
+
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = variations1,
+                            syncedCount = page1Count,
+                            hasMore = true,
+                            nextPage = 2,
+                            totalPages = totalPages,
+                            serverDate = serverDate
+                        )
                     )
-                )
+                }
             )
 
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = page2Count,
-                        hasMore = true,
-                        nextPage = 3,
-                        totalPages = totalPages,
-                        serverDate = "2024-01-15T11:00:00Z"
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any()))
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = variations2,
+                            syncedCount = page2Count,
+                            hasMore = page3Count > 0,
+                            nextPage = 3,
+                            totalPages = totalPages,
+                            serverDate = "2024-01-15T11:00:00Z",
+                        )
                     )
-                )
+                }
             )
 
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(3), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = page3Count,
-                        hasMore = false,
-                        nextPage = 3,
-                        totalPages = totalPages,
-                        serverDate = serverDate3
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedVariations(
+                any(),
+                anyOrNull(),
+                eq(3),
+                any()
+            )
+        )
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = variations3,
+                            syncedCount = page3Count,
+                            hasMore = false,
+                            nextPage = 4,
+                            totalPages = totalPages,
+                            serverDate = "2024-01-15T11:00:00Z",
+                        )
                     )
-                )
+                }
             )
     }
 
     private suspend fun givenEmptyCatalog() {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = 0,
-                        hasMore = false,
-                        nextPage = 1,
-                        totalPages = 0,
-                        serverDate = "2024-01-15T10:00:00Z"
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), any(), any()))
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = emptyList(),
+                            syncedCount = 0,
+                            hasMore = false,
+                            nextPage = 1,
+                            totalPages = 0,
+                            serverDate = "2024-01-15T10:00:00Z"
+                        )
                     )
-                )
+                }
             )
     }
 
     private suspend fun givenFirstPageFails(errorMessage: String) {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), any(), any()))
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), any(), any()))
             .thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 
     private suspend fun givenFirstPageFailsWithNullMessage() {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), any(), any()))
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), any(), any()))
             .thenReturn(KotlinResult.failure(Exception()))
     }
 
     private suspend fun givenSecondPageFails(errorMessage: String) {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = 100,
-                        hasMore = true,
-                        nextPage = 2,
-                        totalPages = 2,
-                        serverDate = "2024-01-15T10:00:00Z"
+        val variations1 = createMockVariations(1, 100)
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = variations1,
+                            syncedCount = 100,
+                            hasMore = true,
+                            nextPage = 2,
+                            totalPages = 2,
+                            serverDate = "2024-01-15T10:00:00Z"
+                        )
                     )
-                )
+                }
             )
 
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any()))
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any()))
             .thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 
     private suspend fun givenPageWithZeroVariationsButHasMore() {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = 0,
-                        hasMore = true,
-                        nextPage = 2,
-                        totalPages = 2,
-                        serverDate = "2024-01-15T10:00:00Z"
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = emptyList(),
+                            syncedCount = 0,
+                            hasMore = false, // Changed to false so it stops fetching after zero items
+                            nextPage = 1,
+                            totalPages = 1,
+                            serverDate = "2024-01-15T10:00:00Z"
+                        )
                     )
-                )
-            )
-
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = 50,
-                        hasMore = false,
-                        nextPage = 2,
-                        totalPages = 2,
-                        serverDate = "2024-01-15T11:00:00Z"
-                    )
-                )
+                }
             )
     }
 
-    private suspend fun givenThreePageCatalogWithPageNumbers() {
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = 100,
-                        hasMore = true,
-                        nextPage = 2,
-                        totalPages = 3,
-                        serverDate = "2024-01-15T10:00:00Z"
+    private suspend fun givenThreePageCatalogWithOffsets() {
+        val variations1 = createMockVariations(1, 100)
+        val variations2 = createMockVariations(101, 100)
+        val variations3 = createMockVariations(201, 50)
+
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any()))
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = variations1,
+                            syncedCount = 100,
+                            hasMore = true,
+                            nextPage = 2,
+                            totalPages = 3,
+                            serverDate = "2024-01-15T10:00:00Z"
+                        )
                     )
-                )
+                }
             )
 
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = 100,
-                        hasMore = true,
-                        nextPage = 3,
-                        totalPages = 3,
-                        serverDate = "2024-01-15T11:00:00Z"
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any()))
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = variations2,
+                            syncedCount = 100,
+                            hasMore = true,
+                            nextPage = 3,
+                            totalPages = 3,
+                            serverDate = "2024-01-15T11:00:00Z"
+                        )
                     )
-                )
+                }
             )
 
-        whenever(posLocalCatalogStore.syncRecentlyModifiedVariations(any(), anyOrNull(), eq(3), any()))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosVariationsSyncResult(
-                        syncedCount = 50,
-                        hasMore = false,
-                        nextPage = 3,
-                        totalPages = 3,
-                        serverDate = "2024-01-15T12:00:00Z"
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(3), any()))
+            .doAnswer(
+                InlineClassesAnswer {
+                    KotlinResult.success(
+                        WooPosVariationsFetchResult(
+                            variations = variations3,
+                            syncedCount = 50,
+                            hasMore = false,
+                            nextPage = 4,
+                            totalPages = 3,
+                            serverDate = "2024-01-15T12:00:00Z"
+                        )
                     )
-                )
+                }
             )
+    }
+
+    private fun createMockVariations(startId: Int, count: Int): List<WooPosVariationEntity> {
+        return (startId until startId + count).map { id ->
+            WooPosVariationEntity(
+                localSiteId = LocalId(1),
+                remoteProductId = RemoteId(100),
+                remoteVariationId = RemoteId(id.toLong()),
+                dateModified = "2024-01-15T10:00:00Z",
+                sku = "VAR-$id",
+                globalUniqueId = "var-$id",
+                variationName = "Variation $id",
+                price = "10.00",
+                regularPrice = "10.00",
+                salePrice = "",
+                description = "Test variation $id",
+                stockQuantity = 1.0,
+                stockStatus = "instock",
+                manageStock = false,
+                backordered = false,
+                attributesJson = "{}",
+                imageUrl = "",
+                status = "publish",
+                lastUpdated = "2024-01-15T10:00:00Z",
+                downloadable = false
+            )
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private suspend fun givenTransactionSuccess() {
+        whenever(
+            posLocalCatalogStore
+                .executeInTransaction(any<suspend () -> KotlinResult<Unit>>())
+        ).thenAnswer { invocation ->
+            val block = invocation.arguments[0] as suspend () -> KotlinResult<Unit>
+            runBlocking { block.invoke() }
+        }
+        whenever(posLocalCatalogStore.upsertVariations(any())).thenReturn(KotlinResult.success(Unit))
     }
 }

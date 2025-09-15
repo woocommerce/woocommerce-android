@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
@@ -108,11 +109,26 @@ class WooPosCartItemsUpdater @Inject constructor(
         updatedItem: WooPosCartItemViewState.Product,
         updatedProduct: ParentToChildrenEvent.OrderCreated.ProductInfo
     ) {
+        // TBD Local Catalog The app should update cache based on the data coming from backend not from the view layer
         productsCache.getProductById(updatedItem.id)?.let { product ->
             productsCache.updateProduct(
                 product.copy(
                     name = updatedItem.name,
-                    price = updatedProduct.subtotalPricePerItem(),
+                    pricing = when (product.pricing) {
+                        WooPosProductModel.WooPosPricing.NoPricing ->
+                            WooPosProductModel.WooPosPricing.NoPricing
+
+                        is WooPosProductModel.WooPosPricing.RegularPricing ->
+                            WooPosProductModel.WooPosPricing.RegularPricing(
+                                updatedProduct.subtotalPricePerItem()
+                            )
+
+                        is WooPosProductModel.WooPosPricing.SalePricing ->
+                            WooPosProductModel.WooPosPricing.SalePricing(
+                                product.pricing.regularPrice,
+                                updatedProduct.subtotalPricePerItem()
+                            )
+                    }
                 )
             )
         }

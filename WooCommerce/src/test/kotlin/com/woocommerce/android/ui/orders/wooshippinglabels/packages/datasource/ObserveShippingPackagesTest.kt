@@ -6,32 +6,39 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FetchPackagesFromStoreTest : BaseUnitTest() {
+class ObserveShippingPackagesTest : BaseUnitTest() {
 
     private val packageRepository: WooShippingLabelPackageRepository = mock()
+    private val fetchShippingPackages: FetchShippingPackages = mock()
     private val selectedSite: SelectedSite = mock()
-    private val fetchPackagesFromStore = FetchPackagesFromStore(selectedSite, packageRepository)
+    private val observeShippingPackages = ObserveShippingPackages(
+        selectedSite,
+        packageRepository,
+        fetchShippingPackages
+    )
 
     @Test
-    fun `invoke should return Data with carrier and saved packages`() = testBlocking {
-        val storePackages = generatePackagesData()
+    fun `when invoke, then return Data with carrier and saved packages`() = testBlocking {
+        val shippingPackages = generatePackagesData()
         val site = SiteModel().apply { id = 1 }
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(packageRepository.fetchAllStorePackages(site)).thenReturn(WooResult(storePackages))
+        whenever(packageRepository.observeShippingPackages(site)).thenReturn(flowOf(shippingPackages))
 
-        val result = fetchPackagesFromStore() as PackagesState.Data
+        val result = observeShippingPackages().first() as PackagesState.Data
 
         assertThat(result.savedPackages).containsExactly(
             PackageData(
@@ -71,26 +78,41 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
     }
 
     @Test
-    fun `invoke should return Error when fetchAllStorePackages returns error`() = testBlocking {
-        val error = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
+    fun `when fetchAllStorePackages returns error and no cache, then return Error`() = testBlocking {
+        val error = Exception("error")
         val site = SiteModel().apply { id = 1 }
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(packageRepository.fetchAllStorePackages(site)).thenReturn(WooResult(error))
+        whenever(packageRepository.observeShippingPackages(site)).thenReturn(flowOf(null))
+        whenever(fetchShippingPackages()).thenReturn(Result.failure(error))
 
-        val result = fetchPackagesFromStore()
+        val result = observeShippingPackages().first()
 
-        assertThat(result).isEqualTo(PackagesState.Error(WooErrorType.GENERIC_ERROR.name))
+        assertThat(result).isEqualTo(PackagesState.Error(error.message!!))
     }
 
-    private fun generatePackagesData() = StorePackagesDAO(
-        storeOptions = StoreOptionsDAO(
+    @Test
+    fun `when starting, then refresh data once`() = testBlocking {
+        val site = SiteModel().apply { id = 1 }
+        val shippingPackages = generatePackagesData()
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(packageRepository.observeShippingPackages(site)).thenReturn(flowOf(shippingPackages))
+        whenever(fetchShippingPackages()).thenReturn(Result.success(shippingPackages))
+
+        val result = observeShippingPackages().toList()
+
+        assertTrue(result.size == 1)
+    }
+
+    private fun generatePackagesData() = WooShippingPackagesEntity(
+        localSiteId = LocalOrRemoteId.LocalId(1),
+        storeOptions = WooShippingPackagesEntity.StoreOptions(
             currencySymbol = "$",
             dimensionUnit = "cm",
             weightUnit = "kg",
             originCountry = "US"
         ),
         savedPackages = listOf(
-            PackageDAO(
+            WooShippingPackagesEntity.Package(
                 id = "1",
                 name = "Saved Package 1",
                 dimensions = "dimensions",
@@ -100,7 +122,7 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
                 weightUnit = "kg",
                 saved = true
             ),
-            PackageDAO(
+            WooShippingPackagesEntity.Package(
                 id = "2",
                 name = "Saved Package 2",
                 dimensions = "dimensions",
@@ -111,13 +133,14 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
                 saved = true
             )
         ),
-        carrierPackages = mapOf(
-            CarrierType.USPS to CarrierDAO(
-                packageGroup = listOf(
-                    CarrierPackageGroupDAO(
+        carrierPackageGroups = listOf(
+            WooShippingPackagesEntity.CarrierPackageGroups(
+                carrierType = WooShippingPackagesEntity.CarrierType.USPS,
+                packageGroups = listOf(
+                    WooShippingPackagesEntity.CarrierPackageGroup(
                         description = "Group 1",
                         packages = listOf(
-                            PackageDAO(
+                            WooShippingPackagesEntity.Package(
                                 id = "1",
                                 name = "Carrier Package 1",
                                 dimensions = "dimensions",

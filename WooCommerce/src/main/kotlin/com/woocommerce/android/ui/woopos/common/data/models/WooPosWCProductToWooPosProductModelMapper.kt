@@ -7,12 +7,12 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @Reusable
-class WCProductToWooPosProductModelMapper @Inject constructor(
-    private val wooPosProductModelMapper: WooPosProductModelVersion2Mapper,
+class WooPosWCProductToWooPosProductModelMapper @Inject constructor(
+    private val wooPosProductModelMapper: WooPosProductModelMapper,
     private val logger: WooPosLogWrapper
 ) {
-    fun map(wcProduct: WCProductModel): WooPosProductModelVersion2 {
-        return WooPosProductModelVersion2(
+    fun map(wcProduct: WCProductModel): WooPosProductModel {
+        return WooPosProductModel(
             remoteId = wcProduct.remoteProductId,
             parentId = wcProduct.parentId.takeIf { it != 0L },
             name = wcProduct.name,

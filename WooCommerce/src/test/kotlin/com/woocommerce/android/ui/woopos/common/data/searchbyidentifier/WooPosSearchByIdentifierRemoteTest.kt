@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -25,7 +25,7 @@ class WooPosSearchByIdentifierRemoteTest {
     private val globalUniqueIdSearch: WooPosSearchByIdentifierGlobalUniqueSearch = mock()
     private val resultConverter: WooPosSearchByIdentifierResultConverter = mock()
 
-    private val testProduct = ProductTestUtils.generateProduct()
+    private val testProduct = generateWooPosProduct()
 
     @Before
     fun setup() {

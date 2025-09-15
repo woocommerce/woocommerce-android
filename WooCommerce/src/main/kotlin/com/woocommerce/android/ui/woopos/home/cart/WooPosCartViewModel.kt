@@ -7,12 +7,14 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
+import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -24,11 +26,11 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Product
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
@@ -69,6 +71,7 @@ class WooPosCartViewModel @Inject constructor(
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
     private val barcodeEventTracker: WooPosBarcodeEventTracker,
+    private val variationMapper: WooPosVariationMapper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -175,8 +178,8 @@ class WooPosCartViewModel @Inject constructor(
     private fun getCartItemsDataList(): List<WooPosItemsViewModel.ItemClickedData> {
         val itemClickedDataList = (_state.value.body as WooPosCartState.Body.WithItems).itemsInCart.mapNotNull {
             when (it) {
-                is WooPosCartItemViewState.Product.Simple -> WooPosItemsViewModel.ItemClickedData.Product.Simple(it.id)
-                is WooPosCartItemViewState.Product.Variation -> WooPosItemsViewModel.ItemClickedData.Product.Variation(
+                is Product.Simple -> WooPosItemsViewModel.ItemClickedData.Product.Simple(it.id)
+                is Product.Variation -> WooPosItemsViewModel.ItemClickedData.Product.Variation(
                     productId = it.id,
                     id = it.variationId
                 )
@@ -573,32 +576,31 @@ class WooPosCartViewModel @Inject constructor(
         .map { item ->
             when (item) {
                 is WooPosCartItemViewState.Coupon -> item.copy(validationState = CouponValidationState.Unknown)
-                is WooPosCartItemViewState.Product -> item
+                is Product -> item
                 is WooPosCartItemViewState.Error -> item
                 is WooPosCartItemViewState.Loading -> item
             }
         }
 
-    private suspend fun Product.toCartListItem(itemNumber: Int): WooPosCartItemViewState.Product.Simple =
-        WooPosCartItemViewState.Product.Simple(
-            itemNumber = itemNumber,
-            id = this.remoteId,
-            name = name,
-            description = null,
-            price = formatPrice(price),
-            imageUrl = firstImageUrl,
-        )
+    private suspend fun WooPosProductModel.toCartListItem(itemNumber: Int): Product.Simple = Product.Simple(
+        itemNumber = itemNumber,
+        id = this.remoteId,
+        name = name,
+        description = null,
+        price = formatPrice(pricing.displayPrice),
+        imageUrl = firstImageUrl,
+    )
 
-    private suspend fun ProductVariation.toCartListItem(
+    private suspend fun WooPosVariation.toCartListItem(
         itemNumber: Int,
-        product: Product
-    ): WooPosCartItemViewState.Product.Variation =
-        WooPosCartItemViewState.Product.Variation(
+        product: WooPosProductModel
+    ): Product.Variation =
+        Product.Variation(
             itemNumber = itemNumber,
             id = product.remoteId,
             variationId = this.remoteVariationId,
             name = product.name,
-            description = getNameForPOS(product, resourceProvider),
+            description = getNameForPOS(variationMapper, product, resourceProvider),
             price = formatPrice(price),
             imageUrl = image?.source,
         )
@@ -607,7 +609,7 @@ class WooPosCartViewModel @Inject constructor(
         (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.maxOfOrNull { it.itemNumber } ?: 1
 
     private fun cartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
-        body.itemsInCart.filterIsInstance<WooPosCartItemViewState.Product>().isNotEmpty()
+        body.itemsInCart.filterIsInstance<Product>().isNotEmpty()
 
     private fun cartContainsLoadingOrErrorItems(body: WooPosCartState.Body.WithItems) =
         body.itemsInCart.any { it is WooPosCartItemViewState.Loading || it is WooPosCartItemViewState.Error }
@@ -619,23 +621,23 @@ class WooPosCartViewModel @Inject constructor(
         return when (this) {
             is WooPosSearchByIdentifierResult.Success -> {
                 val product = this.product
-                WooPosCartItemViewState.Product.Simple(
+                Product.Simple(
                     itemNumber = itemNumber,
                     id = product.remoteId,
                     name = product.name,
                     description = null,
-                    price = formatPrice(product.price),
+                    price = formatPrice(product.pricing.displayPrice),
                     imageUrl = product.firstImageUrl
                 )
             }
 
             is WooPosSearchByIdentifierResult.VariationSuccess -> {
-                WooPosCartItemViewState.Product.Variation(
+                Product.Variation(
                     itemNumber = itemNumber,
                     id = variation.remoteProductId,
                     variationId = variation.remoteVariationId,
                     name = this.parentProduct.name,
-                    description = variation.getNameForPOS(this.parentProduct, resourceProvider),
+                    description = variation.getNameForPOS(variationMapper, this.parentProduct, resourceProvider),
                     price = formatPrice(variation.price),
                     imageUrl = variation.image?.source
                 )

@@ -101,19 +101,15 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 if (listener.isPresent) {
                     listener.get().onPasswordGenerationFailed(credentialsResult.error.toWPAPINetworkError())
                 }
-                return WPAPIResponse.Error(credentialsResult.error.toWPAPINetworkError())
+                return WPAPIResponse.Error(credentialsResult.error.toWPAPINetworkError().asGenerationFailure())
             }
 
             is ApplicationPasswordCreationResult.NotSupported -> {
+                val networkError = credentialsResult.originalError.toWPAPINetworkError()
                 if (listener.isPresent) {
-                    listener.get().onFeatureUnavailable(site, credentialsResult.originalError.toWPAPINetworkError())
+                    listener.get().onFeatureUnavailable(site, networkError)
                 }
-                return WPAPIResponse.Error(
-                    WPAPINetworkError(
-                        baseError = credentialsResult.originalError.toWPAPINetworkError(),
-                        errorCode = APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE
-                    )
-                )
+                return WPAPIResponse.Error(networkError.asGenerationFailure())
             }
         }
 
@@ -188,8 +184,17 @@ class ApplicationPasswordsNetwork @Inject constructor(
         params: Map<String, String>
     ) = executeGsonRequest(site, HttpMethod.DELETE, path, clazz, params)
 
+    private fun WPAPINetworkError.asGenerationFailure(): WPAPINetworkError {
+        val newErrorCode = "$APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX${errorCode.orEmpty()}"
+        return WPAPINetworkError(this, newErrorCode)
+    }
+
     companion object {
-        const val APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE = "application_passwords_not_supported"
+        /**
+         * A prefix that we use to allow differentiating errors caused by app passwords generation
+         * from other regular API errors.
+         */
+        const val APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX = "app_passwords_generation_failure:"
     }
 }
 

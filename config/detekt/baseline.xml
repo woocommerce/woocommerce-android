@@ -2271,21 +2271,6 @@
     <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `verify shipping address`()</ID>
     <ID>UnitTestNamingRule:WCStatsSqlUtilsTest.kt$WCStatsSqlUtilsTest$@Test @Suppress("LongMethod") fun testGetRawRevenueStatsForSiteAndUnit()</ID>
     <ID>UnitTestNamingRule:WCStatsSqlUtilsTest.kt$WCStatsSqlUtilsTest$@Test @Suppress("LongMethod") fun testSimpleInsertionAndRetrievalOfRevenueStats()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Suppress("LongMethod") @Test fun testGetQuantityForMonths()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Suppress("LongMethod") @Test fun testGetQuantityForWeeks()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Suppress("LongMethod") @Test fun testGetQuantityForYears()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test @Suppress("LongMethod") fun testGetRevenueAndOrderStatsForSite()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test @Suppress("LongMethod") fun testGetVisitorStatsForCurrentDayGranularity()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test @Suppress("LongMethod") fun testGetVisitorStatsForThisWeekGranularity()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test fun testFailedFetchingVisitorSummaryStats()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test fun testFetchBundlesErrorResponse()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test fun testFetchBundlesNullResponse()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test fun testFetchBundlesSuccessResponse()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test fun testFetchCurrentDayRevenueStatsDate()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test fun testFetchCurrentDayRevenueStatsDateSpecificEndDate()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test fun testGetNewVisitorStatsWithInvalidData()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test fun testGetQuantityForDays()</ID>
-    <ID>UnitTestNamingRule:WCStatsStoreTest.kt$WCStatsStoreTest$@Test fun testSuccessfulFetchingVisitorSummaryStats()</ID>
     <ID>UnitTestNamingRule:WCTaxStoreTest.kt$WCTaxStoreTest$@Test fun `get stored tax class list for site`()</ID>
     <ID>UnitTestNamingRule:WCUserStoreTest.kt$WCUserStoreTest$@Test fun `fetch user role`()</ID>
     <ID>UnitTestNamingRule:WCUserStoreTest.kt$WCUserStoreTest$@Test fun `get user role from db`()</ID>

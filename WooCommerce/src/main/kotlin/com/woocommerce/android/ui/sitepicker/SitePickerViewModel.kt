@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.H
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -233,8 +232,7 @@ class SitePickerViewModel @Inject constructor(
         val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
         _sites.value = buildSitesList(wooSites, selectedSiteId, nonWooSites)
 
-        val isEditListEnabled = FeatureFlag.HIDE_SITES_FROM_SITE_PICKER.isEnabled() &&
-            !navArgs.openedFromLogin &&
+        val isEditListEnabled = !navArgs.openedFromLogin &&
             wooSites.size > 1
         if (isEditListEnabled && sitePickerViewState.editStoreListEnabled.not()) {
             analyticsTrackerWrapper.track(stat = AnalyticsEvent.SITE_PICKER_EDIT_BUTTON_SHOWN)
@@ -518,11 +516,13 @@ class SitePickerViewModel @Inject constructor(
                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
                 launch {
                     val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
+                    val siteVerificationModel = siteVerificationResult.model
                     when {
                         siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
-                        siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
+                        siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                             experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
-                            selectedSite.set(it.site)
+                            selectedSite.set(siteVerificationModel.siteModel)
+                            trackAppPasswordsSupport(siteVerificationModel.siteModel)
                             userEligibilityFetcher.fetchUserInfo().fold(
                                 onSuccess = {
                                     sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
@@ -544,6 +544,12 @@ class SitePickerViewModel @Inject constructor(
                     }
                 }
             }
+    }
+
+    private fun trackAppPasswordsSupport(site: SiteModel) {
+        if (site.isApplicationPasswordsSupported) {
+            analyticsTrackerWrapper.track(AnalyticsEvent.JETPACK_SITE_ELIGIBLE_FOR_APP_PASSWORD_SUPPORT)
+        }
     }
 
     private fun onSiteVerificationError(

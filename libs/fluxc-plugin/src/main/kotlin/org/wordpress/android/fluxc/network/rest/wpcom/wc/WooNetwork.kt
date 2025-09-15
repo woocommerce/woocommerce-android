@@ -1,7 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -9,8 +7,9 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsErrorHandler
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsSupport
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,7 +29,8 @@ class WooNetwork @Inject constructor(
     private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration,
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
-    private val siteSqlUtils: SiteSqlUtils
+    private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport,
+    private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler
 ) : WPAPINetwork {
     override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
@@ -128,7 +128,7 @@ class WooNetwork @Inject constructor(
         request: suspend WPAPINetwork.() -> WPAPIResponse<T>
     ): WPAPIResponse<T> {
         val appPasswordsEnabled = applicationPasswordsConfiguration.isEnabledForJetpackAccess()
-        if (!appPasswordsEnabled || !site.isApplicationPasswordsSupported) {
+        if (!appPasswordsEnabled || !jetpackApplicationPasswordsSupport.supportsAppPasswords(site)) {
             if (appPasswordsEnabled) {
                 AppLog.v(
                     AppLog.T.API,
@@ -150,15 +150,12 @@ class WooNetwork @Inject constructor(
             is WPAPIResponse.Error<*> -> {
                 logMessageForFailedRequest(requestContext, site.url, appPasswordsResponse.error)
 
-                if (appPasswordsResponse.error.errorCode ==
-                    ApplicationPasswordsNetwork.APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE
-                ) {
-                    withContext(Dispatchers.IO) {
-                        site.applicationPasswordsAuthorizeUrl = null
-                        siteSqlUtils.insertOrUpdateSite(site)
+                jetpackTunnelWPAPINetwork.request().also {
+                    if (it is WPAPIResponse.Success) {
+                        // when the fallback to Jetpack Tunnel succeeds, notify the error handler
+                        jetpackApplicationPasswordsErrorHandler.handleError(site, appPasswordsResponse.error)
                     }
-                }
-                jetpackTunnelWPAPINetwork.request().copyWith(
+                }.copyWith(
                     networkingMode = WPAPINetworkingMode.JetpackTunnel(
                         isFallback = true,
                         applicationPasswordsError = appPasswordsResponse.error

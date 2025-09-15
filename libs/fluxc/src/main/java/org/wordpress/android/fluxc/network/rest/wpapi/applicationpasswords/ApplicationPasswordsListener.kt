@@ -7,4 +7,5 @@ interface ApplicationPasswordsListener {
     fun onNewPasswordCreated(isPasswordRegenerated: Boolean) {}
     fun onPasswordGenerationFailed(networkError: WPAPINetworkError) {}
     fun onFeatureUnavailable(siteModel: SiteModel, networkError: WPAPINetworkError) {}
+    fun onJetpackSiteFlaggedAsUnsupported(event: JetpackSiteFlaggedAsUnsupported)
 }

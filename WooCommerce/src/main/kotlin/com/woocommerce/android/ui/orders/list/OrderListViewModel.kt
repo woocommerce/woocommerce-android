@@ -614,9 +614,6 @@ class OrderListViewModel @Inject constructor(
         if (event.isError) {
             AnalyticsTracker.track(
                 AnalyticsEvent.ORDER_LIST_LOAD_ERROR,
-                properties = mapOf(
-                    "request_type" to event.networkingMode?.toTrackingValue()
-                ).filterNotNull(),
                 errorType = event.error.type.name,
                 errorContext = this::class.simpleName,
                 errorDescription = event.error.message,
@@ -635,19 +632,6 @@ class OrderListViewModel @Inject constructor(
                         "request_type" to event.networkingMode?.toTrackingValue()
                     )
                 )
-
-                if (event.networkingMode is WPAPINetworkingMode.JetpackTunnel &&
-                    (event.networkingMode as WPAPINetworkingMode.JetpackTunnel).isFallback
-                ) {
-                    val error = (event.networkingMode as WPAPINetworkingMode.JetpackTunnel).applicationPasswordsError
-                    AnalyticsTracker.track(
-                        AnalyticsEvent.ORDERS_LIST_APP_PASSWORDS_FAILURE,
-                        properties = mapOf(
-                            "network_error_code" to error?.volleyError?.networkResponse?.statusCode,
-                            "error_api_code" to error?.errorCode,
-                        )
-                    )
-                }
             }
         }
     }
