@@ -35,17 +35,11 @@ class WooPosVariationsInDbDataSource @Inject constructor(
         return posLocalCatalogStore.observeVariationsForProduct(siteId, remoteProductId)
             .map { result ->
                 result.getOrNull()?.mapNotNull { variationModel ->
-                    // Convert WCPosVariationModel to WooPosVariation by fetching from WCProductStore
-                    // This ensures we have all the required fields for WooPosVariation
-                    val fullVariation = productStore.getVariationByRemoteId(
+                    productStore.getVariationByRemoteId(
                         siteModel,
                         productId,
                         variationModel.remoteVariationId.value
-                    )?.toAppModel()
-
-                    // If the variation exists in the product store, convert to WooPosVariation
-                    // Otherwise, skip this variation (it may have been deleted)
-                    fullVariation?.toWooPosVariation(mapper)
+                    )?.toWooPosVariation(mapper)
                 } ?: emptyList()
             }
             .firstOrNull() ?: emptyList()
@@ -64,18 +58,15 @@ class WooPosVariationsInDbDataSource @Inject constructor(
         productId: Long,
         forceRefresh: Boolean
     ): Flow<FetchResult> = flow {
-        // Database mode: load all variations from database
         val databaseVariations = getVariationsFromDatabase(productId).applyFilter()
         emit(FetchResult.Remote(Result.success(databaseVariations)))
     }.flowOn(Dispatchers.IO)
 
     override suspend fun loadMore(productId: Long): Result<List<WooPosVariation>> = withContext(Dispatchers.IO) {
-        // Database mode: all variations already loaded, no pagination needed
         Result.success(emptyList())
     }
 }
 
 private fun List<WooPosVariation>.applyFilter(): List<WooPosVariation> {
-    return filter { !it.isDownloadable } // Keeping this filter for now, but it should be removed in the future after
-    // WC 9.7.0 is released. https://a8c.slack.com/archives/C070SJRA8DP/p1736795937571479
+    return filter { !it.isDownloadable }
 }
