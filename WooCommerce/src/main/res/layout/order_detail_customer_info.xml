@@ -304,6 +304,20 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- View Orders Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/customerInfo_viewOrdersBtn"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:text="@string/orderdetail_view_customer_orders"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
     </LinearLayout>
 
 </merge>
