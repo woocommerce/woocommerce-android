@@ -177,6 +177,7 @@ class OrderRestClient @Inject constructor(
         sortOrder: SortOrder,
         statusFilter: String?,
         createdVia: String? = null,
+        searchQuery: String? = null,
     ): FetchOrdersResponsePayload {
         val url = WOOCOMMERCE.orders.pathV3
         val params = mutableMapOf(
@@ -187,7 +188,8 @@ class OrderRestClient @Inject constructor(
             "_fields" to ORDER_FIELDS
         ).putIfNotEmpty(
             "status" to statusFilter,
-            "created_via" to createdVia
+            "created_via" to createdVia,
+            "search" to searchQuery,
         )
 
         val response = wooNetwork.executeGetGsonRequest(

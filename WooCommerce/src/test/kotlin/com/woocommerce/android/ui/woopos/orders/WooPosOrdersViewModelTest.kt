@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -202,5 +204,104 @@ class WooPosOrdersViewModelTest {
         val state = viewModel.state.value as WooPosOrdersState.Content
         assertThat(state.items.map { it.id }).containsExactly(300L, 400L)
         assertThat(state.selectedOrderId).isEqualTo(300L)
+    }
+
+    @Test
+    fun `given ViewModel initialized, when onSearchEvent SearchIconClicked, then search input state opens`() = runTest {
+        // GIVEN
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
+        val openState = state.searchInputState as WooPosSearchInputState.Open
+        assertThat(openState.input.text).isEmpty()
+        assertThat(openState.requestFocus).isTrue()
+    }
+
+    @Test
+    fun `given search data available, when onSearchEvent Search with query, then searchOrders is called and state updates`() = runTest {
+        // GIVEN
+        val query = "test query"
+        val searchResult = listOf(order(10), order(20))
+        whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Success(searchResult))
+
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.items.map { it.id }).containsExactly(10L, 20L)
+        assertThat(content.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
+
+        verify(dataSource).searchOrders(query)
+    }
+
+    @Test
+    fun `given ViewModel initialized, when onSearchEvent Search with empty query, then loadOrders is called`() = runTest {
+        // GIVEN
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("", 0))
+        advanceUntilIdle()
+
+        // THEN
+        verify(dataSource, times(2)).loadOrders() // init + search with empty query
+    }
+
+    @Test
+    fun `given search input is open, when onSearchEvent Close, then search input state closes and loadOrders is called`() = runTest {
+        // GIVEN
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Close)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state.searchInputState).isEqualTo(WooPosSearchInputState.Closed)
+        verify(dataSource, times(2)).loadOrders() // init + close search
+    }
+
+    @Test
+    fun `given search will fail, when search is performed, then Error state is shown with search input state preserved`() = runTest {
+        // GIVEN
+        val query = "test query"
+        whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Error("search failed"))
+
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Error::class.java)
+        val error = state as WooPosOrdersState.Error
+        assertThat(error.message).isEqualTo("search failed")
+        assertThat(error.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
     }
 }
