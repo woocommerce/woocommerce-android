@@ -12,7 +12,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
@@ -30,9 +33,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -40,6 +48,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+
+private val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -59,6 +69,7 @@ fun WooPosOrdersScreen(
             onRefresh = viewModel::onRefresh,
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
+            onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
@@ -83,13 +94,48 @@ private fun OrdersList(
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        WooPosToolbar(
-            titleText = stringResource(R.string.woopos_orders_title),
-            onBackClicked = onBackClicked,
-        )
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
+        ) {
+            val (toolbar, searchInput) = createRefs()
+
+            if (state.searchInputState is WooPosSearchInputState.Closed) {
+                WooPosToolbar(
+                    titleText = stringResource(R.string.woopos_orders_title),
+                    onBackClicked = onBackClicked,
+                    modifier = Modifier.constrainAs(toolbar) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+                )
+            }
+            WooPosSearchInput(
+                state = state.searchInputState,
+                onEvent = onSearchEvent,
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .constrainAs(searchInput) {
+                        if (state.searchInputState is WooPosSearchInputState.Open) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                        } else {
+                            end.linkTo(parent.end)
+                        }
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isRefreshing,

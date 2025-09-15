@@ -7,6 +7,8 @@
 - [*] Enhance the shipping label creation screen by making the selected hazardous box tappable [https://github.com/woocommerce/woocommerce-android/pull/14576]
 - [*] Shipping Labels: Enhance selected package UI in the create shipping label flow [https://github.com/woocommerce/woocommerce-android/pull/14579]
 - [*] Fixed the incorrect size of the notification icon [https://github.com/woocommerce/woocommerce-android/pull/14586]
+- [***] Performance improvements for users logging in with WordPress.com accounts [https://github.com/woocommerce/woocommerce-android/pull/14610]
+- [*] Fix an issue where there is delay before displaying the continue button in Site Picker screen [https://github.com/woocommerce/woocommerce-android/pull/14611]
 
 23.2
 -----
