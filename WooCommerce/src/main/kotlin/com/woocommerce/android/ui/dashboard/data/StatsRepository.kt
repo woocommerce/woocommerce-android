@@ -154,7 +154,6 @@ class StatsRepository @Inject constructor(
                     result.granularity,
                     result.quantity,
                     result.date,
-                    result.isCustomField
                 )
             }
             Result.success(visitorStats)
