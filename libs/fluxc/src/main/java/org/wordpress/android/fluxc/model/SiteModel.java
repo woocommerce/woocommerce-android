@@ -265,6 +265,14 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     private Boolean mWasEcommerceTrial;
     @Column
     private Boolean mIsSingleUserSite;
+    @Column
+    private boolean mIsGardenSite;
+    @Column
+    @Nullable
+    private String mGardenName;
+    @Column
+    @Nullable
+    private String mGardenPartner;
 
     @Override
     public int getId() {
@@ -1137,6 +1145,32 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         mIsSingleUserSite = isSingleUserSite;
     }
 
+    public boolean isGardenSite() {
+        return mIsGardenSite;
+    }
+
+    public void setIsGardenSite(boolean mIsGardenSite) {
+        this.mIsGardenSite = mIsGardenSite;
+    }
+
+    @Nullable
+    public String getGardenName() {
+        return mGardenName;
+    }
+
+    public void setGardenName(@Nullable String mGardenName) {
+        this.mGardenName = mGardenName;
+    }
+
+    @Nullable
+    public String getGardenPartner() {
+        return mGardenPartner;
+    }
+
+    public void setGardenPartner(@Nullable String mGardenPartner) {
+        this.mGardenPartner = mGardenPartner;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof SiteModel)) return false;
@@ -1236,7 +1270,10 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 Objects.equals(mCanBlaze, siteModel.mCanBlaze) &&
                 Objects.equals(mPlanActiveFeatures, siteModel.mPlanActiveFeatures) &&
                 Objects.equals(mWasEcommerceTrial, siteModel.mWasEcommerceTrial) &&
-                Objects.equals(mIsSingleUserSite, siteModel.mIsSingleUserSite);
+                Objects.equals(mIsSingleUserSite, siteModel.mIsSingleUserSite) &&
+                mIsGardenSite == siteModel.mIsGardenSite &&
+                Objects.equals(mGardenName, siteModel.mGardenName) &&
+                Objects.equals(mGardenPartner, siteModel.mGardenPartner);
     }
 
     @Override
@@ -1336,6 +1373,9 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 mCanBlaze,
                 mPlanActiveFeatures,
                 mWasEcommerceTrial,
-                mIsSingleUserSite);
+                mIsSingleUserSite,
+                mIsGardenSite,
+                mGardenName,
+                mGardenPartner);
     }
 }
