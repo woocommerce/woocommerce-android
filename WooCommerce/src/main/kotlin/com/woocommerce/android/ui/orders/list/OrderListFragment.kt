@@ -690,6 +690,10 @@ class OrderListFragment :
                     selectedOrder.selectOrder(-1L)
                 }
 
+                is OrdersCommunicationViewModel.CommunicationEvent.CustomerFilterRequested -> {
+                    applyCustomerFilter(event.customerId)
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -908,9 +912,6 @@ class OrderListFragment :
             if (requireContext().isTwoPanesShouldBeUsed) {
                 openSpecificOrder(it, true)
             }
-        }
-        handleResult<Long>("customer_filter") { customerId ->
-            applyCustomerFilter(customerId)
         }
         handleDialogResult<OrderStatusUpdateSource>(
             key = OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT,

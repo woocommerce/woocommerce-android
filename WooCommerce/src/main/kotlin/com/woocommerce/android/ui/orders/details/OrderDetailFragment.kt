@@ -888,15 +888,9 @@ class OrderDetailFragment :
     private fun onViewCustomerOrdersClicked(order: Order) {
         val customerId = order.customer?.customerId?.takeIf { it > 0 } ?: return
 
-        if (requireContext().isTwoPanesShouldBeUsed) {
-            val orderListFragment = parentFragment?.parentFragment as? OrderListFragment
-            orderListFragment?.applyCustomerFilter(customerId)
-        } else {
+        communicationViewModel.applyCustomerFilter(customerId)
+        if (!requireContext().isTwoPanesShouldBeUsed) {
             findNavController().popBackStack(R.id.orders, false)
-            findNavController().currentBackStackEntry?.savedStateHandle?.set(
-                "customer_filter",
-                customerId
-            )
         }
     }
 
