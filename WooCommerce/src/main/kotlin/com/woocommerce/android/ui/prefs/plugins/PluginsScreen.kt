@@ -1,16 +1,9 @@
 package com.woocommerce.android.ui.prefs.plugins
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,9 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -45,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -199,32 +190,9 @@ private fun PluginItem(
 
 @Composable
 fun ShimmerPluginsList() {
-    val colors = listOf(
-        Color.LightGray.copy(alpha = 0.9f),
-        Color.LightGray.copy(alpha = 0.2f),
-        Color.LightGray.copy(alpha = 0.9f)
-    )
-
-    val transition = rememberInfiniteTransition(label = "")
-    val animation = transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(600, easing = LinearEasing, delayMillis = 500),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = ""
-    )
-
-    val brush = Brush.linearGradient(
-        colors = colors,
-        start = Offset(animation.value - 500f, animation.value - 500f),
-        end = Offset(animation.value, animation.value)
-    )
-
     LazyColumn {
         items(10) {
-            ShimmerPluginItem(brush = brush)
+            ShimmerPluginItem()
 
             if (it < 10) {
                 Divider()
@@ -234,7 +202,7 @@ fun ShimmerPluginsList() {
 }
 
 @Composable
-fun ShimmerPluginItem(brush: Brush) {
+fun ShimmerPluginItem() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -245,16 +213,14 @@ fun ShimmerPluginItem(brush: Brush) {
                 .weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Box(
+            SkeletonView(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(brush)
                     .height(18.dp)
                     .width(200.dp)
             )
-            Box(
+            SkeletonView(
                 modifier = Modifier
-                    .background(brush)
                     .height(18.dp)
                     .width(150.dp)
             )
@@ -265,17 +231,15 @@ fun ShimmerPluginItem(brush: Brush) {
                 .width(100.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Box(
+            SkeletonView(
                 modifier = Modifier
                     .align(Alignment.End)
-                    .background(brush)
                     .height(18.dp)
                     .width(40.dp)
             )
-            Box(
+            SkeletonView(
                 modifier = Modifier
                     .align(Alignment.End)
-                    .background(brush)
                     .height(16.dp)
                     .width(70.dp)
             )

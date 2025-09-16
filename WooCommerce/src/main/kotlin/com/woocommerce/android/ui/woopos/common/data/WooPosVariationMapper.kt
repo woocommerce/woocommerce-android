@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.WCProductVariationModel
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -74,7 +74,7 @@ class WooPosVariationMapper @Inject constructor(
     }
 
     @Suppress("SwallowedException")
-    fun fromWCPosVariationModel(model: WCPosVariationModel): WooPosVariation {
+    fun fromWooPosVariationEntity(model: WooPosVariationEntity): WooPosVariation {
         val attributesList = parseAttributesJson(model.attributesJson)
 
         return WooPosVariation(
@@ -162,8 +162,8 @@ fun ProductVariation.toWooPosVariation(mapper: WooPosVariationMapper): WooPosVar
 fun WCProductVariationModel.toWooPosVariation(mapper: WooPosVariationMapper): WooPosVariation =
     mapper.fromWCProductVariationModel(this)
 
-fun WCPosVariationModel.toWooPosVariation(mapper: WooPosVariationMapper): WooPosVariation =
-    mapper.fromWCPosVariationModel(this)
+fun WooPosVariationEntity.toWooPosVariation(mapper: WooPosVariationMapper): WooPosVariation =
+    mapper.fromWooPosVariationEntity(this)
 
 fun WooPosVariation.getNameForPOS(
     mapper: WooPosVariationMapper,

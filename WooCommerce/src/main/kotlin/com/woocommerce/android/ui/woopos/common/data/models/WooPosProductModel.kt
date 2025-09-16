@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStat
 import java.math.BigDecimal
 
 /**
- * This model provides a clean separation between the data layer (WCPosProductEntity)
+ * This model provides a clean separation between the data layer (WooPosProductEntity)
  * and the view layer, ensuring all required data is present and properly typed.
  */
 @Parcelize

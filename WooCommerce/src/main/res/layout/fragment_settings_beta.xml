@@ -18,6 +18,7 @@
         android:id="@+id/jetpackAppPasswordsToggle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:toggleOptionDesc="@string/settings_enable_jetpack_app_passwords_message"
         app:toggleOptionTitle="@string/settings_enable_jetpack_app_passwords_title" />
 

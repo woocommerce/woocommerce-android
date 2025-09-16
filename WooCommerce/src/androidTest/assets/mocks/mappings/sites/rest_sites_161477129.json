@@ -47,6 +47,7 @@
                 "view_stats": true
             },
             "jetpack": true,
+            "jetpack_connection": true,
             "visible": true,
             "is_private": false,
             "options": {

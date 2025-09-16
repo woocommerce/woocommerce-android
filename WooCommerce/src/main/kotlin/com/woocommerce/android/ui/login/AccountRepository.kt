@@ -9,16 +9,19 @@ import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
@@ -36,7 +39,8 @@ class AccountRepository @Inject constructor(
     private val zendeskSettings: ZendeskSettings,
     private val prefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
-    private val siteVisibilityDataStore: VisibleWooSitesDataStore
+    private val siteVisibilityDataStore: VisibleWooSitesDataStore,
+    private val dispatchers: CoroutineDispatchers
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -71,23 +75,13 @@ class AccountRepository @Inject constructor(
                 false
             } else {
                 AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
+                deleteApplicationPasswordsOfUserSites()
                 cleanup()
                 true
             }
         } else {
             // Application passwords logout
-            val site = selectedSite.get()
-            appCoroutineScope.launch {
-                val result = siteStore.deleteApplicationPassword(site)
-                if (result.isError) {
-                    WooLog.e(
-                        LOGIN,
-                        "Error deleting application password: ${result.error.errorCode} > ${result.error.message}"
-                    )
-                } else {
-                    WooLog.i(LOGIN, "Application password deleted")
-                }
-            }
+            deleteApplicationPassword(selectedSite.get())
             AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
             cleanup()
             true
@@ -135,6 +129,33 @@ class AccountRepository @Inject constructor(
         dispatcher.dispatchAndAwait<Void, OnDeviceUnregistered>(
             NotificationActionBuilder.newUnregisterDeviceAction()
         )
+    }
+
+    private suspend fun deleteApplicationPasswordsOfUserSites() {
+        val sites = withContext(dispatchers.io) {
+            siteStore.sitesAccessedViaWPComRest
+        }
+
+        // Start deleting passwords asynchronously in the background
+        sites.forEach { site ->
+            deleteApplicationPassword(site)
+        }
+    }
+
+    private fun deleteApplicationPassword(site: SiteModel) {
+        appCoroutineScope.launch {
+            val result = siteStore.deleteApplicationPassword(site)
+            val siteId = site.siteId.takeIf { it != 0L }
+            if (result.isError) {
+                WooLog.e(
+                    LOGIN,
+                    "Error deleting application password: ${siteId?.let { "Site Id: $it - " }.orEmpty()}" +
+                        "${result.error.errorCode} > ${result.error.message}"
+                )
+            } else {
+                WooLog.i(LOGIN, "Application password deleted${siteId?.let { " for site Id: $it" }.orEmpty()}" )
+            }
+        }
     }
 
     sealed class CloseAccountResult {

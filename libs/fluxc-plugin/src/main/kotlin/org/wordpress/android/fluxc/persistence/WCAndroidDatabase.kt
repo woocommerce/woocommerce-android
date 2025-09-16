@@ -7,6 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
+import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
@@ -39,6 +40,7 @@ import org.wordpress.android.fluxc.persistence.dao.GlobalAttributesDao
 import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
+import org.wordpress.android.fluxc.persistence.dao.NewVisitorStatsDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrderStatusDao
@@ -88,8 +90,8 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEn
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration13to14
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration14to15
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration16to17
@@ -118,7 +120,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 64
+const val WC_DATABASE_VERSION = 65
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -145,8 +147,8 @@ const val WC_DATABASE_VERSION = 64
         ShippingMethodEntity::class,
         CustomerFromAnalyticsEntity::class,
         WCProductModel::class,
-        WCPosProductEntity::class,
-        WCPosVariationModel::class,
+        WooPosProductEntity::class,
+        WooPosVariationEntity::class,
         WCProductCategoryModel::class,
         WCProductVariationModel::class,
         WCProductTagModel::class,
@@ -166,6 +168,7 @@ const val WC_DATABASE_VERSION = 64
         WooShippingPackagesEntity::class,
         WCGlobalAttributeModel::class,
         GatewayEntity::class,
+        WCNewVisitorStatsModel::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -212,6 +215,7 @@ const val WC_DATABASE_VERSION = 64
         AutoMigration(from = 60, to = 61),
         AutoMigration(from = 61, to = 62),
         AutoMigration(from = 63, to = 64),
+        AutoMigration(from = 64, to = 65),
     ]
 )
 @TypeConverters(
@@ -259,6 +263,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val wooShippingDao: WooShippingDao
     internal abstract val globalAttributesDao: GlobalAttributesDao
     internal abstract val gatewaysDao: GatewaysDao
+    internal abstract val newVisitorStatsDao: NewVisitorStatsDao
 
     companion object {
         fun buildDb(

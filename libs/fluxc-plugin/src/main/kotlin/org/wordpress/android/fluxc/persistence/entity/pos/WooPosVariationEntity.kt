@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
     tableName = "PosVariationEntity",
     primaryKeys = ["localSiteId", "remoteProductId", "remoteVariationId"],
 )
-data class WCPosVariationModel(
+data class WooPosVariationEntity(
     val localSiteId: LocalId = LocalId(0),
     val remoteProductId: RemoteId = RemoteId(0),
     val remoteVariationId: RemoteId = RemoteId(0),

@@ -21,6 +21,11 @@ sealed class LoadOrdersResult {
     data class Error(val message: String) : LoadOrdersResult()
 }
 
+sealed class SearchOrdersResult {
+    data class Success(val orders: List<Order>) : SearchOrdersResult()
+    data class Error(val message: String) : SearchOrdersResult()
+}
+
 class WooPosOrdersDataSource @Inject constructor(
     private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
@@ -44,37 +49,29 @@ class WooPosOrdersDataSource @Inject constructor(
             emit(LoadOrdersResult.SuccessCache(cached))
         }
 
-        val result = restClient.fetchOrders(
-            site = selectedSite.get(),
-            count = POS_ORDERS_PAGE_SIZE,
-            page = page.get(),
-            orderBy = OrderBy.DATE,
-            sortOrder = OrderRestClient.SortOrder.DESCENDING,
-            statusFilter = null,
-            createdVia = "pos-rest-api"
-        )
+        val result = fetchOrdersFromRemote(searchQuery = null, page = page.get())
 
         if (result.isError) {
-            emit(LoadOrdersResult.Error(result.error.message))
+            emit(LoadOrdersResult.Error(result.error?.message ?: "Unknown error"))
         } else {
             val mapped = result.orders.toAppModels()
             ordersCache.setAll(mapped)
-            canLoadMore.set(result.canLoadMore)
-            page.addAndGet(1)
-            emit(LoadOrdersResult.SuccessRemote(result.orders.toAppModels()))
+            emit(LoadOrdersResult.SuccessRemote(mapped))
+        }
+    }
+
+    suspend fun searchOrders(searchQuery: String): SearchOrdersResult {
+        val result = fetchOrdersFromRemote(searchQuery = searchQuery, page = 1)
+
+        return if (result.isError) {
+            SearchOrdersResult.Error(result.error?.message ?: "Unknown error")
+        } else {
+            SearchOrdersResult.Success(result.orders.toAppModels())
         }
     }
 
     suspend fun loadMore(): Result<List<Order>> = withContext(Dispatchers.IO) {
-        val result = restClient.fetchOrders(
-            site = selectedSite.get(),
-            count = POS_ORDERS_PAGE_SIZE,
-            page = page.get(),
-            orderBy = OrderBy.DATE,
-            sortOrder = OrderRestClient.SortOrder.DESCENDING,
-            statusFilter = null,
-            createdVia = "pos-rest-api"
-        )
+        val result = fetchOrdersFromRemote(searchQuery = null, page = page.get())
 
         if (result.isError) {
             return@withContext Result.failure(result.error.toThrowable())
@@ -86,6 +83,20 @@ class WooPosOrdersDataSource @Inject constructor(
             return@withContext Result.success(mapped)
         }
     }
+
+    private suspend fun fetchOrdersFromRemote(
+        page: Int,
+        searchQuery: String?
+    ) = restClient.fetchOrders(
+        site = selectedSite.get(),
+        count = POS_ORDERS_PAGE_SIZE,
+        page = page,
+        orderBy = OrderBy.DATE,
+        sortOrder = OrderRestClient.SortOrder.DESCENDING,
+        statusFilter = null,
+        createdVia = "pos-rest-api",
+        searchQuery = searchQuery,
+    )
 
     fun clearCache() = ordersCache.clear()
 
