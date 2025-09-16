@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.products.typesbottomsheet
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import javax.inject.Inject
 
-class ProductTypeBottomSheetBuilder @Inject constructor() {
+class ProductTypeBottomSheetBuilder @Inject constructor(
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+) {
     fun buildBottomSheetList(areSubscriptionsSupported: Boolean): List<ProductTypesBottomSheetUiItem> {
         return listOf(
             ProductTypesBottomSheetUiItem(
@@ -33,6 +37,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor() {
                 titleResource = R.string.product_type_variable_title,
                 descResource = R.string.product_type_variable_desc,
                 iconResource = R.drawable.ic_gridicons_types,
+                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.VariableProducts)
             ),
 
             ProductTypesBottomSheetUiItem(
