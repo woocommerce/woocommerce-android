@@ -43,6 +43,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     private val binding = OrderDetailCustomerInfoBinding.inflate(LayoutInflater.from(ctx), this)
     private var isCustomerInfoViewExpanded = false
 
+    var viewCustomerOrdersListener: ((Order) -> Unit)? = null
+
     override fun onSaveInstanceState(): Parcelable {
         val bundle = Bundle()
         bundle.putBoolean(KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED, isCustomerInfoViewExpanded)
@@ -201,12 +203,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         } else {
             binding.customerInfoViewOrdersBtn.visibility = GONE
         }
-    }
-
-    private var viewCustomerOrdersListener: ((Order) -> Unit)? = null
-
-    fun setOnViewCustomerOrdersListener(listener: (Order) -> Unit) {
-        viewCustomerOrdersListener = listener
     }
 
     private fun showBillingAddressPhoneInfo(order: Order) {

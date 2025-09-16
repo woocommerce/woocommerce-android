@@ -251,9 +251,7 @@ class OrderDetailFragment :
             viewModel.onTrashOrderClicked()
         }
 
-        binding.orderDetailCustomerInfo.setOnViewCustomerOrdersListener { order ->
-            onViewCustomerOrdersClicked(order)
-        }
+        binding.orderDetailCustomerInfo.viewCustomerOrdersListener = { order -> onViewCustomerOrdersClicked(order) }
 
         ViewCompat.setTransitionName(
             binding.scrollView,
