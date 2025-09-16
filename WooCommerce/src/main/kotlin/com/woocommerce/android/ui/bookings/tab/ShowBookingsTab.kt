@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class ShowBookingsTab @Inject constructor() {
     suspend operator fun invoke(): Result<Boolean> = withContext(Dispatchers.IO) {
-        // TODO CHECK IF THERE ARE ANY BOOKABLE PRODUCTS PUBLISHED FOR THE SITE
+        // TODO: Fetch if site has any published bookable product AND if site is CIAB
         return@withContext Result.success(FeatureFlag.BOOKINGS_MVP.isEnabled())
     }
 }
