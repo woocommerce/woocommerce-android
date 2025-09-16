@@ -107,6 +107,15 @@ class BlazeRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a campaign with end date, when creating it, budget should equal totalBudget`() =
+        testBlocking {
+            repository.createCampaign(NON_ENDLESS_CAMPAIGN_DETAILS, PAYMENT_METHOD_ID)
+
+            verify(blazeCampaignsStore).createCampaign(any(), createCampaignRequestCaptor.capture())
+            assertThat(createCampaignRequestCaptor.firstValue.budget.amount).isEqualTo(TOTAL_BUDGET.toDouble())
+        }
+
+    @Test
     fun `given productId, when generateDefaultCampaignDetails invoked, then default CampaignDetails created`() =
         testBlocking {
             val productId = 123L
