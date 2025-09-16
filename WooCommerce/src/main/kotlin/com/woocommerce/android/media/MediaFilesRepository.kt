@@ -5,8 +5,6 @@ import android.graphics.BitmapFactory
 import android.graphics.BitmapFactory.Options
 import android.net.Uri
 import android.util.Patterns
-import coil.annotation.ExperimentalCoilApi
-import coil.imageLoader
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
@@ -44,7 +42,6 @@ import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
 import java.net.URL
-import java.net.UnknownHostException
 import javax.inject.Inject
 
 class MediaFilesRepository @Inject constructor(
@@ -90,7 +87,6 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoilApi::class)
     suspend fun getImageDimensions(uri: String): ImageDimensions {
         return withContext(dispatchers.io) {
             try {
@@ -104,16 +100,6 @@ class MediaFilesRepository @Inject constructor(
                     parcelFileDescriptor.close()
                 }
                 return@withContext ImageDimensions(options.outWidth, options.outHeight)
-            } catch (e: UnknownHostException) {
-                e.printStackTrace()
-                // Image could not be loaded from internet, let's try to load a cached version
-                context.imageLoader.diskCache?.openSnapshot(uri)?.let { snapshot ->
-                    val source = snapshot.data.toFile()
-                    val options = Options().apply { inJustDecodeBounds = true }
-                    BitmapFactory.decodeStream(source.inputStream(), null, options)
-                    snapshot.close()
-                    return@withContext ImageDimensions(options.outWidth, options.outHeight)
-                }
             } catch (e: IOException) {
                 e.printStackTrace()
             }
