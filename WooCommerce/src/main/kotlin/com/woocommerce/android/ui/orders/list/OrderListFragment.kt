@@ -931,6 +931,7 @@ class OrderListFragment :
             listOf(customerId.toString())
         )
         viewModel.loadOrders()
+        uiMessageResolver.showSnack(R.string.order_list_customer_filter_applied)
     }
 
     private fun showOrderFilters() {
