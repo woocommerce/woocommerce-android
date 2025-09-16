@@ -23,7 +23,6 @@ class WooPosOrdersViewModel @Inject constructor(
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
     private var loadMoreOrdersJob: Job? = null
     private var loadOrdersJob: Job? = null
-    private var loadMoreAfterLoadCompletes = false
 
     init {
         loadOrders()
@@ -66,7 +65,6 @@ class WooPosOrdersViewModel @Inject constructor(
         }
 
         if (loadOrdersJob?.isActive == true) {
-            loadMoreAfterLoadCompletes = true
             _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
             return
         }
@@ -112,21 +110,8 @@ class WooPosOrdersViewModel @Inject constructor(
                         } else {
                             updateContentState(result.orders)
                         }
-
-                        if (loadMoreAfterLoadCompletes) {
-                            queueLoadMoreAfterLoadCompletes()
-                        }
                     }
                 }
-            }
-        }
-    }
-
-    private fun queueLoadMoreAfterLoadCompletes() {
-        loadOrdersJob?.invokeOnCompletion { throwable ->
-            if (throwable == null && _state.value is WooPosOrdersState.Content) {
-                loadMoreAfterLoadCompletes = false
-                onEndOfOrdersListReached()
             }
         }
     }
