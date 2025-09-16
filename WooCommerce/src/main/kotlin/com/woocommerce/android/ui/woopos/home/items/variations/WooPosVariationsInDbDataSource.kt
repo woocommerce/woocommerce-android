@@ -23,7 +23,6 @@ import javax.inject.Singleton
 class WooPosVariationsInDbDataSource @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
-    private val productStore: WCProductStore,
     private val mapper: WooPosVariationMapper
 ) : WooPosVariationsDataSourceInterface {
 
@@ -34,13 +33,7 @@ class WooPosVariationsInDbDataSource @Inject constructor(
 
         return posLocalCatalogStore.observeVariationsForProduct(siteId, remoteProductId)
             .map { result ->
-                result.getOrNull()?.mapNotNull { variationModel ->
-                    productStore.getVariationByRemoteId(
-                        siteModel,
-                        productId,
-                        variationModel.remoteVariationId.value
-                    )?.toWooPosVariation(mapper)
-                } ?: emptyList()
+                result.getOrNull()?.map { it.toWooPosVariation(mapper) } ?: emptyList()
             }
             .firstOrNull() ?: emptyList()
     }
