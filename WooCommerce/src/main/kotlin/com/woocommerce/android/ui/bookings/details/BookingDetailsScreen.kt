@@ -21,7 +21,8 @@ fun BookingDetailsScreen(
     val viewState by viewModel.state.collectAsStateWithLifecycle()
 
     BookingDetailsScreen(
-        viewState = viewState, onBack = onBack
+        viewState = viewState,
+        onBack = onBack
     )
 }
 

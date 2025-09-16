@@ -90,12 +90,25 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
+    private val bookingDetailsFlow = flowOf(
+        NonToggleableListItem(
+            icon = R.drawable.ic_calendar_16,
+            iconTint = R.color.color_primary,
+            label = UiString.UiStringText("Show booking details"),
+            isEnabled = true,
+            onClick = {
+                triggerEvent(DeveloperOptionsEvents.OpenBookingDetails)
+            }
+        )
+    )
+
     val viewState = combine(
         simulatedCardReaderFlow,
         readerUpdateFrequencyFlow,
         interacPaymentEnabledFlow,
         savedPrivacySettingsOnDialogFlow,
-        apiFakerFlow
+        apiFakerFlow,
+        bookingDetailsFlow
     ) { items ->
         DeveloperOptionsViewState(
             rows = items.filterNotNull()
@@ -139,6 +152,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         ) : DeveloperOptionsEvents()
 
         data object OpenApiFaker : DeveloperOptionsEvents()
+        data object OpenBookingDetails : DeveloperOptionsEvents()
     }
 
     data class DeveloperOptionsViewState(
