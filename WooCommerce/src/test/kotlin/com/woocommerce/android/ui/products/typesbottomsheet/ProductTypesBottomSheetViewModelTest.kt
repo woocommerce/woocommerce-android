@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.typesbottomsheet
 
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -14,12 +13,10 @@ import org.mockito.kotlin.whenever
 class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductTypesBottomSheetViewModel
     private val bottomSheetBuilder: ProductTypeBottomSheetBuilder = mock()
-    private val isEligibleForSubscriptions: IsEligibleForSubscriptions = mock()
 
     @Before
     fun setUp() = testBlocking {
-        whenever(isEligibleForSubscriptions()).thenReturn(false)
-        whenever(bottomSheetBuilder.buildBottomSheetList(false)).thenReturn(uiItems)
+        whenever(bottomSheetBuilder.buildBottomSheetList()).thenReturn(uiItems)
     }
 
     @Test
@@ -27,7 +24,6 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
         viewModel = ProductTypesBottomSheetViewModel(
             ProductTypesBottomSheetFragmentArgs(isAddProduct = true).toSavedStateHandle(),
             bottomSheetBuilder,
-            isEligibleForSubscriptions,
         )
 
         assertThat(viewModel.productTypesBottomSheetList.value).isEqualTo(uiItems)
@@ -42,7 +38,6 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
                 isCurrentProductVirtual = false
             ).toSavedStateHandle(),
             bottomSheetBuilder,
-            isEligibleForSubscriptions
         )
 
         assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)
@@ -57,7 +52,6 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
                 isCurrentProductVirtual = true
             ).toSavedStateHandle(),
             bottomSheetBuilder,
-            isEligibleForSubscriptions
         )
 
         assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)

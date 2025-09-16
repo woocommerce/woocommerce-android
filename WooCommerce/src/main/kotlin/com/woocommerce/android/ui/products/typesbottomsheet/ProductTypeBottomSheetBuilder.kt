@@ -5,12 +5,16 @@ import com.woocommerce.android.ciab.CIABAffectedFeature
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
+import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import javax.inject.Inject
 
 class ProductTypeBottomSheetBuilder @Inject constructor(
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) {
-    fun buildBottomSheetList(areSubscriptionsSupported: Boolean): List<ProductTypesBottomSheetUiItem> {
+    suspend fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {
+        val isEligibleForSubscriptions = isEligibleForSubscriptions()
+
         return listOf(
             ProductTypesBottomSheetUiItem(
                 type = ProductType.SIMPLE,
@@ -30,7 +34,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 titleResource = R.string.product_type_simple_subscription_title,
                 descResource = R.string.product_type_simple_subscription_desc,
                 iconResource = R.drawable.ic_event_repeat,
-                isVisible = areSubscriptionsSupported
+                isVisible = isEligibleForSubscriptions
             ),
             ProductTypesBottomSheetUiItem(
                 type = ProductType.VARIABLE,
@@ -45,7 +49,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 titleResource = R.string.product_type_variable_subscription_title,
                 descResource = R.string.product_type_variable_subscription_desc,
                 iconResource = R.drawable.ic_event_repeat,
-                isVisible = areSubscriptionsSupported
+                isVisible = isEligibleForSubscriptions
             ),
             ProductTypesBottomSheetUiItem(
                 type = ProductType.GROUPED,
