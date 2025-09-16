@@ -67,6 +67,8 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.products.MutableMultipleSelectionPredicate
@@ -111,6 +113,9 @@ class OrderListFragment :
 
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
+
+    @Inject
+    internal lateinit var orderFiltersRepository: OrderFiltersRepository
 
     private var tracker: SelectionTracker<Long>? = null
     private var actionMode: ActionMode? = null
@@ -685,6 +690,10 @@ class OrderListFragment :
                     selectedOrder.selectOrder(-1L)
                 }
 
+                is OrdersCommunicationViewModel.CommunicationEvent.CustomerFilterRequested -> {
+                    applyCustomerFilter(event.customerId)
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -913,6 +922,16 @@ class OrderListFragment :
                 newStatus = Order.Status.fromValue(it.newStatus)
             )
         }
+    }
+
+    fun applyCustomerFilter(customerId: Long) {
+        searchQuery = ""
+        orderFiltersRepository.setSelectedFilters(
+            OrderListFilterCategory.CUSTOMER,
+            listOf(customerId.toString())
+        )
+        viewModel.loadOrders()
+        uiMessageResolver.showSnack(R.string.order_list_customer_filter_applied)
     }
 
     private fun showOrderFilters() {
