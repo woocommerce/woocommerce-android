@@ -51,7 +51,8 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 type = ProductType.GROUPED,
                 titleResource = R.string.product_type_grouped_title,
                 descResource = R.string.product_type_grouped_desc,
-                iconResource = R.drawable.ic_widgets
+                iconResource = R.drawable.ic_widgets,
+                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.GroupedProducts)
             ),
             ProductTypesBottomSheetUiItem(
                 type = ProductType.EXTERNAL,
