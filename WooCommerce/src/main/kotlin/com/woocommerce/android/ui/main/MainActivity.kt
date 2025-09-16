@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.bookings.tab.BookingsTabController
 import com.woocommerce.android.ui.common.InfoScreenFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -187,6 +188,8 @@ class MainActivity :
     @Inject lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
 
     @Inject lateinit var posTabController: WooPosTabController
+
+    @Inject lateinit var bookingsTabController: BookingsTabController
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -333,6 +336,7 @@ class MainActivity :
         binding.bottomNav.init(navController, this)
 
         posTabController.initialize(this, binding, navController)
+        bookingsTabController.init(this, binding)
 
         presenter.takeView(this)
 
