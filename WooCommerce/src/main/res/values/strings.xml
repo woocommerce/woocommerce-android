@@ -4852,4 +4852,7 @@
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>
     <string name="no_network_message">There is no network available</string>
+
+    <!-- Booking details view-->
+    <string name="booking_details_title">Booking #%s</string>
 </resources>
