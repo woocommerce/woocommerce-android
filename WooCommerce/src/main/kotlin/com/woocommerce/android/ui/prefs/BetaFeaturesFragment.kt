@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.CompoundButton
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -16,8 +17,10 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.RemoteFeatureFlag
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,6 +31,9 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
     @Inject
     lateinit var selectedSite: SelectedSite
+
+    @Inject
+    lateinit var isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled
 
     private val settingsListener by lazy {
         activity as? AppSettingsListener
@@ -59,9 +65,11 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     }
 
     private fun FragmentSettingsBetaBinding.bindJetpackAppPasswordsToggle() {
-        // TODO check the remote feature flag state once available
-        val isJetpackSite = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
-        jetpackAppPasswordsToggle.isVisible = FeatureFlag.APP_PASSWORDS_FOR_JETPACK_SITES.isEnabled() && isJetpackSite
+        viewLifecycleOwner.lifecycleScope.launch {
+            val isJetpackSite = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
+            jetpackAppPasswordsToggle.isVisible = isJetpackSite &&
+                isRemoteFeatureFlagEnabled(RemoteFeatureFlag.APP_PASSWORDS_FOR_JETPACK_SITES)
+        }
 
         jetpackAppPasswordsToggle.isChecked = AppPrefs.jetpackAppPasswordsEnabled
         jetpackAppPasswordsToggle.setOnCheckedChangeListener { _, isChecked ->

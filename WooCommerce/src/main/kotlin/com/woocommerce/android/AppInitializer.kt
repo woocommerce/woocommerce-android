@@ -174,9 +174,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
      */
     private val updateSelectedSite: RateLimitedTask = object : RateLimitedTask(SECONDS_BETWEEN_SITE_UPDATE) {
         override fun run(): Boolean {
-            selectedSite.getIfExists()?.let {
+            selectedSite.getIfExists()?.let { site ->
                 appCoroutineScope.launch {
-                    wooCommerceStore.fetchWooCommerceSite(it).model?.let {
+                    wooCommerceStore.fetchWooCommerceSite(site).model?.let {
                         if (!it.hasWooCommerce && it.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
@@ -184,9 +184,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                             selectedSite.reset()
                             restartMainActivity()
                         }
+                        if (it.connectionType != ApplicationPasswords && it.isApplicationPasswordsSupported) {
+                            analyticsTracker.track(AnalyticsEvent.JETPACK_SITE_ELIGIBLE_FOR_APP_PASSWORD_SUPPORT)
+                        }
                     }
-                    wooCommerceStore.fetchSiteGeneralSettings(it)
-                    wooCommerceStore.fetchSiteProductSettings(it)
+                    wooCommerceStore.fetchSiteGeneralSettings(site)
+                    wooCommerceStore.fetchSiteProductSettings(site)
                 }
             }
             return true
