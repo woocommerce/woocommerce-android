@@ -15,7 +15,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsUIEvents
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -36,6 +38,7 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -52,6 +55,10 @@ class WooPosVariationsViewModelTest {
 
     private val getProductById: WooPosGetProductById = mock()
     private val variationsDataSource: WooPosVariationsDataSource = mock()
+    private val variationsInDbDataSource: WooPosVariationsInDbDataSource = mock()
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
+        on { invoke() } doReturn false // Default to using variationsDataSource
+    }
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val priceFormat: WooPosFormatPrice = mock {
@@ -751,9 +758,11 @@ class WooPosVariationsViewModelTest {
             fromChildToParentEventSender,
             getProductById,
             variationsDataSource,
+            variationsInDbDataSource,
             priceFormat,
             resourceProvider,
             analyticsTracker,
+            wooPosLocalCatalogM1Enabled,
             mapper,
         ).let {
             it.init(productId, sourceType = sourceType)
