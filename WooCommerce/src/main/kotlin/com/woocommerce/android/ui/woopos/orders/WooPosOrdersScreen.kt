@@ -168,7 +168,7 @@ private fun OrdersList(
                         selectedOrderId = state.selectedOrderId,
                         onOrderSelected = onOrderSelected,
                         onEndOfOrdersListReached = onEndOfOrdersListReached,
-                        canLoadMore = canLoadMore && state.pullToRefreshState != WooPosPullToRefreshState.Refreshing,
+                        canLoadMore = canLoadMore,
                         isLoadingMore = isLoadingMore,
                         modifier = Modifier.fillMaxSize()
                     )
