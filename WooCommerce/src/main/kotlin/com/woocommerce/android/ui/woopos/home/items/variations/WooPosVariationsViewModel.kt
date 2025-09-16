@@ -235,8 +235,7 @@ class WooPosVariationsViewModel @Inject constructor(
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
                 when {
                     wooPosLocalCatalogM1Enabled() -> {
-                        // Database mode: pull to refresh not needed since data comes from local database
-                        // Future enhancement:  trigger incremental sync of variations from server to database
+                        // TBD: Perform incremental sync of both products and variations: WOOMOB-1069
                         return
                     }
                     else -> {
