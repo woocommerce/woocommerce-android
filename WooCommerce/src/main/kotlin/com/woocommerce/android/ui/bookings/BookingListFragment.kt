@@ -29,7 +29,7 @@ class BookingListFragment : TopLevelFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    Text("Empty Bookings screen: WIP")
+                    Text("Empty Booking List screen: WIP")
                 }
             }
         }
