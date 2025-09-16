@@ -44,7 +44,6 @@ class WooPosVariationsDataSource @Inject constructor(
         productId: Long,
         forceRefresh: Boolean
     ): Flow<FetchResult> = flow {
-        // Traditional cache mode: use cache + remote API
         if (forceRefresh) {
             updateCache(productId, emptyList())
         }
@@ -80,7 +79,6 @@ class WooPosVariationsDataSource @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override suspend fun loadMore(productId: Long): Result<List<WooPosVariation>> = withContext(Dispatchers.IO) {
-        // Traditional cache mode: use remote API pagination
         val result = handler.loadMore(
             productId,
             filterOptions = variationFilterConfig.filters
