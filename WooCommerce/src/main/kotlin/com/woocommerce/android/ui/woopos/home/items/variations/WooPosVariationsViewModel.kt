@@ -43,11 +43,10 @@ class WooPosVariationsViewModel @Inject constructor(
     private val mapper: WooPosVariationMapper,
 ) : ViewModel() {
 
-    private val currentDataSource: WooPosVariationsDataSourceInterface
-        get() = when (wooPosLocalCatalogM1Enabled()) {
-            true -> variationsInDbDataSource
-            false -> variationsDataSource
-        }
+    private val currentDataSource: WooPosVariationsDataSourceInterface = when (wooPosLocalCatalogM1Enabled()) {
+        true -> variationsInDbDataSource
+        false -> variationsDataSource
+    }
 
     private val _viewState =
         MutableStateFlow<WooPosVariationsViewState>(WooPosVariationsViewState.Loading())
