@@ -11,6 +11,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -305,5 +307,91 @@ class WooPosOrdersDataSourceTest {
         assertThat(result).isInstanceOf(SearchOrdersResult.Success::class.java)
         val success = result as SearchOrdersResult.Success
         assertThat(success.orders).isEmpty()
+    }
+
+    @Test
+    fun `when loadOrders then fetches page 1, caches mapped, then sets hasMorePages`() = runTest {
+        whenever(ordersCache.getAll()).thenReturn(emptyList())
+
+        val e1 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), orderId = 1L)
+        val e2 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), orderId = 2L)
+        whenever(orderMapper.toAppModel(e1)).thenReturn(OrderTestUtils.generateTestOrder(orderId = 1))
+        whenever(orderMapper.toAppModel(e2)).thenReturn(OrderTestUtils.generateTestOrder(orderId = 2))
+
+        val payload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = listOf(e1 to emptyList(), e2 to emptyList()),
+            canLoadMore = true
+        )
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull()))
+            .thenReturn(payload)
+
+        val emissions = sut.loadOrders().toList(mutableListOf())
+        val remote = emissions.last() as LoadOrdersResult.SuccessRemote
+        assertThat(remote.orders.map { it.id }).containsExactly(1L, 2L)
+        assertThat(sut.hasMorePages).isTrue
+    }
+
+    @Test
+    fun `given loadOrders, when loadMore called, then fetches page 2 and updates hasMorePages`() = runTest {
+        whenever(ordersCache.getAll()).thenReturn(emptyList())
+
+        val firstPayload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = emptyList(),
+            canLoadMore = true
+        )
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull()))
+            .thenReturn(firstPayload)
+        sut.loadOrders().toList(mutableListOf())
+        assertThat(sut.hasMorePages).isTrue
+
+        val e3 = OrderEntity(LocalOrRemoteId.LocalId(1), 3L)
+        val e4 = OrderEntity(LocalOrRemoteId.LocalId(1), 4L)
+        whenever(orderMapper.toAppModel(e3)).thenReturn(OrderTestUtils.generateTestOrder(orderId = 3))
+        whenever(orderMapper.toAppModel(e4)).thenReturn(OrderTestUtils.generateTestOrder(orderId = 4))
+
+        val page2Payload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = listOf(e3 to emptyList(), e4 to emptyList()),
+            canLoadMore = false
+        )
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull()))
+            .thenReturn(page2Payload)
+
+        val result = sut.loadMore()
+        assertThat(result.isSuccess).isTrue
+        assertThat(result.getOrThrow().map { it.id }).containsExactly(3L, 4L)
+        assertThat(sut.hasMorePages).isFalse
+    }
+
+    @Test
+    fun `when loadMore fails, then page does not advance and hasMorePages unchanged`() = runTest {
+        whenever(ordersCache.getAll()).thenReturn(emptyList())
+
+        val firstPayload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = emptyList(),
+            canLoadMore = true
+        )
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull()))
+            .thenReturn(firstPayload)
+        sut.loadOrders().toList(mutableListOf())
+        assertThat(sut.hasMorePages).isTrue
+
+        val error = WCOrderStore.OrderError(
+            type = WCOrderStore.OrderErrorType.GENERIC_ERROR,
+            message = "boom"
+        )
+        val errorPayload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            error = error
+        )
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull()))
+            .thenReturn(errorPayload)
+
+        val result = sut.loadMore()
+        assertThat(result.isFailure).isTrue
+        assertThat(sut.hasMorePages).isTrue // unchanged
     }
 }

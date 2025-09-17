@@ -304,4 +304,93 @@ class WooPosOrdersViewModelTest {
         assertThat(error.message).isEqualTo("search failed")
         assertThat(error.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
     }
+
+    @Test
+    fun `given more pages, when end reached and loadMore succeeds, then items append and pagination None`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1), order(2)))) }
+        )
+        whenever(dataSource.hasMorePages).thenReturn(true)
+        whenever(dataSource.loadMore()).thenReturn(Result.success(listOf(order(3), order(4))))
+
+        // WHEN
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        viewModel.onEndOfOrdersListReached()
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.items.map { it.id }).containsExactly(1L, 2L, 3L, 4L)
+        assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
+    }
+
+    @Test
+    fun `given more pages, when end reached and loadMore fails, then keep items and show pagination error`() = runTest {
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1), order(2)))) }
+        )
+        whenever(dataSource.hasMorePages).thenReturn(true)
+        whenever(dataSource.loadMore()).thenReturn(Result.failure(RuntimeException("boom")))
+
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        viewModel.onEndOfOrdersListReached()
+        advanceUntilIdle()
+
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.items.map { it.id }).containsExactly(1L, 2L) // unchanged
+        assertThat(content.paginationState).isEqualTo(WooPosPaginationState.Error)
+    }
+
+    @Test
+    fun `given initial load active, when end reached, then set pagination Loading and don't call loadMore`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow {
+                emit(LoadOrdersResult.SuccessCache(listOf(order(1))))
+                // Keep the flow open; remote never emits
+                kotlinx.coroutines.delay(Long.MAX_VALUE)
+            }
+        )
+
+        // WHEN
+        viewModel = WooPosOrdersViewModel(dataSource)
+        viewModel.onEndOfOrdersListReached()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(state.paginationState).isEqualTo(WooPosPaginationState.Loading)
+        verify(dataSource, times(0)).loadMore()
+    }
+
+    @Test
+    fun `given selected order, when appending next page, then selection is preserved`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(10), order(20)))) }
+        )
+        whenever(dataSource.hasMorePages).thenReturn(true)
+        whenever(dataSource.loadMore()).thenReturn(Result.success(listOf(order(30), order(40))))
+
+        // WHEN
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(20L)
+        advanceUntilIdle()
+
+        viewModel.onEndOfOrdersListReached()
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.items.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
+        assertThat(content.selectedOrderId).isEqualTo(20L)
+        val selectedFlags = content.items.associate { it.id to it.isSelected }
+        assertThat(selectedFlags[20L]).isTrue()
+    }
 }
