@@ -101,7 +101,7 @@ class MediaFilesRepository @Inject constructor(
                 }
                 return@withContext ImageDimensions(options.outWidth, options.outHeight)
             } catch (e: IOException) {
-                e.printStackTrace()
+                WooLog.e(T.MEDIA, "MediaFilesRepository > Error getting image dimensions", e)
             }
             return@withContext ImageDimensions(width = 0, height = 0)
         }
