@@ -32,10 +32,15 @@ class OrdersCommunicationViewModel @Inject constructor(
         triggerEvent(CommunicationEvent.OrdersLoaded)
     }
 
+    fun applyCustomerFilter(customerId: Long) {
+        triggerEvent(CommunicationEvent.CustomerFilterRequested(customerId))
+    }
+
     sealed class CommunicationEvent : MultiLiveEvent.Event() {
         data class OrderTrashed(val orderId: Long) : CommunicationEvent()
         data object OrdersEmptyNotified : CommunicationEvent()
         data object OrdersLoadingNotified : CommunicationEvent()
         data object OrdersLoaded : CommunicationEvent()
+        data class CustomerFilterRequested(val customerId: Long) : CommunicationEvent()
     }
 }

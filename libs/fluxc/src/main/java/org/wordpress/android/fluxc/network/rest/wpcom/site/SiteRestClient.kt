@@ -1136,6 +1136,11 @@ class SiteRestClient @Inject constructor(
         site.planActiveFeatures = (from.plan?.features?.active?.joinToString(",")).orEmpty()
         site.wasEcommerceTrial = from.was_ecommerce_trial
         site.setIsSingleUserSite(from.single_user_site)
+
+        site.setIsGardenSite(from.is_garden)
+        site.gardenName = from.garden_name
+        site.gardenPartner = from.garden_partner
+
         return site
     }
 
@@ -1186,7 +1191,7 @@ class SiteRestClient @Inject constructor(
         @VisibleForTesting
         const val SITE_FIELDS = "ID,URL,name,description,jetpack,jetpack_connection,visible,is_private," +
             "options,plan,capabilities,quota,icon,meta,zendesk_site_meta,organization_id," +
-            "was_ecommerce_trial,single_user_site,jetpack_modules"
+            "was_ecommerce_trial,single_user_site,jetpack_modules,is_garden,garden_name,garden_partner"
         private const val ROOT_ENDPOINT_FIELDS = "name,description,gmt_offset,namespaces,authentication"
         private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FIELDS = "fields"

@@ -43,6 +43,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     private val binding = OrderDetailCustomerInfoBinding.inflate(LayoutInflater.from(ctx), this)
     private var isCustomerInfoViewExpanded = false
 
+    var viewCustomerOrdersListener: ((Order) -> Unit)? = null
+
     override fun onSaveInstanceState(): Parcelable {
         val bundle = Bundle()
         bundle.putBoolean(KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED, isCustomerInfoViewExpanded)
@@ -78,6 +80,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         showCustomerNote(order, isReadOnly)
         showShippingAddress(order, isVirtualOrder, isReadOnly)
         showBillingInfo(order, isReadOnly)
+        showViewOrdersButton(order)
         restoreCustomerInfoViewExpandedOrCollapsedState()
     }
 
@@ -176,7 +179,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         if (order.billingAddress.email.isNotEmpty()) {
             binding.customerInfoEmailAddr.text = order.billingAddress.email
             binding.customerInfoEmailAddr.visibility = VISIBLE
-            binding.customerInfoEmailBtn.visibility - VISIBLE
+            binding.customerInfoEmailBtn.visibility = VISIBLE
             binding.customerInfoEmailBtn.setOnClickListener {
                 AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
                 OrderCustomerHelper.createEmail(context, order, order.billingAddress.email)
@@ -186,6 +189,19 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoEmailAddr.visibility = GONE
             binding.customerInfoEmailBtn.visibility = GONE
             binding.customerInfoDivider3.visibility = GONE
+        }
+    }
+
+    private fun showViewOrdersButton(order: Order) {
+        val hasCustomerId = order.customer?.customerId != null && order.customer.customerId > 0
+
+        if (hasCustomerId) {
+            binding.customerInfoViewOrdersBtn.visibility = VISIBLE
+            binding.customerInfoViewOrdersBtn.setOnClickListener {
+                viewCustomerOrdersListener?.invoke(order)
+            }
+        } else {
+            binding.customerInfoViewOrdersBtn.visibility = GONE
         }
     }
 

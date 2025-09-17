@@ -127,4 +127,7 @@ public class SiteWPComRestResponse implements Response {
     public boolean was_ecommerce_trial;
     public boolean single_user_site;
     public List<String> jetpack_modules;
+    public boolean is_garden;
+    public String garden_name;
+    public String garden_partner;
 }

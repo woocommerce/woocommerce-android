@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -26,8 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductTypesBottomSheetViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder,
-    private val isEligibleForSubscriptions: IsEligibleForSubscriptions
+    private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
 
@@ -41,12 +39,11 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
     }
 
     private suspend fun loadProductTypes() {
-        val areSubscriptionsSupported = isEligibleForSubscriptions()
         _productTypesBottomSheetList.value = if (navArgs.isAddProduct) {
-            productTypeBottomSheetBuilder.buildBottomSheetList(areSubscriptionsSupported)
+            productTypeBottomSheetBuilder.buildBottomSheetList()
                 .filter { it.isVisible }
         } else {
-            productTypeBottomSheetBuilder.buildBottomSheetList(areSubscriptionsSupported)
+            productTypeBottomSheetBuilder.buildBottomSheetList()
                 .filter {
                     val currentProductType = navArgs.currentProductType
                         ?.let { nonNullProductType -> ProductType.fromString(nonNullProductType) }
