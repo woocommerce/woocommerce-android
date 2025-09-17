@@ -1295,12 +1295,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val shouldShowSplitShipmentButton: Boolean
                 get() {
                     val unpurchasedShipments = shipmentUIList.filterNot { it.isPurchased }
+                    val hasMultipleUnfulfilledItems = unpurchasedShipments.size > 1 ||
+                        (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1
                     return isSplitShipmentsSupported &&
                         shipmentUIList.none { it.isPurchaseInProgress } &&
-                        (
-                            unpurchasedShipments.size > 1 ||
-                                (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1
-                            )
+                        hasMultipleUnfulfilledItems
                 }
         }
     }
