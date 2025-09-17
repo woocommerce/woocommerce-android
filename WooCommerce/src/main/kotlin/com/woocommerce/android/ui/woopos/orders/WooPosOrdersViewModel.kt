@@ -107,7 +107,7 @@ class WooPosOrdersViewModel @Inject constructor(
         loadingMoreOrdersJob = viewModelScope.launch {
             val result = ordersDataSource.loadMore()
             if (result.isSuccess) {
-                updateContentState(result.getOrThrow())
+                appendOrders(result.getOrThrow())
             } else {
                 _state.value = currentState.copy(paginationState = WooPosPaginationState.Error)
             }
@@ -192,7 +192,7 @@ class WooPosOrdersViewModel @Inject constructor(
                             searchInputState = _state.value.searchInputState
                         )
                     } else {
-                        updateContentState(result.orders)
+                        replaceOrders(result.orders)
                     }
                 }
             }
@@ -214,7 +214,7 @@ class WooPosOrdersViewModel @Inject constructor(
                     }
 
                     is LoadOrdersResult.SuccessCache -> {
-                        updateContentState(result.orders)
+                        replaceOrders(result.orders)
                     }
 
                     is LoadOrdersResult.SuccessRemote -> {
@@ -223,7 +223,7 @@ class WooPosOrdersViewModel @Inject constructor(
                                 searchInputState = WooPosSearchInputState.Closed
                             )
                         } else {
-                            updateContentState(result.orders)
+                            replaceOrders(result.orders)
                         }
                     }
                 }
@@ -237,30 +237,55 @@ class WooPosOrdersViewModel @Inject constructor(
         loadingMoreOrdersJob?.cancel()
     }
 
-    private fun updateContentState(orders: List<Order>) {
-        val currentState = _state.value
-        val currentContentState = _state.value as? WooPosOrdersState.Content
-        val currentSelectedId = currentContentState?.selectedOrderId
-        val newSelectedId = currentSelectedId?.takeIf { id -> orders.any { it.id == id } }
-            ?: orders.firstOrNull()?.id
-        val currentItems = currentContentState?.items ?: emptyList()
+    private fun replaceOrders(
+        orders: List<Order>,
+        paginationState: WooPosPaginationState = WooPosPaginationState.None
+    ) {
+        val newSelectedId = orders.firstOrNull()?.id
+        val newItems = mapOrders(orders, newSelectedId)
 
-        val updatedItems = currentItems + orders.map { order ->
+        _state.value = WooPosOrdersState.Content(
+            items = newItems,
+            selectedOrderId = newSelectedId,
+            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+            paginationState = paginationState,
+            searchInputState = _state.value.searchInputState
+        )
+    }
+
+    private fun appendOrders(
+        orders: List<Order>,
+        paginationState: WooPosPaginationState = WooPosPaginationState.None
+    ) {
+        val current = _state.value as? WooPosOrdersState.Content
+        val existingItems = current?.items.orEmpty()
+        val currentSelectedId = current?.selectedOrderId
+            ?: existingItems.firstOrNull()?.id
+            ?: orders.firstOrNull()?.id
+
+        val newItems = mapOrders(orders, currentSelectedId)
+
+        _state.value = WooPosOrdersState.Content(
+            items = existingItems + newItems,
+            selectedOrderId = currentSelectedId,
+            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+            paginationState = paginationState,
+            searchInputState = _state.value.searchInputState
+        )
+    }
+
+    private fun mapOrders(
+        orders: List<Order>,
+        selectedId: Long?
+    ): List<OrderItemViewState> {
+        return orders.map { order ->
             OrderItemViewState(
                 id = order.id,
                 title = "Order #${order.number}",
                 date = order.dateCreated.formatToDDMMMYYYY(),
                 total = "${order.total} ${order.currency}",
-                isSelected = order.id == currentSelectedId
+                isSelected = order.id == selectedId
             )
         }
-
-        _state.value = WooPosOrdersState.Content(
-            items = updatedItems,
-            selectedOrderId = newSelectedId,
-            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-            paginationState = WooPosPaginationState.None,
-            searchInputState = currentState.searchInputState,
-        )
     }
 }
