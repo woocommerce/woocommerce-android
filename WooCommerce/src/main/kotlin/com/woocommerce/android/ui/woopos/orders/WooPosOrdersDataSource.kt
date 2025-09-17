@@ -54,6 +54,7 @@ class WooPosOrdersDataSource @Inject constructor(
         if (result.isError) {
             emit(LoadOrdersResult.Error(result.error?.message ?: "Unknown error"))
         } else {
+            canLoadMore.set(result.canLoadMore)
             val mapped = result.orders.toAppModels()
             ordersCache.setAll(mapped)
             emit(LoadOrdersResult.SuccessRemote(mapped))
