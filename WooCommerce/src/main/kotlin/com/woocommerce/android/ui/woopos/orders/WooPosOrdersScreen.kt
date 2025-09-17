@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -46,6 +47,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -54,7 +56,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -322,6 +323,12 @@ fun WooPosOrdersListPaneScreen(
                 )
             }
         }
+
+        if (isLoadingMore) {
+            item {
+                OrdersPaginationLoadingRow()
+            }
+        }
     }
 }
 
@@ -347,6 +354,44 @@ fun WooPosOrdersDetailPaneScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+@Composable
+private fun OrdersPaginationLoadingRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            .padding(
+                horizontal = WooPosSpacing.Medium.value,
+                vertical = WooPosSpacing.Medium.value
+            )
+            .heightIn(min = 64.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.55f)
+                    .height(18.dp)
+            )
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.35f)
+                    .height(14.dp)
+            )
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        WooPosShimmerBox(
+            modifier = Modifier
+                .width(72.dp)
+                .height(18.dp)
+                .alignByBaseline()
+        )
     }
 }
 
