@@ -3,7 +3,6 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 23.4
 -----
-- [*] It's possible to see all the orders made by a specific customer from the order details screen [https://github.com/woocommerce/woocommerce-android/pull/14615]
 
 
 23.3
@@ -14,6 +13,7 @@
 - [*] Fixed the incorrect size of the notification icon [https://github.com/woocommerce/woocommerce-android/pull/14586]
 - [***] Performance improvements for users logging in with WordPress.com accounts [https://github.com/woocommerce/woocommerce-android/pull/14610]
 - [*] Fix an issue where there is delay before displaying the continue button in Site Picker screen [https://github.com/woocommerce/woocommerce-android/pull/14611]
+- [*] It's possible to see all the orders made by a specific customer from the order details screen [https://github.com/woocommerce/woocommerce-android/pull/14615]
 
 23.2
 -----
