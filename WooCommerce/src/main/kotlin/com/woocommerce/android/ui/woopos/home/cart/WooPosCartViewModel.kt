@@ -353,7 +353,7 @@ class WooPosCartViewModel @Inject constructor(
                 val result = localCatalogStore.getVariation(siteId = site.get().id, productId, variationId)
                 result.getOrNull()?.let { entity ->
                     variationMapper.fromWooPosVariationEntity(entity)
-                } ?: throw IllegalStateException("Variation not found in local catalog: $variationId")
+                } ?: error("Variation not found in local catalog: $variationId")
             }
             else -> getVariationsById(productId, variationId)!!
         }
