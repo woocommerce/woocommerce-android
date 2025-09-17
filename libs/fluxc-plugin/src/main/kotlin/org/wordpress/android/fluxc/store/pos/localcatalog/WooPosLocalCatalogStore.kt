@@ -170,8 +170,8 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @return [Flow] of [Result] containing list of variations or error
      */
     fun observeVariationsForProduct(
-        siteId: LocalOrRemoteId.LocalId,
-        productId: LocalOrRemoteId.RemoteId
+        siteId: Int,
+        productId: Long,
     ): Flow<Result<List<WooPosVariationEntity>>> =
         posVariationsDao.observeVariationsForProduct(siteId, productId)
             .map { variations ->

@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
@@ -22,10 +20,8 @@ class WooPosVariationsInDbDataSource @Inject constructor(
 ) : WooPosVariationsDataSourceInterface {
     private fun getVariationsFromDatabaseFlow(productId: Long): Flow<List<WooPosVariation>> {
         val siteModel = selectedSite.getOrNull() ?: return flow { emit(emptyList()) }
-        val siteId = LocalId(siteModel.id)
-        val remoteProductId = RemoteId(productId)
 
-        return posLocalCatalogStore.observeVariationsForProduct(siteId, remoteProductId)
+        return posLocalCatalogStore.observeVariationsForProduct(siteModel.id, productId)
             .map { result ->
                 result.getOrNull()?.map { it.toWooPosVariation(mapper) } ?: emptyList()
             }
