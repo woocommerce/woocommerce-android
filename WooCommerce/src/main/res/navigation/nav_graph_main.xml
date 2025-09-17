@@ -217,6 +217,11 @@
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
+    <fragment
+        android:id="@+id/bookings"
+        android:name="com.woocommerce.android.ui.bookings.BookingListFragment"
+        android:label="fragment_bookings"
+        tools:layout="@layout/fragment_bookings" />
     <dialog
         android:id="@+id/updateStockStatusFragment"
         android:name="com.woocommerce.android.ui.products.UpdateProductStockStatusFragment"

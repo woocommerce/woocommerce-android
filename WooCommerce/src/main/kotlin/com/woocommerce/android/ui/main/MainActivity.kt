@@ -61,10 +61,12 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.bookings.tab.BookingsTabController
 import com.woocommerce.android.ui.common.InfoScreenFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.main.BottomNavigationPosition.BOOKINGS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
@@ -186,6 +188,8 @@ class MainActivity :
     @Inject lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
 
     @Inject lateinit var posTabController: WooPosTabController
+
+    @Inject lateinit var bookingsTabController: BookingsTabController
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -332,6 +336,7 @@ class MainActivity :
         binding.bottomNav.init(navController, this)
 
         posTabController.initialize(this, binding, navController)
+        bookingsTabController.init(this, binding)
 
         presenter.takeView(this)
 
@@ -756,6 +761,7 @@ class MainActivity :
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
+            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
         AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
@@ -781,6 +787,7 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
             POS -> null
+            BOOKINGS -> AnalyticsEvent.MAIN_TAB_BOOKINGS_RESELECTED
         }
         stat?.let {
             AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
