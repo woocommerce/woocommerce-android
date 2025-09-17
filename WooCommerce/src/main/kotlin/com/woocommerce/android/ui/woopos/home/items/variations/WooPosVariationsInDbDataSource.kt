@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -21,8 +20,8 @@ class WooPosVariationsInDbDataSource @Inject constructor(
     private val selectedSite: SelectedSite,
     private val mapper: WooPosVariationMapper
 ) : WooPosVariationsDataSourceInterface {
-    private suspend fun getVariationsFromDatabase(productId: Long): List<WooPosVariation> {
-        val siteModel = selectedSite.getOrNull() ?: return emptyList()
+    private fun getVariationsFromDatabaseFlow(productId: Long): Flow<List<WooPosVariation>> {
+        val siteModel = selectedSite.getOrNull() ?: return flow { emit(emptyList()) }
         val siteId = LocalId(siteModel.id)
         val remoteProductId = RemoteId(productId)
 
@@ -30,7 +29,6 @@ class WooPosVariationsInDbDataSource @Inject constructor(
             .map { result ->
                 result.getOrNull()?.map { it.toWooPosVariation(mapper) } ?: emptyList()
             }
-            .firstOrNull() ?: emptyList()
     }
 
     override suspend fun resetState() = Unit
@@ -40,10 +38,11 @@ class WooPosVariationsInDbDataSource @Inject constructor(
     override fun fetchFirstPage(
         productId: Long,
         forceRefresh: Boolean
-    ): Flow<FetchResult> = flow {
-        val databaseVariations = getVariationsFromDatabase(productId).applyFilter()
-        emit(FetchResult.Remote(Result.success(databaseVariations)))
-    }.flowOn(Dispatchers.IO)
+    ): Flow<FetchResult> = getVariationsFromDatabaseFlow(productId)
+        .map { variations ->
+            FetchResult.Remote(Result.success(variations.applyFilter()))
+        }
+        .flowOn(Dispatchers.IO)
 
     override suspend fun loadMore(productId: Long): Result<List<WooPosVariation>> = withContext(Dispatchers.IO) {
         Result.success(emptyList())
