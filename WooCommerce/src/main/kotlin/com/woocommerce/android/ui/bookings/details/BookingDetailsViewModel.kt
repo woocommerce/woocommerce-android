@@ -26,7 +26,7 @@ class BookingDetailsViewModel @Inject constructor(
     init {
         _state.update {
             it.copy(
-                toolbarTitle = resourceProvider.getString(R.string.booking_details_title, navArgs.bookingId)
+                toolbarTitle = resourceProvider.getString(R.string.booking_details_title, navArgs.bookingId),
             )
         }
     }

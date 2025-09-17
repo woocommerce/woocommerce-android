@@ -1,0 +1,107 @@
+package com.woocommerce.android.ui.bookings.compose
+
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+
+@Composable
+fun BookingSummary(
+    model: BookingSummary,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier
+            .padding(16.dp)
+    ) {
+        Text(
+            text = model.date,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+        )
+        FlowRow(
+            modifier = Modifier.padding(top = 2.dp),
+        ) {
+            Text(
+                text = "${model.name} • ",
+                color = colorResource(id = R.color.color_surface_variant),
+                style = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp),
+            )
+            Text(
+                text = model.staff,
+                color = colorResource(id = R.color.color_surface_variant),
+                style = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp),
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .padding(top = 8.dp)
+        ) {
+            AttendanceStatusTag(
+                state = model.attendanceStatus
+            )
+            BookingPaymentStatusTag(
+                state = model.paymentStatus
+            )
+        }
+    }
+}
+
+data class BookingSummary(
+    val date: String,
+    val name: String,
+    val staff: String,
+    val attendanceStatus: AttendanceStatus,
+    val paymentStatus: BookingPaymentStatus,
+)
+
+@Preview
+@Composable
+private fun BookingSummaryPreview() {
+    WooThemeWithBackground {
+        BookingSummary(
+            model = BookingSummary(
+                date = "05/07/2025, 11:00 AM",
+                name = "Women’s Haircut",
+                staff = "Margarita Nikolaevna",
+                attendanceStatus = AttendanceStatus.CHECKED_IN,
+                paymentStatus = BookingPaymentStatus.PAID
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun BookingSummaryDarkPreview() {
+    WooThemeWithBackground {
+        BookingSummary(
+            model = BookingSummary(
+                date = "05/07/2025, 11:00 AM",
+                name = "Women’s Haircut",
+                staff = "Margarita Nikolaevna",
+                attendanceStatus = AttendanceStatus.BOOKED,
+                paymentStatus = BookingPaymentStatus.PENDING_CONFIRMATION
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
