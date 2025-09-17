@@ -34,13 +34,13 @@ class BookingsTabController @Inject constructor(
 
     private fun checkBookingsTabVisibility() {
         activity.lifecycleScope.launch {
-            val shouldShowBookingsTabResult = showBookingsTab()
-            shouldShowBookingsTabResult.onSuccess {
-                binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = it
-            }
-            shouldShowBookingsTabResult.onFailure {
-                // TODO log error or track errors?
-            }
+            showBookingsTab()
+                .onSuccess {
+                    binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = it
+                }
+                .onFailure {
+                    // TODO log error or track errors?
+                }
         }
     }
 }
