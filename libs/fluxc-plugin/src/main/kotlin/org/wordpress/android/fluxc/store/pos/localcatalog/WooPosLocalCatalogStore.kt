@@ -187,9 +187,9 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @return [Result] containing the variation if found, null if not found, or error
      */
     suspend fun getVariation(
-        siteId: LocalOrRemoteId.LocalId,
-        productId: LocalOrRemoteId.RemoteId,
-        variationId: LocalOrRemoteId.RemoteId
+        siteId: Int,
+        productId: Long,
+        variationId: Long
     ): Result<WooPosVariationEntity?> =
         coroutineEngine.withDefaultContext(API, this, "getVariation") {
             val variation = posVariationsDao.getVariation(siteId, productId, variationId)

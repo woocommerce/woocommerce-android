@@ -19,9 +19,9 @@ abstract class WooPosVariationsDao {
 
     @Query("SELECT * FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId = :productId AND remoteVariationId = :variationId")
     abstract suspend fun getVariation(
-        localSiteId: LocalId,
-        productId: RemoteId,
-        variationId: RemoteId
+        localSiteId: Int,
+        productId: Long,
+        variationId: Long
     ): WooPosVariationEntity?
 
     @Upsert
