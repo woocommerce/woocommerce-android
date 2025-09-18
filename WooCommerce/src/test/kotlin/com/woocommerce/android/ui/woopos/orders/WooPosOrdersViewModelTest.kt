@@ -347,23 +347,24 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given initial load active, when end reached, then set pagination Loading and don't call loadMore`() = runTest {
-        // GIVEN
+    fun `given initial load active, when end reached, then do nothing`() = runTest {
+        // GIVEN: cache -> Content; remote never completes (keeps loadingJob active)
         whenever(dataSource.loadOrders()).thenReturn(
             flow {
                 emit(LoadOrdersResult.SuccessCache(listOf(order(1))))
-                // Keep the flow open; remote never emits
                 kotlinx.coroutines.delay(Long.MAX_VALUE)
             }
         )
 
-        // WHEN
         viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        // WHEN
         viewModel.onEndOfOrdersListReached()
 
         // THEN
-        val state = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(state.paginationState).isEqualTo(WooPosPaginationState.Loading)
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
         verify(dataSource, times(0)).loadMore()
     }
 
