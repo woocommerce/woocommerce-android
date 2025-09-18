@@ -162,6 +162,15 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
+    fun isLoadingMore(): Boolean =
+        (_state.value as? WooPosOrdersState.Content)?.paginationState == WooPosPaginationState.Loading
+
+    fun canLoadMore(): Boolean {
+        val contentState = _state.value as? WooPosOrdersState.Content ?: return false
+        return contentState.paginationState == WooPosPaginationState.None &&
+            contentState.pullToRefreshState != WooPosPullToRefreshState.Refreshing
+    }
+
     private fun updateSearchState(searchState: WooPosSearchInputState) {
         _state.value = when (val currentState = _state.value) {
             is WooPosOrdersState.Content -> currentState.copy(searchInputState = searchState)
@@ -203,7 +212,6 @@ class WooPosOrdersViewModel @Inject constructor(
         cancelJobs()
         loadingJob = viewModelScope.launch {
             val currentState = _state.value
-            _state.value = WooPosOrdersState.Loading(searchInputState = currentState.searchInputState)
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {

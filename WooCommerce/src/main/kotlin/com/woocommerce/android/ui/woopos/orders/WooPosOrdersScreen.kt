@@ -53,7 +53,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -80,6 +79,8 @@ fun WooPosOrdersScreen(
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
             onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
+            canLoadMore = viewModel.canLoadMore(),
+            isLoadingMore = viewModel.isLoadingMore(),
             onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
                 .weight(0.3f)
@@ -104,6 +105,8 @@ private fun OrdersList(
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
+    canLoadMore: Boolean,
+    isLoadingMore: Boolean,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
@@ -206,10 +209,6 @@ private fun OrdersList(
                 }
 
                 is WooPosOrdersState.Content -> {
-                    val isLoadingMore = state.paginationState == WooPosPaginationState.Loading
-                    val canLoadMore = state.paginationState == WooPosPaginationState.None &&
-                        state.pullToRefreshState != WooPosPullToRefreshState.Refreshing
-
                     WooPosOrdersListPaneScreen(
                         items = state.items,
                         selectedOrderId = state.selectedOrderId,
