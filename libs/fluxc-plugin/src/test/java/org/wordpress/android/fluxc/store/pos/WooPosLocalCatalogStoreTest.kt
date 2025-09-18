@@ -311,11 +311,11 @@ class WooPosLocalCatalogStoreTest {
         val variation2 = createTestVariation(variationId = 2L, name = "Large")
         val variations = listOf(variation1, variation2)
 
-        whenever(posVariationsDao.observeVariationsForProduct(testSiteId, testRemoteId))
+        whenever(posVariationsDao.observeVariationsForProduct(testSiteId.value, testRemoteId.value))
             .thenReturn(flowOf(variations))
 
         // WHEN
-        val result = store.observeVariationsForProduct(testSiteId, testRemoteId).first().getOrThrow()
+        val result = store.observeVariationsForProduct(testSiteId.value, testRemoteId.value).first().getOrThrow()
 
         // THEN
         assertThat(result).hasSize(2)
@@ -327,11 +327,11 @@ class WooPosLocalCatalogStoreTest {
         // GIVEN
         val variationId = RemoteId(789L)
         val expectedVariation = createTestVariation(variationId = variationId.value, name = "Blue Large")
-        whenever(posVariationsDao.getVariation(testSiteId, testRemoteId, variationId))
+        whenever(posVariationsDao.getVariation(testSiteId.value, testRemoteId.value, variationId.value))
             .thenReturn(expectedVariation)
 
         // WHEN
-        val variation = store.getVariation(testSiteId, testRemoteId, variationId).getOrThrow()
+        val variation = store.getVariation(testSiteId.value, testRemoteId.value, variationId.value).getOrThrow()
 
         // THEN
         assertThat(variation).isNotNull()
@@ -399,11 +399,11 @@ class WooPosLocalCatalogStoreTest {
     fun `given variation not in database, when get variation called, then null returned`() = runTest {
         // GIVEN
         val variationId = RemoteId(999L)
-        whenever(posVariationsDao.getVariation(testSiteId, testRemoteId, variationId))
+        whenever(posVariationsDao.getVariation(testSiteId.value, testRemoteId.value, variationId.value))
             .thenReturn(null)
 
         // WHEN
-        val variation = store.getVariation(testSiteId, testRemoteId, variationId).getOrThrow()
+        val variation = store.getVariation(testSiteId.value, testRemoteId.value, variationId.value).getOrThrow()
 
         // THEN
         assertThat(variation).isNull()
