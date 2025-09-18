@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
@@ -18,7 +19,10 @@ import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSe
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -151,6 +155,13 @@ class WooPosCartViewModelTest {
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val barcodeEventTracker: WooPosBarcodeEventTracker = mock()
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
+        on { invoke() }.thenReturn(false)
+    }
+    private val localCatalogStore: WooPosLocalCatalogStore = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { get() }.thenReturn(SiteModel().apply { id = 123 })
+    }
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1516,6 +1527,9 @@ class WooPosCartViewModelTest {
             soundHelper,
             barcodeEventTracker,
             variationMapper,
+            wooPosLocalCatalogM1Enabled,
+            localCatalogStore,
+            selectedSite,
             savedState,
         )
     }
