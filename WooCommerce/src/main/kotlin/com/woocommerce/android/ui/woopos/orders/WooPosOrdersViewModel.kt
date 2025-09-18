@@ -88,8 +88,7 @@ class WooPosOrdersViewModel @Inject constructor(
             return
         }
 
-        if (loadingJob?.isActive == true) {
-            _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+        if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) {
             return
         }
 
