@@ -42,7 +42,6 @@
     <color name="color_scrim_background">@color/woo_white_alpha_038</color>
     <color name="color_default_image_background">@color/woo_gray_900</color>
 
-    <color name="color_back_arrow">@color/color_on_surface</color>
 
     <!--
         Color resource used to indicate selected state of an item
@@ -82,14 +81,12 @@
     <!--
         App colors
     -->
-    <color name="color_status_bar">@color/color_surface</color>
     <color name="default_window_background">#F2F2F2</color>
     <color name="divider_color">@color/woo_black_90_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
     <color name="splash_background">@color/woo_purple_40</color>
     <color name="color_toolbar">@color/woo_white</color>
-    <color name="bottom_sheet_background">@color/color_surface</color>
     <color name="color_woo_logo">@color/color_primary</color>
 
     <!--
@@ -102,7 +99,6 @@
     -->
     <color name="graph_data_color">@color/woo_pink_50</color>
     <color name="graph_grid_color">@color/woo_black_90_alpha_012</color>
-    <color name="graph_highlight_color">@color/woo_pink_90</color>
     <color name="graph_no_data_text_color">@color/color_on_surface</color>
     <color name="graph_label_color">@color/color_on_surface_medium</color>
 
@@ -132,8 +128,6 @@
     <color name="tag_bg_pos">@color/woo_purple_5</color>
     <color name="tag_text_main">@color/color_primary</color>
     <color name="tag_text_pos">@color/woo_purple_60</color>
-    <color name="tag_task_label">@color/woo_gray_6</color>
-    <color name="tag_task_label_text">@color/woo_black_90_alpha_060</color>
     <color name="tag_icon">@color/color_primary</color>
 
     <!--
@@ -143,21 +137,17 @@
         handles contrast by either dynamically coloring the nav bar handle (gesture nav)
         or automatically applying a translucent background (3-button mode).
     -->
-    <color name="nav_bar">@color/woo_black_90_alpha_020</color>
 
     <!--
         Banner colors
     -->
     <color name="warning_banner_foreground_color">@color/woo_orange_30</color>
     <color name="warning_banner_background_color">@color/woo_orange_5</color>
-    <color name="error_banner_foreground_color">@color/woo_red_50</color>
-    <color name="error_banner_background_color">@color/woo_red_5</color>
     <color name="info_banner_foreground_color">@color/woo_celadon_40</color>
     <color name="info_banner_background_color">@color/woo_celadon_5</color>
     <!--
         Products List
     -->
-    <color name="product_stock_fg">@color/color_on_surface_medium</color>
     <color name="product_status_fg_other">@color/woo_blue_50</color>
     <color name="product_status_fg_pending">@color/woo_orange_50</color>
     <color name="product_filer_bg_selected">@color/color_primary_surface</color>
@@ -181,14 +171,12 @@
     <color name="editor_tag_color">@color/color_primary</color>
     <color name="editor_text_color">@color/color_on_surface_high</color>
     <color name="editor_text_hint_color">@color/color_on_surface_disabled</color>
-    <color name="editor_toolbar_bg_color">@color/woo_white</color>
 
     <!--
         Loading Skeletons
     -->
     <color name="skeleton_color">@color/woo_black_90_alpha_012</color>
     <color name="skeleton_color_inverse">@color/color_surface</color>
-    <color name="skeleton_compose_background">@color/woo_gray_6</color>
 
     <!--
         Empty state view
@@ -207,24 +195,12 @@
     <color name="jetpack_install_progressbar">@color/jetpack_green_40</color>
 
     <!--
-    Media picker colors
-    -->
-    <color name="color_media_picker_toolbar_background">@color/color_toolbar</color>
-    <color name="color_media_picker_toolbar_foreground">@color/color_on_surface</color>
-
-    <!--
     More menu button
     -->
     <color name="more_menu_button_background">@color/color_surface</color>
     <color name="more_menu_button_icon_background">@color/woo_gray_0</color>
 
 
-    <!-- Woo application log -->
-    <color name="log_text_verbose">@color/woo_gray_40</color>
-    <color name="log_text_debug">@color/woo_blue_50</color>
-    <color name="log_text_info">@color/woo_black</color>
-    <color name="log_text_warning">@color/woo_purple_50</color>
-    <color name="log_text_error">@color/woo_red_50</color>
 
     <!-- Text colors -->
     <color name="link_text">@color/woo_blue_40</color>
@@ -241,7 +217,6 @@
     <!--
     Analytics
     -->
-    <color name="analytics_background">@color/woo_white</color>
     <color name="analytics_delta_positive_color">#69B56E</color>
     <color name="analytics_delta_tag_negative_color">#C95854</color>
     <color name="analytics_delta_text_color">@color/white</color>
@@ -279,7 +254,6 @@
     <!--
     Product Creation using AI
     -->
-    <color name="linear_progress_background">@color/woo_purple_0</color>
     <color name="linear_progress_background_gray">@color/woo_gray_20</color>
     <color name="ai_linear_progress_background_more_red">@color/woo_red_50</color>
     <color name="ai_linear_progress_background_orange">@color/woo_orange_30</color>
@@ -337,7 +311,6 @@
     <color name="woo_shipping_label_success_surface">@color/woo_green_0</color>
     <color name="woo_shipping_label_error">@color/woo_red_60</color>
     <color name="woo_shipping_label_error_surface">@color/woo_red_0</color>
-    <color name="woo_shipping_label_purchased_color">@color/woo_green_70</color>
 
     <!--
         Custom Message Color
