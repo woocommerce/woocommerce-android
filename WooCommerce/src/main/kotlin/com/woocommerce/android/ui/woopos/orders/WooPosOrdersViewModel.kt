@@ -92,10 +92,6 @@ class WooPosOrdersViewModel @Inject constructor(
             return
         }
 
-        if (loadingMoreOrdersJob?.isActive == true) {
-            return
-        }
-
         if (!ordersDataSource.hasMorePages) {
             return
         }
