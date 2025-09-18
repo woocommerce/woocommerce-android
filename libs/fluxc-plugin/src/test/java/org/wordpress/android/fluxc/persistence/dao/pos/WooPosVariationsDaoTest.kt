@@ -42,9 +42,9 @@ class WooPosVariationsDaoTest {
 
         // THEN
         val storedVariation = sut.getVariation(
-            variation.localSiteId,
-            variation.remoteProductId,
-            variation.remoteVariationId
+            variation.localSiteId.value,
+            variation.remoteProductId.value,
+            variation.remoteVariationId.value
         )
         assertNotNull(storedVariation)
         assertEquals(variation.variationName, storedVariation.variationName)
@@ -70,9 +70,9 @@ class WooPosVariationsDaoTest {
 
         // THEN
         val storedVariation = sut.getVariation(
-            variation.localSiteId,
-            variation.remoteProductId,
-            variation.remoteVariationId
+            variation.localSiteId.value,
+            variation.remoteProductId.value,
+            variation.remoteVariationId.value
         )
         assertNotNull(storedVariation)
         assertEquals("Updated Variation", storedVariation.variationName)
@@ -96,8 +96,8 @@ class WooPosVariationsDaoTest {
 
         // THEN
         val storedVariations = sut.observeVariationsForProduct(
-            variations.first().localSiteId,
-            RemoteId(productId)
+            variations.first().localSiteId.value,
+            productId
         ).first()
         assertEquals(3, storedVariations.size)
         assertTrue(storedVariations.any { it.remoteVariationId.value == 1001L })
@@ -119,8 +119,8 @@ class WooPosVariationsDaoTest {
         sut.upsertVariations(product1Variations + product2Variations)
 
         // WHEN
-        val product1Results = sut.observeVariationsForProduct(LocalId(1), RemoteId(100L)).first()
-        val product2Results = sut.observeVariationsForProduct(LocalId(1), RemoteId(200L)).first()
+        val product1Results = sut.observeVariationsForProduct(1, 100L).first()
+        val product2Results = sut.observeVariationsForProduct(1, 200L).first()
 
         // THEN
         assertEquals(2, product1Results.size)
@@ -143,8 +143,8 @@ class WooPosVariationsDaoTest {
         sut.upsertVariations(site1Variations + site2Variations)
 
         // WHEN
-        val site1Results = sut.observeVariationsForProduct(LocalId(1), RemoteId(100L)).first()
-        val site2Results = sut.observeVariationsForProduct(LocalId(2), RemoteId(100L)).first()
+        val site1Results = sut.observeVariationsForProduct(1, 100L).first()
+        val site2Results = sut.observeVariationsForProduct(2, 100L).first()
 
         // THEN
         assertEquals(2, site1Results.size)
@@ -156,7 +156,7 @@ class WooPosVariationsDaoTest {
     @Test
     fun `when getting non-existent variation, then null is returned`() = runTest {
         // WHEN
-        val result = sut.getVariation(LocalId(1), RemoteId(100L), RemoteId(999L))
+        val result = sut.getVariation(1, 100L, 999L)
 
         // THEN
         assertNull(result)
@@ -170,9 +170,9 @@ class WooPosVariationsDaoTest {
 
         // WHEN
         val result = sut.getVariation(
-            variation.localSiteId,
-            variation.remoteProductId,
-            variation.remoteVariationId
+            variation.localSiteId.value,
+            variation.remoteProductId.value,
+            variation.remoteVariationId.value
         )
 
         // THEN
@@ -197,9 +197,9 @@ class WooPosVariationsDaoTest {
 
         // THEN
         val result = sut.getVariation(
-            variation.localSiteId,
-            variation.remoteProductId,
-            variation.remoteVariationId
+            variation.localSiteId.value,
+            variation.remoteProductId.value,
+            variation.remoteVariationId.value
         )
         assertNull(result)
     }
@@ -219,7 +219,7 @@ class WooPosVariationsDaoTest {
         sut.deleteVariation(LocalId(1), RemoteId(productId), RemoteId(1002L))
 
         // THEN
-        val remainingVariations = sut.observeVariationsForProduct(LocalId(1), RemoteId(productId)).first()
+        val remainingVariations = sut.observeVariationsForProduct(1, productId).first()
         assertEquals(2, remainingVariations.size)
         assertTrue(remainingVariations.any { it.remoteVariationId.value == 1001L })
         assertTrue(remainingVariations.any { it.remoteVariationId.value == 1003L })
@@ -241,7 +241,7 @@ class WooPosVariationsDaoTest {
         sut.deleteVariationsForProduct(LocalId(1), RemoteId(productId))
 
         // THEN
-        val remainingVariations = sut.observeVariationsForProduct(LocalId(1), RemoteId(productId)).first()
+        val remainingVariations = sut.observeVariationsForProduct(1, productId).first()
         assertTrue(remainingVariations.isEmpty())
     }
 
@@ -262,8 +262,8 @@ class WooPosVariationsDaoTest {
         sut.deleteVariationsForProduct(LocalId(1), RemoteId(100L))
 
         // THEN
-        val product1Results = sut.observeVariationsForProduct(LocalId(1), RemoteId(100L)).first()
-        val product2Results = sut.observeVariationsForProduct(LocalId(1), RemoteId(200L)).first()
+        val product1Results = sut.observeVariationsForProduct(1, 100L).first()
+        val product2Results = sut.observeVariationsForProduct(1, 200L).first()
         assertTrue(product1Results.isEmpty())
         assertEquals(2, product2Results.size)
     }
@@ -282,8 +282,8 @@ class WooPosVariationsDaoTest {
         sut.deleteAllVariationsForSite(LocalId(1))
 
         // THEN
-        val product1Results = sut.observeVariationsForProduct(LocalId(1), RemoteId(100L)).first()
-        val product2Results = sut.observeVariationsForProduct(LocalId(1), RemoteId(200L)).first()
+        val product1Results = sut.observeVariationsForProduct(1, 100L).first()
+        val product2Results = sut.observeVariationsForProduct(1, 200L).first()
         assertTrue(product1Results.isEmpty())
         assertTrue(product2Results.isEmpty())
     }
@@ -305,7 +305,7 @@ class WooPosVariationsDaoTest {
         sut.upsertVariations(variations)
 
         // WHEN
-        val results = sut.observeVariationsForProduct(LocalId(1), RemoteId(productId)).first()
+        val results = sut.observeVariationsForProduct(1, productId).first()
 
         // THEN
         assertEquals(2, results.size)
@@ -316,7 +316,7 @@ class WooPosVariationsDaoTest {
     @Test
     fun `given empty database, when observing variations, then empty list is emitted`() = runTest {
         // WHEN
-        val results = sut.observeVariationsForProduct(LocalId(1), RemoteId(100L)).first()
+        val results = sut.observeVariationsForProduct(1, 100L).first()
 
         // THEN
         assertTrue(results.isEmpty())
@@ -336,9 +336,9 @@ class WooPosVariationsDaoTest {
 
         // THEN
         val storedVariation = sut.getVariation(
-            variation.localSiteId,
-            variation.remoteProductId,
-            variation.remoteVariationId
+            variation.localSiteId.value,
+            variation.remoteProductId.value,
+            variation.remoteVariationId.value
         )
         assertNotNull(storedVariation)
         assertEquals(7.5, storedVariation.stockQuantity)
@@ -362,9 +362,9 @@ class WooPosVariationsDaoTest {
 
         // THEN
         val storedVariation = sut.getVariation(
-            variation.localSiteId,
-            variation.remoteProductId,
-            variation.remoteVariationId
+            variation.localSiteId.value,
+            variation.remoteProductId.value,
+            variation.remoteVariationId.value
         )
         assertNotNull(storedVariation)
         assertEquals(variation.attributesJson, storedVariation.attributesJson)
@@ -384,7 +384,7 @@ class WooPosVariationsDaoTest {
         sut.upsertVariations(variations)
 
         // WHEN
-        val results = sut.observeVariationsForProduct(LocalId(1), RemoteId(productId)).first()
+        val results = sut.observeVariationsForProduct(1, productId).first()
 
         // THEN
         assertEquals(3, results.size)
@@ -409,9 +409,9 @@ class WooPosVariationsDaoTest {
 
         // THEN
         val storedVariation = sut.getVariation(
-            variation.localSiteId,
-            variation.remoteProductId,
-            variation.remoteVariationId
+            variation.localSiteId.value,
+            variation.remoteProductId.value,
+            variation.remoteVariationId.value
         )
         assertNotNull(storedVariation)
         assertEquals(true, storedVariation.manageStock)
