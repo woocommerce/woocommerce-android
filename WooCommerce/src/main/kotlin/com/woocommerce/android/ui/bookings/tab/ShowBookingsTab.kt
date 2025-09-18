@@ -10,4 +10,6 @@ class ShowBookingsTab @Inject constructor() {
         // Add here: Fetch if site has any published bookable product AND if site is CIAB
         return@withContext Result.success(FeatureFlag.BOOKINGS_MVP.isEnabled())
     }
+
+    fun testingUnused() = FeatureFlag.BOOKINGS_MVP.isEnabled()
 }
