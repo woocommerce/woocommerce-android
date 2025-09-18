@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import androidx.lifecycle.ViewModel
+import com.woocommerce.android.R
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -14,12 +15,14 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +42,7 @@ class WooPosProductsViewModel @Inject constructor(
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
     private val selectedSite: SelectedSite,
+    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
     private var loadProductsJob: Job? = null
@@ -333,24 +337,43 @@ class WooPosProductsViewModel @Inject constructor(
 
         viewModelScope.launch {
             selectedSite.getOrNull()?.let { site ->
-                localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-                // TODO: handle sync failure [Failure]
-                _viewState.value = when (val currentState = _viewState.value) {
-                    is WooPosProductsViewState.Content -> currentState.copy(
-                        pullToRefreshState = WooPosPullToRefreshState.Enabled
-                    )
-                    is WooPosProductsViewState.Loading -> currentState.copy(
-                        pullToRefreshState = WooPosPullToRefreshState.Enabled
-                    )
-                    is WooPosProductsViewState.Error -> currentState.copy(
-                        pullToRefreshState = WooPosPullToRefreshState.Enabled
-                    )
-                    is WooPosProductsViewState.Empty -> currentState.copy(
-                        pullToRefreshState = WooPosPullToRefreshState.Enabled
-                    )
-                }
+                val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
+                _viewState.value = getViewStateForSyncResult(syncResult)
             }
         }
+    }
+
+    private fun getViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosProductsViewState = when (syncResult) {
+        is PosLocalCatalogSyncResult.Success -> {
+            hidePTRIndicator()
+        }
+
+        is PosLocalCatalogSyncResult.Failure -> {
+            sendEventToParent(
+                ChildToParentEvent.ToastMessageDisplayed(
+                    message = resourceProvider.getString(R.string.something_went_wrong_try_again)
+                )
+            )
+            hidePTRIndicator()
+        }
+    }
+
+    private fun hidePTRIndicator(): WooPosProductsViewState = when (val currentState = _viewState.value) {
+        is WooPosProductsViewState.Content -> currentState.copy(
+            pullToRefreshState = WooPosPullToRefreshState.Enabled
+        )
+
+        is WooPosProductsViewState.Loading -> currentState.copy(
+            pullToRefreshState = WooPosPullToRefreshState.Enabled
+        )
+
+        is WooPosProductsViewState.Error -> currentState.copy(
+            pullToRefreshState = WooPosPullToRefreshState.Enabled
+        )
+
+        is WooPosProductsViewState.Empty -> currentState.copy(
+            pullToRefreshState = WooPosPullToRefreshState.Enabled
+        )
     }
 
     private fun WooPosProductModel.isVariable() =
