@@ -582,6 +582,7 @@
     <string name="orderlist_error_fetch_generic">Error fetching orders</string>
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter">Filter</string>
+    <string name="order_list_customer_filter_applied">Customer filter applied</string>
     <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_search_hint_active_filters">Search filtered orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
@@ -947,6 +948,7 @@
     <string name="orderdetail_shipping_details">Shipping details</string>
     <string name="orderdetail_billing_details">Billing details</string>
     <string name="orderdetail_email_contentdesc">email customer</string>
+    <string name="orderdetail_view_customer_orders">View customer orders</string>
     <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
@@ -4850,4 +4852,10 @@
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>
     <string name="no_network_message">There is no network available</string>
+
+    <!--
+    Bookings
+    -->
+    <string name="bookings_tab_title">Bookings</string>
+
 </resources>

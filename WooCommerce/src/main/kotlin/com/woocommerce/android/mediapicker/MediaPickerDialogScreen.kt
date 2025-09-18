@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +43,7 @@ fun MediaPickerDialog(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colors.surface, MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium)
                 .shadow(elevation = dimensionResource(id = dimen.major_75)),
         ) {
             Column(
@@ -58,7 +58,7 @@ fun MediaPickerDialog(
                             bottom = dimensionResource(id = dimen.minor_100)
                         ),
                     text = stringResource(id = string.media_picker_dialog_title),
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.titleLarge
                 )
 
                 DialogButton(
@@ -116,8 +116,8 @@ private fun DialogButton(@DrawableRes image: Int, @StringRes title: Int, onClick
                     .align(alignment = Alignment.CenterVertically)
                     .padding(start = dimensionResource(id = dimen.major_100)),
                 text = stringResource(id = title),
-                color = MaterialTheme.colors.onSurface,
-                style = MaterialTheme.typography.body2
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
