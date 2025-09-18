@@ -1,13 +1,21 @@
 package com.woocommerce.android.ui.bookings.tab
 
+import com.woocommerce.android.ciab.isCurrentSiteCIAB
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class ShowBookingsTab @Inject constructor() {
-    suspend operator fun invoke(): Result<Boolean> = withContext(Dispatchers.IO) {
-        // Add here: Fetch if site has any published bookable product AND if site is CIAB
-        return@withContext Result.success(FeatureFlag.BOOKINGS_MVP.isEnabled())
-    }
+class ShowBookingsTab @Inject constructor(
+    private val selectedSite: SelectedSite
+) {
+
+    suspend operator fun invoke(): Result<Boolean> =
+        withContext(Dispatchers.IO) {
+            Result.success(
+                selectedSite.isCurrentSiteCIAB() &&
+                    FeatureFlag.BOOKINGS_MVP.isEnabled()
+            )
+        }
 }
