@@ -10,6 +10,8 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getName
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -17,7 +19,9 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import java.util.Date
 import javax.inject.Inject
 
@@ -31,6 +35,9 @@ class WooPosTotalsRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val resourceProvider: ResourceProvider,
     private val variationMapper: WooPosVariationMapper,
+    private val productMapper: WooPosProductModelMapper,
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
+    private val localCatalogStore: WooPosLocalCatalogStore,
 ) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
@@ -98,7 +105,18 @@ class WooPosTotalsRepository @Inject constructor(
         quantity: Int,
         itemData: WooPosItemsViewModel.ItemClickedData.Product.Simple
     ): Order.Item {
-        val productResult = getProductById(itemData.id)!!
+        val productResult = when {
+            wooPosLocalCatalogM1Enabled() -> {
+                val result = localCatalogStore.getProduct(
+                    siteId = LocalOrRemoteId.LocalId(selectedSite.get().id),
+                    remoteProductId = LocalOrRemoteId.RemoteId(itemData.id)
+                )
+                result.getOrNull()?.let { entity ->
+                    productMapper.fromEntity(entity)
+                } ?: error("Product not found in local catalog: ${itemData.id}")
+            }
+            else -> getProductById(itemData.id)!!
+        }
         return Order.Item.EMPTY.copy(
             itemId = 0L,
             productId = itemData.id,
@@ -115,7 +133,18 @@ class WooPosTotalsRepository @Inject constructor(
         quantity: Int,
         itemData: WooPosItemsViewModel.ItemClickedData.Product.Variation
     ): Order.Item {
-        val productResult = getProductById(itemData.productId)!!
+        val productResult = when {
+            wooPosLocalCatalogM1Enabled() -> {
+                val result = localCatalogStore.getProduct(
+                    siteId = LocalOrRemoteId.LocalId(selectedSite.get().id),
+                    remoteProductId = LocalOrRemoteId.RemoteId(itemData.productId)
+                )
+                result.getOrNull()?.let { entity ->
+                    productMapper.fromEntity(entity)
+                } ?: error("Product not found in local catalog: ${itemData.productId}")
+            }
+            else -> getProductById(itemData.productId)!!
+        }
         val variationResult = getVariationById(
             productId = itemData.productId,
             variationId = itemData.id
