@@ -70,6 +70,8 @@ class WooPosVariationsViewModelTest {
         onBlocking { invoke(null) }.thenReturn("$0.00")
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository = mock()
+    private val selectedSite: SelectedSite = mock()
     private val mapper: WooPosVariationMapper = mock {
         on { fromProductVariation(any()) } doAnswer { invocation ->
             val productVariation = invocation.arguments[0] as com.woocommerce.android.model.ProductVariation
