@@ -10,12 +10,15 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
     ): Boolean {
         // For now, all affected features are unsupported in CIAB.
         // If there are exceptions in the future, we can handle them here.
-        return !selectedSite.isCurrentSiteCIAB()
+        return !isCurrentSiteCIAB()
     }
 
     fun isFeatureUnsupported(feature: CIABAffectedFeature): Boolean {
         return !isFeatureSupported(feature)
     }
+
+    private fun isCurrentSiteCIAB(): Boolean =
+        selectedSite.getOrNull()?.isCIABSite() ?: false
 
     companion object Companion {
         const val CIAB_GARDEN_NAME = "commerce"
