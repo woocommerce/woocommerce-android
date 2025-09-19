@@ -55,6 +55,7 @@ class WooPosProductsViewModelTest {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
+    private val productsInDbDataSource: WooPosProductsInDbDataSource = mock()
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
         on { invoke() }.thenReturn(false)
     }
@@ -74,7 +75,14 @@ class WooPosProductsViewModelTest {
             ),
         )
 
-        whenever(productsDataSource.loadProducts(any())).thenReturn(
+        whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+        whenever(productsInDbDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -107,7 +115,7 @@ class WooPosProductsViewModelTest {
             )
         )
 
-        whenever(productsDataSource.loadProducts(any())).thenReturn(
+        whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -136,7 +144,7 @@ class WooPosProductsViewModelTest {
     @Test
     fun `given empty products list returned, when view model created, then view state is empty`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadProducts(any())).thenReturn(
+        whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(emptyList())
@@ -159,7 +167,7 @@ class WooPosProductsViewModelTest {
     @Test
     fun `given loading products fails, when view model created, then view state is error`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadProducts(any())).thenReturn(
+        whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.failure(Exception())
@@ -188,7 +196,7 @@ class WooPosProductsViewModelTest {
 
             // THEN
             viewModel.viewState.test {
-                verify(productsDataSource).loadProducts(forceRefreshProducts = true)
+                verify(productsDataSource).fetchFirstPage(forceRefresh = true)
                 cancelAndConsumeRemainingEvents()
             }
         }
@@ -262,7 +270,7 @@ class WooPosProductsViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            verify(productsDataSource).loadProducts(forceRefreshProducts = false)
+            verify(productsDataSource).fetchFirstPage(forceRefresh = false)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -297,7 +305,7 @@ class WooPosProductsViewModelTest {
     fun `given no products, when pull to refresh, then state is Empty`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        whenever(productsDataSource.loadProducts(any())).thenReturn(
+        whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(emptyList())
@@ -355,7 +363,7 @@ class WooPosProductsViewModelTest {
             )
         )
 
-        whenever(productsDataSource.loadProducts(any())).thenReturn(
+        whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -409,7 +417,7 @@ class WooPosProductsViewModelTest {
                 )
             }
 
-            whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
+            whenever(productsDataSource.fetchFirstPage(any())).thenReturn(productsFlow)
 
             val viewModel = createViewModel()
 
@@ -428,7 +436,7 @@ class WooPosProductsViewModelTest {
         whenever(productsDataSource.hasMorePages).thenReturn(true)
 
         val productsFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
-        whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
+        whenever(productsDataSource.fetchFirstPage(any())).thenReturn(productsFlow)
 
         val viewModel = createViewModel()
 
@@ -490,7 +498,7 @@ class WooPosProductsViewModelTest {
         createViewModel()
 
         // THEN
-        verify(productsDataSource).loadProducts(forceRefreshProducts = true)
+        verify(productsDataSource).fetchFirstPage(forceRefresh = true)
     }
 
     @Test
@@ -502,7 +510,7 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked)
 
         // THEN
-        verify(productsDataSource, times(2)).loadProducts(forceRefreshProducts = false)
+        verify(productsDataSource, times(2)).fetchFirstPage(forceRefresh = false)
     }
 
     @Test
@@ -538,6 +546,7 @@ class WooPosProductsViewModelTest {
     private fun createViewModel(): WooPosProductsViewModel {
         return WooPosProductsViewModel(
             productsDataSource = productsDataSource,
+            productsInDbDataSource = productsInDbDataSource,
             fromChildToParentEventSender = fromChildToParentEventSender,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             priceFormat = priceFormat,

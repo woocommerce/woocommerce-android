@@ -64,7 +64,7 @@ class WooPosProductsInDbDataSourceTest {
     }
 
     @Test
-    fun `given search query, when fetchFirstPage called, then filters products by name`() = runTest {
+    fun `given products in database, when fetchFirstPage called, then returns all products`() = runTest {
         // Given
         val product1 = createProductEntity(remoteId = 1L, name = "Apple iPhone", sku = "ABC123")
         val product2 = createProductEntity(remoteId = 2L, name = "Samsung Galaxy", sku = "XYZ789")
@@ -77,7 +77,7 @@ class WooPosProductsInDbDataSourceTest {
         whenever(mapper.fromEntity(product2)).thenReturn(model2)
 
         // When
-        val results = sut.fetchFirstPage(searchQuery = "iPhone", forceRefresh = false).toList()
+        val results = sut.fetchFirstPage(forceRefresh = false).toList()
 
         // Then
         assertThat(results).hasSize(1)
@@ -86,33 +86,7 @@ class WooPosProductsInDbDataSourceTest {
 
         val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
-        assertThat(remoteResult.productsResult.getOrThrow()).containsExactly(model1)
-    }
-
-    @Test
-    fun `given search query, when fetchFirstPage called, then filters products by sku`() = runTest {
-        // Given
-        val product1 = createProductEntity(remoteId = 1L, name = "Product A", sku = "ABC123")
-        val product2 = createProductEntity(remoteId = 2L, name = "Product B", sku = "XYZ789")
-        val model1 = createProductModel(remoteId = 1L, name = "Product A", sku = "ABC123")
-        val model2 = createProductModel(remoteId = 2L, name = "Product B", sku = "XYZ789")
-
-        whenever(posLocalCatalogStore.observeProducts(any()))
-            .thenReturn(flowOf(Result.success(listOf(product1, product2))))
-        whenever(mapper.fromEntity(product1)).thenReturn(model1)
-        whenever(mapper.fromEntity(product2)).thenReturn(model2)
-
-        // When
-        val results = sut.fetchFirstPage(searchQuery = "XYZ", forceRefresh = false).toList()
-
-        // Then
-        assertThat(results).hasSize(1)
-        val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
-
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
-        assertThat(remoteResult.productsResult.isSuccess).isTrue()
-        assertThat(remoteResult.productsResult.getOrThrow()).containsExactly(model2)
+        assertThat(remoteResult.productsResult.getOrThrow()).containsExactly(model1, model2)
     }
 
     @Test

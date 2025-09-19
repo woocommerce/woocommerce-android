@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface WooPosProductsDataSourceInterface {
     fun fetchFirstPage(
-        searchQuery: String? = null,
         forceRefresh: Boolean
     ): Flow<WooPosProductsDataSource.ProductsResult>
 

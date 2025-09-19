@@ -31,21 +31,10 @@ class WooPosProductsInDbDataSource @Inject constructor(
     }
 
     override fun fetchFirstPage(
-        searchQuery: String?,
         forceRefresh: Boolean
     ): Flow<WooPosProductsDataSource.ProductsResult> = getProductsFromDatabaseFlow()
         .map { products ->
-            val filteredProducts = if (searchQuery.isNullOrBlank()) {
-                products
-            } else {
-                products.filter { product ->
-                    product.name.contains(searchQuery, ignoreCase = true) || product.sku.contains(
-                        searchQuery,
-                        ignoreCase = true
-                    )
-                }
-            }
-            WooPosProductsDataSource.ProductsResult.Remote(Result.success(filteredProducts))
+            WooPosProductsDataSource.ProductsResult.Remote(Result.success(products))
         }
         .flowOn(Dispatchers.IO)
 

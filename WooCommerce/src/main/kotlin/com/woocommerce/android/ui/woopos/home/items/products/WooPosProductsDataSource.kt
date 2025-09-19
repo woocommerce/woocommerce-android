@@ -81,7 +81,6 @@ class WooPosProductsDataSource @Inject constructor(
     }
 
     override fun fetchFirstPage(
-        searchQuery: String?,
         forceRefresh: Boolean
     ): Flow<ProductsResult> = flow {
         offset.set(0)
