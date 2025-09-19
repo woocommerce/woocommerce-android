@@ -118,8 +118,6 @@ class WooPosVariationsViewModelTest {
             }
         }
     }
-    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository = mock()
-    private val selectedSite: SelectedSite = mock()
 
     @Test
     fun `given variations from data source, when view model created, then view state updated correctly`() = runTest {
