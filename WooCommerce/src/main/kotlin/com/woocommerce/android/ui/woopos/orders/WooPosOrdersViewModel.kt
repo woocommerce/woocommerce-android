@@ -84,7 +84,10 @@ class WooPosOrdersViewModel @Inject constructor(
     @Suppress("ReturnCount")
     fun onEndOfOrdersListReached() {
         val currentState = _state.value
-        if (currentState !is WooPosOrdersState.Content) {
+        if (currentState !is WooPosOrdersState.Content
+            || currentState.paginationState != WooPosPaginationState.None
+            || currentState.pullToRefreshState == WooPosPullToRefreshState.Refreshing
+        ) {
             return
         }
 
@@ -155,15 +158,6 @@ class WooPosOrdersViewModel @Inject constructor(
                 loadOrders()
             }
         }
-    }
-
-    fun isLoadingMore(): Boolean =
-        (_state.value as? WooPosOrdersState.Content)?.paginationState == WooPosPaginationState.Loading
-
-    fun canLoadMore(): Boolean {
-        val contentState = _state.value as? WooPosOrdersState.Content ?: return false
-        return contentState.paginationState == WooPosPaginationState.None &&
-            contentState.pullToRefreshState != WooPosPullToRefreshState.Refreshing
     }
 
     private fun updateSearchState(searchState: WooPosSearchInputState) {
