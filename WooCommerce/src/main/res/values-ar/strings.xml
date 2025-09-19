@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-25 14:54:04+0000
+Translation-Revision-Date: 2025-09-09 11:54:07+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">ينبغي أن تكون أبعاد الحزمة أكبر من 0.</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> للإضافة إلى عربة التسوق</string>
+    <string name="woopos_cart_empty_scan_barcode">مسح رمز شريطي ضوئيًا</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">النقر على منتج أو </string>
+    <string name="woopos_orders_title">الطلبات</string>
+    <string name="woopos_settings_help_category">المساعدة</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">مشرف ووردبريس</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">السداد عبر الويب</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">لا يمكنك نقل المنتجات إليه أو الخروج منه.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">لقد اشتريت ملصقًا لهذه الشحنة.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">البلد الذي تم تصنيع المنتج أو تجميعه فيه.</string>
@@ -71,7 +79,6 @@ Language: ar
     <string name="woopos_scanning_setup_software_keyboard_message">يتعامل نظام التشغيل Android مع ماسحات الرمز الشريطي على أنها لوحات مفاتيح مادية، والتي قد تقوم بإخفاء لوحة المفاتيح على الشاشة. لنتحقق من الآتي:</string>
     <string name="woopos_scanning_setup_software_keyboard_title">إظهار لوحة المفاتيح على الشاشة</string>
     <string name="woopos_scanning_setup_success_message">أنت مستعد لبدء المسح الضوئي للمنتجات. في المرة القادمة التي تحتاج فيها إلى توصيل الماسح الضوئي، ما عليك سوى تشغيل الماسح الضوئي وسيتم إعادة توصيله تلقائيًا.</string>
-    <string name="woopos_barcode_scanning_title">إعداد الماسح الضوئي للرمز الشريطي</string>
     <string name="woopos_cart_clear_all_button_content_description">مسح أيقونة العناصر الموجودة في عربة التسوق</string>
     <string name="product_selector_subscription_not_supported">منتجات الاشتراك غير مدعومة لإنشاء الطلب</string>
     <string name="save_copy">حفظ نسخة</string>
@@ -636,7 +643,6 @@ Language: ar
     <string name="analytics_spend_subtitle_value">الإنفاق: ⁦%1$s⁩</string>
     <string name="analytics_custom_list_selection_button_description">تحديد عامل التصفية</string>
     <string name="woopos_cart_empty_content_description">سلة التسوق فارغة</string>
-    <string name="woopos_cart_empty_subtitle">النقر على منتج إلى\nإضافته إلى عربة التسوق</string>
     <string name="woopos_totals_main_error_label">يتعذر تحميل الإجماليات</string>
     <string name="woopos_items_in_cart_multiple">%d من العناصر</string>
     <string name="ai_product_creation_error_media_upload">فشل رفع صورة المنتج المحددة.</string>
