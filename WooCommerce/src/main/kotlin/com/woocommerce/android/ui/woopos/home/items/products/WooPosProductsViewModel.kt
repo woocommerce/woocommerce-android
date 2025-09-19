@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import androidx.lifecycle.ViewModel
-import com.woocommerce.android.R
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -13,8 +15,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -34,7 +34,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosProductsViewModel @Inject constructor(
-    private val productsDataSource: WooPosProductsDataSource,
+    productsDataSource: WooPosProductsDataSource,
+    productsInDbDataSource: WooPosProductsInDbDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val priceFormat: WooPosFormatPrice,
@@ -44,6 +45,12 @@ class WooPosProductsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
+
+    private val currentDataSource: WooPosProductsDataSourceInterface = when (wooPosLocalCatalogM1Enabled()) {
+        true -> productsInDbDataSource
+        false -> productsDataSource
+    }
+
     private var loadMoreProductsJob: Job? = null
     private var loadProductsJob: Job? = null
     private var loadMoreAfterLoadCompletes = false
@@ -61,6 +68,9 @@ class WooPosProductsViewModel @Inject constructor(
 
     init {
         listenEventsFromParent()
+        viewModelScope.launch {
+            currentDataSource.resetState()
+        }
         loadProducts(
             forceRefreshProducts = false,
             withPullToRefresh = false,
@@ -181,7 +191,7 @@ class WooPosProductsViewModel @Inject constructor(
                 WooPosProductsViewState.Loading()
             }
 
-            productsDataSource.loadProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
+            currentDataSource.fetchFirstPage(forceRefresh = forceRefreshProducts).collect { result ->
                 when (result) {
                     is WooPosProductsDataSource.ProductsResult.Cached -> {
                         if (result.products.isNotEmpty()) {
@@ -195,7 +205,7 @@ class WooPosProductsViewModel @Inject constructor(
                                 val products = result.productsResult.getOrThrow()
                                 if (products.isNotEmpty()) {
                                     val currentState = _viewState.value
-                                    val paginationState = if (loadMoreProductsJob?.isActive == true) {
+                                    val paginationState = if (loadMoreProductsJob?.isActive == true && currentDataSource.hasMorePages) {
                                         WooPosPaginationState.Loading
                                     } else {
                                         WooPosPaginationState.None
@@ -282,7 +292,9 @@ class WooPosProductsViewModel @Inject constructor(
 
         if (loadProductsJob?.isActive == true) {
             loadMoreAfterLoadCompletes = true
-            _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+            if (currentDataSource.hasMorePages) {
+                _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+            }
             return
         }
 
@@ -290,7 +302,7 @@ class WooPosProductsViewModel @Inject constructor(
             return
         }
 
-        if (!productsDataSource.hasMorePages) {
+        if (!currentDataSource.hasMorePages) {
             return
         }
 
@@ -298,7 +310,7 @@ class WooPosProductsViewModel @Inject constructor(
 
         loadMoreProductsJob?.cancel()
         loadMoreProductsJob = viewModelScope.launch {
-            val result = productsDataSource.loadMore()
+            val result = currentDataSource.loadMore()
             _viewState.value = if (result.isSuccess) {
                 result.getOrThrow().toContentState().also {
                     analyticsTracker.track(
