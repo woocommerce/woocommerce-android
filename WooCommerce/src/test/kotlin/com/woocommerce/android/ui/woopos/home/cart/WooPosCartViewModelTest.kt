@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
@@ -155,6 +156,7 @@ class WooPosCartViewModelTest {
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val barcodeEventTracker: WooPosBarcodeEventTracker = mock()
+    private val productMapper: WooPosProductModelMapper = mock()
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
         on { invoke() }.thenReturn(false)
     }
@@ -1527,6 +1529,7 @@ class WooPosCartViewModelTest {
             soundHelper,
             barcodeEventTracker,
             variationMapper,
+            productMapper,
             wooPosLocalCatalogM1Enabled,
             localCatalogStore,
             selectedSite,
