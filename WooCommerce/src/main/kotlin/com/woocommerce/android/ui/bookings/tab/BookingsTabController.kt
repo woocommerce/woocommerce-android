@@ -6,7 +6,6 @@ import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,11 +35,8 @@ class BookingsTabController @Inject constructor(
     private fun checkBookingsTabVisibility() {
         activity.lifecycleScope.launch {
             showBookingsTab()
-                .onSuccess {
+                .collect {
                     binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = it
-                }
-                .onFailure {
-                    WooLog.w(WooLog.T.BOOKINGS, "Failed to check if bookings tab should be visible: ${it.message}")
                 }
         }
     }
