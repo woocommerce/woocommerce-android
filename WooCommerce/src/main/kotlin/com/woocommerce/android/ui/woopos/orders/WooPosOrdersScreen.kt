@@ -16,16 +16,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,13 +47,17 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 private val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 
@@ -69,6 +79,7 @@ fun WooPosOrdersScreen(
             onRefresh = viewModel::onRefresh,
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
+            onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
             onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
                 .weight(0.3f)
@@ -94,6 +105,7 @@ private fun OrdersList(
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
+    onEndOfOrdersListReached: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -195,10 +207,10 @@ private fun OrdersList(
 
                 is WooPosOrdersState.Content -> {
                     WooPosOrdersListPaneScreen(
-                        items = state.items,
-                        selectedOrderId = state.selectedOrderId,
+                        modifier = Modifier.fillMaxSize(),
+                        state = state,
                         onOrderSelected = onOrderSelected,
-                        modifier = Modifier.fillMaxSize()
+                        onEndOfOrdersListReached = onEndOfOrdersListReached,
                     )
                 }
             }
@@ -234,17 +246,37 @@ private fun OrderDetails(
 
 @Composable
 fun WooPosOrdersListPaneScreen(
-    items: List<OrderItemViewState>,
-    selectedOrderId: Long?,
+    modifier: Modifier = Modifier,
+    state: WooPosOrdersState.Content,
     onOrderSelected: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    onEndOfOrdersListReached: () -> Unit,
 ) {
+    val listState = rememberLazyListState()
+
+    val loadMoreBuffer = 5
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val info = listState.layoutInfo
+            val total = info.totalItemsCount
+            if (total == 0) return@derivedStateOf false
+            val lastVisible = (info.visibleItemsInfo.lastOrNull()?.index ?: -1)
+            lastVisible >= total - 1 - loadMoreBuffer
+        }
+    }
+    LaunchedEffect(state.paginationState) {
+        snapshotFlow { shouldLoadMore.value }
+            .distinctUntilChanged()
+            .filter { it }
+            .collect { onEndOfOrdersListReached() }
+    }
+
     LazyColumn(
+        state = listState,
         modifier = modifier,
         contentPadding = PaddingValues(vertical = WooPosSpacing.XSmall.value)
     ) {
-        items(items, key = { it.id }) { item ->
-            val isSelected = item.id == selectedOrderId
+        items(state.items, key = { it.id }) { item ->
+            val isSelected = item.id == state.selectedOrderId
             val background = if (isSelected) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
@@ -281,6 +313,12 @@ fun WooPosOrdersListPaneScreen(
                 )
             }
         }
+
+        if (state.paginationState == WooPosPaginationState.Loading) {
+            item {
+                OrdersPaginationLoadingRow()
+            }
+        }
     }
 }
 
@@ -306,6 +344,44 @@ fun WooPosOrdersDetailPaneScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+@Composable
+private fun OrdersPaginationLoadingRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            .padding(
+                horizontal = WooPosSpacing.Medium.value,
+                vertical = WooPosSpacing.Medium.value
+            )
+            .heightIn(min = 64.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.55f)
+                    .height(18.dp)
+            )
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.35f)
+                    .height(14.dp)
+            )
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        WooPosShimmerBox(
+            modifier = Modifier
+                .width(72.dp)
+                .height(18.dp)
+                .alignByBaseline()
+        )
     }
 }
 
