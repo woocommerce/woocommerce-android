@@ -18,7 +18,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
-    private lateinit var sut: PosLocalCatalogSyncRepository
+    private lateinit var sut: WooPosLocalCatalogSyncRepository
     private var posSyncProductsAction: WooPosSyncProductsAction = mock()
     private var posSyncVariationsAction: WooPosSyncVariationsAction = mock()
     private var syncTimestampManager: WooPosSyncTimestampManager = mock()
@@ -34,7 +34,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             computation = UnconfinedTestDispatcher()
         )
 
-        sut = PosLocalCatalogSyncRepository(
+        sut = WooPosLocalCatalogSyncRepository(
             posSyncProductsAction = posSyncProductsAction,
             posSyncVariationsAction = posSyncVariationsAction,
             syncTimestampManager = syncTimestampManager,
@@ -88,7 +88,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when full sync fails with catalog too large, then returns CatalogTooLarge failure`() = testBlocking {
         // GIVEN
         val totalPages = 15
-        val maxPages = PosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
+        val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
@@ -153,7 +153,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when incremental sync fails with catalog too large, then returns CatalogTooLarge failure`() = testBlocking {
         // GIVEN
         val totalPages = 15
-        val maxPages = PosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
+        val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
             .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
 

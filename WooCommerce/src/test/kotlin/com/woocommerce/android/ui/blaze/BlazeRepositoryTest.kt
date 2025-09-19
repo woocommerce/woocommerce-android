@@ -2,15 +2,19 @@ package com.woocommerce.android.ui.blaze
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.media.MediaFilesRepository
+import com.woocommerce.android.media.MediaFilesRepository.ImageDimensions
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage.RemoteImage
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignDetails
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_BUDGET_MODE_DAILY
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_BUDGET_MODE_TOTAL
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAIGN_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.WEEKLY_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.BlazeRepository.TargetingParameters
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +25,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequest
@@ -37,7 +42,20 @@ class BlazeRepositoryTest : BaseUnitTest() {
             url = "https://example.com"
         }
     }
-    private val blazeModel: BlazeCampaignModel = mock()
+    private val blazeModel: BlazeCampaignModel = BlazeCampaignModel(
+        campaignId = "1",
+        title = "",
+        imageUrl = null,
+        startTime = Date(),
+        durationInDays = 0,
+        uiStatus = "",
+        impressions = 0,
+        clicks = 0,
+        targetUrn = null,
+        totalBudget = 0.0,
+        spentBudget = 0.0,
+        isEndlessCampaign = false
+    )
     private val blazeCampaignsStore: BlazeCampaignsStore = mock {
         onBlocking { createCampaign(any(), any()) } doReturn
             BlazeResult(blazeModel)
@@ -95,6 +113,82 @@ class BlazeRepositoryTest : BaseUnitTest() {
 
             verify(blazeCampaignsStore).createCampaign(any(), createCampaignRequestCaptor.capture())
             assertThat(createCampaignRequestCaptor.firstValue.budget.amount).isEqualTo(TOTAL_BUDGET.toDouble())
+        }
+
+    @Test
+    fun `given productId, when generateDefaultCampaignDetails invoked, then default CampaignDetails created`() =
+        testBlocking {
+            val productId = 123L
+            val objective = "sales"
+            val imageUrl = "https://example.com/image-400.jpg"
+            val product = ProductTestUtils.generateProduct(
+                productId = productId,
+                productName = "My Product",
+                imageUrl = imageUrl
+            ).copy(
+                shortDescription = "<p>Hello<br>World</p>"
+            )
+
+            whenever(appPrefsWrapper.blazeCampaignSelectedObjective).thenReturn(objective)
+            whenever(productDetailRepository.getProduct(productId)).thenReturn(product)
+            whenever(mediaFilesRepository.getImageDimensions(imageUrl)).thenReturn(ImageDimensions(0, 0))
+
+            val before = Date()
+            val details = repository.generateDefaultCampaignDetails(productId)
+
+            // Basic fields
+            assertThat(details.productId).isEqualTo(productId)
+            assertThat(details.tagLine).isEqualTo("My Product")
+            assertThat(details.description).isEqualTo("Hello\nWorld")
+            assertThat(details.ctaText).isEmpty()
+            assertThat(details.objectiveId).isEqualTo(objective)
+            assertThat(details.acceptedTos).isFalse()
+
+            // Destination
+            assertThat(details.destinationParameters.targetUrl).isEqualTo(product.permalink)
+            assertThat(details.destinationParameters.parameters).isEmpty()
+
+            // Targeting
+            assertThat(details.targetingParameters.locations).isEmpty()
+            assertThat(details.targetingParameters.languages).isEmpty()
+            assertThat(details.targetingParameters.devices).isEmpty()
+            assertThat(details.targetingParameters.interests).isEmpty()
+
+            // Campaign Image
+            assertThat(details.campaignImage).isInstanceOf(BlazeRepository.BlazeCampaignImage.None::class.java)
+
+            // Budget defaults
+            val expectedTotal = DEFAULT_CAMPAIGN_DURATION * CAMPAIGN_MINIMUM_DAILY_SPEND
+            assertThat(details.budget.totalBudget).isEqualTo(expectedTotal)
+            assertThat(details.budget.spentBudget).isEqualTo(0f)
+            assertThat(details.budget.currencyCode).isEqualTo("USD")
+            assertThat(details.budget.durationInDays).isEqualTo(DEFAULT_CAMPAIGN_DURATION)
+            assertThat(details.budget.isEndlessCampaign).isTrue()
+            // Start date should be roughly tomorrow: after 'before' and not too far in the future
+            assertThat(details.budget.startDate.time).isGreaterThanOrEqualTo(before.time)
+        }
+
+    @Test
+    fun `given a product with no short description, when generateDefaultCampaignDetails invoked, then CampaignDetails with description created`() =
+        testBlocking {
+            val productId = 456L
+            val objective = "sales"
+            val product = ProductTestUtils.generateProduct(
+                productId = productId,
+                productName = "Another Product",
+                imageUrl = null
+            ).copy(
+                shortDescription = "",
+                description = "<p>Main <br> Description</p>"
+            )
+
+            whenever(appPrefsWrapper.blazeCampaignSelectedObjective).thenReturn(objective)
+            whenever(productDetailRepository.getProduct(productId)).thenReturn(product)
+
+            val details = repository.generateDefaultCampaignDetails(productId)
+
+            // Only focus on description defaulting behavior
+            assertThat(details.description).isEqualTo("Main \n Description")
         }
 
     companion object {

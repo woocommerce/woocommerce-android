@@ -14,7 +14,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
-import java.util.*
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -34,7 +33,10 @@ class ApplicationPasswordManagerTests {
     private val mJetpackApplicationPasswordsRestClient: JetpackApplicationPasswordsRestClient = mock()
     private val mWpApiApplicationPasswordsRestClient: WPApiApplicationPasswordsRestClient = mock()
 
-    private val applicationPasswordsConfiguration = ApplicationPasswordsConfiguration(Optional.of(applicationName))
+    private val applicationPasswordsConfiguration = object : ApplicationPasswordsConfiguration {
+        override val applicationName: String = this@ApplicationPasswordManagerTests.applicationName
+        override suspend fun isEnabledForJetpackAccess() = true
+    }
 
     private lateinit var mApplicationPasswordsManager: ApplicationPasswordsManager
 
@@ -165,6 +167,29 @@ class ApplicationPasswordManagerTests {
         }
 
     @Test
+    fun `when a jetpack site returns application_passwords_disabled_for_user, then return feature not available`() =
+        runTest {
+            val site = testSite.apply {
+                origin = SiteModel.ORIGIN_WPCOM_REST
+            }
+            val networkError = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.SERVER_ERROR)).apply {
+                apiError = "application_passwords_disabled_for_user"
+            }
+
+            whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
+            whenever(mJetpackApplicationPasswordsRestClient.fetchWPAdminUsername(site))
+                .thenReturn(UsernameFetchPayload(testCredentials.userName))
+            whenever(mJetpackApplicationPasswordsRestClient.createApplicationPassword(site, applicationName))
+                .thenReturn(ApplicationPasswordCreationPayload(networkError))
+
+            val result = mApplicationPasswordsManager.getApplicationCredentials(
+                testSite
+            )
+
+            assertEquals(ApplicationPasswordCreationResult.NotSupported(networkError), result)
+        }
+
+    @Test
     fun `when a non-jetpack site returns 404, then return feature not available`() =
         runTest {
             val site = testSite.apply {
@@ -229,26 +254,6 @@ class ApplicationPasswordManagerTests {
             val result = mApplicationPasswordsManager.getApplicationCredentials(site)
 
             assertEquals(ApplicationPasswordCreationResult.Created(testCredentials), result)
-            verify(mWpApiApplicationPasswordsRestClient).fetchApplicationPasswordUUID(site, applicationName)
-            verify(mWpApiApplicationPasswordsRestClient).deleteApplicationPassword(site, uuid)
-        }
-
-    @Test
-    fun `given application password doesn't exist locally, when deleting a password, then fetch the UUID`() =
-        runTest {
-            val site = testSite.apply {
-                origin = SiteModel.ORIGIN_XMLRPC
-                username = testCredentials.userName
-            }
-            whenever(applicationPasswordsStore.getCredentials(testSite)).thenReturn(null)
-            whenever(mWpApiApplicationPasswordsRestClient.fetchApplicationPasswordUUID(site, applicationName))
-                .thenReturn(ApplicationPasswordUUIDFetchPayload(uuid))
-            whenever(mWpApiApplicationPasswordsRestClient.deleteApplicationPassword(site, uuid))
-                .thenReturn(ApplicationPasswordDeletionPayload(isDeleted = true))
-
-            val result = mApplicationPasswordsManager.deleteApplicationCredentials(site)
-
-            assertEquals(ApplicationPasswordDeletionResult.Success, result)
             verify(mWpApiApplicationPasswordsRestClient).fetchApplicationPasswordUUID(site, applicationName)
             verify(mWpApiApplicationPasswordsRestClient).deleteApplicationPassword(site, uuid)
         }

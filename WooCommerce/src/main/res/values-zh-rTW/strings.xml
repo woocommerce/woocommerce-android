@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-26 13:54:04+0000
+Translation-Revision-Date: 2025-09-10 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">包裹尺寸皆應大於 0。</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> 將其新增至購物車</string>
+    <string name="woopos_cart_empty_scan_barcode">掃描條碼</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">點選商品或 </string>
+    <string name="woopos_orders_title">訂單</string>
+    <string name="woopos_settings_help_category">說明</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP-管理員</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">網頁結帳</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">無法移入或移出商品。</string>
     <string name="woo_shipping_labels_customs_origin_country_info">商品製造或組裝的國家/地區。</string>
     <string name="woo_shipping_labels_customs_description_info">運送到遵循歐盟 (EU) 海關規定的國家/地區時，請針對各個項目提供清楚明確的描述。 舉例來說，若要寄送衣服，請指明衣服種類 (例如，男性襯衫、女童背心、男童外套)，海關才會採納相關資訊， 否則貨件可能會在海關檢查時遭遇延誤或中斷。</string>
@@ -70,7 +78,6 @@ Language: zh_TW
     <string name="woopos_scanning_setup_software_keyboard_message_two">如果看不到鍵盤，請嘗試以下選項：</string>
     <string name="woopos_scanning_setup_software_keyboard_message">Android 可能將條碼掃描器視為實體鍵盤，因而隱藏螢幕小鍵盤。 請嘗試：</string>
     <string name="woopos_scanning_setup_software_keyboard_title">顯示螢幕小鍵盤</string>
-    <string name="woopos_barcode_scanning_title">條碼掃描器初始設定</string>
     <string name="woopos_scanning_setup_success_message">你可以開始掃描商品了。 之後要連結掃描器時，只要開啟掃描器，即會自動重新連結。</string>
     <string name="woopos_cart_clear_all_button_content_description">清除購物車圖示中的商品</string>
     <string name="product_selector_subscription_not_supported">建立訂單功能不支援訂閱產品</string>
@@ -638,7 +645,6 @@ Language: zh_TW
     <string name="woopos_cart_empty_content_description">購物車是空的</string>
     <string name="woopos_totals_main_error_label">無法載入總金額</string>
     <string name="woopos_items_in_cart_multiple">%d 個品項</string>
-    <string name="woopos_cart_empty_subtitle">點選商品即可\n新增至購物車</string>
     <string name="ai_product_creation_error_media_upload">無法上傳所選商品圖片。</string>
     <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;很棒的提示！&lt;/b&gt;你已提供足夠的工作資料，但歡迎新增更多詳細資料，讓成品更臻完善。</string>
     <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;新增更多詳細資料。&lt;/b&gt;你提供的詳細資料越豐富，就能產生更好的詳細資料。</string>

@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-26 13:54:06+0000
+Translation-Revision-Date: 2025-09-10 13:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">Tutte le dimensioni del pacco devono essere superiori a 0.</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> per aggiungerlo al carrello</string>
+    <string name="woopos_cart_empty_scan_barcode">scansiona un codice a barre</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">Tocca un prodotto o  </string>
+    <string name="woopos_orders_title">Ordini</string>
+    <string name="woopos_settings_help_category">Aiuto</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Pagamento web</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Non puoi aggiungere o rimuovere prodotti.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">Hai acquistato un\'etichetta per questa spedizione.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">Paese in cui il prodotto è stato realizzato o assemblato.</string>
@@ -71,7 +79,6 @@ Language: it
     <string name="woopos_scanning_setup_software_keyboard_message">Android considera gli scanner di codici a barre come tastiere fisiche, il che potrebbe nascondere la tastiera su schermo. Controlliamo:</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Mostra la tastiera su schermo</string>
     <string name="woopos_scanning_setup_success_message">È tutto pronto per la scansione dei prodotti. La prossima volta che dovrai collegare lo scanner, accendilo e si riconnetterà automaticamente.</string>
-    <string name="woopos_barcode_scanning_title">Configurazione iniziale dello scanner di codici a barre</string>
     <string name="woopos_cart_clear_all_button_content_description">Icona svuota carrello</string>
     <string name="product_selector_subscription_not_supported">I prodotti in abbonamento non sono supportati per la creazione di ordini</string>
     <string name="save_copy">Salva copia</string>
@@ -635,7 +642,6 @@ Language: it
     <string name="analytics_spend_subtitle_value">Spesa: %1$s</string>
     <string name="analytics_custom_list_selection_button_description">Selezione dei filtri</string>
     <string name="woopos_cart_empty_content_description">Il carrello è vuoto</string>
-    <string name="woopos_cart_empty_subtitle">Tocca un prodotto per\naggiungerlo al carrello</string>
     <string name="woopos_totals_main_error_label">Non è stato possibile caricare i totali</string>
     <string name="woopos_items_in_cart_multiple">%d elementi</string>
     <string name="ai_product_creation_error_media_upload">Impossibile caricare l\'immagine prodotto selezionata.</string>

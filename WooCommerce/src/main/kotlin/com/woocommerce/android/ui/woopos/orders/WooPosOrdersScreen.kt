@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,13 +12,26 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,18 +39,29 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.formatToDDMMMYYYY
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
+private val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -48,19 +73,97 @@ fun WooPosOrdersScreen(
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 
     Row(modifier = Modifier.fillMaxSize()) {
-        Column(
+        OrdersList(
+            state = state,
+            onBackClicked = onBackClicked,
+            onRefresh = viewModel::onRefresh,
+            isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+            onOrderSelected = viewModel::onOrderSelected,
+            onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
+            onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surface)
-        ) {
-            WooPosToolbar(
-                titleText = stringResource(R.string.woopos_orders_title),
-                onBackClicked = onBackClicked,
-            )
+        )
 
-            when {
-                state.isLoading -> {
+        OrderDetails(
+            state = state,
+            modifier = Modifier
+                .weight(0.7f)
+                .fillMaxHeight()
+                .background(MaterialTheme.colorScheme.surfaceContainerLow)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun OrdersList(
+    state: WooPosOrdersState,
+    onBackClicked: () -> Unit,
+    onRefresh: () -> Unit,
+    isRefreshing: Boolean,
+    onOrderSelected: (Long) -> Unit,
+    onEndOfOrdersListReached: () -> Unit,
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
+        ) {
+            val (toolbar, searchInput) = createRefs()
+
+            if (state.searchInputState is WooPosSearchInputState.Closed) {
+                WooPosToolbar(
+                    titleText = stringResource(R.string.woopos_orders_title),
+                    onBackClicked = onBackClicked,
+                    modifier = Modifier.constrainAs(toolbar) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+                )
+            }
+            WooPosSearchInput(
+                state = state.searchInputState,
+                onEvent = onSearchEvent,
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .constrainAs(searchInput) {
+                        if (state.searchInputState is WooPosSearchInputState.Open) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                        } else {
+                            end.linkTo(parent.end)
+                        }
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = isRefreshing,
+            onRefresh = onRefresh
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(
+                    pullRefreshState,
+                    enabled = state.pullToRefreshState != WooPosPullToRefreshState.Disabled
+                )
+        ) {
+            when (state) {
+                is WooPosOrdersState.Loading -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -73,72 +176,112 @@ fun WooPosOrdersScreen(
                         )
                     }
                 }
-                state.error != null -> {
+
+                is WooPosOrdersState.Error -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         WooPosText(
-                            text = state.error ?: stringResource(R.string.error_generic),
+                            text = state.message,
                             style = WooPosTypography.BodyMedium,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(WooPosSpacing.Large.value)
                         )
                     }
                 }
-                state.orders.isEmpty() -> {
+
+                is WooPosOrdersState.Empty -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         WooPosText(
-                            text = "No Orders Found",
+                            text = "No orders found",
                             style = WooPosTypography.BodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(WooPosSpacing.Large.value)
                         )
                     }
                 }
-                else -> {
+
+                is WooPosOrdersState.Content -> {
                     WooPosOrdersListPaneScreen(
-                        orders = state.orders,
-                        selectedOrderId = state.selectedOrderId,
-                        onOrderSelected = viewModel::onOrderSelected,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        state = state,
+                        onOrderSelected = onOrderSelected,
+                        onEndOfOrdersListReached = onEndOfOrdersListReached,
                     )
                 }
             }
-        }
 
-        WooPosOrdersDetailPaneScreen(
-            order = state.selectedOrder,
-            modifier = Modifier
-                .weight(0.7f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
-        )
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = WooPosSpacing.XSmall.value),
+                backgroundColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 
 @Composable
-fun WooPosOrdersListPaneScreen(
-    orders: List<Order>,
-    selectedOrderId: Long?,
-    onOrderSelected: (Long) -> Unit,
+private fun OrderDetails(
+    state: WooPosOrdersState,
     modifier: Modifier = Modifier
 ) {
+    val selectedItem: OrderItemViewState? = when (state) {
+        is WooPosOrdersState.Content -> state.items.firstOrNull { it.id == state.selectedOrderId }
+        else -> null
+    }
+
+    WooPosOrdersDetailPaneScreen(
+        selected = selectedItem,
+        modifier = modifier.fillMaxSize()
+    )
+}
+
+@Composable
+fun WooPosOrdersListPaneScreen(
+    modifier: Modifier = Modifier,
+    state: WooPosOrdersState.Content,
+    onOrderSelected: (Long) -> Unit,
+    onEndOfOrdersListReached: () -> Unit,
+) {
+    val listState = rememberLazyListState()
+
+    val loadMoreBuffer = 5
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val info = listState.layoutInfo
+            val total = info.totalItemsCount
+            if (total == 0) return@derivedStateOf false
+            val lastVisible = (info.visibleItemsInfo.lastOrNull()?.index ?: -1)
+            lastVisible >= total - 1 - loadMoreBuffer
+        }
+    }
+    LaunchedEffect(state.paginationState) {
+        snapshotFlow { shouldLoadMore.value }
+            .distinctUntilChanged()
+            .filter { it }
+            .collect { onEndOfOrdersListReached() }
+    }
+
     LazyColumn(
+        state = listState,
         modifier = modifier,
         contentPadding = PaddingValues(vertical = WooPosSpacing.XSmall.value)
     ) {
-        items(orders, key = { it.id }) { order ->
-            val isSelected = order.id == selectedOrderId
+        items(state.items, key = { it.id }) { item ->
+            val isSelected = item.id == state.selectedOrderId
             val background = if (isSelected) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
                 MaterialTheme.colorScheme.surface
             }
-
             val foreground = if (isSelected) {
                 MaterialTheme.colorScheme.onPrimaryContainer
             } else {
@@ -150,7 +293,7 @@ fun WooPosOrdersListPaneScreen(
                     .fillMaxWidth()
                     .clip(MaterialTheme.shapes.medium)
                     .background(background)
-                    .clickable { onOrderSelected(order.id) }
+                    .clickable { onOrderSelected(item.id) }
                     .semantics { selected = isSelected }
                     .padding(
                         horizontal = WooPosSpacing.Medium.value,
@@ -158,27 +301,22 @@ fun WooPosOrdersListPaneScreen(
                     ),
                 verticalAlignment = Alignment.Top
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
-                ) {
-                    WooPosText(
-                        "Order #${order.number}",
-                        style = WooPosTypography.BodyMedium
-                    )
-                    WooPosText(
-                        text = order.dateCreated.formatToDDMMMYYYY(),
-                        style = WooPosTypography.BodySmall,
-                        color = foreground
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+                    WooPosText(item.title, style = WooPosTypography.BodyMedium, color = foreground)
+                    WooPosText(item.date, style = WooPosTypography.BodySmall, color = foreground)
                 }
-
                 Spacer(Modifier.weight(1f))
-
                 WooPosText(
-                    text = "${order.total} ${order.currency}",
+                    text = item.total,
                     style = WooPosTypography.BodyMedium,
                     modifier = Modifier.alignByBaseline()
                 )
+            }
+        }
+
+        if (state.paginationState == WooPosPaginationState.Loading) {
+            item {
+                OrdersPaginationLoadingRow()
             }
         }
     }
@@ -186,29 +324,22 @@ fun WooPosOrdersListPaneScreen(
 
 @Composable
 fun WooPosOrdersDetailPaneScreen(
-    order: Order?,
+    selected: OrderItemViewState?,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Column(modifier = modifier.fillMaxSize()) {
         WooPosToolbar(
-            modifier = Modifier
-                .fillMaxWidth(),
-            titleText = "Order #${order?.number ?: "--"}",
+            modifier = Modifier.fillMaxWidth(),
+            titleText = selected?.title ?: "--",
             titleFontWeight = FontWeight.Bold
         )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    start = WooPosSpacing.Large.value,
-                    end = WooPosSpacing.Large.value,
-                )
+                .padding(start = WooPosSpacing.Large.value, end = WooPosSpacing.Large.value)
         ) {
             WooPosText(
-                text = "Orders details will be displayed here",
+                text = "Order details goes here",
                 style = WooPosTypography.BodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -216,12 +347,46 @@ fun WooPosOrdersDetailPaneScreen(
     }
 }
 
+@Composable
+private fun OrdersPaginationLoadingRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            .padding(
+                horizontal = WooPosSpacing.Medium.value,
+                vertical = WooPosSpacing.Medium.value
+            )
+            .heightIn(min = 64.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.55f)
+                    .height(18.dp)
+            )
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.35f)
+                    .height(14.dp)
+            )
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        WooPosShimmerBox(
+            modifier = Modifier
+                .width(72.dp)
+                .height(18.dp)
+                .alignByBaseline()
+        )
+    }
+}
+
 @WooPosPreview
 @Composable
 fun WooPosOrdersScreenPreview() {
-    WooPosTheme {
-        WooPosOrdersScreen(
-            onNavigationEvent = {}
-        )
-    }
+    WooPosTheme { WooPosOrdersScreen(onNavigationEvent = {}) }
 }

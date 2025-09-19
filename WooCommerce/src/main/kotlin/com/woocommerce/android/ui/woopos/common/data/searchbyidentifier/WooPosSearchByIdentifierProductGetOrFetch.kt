@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
@@ -10,7 +10,8 @@ class WooPosSearchByIdentifierProductGetOrFetch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
     private val productsCache: WooPosProductsCache,
-    private val errorMapper: WooPosSearchByIdentifierProductErrorMapper
+    private val errorMapper: WooPosSearchByIdentifierProductErrorMapper,
+    private val posProductMapper: WooPosWCProductToWooPosProductModelMapper,
 ) {
     suspend operator fun invoke(productId: Long): WooPosSearchByIdentifierResult {
         productsCache.getProductById(productId)?.let { cachedProduct ->
@@ -28,7 +29,9 @@ class WooPosSearchByIdentifierProductGetOrFetch @Inject constructor(
             result.isError -> WooPosSearchByIdentifierResult.Failure(errorMapper(result.error))
 
             else -> {
-                val product = productStore.getProduct(selectedSite.get(), productId)?.toAppModel()
+                val product = productStore.getProduct(selectedSite.get(), productId)?.let {
+                    posProductMapper.map(it)
+                }
                 if (product != null) {
                     productsCache.addAll(listOf(product))
                     WooPosSearchByIdentifierResult.Success(product)

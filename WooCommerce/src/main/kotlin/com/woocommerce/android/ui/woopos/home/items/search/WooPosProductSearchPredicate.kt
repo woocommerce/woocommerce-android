@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
 import com.woocommerce.android.extensions.semverCompareTo
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,14 +13,14 @@ class WooPosProductSearchPredicate @Inject constructor(
     private val whitespaceRegex = "\\s+".toRegex()
     private var cachedSupportsNameOrSkuSearch: Boolean? = null
 
-    operator fun invoke(query: String): (Product) -> Boolean =
+    operator fun invoke(query: String): (WooPosProductModel) -> Boolean =
         when {
             query.isBlank() -> { _ -> true }
             isWooCoreSupportsNameOrSkuSearch() -> tokenizedSkuOrNameSearchPredicate(query)
             else -> simpleSearchPredicate(query)
         }
 
-    private fun simpleSearchPredicate(query: String): (Product) -> Boolean {
+    private fun simpleSearchPredicate(query: String): (WooPosProductModel) -> Boolean {
         val terms: List<String> = query.split(whitespaceRegex).filter { it.isNotBlank() }.map { it.lowercase() }
 
         return { product ->
@@ -36,7 +36,7 @@ class WooPosProductSearchPredicate @Inject constructor(
         }
     }
 
-    private fun tokenizedSkuOrNameSearchPredicate(query: String): (Product) -> Boolean {
+    private fun tokenizedSkuOrNameSearchPredicate(query: String): (WooPosProductModel) -> Boolean {
         val tokens: List<String> = query
             .trim()
             .split(whitespaceRegex)

@@ -53,7 +53,7 @@ data class MoreMenuItemButton(
     }
 
     enum class Type {
-        Blaze, GoogleForWoo, Inbox, Settings,
+        Blaze, GoogleForWoo, Inbox, Settings, Payments
     }
 }
 

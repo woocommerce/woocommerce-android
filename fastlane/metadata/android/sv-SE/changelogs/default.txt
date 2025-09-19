@@ -1,0 +1,2 @@
+23.2:
+Vi har förbättrat din WooCommerce-app med nya inställningar för POS-anpassning, tydligare uppdateringar av fraktetiketter, smartare beställningsfilter och automatisk inmatning av fraktvikt. Du får också bättre hantering av etiketter under bearbetning, visning av bråkdelar i lagret och förbättrad inloggningssäkerhet för en smidigare butikshantering.

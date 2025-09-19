@@ -1,9 +1,19 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
-23.3
+23.4
 -----
 
+
+23.3
+-----
+- [Internal] Migration to POS specific product model [https://github.com/woocommerce/woocommerce-android/pull/14598]
+- [*] Enhance the shipping label creation screen by making the selected hazardous box tappable [https://github.com/woocommerce/woocommerce-android/pull/14576]
+- [*] Shipping Labels: Enhance selected package UI in the create shipping label flow [https://github.com/woocommerce/woocommerce-android/pull/14579]
+- [*] Fixed the incorrect size of the notification icon [https://github.com/woocommerce/woocommerce-android/pull/14586]
+- [***] Performance improvements for users logging in with WordPress.com accounts [https://github.com/woocommerce/woocommerce-android/pull/14610]
+- [*] Fix an issue where there is delay before displaying the continue button in Site Picker screen [https://github.com/woocommerce/woocommerce-android/pull/14611]
+- [*] It's possible to see all the orders made by a specific customer from the order details screen [https://github.com/woocommerce/woocommerce-android/pull/14615]
 
 23.2
 -----
@@ -16,9 +26,11 @@
 - [WEAR] Updated UserAgent of API requests to use `http.agent` System Property to fix performance issues related to WebView usage on app launch [https://github.com/woocommerce/woocommerce-android/pull/14431]
 - [***] POS: A new settings to customize the POS [https://github.com/woocommerce/woocommerce-android/pull/14527]
 - [*] [Login] Improved the detection of WooCommerce API version during login flow [https://github.com/woocommerce/woocommerce-android/pull/14524]
+- [*] Shipping Labels: Adds caching to the "Select a Package" screen [https://github.com/woocommerce/woocommerce-android/pull/14541]
 - [*]  Add more filter options to orders filters sales channel [https://github.com/woocommerce/woocommerce-android/pull/14546]
 - [*] Automatically populate the weight field in the create shipment flow [https://github.com/woocommerce/woocommerce-android/pull/14525]
 - [*] [Shipping Labels] Fixed displaying incorrect hazardous material option for purchased labels [https://github.com/woocommerce/woocommerce-android/pull/14571]
+- [*] Shipping Labels: Updated the disabled button text on the package selection screen [https://github.com/woocommerce/woocommerce-android/pull/14558]
 
 23.1
 -----

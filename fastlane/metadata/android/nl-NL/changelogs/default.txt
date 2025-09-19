@@ -1,0 +1,2 @@
+23.2:
+We hebben uw WooCommerce-app verbeterd met nieuwe POS-aanpassingsinstellingen, duidelijkere updates voor verzendlabels, slimmere filters voor bestellingen en automatische invoer van het verzendgewicht. Daarnaast worden labels die in bewerking zijn beter verwerkt, worden de voorraadfracties weergegeven en is inloggen betrouwbaarder, wat zorgt voor een soepeler winkelbeheer.

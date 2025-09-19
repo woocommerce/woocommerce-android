@@ -1,0 +1,2 @@
+23.2:
+WooCommerce uygulamanız yeni POS özelleştirme ayarları, daha net kargo etiketi güncellemeleri, daha akıllı sipariş filtreleri ve otomatik kargo ağırlığı girişiyle iyileştirildi. Ayrıca devam eden etiketlerin daha iyi işlenir, kesirli stok gösterimi ve daha sorunsuz bir mağaza yönetimi deneyimi için geliştirilmiş oturum açma güvenilirliği de eklendi.

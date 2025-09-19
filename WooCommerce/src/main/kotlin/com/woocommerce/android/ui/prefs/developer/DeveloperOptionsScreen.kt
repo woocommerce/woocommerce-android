@@ -11,12 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -61,7 +60,6 @@ private fun ToggleableListItem(
         Switch(
             checked = item.isChecked,
             onCheckedChange = item.onToggled,
-            colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colors.primary)
         )
     }
 }
@@ -90,7 +88,7 @@ private fun CommonItemLayout(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -113,6 +111,6 @@ private fun CommonItemLayout(
             additionalContent?.invoke()
         }
 
-        Divider()
+        HorizontalDivider()
     }
 }

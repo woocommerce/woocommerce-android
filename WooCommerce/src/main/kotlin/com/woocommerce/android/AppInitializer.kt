@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
@@ -63,6 +64,8 @@ import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -92,6 +95,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
         private const val UNAUTHORIZED_STATUS_CODE = 401
         private const val CARD_READER_USAGE_THIRTY_DAYS = 30
+        private const val POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS = 20000L
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -159,6 +163,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var edgeToEdgeEnabler: ApplicationEdgeToEdgeEnabler
 
+    @Inject lateinit var posLocalCatalogScheduler: WooPosLocalCatalogSyncScheduler
+
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
@@ -168,9 +174,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
      */
     private val updateSelectedSite: RateLimitedTask = object : RateLimitedTask(SECONDS_BETWEEN_SITE_UPDATE) {
         override fun run(): Boolean {
-            selectedSite.getIfExists()?.let {
+            selectedSite.getIfExists()?.let { site ->
                 appCoroutineScope.launch {
-                    wooCommerceStore.fetchWooCommerceSite(it).model?.let {
+                    wooCommerceStore.fetchWooCommerceSite(site).model?.let {
                         if (!it.hasWooCommerce && it.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
@@ -178,9 +184,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                             selectedSite.reset()
                             restartMainActivity()
                         }
+                        if (it.connectionType != ApplicationPasswords && it.isApplicationPasswordsSupported) {
+                            analyticsTracker.track(AnalyticsEvent.JETPACK_SITE_ELIGIBLE_FOR_APP_PASSWORD_SUPPORT)
+                        }
                     }
-                    wooCommerceStore.fetchSiteGeneralSettings(it)
-                    wooCommerceStore.fetchSiteProductSettings(it)
+                    wooCommerceStore.fetchSiteGeneralSettings(site)
+                    wooCommerceStore.fetchSiteProductSettings(site)
                 }
             }
             return true
@@ -238,6 +247,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         // Schedule worker to refresh FCM token periodically
         FCMRefreshWorker.schedule(application)
+
+        posLocalCatalogScheduler.schedulePeriodicFullCatalogSync()
+        observeSiteChangesForCatalogSync()
     }
 
     @Suppress("DEPRECATION")
@@ -386,6 +398,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // to prevent duplicate install events being called
                 prefs.setLastAppVersionCode(versionCode)
             }
+
             oldVersionCode < versionCode -> {
                 // Track upgrade event only if oldVersionCode is not -1, to prevent
                 // duplicate upgrade events being called
@@ -397,6 +410,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // is greater than the stored version code
                 prefs.setLastAppVersionCode(versionCode)
             }
+
             versionCode == PackageUtils.PACKAGE_VERSION_CODE_DEFAULT -> {
                 // we are not able to read the current app version code
                 // track this event along with the last stored version code
@@ -421,6 +435,19 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             appCoroutineScope.launch {
                 registerDevice(IF_NEEDED)
             }
+        }
+    }
+
+    fun observeSiteChangesForCatalogSync() {
+        appCoroutineScope.launch {
+            selectedSite.observe()
+                .drop(1) // invoke only on site change not on app initialization
+                .collect { selectedSite ->
+                    if (selectedSite != null) {
+                        delay(POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS)
+                        posLocalCatalogScheduler.triggerManualFullCatalogSync()
+                    }
+                }
         }
     }
 

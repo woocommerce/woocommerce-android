@@ -7,13 +7,13 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPOSEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVariationModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToWooPOSEntity
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosProductEntity
-import org.wordpress.android.fluxc.persistence.entity.pos.WCPosVariationModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog.T.API
@@ -42,7 +42,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      */
     fun observeProducts(
         siteId: LocalOrRemoteId.LocalId
-    ): Flow<Result<List<WCPosProductEntity>>> =
+    ): Flow<Result<List<WooPosProductEntity>>> =
         posProductDao.observeAllProducts(siteId)
             .map { products ->
                 Result.success(products)
@@ -58,7 +58,7 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun getProduct(
         siteId: LocalOrRemoteId.LocalId,
         remoteProductId: LocalOrRemoteId.RemoteId
-    ): Result<WCPosProductEntity?> =
+    ): Result<WooPosProductEntity?> =
         coroutineEngine.withDefaultContext(API, this, "getProduct") {
             val product = posProductDao.getProduct(siteId, remoteProductId)
             Result.success(product)
@@ -81,7 +81,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
-     * Syncs recently modified products with pagination support.
+     * Fetch recently modified products with pagination support.
      *
      * @param [site] The site to sync products for
      * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT)
@@ -89,14 +89,13 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @param [pageSize] Number of products to fetch per page (default: 100, max: 100)
      * @return Result containing SyncResponse with pagination info or error
      */
-    suspend fun syncRecentlyModifiedProducts(
+    suspend fun fetchRecentlyModifiedProducts(
         site: SiteModel,
         modifiedAfterGmt: String?,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-        storeInDb: Boolean = true
-    ): Result<WooPosLocalCatalogSyncResult> =
-        coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedProducts") {
+    ): Result<WooPosLocalCatalogFetchProductsResult> =
+        coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
             val response = posProductRestClient.fetchProducts(
@@ -118,7 +117,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 response.isError -> Result.failure(mapResponseError(response.error))
 
                 response.model.isNullOrEmpty() -> Result.success(
-                    WooPosLocalCatalogSyncResult(
+                    WooPosLocalCatalogFetchProductsResult(
+                        products = emptyList(),
                         syncedCount = 0,
                         hasMore = false,
                         nextOffset = offset,
@@ -128,20 +128,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                 )
 
                 else -> {
-                    val products = response.model.map { it.mapToPOSEntity() }
-
-                    if (storeInDb) {
-                        val upsertResult = runCatching { posProductDao.upsertProducts(products) }
-
-                        if (upsertResult.isFailure) {
-                            return@withDefaultContext Result.failure(
-                                WooPosLocalCatalogError.DatabaseError(
-                                    errorMessage = "Failed to save products to database",
-                                    throwable = upsertResult.exceptionOrNull()
-                                )
-                            )
-                        }
-                    }
+                    val products = response.model.map { it.mapToWooPOSEntity(site.localId()) }
 
                     val hasMore = products.size == validPageSize
 
@@ -156,7 +143,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                     }
 
                     Result.success(
-                        WooPosLocalCatalogSyncResult(
+                        WooPosLocalCatalogFetchProductsResult(
+                            products = products,
                             syncedCount = products.size,
                             hasMore = hasMore,
                             nextOffset = if (hasMore) offset + products.size else offset,
@@ -168,6 +156,12 @@ class WooPosLocalCatalogStore @Inject constructor(
             }
         }
 
+    suspend fun upsertProducts(products: List<WooPosProductEntity>): Result<Unit> =
+        runCatching { posProductDao.upsertProducts(products) }
+
+    suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
+        runCatching { posVariationsDao.upsertVariations(variations) }
+
     /**
      * Observes all variations for a given product from the local database.
      *
@@ -176,9 +170,9 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @return [Flow] of [Result] containing list of variations or error
      */
     fun observeVariationsForProduct(
-        siteId: LocalOrRemoteId.LocalId,
-        productId: LocalOrRemoteId.RemoteId
-    ): Flow<Result<List<WCPosVariationModel>>> =
+        siteId: Int,
+        productId: Long,
+    ): Flow<Result<List<WooPosVariationEntity>>> =
         posVariationsDao.observeVariationsForProduct(siteId, productId)
             .map { variations ->
                 Result.success(variations)
@@ -193,32 +187,33 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @return [Result] containing the variation if found, null if not found, or error
      */
     suspend fun getVariation(
-        siteId: LocalOrRemoteId.LocalId,
-        productId: LocalOrRemoteId.RemoteId,
-        variationId: LocalOrRemoteId.RemoteId
-    ): Result<WCPosVariationModel?> =
+        siteId: Int,
+        productId: Long,
+        variationId: Long
+    ): Result<WooPosVariationEntity?> =
         coroutineEngine.withDefaultContext(API, this, "getVariation") {
             val variation = posVariationsDao.getVariation(siteId, productId, variationId)
             Result.success(variation)
         }
 
     /**
-     * Syncs recently modified variations with pagination support.
+     * Fetches recently modified variations with pagination support.
      *
      * @param site The site to sync variations for
      * @param modifiedAfterGmt ISO 8601 formatted date string (GMT)
      * @param page Starting page for pagination (1-based)
      * @param pageSize Number of variations to fetch per page (default: 100, max: 100)
-     * @return [Result] containing [WooPosVariationsSyncResult] with pagination info or error
+     * @return [Result] containing [WooPosVariationsFetchResult] with pagination info or error
      */
     @Suppress("LongMethod")
-    suspend fun syncRecentlyModifiedVariations(
+    suspend fun fetchRecentlyModifiedVariations(
         site: SiteModel,
-        modifiedAfterGmt: String,
+        modifiedAfterGmt: String?,
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-    ): Result<WooPosVariationsSyncResult> =
-        coroutineEngine.withDefaultContext(API, this, "syncRecentlyModifiedVariations") {
+    ): Result<WooPosVariationsFetchResult> =
+        coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedVariations") {
+            require(page > 0) { "Page number must be 1 or greater" }
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
             val response = posProductRestClient.fetchVariations(
@@ -245,7 +240,8 @@ class WooPosLocalCatalogStore @Inject constructor(
 
                 response.model.isNullOrEmpty() -> {
                     Result.success(
-                        WooPosVariationsSyncResult(
+                        WooPosVariationsFetchResult(
+                            variations = emptyList(),
                             syncedCount = 0,
                             hasMore = false,
                             nextPage = page,
@@ -262,19 +258,6 @@ class WooPosLocalCatalogStore @Inject constructor(
                         variationResponse.mapToPosVariationModel(siteId)
                     }
 
-                    val upsertResult = runCatching {
-                        posVariationsDao.upsertVariations(variations)
-                    }
-
-                    if (upsertResult.isFailure) {
-                        return@withDefaultContext Result.failure(
-                            WooPosLocalCatalogError.DatabaseError(
-                                errorMessage = "Failed to save variations to database",
-                                throwable = upsertResult.exceptionOrNull()
-                            )
-                        )
-                    }
-
                     val hasMore = variations.size == validPageSize
 
                     val totalPages = headersParser.getTotalPages(response)
@@ -288,7 +271,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                     }
 
                     Result.success(
-                        WooPosVariationsSyncResult(
+                        WooPosVariationsFetchResult(
+                            variations = variations,
                             syncedCount = variations.size,
                             hasMore = hasMore,
                             nextPage = if (hasMore) {

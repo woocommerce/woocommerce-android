@@ -30,7 +30,7 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
         const val TIME_OF_DAY_FOR_PERIODIC_SYNC = 23 // 11 PM
     }
 
-    private val workManager = WorkManager.getInstance(context)
+    private val workManager by lazy { WorkManager.getInstance(context) }
 
     fun schedulePeriodicFullCatalogSync() {
         val syncWorkRequest = PeriodicWorkRequestBuilder<WooPosLocalCatalogSyncWorker>(

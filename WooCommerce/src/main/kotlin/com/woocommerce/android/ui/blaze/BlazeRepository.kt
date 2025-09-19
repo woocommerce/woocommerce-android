@@ -6,6 +6,7 @@ import com.woocommerce.android.AppUrls.FETCH_PAYMENT_METHOD_URL_PATH
 import com.woocommerce.android.AppUrls.WPCOM_ADD_PAYMENT_METHOD
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
@@ -176,10 +177,11 @@ class BlazeRepository @Inject constructor(
         val product = productDetailRepository.getProduct(productId)
             ?: productDetailRepository.fetchAndGetProduct(productId)!!
 
+        val description = product.shortDescription.takeIf { product.hasShortDescription } ?: product.description
         return CampaignDetails(
             productId = productId,
-            tagLine = "",
-            description = "",
+            tagLine = product.name,
+            description = description.fastStripHtml(),
             campaignImage = product.images.firstOrNull().let {
                 if (it != null && isValidAdImage(it.source)) {
                     BlazeCampaignImage.RemoteImage(it.id, it.source)

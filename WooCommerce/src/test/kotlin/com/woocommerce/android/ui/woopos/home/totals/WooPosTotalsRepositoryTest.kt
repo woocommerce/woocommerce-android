@@ -5,11 +5,11 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreationSource
-import com.woocommerce.android.ui.products.ProductHelper
-import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.test.runTest
@@ -33,13 +33,11 @@ class WooPosTotalsRepositoryTest {
     private val selectedSite: SelectedSite = mock()
     private val orderMapper: OrderMapper = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val variationMapper: WooPosVariationMapper = mock()
 
     private lateinit var repository: WooPosTotalsRepository
 
-    private val product1 = ProductHelper.getDefaultNewProduct(
-        productType = ProductType.SIMPLE,
-        isVirtual = false
-    ).copy(remoteId = 1L)
+    private val product1 = generateWooPosProduct(productId = 1L)
 
     @Test
     fun `given empty product list, when createOrderFromCartItems called, then return error`() = runTest {
@@ -233,5 +231,6 @@ class WooPosTotalsRepositoryTest {
         selectedSite,
         orderMapper,
         resourceProvider,
+        variationMapper,
     )
 }

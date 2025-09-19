@@ -21,7 +21,6 @@ import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooExperimentalNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Billing
@@ -64,7 +63,6 @@ class OrderRestClient @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderDtoMapper: OrderDtoMapper,
     private val wooNetwork: WooNetwork,
-    private val wooExperimentalNetwork: WooExperimentalNetwork,
     private val coroutineEngine: CoroutineEngine
 ) {
     /**
@@ -108,6 +106,7 @@ class OrderRestClient @Inject constructor(
                     )
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersAction(payload))
                 }
+
                 is WPAPIResponse.Error -> {
                     val orderError = wpAPINetworkErrorToOrderError(response.error)
                     val payload = FetchOrdersResponsePayload(orderError, site)
@@ -178,6 +177,7 @@ class OrderRestClient @Inject constructor(
         sortOrder: SortOrder,
         statusFilter: String?,
         createdVia: String? = null,
+        searchQuery: String? = null,
     ): FetchOrdersResponsePayload {
         val url = WOOCOMMERCE.orders.pathV3
         val params = mutableMapOf(
@@ -188,7 +188,8 @@ class OrderRestClient @Inject constructor(
             "_fields" to ORDER_FIELDS
         ).putIfNotEmpty(
             "status" to statusFilter,
-            "created_via" to createdVia
+            "created_via" to createdVia,
+            "search" to searchQuery,
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -204,7 +205,7 @@ class OrderRestClient @Inject constructor(
                     orderDtoMapper.toDatabaseEntity(orderDto, site.localId())
                 }.orEmpty()
 
-                val canLoadMore = orderModels.size == WCOrderStore.NUM_ORDERS_PER_FETCH
+                val canLoadMore = orderModels.size == count
                 return FetchOrdersResponsePayload(
                     site = site,
                     ordersWithMeta = orderModels,
@@ -212,6 +213,7 @@ class OrderRestClient @Inject constructor(
                     canLoadMore = canLoadMore
                 )
             }
+
             is WPAPIResponse.Error -> {
                 val orderError = wpAPINetworkErrorToOrderError(response.error)
                 return FetchOrdersResponsePayload(orderError, site)
@@ -236,8 +238,7 @@ class OrderRestClient @Inject constructor(
     @Suppress("LongMethod")
     fun fetchOrderListSummaries(
         listDescriptor: WCOrderListDescriptor,
-        offset: Long,
-        useAppPasswordsForJetpackSites: Boolean
+        offset: Long
     ) {
         coroutineEngine.launch(T.API, this, "fetchOrderListSummaries") {
             val startTime = System.currentTimeMillis()
@@ -258,13 +259,7 @@ class OrderRestClient @Inject constructor(
                 "created_via" to listDescriptor.createdViaFilter.takeUnless { it.isNullOrBlank() }
             )
 
-            val network = if (useAppPasswordsForJetpackSites) {
-                wooExperimentalNetwork
-            } else {
-                wooNetwork
-            }
-
-            val response = network.executeGetGsonRequest(
+            val response = wooNetwork.executeGetGsonRequest(
                 site = listDescriptor.site,
                 path = url,
                 clazz = Array<OrderSummaryApiResponse>::class.java,
@@ -289,6 +284,7 @@ class OrderRestClient @Inject constructor(
                     )
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrderListAction(payload))
                 }
+
                 is WPAPIResponse.Error -> {
                     val orderError = wpAPINetworkErrorToOrderError(response.error)
                     val payload = FetchOrderListResponsePayload(
@@ -372,6 +368,7 @@ class OrderRestClient @Inject constructor(
                     )
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersByIdsAction(payload))
                 }
+
                 is WPAPIResponse.Error -> {
                     val orderError = wpAPINetworkErrorToOrderError(response.error)
                     val payload = FetchOrdersByIdsResponsePayload(
@@ -418,6 +415,7 @@ class OrderRestClient @Inject constructor(
                         WCOrderActionBuilder.newFetchedOrderStatusOptionsAction(payload)
                     )
                 }
+
                 is WPAPIResponse.Error -> {
                     val orderError = wpAPINetworkErrorToOrderError(response.error)
                     val payload = FetchOrderStatusOptionsResponsePayload(orderError, site)
@@ -473,6 +471,7 @@ class OrderRestClient @Inject constructor(
                     )
                     dispatcher.dispatch(WCOrderActionBuilder.newSearchedOrdersAction(payload))
                 }
+
                 is WPAPIResponse.Error -> {
                     val orderError = wpAPINetworkErrorToOrderError(response.error)
                     val payload = SearchOrdersResponsePayload(orderError, site, searchQuery)
@@ -512,6 +511,7 @@ class OrderRestClient @Inject constructor(
                     site
                 )
             }
+
             is WPAPIResponse.Error -> {
                 val orderError = wpAPINetworkErrorToOrderError(response.error)
                 RemoteOrderPayload.Fetching(
@@ -536,8 +536,10 @@ class OrderRestClient @Inject constructor(
      */
     fun fetchOrderCountSync(site: SiteModel, filterByStatus: String) {
         coroutineEngine.launch(T.API, this, "fetchOrderCount") {
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersCountAction(
-                doFetchOrderCount(site, filterByStatus))
+            dispatcher.dispatch(
+                WCOrderActionBuilder.newFetchedOrdersCountAction(
+                    doFetchOrderCount(site, filterByStatus)
+                )
             )
         }
     }
@@ -589,6 +591,7 @@ class OrderRestClient @Inject constructor(
                     site
                 )
             }
+
             is WPAPIResponse.Error -> {
                 val orderError = wpAPINetworkErrorToOrderError(response.error)
                 FetchHasOrdersResponsePayload(
@@ -631,6 +634,7 @@ class OrderRestClient @Inject constructor(
                     site
                 )
             }
+
             is WPAPIResponse.Error -> {
                 val orderError = wpAPINetworkErrorToOrderError(response.error)
                 RemoteOrderPayload.Updating(
@@ -660,10 +664,10 @@ class OrderRestClient @Inject constructor(
         paymentDetails?.cashPaymentChangeDueAmount?.let {
             val metaData = mapOf(
                 "meta_data" to listOfNotNull(
-                        mapOf(
-                            "key" to "_cash_change_amount",
-                            "value" to it
-                        )
+                    mapOf(
+                        "key" to "_cash_change_amount",
+                        "value" to it
+                    )
                 )
             )
 
@@ -789,6 +793,7 @@ class OrderRestClient @Inject constructor(
 
                 FetchOrderShipmentTrackingsResponsePayload(site, orderId, trackings)
             }
+
             is WPAPIResponse.Error -> {
                 val trackingsError = wpAPINetworkErrorToOrderError(response.error)
                 FetchOrderShipmentTrackingsResponsePayload(trackingsError, site, orderId)
@@ -845,6 +850,7 @@ class OrderRestClient @Inject constructor(
                     tracking
                 )
             }
+
             is WPAPIResponse.Error -> {
                 val trackingsError = wpAPINetworkErrorToOrderError(response.error)
                 AddOrderShipmentTrackingResponsePayload(trackingsError, site, orderId, tracking)
@@ -894,6 +900,7 @@ class OrderRestClient @Inject constructor(
                     tracking
                 )
             }
+
             is WPAPIResponse.Error -> DeleteOrderShipmentTrackingResponsePayload(
                 wpAPINetworkErrorToOrderError(response.error),
                 site,
@@ -1124,16 +1131,16 @@ class OrderRestClient @Inject constructor(
     }
 
     /**
-    * Performs a batch update of order statuses via the WooCommerce REST API.
-    *
-    * This endpoint enables updating multiple orders to the same status in a single network request.
-    * The WooCommerce API has a limit of 100 orders per batch update.
-    *
-    * @param site The site to perform the update on
-    * @param orderIds List of order IDs to update. Error if exceeds [BATCH_UPDATE_LIMIT]
-    * @param newStatus The new status to set for all specified orders
-    * @return [BulkUpdateOrderStatusResponsePayload] containing either the update results or an error
-    */
+     * Performs a batch update of order statuses via the WooCommerce REST API.
+     *
+     * This endpoint enables updating multiple orders to the same status in a single network request.
+     * The WooCommerce API has a limit of 100 orders per batch update.
+     *
+     * @param site The site to perform the update on
+     * @param orderIds List of order IDs to update. Error if exceeds [BATCH_UPDATE_LIMIT]
+     * @param newStatus The new status to set for all specified orders
+     * @return [BulkUpdateOrderStatusResponsePayload] containing either the update results or an error
+     */
     suspend fun batchUpdateOrdersStatus(
         site: SiteModel,
         orderIds: List<Long>,
@@ -1201,7 +1208,10 @@ class OrderRestClient @Inject constructor(
         }
     }
 
-    private fun orderResponseToOrderSummaryModel(response: OrderSummaryApiResponse, siteId: LocalId): WCOrderSummaryModel {
+    private fun orderResponseToOrderSummaryModel(
+        response: OrderSummaryApiResponse,
+        siteId: LocalId
+    ): WCOrderSummaryModel {
         return WCOrderSummaryModel(
             siteId = siteId,
             orderId = RemoteId(response.id ?: 0),
@@ -1275,6 +1285,7 @@ class OrderRestClient @Inject constructor(
             "fee_lines",
             "tax_lines",
             "id",
+            "customer_id",
             "line_items",
             "number",
             "payment_method",

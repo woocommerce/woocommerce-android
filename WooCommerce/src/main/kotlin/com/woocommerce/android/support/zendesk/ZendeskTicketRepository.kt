@@ -2,6 +2,7 @@ package com.woocommerce.android.support.zendesk
 
 import android.content.Context
 import android.os.Parcelable
+import com.woocommerce.android.applicationpasswords.IsAppPasswordsSupportedForJetpackSite
 import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
@@ -35,7 +36,8 @@ class ZendeskTicketRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers,
     private val wooLog: WooLog,
-    private val ssrFetcher: WCSSRModelCachingFetcher
+    private val ssrFetcher: WCSSRModelCachingFetcher,
+    private val isAppPasswordsSupportedForJetpackSite: IsAppPasswordsSupportedForJetpackSite
 ) {
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
@@ -140,16 +142,21 @@ class ZendeskTicketRepository @Inject constructor(
      * This is a helper function which returns a set of pre-defined tags depending on some conditions. It accepts a list of
      * custom tags to be added for special cases.
      */
-    private fun buildZendeskTags(
+    private suspend fun buildZendeskTags(
         selectedSite: SiteModel?,
         allSites: List<SiteModel>?,
         origin: HelpOrigin,
         extraTags: List<String>
     ): List<String> {
         val tags = ArrayList<String>()
-        if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
-            tags.add(ZendeskTags.applicationPasswordAuthenticated)
+        selectedSite?.let {
+            if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+                tags.add(ZendeskTags.applicationPasswordAuthenticated)
+            } else if (isAppPasswordsSupportedForJetpackSite(it)) {
+                tags.add(ZendeskTags.jetpackSiteUsingAppPasswords)
+            }
         }
+
         allSites?.let { it ->
             // Add wpcom tag if at least one site is WordPress.com site
             if (it.any { it.isWPCom }) {
@@ -181,14 +188,16 @@ sealed class TicketType(
     val tags: List<String> = emptyList(),
     val excludedTags: List<String> = emptyList()
 ) : Parcelable {
-    @Parcelize object MobileApp : TicketType(
+    @Parcelize
+    object MobileApp : TicketType(
         form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
         tags = listOf(ZendeskTags.mobileApp)
     )
 
-    @Parcelize object InPersonPayments : TicketType(
+    @Parcelize
+    object InPersonPayments : TicketType(
         form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
@@ -198,7 +207,8 @@ sealed class TicketType(
         )
     )
 
-    @Parcelize object Payments : TicketType(
+    @Parcelize
+    object Payments : TicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
@@ -212,7 +222,8 @@ sealed class TicketType(
         excludedTags = listOf(ZendeskTags.jetpackTag)
     )
 
-    @Parcelize object WooPlugin : TicketType(
+    @Parcelize
+    object WooPlugin : TicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = "",
@@ -224,7 +235,8 @@ sealed class TicketType(
         excludedTags = listOf(ZendeskTags.jetpackTag)
     )
 
-    @Parcelize object OtherPlugins : TicketType(
+    @Parcelize
+    object OtherPlugins : TicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.storeSubcategoryValue,
@@ -267,6 +279,7 @@ object TicketCustomField {
 
 object ZendeskTags {
     const val applicationPasswordAuthenticated = "application_password_authenticated"
+    const val jetpackSiteUsingAppPasswords = "jetpack_site_using_app_passwords"
     const val mobileApp = "mobile_app"
     const val woocommerceCore = "woocommerce_core"
     const val paymentsProduct = "woocommerce_payments"

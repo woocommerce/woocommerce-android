@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-26 11:54:05+0000
+Translation-Revision-Date: 2025-09-10 13:54:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">Verpackungsabmessungen sollten alle größer als 0 sein.</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> es dem Warenkorb hinzuzufügen</string>
+    <string name="woopos_cart_empty_scan_barcode">scanne den Barcode, um</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">Tippe auf ein Produkt oder </string>
+    <string name="woopos_orders_title">Bestellungen</string>
+    <string name="woopos_settings_help_category">Hilfe</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP Admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Web-Bezahlen</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Du kannst keine Produkte hinein- oder herausschieben.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">Du hast ein Etikett für diese Sendung gekauft.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">Land, in dem das Produkt hergestellt oder montiert wurde.</string>
@@ -71,7 +79,6 @@ Language: de
     <string name="woopos_scanning_setup_software_keyboard_message_two">Wenn die Tastatur nicht sichtbar ist, probiere die folgenden Optionen aus:</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Bildschirmtastatur anzeigen</string>
     <string name="woopos_scanning_setup_success_message">Du kannst jetzt mit dem Scannen von Produkten beginnen. Wenn du deinen Scanner das nächste Mal verbinden musst, schalte ihn einfach ein. Dann wird er die Verbindung automatisch wiederherstellen.</string>
-    <string name="woopos_barcode_scanning_title">Ersteinrichtung des Barcode-Scanners</string>
     <string name="product_selector_subscription_not_supported">Abonnement-Produkte werden bei der Erstellung von Bestellungen nicht unterstützt</string>
     <string name="save_copy">Kopie speichern</string>
     <string name="changes_not_saved_message">Deine Änderungen werden nicht gespeichert</string>
@@ -636,7 +643,6 @@ Language: de
     <string name="analytics_total_sales_subtitle_value">Umsatz insgesamt: %1$s</string>
     <string name="analytics_custom_list_selection_button_description">Filterauswahl</string>
     <string name="woopos_cart_empty_content_description">Warenkorb ist leer</string>
-    <string name="woopos_cart_empty_subtitle">Tippe auf ein Produkt, um \nes dem Warenkorb hinzuzufügen</string>
     <string name="woopos_totals_main_error_label">Gesamtbeträge konnten nicht geladen werden</string>
     <string name="woopos_items_in_cart_multiple">%d Artikel</string>
     <string name="ai_product_creation_error_media_upload">Das ausgewählte Produktbild konnte nicht hochgeladen werden.</string>

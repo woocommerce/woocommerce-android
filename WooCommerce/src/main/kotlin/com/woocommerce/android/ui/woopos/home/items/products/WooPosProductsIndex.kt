@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -19,7 +19,7 @@ class WooPosProductsIndex @Inject constructor(
         productListIds = (productListIds + productIds).distinct()
     }
 
-    suspend fun getProductList(): List<Product> = mutex.withLock {
+    suspend fun getProductList(): List<WooPosProductModel> = mutex.withLock {
         return productListIds.mapNotNull { productsCache.getProductById(it) }
     }
 

@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -25,12 +26,18 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         // GIVEN
         val parentId = 123L
         val variationId = 456L
-        val product: Product = mock {
-            on { this.parentId }.thenReturn(parentId)
-            on { remoteId }.thenReturn(variationId)
-        }
-        val parentProduct: Product = mock()
-        val variation: ProductVariation = mock()
+        val product: WooPosProductModel = generateWooPosProduct(productId = variationId, parentId = parentId)
+        val parentProduct: WooPosProductModel = generateWooPosProduct()
+        val variation = WooPosVariation(
+            remoteVariationId = variationId,
+            remoteProductId = parentId,
+            globalUniqueId = "test",
+            price = null,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
 
         runBlocking {
             whenever(
@@ -51,10 +58,7 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
     @Test
     fun `given product with invalid parent id, when invoke called, then return product not found failure`() = runTest {
         // GIVEN
-        val product: Product = mock {
-            on { parentId }.thenReturn(0L)
-            on { remoteId }.thenReturn(456L)
-        }
+        val product: WooPosProductModel = generateWooPosProduct(productId = 456L, parentId = 0L)
 
         // WHEN
         val result = sut(product)
@@ -71,10 +75,7 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         // GIVEN
         val parentId = 123L
         val variationId = 456L
-        val product: Product = mock {
-            on { this.parentId }.thenReturn(parentId)
-            on { remoteId }.thenReturn(variationId)
-        }
+        val product: WooPosProductModel = generateWooPosProduct(productId = variationId, parentId = parentId)
 
         runBlocking {
             whenever(
@@ -104,11 +105,17 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         // GIVEN
         val parentId = 123L
         val variationId = 456L
-        val product: Product = mock {
-            on { this.parentId }.thenReturn(parentId)
-            on { remoteId }.thenReturn(variationId)
-        }
-        val variation: ProductVariation = mock()
+        val product: WooPosProductModel = generateWooPosProduct(productId = variationId, parentId = parentId)
+        val variation = WooPosVariation(
+            remoteVariationId = variationId,
+            remoteProductId = parentId,
+            globalUniqueId = "test",
+            price = null,
+            image = null,
+            attributes = emptyList(),
+            isVisible = true,
+            isDownloadable = false
+        )
         val expectedFailure = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
 
         runBlocking {
@@ -130,10 +137,7 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         // GIVEN
         val parentId = 123L
         val variationId = 456L
-        val product: Product = mock {
-            on { this.parentId }.thenReturn(parentId)
-            on { remoteId }.thenReturn(variationId)
-        }
+        val product: WooPosProductModel = generateWooPosProduct(productId = variationId, parentId = parentId)
 
         val variationResult = WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
             WooPosSearchByIdentifierResult.Error.UnknownError("Variation not found for ID: $variationId")

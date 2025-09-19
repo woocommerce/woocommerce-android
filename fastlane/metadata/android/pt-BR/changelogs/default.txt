@@ -1,0 +1,2 @@
+23.2:
+Melhoramos seu aplicativo WooCommerce com novas configurações de personalização de PDV, atualizações de etiquetas de envio mais claras, filtros de pedidos mais inteligentes e entrada automática de peso de envio. Você também encontrará melhor manuseio de etiquetas em andamento, exibição de estoque fracionado e confiabilidade de login aprimorada para uma experiência de gerenciamento de loja mais tranquila.
