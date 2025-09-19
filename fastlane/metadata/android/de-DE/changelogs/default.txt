@@ -1,2 +1,0 @@
-23.2:
-Wir haben deine WooCommerce-App mit neuen POS-Anpassungseinstellungen, klareren Aktualisierungen der Versandetiketten, intelligenteren Bestellungsfiltern und automatischer Eingabe des Versandgewichts verbessert. Du profitierst außerdem von einer besseren Handhabung von Etiketten in Bearbeitung, einer Anzeige von Lagerbeständen in Form von Dezimalzahlen und einer verbesserten Anmeldezuverlässigkeit für ein reibungsloseres Erlebnis bei der Verwaltung deines Shops.

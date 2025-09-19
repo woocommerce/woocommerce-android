@@ -1,2 +1,0 @@
-23.2:
-Hemos mejorado tu aplicación WooCommerce con nuevas configuraciones de personalización de POS, actualizaciones de etiquetas de envío más claras, filtros de pedidos más inteligentes y entrada automática del peso del envío. También encontrarás un mejor manejo de las etiquetas en proceso, visualización de stock fraccional y confiabilidad de acceso mejorada para una experiencia de gestión de la tienda más fluida.
