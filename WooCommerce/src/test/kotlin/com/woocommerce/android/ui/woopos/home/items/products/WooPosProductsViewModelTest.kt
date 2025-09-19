@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import app.cash.turbine.test
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -11,12 +13,14 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
@@ -35,6 +39,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import kotlin.test.assertIs
 
 class WooPosProductsViewModelTest {
 
@@ -51,6 +56,12 @@ class WooPosProductsViewModelTest {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
+        on { invoke() }.thenReturn(false)
+    }
+    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val resourceProvider: ResourceProvider = mock()
 
     @Before
     fun setup() {
@@ -72,6 +83,8 @@ class WooPosProductsViewModelTest {
             )
         )
         whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())
+
+        whenever(productsDataSource.hasMorePages).thenReturn(false)
     }
 
     @Test
@@ -323,49 +336,43 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `given variable products from data source, when view model created, then items list updated correctly`() =
-        runTest {
-            // GIVEN
-            val products = listOf(
-                generateWooPosProduct(
-                    productId = 1,
-                    productName = "Product 1",
-                    amount = "10.0",
-                    productType = WooPosProductModel.WooPosProductType.SIMPLE,
-                    isDownloadable = false,
-                ),
-                generateWooPosProduct(
-                    productId = 2,
-                    productName = "Product 2",
-                    amount = "20.0",
-                    productType = WooPosProductModel.WooPosProductType.VARIABLE,
-                    isDownloadable = false,
-                    images = listOf(
-                        WooPosProductModel
-                            .WooPosProductImage(0, "https://test.com", "", "")
-                    ),
+    fun `given variable products from data source, when view model created, then items list updated correctly`() = runTest {
+        // GIVEN
+        val products = listOf(
+            generateWooPosProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = WooPosProductModel.WooPosProductType.SIMPLE,
+                isDownloadable = false,
+            ),
+            generateWooPosProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                isDownloadable = false,
+                images = listOf(WooPosProductModel.WooPosProductImage(0, "https://test.com", "", ""))
+            )
+        )
+
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
                 )
             )
+        )
+        val viewModel = createViewModel()
 
-            whenever(productsDataSource.loadProducts(any())).thenReturn(
-                flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
-                        Result.success(products)
-                    )
-                )
-            )
-
-            // WHEN
-            val viewModel = createViewModel()
-            viewModel.viewState.test {
-                // THEN
-                val value = awaitItem() as WooPosProductsViewState.Content
-
-                assertThat(
-                    value.items.filterIsInstance<WooPosItemSelectionViewState.Product.Variable>().size
-                ).isEqualTo(1)
-            }
+        // THEN
+        viewModel.viewState.test {
+            val contentState = awaitItem() as WooPosProductsViewState.Content
+            assertThat(
+                contentState.items.filterIsInstance<WooPosItemSelectionViewState.Product.Variable>().size
+            ).isEqualTo(1)
         }
+    }
 
     @Test
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -532,10 +539,14 @@ class WooPosProductsViewModelTest {
     private fun createViewModel(): WooPosProductsViewModel {
         return WooPosProductsViewModel(
             productsDataSource = productsDataSource,
-            priceFormat = priceFormat,
-            analyticsTracker = analyticsTracker,
             fromChildToParentEventSender = fromChildToParentEventSender,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            priceFormat = priceFormat,
+            analyticsTracker = analyticsTracker,
+            wooPosLocalCatalogM1Enabled = wooPosLocalCatalogM1Enabled,
+            localCatalogSyncRepository = localCatalogSyncRepository,
+            selectedSite = selectedSite,
+            resourceProvider = resourceProvider,
         )
     }
 }
