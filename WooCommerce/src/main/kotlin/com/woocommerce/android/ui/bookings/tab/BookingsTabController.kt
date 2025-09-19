@@ -5,12 +5,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityMainBinding
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class BookingsTabController @Inject constructor(
-    private val observeBookingsTabVisibility: ObserveBookingsTabVisibility
+    private val observeBookingsTabVisibility: ObserveBookingsTabVisibility,
+    private val selectedSite: SelectedSite
 ) : DefaultLifecycleObserver {
     private lateinit var activity: MainActivity
     private lateinit var binding: ActivityMainBinding
@@ -34,9 +37,13 @@ class BookingsTabController @Inject constructor(
 
     private fun checkBookingsTabVisibility() {
         activity.lifecycleScope.launch {
-            observeBookingsTabVisibility()
-                .collect {
-                    binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = it
+            selectedSite.observe()
+                .filter { it != null }
+                .collect { siteModel ->
+                    observeBookingsTabVisibility(siteModel!!)
+                        .collect {
+                            binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = it
+                        }
                 }
         }
     }
