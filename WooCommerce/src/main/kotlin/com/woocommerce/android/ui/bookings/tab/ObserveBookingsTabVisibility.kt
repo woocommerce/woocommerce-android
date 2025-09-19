@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.tab
 
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.ciab.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStatus
@@ -43,6 +44,7 @@ class ObserveBookingsTabVisibility @Inject constructor(
     }
 
     companion object {
-        private const val BOOKING_PRODUCT_TYPE = "booking"
+        @VisibleForTesting
+        const val BOOKING_PRODUCT_TYPE = "booking"
     }
 }
