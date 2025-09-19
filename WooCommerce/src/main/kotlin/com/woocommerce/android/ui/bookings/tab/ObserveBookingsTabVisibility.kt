@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
-class ShowBookingsTab @Inject constructor(
+class ObserveBookingsTabVisibility @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productListRepository: ProductListRepository
 ) {

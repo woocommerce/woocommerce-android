@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class BookingsTabController @Inject constructor(
-    private val showBookingsTab: ShowBookingsTab
+    private val observeBookingsTabVisibility: ObserveBookingsTabVisibility
 ) : DefaultLifecycleObserver {
     private lateinit var activity: MainActivity
     private lateinit var binding: ActivityMainBinding
@@ -34,7 +34,7 @@ class BookingsTabController @Inject constructor(
 
     private fun checkBookingsTabVisibility() {
         activity.lifecycleScope.launch {
-            showBookingsTab()
+            observeBookingsTabVisibility()
                 .collect {
                     binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = it
                 }
