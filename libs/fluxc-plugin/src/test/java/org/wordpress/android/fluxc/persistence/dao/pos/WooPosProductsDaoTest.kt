@@ -208,6 +208,28 @@ class WooPosProductsDaoTest {
     }
 
     @Test
+    fun `when observing products, then products are sorted by name case-insensitive`() = runTest {
+        // GIVEN
+        val products = listOf(
+            generatePosProduct(remoteId = 100L, name = "zebra product"),
+            generatePosProduct(remoteId = 101L, name = "Apple product"),
+            generatePosProduct(remoteId = 102L, name = "banana Product"),
+            generatePosProduct(remoteId = 103L, name = "Cherry PRODUCT")
+        )
+        sut.upsertProducts(products)
+
+        // WHEN
+        val results = sut.observeAllProducts(products.first().localSiteId).first()
+
+        // THEN
+        assertEquals(4, results.size)
+        assertEquals("Apple product", results[0].name)
+        assertEquals("banana Product", results[1].name)
+        assertEquals("Cherry PRODUCT", results[2].name)
+        assertEquals("zebra product", results[3].name)
+    }
+
+    @Test
     fun `given products with decimal stock quantities, when storing, then decimal values preserved`() = runTest {
         // GIVEN
         val product = generatePosProduct(
