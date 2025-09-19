@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getName
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.util.DateUtils
@@ -145,10 +146,25 @@ class WooPosTotalsRepository @Inject constructor(
             }
             else -> getProductById(itemData.productId)!!
         }
-        val variationResult = getVariationById(
-            productId = itemData.productId,
-            variationId = itemData.id
-        )!!
+        val variationResult = when {
+            wooPosLocalCatalogM1Enabled() -> {
+                val result = localCatalogStore.getVariation(
+                    siteId = selectedSite.get().id,
+                    productId = itemData.productId,
+                    variationId = itemData.id
+                )
+                result.getOrNull()?.toWooPosVariation(variationMapper)
+                    ?: error(
+                        "Variation not found in local catalog: product=${itemData.productId}, variation=${itemData.id}"
+                    )
+            }
+            else -> {
+                getVariationById(
+                    productId = itemData.productId,
+                    variationId = itemData.id
+                )!!
+            }
+        }
         variationResult.getNameForPOS(variationMapper, productResult, resourceProvider)
         return Order.Item.EMPTY.copy(
             itemId = 0L,
