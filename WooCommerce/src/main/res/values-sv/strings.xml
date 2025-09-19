@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-26 13:54:04+0000
+Translation-Revision-Date: 2025-09-10 13:54:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">Alla paketdimensioner ska alla vara större än 0.</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> för att lägga till den i varukorgen</string>
+    <string name="woopos_cart_empty_scan_barcode">skanna en streckkod</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">Tryck på en produkt eller </string>
+    <string name="woopos_orders_title">Beställningar</string>
+    <string name="woopos_settings_help_category">Hjälp</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Webbkassa</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Du kan inte flytta produkter till eller från den.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">Du har köpt en etikett för den här försändelsen.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">Land där produkten tillverkades eller monterades.</string>
@@ -71,7 +79,6 @@ Language: sv_SE
     <string name="woopos_scanning_setup_software_keyboard_message">Android behandlar streckkodsskannrar som fysiska tangentbord, vilket kan dölja ditt tangentbord på skärmen. Vi kollar:</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Visa tangentbordet på skärmen</string>
     <string name="woopos_scanning_setup_success_message">Du är redo att börja skanna produkter. Nästa gång du behöver ansluta skannern, slå bara på skannern så återansluter den automatiskt.</string>
-    <string name="woopos_barcode_scanning_title">Initial konfiguration av streckkodsskanner</string>
     <string name="woopos_cart_clear_all_button_content_description">Ikon för att rensa artiklar i varukorg</string>
     <string name="product_selector_subscription_not_supported">Prenumerationsprodukter stöds inte vid skapande av ordrar</string>
     <string name="save_copy">Spara kopia</string>
@@ -636,7 +643,6 @@ Language: sv_SE
     <string name="analytics_spend_subtitle_value">Belopp: %1$s</string>
     <string name="analytics_custom_list_selection_button_description">Filtrera urval</string>
     <string name="woopos_cart_empty_content_description">Varukorg är tom</string>
-    <string name="woopos_cart_empty_subtitle">Tryck på en produkt för att\nlägga till den i varukorgen</string>
     <string name="woopos_totals_main_error_label">Det gick inte att hämta summor.</string>
     <string name="woopos_items_in_cart_multiple">%d artiklar</string>
     <string name="ai_product_creation_error_media_upload">Misslyckades att ladda upp den valda produktbilden.</string>
