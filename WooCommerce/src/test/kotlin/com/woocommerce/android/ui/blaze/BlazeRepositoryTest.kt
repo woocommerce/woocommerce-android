@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.blaze
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.media.MediaFilesRepository
-import com.woocommerce.android.media.MediaFilesRepository.ImageDimensions
+import com.woocommerce.android.media.MediaFilesRepository.ImageDetails
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage.RemoteImage
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
@@ -131,7 +131,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
 
             whenever(appPrefsWrapper.blazeCampaignSelectedObjective).thenReturn(objective)
             whenever(productDetailRepository.getProduct(productId)).thenReturn(product)
-            whenever(mediaFilesRepository.getImageDimensions(imageUrl)).thenReturn(ImageDimensions(0, 0))
+            whenever(mediaFilesRepository.getImageDetails(imageUrl)).thenReturn(ImageDetails(0, 0))
 
             val before = Date()
             val details = repository.generateDefaultCampaignDetails(productId)

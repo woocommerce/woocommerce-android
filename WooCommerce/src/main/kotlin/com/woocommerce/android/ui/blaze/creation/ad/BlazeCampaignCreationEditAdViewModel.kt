@@ -130,7 +130,8 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     fun onLocalImageSelected(uri: String) {
         launch {
-            if (blazeRepository.isValidAdImage(uri)) {
+            val imageDetails = blazeRepository.getImageDetails(uri)
+            if (with(blazeRepository) { imageDetails.isValidAdImage() }) {
                 _viewState.update {
                     it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
                 }
@@ -142,12 +143,14 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     fun onWPMediaSelected(image: Product.Image) {
         launch {
-            if (blazeRepository.isValidAdImage(image.source)) {
+            val imageDetails = blazeRepository.getImageDetails(image.source)
+            if (with(blazeRepository) { imageDetails.isValidAdImage() }) {
                 _viewState.update {
                     it.copy(
                         adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
                             mediaId = image.id,
-                            uri = image.source
+                            uri = image.source,
+                            mimeType = imageDetails.mimeType
                         )
                     )
                 }

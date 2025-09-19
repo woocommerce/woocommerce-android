@@ -19,11 +19,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.transform
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.blaze.BlazeAdForecast
 import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequest
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequestBudget
+import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequestImage
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignType
 import org.wordpress.android.fluxc.model.blaze.BlazePaymentMethod.PaymentMethodInfo
 import org.wordpress.android.fluxc.model.blaze.BlazeTargetingParameters
@@ -183,8 +183,9 @@ class BlazeRepository @Inject constructor(
             tagLine = product.name,
             description = description.fastStripHtml(),
             campaignImage = product.images.firstOrNull().let {
-                if (it != null && isValidAdImage(it.source)) {
-                    BlazeCampaignImage.RemoteImage(it.id, it.source)
+                val imageDetails = it?.source?.let { uri -> getImageDetails(uri) }
+                if (imageDetails?.isValidAdImage() == true) {
+                    BlazeCampaignImage.RemoteImage(it.id, it.source, imageDetails.mimeType)
                 } else {
                     BlazeCampaignImage.None
                 }
@@ -345,13 +346,20 @@ class BlazeRepository @Inject constructor(
         }
     }
 
-    private suspend fun prepareCampaignImage(image: BlazeCampaignImage): Result<MediaModel> {
+    private suspend fun prepareCampaignImage(image: BlazeCampaignImage): Result<BlazeCampaignCreationRequestImage> {
         val result = when (image) {
             is BlazeCampaignImage.LocalImage -> {
                 mediaFilesRepository.uploadFile(image.uri)
                     .transform {
                         when (it) {
-                            is MediaFilesRepository.UploadResult.UploadSuccess -> emit(Result.success(it.media))
+                            is MediaFilesRepository.UploadResult.UploadSuccess -> {
+                                val requestImage = BlazeCampaignCreationRequestImage(
+                                    url = it.media.url,
+                                    mimeType = it.media.mimeType.orEmpty()
+                                )
+                                emit(Result.success(requestImage))
+                            }
+
                             is MediaFilesRepository.UploadResult.UploadFailure -> throw it.error
                             else -> {
                                 /* Do nothing */
@@ -363,7 +371,13 @@ class BlazeRepository @Inject constructor(
                     .first()
             }
 
-            is BlazeCampaignImage.RemoteImage -> mediaFilesRepository.fetchWordPressMedia(image.mediaId)
+            is BlazeCampaignImage.RemoteImage -> Result.success(
+                BlazeCampaignCreationRequestImage(
+                    url = image.uri,
+                    mimeType = image.mimeType
+                )
+            )
+
             is BlazeCampaignImage.None -> error("No image provided for Blaze Campaign Creation")
         }
 
@@ -372,15 +386,12 @@ class BlazeRepository @Inject constructor(
         }
     }
 
-    suspend fun isValidAdImage(uri: String): Boolean {
-        val (width, height) = mediaFilesRepository.getImageDimensions(uri)
-        return when {
-            width == 0 || height == 0 -> {
-                WooLog.w(WooLog.T.BLAZE, "isValidAdImage uri: Failed to get image dimens from uri: $uri")
-                false
-            }
+    suspend fun getImageDetails(uri: String) = mediaFilesRepository.getImageDetails(uri)
 
+    fun MediaFilesRepository.ImageDetails.isValidAdImage(): Boolean {
+        return when {
             width < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS || height < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> false
+            !mimeType.startsWith("image/") -> false
             else -> true
         }
     }
@@ -422,7 +433,7 @@ class BlazeRepository @Inject constructor(
         data class LocalImage(override val uri: String) : BlazeCampaignImage
 
         @Parcelize
-        data class RemoteImage(val mediaId: Long, override val uri: String) : BlazeCampaignImage
+        data class RemoteImage(val mediaId: Long, override val uri: String, val mimeType: String) : BlazeCampaignImage
     }
 
     @Parcelize
