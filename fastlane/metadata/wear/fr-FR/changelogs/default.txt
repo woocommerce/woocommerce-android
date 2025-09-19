@@ -1,0 +1,1 @@
+Cette mise à jour permet à l’application Wear de fonctionner plus facilement avec des temps de démarrage plus rapides et une fiabilité améliorée, vous offrant une meilleure expérience de gestion de votre boutique depuis votre poignet.
