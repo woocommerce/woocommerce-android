@@ -1,0 +1,2 @@
+23.2:
+Kami telah meningkatkan aplikasi WooCommerce Anda dengan pengaturan penyesuaian POS baru, pembaruan label pengiriman yang lebih jelas, filter pesanan yang lebih cerdas, dan entri berat pengiriman otomatis. Anda juga akan menemukan penanganan label yang sedang diproses dengan lebih baik, tampilan stok dalam desimal, dan login yang lebih andal untuk pengalaman pengelolaan toko yang lebih lancar.
