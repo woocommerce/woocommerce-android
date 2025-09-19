@@ -39,7 +39,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
-import kotlin.test.assertIs
 
 class WooPosProductsViewModelTest {
 

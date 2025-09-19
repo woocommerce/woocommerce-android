@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import androidx.lifecycle.ViewModel
-import com.woocommerce.android.R
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -13,8 +15,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -343,20 +343,21 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
-    private fun getViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosProductsViewState = when (syncResult) {
-        is PosLocalCatalogSyncResult.Success -> {
-            hidePTRIndicator()
-        }
+    private fun getViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosProductsViewState =
+        when (syncResult) {
+            is PosLocalCatalogSyncResult.Success -> {
+                hidePTRIndicator()
+            }
 
-        is PosLocalCatalogSyncResult.Failure -> {
-            sendEventToParent(
-                ChildToParentEvent.ToastMessageDisplayed(
-                    message = resourceProvider.getString(R.string.something_went_wrong_try_again)
+            is PosLocalCatalogSyncResult.Failure -> {
+                sendEventToParent(
+                    ChildToParentEvent.ToastMessageDisplayed(
+                        message = resourceProvider.getString(R.string.something_went_wrong_try_again)
+                    )
                 )
-            )
-            hidePTRIndicator()
+                hidePTRIndicator()
+            }
         }
-    }
 
     private fun hidePTRIndicator(): WooPosProductsViewState = when (val currentState = _viewState.value) {
         is WooPosProductsViewState.Content -> currentState.copy(

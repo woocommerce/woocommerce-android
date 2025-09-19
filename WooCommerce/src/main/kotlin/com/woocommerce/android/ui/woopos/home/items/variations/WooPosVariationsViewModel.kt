@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.items.variations
 
 import androidx.annotation.VisibleForTesting
-import com.woocommerce.android.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
@@ -13,7 +14,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
@@ -303,20 +303,21 @@ class WooPosVariationsViewModel @Inject constructor(
         }
     }
 
-    private fun getViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosVariationsViewState = when (syncResult) {
-        is PosLocalCatalogSyncResult.Success -> {
-            hidePTRIndicator()
-        }
+    private fun getViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosVariationsViewState =
+        when (syncResult) {
+            is PosLocalCatalogSyncResult.Success -> {
+                hidePTRIndicator()
+            }
 
-        is PosLocalCatalogSyncResult.Failure -> {
-            sendEventToParent(
-                ChildToParentEvent.ToastMessageDisplayed(
-                    message = resourceProvider.getString(R.string.offline_error)
+            is PosLocalCatalogSyncResult.Failure -> {
+                sendEventToParent(
+                    ChildToParentEvent.ToastMessageDisplayed(
+                        message = resourceProvider.getString(R.string.offline_error)
+                    )
                 )
-            )
-            hidePTRIndicator()
+                hidePTRIndicator()
+            }
         }
-    }
 
     private fun hidePTRIndicator(): WooPosVariationsViewState = when (val currentState = _viewState.value) {
         is WooPosVariationsViewState.Content -> currentState.copy(
