@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.bookings.tab
 
 import app.cash.turbine.test
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.bookings.tab.ObserveBookingsTabVisibility.Companion.BOOKING_PRODUCT_TYPE
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.list.ProductListRepository
@@ -23,12 +22,8 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
         ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
         ProductFilterOption.TYPE to BOOKING_PRODUCT_TYPE
     )
-    private val siteFlow = MutableStateFlow<SiteModel?>(null)
     private val bookableProdsCountFlow = MutableStateFlow(0L)
 
-    private val selectedSite: SelectedSite = mock {
-        on { observe() }.thenReturn(siteFlow)
-    }
     private val productListRepository: ProductListRepository = mock {
         on {
             observeProductsCount(
@@ -42,17 +37,16 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
-        sut = ObserveBookingsTabVisibility(selectedSite, productListRepository)
+        sut = ObserveBookingsTabVisibility(productListRepository)
     }
 
     @Test
     fun `when invoke is called, then bookable products are fetched`() = testBlocking {
-        siteFlow.value = ciabSite()
         bookableProdsCountFlow.value = 2
 
         setup()
 
-        sut().test {
+        sut(ciabSite()).test {
             verify(productListRepository).fetchProductList(
                 loadMore = false,
                 productFilterOptions = mapOf(ProductFilterOption.TYPE to BOOKING_PRODUCT_TYPE),
@@ -65,12 +59,11 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
 
     @Test
     fun `given CIAB site and bookings products published, when invoke, then emits true`() = testBlocking {
-        siteFlow.value = ciabSite()
         bookableProdsCountFlow.value = 1
 
         setup()
 
-        sut().test {
+        sut(ciabSite()).test {
             val showBookingTabValue = awaitItem()
             assertTrue(showBookingTabValue)
             cancelAndIgnoreRemainingEvents()
@@ -78,13 +71,12 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given zero booking products, when invoke, then emits false`() = testBlocking {
-        siteFlow.value = ciabSite()
+    fun `given CIAB site with zero booking products, when invoke, then emits false`() = testBlocking {
         bookableProdsCountFlow.value = 0
 
         setup()
 
-        sut().test {
+        sut(ciabSite()).test {
             val showBookingTabValue = awaitItem()
             assertFalse(showBookingTabValue)
             cancelAndIgnoreRemainingEvents()
@@ -93,12 +85,11 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
 
     @Test
     fun `given non-CIAB site, when invoke, then emits false`() = testBlocking {
-        siteFlow.value = nonCiabSite()
         bookableProdsCountFlow.value = 10
 
         setup()
 
-        sut().test {
+        sut(nonCiabSite()).test {
             val showBookingTabValue = awaitItem()
             assertFalse(showBookingTabValue)
             cancelAndIgnoreRemainingEvents()
@@ -107,12 +98,11 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
 
     @Test
     fun `given non-Commerce Garden CIAB site, when invoke, then emits false`() = testBlocking {
-        siteFlow.value = nonCommerceGardenSite()
         bookableProdsCountFlow.value = 10
 
         setup()
 
-        sut().test {
+        sut(nonCommerceGardenSite()).test {
             val showBookingTabValue = awaitItem()
             assertFalse(showBookingTabValue)
             cancelAndIgnoreRemainingEvents()
@@ -121,19 +111,15 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
 
     @Test
     fun `given same inputs produce same result, when values update, then only emits once`() = testBlocking {
-        siteFlow.value = ciabSite()
         bookableProdsCountFlow.value = 2
 
         setup()
 
-        sut().test {
+        sut(ciabSite()).test {
             val firstEmission = awaitItem()
             assertTrue(firstEmission)
-
             // When inputs change but computed value remains true
             bookableProdsCountFlow.value = 3 // still true
-            siteFlow.value = ciabSite() // new instance but still CIAB
-
             // Then no new emissions due to distinctUntilChanged
             expectNoEvents()
 
@@ -148,12 +134,11 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
     @Test
     fun `given bookable products fetch fails onStart, when invoke, then emits based on persisted values`() =
         testBlocking {
-            siteFlow.value = ciabSite()
             bookableProdsCountFlow.value = 1
 
             setup()
 
-            sut().test {
+            sut(ciabSite()).test {
                 assert(awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
