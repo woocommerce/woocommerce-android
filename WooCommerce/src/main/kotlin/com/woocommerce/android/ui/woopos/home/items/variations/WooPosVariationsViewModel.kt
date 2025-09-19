@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -32,6 +33,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,6 +50,8 @@ class WooPosVariationsViewModel @Inject constructor(
     private val mapper: WooPosVariationMapper,
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
     private val selectedSite: SelectedSite,
+    private val productMapper: WooPosProductModelMapper,
+    private val localCatalogStore: WooPosLocalCatalogStore,
 ) : ViewModel() {
 
     private val currentDataSource: WooPosVariationsDataSourceInterface = when (wooPosLocalCatalogM1Enabled()) {
@@ -110,26 +115,7 @@ class WooPosVariationsViewModel @Inject constructor(
                             result.result.isSuccess -> {
                                 val variations = result.result.getOrThrow()
                                 if (variations.isNotEmpty()) {
-                                    WooPosVariationsViewState.Content(
-                                        items = variations.map {
-                                            WooPosItemSelectionViewState.Product.Variation(
-                                                id = it.remoteVariationId,
-                                                name = it.getNameForPOS(
-                                                    mapper,
-                                                    getProductById(productId),
-                                                    resourceProvider
-                                                ),
-                                                productId = it.remoteProductId,
-                                                price = priceFormat(it.price),
-                                                imageUrl = it.image?.source
-                                            )
-                                        },
-                                        paginationState = if (loadMoreJob?.isActive == true) {
-                                            WooPosPaginationState.Loading
-                                        } else {
-                                            WooPosPaginationState.None
-                                        }
-                                    )
+                                    createContentState(variations, productId)
                                 } else {
                                     WooPosVariationsViewState.Empty()
                                 }
@@ -147,21 +133,7 @@ class WooPosVariationsViewModel @Inject constructor(
         if (variations.isEmpty()) {
             _viewState.value = WooPosVariationsViewState.Empty()
         } else {
-            _viewState.value = WooPosVariationsViewState.Content(
-                items = variations.map {
-                    WooPosItemSelectionViewState.Product.Variation(
-                        id = it.remoteVariationId,
-                        name = it.getNameForPOS(
-                            mapper,
-                            getProductById(productId),
-                            resourceProvider
-                        ),
-                        productId = it.remoteProductId,
-                        price = priceFormat(it.price),
-                        imageUrl = it.image?.source
-                    )
-                }
-            )
+            _viewState.value = createContentState(variations, productId)
         }
     }
 
@@ -339,5 +311,47 @@ class WooPosVariationsViewModel @Inject constructor(
 
     private fun onEndOfVariationsListReached(productId: Long, numOfVariations: Int) {
         loadMore(productId, numOfVariations)
+    }
+
+    private suspend fun createContentState(
+        variations: List<WooPosVariation>,
+        productId: Long
+    ): WooPosVariationsViewState.Content {
+        val parentProduct = getParentProduct(productId)
+        return WooPosVariationsViewState.Content(
+            items = variations.map { variation ->
+                WooPosItemSelectionViewState.Product.Variation(
+                    id = variation.remoteVariationId,
+                    name = variation.getNameForPOS(
+                        mapper,
+                        parentProduct,
+                        resourceProvider
+                    ),
+                    productId = variation.remoteProductId,
+                    price = priceFormat(variation.price),
+                    imageUrl = variation.image?.source
+                )
+            },
+            paginationState = if (loadMoreJob?.isActive == true) {
+                WooPosPaginationState.Loading
+            } else {
+                WooPosPaginationState.None
+            }
+        )
+    }
+
+    private suspend fun getParentProduct(productId: Long) = when {
+        wooPosLocalCatalogM1Enabled() -> {
+            val result = localCatalogStore.getProduct(
+                siteId = LocalOrRemoteId.LocalId(selectedSite.get().id),
+                remoteProductId = LocalOrRemoteId.RemoteId(productId)
+            )
+            result.getOrNull()?.let { entity ->
+                productMapper.fromEntity(entity)
+            }
+        }
+        else -> {
+            getProductById(productId)
+        }
     }
 }
