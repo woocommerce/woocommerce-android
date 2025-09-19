@@ -5,6 +5,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -35,7 +36,9 @@ class ShowBookingsTab @Inject constructor(
         }.onStart {
             productListRepository.fetchProductList(
                 productFilterOptions = mapOf(ProductFilterOption.TYPE to BOOKING_PRODUCT_TYPE)
-            )
+            ).onFailure {
+                WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookable products" )
+            }
         }.distinctUntilChanged()
     }
 
