@@ -1,2 +1,0 @@
-23.2:
-Abbiamo migliorato la tua app WooCommerce attraverso nuove impostazioni di personalizzazione del POS, aggiornamenti più chiari delle etichette di spedizione, filtri degli ordini più intelligenti e inserimento automatico del peso della spedizione. Troverai anche una migliore gestione delle etichette in lavorazione, la visualizzazione delle scorte frazionarie e una maggiore affidabilità di accesso per un'esperienza di gestione del negozio più fluida.

@@ -16,16 +16,16 @@ msgid "This update makes the Wear app run more smoothly with faster startup time
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_233"
+msgid ""
+"23.3:\n"
+"This update brings smoother performance for WordPress.com users, clearer shipping label creation with improved package and hazardous item selection, and easier access to all orders from a customer. We also fixed small UI glitches like notification icon sizing and delays on the site picker screen.\n"
+msgstr ""
+
 msgctxt "release_note_232"
 msgid ""
 "23.2:\n"
 "We’ve improved your WooCommerce app with new POS customization settings, clearer shipping label updates, smarter order filters, and automatic shipment weight entry. You’ll also find better handling of in-progress labels, fractional stock display, and enhanced login reliability for a smoother store management experience.\n"
-msgstr ""
-
-msgctxt "release_note_231"
-msgid ""
-"23.1:\n"
-"Enhanced your store management experience with exciting new features! Remove backgrounds from product images instantly with our new one-tap tool. Improved shipping labels with better address validation, cleaner layouts, and smarter split shipment handling. Fixed order selection issues and enhanced login error handling for smoother operations.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
