@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.variations
 
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
@@ -20,6 +21,7 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsD
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsUIEvents
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -114,6 +116,8 @@ class WooPosVariationsViewModelTest {
             }
         }
     }
+    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository = mock()
+    private val selectedSite: SelectedSite = mock()
 
     @Test
     fun `given variations from data source, when view model created, then view state updated correctly`() = runTest {
@@ -764,6 +768,8 @@ class WooPosVariationsViewModelTest {
             analyticsTracker,
             wooPosLocalCatalogM1Enabled,
             mapper,
+            localCatalogSyncRepository,
+            selectedSite,
         ).let {
             it.init(productId, sourceType = sourceType)
             it

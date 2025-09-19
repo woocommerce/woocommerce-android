@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import com.woocommerce.android.util.DateUtils
@@ -23,6 +25,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 
 class WooPosTotalsRepositoryTest {
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
@@ -34,6 +37,11 @@ class WooPosTotalsRepositoryTest {
     private val orderMapper: OrderMapper = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val variationMapper: WooPosVariationMapper = mock()
+    private val productMapper: WooPosProductModelMapper = mock()
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
+        on { invoke() }.thenReturn(false)
+    }
+    private val localCatalogStore: WooPosLocalCatalogStore = mock()
 
     private lateinit var repository: WooPosTotalsRepository
 
@@ -232,5 +240,8 @@ class WooPosTotalsRepositoryTest {
         orderMapper,
         resourceProvider,
         variationMapper,
+        productMapper,
+        wooPosLocalCatalogM1Enabled,
+        localCatalogStore,
     )
 }
