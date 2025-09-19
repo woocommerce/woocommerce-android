@@ -205,11 +205,12 @@ class WooPosProductsViewModel @Inject constructor(
                                 val products = result.productsResult.getOrThrow()
                                 if (products.isNotEmpty()) {
                                     val currentState = _viewState.value
-                                    val paginationState = if (loadMoreProductsJob?.isActive == true && currentDataSource.hasMorePages) {
-                                        WooPosPaginationState.Loading
-                                    } else {
-                                        WooPosPaginationState.None
-                                    }
+                                    val paginationState =
+                                        if (loadMoreProductsJob?.isActive == true && currentDataSource.hasMorePages) {
+                                            WooPosPaginationState.Loading
+                                        } else {
+                                            WooPosPaginationState.None
+                                        }
                                     if (currentState is WooPosProductsViewState.Content) {
                                         currentState.copy(
                                             items = products.map { it.toItemSelectionViewState() },
@@ -355,20 +356,21 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
-    private fun getViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosProductsViewState = when (syncResult) {
-        is PosLocalCatalogSyncResult.Success -> {
-            hidePTRIndicator()
-        }
+    private fun getViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosProductsViewState =
+        when (syncResult) {
+            is PosLocalCatalogSyncResult.Success -> {
+                hidePTRIndicator()
+            }
 
-        is PosLocalCatalogSyncResult.Failure -> {
-            sendEventToParent(
-                ChildToParentEvent.ToastMessageDisplayed(
-                    message = resourceProvider.getString(R.string.something_went_wrong_try_again)
+            is PosLocalCatalogSyncResult.Failure -> {
+                sendEventToParent(
+                    ChildToParentEvent.ToastMessageDisplayed(
+                        message = resourceProvider.getString(R.string.something_went_wrong_try_again)
+                    )
                 )
-            )
-            hidePTRIndicator()
+                hidePTRIndicator()
+            }
         }
-    }
 
     private fun hidePTRIndicator(): WooPosProductsViewState = when (val currentState = _viewState.value) {
         is WooPosProductsViewState.Content -> currentState.copy(

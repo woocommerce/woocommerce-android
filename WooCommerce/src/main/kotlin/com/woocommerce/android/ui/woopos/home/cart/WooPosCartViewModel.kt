@@ -354,7 +354,7 @@ class WooPosCartViewModel @Inject constructor(
             }
             else -> getProductById(productId)!!
         }
-        
+
         val itemNumber = getItemNumber()
         return product.toCartListItem(itemNumber)
     }
@@ -372,7 +372,7 @@ class WooPosCartViewModel @Inject constructor(
             }
             else -> getProductById(productId)!!
         }
-        
+
         val itemNumber = getItemNumber()
 
         val productVariation = when {

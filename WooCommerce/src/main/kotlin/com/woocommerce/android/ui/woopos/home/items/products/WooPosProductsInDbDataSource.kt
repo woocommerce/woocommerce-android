@@ -39,7 +39,10 @@ class WooPosProductsInDbDataSource @Inject constructor(
                 products
             } else {
                 products.filter { product ->
-                    product.name.contains(searchQuery, ignoreCase = true) || product.sku.contains(searchQuery, ignoreCase = true)
+                    product.name.contains(searchQuery, ignoreCase = true) || product.sku.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    )
                 }
             }
             WooPosProductsDataSource.ProductsResult.Remote(Result.success(filteredProducts))
