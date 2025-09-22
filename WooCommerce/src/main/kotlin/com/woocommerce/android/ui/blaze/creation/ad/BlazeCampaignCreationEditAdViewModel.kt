@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_SAVE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
@@ -131,7 +132,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     fun onLocalImageSelected(uri: String) {
         launch {
             val imageDetails = blazeRepository.getImageDetails(uri)
-            if (with(blazeRepository) { imageDetails.isValidAdImage() }) {
+            if (imageDetails.isValidAdImage()) {
                 _viewState.update {
                     it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
                 }
@@ -144,7 +145,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     fun onWPMediaSelected(image: Product.Image) {
         launch {
             val imageDetails = blazeRepository.getImageDetails(image.source)
-            if (with(blazeRepository) { imageDetails.isValidAdImage() }) {
+            if (imageDetails.isValidAdImage()) {
                 _viewState.update {
                     it.copy(
                         adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
@@ -159,6 +160,8 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
             }
         }
     }
+
+    private fun MediaFilesRepository.ImageDetails.isValidAdImage() = with(blazeRepository) { isValidAdImage() }
 
     private fun showInvalidImageSizeDialog() {
         triggerEvent(
