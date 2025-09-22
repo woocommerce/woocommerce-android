@@ -185,7 +185,7 @@ class BlazeRepository @Inject constructor(
             campaignImage = product.images.firstOrNull().let {
                 val imageDetails = it?.source?.let { uri -> getImageDetails(uri) }
                 if (imageDetails?.isValidAdImage() == true) {
-                    BlazeCampaignImage.RemoteImage(it.id, it.source, imageDetails.mimeType)
+                    BlazeCampaignImage.RemoteImage(it.source, imageDetails.mimeType)
                 } else {
                     BlazeCampaignImage.None
                 }
@@ -433,7 +433,7 @@ class BlazeRepository @Inject constructor(
         data class LocalImage(override val uri: String) : BlazeCampaignImage
 
         @Parcelize
-        data class RemoteImage(val mediaId: Long, override val uri: String, val mimeType: String) : BlazeCampaignImage
+        data class RemoteImage(override val uri: String, val mimeType: String) : BlazeCampaignImage
     }
 
     @Parcelize
