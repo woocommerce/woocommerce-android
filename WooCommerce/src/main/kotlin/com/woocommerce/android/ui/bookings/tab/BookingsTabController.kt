@@ -7,7 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,7 +38,7 @@ class BookingsTabController @Inject constructor(
     private fun checkBookingsTabVisibility() {
         activity.lifecycleScope.launch {
             selectedSite.observe()
-                .filter { it != null }
+                .filterNotNull()
                 .collect { siteModel ->
                     observeBookingsTabVisibility(siteModel!!)
                         .collect {
