@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.bookings.tab
 
 import androidx.annotation.VisibleForTesting
-import com.woocommerce.android.ciab.isCIABSite
+import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.FeatureFlag

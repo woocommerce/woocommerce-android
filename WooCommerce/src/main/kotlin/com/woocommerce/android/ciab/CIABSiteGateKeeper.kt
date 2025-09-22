@@ -1,5 +1,6 @@
 package com.woocommerce.android.ciab
 
+import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
 import javax.inject.Inject
 
