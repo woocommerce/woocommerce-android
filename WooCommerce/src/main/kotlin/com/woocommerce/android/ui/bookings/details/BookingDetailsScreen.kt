@@ -6,9 +6,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -18,12 +18,14 @@ fun BookingDetailsScreen(
     viewModel: BookingDetailsViewModel,
     onBack: () -> Unit
 ) {
-    val viewState by viewModel.state.collectAsStateWithLifecycle()
+    val viewState by viewModel.state.observeAsState()
 
-    BookingDetailsScreen(
-        viewState = viewState,
-        onBack = onBack
-    )
+    viewState?.let {
+        BookingDetailsScreen(
+            viewState = it,
+            onBack = onBack
+        )
+    }
 }
 
 @Composable

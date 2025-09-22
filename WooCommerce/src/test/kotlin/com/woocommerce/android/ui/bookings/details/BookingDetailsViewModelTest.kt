@@ -27,13 +27,15 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         // Then
         val state = viewModel.state.value
-        assertThat(state.toolbarTitle).isEqualTo("Booking #$bookingId")
+        assertThat(state?.toolbarTitle).isEqualTo("Booking #$bookingId")
     }
 
     private fun createViewModel(
         savedState: SavedStateHandle,
         resourceProvider: ResourceProvider
     ): BookingDetailsViewModel {
-        return BookingDetailsViewModel(savedState, resourceProvider)
+        return BookingDetailsViewModel(savedState, resourceProvider).apply {
+            state.observeForever { }
+        }
     }
 }
