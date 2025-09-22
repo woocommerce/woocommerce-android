@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-26 13:54:04+0000
+Translation-Revision-Date: 2025-09-11 09:54:10+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_empty_subtitle_suffix"> чтобы добавить его в корзину</string>
+    <string name="woopos_cart_empty_scan_barcode">сканируйте штрихкод,</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">Нажмите на товар или </string>
+    <string name="woopos_orders_title">Заказы</string>
+    <string name="woopos_settings_help_category">Справка</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">Консоль WP-Admin</string>
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">Размеры посылки должны быть больше 0.</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Онлайн-оформление заказа</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Вы не можете перемещать сюда товары или удалять их отсюда.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">Вы приобрели этикетку для этой доставки.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">Страна производства или сборки товара.</string>
@@ -70,7 +78,6 @@ Language: ru
     <string name="woopos_scanning_setup_software_keyboard_message">Android воспринимает сканер штрихкодов как физическую клавиатуру, которая может заслонять экранную клавиатуру. Давайте проверим.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">Перейдите в настройки устройства, выполните поиск по запросу keyboard (клавиатура) и включите параметр Show on-screen keyboard when physical keyboard connected (Отображать экранную клавиатуру при подключении физической клавиатуры). Этот параметр может находиться в настройках вашего приложения для клавиатуры.</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Отображать экранную клавиатуру</string>
-    <string name="woopos_barcode_scanning_title">Начальная настройка сканера штрихкодов</string>
     <string name="woopos_scanning_setup_success_message">Вы можете начинать сканировать товары. В следующий раз, когда вам потребуется сканер, просто включите его и он подключится автоматически.</string>
     <string name="woopos_cart_clear_all_button_content_description">Значок «Очистить корзину»</string>
     <string name="product_selector_subscription_not_supported">Товары по подписке не поддерживаются при создании заказа</string>
@@ -636,7 +643,6 @@ Language: ru
     <string name="analytics_spend_subtitle_value">Сумма: %1$s</string>
     <string name="analytics_custom_list_selection_button_description">Выбор фильтров</string>
     <string name="woopos_cart_empty_content_description">Корзина пуста</string>
-    <string name="woopos_cart_empty_subtitle">Нажмите на товар, чтобы\nдобавить его в корзину</string>
     <string name="woopos_totals_main_error_label">Ошибка при загрузке итоговой суммы</string>
     <string name="woopos_items_in_cart_multiple">Товары (%d)</string>
     <string name="ai_product_creation_error_media_upload">Не удалось загрузить изображение выбранного товара.</string>

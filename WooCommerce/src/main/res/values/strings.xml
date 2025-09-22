@@ -4853,6 +4853,11 @@
     <string name="media_loading_failed">Media loading failed</string>
     <string name="no_network_message">There is no network available</string>
 
+    <!--
+    Bookings
+    -->
+    <string name="bookings_tab_title">Bookings</string>
+
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
 </resources>

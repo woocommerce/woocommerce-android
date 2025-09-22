@@ -1,12 +1,20 @@
 package com.woocommerce.android.ui.products.typesbottomsheet
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
+import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import javax.inject.Inject
 
-class ProductTypeBottomSheetBuilder @Inject constructor() {
-    fun buildBottomSheetList(areSubscriptionsSupported: Boolean): List<ProductTypesBottomSheetUiItem> {
+class ProductTypeBottomSheetBuilder @Inject constructor(
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+) {
+    suspend fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {
+        val isEligibleForSubscriptions = isEligibleForSubscriptions()
+
         return listOf(
             ProductTypesBottomSheetUiItem(
                 type = ProductType.SIMPLE,
@@ -26,13 +34,14 @@ class ProductTypeBottomSheetBuilder @Inject constructor() {
                 titleResource = R.string.product_type_simple_subscription_title,
                 descResource = R.string.product_type_simple_subscription_desc,
                 iconResource = R.drawable.ic_event_repeat,
-                isVisible = areSubscriptionsSupported
+                isVisible = isEligibleForSubscriptions
             ),
             ProductTypesBottomSheetUiItem(
                 type = ProductType.VARIABLE,
                 titleResource = R.string.product_type_variable_title,
                 descResource = R.string.product_type_variable_desc,
                 iconResource = R.drawable.ic_gridicons_types,
+                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.VariableProducts)
             ),
 
             ProductTypesBottomSheetUiItem(
@@ -40,13 +49,14 @@ class ProductTypeBottomSheetBuilder @Inject constructor() {
                 titleResource = R.string.product_type_variable_subscription_title,
                 descResource = R.string.product_type_variable_subscription_desc,
                 iconResource = R.drawable.ic_event_repeat,
-                isVisible = areSubscriptionsSupported
+                isVisible = isEligibleForSubscriptions
             ),
             ProductTypesBottomSheetUiItem(
                 type = ProductType.GROUPED,
                 titleResource = R.string.product_type_grouped_title,
                 descResource = R.string.product_type_grouped_desc,
-                iconResource = R.drawable.ic_widgets
+                iconResource = R.drawable.ic_widgets,
+                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.GroupedProducts)
             ),
             ProductTypesBottomSheetUiItem(
                 type = ProductType.EXTERNAL,

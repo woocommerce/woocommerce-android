@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-25 12:54:05+0000
+Translation-Revision-Date: 2025-09-11 09:54:06+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">Paket boyutlarının tamamı 0\'dan büyük olmalıdır.</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> bir barkodu okutun</string>
+    <string name="woopos_cart_empty_scan_barcode">bir ürüne dokunun veya</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">Sepete eklemek için </string>
+    <string name="woopos_orders_title">Siparişler</string>
+    <string name="woopos_settings_help_category">Yardım</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Web ödeme</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Ürünleri bunun içine veya dışına taşıyamazsınız.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">Bu gönderim için bir etiket satın aldınız.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">Ürünün üretildiği veya monte edildiği ülke.</string>
@@ -71,7 +79,6 @@ Language: tr
     <string name="woopos_scanning_setup_software_keyboard_message">Android, barkod tarayıcılarını ekrandaki klavyenizi gizleyebilecek fiziksel klavyeler gibi ele alır. Kontrol edelim:</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Ekran Klavyesini Göster</string>
     <string name="woopos_scanning_setup_success_message">Ürün taramaya başlamaya hazırsınız. Tarayıcınızı bağlamanız gereken bir sonraki seferde tarayıcıyı açmanız yeterli; tarayıcı otomatik olarak yeniden bağlanacaktır.</string>
-    <string name="woopos_barcode_scanning_title">İlk barkod tarayıcı kurulumu</string>
     <string name="woopos_cart_clear_all_button_content_description">Sepetteki öğeleri temizle simgesi</string>
     <string name="product_selector_subscription_not_supported">Abonelik ürünleri, sipariş oluşturma için desteklenmiyor</string>
     <string name="save_copy">Kopyayı kaydet</string>
@@ -635,7 +642,6 @@ Language: tr
     <string name="analytics_spend_subtitle_value">Harcama: %1$s</string>
     <string name="analytics_custom_list_selection_button_description">Seçimi filtreleyin</string>
     <string name="woopos_cart_empty_content_description">Sepet boş</string>
-    <string name="woopos_cart_empty_subtitle">Sepete eklemek için\nbir ürüne dokunun</string>
     <string name="woopos_totals_main_error_label">Toplamlar yüklenemedi</string>
     <string name="woopos_items_in_cart_multiple">%d öğe</string>
     <string name="ai_product_creation_error_media_upload">Seçilen ürün görseli yüklenemedi.</string>

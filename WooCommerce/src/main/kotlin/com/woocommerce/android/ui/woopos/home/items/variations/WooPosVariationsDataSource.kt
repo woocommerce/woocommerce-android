@@ -23,7 +23,7 @@ class WooPosVariationsDataSource @Inject constructor(
     private val variationCache: WooPosVariationsLRUCache,
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig,
     private val mapper: WooPosVariationMapper
-) {
+) : WooPosVariationsDataSourceInterface {
     private suspend fun getCachedVariations(productId: Long): List<WooPosVariation> {
         return variationCache.get(productId) ?: emptyList()
     }
@@ -32,17 +32,17 @@ class WooPosVariationsDataSource @Inject constructor(
         variationCache.put(productId, variations)
     }
 
-    suspend fun resetState() {
+    override suspend fun resetState() {
         handler.resetState()
     }
 
-    fun canLoadMore(numOfVariations: Int): Boolean {
+    override fun canLoadMore(numOfVariations: Int): Boolean {
         return handler.canLoadMore(numOfVariations)
     }
 
-    fun fetchFirstPage(
+    override fun fetchFirstPage(
         productId: Long,
-        forceRefresh: Boolean = true
+        forceRefresh: Boolean
     ): Flow<FetchResult> = flow {
         if (forceRefresh) {
             updateCache(productId, emptyList())
@@ -58,38 +58,44 @@ class WooPosVariationsDataSource @Inject constructor(
             forceRefresh = true,
             filterOptions = variationFilterConfig.filters
         )
-        if (result.isSuccess) {
-            val remoteVariations = handler.getVariationsFlow(productId).firstOrNull()?.applyFilter()?.map {
-                it.toWooPosVariation(mapper)
-            } ?: emptyList()
-            updateCache(productId, remoteVariations)
-            emit(FetchResult.Remote(Result.success(remoteVariations)))
-        } else {
-            emit(
-                FetchResult.Remote(
-                    Result.failure(
-                        result.exceptionOrNull() ?: Exception("Unknown error while fetching variations")
+        when {
+            result.isSuccess -> {
+                val remoteVariations = handler.getVariationsFlow(productId).firstOrNull()?.applyFilter()?.map {
+                    it.toWooPosVariation(mapper)
+                } ?: emptyList()
+                updateCache(productId, remoteVariations)
+                emit(FetchResult.Remote(Result.success(remoteVariations)))
+            }
+            else -> {
+                emit(
+                    FetchResult.Remote(
+                        Result.failure(
+                            result.exceptionOrNull() ?: Exception("Unknown error while fetching variations")
+                        )
                     )
                 )
-            )
+            }
         }
     }.flowOn(Dispatchers.IO)
 
-    suspend fun loadMore(productId: Long): Result<List<WooPosVariation>> = withContext(Dispatchers.IO) {
+    override suspend fun loadMore(productId: Long): Result<List<WooPosVariation>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore(
             productId,
             filterOptions = variationFilterConfig.filters
         )
-        if (result.isSuccess) {
-            val fetchedVariations = handler.getVariationsFlow(
-                productId
-            ).first().applyFilter().map { it.toWooPosVariation(mapper) }
-            Result.success(fetchedVariations)
-        } else {
-            result.logFailure()
-            Result.failure(
-                result.exceptionOrNull() ?: Exception("Unknown error while loading more variations")
-            )
+        when {
+            result.isSuccess -> {
+                val fetchedVariations = handler.getVariationsFlow(
+                    productId
+                ).first().applyFilter().map { it.toWooPosVariation(mapper) }
+                Result.success(fetchedVariations)
+            }
+            else -> {
+                result.logFailure()
+                Result.failure(
+                    result.exceptionOrNull() ?: Exception("Unknown error while loading more variations")
+                )
+            }
         }
     }
 }
