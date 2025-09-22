@@ -5,6 +5,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,7 +22,7 @@ class BookingsRestClient @Inject constructor(
         site: SiteModel,
         perPage: Int,
         page: Int
-    ): BookingsFetchedPayload<List<BookingDto>> {
+    ): WooPayload<Array<BookingDto>> {
         val endpoint = WOOCOMMERCE.bookings.pathV2Bookings
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -33,8 +35,8 @@ class BookingsRestClient @Inject constructor(
             )
         )
         return when (response) {
-            is Success -> BookingsFetchedPayload(response.data?.toList() ?: emptyList())
-            is Error -> BookingsFetchedPayload(response.error.toBookingsError())
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
         }
     }
 }
