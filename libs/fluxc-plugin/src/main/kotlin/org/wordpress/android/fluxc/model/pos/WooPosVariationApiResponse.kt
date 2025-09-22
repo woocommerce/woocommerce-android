@@ -49,7 +49,7 @@ data class WooPosVariationApiResponse(
     val backordered: Boolean = false,
 
     @SerializedName("attributes")
-    val attributes: List<VariationAttribute> = emptyList(),
+    val attributesJson: String = "",
 
     @SerializedName("image")
     val image: VariationImage? = null,
@@ -60,17 +60,6 @@ data class WooPosVariationApiResponse(
     @SerializedName("name")
     val name: String = ""
 ) {
-    data class VariationAttribute(
-        @SerializedName("id")
-        val id: Long = 0L,
-
-        @SerializedName("name")
-        val name: String = "",
-
-        @SerializedName("option")
-        val option: String = ""
-    )
-
     data class VariationImage(
         @SerializedName("id")
         val id: Long = 0L,

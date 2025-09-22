@@ -26,10 +26,7 @@ class WooPosVariationMapperTest {
             stockStatus = "instock",
             manageStock = true,
             backordered = false,
-            attributes = listOf(
-                WooPosVariationApiResponse.VariationAttribute(1, "Color", "Blue"),
-                WooPosVariationApiResponse.VariationAttribute(2, "Size", "Large")
-            ),
+            attributesJson = """[{"id":1,"name":"Color","option":"Blue"},{"id":2,"name":"Size","option":"Large"}]""",
             image = WooPosVariationApiResponse.VariationImage(
                 id = 789,
                 src = "https://example.com/image.jpg",
@@ -105,7 +102,7 @@ class WooPosVariationMapperTest {
         val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
-            attributes = emptyList()
+            attributesJson = "[]"
         )
 
         // When
@@ -121,11 +118,7 @@ class WooPosVariationMapperTest {
         val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
-            attributes = listOf(
-                WooPosVariationApiResponse.VariationAttribute(1, "Color", "Red"),
-                WooPosVariationApiResponse.VariationAttribute(2, "Size", "Medium"),
-                WooPosVariationApiResponse.VariationAttribute(3, "Material", "Cotton")
-            )
+            attributesJson = """[{"id":1,"name":"Color","option":"Red"},{"id":2,"name":"Size","option":"Medium"},{"id":3,"name":"Material","option":"Cotton"}]"""
         )
 
         // When
