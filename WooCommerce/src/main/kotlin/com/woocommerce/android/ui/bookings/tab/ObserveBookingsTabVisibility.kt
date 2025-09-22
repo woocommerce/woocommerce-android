@@ -32,9 +32,7 @@ class ObserveBookingsTabVisibility @Inject constructor(
         }
     }
         .map { productsCount ->
-            productsCount > 0 &&
-                siteModel?.isCIABSite() == true &&
-                FeatureFlag.BOOKINGS_MVP.isEnabled()
+            productsCount > 0 && siteModel.isCIABSite() && FeatureFlag.BOOKINGS_MVP.isEnabled()
         }
         .distinctUntilChanged()
 
