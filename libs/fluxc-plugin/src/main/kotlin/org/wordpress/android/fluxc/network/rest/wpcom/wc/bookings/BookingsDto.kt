@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
 import com.google.gson.annotations.SerializedName
-import org.wordpress.android.fluxc.store.Store.OnChangedError
 
 data class BookingDto(
     @SerializedName("id") val id: Long,
