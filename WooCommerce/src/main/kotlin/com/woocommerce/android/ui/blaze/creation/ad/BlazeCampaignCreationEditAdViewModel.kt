@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_SAVE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
@@ -130,7 +131,8 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     fun onLocalImageSelected(uri: String) {
         launch {
-            if (blazeRepository.isValidAdImage(uri)) {
+            val imageDetails = blazeRepository.getImageDetails(uri)
+            if (imageDetails.isValidAdImage()) {
                 _viewState.update {
                     it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
                 }
@@ -142,12 +144,13 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     fun onWPMediaSelected(image: Product.Image) {
         launch {
-            if (blazeRepository.isValidAdImage(image.source)) {
+            val imageDetails = blazeRepository.getImageDetails(image.source)
+            if (imageDetails.isValidAdImage()) {
                 _viewState.update {
                     it.copy(
                         adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
-                            mediaId = image.id,
-                            uri = image.source
+                            uri = image.source,
+                            mimeType = imageDetails.mimeType
                         )
                     )
                 }
@@ -156,6 +159,8 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
             }
         }
     }
+
+    private fun MediaFilesRepository.ImageDetails.isValidAdImage() = with(blazeRepository) { isValidAdImage() }
 
     private fun showInvalidImageSizeDialog() {
         triggerEvent(

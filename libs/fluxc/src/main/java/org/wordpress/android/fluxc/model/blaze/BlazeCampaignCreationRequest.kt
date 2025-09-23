@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.model.blaze
 
-import org.wordpress.android.fluxc.model.MediaModel
 import java.util.Date
 import java.util.TimeZone
 
@@ -18,12 +17,17 @@ data class BlazeCampaignCreationRequest(
     val budget: BlazeCampaignCreationRequestBudget,
     val targetUrl: String,
     val urlParams: Map<String, String>,
-    val mainImage: MediaModel,
+    val mainImage: BlazeCampaignCreationRequestImage,
     val targetingParameters: BlazeTargetingParameters?,
     val timeZoneId: String = TimeZone.getDefault().id,
     val isEndlessCampaign: Boolean,
     val objectiveId: String?,
     val acceptedTos: Boolean,
+)
+
+data class BlazeCampaignCreationRequestImage(
+    val url: String,
+    val mimeType: String
 )
 
 data class BlazeCampaignCreationRequestBudget(
