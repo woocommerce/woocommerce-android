@@ -12,9 +12,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -31,7 +34,8 @@ fun BookingDetailsScreen(
     viewState?.let {
         BookingDetailsScreen(
             viewState = it,
-            onBack = onBack
+            onBack = onBack,
+            onCancelBooking = viewModel::onCancelBooking
         )
     }
 }
@@ -39,7 +43,8 @@ fun BookingDetailsScreen(
 @Composable
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onCancelBooking: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -51,6 +56,7 @@ fun BookingDetailsScreen(
         }
     ) { innerPadding ->
         Surface(
+            color = colorResource(R.color.default_window_background),
             modifier = Modifier.fillMaxSize()
         ) {
             Column(
@@ -58,6 +64,11 @@ fun BookingDetailsScreen(
             ) {
                 BookingSummary(
                     model = viewState.bookingSummary,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                BookingAppointmentDetails(
+                    model = viewState.bookingsAppointmentDetails,
+                    onCancelBooking = onCancelBooking,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -80,7 +91,8 @@ private fun BookingDetailsPreview() {
                     paymentStatus = BookingPaymentStatus.PAID
                 )
             ),
-            onBack = {}
+            onBack = {},
+            onCancelBooking = {}
         )
     }
 }
