@@ -30,4 +30,8 @@ class BookingDetailsViewModel @Inject constructor(
             )
         }
     }
+
+    fun onCancelBooking() {
+        // TODO Add logic to Cancel booking
+    }
 }
