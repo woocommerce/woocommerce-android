@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,15 +29,15 @@ class BookingListViewModel @Inject constructor(
         State(
             bookings = bookings,
             isLoading = loading,
-            onRefresh = { refresh() }
+            onRefresh = { fetchBookings() }
         )
     }.asLiveData()
 
     init {
-        launch { refresh() }
+        launch { fetchBookings() }
     }
 
-    fun refresh() {
+    fun fetchBookings() {
         if (isLoading.value) return
         launch {
             isLoading.value = true
@@ -50,7 +51,7 @@ class BookingListViewModel @Inject constructor(
     }
 
     data class State(
-        val bookings: List<org.wordpress.android.fluxc.persistence.entity.BookingEntity>,
+        val bookings: List<BookingEntity>, // To be replaced with Ui model
         val isLoading: Boolean,
         val onRefresh: () -> Unit,
     )
