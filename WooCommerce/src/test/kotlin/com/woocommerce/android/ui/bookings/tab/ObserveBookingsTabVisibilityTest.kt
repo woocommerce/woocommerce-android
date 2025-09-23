@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestScope
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -17,6 +18,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
+    private val testScope = TestScope(coroutinesTestRule.testDispatcher)
 
     private val bookableProdsFilterOptions = mapOf(
         ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
@@ -37,7 +39,10 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
-        sut = ObserveBookingsTabVisibility(productListRepository)
+        sut = ObserveBookingsTabVisibility(
+            productListRepository,
+            appCoroutineScope = testScope
+        )
     }
 
     @Test
