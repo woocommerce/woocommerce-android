@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
+import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,13 +20,14 @@ import javax.inject.Singleton
 class BookingsStore @Inject constructor(
     private val bookingsRestClient: BookingsRestClient,
     private val bookingsDao: BookingsDao,
+    private val headersParser: HeadersParser,
     private val coroutineEngine: CoroutineEngine,
 ) {
     suspend fun fetchBookings(
         site: SiteModel,
         perPage: Int = BookingsRestClient.DEFAULT_PER_PAGE,
         page: Int = 1
-    ): WooResult<List<BookingEntity>> {
+    ): WooResult<Boolean> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
             val response = bookingsRestClient.fetchBookings(site, perPage, page)
             when {
@@ -33,7 +35,11 @@ class BookingsStore @Inject constructor(
                 response.result != null -> {
                     val entities = response.result.map { it.toEntity(site.localId()) }
                     bookingsDao.insertOrReplace(entities)
-                    WooResult(entities)
+                    val totalPages = headersParser.getTotalPages(response.headers)
+                    // Determine if we can load more from the total pages header if available, otherwise
+                    // infer it from the number of items returned
+                    val canLoadMore = (totalPages?.let { it > page }) ?: (entities.size == perPage)
+                    WooResult(canLoadMore)
                 }
 
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
