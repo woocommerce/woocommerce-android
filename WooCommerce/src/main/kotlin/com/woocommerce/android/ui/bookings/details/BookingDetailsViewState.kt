@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.bookings.details
 import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
-import com.woocommerce.android.ui.bookings.compose.BookingSummary
+import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 
 data class BookingDetailsViewState(
     val toolbarTitle: String = "",
-    val bookingSummary: BookingSummary = BookingSummary(
+    val bookingSummary: BookingSummaryModel = BookingSummaryModel(
         date = "05/07/2025, 11:00 AM",
         name = "Women’s Haircut",
         customerName = "Margarita Nikolaevna",

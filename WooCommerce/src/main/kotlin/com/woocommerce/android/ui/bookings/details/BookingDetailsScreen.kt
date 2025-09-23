@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
+import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -84,7 +85,7 @@ private fun BookingDetailsPreview() {
         BookingDetailsScreen(
             viewState = BookingDetailsViewState(
                 toolbarTitle = "Booking #12345",
-                bookingSummary = BookingSummary(
+                bookingSummary = BookingSummaryModel(
                     date = "05/07/2025, 11:00 AM",
                     name = "Women’s Haircut",
                     customerName = "Margarita Nikolaevna",

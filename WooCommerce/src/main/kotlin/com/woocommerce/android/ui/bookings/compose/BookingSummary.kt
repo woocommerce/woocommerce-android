@@ -23,7 +23,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun BookingSummary(
-    model: BookingSummary,
+    model: BookingSummaryModel,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -66,7 +66,7 @@ fun BookingSummary(
     }
 }
 
-data class BookingSummary(
+data class BookingSummaryModel(
     val date: String,
     val name: String,
     val customerName: String,
@@ -79,7 +79,7 @@ data class BookingSummary(
 private fun BookingSummaryPreview() {
     WooThemeWithBackground {
         BookingSummary(
-            model = BookingSummary(
+            model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
@@ -96,7 +96,7 @@ private fun BookingSummaryPreview() {
 private fun BookingSummaryDarkPreview() {
     WooThemeWithBackground {
         BookingSummary(
-            model = BookingSummary(
+            model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
