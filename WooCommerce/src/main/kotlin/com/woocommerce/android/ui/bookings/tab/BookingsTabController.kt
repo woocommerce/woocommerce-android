@@ -31,13 +31,13 @@ class BookingsTabController @Inject constructor(
     private fun checkBookingsTabVisibility() {
         activity.lifecycleScope.launch {
             selectedSite.observe()
-            .filterNotNull()
-            .flatMapLatest { siteModel ->
-                observeBookingsTabVisibility(siteModel)
-            }
-            .collect { isVisible ->
-                binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = isVisible
-            }
+                .filterNotNull()
+                .flatMapLatest { siteModel ->
+                    observeBookingsTabVisibility(siteModel)
+                }
+                .collect { isVisible ->
+                    binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = isVisible
+                }
         }
     }
 }
