@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.compose
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -28,6 +29,7 @@ fun BookingSummary(
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = modifier
+            .background(color = MaterialTheme.colorScheme.surfaceContainer)
             .padding(16.dp)
     ) {
         Text(
