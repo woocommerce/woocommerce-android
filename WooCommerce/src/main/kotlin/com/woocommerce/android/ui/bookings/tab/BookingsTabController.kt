@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.bookings.tab
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityMainBinding
@@ -14,7 +12,7 @@ import javax.inject.Inject
 class BookingsTabController @Inject constructor(
     private val observeBookingsTabVisibility: ObserveBookingsTabVisibility,
     private val selectedSite: SelectedSite
-) : DefaultLifecycleObserver {
+) {
     private lateinit var activity: MainActivity
     private lateinit var binding: ActivityMainBinding
 
@@ -24,15 +22,7 @@ class BookingsTabController @Inject constructor(
     ) {
         this.activity = activity
         this.binding = binding
-        activity.lifecycle.addObserver(this)
-    }
-
-    override fun onResume(owner: LifecycleOwner) {
         checkBookingsTabVisibility()
-    }
-
-    override fun onDestroy(owner: LifecycleOwner) {
-        owner.lifecycle.removeObserver(this)
     }
 
     private fun checkBookingsTabVisibility() {
@@ -40,7 +30,7 @@ class BookingsTabController @Inject constructor(
             selectedSite.observe()
                 .filterNotNull()
                 .collect { siteModel ->
-                    observeBookingsTabVisibility(siteModel!!)
+                    observeBookingsTabVisibility(siteModel)
                         .collect {
                             binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = it
                         }
