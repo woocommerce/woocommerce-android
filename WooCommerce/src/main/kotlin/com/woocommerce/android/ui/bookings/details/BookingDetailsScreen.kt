@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
+import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -89,6 +90,14 @@ private fun BookingDetailsPreview() {
                     customerName = "Margarita Nikolaevna",
                     attendanceStatus = AttendanceStatus.CHECKED_IN,
                     paymentStatus = BookingPaymentStatus.PAID
+                ),
+                bookingsAppointmentDetails = BookingAppointmentDetailsModel(
+                    date = "Monday, 05 July 2025",
+                    time = "11:00 am - 12:00 pm",
+                    staff = "Marianne Renoir",
+                    location = "238 Willow Creek Drive, Montgomery AL 36109",
+                    duration = "60 min",
+                    price = "$55.00"
                 )
             ),
             onBack = {},
