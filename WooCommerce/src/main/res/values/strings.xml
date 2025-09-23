@@ -4860,6 +4860,13 @@
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
+    <string name="booking_appointment_details_header">APPOINTMENT DETAILS</string>
+    <string name="booking_appointment_label_date">Date</string>
+    <string name="booking_appointment_label_time">Time</string>
+    <string name="booking_appointment_label_staff">Assigned staff</string>
+    <string name="booking_appointment_label_location">Location</string>
+    <string name="booking_appointment_label_duration">Duration</string>
+    <string name="booking_appointment_label_price">Price</string>
     <string name="booking_payment_status_unpaid">Unpaid</string>
     <string name="booking_payment_status_paid">Paid</string>
     <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
@@ -4870,5 +4877,6 @@
     <string name="booking_attendance_status_checked_in">Checked-in</string>
     <string name="booking_attendance_status_cancelled">Cancelled</string>
     <string name="booking_attendance_status_no_show">No-show</string>
+    <string name="booking_details_cancel_booking_button">Cancel booking</string>
 
 </resources>
