@@ -75,7 +75,7 @@ private fun BookingDetailsPreview() {
                 bookingSummary = BookingSummary(
                     date = "05/07/2025, 11:00 AM",
                     name = "Women’s Haircut",
-                    staff = "Margarita Nikolaevna",
+                    customerName = "Margarita Nikolaevna",
                     attendanceStatus = AttendanceStatus.CHECKED_IN,
                     paymentStatus = BookingPaymentStatus.PAID
                 )

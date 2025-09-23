@@ -44,7 +44,7 @@ fun BookingSummary(
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp),
             )
             Text(
-                text = model.staff,
+                text = model.customerName,
                 color = colorResource(id = R.color.color_surface_variant),
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp),
             )
@@ -67,7 +67,7 @@ fun BookingSummary(
 data class BookingSummary(
     val date: String,
     val name: String,
-    val staff: String,
+    val customerName: String,
     val attendanceStatus: AttendanceStatus,
     val paymentStatus: BookingPaymentStatus,
 )
@@ -80,7 +80,7 @@ private fun BookingSummaryPreview() {
             model = BookingSummary(
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
-                staff = "Margarita Nikolaevna",
+                customerName = "Margarita Nikolaevna",
                 attendanceStatus = AttendanceStatus.CHECKED_IN,
                 paymentStatus = BookingPaymentStatus.PAID
             ),
@@ -97,7 +97,7 @@ private fun BookingSummaryDarkPreview() {
             model = BookingSummary(
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
-                staff = "Margarita Nikolaevna",
+                customerName = "Margarita Nikolaevna",
                 attendanceStatus = AttendanceStatus.BOOKED,
                 paymentStatus = BookingPaymentStatus.PENDING_CONFIRMATION
             ),
