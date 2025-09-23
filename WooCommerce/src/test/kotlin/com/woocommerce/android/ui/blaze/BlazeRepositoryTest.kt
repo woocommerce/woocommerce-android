@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.blaze
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.media.MediaFilesRepository
-import com.woocommerce.android.media.MediaFilesRepository.ImageDimensions
+import com.woocommerce.android.media.MediaFilesRepository.ImageDetails
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage.RemoteImage
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
@@ -26,7 +26,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequest
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
@@ -61,11 +60,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
             BlazeResult(blazeModel)
     }
     private val productDetailRepository: ProductDetailRepository = mock()
-    private val mediaModel: MediaModel = mock()
-    private val mediaFilesRepository: MediaFilesRepository = mock {
-        onBlocking { fetchWordPressMedia(AD_IMAGE.mediaId) } doReturn
-            Result.success(mediaModel)
-    }
+    private val mediaFilesRepository: MediaFilesRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val createCampaignRequestCaptor = argumentCaptor<BlazeCampaignCreationRequest>()
@@ -131,7 +126,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
 
             whenever(appPrefsWrapper.blazeCampaignSelectedObjective).thenReturn(objective)
             whenever(productDetailRepository.getProduct(productId)).thenReturn(product)
-            whenever(mediaFilesRepository.getImageDimensions(imageUrl)).thenReturn(ImageDimensions(0, 0))
+            whenever(mediaFilesRepository.getImageDetails(imageUrl)).thenReturn(ImageDetails(0, 0, ""))
 
             val before = Date()
             val details = repository.generateDefaultCampaignDetails(productId)
@@ -191,12 +186,34 @@ class BlazeRepositoryTest : BaseUnitTest() {
             assertThat(details.description).isEqualTo("Main \n Description")
         }
 
+    @Test
+    fun `given a product with invalid image, when generateDefaultCampaignDetails invoked, then CampaignDetails with no image created`() =
+        testBlocking {
+            val productId = 456L
+            val objective = "sales"
+            val imageUrl = "https://example.com/image-400.jpg"
+            val product = ProductTestUtils.generateProduct(
+                productId = productId,
+                productName = "Another Product",
+                imageUrl = imageUrl
+            )
+
+            whenever(appPrefsWrapper.blazeCampaignSelectedObjective).thenReturn(objective)
+            whenever(productDetailRepository.getProduct(productId)).thenReturn(product)
+            whenever(mediaFilesRepository.getImageDetails(imageUrl)).thenReturn(ImageDetails(0, 0, ""))
+
+            val details = repository.generateDefaultCampaignDetails(productId)
+
+            // Only focus on campaign image behavior
+            assertThat(details.campaignImage).isInstanceOf(BlazeRepository.BlazeCampaignImage.None::class.java)
+        }
+
     companion object {
         private const val TOTAL_BUDGET = 35f
         private const val PAYMENT_METHOD_ID = "132435"
         private val AD_IMAGE = RemoteImage(
-            mediaId = 1,
             uri = "https://example.com/image.jpg",
+            mimeType = "image/jpeg",
         )
         private val DEFAULT_START_DATE = Date()
         private val EMPTY_TARGETING_PARAMETERS = TargetingParameters(

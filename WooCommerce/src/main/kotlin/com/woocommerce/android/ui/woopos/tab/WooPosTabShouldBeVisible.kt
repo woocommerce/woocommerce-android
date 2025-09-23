@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.tab
 
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
@@ -16,11 +18,18 @@ class WooPosTabShouldBeVisible @Inject constructor(
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     private val wooPosLog: WooPosLogWrapper,
 ) {
     suspend operator fun invoke(): Result<Boolean> = withContext(Dispatchers.IO) {
         val selectedSite = selectedSite.getOrNull()
             ?: return@withContext Result.failure(WooPosCouldNotDetermineValueException())
+
+        if (ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.POS)) {
+            return@withContext Result.success(false).also {
+                wooPosLog.i("POS Tab Not visible reason: Site is CIAB")
+            }
+        }
 
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) {
             return@withContext Result.success(false).also {

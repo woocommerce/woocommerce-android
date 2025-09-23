@@ -41,6 +41,7 @@ class DeveloperOptionsFragment : BaseFragment() {
         observeEvents()
     }
 
+    @Suppress("MagicNumber")
     private fun observeEvents() {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -62,6 +63,14 @@ class DeveloperOptionsFragment : BaseFragment() {
                     findNavController().navigate(
                         DeveloperOptionsFragmentDirections.actionDeveloperOptionsFragmentToApiFaker()
                     )
+                }
+
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.OpenBookingDetails -> {
+                    // Temporary navigation to Booking Details screen with a hardcoded booking ID
+                    val action = DeveloperOptionsFragmentDirections
+                        .actionDeveloperOptionsFragmentToBookingDetailsFragment()
+                    val args = action.arguments.apply { putLong("bookingId", 123L) }
+                    findNavController().navigate(action.actionId, args)
                 }
             }
         }
