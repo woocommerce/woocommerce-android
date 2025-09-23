@@ -21,4 +21,7 @@ interface BookingsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(entities: List<BookingEntity>)
+
+    @Query("DELETE FROM Bookings WHERE localSiteId = :localSiteId")
+    suspend fun deleteAllForSite(localSiteId: LocalId)
 }
