@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 
+import com.google.gson.JsonParser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -26,7 +27,7 @@ class WooPosVariationMapperTest {
             stockStatus = "instock",
             manageStock = true,
             backordered = false,
-            attributesJson = """[{"id":1,"name":"Color","option":"Blue"},{"id":2,"name":"Size","option":"Large"}]""",
+            attributes = JsonParser.parseString("""[{"id":1,"name":"Color","option":"Blue"},{"id":2,"name":"Size","option":"Large"}]"""),
             image = WooPosVariationApiResponse.VariationImage(
                 id = 789,
                 src = "https://example.com/image.jpg",
@@ -102,7 +103,7 @@ class WooPosVariationMapperTest {
         val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
-            attributesJson = "[]"
+            attributes = JsonParser.parseString("[]")
         )
 
         // When
@@ -118,7 +119,7 @@ class WooPosVariationMapperTest {
         val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
-            attributesJson = """[{"id":1,"name":"Color","option":"Red"},{"id":2,"name":"Size","option":"Medium"},{"id":3,"name":"Material","option":"Cotton"}]"""
+            attributes = JsonParser.parseString("""[{"id":1,"name":"Color","option":"Red"},{"id":2,"name":"Size","option":"Medium"},{"id":3,"name":"Material","option":"Cotton"}]""")
         )
 
         // When

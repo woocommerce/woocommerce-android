@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.model.pos
 
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -49,7 +50,7 @@ data class WooPosVariationApiResponse(
     val backordered: Boolean = false,
 
     @SerializedName("attributes")
-    val attributesJson: String = "",
+    val attributes: JsonElement? = null,
 
     @SerializedName("image")
     val image: VariationImage? = null,

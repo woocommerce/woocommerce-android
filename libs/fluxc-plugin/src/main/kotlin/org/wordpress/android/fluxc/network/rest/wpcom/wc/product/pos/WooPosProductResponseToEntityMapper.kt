@@ -57,7 +57,7 @@ fun WooPosVariationApiResponse.mapToPosVariationModel(
         stockStatus = this.stockStatus,
         manageStock = this.manageStock,
         backordered = this.backordered,
-        attributesJson = this.attributesJson,
+        attributesJson = this.attributes?.toString() ?: "[]",
         imageUrl = this.image?.src ?: "",
         status = this.status,
         downloadable = this.downloadable
