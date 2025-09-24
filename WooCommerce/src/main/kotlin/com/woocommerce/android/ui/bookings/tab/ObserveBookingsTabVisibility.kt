@@ -37,7 +37,6 @@ class ObserveBookingsTabVisibility @Inject constructor(
                 observeBookingTabVisibility(siteModel)
             }
 
-
     private fun observeBookingTabVisibility(siteModel: SiteModel): Flow<Boolean> = flow {
         val isCIABSite = FeatureFlag.BOOKINGS_MVP.isEnabled() && siteModel.isCIABSite()
         if (!isCIABSite) {
