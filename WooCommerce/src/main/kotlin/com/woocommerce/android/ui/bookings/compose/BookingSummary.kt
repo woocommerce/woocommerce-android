@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.compose
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -22,12 +23,13 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun BookingSummary(
-    model: BookingSummary,
+    model: BookingSummaryModel,
     modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = modifier
+            .background(color = MaterialTheme.colorScheme.surfaceContainer)
             .padding(16.dp)
     ) {
         Text(
@@ -64,7 +66,7 @@ fun BookingSummary(
     }
 }
 
-data class BookingSummary(
+data class BookingSummaryModel(
     val date: String,
     val name: String,
     val customerName: String,
@@ -77,7 +79,7 @@ data class BookingSummary(
 private fun BookingSummaryPreview() {
     WooThemeWithBackground {
         BookingSummary(
-            model = BookingSummary(
+            model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
@@ -94,7 +96,7 @@ private fun BookingSummaryPreview() {
 private fun BookingSummaryDarkPreview() {
     WooThemeWithBackground {
         BookingSummary(
-            model = BookingSummary(
+            model = BookingSummaryModel(
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
