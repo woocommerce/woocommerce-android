@@ -4878,5 +4878,10 @@
     <string name="booking_attendance_status_cancelled">Cancelled</string>
     <string name="booking_attendance_status_no_show">No-show</string>
     <string name="booking_details_cancel_booking_button">Cancel booking</string>
+    <string name="booking_customer_details_header">CUSTOMER</string>
+    <string name="booking_customer_label_name">Customer name</string>
+    <string name="booking_customer_label_email">Email</string>
+    <string name="booking_customer_label_phone">Phone</string>
+    <string name="booking_billing_address_label">Billing address</string>
 
 </resources>

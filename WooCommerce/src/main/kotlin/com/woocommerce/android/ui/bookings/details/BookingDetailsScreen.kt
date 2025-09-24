@@ -21,6 +21,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -75,6 +76,12 @@ fun BookingDetailsScreen(
                 BookingAppointmentDetails(
                     model = viewState.bookingsAppointmentDetails,
                     onCancelBooking = onCancelBooking,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                BookingCustomerDetails(
+                    model = viewState.bookingCustomerDetails,
+                    onEmailClick = {},
+                    onPhoneClick = {},
                     modifier = Modifier.fillMaxWidth()
                 )
             }
