@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings
 
+import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,8 @@ class BookingListHandler @Inject constructor(
     private val bookingsRepository: BookingsRepository
 ) {
     companion object {
-        private const val PAGE_SIZE = 25
+        @VisibleForTesting
+        const val PAGE_SIZE = 25
     }
 
     private val mutex = Mutex()
