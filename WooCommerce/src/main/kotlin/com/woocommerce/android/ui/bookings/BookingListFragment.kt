@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material3.Text
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -28,9 +26,7 @@ class BookingListFragment : TopLevelFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            viewModel.state.observeAsState().value?.let { state ->
-                Text("Empty Booking List screen: WIP")
-            }
+            BookingListScreen(viewModel)
         }
     }
 }
