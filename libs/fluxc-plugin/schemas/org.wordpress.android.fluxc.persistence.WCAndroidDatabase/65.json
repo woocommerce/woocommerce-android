@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 65,
-    "identityHash": "2f88094bb00e637769cc5a8bdef5dcc3",
+    "identityHash": "2d180f4d4c2ccaf6305a746959d1289d",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3948,137 +3948,11 @@
             "quantity"
           ]
         }
-      },
-      {
-        "tableName": "Bookings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `allDay` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` TEXT NOT NULL, `currency` TEXT NOT NULL, `customerId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `resourceId` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `googleCalendarEventId` TEXT NOT NULL, `orderId` INTEGER NOT NULL, `orderItemId` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `personCounts` TEXT, `localTimezone` TEXT NOT NULL, PRIMARY KEY(`id`, `localSiteId`))",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "localSiteId",
-            "columnName": "localSiteId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "start",
-            "columnName": "start",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "end",
-            "columnName": "end",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "allDay",
-            "columnName": "allDay",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "status",
-            "columnName": "status",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "cost",
-            "columnName": "cost",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "currency",
-            "columnName": "currency",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "customerId",
-            "columnName": "customerId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "productId",
-            "columnName": "productId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "resourceId",
-            "columnName": "resourceId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dateCreated",
-            "columnName": "dateCreated",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dateModified",
-            "columnName": "dateModified",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "googleCalendarEventId",
-            "columnName": "googleCalendarEventId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "orderId",
-            "columnName": "orderId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "orderItemId",
-            "columnName": "orderItemId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "parentId",
-            "columnName": "parentId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "personCounts",
-            "columnName": "personCounts",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "localTimezone",
-            "columnName": "localTimezone",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "id",
-            "localSiteId"
-          ]
-        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2f88094bb00e637769cc5a8bdef5dcc3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2d180f4d4c2ccaf6305a746959d1289d')"
     ]
   }
 }
