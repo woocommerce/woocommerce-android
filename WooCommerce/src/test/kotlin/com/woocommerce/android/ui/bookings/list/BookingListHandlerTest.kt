@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.bookings
+package com.woocommerce.android.ui.bookings.list
 
 import com.woocommerce.android.util.InlineClassesAnswer
 import com.woocommerce.android.viewmodel.BaseUnitTest

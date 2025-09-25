@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.bookings
+package com.woocommerce.android.ui.bookings.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 
 @Composable

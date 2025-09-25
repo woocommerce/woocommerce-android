@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.bookings
+package com.woocommerce.android.ui.bookings.list
 
 import android.os.Bundle
 import android.view.LayoutInflater

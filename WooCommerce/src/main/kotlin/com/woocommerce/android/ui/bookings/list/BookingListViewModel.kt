@@ -1,7 +1,8 @@
-package com.woocommerce.android.ui.bookings
+package com.woocommerce.android.ui.bookings.list
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job

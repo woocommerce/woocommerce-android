@@ -1,6 +1,8 @@
-package com.woocommerce.android.ui.bookings
+package com.woocommerce.android.ui.bookings.list
 
 import androidx.annotation.VisibleForTesting
+import com.woocommerce.android.ui.bookings.Booking
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

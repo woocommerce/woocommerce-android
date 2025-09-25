@@ -219,7 +219,7 @@
     </fragment>
     <fragment
         android:id="@+id/bookings"
-        android:name="com.woocommerce.android.ui.bookings.BookingListFragment"
+        android:name="com.woocommerce.android.ui.bookings.list.BookingListFragment"
         android:label="fragment_bookings"
         tools:layout="@layout/fragment_bookings" />
     <dialog
