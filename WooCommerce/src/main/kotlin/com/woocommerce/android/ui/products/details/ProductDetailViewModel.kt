@@ -393,13 +393,6 @@ class ProductDetailViewModel @Inject constructor(
         get() = isAddNewProductFlow && isProductStoredAtSite.not()
 
     /**
-     * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
-     * trash menu. Always returns false when we're in the add flow.
-     */
-    val isTrashEnabled: Boolean
-        get() = !isProductUnderCreation && isTrashActionPossibleFlow.value
-
-    /**
      * Provides the currencyCode for views who requires display prices
      */
     val currencyCode: String

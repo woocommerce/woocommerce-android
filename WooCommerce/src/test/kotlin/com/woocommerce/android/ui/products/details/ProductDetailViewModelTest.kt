@@ -659,13 +659,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not enable trashing a product when in add product flow`() {
-        viewModel.start()
-        doReturn(true).whenever(viewModel).isProductUnderCreation
-        Assertions.assertThat(viewModel.isTrashEnabled).isFalse()
-    }
-
-    @Test
     fun `Display offline message and don't show trash confirmation dialog when not connected`() {
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -1436,24 +1429,25 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         get() = viewModel.productDetailViewStateData.liveData.value?.productDraft
 
     @Test
-    fun `given add new product flow, when trash action becomes possible, then trashOption remains hidden`() = testBlocking {
-        // GIVEN: start in AddNewProduct mode (product under creation)
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.AddNewProduct).toSavedStateHandle()
-        // Ensure default product type preferences are provided
-        whenever(prefsWrapper.getSelectedProductType()).thenReturn(ProductType.SIMPLE.value)
-        whenever(prefsWrapper.isSelectedProductVirtual()).thenReturn(false)
-        // Recreate VM with the new SavedState
-        setup()
-        // WHEN: start and mark trash action as possible
-        val menuButtonsStates = viewModel.menuButtonsState.runAndCaptureValues {
-            viewModel.start()
-            // Observe the view state to trigger menu buttons state emissions
-            viewModel.productDetailViewStateData.observeForever { _, _ -> }
-            viewModel.setTrashActionPossible(true)
+    fun `given add new product flow, when trash action becomes possible, then trashOption remains hidden`() =
+        testBlocking {
+            // GIVEN: start in AddNewProduct mode (product under creation)
+            savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.AddNewProduct).toSavedStateHandle()
+            // Ensure default product type preferences are provided
+            whenever(prefsWrapper.getSelectedProductType()).thenReturn(ProductType.SIMPLE.value)
+            whenever(prefsWrapper.isSelectedProductVirtual()).thenReturn(false)
+            // Recreate VM with the new SavedState
+            setup()
+            // WHEN: start and mark trash action as possible
+            val menuButtonsStates = viewModel.menuButtonsState.runAndCaptureValues {
+                viewModel.start()
+                // Observe the view state to trigger menu buttons state emissions
+                viewModel.productDetailViewStateData.observeForever { _, _ -> }
+                viewModel.setTrashActionPossible(true)
+            }
+            // THEN: trash option must be hidden in add flow regardless of isTrashActionPossible
+            Assertions.assertThat(menuButtonsStates.last().trashOption).isFalse()
         }
-        // THEN: trash option must be hidden in add flow regardless of isTrashActionPossible
-        Assertions.assertThat(menuButtonsStates.last().trashOption).isFalse()
-    }
 
     @Test
     fun `given existing product, when trash action not possible, then trashOption hidden`() = testBlocking {
