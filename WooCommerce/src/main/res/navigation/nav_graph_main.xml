@@ -17,6 +17,7 @@
     <include app:graph="@navigation/nav_graph_domain_change" />
     <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
     <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_bookings" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -217,11 +218,6 @@
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
-    <fragment
-        android:id="@+id/bookings"
-        android:name="com.woocommerce.android.ui.bookings.list.BookingListFragment"
-        android:label="fragment_bookings"
-        tools:layout="@layout/fragment_bookings" />
     <dialog
         android:id="@+id/updateStockStatusFragment"
         android:name="com.woocommerce.android.ui.products.UpdateProductStockStatusFragment"
