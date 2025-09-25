@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -49,10 +50,7 @@ fun BookingListScreen(state: BookingListViewState) {
         when {
             state.bookings.isNotEmpty() -> {
                 BookingList(
-                    bookings = state.bookings,
-                    onRefresh = state.onRefresh,
-                    onLoadMore = state.onLoadMore,
-                    loadingState = state.loadingState,
+                    state = state,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -83,15 +81,12 @@ fun BookingListScreen(state: BookingListViewState) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BookingList(
-    bookings: List<BookingListItem>,
-    onRefresh: () -> Unit,
-    onLoadMore: () -> Unit,
-    loadingState: BookingListViewState.LoadingState,
+    state: BookingListViewState,
     modifier: Modifier = Modifier
 ) {
     WCPullToRefreshBox(
-        isRefreshing = loadingState == BookingListViewState.LoadingState.Refreshing,
-        onRefresh = onRefresh,
+        isRefreshing = state.loadingState == BookingListViewState.LoadingState.Refreshing,
+        onRefresh = state.onRefresh,
         state = rememberPullToRefreshState(),
         modifier = modifier
     ) {
@@ -101,15 +96,17 @@ private fun BookingList(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surface)
         ) {
-            itemsIndexed(bookings) { _, booking ->
+            itemsIndexed(state.bookings) { _, booking ->
                 BookingSummary(
                     model = booking.summary,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = { state.onBookingClick(booking.id) })
                 )
                 HorizontalDivider()
             }
 
-            if (loadingState == BookingListViewState.LoadingState.Appending) {
+            if (state.loadingState == BookingListViewState.LoadingState.Appending) {
                 item {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -121,9 +118,7 @@ private fun BookingList(
             }
         }
 
-        InfiniteListHandler(listState = listState) {
-            onLoadMore()
-        }
+        InfiniteListHandler(listState = listState, onLoadMore = state.onLoadMore)
     }
 }
 
@@ -147,7 +142,8 @@ private fun BookingListPreview() {
                 },
                 loadingState = BookingListViewState.LoadingState.Idle,
                 onRefresh = {},
-                onLoadMore = {}
+                onLoadMore = {},
+                onBookingClick = {}
             )
         )
     }

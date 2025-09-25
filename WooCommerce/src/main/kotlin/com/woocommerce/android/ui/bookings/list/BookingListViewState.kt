@@ -11,7 +11,8 @@ data class BookingListViewState(
     val bookings: List<BookingListItem>,
     val loadingState: LoadingState,
     val onRefresh: () -> Unit,
-    val onLoadMore: () -> Unit
+    val onLoadMore: () -> Unit,
+    val onBookingClick: (Long) -> Unit
 ) {
     enum class LoadingState {
         Idle, Loading, Refreshing, Appending

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.list
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -28,7 +29,8 @@ class BookingListViewModel @Inject constructor(
             bookings = bookings,
             loadingState = loadingState,
             onRefresh = { fetchBookings(BookingListViewState.LoadingState.Refreshing) },
-            onLoadMore = { loadMore() }
+            onLoadMore = ::loadMore,
+            onBookingClick = ::onBookingClick
         )
     }.asLiveData()
 
@@ -61,4 +63,10 @@ class BookingListViewModel @Inject constructor(
             loadingState.value = BookingListViewState.LoadingState.Idle
         }
     }
+
+    private fun onBookingClick(bookingId: Long) {
+        triggerEvent(NavigateToBookingDetails(bookingId))
+    }
+
+    data class NavigateToBookingDetails(val bookingId: Long) : MultiLiveEvent.Event()
 }
