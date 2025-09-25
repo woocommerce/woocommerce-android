@@ -15,7 +15,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -26,6 +25,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -89,7 +89,7 @@ private fun BookingList(
     loadingState: BookingListViewState.LoadingState,
     modifier: Modifier = Modifier
 ) {
-    PullToRefreshBox(
+    WCPullToRefreshBox(
         isRefreshing = loadingState == BookingListViewState.LoadingState.Refreshing,
         onRefresh = onRefresh,
         state = rememberPullToRefreshState(),
