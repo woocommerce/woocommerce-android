@@ -132,8 +132,7 @@ class ProductDetailFragment :
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    @Inject
-    lateinit var crashLogging: CrashLogging
+    @Inject lateinit var crashLogging: CrashLogging
 
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
 
@@ -400,7 +399,6 @@ class ProductDetailFragment :
                 is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is Event.LaunchUrlInAuthenticatedWebView -> findNavController(R.id.nav_host_fragment_main)
                     .navigateSafely(NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(event.url))
-
                 is RefreshMenu -> toolbarHelper.setupToolbar()
 
                 is TrashProduct -> {
