@@ -78,7 +78,7 @@ fun AppointmentDetailsRow(@StringRes label: Int, value: String) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 11.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             BookingDetailsLabel(label)
             Text(
