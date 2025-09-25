@@ -154,6 +154,9 @@ class ProductDetailFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val isTrashEnabled = findNavController().previousBackStackEntry?.destination?.id == R.id.products
+        viewModel.setTrashActionPossible(isTrashEnabled)
+
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON)
 
         _binding = FragmentProductDetailBinding.bind(view)

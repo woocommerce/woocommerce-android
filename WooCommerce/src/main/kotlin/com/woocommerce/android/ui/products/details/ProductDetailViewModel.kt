@@ -181,6 +181,8 @@ class ProductDetailViewModel @Inject constructor(
         parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
     }
 
+    private val isTrashActionPossibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
@@ -325,7 +327,10 @@ class ProductDetailViewModel @Inject constructor(
         .filterNotNull()
         .combine(_hasChanges) { draft, hasChanges ->
             Pair(draft.product, hasChanges)
-        }.map { (productDraft, hasChanges) ->
+        }
+        .combine(isTrashActionPossibleFlow) { (draft, hasChanges), isTrashEnabled ->
+            Triple(draft, hasChanges, isTrashEnabled)
+        }.map { (productDraft, hasChanges, isTrashEnabled) ->
             val canBeSavedAsDraft = this.isAddNewProductFlow &&
                 !isProductStoredAtSite &&
                 productDraft.status != DRAFT
@@ -357,7 +362,7 @@ class ProductDetailViewModel @Inject constructor(
                 viewProductOption = showViewProductOption,
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
-                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
+                trashOption = !isProductUnderCreation && isTrashEnabled
             )
         }.asLiveData()
 
@@ -392,7 +397,7 @@ class ProductDetailViewModel @Inject constructor(
      * trash menu. Always returns false when we're in the add flow.
      */
     val isTrashEnabled: Boolean
-        get() = !isProductUnderCreation && navArgs.isTrashEnabled
+        get() = !isProductUnderCreation && isTrashActionPossibleFlow.value
 
     /**
      * Provides the currencyCode for views who requires display prices
@@ -2669,6 +2674,10 @@ class ProductDetailViewModel @Inject constructor(
 
     fun openUploadScreen() {
         triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(getRemoteProductId()))
+    }
+
+    fun setTrashActionPossible(isTrashActionPossible: Boolean) {
+        isTrashActionPossibleFlow.value = isTrashActionPossible
     }
 
     /**
