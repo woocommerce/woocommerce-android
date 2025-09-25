@@ -13,14 +13,18 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.Toolbar
 
 @Composable
 fun BookingListScreen(viewModel: BookingListViewModel) {
@@ -31,33 +35,44 @@ fun BookingListScreen(viewModel: BookingListViewModel) {
 
 @Composable
 fun BookingListScreen(state: BookingListViewState) {
-    when {
-        state.bookings.isNotEmpty() -> {
-            BookingList(
-                bookings = state.bookings,
-                onRefresh = state.onRefresh,
-                onLoadMore = state.onLoadMore,
-                loadingState = state.loadingState,
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = stringResource(R.string.bookings_tab_title),
+                navigationIcon = null
             )
         }
+    ) { paddingValues ->
+        when {
+            state.bookings.isNotEmpty() -> {
+                BookingList(
+                    bookings = state.bookings,
+                    onRefresh = state.onRefresh,
+                    onLoadMore = state.onLoadMore,
+                    loadingState = state.loadingState,
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
 
-        state.loadingState == BookingListViewState.LoadingState.Loading -> {
-            // TODO replace with shimmer
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize()
-            )
-        }
+            state.loadingState == BookingListViewState.LoadingState.Loading -> {
+                // TODO replace with shimmer
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .wrapContentSize()
+                )
+            }
 
-        else -> {
-            // TODO replace with empty state
-            Text(
-                text = "No bookings found",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize()
-            )
+            else -> {
+                // TODO replace with empty state
+                Text(
+                    text = "No bookings found",
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .wrapContentSize()
+                )
+            }
         }
     }
 }
@@ -68,12 +83,14 @@ private fun BookingList(
     bookings: List<BookingListItem>,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
-    loadingState: BookingListViewState.LoadingState
+    loadingState: BookingListViewState.LoadingState,
+    modifier: Modifier = Modifier
 ) {
     PullToRefreshBox(
         isRefreshing = loadingState == BookingListViewState.LoadingState.Refreshing,
         onRefresh = onRefresh,
-        state = rememberPullToRefreshState()
+        state = rememberPullToRefreshState(),
+        modifier = modifier
     ) {
         val listState = rememberLazyListState()
         LazyColumn(
