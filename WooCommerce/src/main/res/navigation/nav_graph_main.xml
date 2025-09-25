@@ -405,10 +405,6 @@
             android:name="mode"
             app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
         <argument
-            android:name="isTrashEnabled"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
             android:name="images"
             android:defaultValue="@null"
             app:argType="string[]"
@@ -425,10 +421,6 @@
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
-        <argument
-            android:name="isTrashEnabled"
-            android:defaultValue="false"
-            app:argType="boolean" />
         <argument
             android:name="images"
             android:defaultValue="@null"

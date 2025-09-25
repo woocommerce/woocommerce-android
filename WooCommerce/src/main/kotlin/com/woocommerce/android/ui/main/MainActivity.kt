@@ -1021,27 +1021,24 @@ class MainActivity :
         restart()
     }
 
-    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean, popUpToProductList: Boolean) {
+    override fun showProductDetail(remoteProductId: Long, popUpToProductList: Boolean) {
         val action = when (popUpToProductList) {
             true -> NavGraphMainDirections.actionGlobalProductDetailFragmentPopUpToProductList(
                 mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-                isTrashEnabled = enableTrash
             )
             else -> NavGraphMainDirections.actionGlobalProductDetailFragment(
                 mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-                isTrashEnabled = enableTrash
             )
         }
         navController.navigateSafely(action)
     }
 
-    override fun showProductDetailWithSharedTransition(remoteProductId: Long, sharedView: View, enableTrash: Boolean) {
+    override fun showProductDetailWithSharedTransition(remoteProductId: Long, sharedView: View) {
         val productCardDetailTransitionName = getString(R.string.product_card_detail_transition_name)
         val extras = FragmentNavigatorExtras(sharedView to productCardDetailTransitionName)
 
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
             mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-            isTrashEnabled = enableTrash
         )
         navController.navigateSafely(directions = action, extras = extras)
     }
