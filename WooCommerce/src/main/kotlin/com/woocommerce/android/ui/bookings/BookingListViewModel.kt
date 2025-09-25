@@ -2,57 +2,73 @@ package com.woocommerce.android.ui.bookings
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
-import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 @HiltViewModel
 class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val bookingsStore: BookingsStore,
-    private val selectedSite: SelectedSite,
+    private val bookingListHandler: BookingListHandler
 ) : ScopedViewModel(savedStateHandle) {
-    private val isLoading = MutableStateFlow(false)
+    private val loadingState = MutableStateFlow(LoadingState.Idle)
+
+    private var bookingsFetchJob: Job? = null
 
     val state = combine(
-        bookingsStore.observeBookings(selectedSite.get()),
-        isLoading
-    ) { bookings, loading ->
+        bookingListHandler.bookingsFlow,
+        loadingState,
+    ) { bookings, loadingState ->
         State(
             bookings = bookings,
-            isLoading = loading,
-            onRefresh = { fetchBookings() }
+            loadingState = loadingState,
+            onRefresh = { fetchBookings(LoadingState.Refreshing) },
+            onLoadMore = { loadMore() }
         )
     }.asLiveData()
 
     init {
-        launch { fetchBookings() }
+        fetchBookings(initialLoadingState = LoadingState.Loading)
     }
 
-    fun fetchBookings() {
-        if (isLoading.value) return
+    private fun fetchBookings(initialLoadingState: LoadingState) {
+        bookingsFetchJob?.cancel()
+        bookingsFetchJob = launch {
+            loadingState.value = initialLoadingState
+            bookingListHandler.loadBookings(forceRefresh = true)
+                .onFailure {
+                    // Show error message
+                }
+            loadingState.value = LoadingState.Idle
+        }
+    }
+
+    private fun loadMore() {
         launch {
-            isLoading.value = true
-            val result = bookingsStore.fetchBookings(selectedSite.get())
-            if (result.isError) {
-                // Surface a generic error
-                triggerEvent(Event.ShowSnackbar(R.string.error_generic))
-            }
-            isLoading.value = false
+            // If a fetch is already in progress, wait for it to complete before loading more
+            bookingsFetchJob?.join()
+
+            loadingState.value = LoadingState.Appending
+            bookingListHandler.loadMore()
+                .onFailure {
+                    // Show error message
+                }
+            loadingState.value = LoadingState.Idle
         }
     }
 
     data class State(
-        val bookings: List<BookingEntity>, // To be replaced with Ui model
-        val isLoading: Boolean,
+        val bookings: List<Booking>, // To be replaced with Ui model
+        val loadingState: LoadingState,
         val onRefresh: () -> Unit,
+        val onLoadMore: () -> Unit
     )
+
+    enum class LoadingState {
+        Idle, Loading, Refreshing, Appending
+    }
 }

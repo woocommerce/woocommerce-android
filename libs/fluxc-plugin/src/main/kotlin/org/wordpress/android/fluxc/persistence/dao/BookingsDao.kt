@@ -10,8 +10,10 @@ import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 
 @Dao
 interface BookingsDao {
-    @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId ORDER BY dateCreated DESC")
-    fun observeBookings(localSiteId: LocalId): Flow<List<BookingEntity>>
+    @Query("""SELECT * FROM Bookings WHERE localSiteId = :localSiteId
+        ORDER BY dateCreated DESC
+        LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END""")
+    fun observeBookings(localSiteId: LocalId, limit: Int?): Flow<List<BookingEntity>>
 
     @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId ORDER BY dateCreated DESC")
     suspend fun getBookings(localSiteId: LocalId): List<BookingEntity>
@@ -21,4 +23,7 @@ interface BookingsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(entities: List<BookingEntity>)
+
+    @Query("DELETE FROM Bookings WHERE localSiteId = :localSiteId")
+    suspend fun deleteAllForSite(localSiteId: LocalId)
 }
