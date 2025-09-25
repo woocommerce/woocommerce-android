@@ -78,14 +78,14 @@ fun AppointmentDetailsRow(@StringRes label: Int, value: String) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 11.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             BookingDetailsLabel(label)
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = value,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.details
 
 import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 
@@ -21,5 +22,15 @@ data class BookingDetailsViewState(
         location = "238 Willow Creek Drive, Montgomery AL 36109",
         duration = "60 min",
         price = "$55.00"
+    ),
+    val bookingCustomerDetails: BookingCustomerDetailsModel = BookingCustomerDetailsModel(
+        name = "Margarita Nikolaevna",
+        email = "margarita@example.com",
+        phone = "+1 555-123-4567",
+        billingAddressLines = listOf(
+            "238 Willow Creek Drive",
+            "Montgomery AL 36109",
+            "United States"
+        )
     )
 )
