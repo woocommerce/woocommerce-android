@@ -85,7 +85,7 @@ fun AppointmentDetailsRow(@StringRes label: Int, value: String) {
                 modifier = Modifier.padding(start = 8.dp),
                 text = value,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

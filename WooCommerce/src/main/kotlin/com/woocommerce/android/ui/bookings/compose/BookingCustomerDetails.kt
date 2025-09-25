@@ -73,7 +73,7 @@ fun BookingCustomerDetails(
                     Text(
                         text = line,
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }

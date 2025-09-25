@@ -42,12 +42,12 @@ fun BookingSummary(
         ) {
             Text(
                 text = "${model.name} • ",
-                color = colorResource(id = R.color.color_surface_variant),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp),
             )
             Text(
                 text = model.customerName,
-                color = colorResource(id = R.color.color_surface_variant),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp),
             )
         }
