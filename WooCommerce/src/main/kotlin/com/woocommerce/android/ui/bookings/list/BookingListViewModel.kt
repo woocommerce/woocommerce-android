@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.list
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +45,7 @@ class BookingListViewModel @Inject constructor(
             loadingState.value = initialLoadingState
             bookingListHandler.loadBookings(forceRefresh = true)
                 .onFailure {
-                    // Show error message
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
                 }
             loadingState.value = BookingListViewState.LoadingState.Idle
         }
@@ -58,7 +59,7 @@ class BookingListViewModel @Inject constructor(
             loadingState.value = BookingListViewState.LoadingState.Appending
             bookingListHandler.loadMore()
                 .onFailure {
-                    // Show error message
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
                 }
             loadingState.value = BookingListViewState.LoadingState.Idle
         }
