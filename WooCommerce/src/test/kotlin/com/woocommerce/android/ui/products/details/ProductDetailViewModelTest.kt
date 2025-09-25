@@ -1434,4 +1434,62 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val productsDraft
         get() = viewModel.productDetailViewStateData.liveData.value?.productDraft
+
+    @Test
+    fun `given add new product flow, when trash action becomes possible, then trashOption remains hidden`() = testBlocking {
+        // GIVEN: start in AddNewProduct mode (product under creation)
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.AddNewProduct).toSavedStateHandle()
+        // Ensure default product type preferences are provided
+        whenever(prefsWrapper.getSelectedProductType()).thenReturn(ProductType.SIMPLE.value)
+        whenever(prefsWrapper.isSelectedProductVirtual()).thenReturn(false)
+        // Recreate VM with the new SavedState
+        setup()
+        // WHEN: start and mark trash action as possible
+        val menuButtonsStates = viewModel.menuButtonsState.runAndCaptureValues {
+            viewModel.start()
+            // Observe the view state to trigger menu buttons state emissions
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            viewModel.setTrashActionPossible(true)
+        }
+        // THEN: trash option must be hidden in add flow regardless of isTrashActionPossible
+        Assertions.assertThat(menuButtonsStates.last().trashOption).isFalse()
+    }
+
+    @Test
+    fun `given existing product, when trash action not possible, then trashOption hidden`() = testBlocking {
+        // GIVEN: existing product (ShowProduct mode)
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+            .toSavedStateHandle()
+        setup()
+        given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+
+        val menuButtonsState = viewModel.menuButtonsState.runAndCaptureValues {
+            viewModel.start()
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            // Ensure trash action is not possible
+            viewModel.setTrashActionPossible(false)
+        }.last()
+
+        // THEN
+        Assertions.assertThat(menuButtonsState.trashOption).isFalse()
+    }
+
+    @Test
+    fun `given existing product, when trash action possible, then trashOption shown`() = testBlocking {
+        // GIVEN: existing product (ShowProduct mode)
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+            .toSavedStateHandle()
+        setup()
+        given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+
+        val menuButtonsState = viewModel.menuButtonsState.runAndCaptureValues {
+            viewModel.start()
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            // Make trash action possible
+            viewModel.setTrashActionPossible(true)
+        }.last()
+
+        // THEN
+        Assertions.assertThat(menuButtonsState.trashOption).isTrue()
+    }
 }
