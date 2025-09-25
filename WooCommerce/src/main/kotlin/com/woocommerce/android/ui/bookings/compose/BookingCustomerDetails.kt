@@ -34,7 +34,10 @@ fun BookingCustomerDetails(
 ) {
     Column(modifier = modifier) {
         BookingSectionHeader(R.string.booking_customer_details_header)
-        Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceContainer)) {
+        Column(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.surfaceContainer)
+        ) {
             HorizontalDivider(thickness = 0.5.dp)
             CustomerDetailsRow(value = model.name)
             CustomerDetailsRow(
@@ -59,16 +62,11 @@ fun BookingCustomerDetails(
                 },
                 modifier = Modifier.clickable { onPhoneClick() }
             )
-            BookingDetailsLabel(
-                label = R.string.booking_billing_address_label,
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, top = 11.dp),
-            )
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 11.dp)
+                    .padding(vertical = 12.dp, horizontal = 16.dp)
             ) {
+                BookingDetailsLabel(label = R.string.booking_billing_address_label)
                 model.billingAddressLines.forEach { line ->
                     Text(
                         text = line,
@@ -95,7 +93,7 @@ private fun CustomerDetailsRow(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 11.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Text(
                 text = value,
