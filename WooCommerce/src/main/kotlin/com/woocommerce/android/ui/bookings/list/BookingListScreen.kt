@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 
 @Composable
@@ -31,7 +30,7 @@ fun BookingListScreen(viewModel: BookingListViewModel) {
 }
 
 @Composable
-fun BookingListScreen(state: BookingListViewModel.State) {
+fun BookingListScreen(state: BookingListViewState) {
     when {
         state.bookings.isNotEmpty() -> {
             BookingList(
@@ -42,7 +41,7 @@ fun BookingListScreen(state: BookingListViewModel.State) {
             )
         }
 
-        state.loadingState == BookingListViewModel.LoadingState.Loading -> {
+        state.loadingState == BookingListViewState.LoadingState.Loading -> {
             // TODO replace with shimmer
             CircularProgressIndicator(
                 modifier = Modifier
@@ -66,13 +65,13 @@ fun BookingListScreen(state: BookingListViewModel.State) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BookingList(
-    bookings: List<Booking>,
+    bookings: List<BookingListItem>,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
-    loadingState: BookingListViewModel.LoadingState
+    loadingState: BookingListViewState.LoadingState
 ) {
     PullToRefreshBox(
-        isRefreshing = loadingState == BookingListViewModel.LoadingState.Refreshing,
+        isRefreshing = loadingState == BookingListViewState.LoadingState.Refreshing,
         onRefresh = onRefresh,
         state = rememberPullToRefreshState()
     ) {
@@ -84,13 +83,13 @@ private fun BookingList(
         ) {
             itemsIndexed(bookings) { _, booking ->
                 Text(
-                    text = "Booking #${booking.id.value}",
+                    text = "Booking #${booking.id}",
                     modifier = Modifier.padding(16.dp)
                 )
                 HorizontalDivider()
             }
 
-            if (loadingState == BookingListViewModel.LoadingState.Appending) {
+            if (loadingState == BookingListViewState.LoadingState.Appending) {
                 item {
                     CircularProgressIndicator(
                         modifier = Modifier
