@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.bookings.list
 
+import com.woocommerce.android.ui.bookings.Booking
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.util.InlineClassesAnswer
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
