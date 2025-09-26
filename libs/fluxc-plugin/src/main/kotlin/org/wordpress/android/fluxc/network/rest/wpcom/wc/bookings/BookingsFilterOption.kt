@@ -7,4 +7,6 @@ sealed interface BookingsFilterOption {
         val before: Instant?,
         val after: Instant?
     ) : BookingsFilterOption
+
+    data class Customer(val customerId: Long) : BookingsFilterOption
 }

@@ -49,6 +49,7 @@ class BookingsRestClient @Inject constructor(
                         filter.before?.let { set("start_date_before", it.toString()) }
                         filter.after?.let { set("start_date_after", it.toString()) }
                     }
+                    is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
                 }
             }
         }
