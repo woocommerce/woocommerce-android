@@ -7,6 +7,19 @@
     <fragment
         android:id="@+id/bookingListFragment"
         android:name="com.woocommerce.android.ui.bookings.list.BookingListFragment"
-        android:label="fragment_bookings" />
+        android:label="fragment_bookings" >
+        <action
+            android:id="@+id/action_bookingListFragment_to_bookingDetailsFragment"
+            app:destination="@id/bookingDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/bookingDetailsFragment"
+        android:name="com.woocommerce.android.ui.bookings.details.BookingDetailsFragment"
+        android:label="BookingDetailsFragment">
+        <argument
+            android:name="bookingId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+    </fragment>
 
 </navigation>
