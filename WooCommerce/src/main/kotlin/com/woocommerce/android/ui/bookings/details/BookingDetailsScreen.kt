@@ -44,7 +44,8 @@ fun BookingDetailsScreen(
         BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
-            onCancelBooking = viewModel::onCancelBooking
+            onCancelBooking = viewModel::onCancelBooking,
+            onAttendanceStatusSelected = viewModel::onAttendanceStatusSelected
         )
     }
 }
@@ -53,7 +54,8 @@ fun BookingDetailsScreen(
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
-    onCancelBooking: () -> Unit
+    onCancelBooking: () -> Unit,
+    onAttendanceStatusSelected: (AttendanceStatus) -> Unit
 ) {
     val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
@@ -97,7 +99,9 @@ fun BookingDetailsScreen(
             }
             if (showAttendanceSheet.value) {
                 BookingAttendanceStatusBottomSheet(
-                    onSelect = { },
+                    onSelect = { status ->
+                        onAttendanceStatusSelected(status)
+                    },
                     onDismiss = { showAttendanceSheet.value = false }
                 )
             }
@@ -129,7 +133,8 @@ private fun BookingDetailsPreview() {
                 )
             ),
             onBack = {},
-            onCancelBooking = {}
+            onCancelBooking = {},
+            onAttendanceStatusSelected = {}
         )
     }
 }
