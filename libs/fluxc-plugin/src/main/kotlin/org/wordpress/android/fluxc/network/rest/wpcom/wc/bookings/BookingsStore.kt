@@ -35,9 +35,9 @@ class BookingsStore @Inject constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    if (page == 1) {
+                    if (page == 1 && filters.isEmpty()) {
                         // Clear existing bookings when fetching the first page
-                        // TODO when supporting filters, we should only clear bookings if no filters are applied
+                        // TODO when we support text search, we should only clear if no search is applied
                         bookingsDao.deleteAllForSite(site.localId())
                     }
                     val entities = response.result.map { it.toEntity(site.localId()) }
