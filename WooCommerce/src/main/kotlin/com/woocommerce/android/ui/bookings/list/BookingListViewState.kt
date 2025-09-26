@@ -31,6 +31,7 @@ fun Booking.toUiModel(): BookingListItem {
         FormatStyle.SHORT
     ).withZone(ZoneId.systemDefault())
 
+    // TODO replace the mocked details with real data when available from the API
     return BookingListItem(
         id = id.value,
         summary = BookingSummaryModel(
