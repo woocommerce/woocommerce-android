@@ -4886,5 +4886,10 @@
     <string name="booking_customer_label_phone">Phone</string>
     <string name="booking_billing_address_label">Billing address</string>
     <string name="booking_attendance_change_status_description">Mark attendance to keep your reports accurate and spot booking trends.</string>
+    <string name="booking_attendance_update_title">Update attendance status</string>
+    <string name="booking_attendance_status_booked_desc">The appointment is scheduled but hasn’t happened yet.</string>
+    <string name="booking_attendance_status_checked_in_desc">The customer arrived and the session took place as planned.</string>
+    <string name="booking_attendance_status_cancelled_desc">Booking was cancelled.</string>
+    <string name="booking_attendance_status_no_show_desc">The client missed the appointment without canceling in advance.</string>
 
 </resources>

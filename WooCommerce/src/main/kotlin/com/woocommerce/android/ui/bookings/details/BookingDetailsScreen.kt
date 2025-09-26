@@ -12,6 +12,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
@@ -22,6 +24,7 @@ import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
+import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
@@ -52,6 +55,7 @@ fun BookingDetailsScreen(
     onBack: () -> Unit,
     onCancelBooking: () -> Unit
 ) {
+    val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             Toolbar(
@@ -87,8 +91,14 @@ fun BookingDetailsScreen(
                 )
                 BookingAttendanceSection(
                     status = viewState.bookingSummary.attendanceStatus,
-                    onClick = {},
+                    onClick = { showAttendanceSheet.value = true },
                     modifier = Modifier.fillMaxWidth()
+                )
+            }
+            if (showAttendanceSheet.value) {
+                BookingAttendanceStatusBottomSheet(
+                    onSelect = { },
+                    onDismiss = { showAttendanceSheet.value = false }
                 )
             }
         }
