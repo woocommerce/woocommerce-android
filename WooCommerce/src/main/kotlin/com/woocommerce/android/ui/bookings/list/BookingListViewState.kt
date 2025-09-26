@@ -4,8 +4,9 @@ import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 data class BookingListViewState(
     val bookings: List<BookingListItem>,
@@ -25,15 +26,15 @@ data class BookingListItem(
 )
 
 fun Booking.toUiModel(): BookingListItem {
-    val dateFormatter = SimpleDateFormat.getDateTimeInstance(
-        SimpleDateFormat.MEDIUM,
-        SimpleDateFormat.SHORT
-    )
+    val dateFormatter = DateTimeFormatter.ofLocalizedDateTime(
+        FormatStyle.MEDIUM,
+        FormatStyle.SHORT
+    ).withZone(ZoneId.systemDefault())
 
     return BookingListItem(
         id = id.value,
         summary = BookingSummaryModel(
-            date = dateFormatter.format(Date(start * 1000)),
+            date = dateFormatter.format(start),
             name = "Women’s Haircut",
             customerName = "Margarita Nikolaevna",
             attendanceStatus = AttendanceStatus.BOOKED,

@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog
+import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -58,8 +59,8 @@ class BookingsStore @Inject constructor(
     private fun BookingDto.toEntity(localSiteId: LocalId): BookingEntity = BookingEntity(
         id = RemoteId(id),
         localSiteId = localSiteId,
-        start = start,
-        end = end,
+        start = Instant.ofEpochSecond(start),
+        end = Instant.ofEpochSecond(end),
         allDay = allDay,
         status = status,
         cost = cost,
@@ -67,8 +68,8 @@ class BookingsStore @Inject constructor(
         customerId = customerId,
         productId = productId,
         resourceId = resourceId,
-        dateCreated = dateCreated,
-        dateModified = dateModified,
+        dateCreated = Instant.ofEpochSecond(dateCreated),
+        dateModified = Instant.ofEpochSecond(dateModified),
         googleCalendarEventId = googleCalendarEventId,
         orderId = orderId,
         orderItemId = orderItemId,
