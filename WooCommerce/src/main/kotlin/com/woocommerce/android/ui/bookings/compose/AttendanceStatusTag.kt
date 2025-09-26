@@ -29,7 +29,7 @@ enum class AttendanceStatus {
 }
 
 @Composable
-private fun AttendanceStatus.text(): String {
+fun AttendanceStatus.text(): String {
     return when (this) {
         AttendanceStatus.BOOKED -> R.string.booking_attendance_status_booked
         AttendanceStatus.CHECKED_IN -> R.string.booking_attendance_status_checked_in
