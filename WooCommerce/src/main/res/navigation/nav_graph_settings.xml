@@ -174,9 +174,6 @@
         <action
             android:id="@+id/action_developerOptionsFragment_to_ApiFaker"
             app:destination="@id/apiFakerHostFragment" />
-        <action
-            android:id="@+id/action_developerOptionsFragment_to_bookingDetailsFragment"
-            app:destination="@id/bookingDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountSettingsFragment"
@@ -190,15 +187,6 @@
         android:id="@+id/closeAccountDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.account.CloseAccountDialogFragment"
         android:label="CloseAccountDialogFragment" />
-    <fragment
-        android:id="@+id/bookingDetailsFragment"
-        android:name="com.woocommerce.android.ui.bookings.details.BookingDetailsFragment"
-        android:label="BookingDetailsFragment">
-        <argument
-            android:name="bookingId"
-            android:defaultValue="-1L"
-            app:argType="long" />
-    </fragment>
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
         android:name="com.woocommerce.android.ui.onboarding.NameYourStoreDialogFragment"
