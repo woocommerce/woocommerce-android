@@ -103,7 +103,9 @@ private fun BookingList(
                         .fillMaxWidth()
                         .clickable(onClick = { state.onBookingClick(booking.id) })
                 )
-                HorizontalDivider()
+                HorizontalDivider(
+                    Modifier.padding(start = 16.dp)
+                )
             }
 
             if (state.loadingState == BookingListViewState.LoadingState.Appending) {
