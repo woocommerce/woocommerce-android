@@ -54,8 +54,11 @@ class BookingsStore @Inject constructor(
         }
     }
 
-    fun observeBookings(site: SiteModel, limit: Int? = null): Flow<List<BookingEntity>> =
-        bookingsDao.observeBookings(site.localId(), limit)
+    fun observeBookings(
+        site: SiteModel,
+        limit: Int? = null,
+        filters: List<BookingsFilterOption> = emptyList()
+    ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters)
 
     private fun BookingDto.toEntity(localSiteId: LocalId): BookingEntity = BookingEntity(
         id = RemoteId(id),
