@@ -27,10 +27,11 @@ class BookingsStore @Inject constructor(
     suspend fun fetchBookings(
         site: SiteModel,
         perPage: Int = BookingsRestClient.DEFAULT_PER_PAGE,
-        page: Int = 1
+        page: Int = 1,
+        filters: List<BookingsFilterOption> = emptyList()
     ): WooResult<Boolean> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
-            val response = bookingsRestClient.fetchBookings(site, perPage, page)
+            val response = bookingsRestClient.fetchBookings(site, perPage, page, filters)
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
