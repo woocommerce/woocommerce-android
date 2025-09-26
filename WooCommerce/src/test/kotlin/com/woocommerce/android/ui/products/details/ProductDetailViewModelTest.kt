@@ -1486,4 +1486,33 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         // THEN
         Assertions.assertThat(menuButtonsState.trashOption).isTrue()
     }
+
+    @Test
+    fun `given add new product flow, when product gets stored later and trash possible, then trashOption shown`() = testBlocking {
+        // GIVEN: start in AddNewProduct mode (product under creation)
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.AddNewProduct).toSavedStateHandle()
+        // Ensure default product type preferences are provided for the add flow
+        whenever(prefsWrapper.getSelectedProductType()).thenReturn(ProductType.SIMPLE.value)
+        whenever(prefsWrapper.isSelectedProductVirtual()).thenReturn(false)
+        setup()
+
+        // Simulate successful creation on server returning a new remote id
+        val newRemoteId = 1234L
+        val storedAggregate = ProductAggregate(ProductTestUtils.generateProduct(newRemoteId))
+        given(productRepository.addProduct(any<ProductAggregate>())).willReturn(Pair(true, newRemoteId))
+        whenever(productRepository.getProductAggregate(eq(newRemoteId))).thenReturn(storedAggregate)
+        whenever(productRepository.fetchAndGetProductAggregate(eq(newRemoteId))).thenReturn(storedAggregate)
+
+        val menuButtonsStates = viewModel.menuButtonsState.runAndCaptureValues {
+            viewModel.setTrashActionPossible(true)
+            viewModel.start()
+            // Observe the view state to trigger menu buttons state emissions
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            // When: user saves as draft so the product is posted to the server
+            viewModel.onSaveAsDraftButtonClicked()
+        }
+
+        // THEN: once the product is stored, trash option should be visible
+        Assertions.assertThat(menuButtonsStates.last().trashOption).isTrue()
+    }
 }
