@@ -1450,7 +1450,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given existing product, when trash action not possible, then trashOption hidden`() = testBlocking {
+    fun `given add new product flow, when product not yet created on server, then trashOption is hidden`() = testBlocking {
         // GIVEN: existing product (ShowProduct mode)
         savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
             .toSavedStateHandle()
