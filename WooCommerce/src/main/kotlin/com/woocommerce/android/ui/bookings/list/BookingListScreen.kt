@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.list
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -103,7 +105,9 @@ private fun BookingList(
         LazyColumn(
             state = listState,
             modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceContainer)
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
             itemsIndexed(state.bookings) { _, booking ->
                 BookingSummary(
@@ -168,7 +172,7 @@ private fun BookingListPreview() {
         BookingListScreen(
             state = BookingListViewState(
                 contentState = BookingListContentState(
-                    bookings = List(20) {
+                    bookings = List(3) {
                         BookingListItem(
                             id = it.toLong(),
                             summary = com.woocommerce.android.ui.bookings.compose.BookingSummaryModel(
