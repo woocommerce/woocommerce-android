@@ -25,7 +25,7 @@ fun AttendanceStatusTag(
 }
 
 enum class AttendanceStatus {
-    BOOKED, CHECKED_IN, CANCELLED, NO_SHOW
+    BOOKED, CHECKED_IN, NO_SHOW, CANCELLED
 }
 
 @Composable
