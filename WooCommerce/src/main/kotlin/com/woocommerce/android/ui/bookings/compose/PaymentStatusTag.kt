@@ -24,8 +24,19 @@ fun BookingPaymentStatusTag(
     )
 }
 
-enum class BookingPaymentStatus {
-    UNPAID, PENDING_CONFIRMATION, CONFIRMED, PAID, CANCELLED, COMPLETE
+enum class BookingPaymentStatus(val key: String) {
+    UNPAID("unpaid"),
+    PENDING_CONFIRMATION("pending-confirmation"),
+    CONFIRMED("confirmed"),
+    PAID("paid"),
+    CANCELLED("cancelled"),
+    COMPLETE("complete");
+
+    companion object {
+        fun fromKey(key: String): BookingPaymentStatus {
+            return entries.firstOrNull { it.key == key } ?: UNPAID
+        }
+    }
 }
 
 @Composable

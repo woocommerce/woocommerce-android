@@ -1,5 +1,7 @@
-package com.woocommerce.android.ui.bookings
+package com.woocommerce.android.ui.bookings.list
 
+import com.woocommerce.android.ui.bookings.Booking
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.util.InlineClassesAnswer
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +23,8 @@ import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.time.Duration
+import java.time.Instant
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -159,8 +163,8 @@ class BookingListHandlerTest : BaseUnitTest() {
     private fun getSampleBooking(id: Int) = BookingEntity(
         id = RemoteId(id.toLong()),
         localSiteId = LocalId(1),
-        start = System.currentTimeMillis(),
-        end = System.currentTimeMillis() + 3600000,
+        start = Instant.now(),
+        end = Instant.now() + Duration.ofDays(1),
         allDay = false,
         status = "confirmed",
         cost = "100.00",
@@ -168,13 +172,13 @@ class BookingListHandlerTest : BaseUnitTest() {
         customerId = 1L,
         productId = 1L,
         resourceId = 1L,
-        dateCreated = System.currentTimeMillis(),
-        dateModified = System.currentTimeMillis(),
+        dateCreated = Instant.now(),
+        dateModified = Instant.now(),
         googleCalendarEventId = "",
         orderId = 1L,
         orderItemId = 1L,
         parentId = 0L,
         personCounts = listOf(1L),
-        localTimezone = "UTC"
+        localTimezone = ""
     )
 }

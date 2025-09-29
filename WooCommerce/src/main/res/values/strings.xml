@@ -4857,6 +4857,7 @@
     Bookings
     -->
     <string name="bookings_tab_title">Bookings</string>
+    <string name="bookings_fetch_error">Error fetching bookings</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
