@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.bookings.list
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,28 +20,42 @@ class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookingListHandler: BookingListHandler
 ) : ScopedViewModel(savedStateHandle) {
-    private val loadingState = MutableStateFlow(BookingListViewState.LoadingState.Idle)
+    private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
+    private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
 
     private var bookingsFetchJob: Job? = null
 
-    val state = combine(
+    private val contentState = combine(
         bookingListHandler.bookingsFlow.map { bookings -> bookings.map { it.toUiModel() } },
-        loadingState,
+        loadingState
     ) { bookings, loadingState ->
-        BookingListViewState(
+        BookingListContentState(
             bookings = bookings,
             loadingState = loadingState,
-            onRefresh = { fetchBookings(BookingListViewState.LoadingState.Refreshing) },
+            onRefresh = { fetchBookings(BookingListLoadingState.Refreshing) },
             onLoadMore = ::loadMore,
             onBookingClick = ::onBookingClick
+        )
+    }
+
+    val state = combine(
+        contentState,
+        selectedTab
+    ) { contentState, selectedTab ->
+        BookingListViewState(
+            contentState = contentState,
+            tabState = BookingListTabState(
+                selectedTab = selectedTab,
+                onTabChanged = ::onTabChanged
+            )
         )
     }.asLiveData()
 
     init {
-        fetchBookings(initialLoadingState = BookingListViewState.LoadingState.Loading)
+        fetchBookings(initialLoadingState = BookingListLoadingState.Loading)
     }
 
-    private fun fetchBookings(initialLoadingState: BookingListViewState.LoadingState) {
+    private fun fetchBookings(initialLoadingState: BookingListLoadingState) {
         bookingsFetchJob?.cancel()
         bookingsFetchJob = launch {
             loadingState.value = initialLoadingState
@@ -47,7 +63,7 @@ class BookingListViewModel @Inject constructor(
                 .onFailure {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
                 }
-            loadingState.value = BookingListViewState.LoadingState.Idle
+            loadingState.value = BookingListLoadingState.Idle
         }
     }
 
@@ -56,17 +72,21 @@ class BookingListViewModel @Inject constructor(
             // If a fetch is already in progress, wait for it to complete before loading more
             bookingsFetchJob?.join()
 
-            loadingState.value = BookingListViewState.LoadingState.Appending
+            loadingState.value = BookingListLoadingState.Appending
             bookingListHandler.loadMore()
                 .onFailure {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
                 }
-            loadingState.value = BookingListViewState.LoadingState.Idle
+            loadingState.value = BookingListLoadingState.Idle
         }
     }
 
     private fun onBookingClick(bookingId: Long) {
         triggerEvent(NavigateToBookingDetails(bookingId))
+    }
+
+    private fun onTabChanged(tab: BookingListTab) {
+        selectedTab.value = tab
     }
 
     data class NavigateToBookingDetails(val bookingId: Long) : MultiLiveEvent.Event()

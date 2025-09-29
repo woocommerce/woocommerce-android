@@ -46,16 +46,16 @@ fun BookingListScreen(state: BookingListViewState) {
         }
     ) { paddingValues ->
         when {
-            state.bookings.isNotEmpty() -> {
+            state.contentState.isNotEmpty() -> {
                 BookingList(
-                    state = state,
+                    state = state.contentState,
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
                 )
             }
 
-            state.loadingState == BookingListViewState.LoadingState.Loading -> {
+            state.contentState.loadingState == BookingListLoadingState.Loading -> {
                 // TODO replace with shimmer
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -81,11 +81,11 @@ fun BookingListScreen(state: BookingListViewState) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BookingList(
-    state: BookingListViewState,
+    state: BookingListContentState,
     modifier: Modifier = Modifier
 ) {
     WCPullToRefreshBox(
-        isRefreshing = state.loadingState == BookingListViewState.LoadingState.Refreshing,
+        isRefreshing = state.loadingState == BookingListLoadingState.Refreshing,
         onRefresh = state.onRefresh,
         state = rememberPullToRefreshState(),
         modifier = modifier
@@ -108,7 +108,7 @@ private fun BookingList(
                 )
             }
 
-            if (state.loadingState == BookingListViewState.LoadingState.Appending) {
+            if (state.loadingState == BookingListLoadingState.Appending) {
                 item {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -130,22 +130,27 @@ private fun BookingListPreview() {
     WooThemeWithBackground {
         BookingListScreen(
             state = BookingListViewState(
-                bookings = List(3) {
-                    BookingListItem(
-                        id = it.toLong(),
-                        summary = com.woocommerce.android.ui.bookings.compose.BookingSummaryModel(
-                            date = "Aug 20, 2024",
-                            name = "Women’s Haircut",
-                            customerName = "Margarita Nikolaevna",
-                            attendanceStatus = com.woocommerce.android.ui.bookings.compose.AttendanceStatus.BOOKED,
-                            paymentStatus = com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus.PAID
+                contentState = BookingListContentState(
+                    bookings = List(20) {
+                        BookingListItem(
+                            id = it.toLong(),
+                            summary = com.woocommerce.android.ui.bookings.compose.BookingSummaryModel(
+                                date = "Aug 20, 2024",
+                                name = "Women’s Haircut",
+                                customerName = "Margarita Nikolaevna",
+                                attendanceStatus = com.woocommerce.android.ui.bookings.compose.AttendanceStatus.BOOKED,
+                                paymentStatus = com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus.PAID
+                            )
                         )
-                    )
-                },
-                loadingState = BookingListViewState.LoadingState.Idle,
-                onRefresh = {},
-                onLoadMore = {},
-                onBookingClick = {}
+                    },
+                    loadingState = BookingListLoadingState.Idle,
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onBookingClick = {}),
+                tabState = BookingListTabState(
+                    selectedTab = BookingListTab.Today,
+                    onTabChanged = {}
+                )
             )
         )
     }

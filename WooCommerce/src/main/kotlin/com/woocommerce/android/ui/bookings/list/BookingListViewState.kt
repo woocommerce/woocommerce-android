@@ -9,21 +9,37 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 data class BookingListViewState(
+    val contentState: BookingListContentState,
+    val tabState: BookingListTabState
+)
+
+data class BookingListContentState(
     val bookings: List<BookingListItem>,
-    val loadingState: LoadingState,
+    val loadingState: BookingListLoadingState,
     val onRefresh: () -> Unit,
     val onLoadMore: () -> Unit,
-    val onBookingClick: (Long) -> Unit
+    val onBookingClick: (Long) -> Unit,
 ) {
-    enum class LoadingState {
-        Idle, Loading, Refreshing, Appending
-    }
+    fun isNotEmpty() = bookings.isNotEmpty()
 }
+
+data class BookingListTabState(
+    val selectedTab: BookingListTab,
+    val onTabChanged: (BookingListTab) -> Unit
+)
 
 data class BookingListItem(
     val id: Long,
     val summary: BookingSummaryModel
 )
+
+enum class BookingListLoadingState {
+    Idle, Loading, Refreshing, Appending
+}
+
+enum class BookingListTab {
+    Today, Upcoming, All
+}
 
 fun Booking.toUiModel(): BookingListItem {
     val dateFormatter = DateTimeFormatter.ofLocalizedDateTime(
