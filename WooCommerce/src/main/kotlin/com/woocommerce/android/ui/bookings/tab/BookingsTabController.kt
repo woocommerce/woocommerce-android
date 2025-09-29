@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.bookings.tab
 
 import androidx.lifecycle.lifecycleScope
-import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityMainBinding
+import com.woocommerce.android.ui.main.BottomNavigationPosition
 import com.woocommerce.android.ui.main.MainActivity
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,7 +26,7 @@ class BookingsTabController @Inject constructor(
         activity.lifecycleScope.launch {
             observeBookingsTabVisibility()
                 .collect { isVisible ->
-                    binding.bottomNav.menu.findItem(R.id.bookings)?.isVisible = isVisible
+                    binding.bottomNav.menu.findItem(BottomNavigationPosition.BOOKINGS.id)?.isVisible = isVisible
                 }
         }
     }

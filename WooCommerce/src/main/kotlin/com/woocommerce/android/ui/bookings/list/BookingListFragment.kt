@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -12,7 +13,6 @@ import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -45,9 +45,12 @@ class BookingListFragment : TopLevelFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is BookingListViewModel.NavigateToBookingDetails -> {
-                    // TODO navigate to booking details screen
-                    ToastUtils.showToast(requireContext(), "Navigate to booking ${event.bookingId}")
+                    findNavController().navigate(
+                        BookingListFragmentDirections
+                            .actionBookingListFragmentToBookingDetailsFragment(event.bookingId)
+                    )
                 }
+
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
