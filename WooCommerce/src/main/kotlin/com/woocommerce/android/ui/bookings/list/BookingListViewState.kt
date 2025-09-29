@@ -39,7 +39,7 @@ fun Booking.toUiModel(): BookingListItem {
             name = "Women’s Haircut",
             customerName = "Margarita Nikolaevna",
             attendanceStatus = AttendanceStatus.BOOKED,
-            paymentStatus = BookingPaymentStatus.valueOf(status.uppercase())
+            paymentStatus = BookingPaymentStatus.fromKey(status)
         )
     )
 }
