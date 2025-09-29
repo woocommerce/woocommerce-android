@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.bookings
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
 import javax.inject.Inject
 
@@ -12,12 +13,14 @@ class BookingsRepository @Inject constructor(
 ) {
     suspend fun fetchBookings(
         page: Int,
-        perPage: Int
+        perPage: Int,
+        filters: List<BookingsFilterOption> = emptyList()
     ): Result<Boolean> {
         val result = bookingsStore.fetchBookings(
             site = selectedSite.get(),
+            perPage = perPage,
             page = page,
-            perPage = perPage
+            filters = filters
         )
         return if (result.isError) {
             Result.failure(WooException(result.error))
@@ -26,8 +29,15 @@ class BookingsRepository @Inject constructor(
         }
     }
 
-    fun observeBookings(limit: Int? = null): Flow<List<Booking>> =
-        bookingsStore.observeBookings(selectedSite.get(), limit)
+    fun observeBookings(
+        limit: Int? = null,
+        filters: List<BookingsFilterOption> = emptyList()
+    ): Flow<List<Booking>> =
+        bookingsStore.observeBookings(
+            site = selectedSite.get(),
+            limit = limit,
+            filters = filters
+        )
 }
 
 typealias Booking = org.wordpress.android.fluxc.persistence.entity.BookingEntity

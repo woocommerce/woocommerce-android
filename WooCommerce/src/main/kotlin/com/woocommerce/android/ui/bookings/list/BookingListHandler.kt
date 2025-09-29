@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -27,12 +28,14 @@ class BookingListHandler @Inject constructor(
     private val canLoadMore = AtomicBoolean(false)
 
     private val searchQuery = MutableStateFlow<String?>(null)
+    private val filters = MutableStateFlow<List<BookingsFilterOption>>(emptyList())
+
     private val searchResults = MutableStateFlow(emptyList<Booking>())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val bookingsFlow: Flow<List<Booking>> = combine(searchQuery, page) { query, page ->
+    val bookingsFlow: Flow<List<Booking>> = combine(searchQuery, filters, page) { query, filters, page ->
         if (query == null) {
-            bookingsRepository.observeBookings(limit = page * PAGE_SIZE)
+            bookingsRepository.observeBookings(limit = page * PAGE_SIZE, filters)
         } else {
             searchResults
         }
@@ -41,12 +44,15 @@ class BookingListHandler @Inject constructor(
     suspend fun loadBookings(
         searchQuery: String? = null,
         forceRefresh: Boolean = false,
+        filters: List<BookingsFilterOption> = emptyList()
     ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
         page.value = 1
         canLoadMore.set(true)
 
         this.searchQuery.value = searchQuery
+        this.filters.value = filters
+
         return if (searchQuery == null) {
             if (forceRefresh) {
                 fetchBookings()
@@ -77,7 +83,8 @@ class BookingListHandler @Inject constructor(
     private suspend fun fetchBookings(): Result<Unit> {
         return bookingsRepository.fetchBookings(
             page = page.value,
-            perPage = PAGE_SIZE
+            perPage = PAGE_SIZE,
+            filters = filters.value
         ).onSuccess { hasMorePages ->
             canLoadMore.set(hasMorePages)
             if (hasMorePages) {
