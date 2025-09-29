@@ -183,7 +183,8 @@ private fun BookingListPreview() {
                     loadingState = BookingListLoadingState.Idle,
                     onRefresh = {},
                     onLoadMore = {},
-                    onBookingClick = {}),
+                    onBookingClick = {}
+                ),
                 tabState = BookingListTabState(
                     selectedTab = BookingListTab.Today,
                     onTabChanged = {}

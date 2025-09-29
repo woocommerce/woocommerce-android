@@ -54,7 +54,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         setup(bookings = bookings)
 
         // WHEN
-       advanceUntilIdle()
+        advanceUntilIdle()
 
         // THEN
         verify(bookingListHandler).loadBookings(searchQuery = eq(null), forceRefresh = eq(true))
