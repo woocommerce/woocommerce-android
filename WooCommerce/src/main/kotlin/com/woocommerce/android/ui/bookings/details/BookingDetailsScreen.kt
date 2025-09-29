@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
+import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -94,6 +95,12 @@ fun BookingDetailsScreen(
                 BookingAttendanceSection(
                     status = viewState.bookingSummary.attendanceStatus,
                     onClick = { showAttendanceSheet.value = true },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                BookingPaymentSection(
+                    model = viewState.bookingPaymentDetails,
+                    onMarkAsPaid = {},
+                    onViewOrder = {},
                     modifier = Modifier.fillMaxWidth()
                 )
             }
