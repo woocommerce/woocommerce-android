@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.list
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,13 +13,17 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
@@ -45,34 +50,38 @@ fun BookingListScreen(state: BookingListViewState) {
             )
         }
     ) { paddingValues ->
-        when {
-            state.contentState.isNotEmpty() -> {
-                BookingList(
-                    state = state.contentState,
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                )
-            }
+        Column(modifier = Modifier.padding(paddingValues)) {
+            BookingListTabs(
+                tabState = state.tabState,
+                modifier = Modifier
+            )
+            when {
+                state.contentState.isNotEmpty() -> {
+                    BookingList(
+                        state = state.contentState,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
 
-            state.contentState.loadingState == BookingListLoadingState.Loading -> {
-                // TODO replace with shimmer
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                        .wrapContentSize()
-                )
-            }
+                state.contentState.loadingState == BookingListLoadingState.Loading -> {
+                    // TODO replace with shimmer
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize()
+                            .wrapContentSize()
+                    )
+                }
 
-            else -> {
-                // TODO replace with empty state
-                Text(
-                    text = "No bookings found",
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .wrapContentSize()
-                )
+                else -> {
+                    // TODO replace with empty state
+                    Text(
+                        text = "No bookings found",
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .wrapContentSize()
+                    )
+                }
             }
         }
     }
@@ -121,6 +130,34 @@ private fun BookingList(
         }
 
         InfiniteListHandler(listState = listState, onLoadMore = state.onLoadMore)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BookingListTabs(
+    tabState: BookingListTabState,
+    modifier: Modifier = Modifier
+) {
+    val selectedTabIndex = BookingListTab.entries.indexOf(tabState.selectedTab)
+    PrimaryTabRow(
+        selectedTabIndex = selectedTabIndex,
+        containerColor = colorResource(id = R.color.color_toolbar),
+        modifier = modifier
+    ) {
+        BookingListTab.entries.forEach { tab ->
+            Tab(
+                selected = tab == tabState.selectedTab,
+                onClick = { tabState.onTabChanged(tab) },
+                text = {
+                    Text(
+                        text = tab.name,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            )
+        }
     }
 }
 
