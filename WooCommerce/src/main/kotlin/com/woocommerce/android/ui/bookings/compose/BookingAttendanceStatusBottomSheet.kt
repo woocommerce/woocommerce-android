@@ -126,7 +126,7 @@ private val AttendanceStatus.iconRes: Int
     get() = when (this) {
         AttendanceStatus.BOOKED -> R.drawable.ic_attendance_booked
         AttendanceStatus.CHECKED_IN -> R.drawable.ic_attendance_checked_in
-        AttendanceStatus.CANCELLED -> R.drawable.ic_attendance_no_show
+        AttendanceStatus.CANCELLED -> R.drawable.ic_attendance_cancelled
         AttendanceStatus.NO_SHOW -> R.drawable.ic_attendance_no_show
     }
 
