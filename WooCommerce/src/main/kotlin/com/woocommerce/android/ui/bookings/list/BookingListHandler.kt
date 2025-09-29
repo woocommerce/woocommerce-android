@@ -53,10 +53,11 @@ class BookingListHandler @Inject constructor(
         this.searchQuery.value = searchQuery
         this.filters.value = filters
 
-        return if (searchQuery == null) {
+        return@withLock if (searchQuery == null) {
             if (forceRefresh) {
                 fetchBookings()
             } else {
+                // Load from DB only
                 Result.success(Unit)
             }
         } else {

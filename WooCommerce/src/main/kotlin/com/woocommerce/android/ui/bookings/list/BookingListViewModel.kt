@@ -10,10 +10,9 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
@@ -28,6 +27,7 @@ class BookingListViewModel @Inject constructor(
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
 
     private var bookingsFetchJob: Job? = null
+    private var bookingsLoadMoreJob: Job? = null
 
     private val contentState = combine(
         bookingListHandler.bookingsFlow.map { bookings -> bookings.map { it.toUiModel() } },
@@ -60,29 +60,31 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun monitorFilterChanges() {
-        selectedTab
-            .onEach {
-                fetchBookings(BookingListLoadingState.Loading)
-            }
-            .launchIn(viewModelScope)
-    }
+        launch {
+            selectedTab.collectLatest {
+                // Cancel any ongoing fetch or load more operations
+                bookingsFetchJob?.cancel()
+                bookingsLoadMoreJob?.cancel()
 
-    private fun fetchBookings(initialLoadingState: BookingListLoadingState) {
-        bookingsFetchJob?.cancel()
-        bookingsFetchJob = launch {
-            loadingState.value = initialLoadingState
-            bookingListHandler.loadBookings(
-                forceRefresh = true,
-                filters = prepareFilters()
-            ).onFailure {
-                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
+                bookingsFetchJob = fetchBookings(BookingListLoadingState.Loading)
             }
-            loadingState.value = BookingListLoadingState.Idle
         }
     }
 
+    private fun fetchBookings(initialLoadingState: BookingListLoadingState) = launch {
+        loadingState.value = initialLoadingState
+        bookingListHandler.loadBookings(
+            forceRefresh = true,
+            filters = prepareFilters()
+        ).onFailure {
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
+        }
+        loadingState.value = BookingListLoadingState.Idle
+    }
+
     private fun loadMore() {
-        launch {
+        bookingsLoadMoreJob?.cancel()
+        bookingsLoadMoreJob = launch {
             // If a fetch is already in progress, wait for it to complete before loading more
             bookingsFetchJob?.join()
 
