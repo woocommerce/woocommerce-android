@@ -11,14 +11,18 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
 
 @HiltViewModel
 class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val bookingListHandler: BookingListHandler
+    private val bookingListHandler: BookingListHandler,
+    private val filtersBuilder: BookingListFiltersBuilder
 ) : ScopedViewModel(savedStateHandle) {
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
@@ -52,17 +56,27 @@ class BookingListViewModel @Inject constructor(
     }.asLiveData()
 
     init {
-        fetchBookings(initialLoadingState = BookingListLoadingState.Loading)
+        monitorFilterChanges()
+    }
+
+    private fun monitorFilterChanges() {
+        selectedTab
+            .onEach {
+                fetchBookings(BookingListLoadingState.Loading)
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun fetchBookings(initialLoadingState: BookingListLoadingState) {
         bookingsFetchJob?.cancel()
         bookingsFetchJob = launch {
             loadingState.value = initialLoadingState
-            bookingListHandler.loadBookings(forceRefresh = true)
-                .onFailure {
-                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
-                }
+            bookingListHandler.loadBookings(
+                forceRefresh = true,
+                filters = prepareFilters()
+            ).onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
+            }
             loadingState.value = BookingListLoadingState.Idle
         }
     }
@@ -87,6 +101,12 @@ class BookingListViewModel @Inject constructor(
 
     private fun onTabChanged(tab: BookingListTab) {
         selectedTab.value = tab
+    }
+
+    private fun prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
+        listOfNotNull(
+            selectedTab.value.asDateRangeFilter()
+        )
     }
 
     data class NavigateToBookingDetails(val bookingId: Long) : MultiLiveEvent.Event()
