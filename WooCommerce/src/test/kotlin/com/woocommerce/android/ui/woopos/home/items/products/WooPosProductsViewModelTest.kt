@@ -545,8 +545,7 @@ class WooPosProductsViewModelTest {
 
     private fun createViewModel(): WooPosProductsViewModel {
         return WooPosProductsViewModel(
-            productsDataSource = productsDataSource,
-            productsInDbDataSource = productsInDbDataSource,
+            dataSource = productsDataSource,
             fromChildToParentEventSender = fromChildToParentEventSender,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             priceFormat = priceFormat,

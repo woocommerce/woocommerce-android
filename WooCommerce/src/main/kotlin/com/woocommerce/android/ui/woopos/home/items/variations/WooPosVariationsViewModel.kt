@@ -38,8 +38,7 @@ import javax.inject.Inject
 class WooPosVariationsViewModel @Inject constructor(
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val getProductById: WooPosGetProductById,
-    variationsDataSource: WooPosVariationsDataSource,
-    variationsInDbDataSource: WooPosVariationsInDbDataSource,
+    private val dataSource: WooPosVariationsDataSourceInterface,
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
@@ -48,11 +47,6 @@ class WooPosVariationsViewModel @Inject constructor(
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
     private val selectedSite: SelectedSite,
 ) : ViewModel() {
-
-    private val currentDataSource: WooPosVariationsDataSourceInterface = when (wooPosLocalCatalogM1Enabled()) {
-        true -> variationsInDbDataSource
-        false -> variationsDataSource
-    }
 
     private val _viewState =
         MutableStateFlow<WooPosVariationsViewState>(WooPosVariationsViewState.Loading())
@@ -75,7 +69,7 @@ class WooPosVariationsViewModel @Inject constructor(
     ) {
         this.sourceType = sourceType
         viewModelScope.launch {
-            currentDataSource.resetState()
+            dataSource.resetState()
         }
         loadVariations(
             productId = productId,
@@ -97,7 +91,7 @@ class WooPosVariationsViewModel @Inject constructor(
                 WooPosVariationsViewState.Loading()
             }
 
-            currentDataSource.fetchFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
+            dataSource.fetchFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
                 when (result) {
                     is FetchResult.Cached -> {
                         if (result.data.isNotEmpty()) {
@@ -157,7 +151,7 @@ class WooPosVariationsViewModel @Inject constructor(
             return
         }
 
-        if (!currentDataSource.canLoadMore(numOfVariations)) {
+        if (!dataSource.canLoadMore(numOfVariations)) {
             return
         }
 
@@ -165,7 +159,7 @@ class WooPosVariationsViewModel @Inject constructor(
 
         loadMoreJob?.cancel()
         loadMoreJob = viewModelScope.launch {
-            val result = currentDataSource.loadMore(productId)
+            val result = dataSource.loadMore(productId)
             _viewState.value = if (result.isSuccess) {
                 trackItemsNextPageLoaded()
                 WooPosVariationsViewState.Content(

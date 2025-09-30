@@ -57,7 +57,6 @@ class WooPosVariationsViewModelTest {
 
     private val getProductById: WooPosGetProductById = mock()
     private val variationsDataSource: WooPosVariationsDataSource = mock()
-    private val variationsInDbDataSource: WooPosVariationsInDbDataSource = mock()
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
         on { invoke() } doReturn false // Default to using variationsDataSource
     }
@@ -761,8 +760,7 @@ class WooPosVariationsViewModelTest {
         WooPosVariationsViewModel(
             fromChildToParentEventSender,
             getProductById,
-            variationsDataSource,
-            variationsInDbDataSource,
+            variationsDataSource, // Since feature flag is false in test
             priceFormat,
             resourceProvider,
             analyticsTracker,
