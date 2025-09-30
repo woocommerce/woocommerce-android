@@ -11,7 +11,8 @@ import java.time.format.FormatStyle
 data class BookingListViewState(
     val contentState: BookingListContentState,
     val tabState: BookingListTabState,
-    val controlsState: BookingListControlsState
+    val controlsState: BookingListControlsState,
+    val sortBottomSheetState: BookingListSortBottomSheetState?
 )
 
 data class BookingListContentState(
@@ -46,6 +47,16 @@ enum class BookingListLoadingState {
 enum class BookingListTab {
     Today, Upcoming, All
 }
+
+enum class BookingListSortOption {
+    NewestToOldest, OldestToNewest
+}
+
+data class BookingListSortBottomSheetState(
+    val selectedOption: BookingListSortOption,
+    val onSelect: (BookingListSortOption) -> Unit,
+    val onDismiss: () -> Unit
+)
 
 fun Booking.toUiModel(): BookingListItem {
     val dateFormatter = DateTimeFormatter.ofLocalizedDateTime(
