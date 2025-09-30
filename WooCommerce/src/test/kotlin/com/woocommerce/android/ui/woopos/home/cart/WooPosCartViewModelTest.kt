@@ -156,14 +156,6 @@ class WooPosCartViewModelTest {
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val barcodeEventTracker: WooPosBarcodeEventTracker = mock()
-    private val productMapper: WooPosProductModelMapper = mock()
-    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
-        on { invoke() }.thenReturn(false)
-    }
-    private val localCatalogStore: WooPosLocalCatalogStore = mock()
-    private val selectedSite: SelectedSite = mock {
-        on { get() }.thenReturn(SiteModel().apply { id = 123 })
-    }
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1529,10 +1521,6 @@ class WooPosCartViewModelTest {
             soundHelper,
             barcodeEventTracker,
             variationMapper,
-            productMapper,
-            wooPosLocalCatalogM1Enabled,
-            localCatalogStore,
-            selectedSite,
             savedState,
         )
     }

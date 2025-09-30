@@ -37,11 +37,6 @@ class WooPosTotalsRepositoryTest {
     private val orderMapper: OrderMapper = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val variationMapper: WooPosVariationMapper = mock()
-    private val productMapper: WooPosProductModelMapper = mock()
-    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
-        on { invoke() }.thenReturn(false)
-    }
-    private val localCatalogStore: WooPosLocalCatalogStore = mock()
 
     private lateinit var repository: WooPosTotalsRepository
 
@@ -240,8 +235,5 @@ class WooPosTotalsRepositoryTest {
         orderMapper,
         resourceProvider,
         variationMapper,
-        productMapper,
-        wooPosLocalCatalogM1Enabled,
-        localCatalogStore,
     )
 }

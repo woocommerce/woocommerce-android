@@ -7,7 +7,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -16,12 +15,10 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
@@ -53,8 +50,6 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
@@ -77,10 +72,6 @@ class WooPosCartViewModel @Inject constructor(
     private val soundHelper: WooPosSoundHelper,
     private val barcodeEventTracker: WooPosBarcodeEventTracker,
     private val variationMapper: WooPosVariationMapper,
-    private val productMapper: WooPosProductModelMapper,
-    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
-    private val localCatalogStore: WooPosLocalCatalogStore,
-    private val site: SelectedSite,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -342,48 +333,16 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private suspend fun handleSimpleProductClicked(productId: Long): WooPosCartItemViewState {
-        val product = when {
-            wooPosLocalCatalogM1Enabled() -> {
-                val result = localCatalogStore.getProduct(
-                    siteId = LocalOrRemoteId.LocalId(site.get().id),
-                    remoteProductId = LocalOrRemoteId.RemoteId(productId)
-                )
-                result.getOrNull()?.let { entity ->
-                    productMapper.fromEntity(entity)
-                } ?: error("Product not found in local catalog: $productId")
-            }
-            else -> getProductById(productId)!!
-        }
+        val product = getProductById(productId) ?: error("Product not found: $productId")
 
         val itemNumber = getItemNumber()
         return product.toCartListItem(itemNumber)
     }
 
     private suspend fun handleVariationClicked(productId: Long, variationId: Long): WooPosCartItemViewState {
-        val product = when {
-            wooPosLocalCatalogM1Enabled() -> {
-                val result = localCatalogStore.getProduct(
-                    siteId = LocalOrRemoteId.LocalId(site.get().id),
-                    remoteProductId = LocalOrRemoteId.RemoteId(productId)
-                )
-                result.getOrNull()?.let { entity ->
-                    productMapper.fromEntity(entity)
-                } ?: error("Product not found in local catalog: $productId")
-            }
-            else -> getProductById(productId)!!
-        }
-
+        val product = getProductById(productId) ?: error("Product not found: $productId")
         val itemNumber = getItemNumber()
-
-        val productVariation = when {
-            wooPosLocalCatalogM1Enabled() -> {
-                val result = localCatalogStore.getVariation(siteId = site.get().id, productId, variationId)
-                result.getOrNull()?.let { entity ->
-                    variationMapper.fromWooPosVariationEntity(entity)
-                } ?: error("Variation not found in local catalog: $variationId")
-            }
-            else -> getVariationsById(productId, variationId)!!
-        }
+        val productVariation = getVariationsById(productId, variationId) ?: error("Variation not found: $variationId")
         return productVariation.toCartListItem(itemNumber, product)
     }
 
