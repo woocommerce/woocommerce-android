@@ -772,8 +772,6 @@ class WooPosVariationsViewModelTest {
             mapper,
             localCatalogSyncRepository,
             selectedSite,
-            productMapper,
-            localCatalogStore,
         ).let {
             it.init(productId, sourceType = sourceType)
             it

@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -33,16 +32,14 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosVariationsViewModel @Inject constructor(
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val getProductById: WooPosGetProductById,
-    private val variationsDataSource: WooPosVariationsDataSource,
-    private val variationsInDbDataSource: WooPosVariationsInDbDataSource,
+    variationsDataSource: WooPosVariationsDataSource,
+    variationsInDbDataSource: WooPosVariationsInDbDataSource,
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
@@ -50,8 +47,6 @@ class WooPosVariationsViewModel @Inject constructor(
     private val mapper: WooPosVariationMapper,
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
     private val selectedSite: SelectedSite,
-    private val productMapper: WooPosProductModelMapper,
-    private val localCatalogStore: WooPosLocalCatalogStore,
 ) : ViewModel() {
 
     private val currentDataSource: WooPosVariationsDataSourceInterface = when (wooPosLocalCatalogM1Enabled()) {
@@ -317,7 +312,7 @@ class WooPosVariationsViewModel @Inject constructor(
         variations: List<WooPosVariation>,
         productId: Long
     ): WooPosVariationsViewState.Content {
-        val parentProduct = getParentProduct(productId)
+        val parentProduct = getProductById(productId)
         return WooPosVariationsViewState.Content(
             items = variations.map { variation ->
                 WooPosItemSelectionViewState.Product.Variation(
@@ -338,20 +333,5 @@ class WooPosVariationsViewModel @Inject constructor(
                 WooPosPaginationState.None
             }
         )
-    }
-
-    private suspend fun getParentProduct(productId: Long) = when {
-        wooPosLocalCatalogM1Enabled() -> {
-            val result = localCatalogStore.getProduct(
-                siteId = LocalOrRemoteId.LocalId(selectedSite.get().id),
-                remoteProductId = LocalOrRemoteId.RemoteId(productId)
-            )
-            result.getOrNull()?.let { entity ->
-                productMapper.fromEntity(entity)
-            }
-        }
-        else -> {
-            getProductById(productId)
-        }
     }
 }
