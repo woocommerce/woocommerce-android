@@ -30,7 +30,7 @@ class BookingsStore @Inject constructor(
         page: Int = 1,
         query: String? = null,
         filters: List<BookingsFilterOption> = emptyList()
-    ): WooResult<Boolean> {
+    ): WooResult<BookingsFetchResult> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
             val response = bookingsRestClient.fetchBookings(site, perPage, page, query, filters)
             when {
@@ -38,7 +38,6 @@ class BookingsStore @Inject constructor(
                 response.result != null -> {
                     if (page == 1 && filters.isEmpty() && query.isNullOrEmpty()) {
                         // Clear existing bookings when fetching the first page
-                        // TODO when we support text search, we should only clear if no search is applied
                         bookingsDao.deleteAllForSite(site.localId())
                     }
                     val entities = response.result.map { it.toEntity(site.localId()) }
@@ -46,8 +45,13 @@ class BookingsStore @Inject constructor(
                     val totalPages = headersParser.getTotalPages(response.headers)
                     // Determine if we can load more from the total pages header if available, otherwise
                     // infer it from the number of items returned
-                    val canLoadMore = (totalPages?.let { it > page }) ?: (entities.size == perPage)
-                    WooResult(canLoadMore)
+                    val hasMorePages = (totalPages?.let { it > page }) ?: (entities.size == perPage)
+                    WooResult(
+                        BookingsFetchResult(
+                            bookings = entities,
+                            hasMorePages = hasMorePages
+                        )
+                    )
                 }
 
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))

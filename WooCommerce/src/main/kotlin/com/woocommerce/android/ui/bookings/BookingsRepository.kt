@@ -16,7 +16,7 @@ class BookingsRepository @Inject constructor(
         perPage: Int,
         query: String? = null,
         filters: List<BookingsFilterOption> = emptyList()
-    ): Result<Boolean> {
+    ): Result<FetchResult> {
         val result = bookingsStore.fetchBookings(
             site = selectedSite.get(),
             perPage = perPage,
@@ -27,7 +27,14 @@ class BookingsRepository @Inject constructor(
         return if (result.isError) {
             Result.failure(WooException(result.error))
         } else {
-            Result.success(result.model!!)
+            Result.success(
+                result.model!!.let {
+                    FetchResult(
+                        bookings = it.bookings,
+                        hasMorePages = it.hasMorePages
+                    )
+                }
+            )
         }
     }
 
@@ -40,6 +47,11 @@ class BookingsRepository @Inject constructor(
             limit = limit,
             filters = filters
         )
+
+    data class FetchResult(
+        val bookings: List<Booking>,
+        val hasMorePages: Boolean
+    )
 }
 
 typealias Booking = org.wordpress.android.fluxc.persistence.entity.BookingEntity

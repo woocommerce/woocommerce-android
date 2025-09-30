@@ -67,34 +67,31 @@ class BookingListHandler @Inject constructor(
                 canLoadMore.set(false)
                 Result.success(Unit)
             } else {
-                searchBookings()
+                fetchBookings()
             }
         }
     }
 
     suspend fun loadMore(): Result<Unit> = mutex.withLock {
         if (!canLoadMore.get()) return@withLock Result.success(Unit)
-        return if (searchQuery.value == null) {
-            fetchBookings()
-        } else {
-            searchBookings()
-        }
+        return fetchBookings()
     }
 
     private suspend fun fetchBookings(): Result<Unit> {
+        val isSearching = !searchQuery.value.isNullOrEmpty()
         return bookingsRepository.fetchBookings(
             page = page.value,
             perPage = PAGE_SIZE,
+            query = searchQuery.value,
             filters = filters.value
-        ).onSuccess { hasMorePages ->
-            canLoadMore.set(hasMorePages)
-            if (hasMorePages) {
+        ).onSuccess { result ->
+            canLoadMore.set(result.hasMorePages)
+            if (result.hasMorePages) {
                 page.update { it + 1 }
             }
+            if (isSearching) {
+                searchResults.update { it + result.bookings }
+            }
         }.map { }
-    }
-
-    private suspend fun searchBookings(): Result<Unit> {
-        TODO("Not yet implemented")
     }
 }
