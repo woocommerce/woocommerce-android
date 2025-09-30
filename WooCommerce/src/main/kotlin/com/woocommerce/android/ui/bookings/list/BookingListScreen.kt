@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.bookings.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +33,7 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.launch
@@ -69,6 +72,10 @@ fun BookingListScreen(state: BookingListViewState) {
                 },
                 modifier = Modifier
             )
+            if (state.contentState.isNotEmpty()) {
+                BookingListControls(state.controlsState)
+                HorizontalDivider()
+            }
             when {
                 state.contentState.isNotEmpty() -> {
                     BookingList(
@@ -151,6 +158,35 @@ private fun BookingList(
 }
 
 @Composable
+private fun BookingListControls(
+    state: BookingListControlsState,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        WCTextButton(onClick = state.onSortClick) {
+            Text(
+                text = stringResource(R.string.product_list_sorting_header),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        WCTextButton(onClick = state.onFilterClick) {
+            Text(
+                text = stringResource(R.string.orderlist_filter),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+@Composable
 private fun BookingListTab.name(): String = when (this) {
     BookingListTab.Today -> stringResource(R.string.bookings_tab_today)
     BookingListTab.Upcoming -> stringResource(R.string.bookings_tab_upcoming)
@@ -184,6 +220,10 @@ private fun BookingListPreview() {
                 tabState = BookingListTabState(
                     selectedTab = BookingListTab.Today,
                     onTabChanged = {}
+                ),
+                controlsState = BookingListControlsState(
+                    onSortClick = {},
+                    onFilterClick = {}
                 )
             )
         )
