@@ -27,6 +27,7 @@ class BookingDetailsViewModel @Inject constructor(
             onMarkAsPaid = ::onMarkAsPaid,
             onMarkAsRefunded = ::onMarkAsRefunded,
             onCancelBooking = ::onCancelBooking,
+            onAttendanceStatusSelected = ::onAttendanceStatusSelected,
         )
     )
     val state: LiveData<BookingDetailsViewState> = _state.asLiveData()
@@ -39,7 +40,7 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
+    private fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
         _state.update { current ->
             current.copy(
                 bookingSummary = current.bookingSummary.copy(attendanceStatus = status)

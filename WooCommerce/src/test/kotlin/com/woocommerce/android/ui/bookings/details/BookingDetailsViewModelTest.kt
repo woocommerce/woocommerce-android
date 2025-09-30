@@ -2,7 +2,11 @@ package com.woocommerce.android.ui.bookings.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+<<<<<<< HEAD
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+=======
+import com.woocommerce.android.util.getOrAwaitValue
+>>>>>>> a4e6bd3632f (Move onAttendanceStatusSelected to BookingDetailsViewState)
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,7 +46,12 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel(savedState, resourceProvider)
 
         // When
+<<<<<<< HEAD
         viewModel.onAttendanceStatusSelected(BookingAttendanceStatus.CANCELLED)
+=======
+        val state = viewModel.state.getOrAwaitValue()
+        state.onAttendanceStatusSelected(com.woocommerce.android.ui.bookings.compose.AttendanceStatus.CANCELLED)
+>>>>>>> a4e6bd3632f (Move onAttendanceStatusSelected to BookingDetailsViewState)
 
         // Then
         val updated = viewModel.state.value?.bookingSummary?.attendanceStatus

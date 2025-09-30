@@ -44,4 +44,5 @@ data class BookingDetailsViewState(
     val onMarkAsPaid: () -> Unit = {},
     val onMarkAsRefunded: () -> Unit = {},
     val onCancelBooking: () -> Unit = {},
+    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> }
 )

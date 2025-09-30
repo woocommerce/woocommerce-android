@@ -46,7 +46,6 @@ fun BookingDetailsScreen(
         BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
-            onAttendanceStatusSelected = viewModel::onAttendanceStatusSelected,
             onViewOrder = onViewOrder,
         )
     }
@@ -56,7 +55,6 @@ fun BookingDetailsScreen(
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
-    onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit,
     onViewOrder: (Long) -> Unit,
 ) {
     val showAttendanceSheet = remember { mutableStateOf(false) }
@@ -110,7 +108,7 @@ fun BookingDetailsScreen(
             if (showAttendanceSheet.value) {
                 BookingAttendanceStatusBottomSheet(
                     onSelect = { status ->
-                        onAttendanceStatusSelected(status)
+                        viewState.onAttendanceStatusSelected(status)
                     },
                     onDismiss = { showAttendanceSheet.value = false }
                 )
@@ -143,7 +141,6 @@ private fun BookingDetailsPreview() {
                 )
             ),
             onBack = {},
-            onAttendanceStatusSelected = {},
             onViewOrder = {}
         )
     }
