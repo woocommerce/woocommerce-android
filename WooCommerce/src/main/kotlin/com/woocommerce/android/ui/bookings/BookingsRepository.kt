@@ -14,12 +14,14 @@ class BookingsRepository @Inject constructor(
     suspend fun fetchBookings(
         page: Int,
         perPage: Int,
+        query: String? = null,
         filters: List<BookingsFilterOption> = emptyList()
     ): Result<Boolean> {
         val result = bookingsStore.fetchBookings(
             site = selectedSite.get(),
             perPage = perPage,
             page = page,
+            query = query,
             filters = filters
         )
         return if (result.isError) {
