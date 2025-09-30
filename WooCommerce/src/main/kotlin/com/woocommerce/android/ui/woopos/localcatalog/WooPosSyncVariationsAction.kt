@@ -28,34 +28,33 @@ class WooPosSyncVariationsAction @Inject constructor(
         pageSize: Int,
         maxPages: Int
     ): WooPosSyncVariationsResult {
-        val fetchResult = runCatching {
-            fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
-        }
+        return runCatching {
+            val (variations, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
 
-        if (fetchResult.isFailure) {
-            val error = fetchResult.exceptionOrNull()
-            logger.e("Failed to fetch variations: ${error?.message}")
-            return when (error) {
-                is CatalogTooLargeException -> error.toSyncResult()
-                else -> WooPosSyncVariationsResult.Failed.UnexpectedError(
-                    error?.message ?: "Failed to fetch variations"
-                )
-            }
-        }
-
-        val (variations, serverDate) = fetchResult.getOrThrow()
-        return posLocalCatalogStore.executeInTransaction {
-            // TBD local catalog We need to either remove variations that are no longer present on the server
-            // or delete all variations before we start inserting (low performance)
-            // or soft-delete all variations before we start inserting
-            posLocalCatalogStore.upsertVariations(variations)
+            posLocalCatalogStore.executeInTransaction {
+                // TBD local catalog We need to either remove variations that are no longer present on the server
+                // or delete all variations before we start inserting (low performance)
+                // or soft-delete all variations before we start inserting
+                posLocalCatalogStore.upsertVariations(variations)
+            }.fold(
+                onSuccess = {
+                    logger.d("Local Catalog variations transaction committed successfully")
+                    WooPosSyncVariationsResult.Success(variations.size, serverDate)
+                },
+                onFailure = { error ->
+                    handleTransactionError(error)
+                }
+            )
         }.fold(
-            onSuccess = {
-                logger.d("Local Catalog variations transaction committed successfully")
-                WooPosSyncVariationsResult.Success(variations.size, serverDate)
-            },
+            onSuccess = { result -> result },
             onFailure = { error ->
-                handleTransactionError(error)
+                logger.e("Failed to sync variations: ${error.message}")
+                when (error) {
+                    is CatalogTooLargeException -> error.toSyncResult()
+                    else -> WooPosSyncVariationsResult.Failed.UnexpectedError(
+                        error.message ?: "Failed to sync variations"
+                    )
+                }
             }
         )
     }
