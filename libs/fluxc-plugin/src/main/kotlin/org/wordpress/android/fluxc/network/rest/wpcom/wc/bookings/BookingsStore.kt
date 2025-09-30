@@ -36,7 +36,7 @@ class BookingsStore @Inject constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    if (page == 1 && filters.isEmpty()) {
+                    if (page == 1 && filters.isEmpty() && query.isNullOrEmpty()) {
                         // Clear existing bookings when fetching the first page
                         // TODO when we support text search, we should only clear if no search is applied
                         bookingsDao.deleteAllForSite(site.localId())
