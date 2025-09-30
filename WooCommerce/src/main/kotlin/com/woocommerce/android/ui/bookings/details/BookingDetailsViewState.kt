@@ -40,5 +40,7 @@ data class BookingDetailsViewState(
         tax = "$4.50",
         discount = "-",
         total = "$59.50"
-    )
+    ),
+    val onMarkAsPaid: () -> Unit = {},
+    val onMarkAsRefunded: () -> Unit = {},
 )

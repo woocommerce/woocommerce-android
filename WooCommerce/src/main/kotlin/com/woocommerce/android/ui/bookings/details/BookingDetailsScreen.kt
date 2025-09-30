@@ -48,7 +48,7 @@ fun BookingDetailsScreen(
             onBack = onBack,
             onCancelBooking = viewModel::onCancelBooking,
             onAttendanceStatusSelected = viewModel::onAttendanceStatusSelected,
-            onViewOrder = onViewOrder
+            onViewOrder = onViewOrder,
         )
     }
 }
@@ -59,7 +59,7 @@ fun BookingDetailsScreen(
     onBack: () -> Unit,
     onCancelBooking: () -> Unit,
     onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit,
-    onViewOrder: (Long) -> Unit
+    onViewOrder: (Long) -> Unit,
 ) {
     val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
@@ -103,9 +103,9 @@ fun BookingDetailsScreen(
                 BookingPaymentSection(
                     model = viewState.bookingPaymentDetails,
                     paymentStatus = viewState.bookingSummary.status,
-                    onMarkAsPaid = {},
+                    onMarkAsPaid = viewState.onMarkAsPaid,
                     onViewOrder = { onViewOrder(viewState.orderId) },
-                    onMarkAsRefunded = {},
+                    onMarkAsRefunded = viewState.onMarkAsRefunded,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
