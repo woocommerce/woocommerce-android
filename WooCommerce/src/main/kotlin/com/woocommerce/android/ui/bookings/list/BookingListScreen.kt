@@ -172,7 +172,7 @@ private fun BookingListPreview() {
         BookingListScreen(
             state = BookingListViewState(
                 contentState = BookingListContentState(
-                    bookings = List(3) {
+                    bookings = List(20) {
                         BookingListItem(
                             id = it.toLong(),
                             summary = com.woocommerce.android.ui.bookings.compose.BookingSummaryModel(
