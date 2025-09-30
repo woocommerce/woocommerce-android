@@ -26,7 +26,9 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun BookingPaymentSection(
     model: BookingPaymentDetailsModel,
+    paymentStatus: BookingPaymentStatus,
     onMarkAsPaid: () -> Unit,
+    onMarkAsRefunded: () -> Unit,
     onViewOrder: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -54,13 +56,26 @@ fun BookingPaymentSection(
                 thickness = 0.5.dp,
                 modifier = Modifier.padding(start = 16.dp)
             )
-            WCColoredButton(
-                onClick = onMarkAsPaid,
-                text = stringResource(id = R.string.booking_payment_mark_as_paid),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
+            if (paymentStatus == BookingPaymentStatus.PAID) {
+                WCOutlinedButton(
+                    onClick = onMarkAsRefunded,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    text = stringResource(id = R.string.booking_payment_mark_as_refunded),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            } else {
+                WCColoredButton(
+                    onClick = onMarkAsPaid,
+                    text = stringResource(id = R.string.booking_payment_mark_as_paid),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            }
             WCOutlinedButton(
                 onClick = onViewOrder,
                 colors = ButtonDefaults.outlinedButtonColors(
@@ -125,8 +140,30 @@ private fun BookingPaymentSectionPreview() {
                 discount = "-",
                 total = "$59.50"
             ),
+            paymentStatus = BookingPaymentStatus.COMPLETE,
             onMarkAsPaid = {},
             onViewOrder = {},
+            onMarkAsRefunded = {},
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun BookingPaymentSectionWithRefundOptionPreview() {
+    WooThemeWithBackground {
+        BookingPaymentSection(
+            model = BookingPaymentDetailsModel(
+                service = "$55.00",
+                tax = "$4.50",
+                discount = "-",
+                total = "$59.50"
+            ),
+            paymentStatus = BookingPaymentStatus.PAID,
+            onMarkAsPaid = {},
+            onViewOrder = {},
+            onMarkAsRefunded = {},
             modifier = Modifier.fillMaxWidth()
         )
     }

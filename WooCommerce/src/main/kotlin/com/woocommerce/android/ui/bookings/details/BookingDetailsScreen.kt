@@ -99,8 +99,10 @@ fun BookingDetailsScreen(
                 )
                 BookingPaymentSection(
                     model = viewState.bookingPaymentDetails,
+                    paymentStatus = viewState.bookingSummary.paymentStatus,
                     onMarkAsPaid = {},
                     onViewOrder = {},
+                    onMarkAsRefunded = {},
                     modifier = Modifier.fillMaxWidth()
                 )
             }
