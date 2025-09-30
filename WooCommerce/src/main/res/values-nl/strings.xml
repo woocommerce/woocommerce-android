@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-27 09:54:05+0000
+Translation-Revision-Date: 2025-09-10 13:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">De afmetingen van het pakket moeten allemaal groter zijn dan 0.</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> om aan de winkelwagen toe te voegen</string>
+    <string name="woopos_cart_empty_scan_barcode">streepjescode scannen</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">Tik op een product of </string>
+    <string name="woopos_orders_title">Bestellingen</string>
+    <string name="woopos_settings_help_category">Help</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP Admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Webkassa</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Je kan er geen producten in plaatsen of uit verwijderen.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">Je hebt een label aangeschaft voor deze verzending.</string>
     <string name="woo_shipping_labels_customs_origin_country_info_button">Meer informatie over het land van herkomst van het product</string>
@@ -71,7 +79,6 @@ Language: nl
     <string name="woopos_scanning_setup_software_keyboard_message">Android behandelt streepjescodescanners als fysieke toetsenborden, die je toetsenbord op het scherm kunnen verbergen. Laten we het controleren:</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Toetsenbord op het scherm tonen</string>
     <string name="woopos_scanning_setup_success_message">Je bent klaar om producten te scannen. De volgende keer dat je je scanner moet aansluiten, hoef je alleen de scanner in te schakelen. Hij maakt dan automatisch opnieuw verbinding.</string>
-    <string name="woopos_barcode_scanning_title">Eerste instelling streepjescodescanner</string>
     <string name="save_copy">Kopie opslaan</string>
     <string name="changes_not_saved_message">Je wijzigingen worden niet opgeslagen</string>
     <string name="woopos_cart_clear_all_button_content_description">Artikelen in winkelwagenpictogram wissen</string>
@@ -636,7 +643,6 @@ Language: nl
     <string name="analytics_spend_subtitle_value">Uitgaven: %1$s</string>
     <string name="analytics_custom_list_selection_button_description">Filterselectie</string>
     <string name="woopos_cart_empty_content_description">Winkelwagen is leeg</string>
-    <string name="woopos_cart_empty_subtitle">Tik op een product om het\ntoe te voegen aan de winkelwagen</string>
     <string name="woopos_totals_main_error_label">Kan totalen niet laden</string>
     <string name="woopos_items_in_cart_multiple">%d artikelen</string>
     <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;Geweldige opdracht!&lt;/b&gt; We hebben genoeg informatie om mee aan de slag te kunnen, maar als je nog meer details toevoegt, zal het resultaat nog beter zijn.</string>

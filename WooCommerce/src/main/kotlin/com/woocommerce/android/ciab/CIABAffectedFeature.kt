@@ -7,5 +7,6 @@ enum class CIABAffectedFeature {
     GroupedProducts,
     VariableProducts,
     GiftCardEditing,
-    ProductsStockDashboardCard
+    ProductsStockDashboardCard,
+    POS
 }

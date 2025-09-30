@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-27 09:54:05+0000
+Translation-Revision-Date: 2025-09-11 09:54:09+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_empty_subtitle_suffix"> añadirlo al carrito</string>
+    <string name="woopos_cart_empty_scan_barcode">Escanear código de barras</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">Toca un producto para </string>
+    <string name="woopos_orders_title">Pedidos</string>
+    <string name="woopos_settings_help_category">Ayuda</string>
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">Las dimensiones del paquete deben ser mayores que 0.</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Caja web</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">No puedes añadir ni quitar productos.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">Has comprado una etiqueta para este envío.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">País en el que se fabricó o montó el producto.</string>
@@ -71,7 +79,6 @@ Language: es
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">Ve a los ajustes del dispositivo, busca «teclado» y activa «Mostrar el teclado en pantalla cuando el teclado físico esté conectado». Es posible que este ajuste esté en los ajustes de la aplicación del teclado.</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Mostrar el teclado en pantalla</string>
     <string name="woopos_scanning_setup_success_message">Ya lo tienes todo listo para empezar a escanear productos. La próxima vez que necesites conectar el escáner, solo tienes que encenderlo y se volverá a conectar automáticamente.</string>
-    <string name="woopos_barcode_scanning_title">Configuración inicial del escáner de códigos de barras</string>
     <string name="save_copy">Guardar copia</string>
     <string name="woopos_cart_clear_all_button_content_description">Icono de borrar artículos del carrito</string>
     <string name="product_selector_subscription_not_supported">Los productos de suscripción no son compatibles con la creación de pedidos</string>
@@ -636,7 +643,6 @@ Language: es
     <string name="analytics_spend_subtitle_value">Gasto: %1$s</string>
     <string name="analytics_custom_list_selection_button_description">Selección de filtro</string>
     <string name="woopos_cart_empty_content_description">El carrito está vacío</string>
-    <string name="woopos_cart_empty_subtitle">Toca un producto para\nañadirlo al carrito</string>
     <string name="woopos_totals_main_error_label">No se han podido cargar los totales</string>
     <string name="woopos_items_in_cart_multiple">%d elementos</string>
     <string name="ai_product_creation_error_media_upload">No se ha podido cargar la imagen del producto seleccionado.</string>

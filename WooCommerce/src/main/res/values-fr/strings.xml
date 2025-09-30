@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-26 09:54:05+0000
+Translation-Revision-Date: 2025-09-10 13:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">Les dimensions du colis doivent toutes être supérieures à 0.</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> pour l’ajouter au panier</string>
+    <string name="woopos_cart_empty_scan_barcode">scanner un code-barres</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">Appuyer sur un produit ou </string>
+    <string name="woopos_orders_title">Commandes</string>
+    <string name="woopos_settings_help_category">Aide</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Validation de la commande en ligne</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Vous ne pouvez pas y déplacer des produits.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">Vous avez acheté une étiquette pour cette expédition.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">Pays dans lequel le produit a été fabriqué ou assemblé.</string>
@@ -71,7 +79,6 @@ Language: fr
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">Accédez aux réglages de l’appareil, recherchez « clavier », puis activez « Afficher le clavier visuel lorsque le clavier physique est connecté ». Ce réglage se trouve peut-être dans les réglages de l’application de votre clavier.</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Afficher le clavier visuel</string>
     <string name="woopos_scanning_setup_success_message">Vous êtes prêt(e) à commencer à scanner des produits. La prochaine fois que vous devrez connecter votre scanner, il suffit de l’activer et il se reconnectera automatiquement.</string>
-    <string name="woopos_barcode_scanning_title">Configuration initiale du scanner de code-barres</string>
     <string name="woopos_cart_clear_all_button_content_description">Icône Effacer les articles dans le panier</string>
     <string name="save_copy">Enregistrer la copie</string>
     <string name="changes_not_saved_message">Vos modifications ne sont pas enregistrées</string>
@@ -636,7 +643,6 @@ Language: fr
     <string name="analytics_custom_list_selection_button_description">Sélection des filtres</string>
     <string name="ai_product_creation_image_scan_subtitle">Ajouter du texte scanné depuis une photo</string>
     <string name="woopos_cart_empty_content_description">Le panier est vide</string>
-    <string name="woopos_cart_empty_subtitle">Appuyer sur un produit pour\nl’ajouter au panier</string>
     <string name="woopos_totals_main_error_label">Impossible de charger les totaux</string>
     <string name="woopos_items_in_cart_multiple">%d éléments</string>
     <string name="ai_product_creation_error_media_upload">Échec du chargement de l’image de produit sélectionnée.</string>

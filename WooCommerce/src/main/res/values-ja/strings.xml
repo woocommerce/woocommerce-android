@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-26 09:54:05+0000
+Translation-Revision-Date: 2025-09-10 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">荷物の寸法はすべて0より大きくする必要があります。</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> お買い物カゴに追加</string>
+    <string name="woopos_cart_empty_scan_barcode">バーコードをスキャンする</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">商品をタップするか </string>
+    <string name="woopos_orders_title">注文</string>
+    <string name="woopos_settings_help_category">ヘルプ</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP 管理画面</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">ウェブでの購入手続き</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">商品を出し入れできません。</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">この配送のラベルを購入しました。</string>
     <string name="woo_shipping_labels_customs_origin_country_info">商品製造国または商品の組み立てが行われた国。</string>
@@ -70,7 +78,6 @@ Language: ja_JP
     <string name="woopos_scanning_setup_software_keyboard_message_two">キーボードが表示されない場合は、次の方法をお試しください。</string>
     <string name="woopos_scanning_setup_software_keyboard_message">Android はバーコードスキャナーを物理的なキーボードとして扱うため、オンスクリーンキーボードが非表示になる場合があります。 以下を確認してください。</string>
     <string name="woopos_scanning_setup_software_keyboard_title">オンスクリーンキーボードを表示</string>
-    <string name="woopos_barcode_scanning_title">バーコードスキャナーの初期設定</string>
     <string name="woopos_scanning_setup_success_message">商品のスキャンを開始する準備ができました。 次回スキャナーを接続する場合は、スキャナーの電源を入れるだけで自動的に再接続されます。</string>
     <string name="product_selector_subscription_not_supported">定期購入商品は注文の作成に対応していません</string>
     <string name="save_copy">コピーを保存</string>
@@ -636,7 +643,6 @@ Language: ja_JP
     <string name="analytics_spend_subtitle_value">利用額: %1$s</string>
     <string name="analytics_custom_list_selection_button_description">フィルター選択</string>
     <string name="woopos_cart_empty_content_description">お買い物カゴが空です</string>
-    <string name="woopos_cart_empty_subtitle">商品をタップして\nお買い物カゴに追加します</string>
     <string name="woopos_totals_main_error_label">合計を読み込めませんでした</string>
     <string name="woopos_items_in_cart_multiple">%d個のアイテム</string>
     <string name="ai_product_creation_error_media_upload">選択した商品の画像のアップロードに失敗しました。</string>

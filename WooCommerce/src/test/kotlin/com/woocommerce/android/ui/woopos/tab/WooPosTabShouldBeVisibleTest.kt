@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.tab
 
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
@@ -9,6 +11,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -28,6 +31,9 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
+        on { isFeatureUnsupported(CIABAffectedFeature.POS) } doReturn false
+    }
 
     private lateinit var sut: WooPosTabShouldBeVisible
     private lateinit var siteModel: SiteModel
@@ -46,6 +52,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
             isScreenSizeAllowed = isScreenSizeAllowed,
             wooCommerceStore = wooCommerceStore,
             isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
+            ciabSiteGateKeeper = ciabSiteGateKeeper,
             wooPosLog = mock()
         )
     }
@@ -116,6 +123,16 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
         whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).thenReturn(WooResult(fetchedSettings))
 
         val r = sut()
+        assertTrue(r.isSuccess)
+        assertFalse(r.getOrThrow())
+    }
+
+    @Test
+    fun `given feature unsupported for CIAB site, when invoked, then return success false`() = testBlocking {
+        whenever(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.POS)).thenReturn(true)
+
+        val r = sut()
+
         assertTrue(r.isSuccess)
         assertFalse(r.getOrThrow())
     }

@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-26 09:54:05+0000
+Translation-Revision-Date: 2025-09-09 15:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">所有包装尺寸参数均应大于 0。</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> 以将其添加到购物车</string>
+    <string name="woopos_cart_empty_scan_barcode">扫描条形码</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">点击产品或 </string>
+    <string name="woopos_orders_title">订单</string>
+    <string name="woopos_settings_help_category">帮助</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">网页结账</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">您不得移入或移出产品。</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">您已为此包裹购买标签。</string>
     <string name="woo_shipping_labels_customs_origin_country_info">产品的制造或组装国家/地区。</string>
@@ -71,7 +79,6 @@ Language: zh_CN
     <string name="woopos_scanning_setup_software_keyboard_message">Android 系统会将条形码扫描仪视为物理键盘，从而可能隐藏屏幕键盘。 让我们来检查一下：</string>
     <string name="woopos_scanning_setup_software_keyboard_title">显示屏幕键盘</string>
     <string name="woopos_scanning_setup_success_message">您可以开始扫描产品了。 下次需要连接扫描仪时，您只需将其打开，它就会自动重新连接。</string>
-    <string name="woopos_barcode_scanning_title">条形码扫描仪初始设置</string>
     <string name="woopos_cart_clear_all_button_content_description">“清除购物车中的商品”图标</string>
     <string name="product_selector_subscription_not_supported">不支持为订阅产品创建订单</string>
     <string name="save_copy">保存副本</string>
@@ -636,7 +643,6 @@ Language: zh_CN
     <string name="analytics_spend_subtitle_value">支出：%1$s</string>
     <string name="analytics_custom_list_selection_button_description">筛选条件选择</string>
     <string name="woopos_cart_empty_content_description">购物车为空</string>
-    <string name="woopos_cart_empty_subtitle">点击产品以\n将其添加到购物车</string>
     <string name="woopos_totals_main_error_label">无法加载总计。</string>
     <string name="woopos_items_in_cart_multiple">%d 件商品</string>
     <string name="ai_product_creation_error_media_upload">上传所选产品图片失败。</string>

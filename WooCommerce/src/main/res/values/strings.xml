@@ -4857,5 +4857,40 @@
     Bookings
     -->
     <string name="bookings_tab_title">Bookings</string>
+    <string name="bookings_fetch_error">Error fetching bookings</string>
+
+    <!-- Booking details view-->
+    <string name="booking_details_title">Booking #%s</string>
+    <string name="booking_appointment_details_header">APPOINTMENT DETAILS</string>
+    <string name="booking_appointment_label_date">Date</string>
+    <string name="booking_appointment_label_time">Time</string>
+    <string name="booking_appointment_label_staff">Assigned staff</string>
+    <string name="booking_appointment_label_location">Location</string>
+    <string name="booking_appointment_label_duration">Duration</string>
+    <string name="booking_appointment_label_price">Price</string>
+    <string name="booking_payment_status_unpaid">Unpaid</string>
+    <string name="booking_payment_status_paid">Paid</string>
+    <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
+    <string name="booking_payment_status_cancelled">Cancelled</string>
+    <string name="booking_payment_status_confirmed">Confirmed</string>
+    <string name="booking_payment_status_complete">Complete</string>
+    <string name="booking_attendance_status_booked">Booked</string>
+    <string name="booking_attendance_status_checked_in">Checked-in</string>
+    <string name="booking_attendance_status_cancelled">Cancelled</string>
+    <string name="booking_attendance_status_no_show">No-show</string>
+    <string name="booking_details_cancel_booking_button">Cancel booking</string>
+    <string name="booking_customer_details_header">CUSTOMER</string>
+    <string name="booking_attendance_header">ATTENDANCE</string>
+    <string name="booking_attendance_label_status">Status</string>
+    <string name="booking_customer_label_name">Customer name</string>
+    <string name="booking_customer_label_email">Email</string>
+    <string name="booking_customer_label_phone">Phone</string>
+    <string name="booking_billing_address_label">Billing address</string>
+    <string name="booking_attendance_change_status_description">Mark attendance to keep your reports accurate and spot booking trends.</string>
+    <string name="booking_attendance_update_title">Update attendance status</string>
+    <string name="booking_attendance_status_booked_desc">The appointment is scheduled but hasn’t happened yet.</string>
+    <string name="booking_attendance_status_checked_in_desc">The customer arrived and the session took place as planned.</string>
+    <string name="booking_attendance_status_cancelled_desc">The client will no longer be able to attend.</string>
+    <string name="booking_attendance_status_no_show_desc">The client missed the appointment without canceling in advance.</string>
 
 </resources>
