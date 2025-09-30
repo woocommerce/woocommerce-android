@@ -375,7 +375,6 @@ class ProductListFragment :
                             productAdapter.notifyItemChanged(event.newPosition)
                             R.id.nav_graph_products to ProductDetailFragmentArgs(
                                 mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
-                                isTrashEnabled = true,
                             ).toBundle()
                         },
                         navigateWithPhoneNavigation = {
@@ -390,7 +389,6 @@ class ProductListFragment :
                         tabletNavigateTo = {
                             R.id.nav_graph_products to ProductDetailFragmentArgs(
                                 mode = ProductDetailFragment.Mode.Empty,
-                                isTrashEnabled = true,
                             ).toBundle()
                         },
                         navigateWithPhoneNavigation = {
@@ -673,9 +671,9 @@ class ProductListFragment :
         productListToolbar.disableSearchListeners()
         (activity as? MainNavigationRouter)?.let { router ->
             if (sharedView == null) {
-                router.showProductDetail(remoteProductId, enableTrash = true)
+                router.showProductDetail(remoteProductId)
             } else {
-                router.showProductDetailWithSharedTransition(remoteProductId, sharedView, enableTrash = true)
+                router.showProductDetailWithSharedTransition(remoteProductId, sharedView)
             }
         }
     }

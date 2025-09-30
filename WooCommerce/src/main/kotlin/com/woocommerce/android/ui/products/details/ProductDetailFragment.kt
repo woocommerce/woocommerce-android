@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.BottomNavigationPosition
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.BaseProductFragment
@@ -132,7 +133,8 @@ class ProductDetailFragment :
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    @Inject lateinit var crashLogging: CrashLogging
+    @Inject
+    lateinit var crashLogging: CrashLogging
 
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
 
@@ -153,6 +155,10 @@ class ProductDetailFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val isTrashEnabled =
+            findNavController().previousBackStackEntry?.destination?.id == BottomNavigationPosition.PRODUCTS.id
+        viewModel.setTrashActionPossible(isTrashEnabled)
 
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON)
 
@@ -396,6 +402,7 @@ class ProductDetailFragment :
                 is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is Event.LaunchUrlInAuthenticatedWebView -> findNavController(R.id.nav_host_fragment_main)
                     .navigateSafely(NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(event.url))
+
                 is RefreshMenu -> toolbarHelper.setupToolbar()
 
                 is TrashProduct -> {
@@ -480,7 +487,6 @@ class ProductDetailFragment :
         hideProgressDialog()
         (activity as? MainNavigationRouter)?.showProductDetail(
             remoteProductId = productRemoteId,
-            enableTrash = true,
             popUpToProductList = true
         )
     }

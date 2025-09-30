@@ -165,7 +165,6 @@ private fun HandleEvents(
                 is OpenTopPerformer -> navController.navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
                         mode = ShowProduct(event.productId),
-                        isTrashEnabled = false
                     )
                 )
 
