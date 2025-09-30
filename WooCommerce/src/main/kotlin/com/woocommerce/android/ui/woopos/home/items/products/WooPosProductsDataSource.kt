@@ -31,11 +31,11 @@ class WooPosProductsDataSource @Inject constructor(
     private val productsIndex: WooPosProductsIndex,
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
     private val posProductMapper: WooPosWCProductToWooPosProductModelMapper,
-) {
+) : WooPosProductsDataSourceInterface {
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)
 
-    val hasMorePages: Boolean
+    override val hasMorePages: Boolean
         get() = canLoadMore.get()
 
     suspend fun prepopulateProductsCache(): Result<Unit> = coroutineScope {
@@ -80,11 +80,13 @@ class WooPosProductsDataSource @Inject constructor(
         Result.success(Unit)
     }
 
-    fun loadProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
+    override fun fetchFirstPage(
+        forceRefresh: Boolean
+    ): Flow<ProductsResult> = flow {
         offset.set(0)
         productsIndex.clearCache()
 
-        if (!forceRefreshProducts) {
+        if (!forceRefresh) {
             val cachedProducts = sortProducts(productsCache.getAll()).take(NORMAL_PAGE_SIZE)
             emit(ProductsResult.Cached(cachedProducts))
         }
@@ -98,7 +100,7 @@ class WooPosProductsDataSource @Inject constructor(
         }
     }.flowOn(Dispatchers.IO).take(2)
 
-    suspend fun loadMore(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
+    override suspend fun loadMore(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
         if (!canLoadMore.get()) {
             return@withContext Result.success(productsIndex.getProductList())
         }
@@ -159,6 +161,11 @@ class WooPosProductsDataSource @Inject constructor(
     sealed class ProductsResult {
         data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
         data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
+    }
+
+    override suspend fun resetState() {
+        canLoadMore.set(false)
+        offset.set(0)
     }
 
     companion object {

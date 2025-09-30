@@ -34,7 +34,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosProductsViewModel @Inject constructor(
-    private val productsDataSource: WooPosProductsDataSource,
+    private val dataSource: WooPosProductsDataSourceInterface,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val priceFormat: WooPosFormatPrice,
@@ -44,6 +44,7 @@ class WooPosProductsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
+
     private var loadMoreProductsJob: Job? = null
     private var loadProductsJob: Job? = null
     private var loadMoreAfterLoadCompletes = false
@@ -181,7 +182,7 @@ class WooPosProductsViewModel @Inject constructor(
                 WooPosProductsViewState.Loading()
             }
 
-            productsDataSource.loadProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
+            dataSource.fetchFirstPage(forceRefresh = forceRefreshProducts).collect { result ->
                 when (result) {
                     is WooPosProductsDataSource.ProductsResult.Cached -> {
                         if (result.products.isNotEmpty()) {
@@ -195,11 +196,12 @@ class WooPosProductsViewModel @Inject constructor(
                                 val products = result.productsResult.getOrThrow()
                                 if (products.isNotEmpty()) {
                                     val currentState = _viewState.value
-                                    val paginationState = if (loadMoreProductsJob?.isActive == true) {
-                                        WooPosPaginationState.Loading
-                                    } else {
-                                        WooPosPaginationState.None
-                                    }
+                                    val paginationState =
+                                        if (loadMoreProductsJob?.isActive == true && dataSource.hasMorePages) {
+                                            WooPosPaginationState.Loading
+                                        } else {
+                                            WooPosPaginationState.None
+                                        }
                                     if (currentState is WooPosProductsViewState.Content) {
                                         currentState.copy(
                                             items = products.map { it.toItemSelectionViewState() },
@@ -282,7 +284,9 @@ class WooPosProductsViewModel @Inject constructor(
 
         if (loadProductsJob?.isActive == true) {
             loadMoreAfterLoadCompletes = true
-            _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+            if (dataSource.hasMorePages) {
+                _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+            }
             return
         }
 
@@ -290,7 +294,7 @@ class WooPosProductsViewModel @Inject constructor(
             return
         }
 
-        if (!productsDataSource.hasMorePages) {
+        if (!dataSource.hasMorePages) {
             return
         }
 
@@ -298,7 +302,7 @@ class WooPosProductsViewModel @Inject constructor(
 
         loadMoreProductsJob?.cancel()
         loadMoreProductsJob = viewModelScope.launch {
-            val result = productsDataSource.loadMore()
+            val result = dataSource.loadMore()
             _viewState.value = if (result.isSuccess) {
                 result.getOrThrow().toContentState().also {
                     analyticsTracker.track(

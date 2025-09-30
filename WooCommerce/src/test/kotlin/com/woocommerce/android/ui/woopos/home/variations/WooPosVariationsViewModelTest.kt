@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsUIEvents
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
@@ -57,7 +56,6 @@ class WooPosVariationsViewModelTest {
 
     private val getProductById: WooPosGetProductById = mock()
     private val variationsDataSource: WooPosVariationsDataSource = mock()
-    private val variationsInDbDataSource: WooPosVariationsInDbDataSource = mock()
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
         on { invoke() } doReturn false // Default to using variationsDataSource
     }
@@ -761,8 +759,7 @@ class WooPosVariationsViewModelTest {
         WooPosVariationsViewModel(
             fromChildToParentEventSender,
             getProductById,
-            variationsDataSource,
-            variationsInDbDataSource,
+            variationsDataSource, // Since feature flag is false in test
             priceFormat,
             resourceProvider,
             analyticsTracker,
