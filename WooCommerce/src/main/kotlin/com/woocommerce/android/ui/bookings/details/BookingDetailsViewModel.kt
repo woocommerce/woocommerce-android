@@ -26,6 +26,7 @@ class BookingDetailsViewModel @Inject constructor(
         BookingDetailsViewState(
             onMarkAsPaid = ::onMarkAsPaid,
             onMarkAsRefunded = ::onMarkAsRefunded,
+            onCancelBooking = ::onCancelBooking,
         )
     )
     val state: LiveData<BookingDetailsViewState> = _state.asLiveData()
@@ -62,7 +63,7 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onCancelBooking() {
+    private fun onCancelBooking() {
         // TODO Add logic to Cancel booking
     }
 }

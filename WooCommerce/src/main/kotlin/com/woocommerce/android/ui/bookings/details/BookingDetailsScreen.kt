@@ -46,7 +46,6 @@ fun BookingDetailsScreen(
         BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
-            onCancelBooking = viewModel::onCancelBooking,
             onAttendanceStatusSelected = viewModel::onAttendanceStatusSelected,
             onViewOrder = onViewOrder,
         )
@@ -57,7 +56,6 @@ fun BookingDetailsScreen(
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
-    onCancelBooking: () -> Unit,
     onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit,
     onViewOrder: (Long) -> Unit,
 ) {
@@ -86,7 +84,7 @@ fun BookingDetailsScreen(
                 )
                 BookingAppointmentDetails(
                     model = viewState.bookingsAppointmentDetails,
-                    onCancelBooking = onCancelBooking,
+                    onCancelBooking = viewState.onCancelBooking,
                     modifier = Modifier.fillMaxWidth()
                 )
                 BookingCustomerDetails(
@@ -145,7 +143,6 @@ private fun BookingDetailsPreview() {
                 )
             ),
             onBack = {},
-            onCancelBooking = {},
             onAttendanceStatusSelected = {},
             onViewOrder = {}
         )
