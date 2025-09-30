@@ -176,7 +176,7 @@ class WooPosProductsViewModel @Inject constructor(
         loadMoreProductsJob?.cancel()
         loadProductsJob = viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
-                buildProductsReloadingState()
+                buildReloadingState()
             } else {
                 WooPosProductsViewState.Loading()
             }
@@ -237,7 +237,7 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
-    private fun buildProductsReloadingState() =
+    private fun buildReloadingState() =
         when (val state = viewState.value) {
             is WooPosProductsViewState.Content -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
             is WooPosProductsViewState.Loading -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
@@ -333,7 +333,7 @@ class WooPosProductsViewModel @Inject constructor(
     }
 
     private fun performIncrementalSync() {
-        _viewState.value = buildProductsReloadingState()
+        _viewState.value = buildReloadingState()
 
         viewModelScope.launch {
             selectedSite.getOrNull()?.let { site ->
