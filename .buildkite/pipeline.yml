@@ -89,6 +89,8 @@ steps:
           - $TEST_COLLECTOR :
               <<: *test_collector_common_params
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
+          - claude-summarize#v1.1.0:
+              api_key: "ANTHROPIC_API_KEY"
         artifact_paths:
           - "**/build/test-results/merged-test-results.xml"
 
