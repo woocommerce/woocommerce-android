@@ -142,12 +142,6 @@ class WooPosProductsInDbDataSourceTest {
         assertThat(sut.hasMorePages).isFalse()
     }
 
-    @Test
-    fun `when resetState called, then does nothing`() = runTest {
-        // When/Then - should complete without error
-        sut.resetState()
-    }
-
     private fun createProductEntity(
         remoteId: Long,
         name: String,

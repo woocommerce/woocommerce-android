@@ -62,9 +62,6 @@ class WooPosProductsViewModel @Inject constructor(
 
     init {
         listenEventsFromParent()
-        viewModelScope.launch {
-            dataSource.resetState()
-        }
         loadProducts(
             forceRefreshProducts = false,
             withPullToRefresh = false,

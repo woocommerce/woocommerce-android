@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsUIEvents
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
