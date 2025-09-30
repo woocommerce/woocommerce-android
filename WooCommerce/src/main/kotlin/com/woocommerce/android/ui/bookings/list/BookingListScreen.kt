@@ -105,20 +105,20 @@ private fun BookingList(
         LazyColumn(
             state = listState,
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceContainer)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
         ) {
             itemsIndexed(state.bookings) { _, booking ->
-                BookingSummary(
-                    model = booking.summary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = { state.onBookingClick(booking.id) })
-                )
-                HorizontalDivider(
-                    Modifier.padding(start = 16.dp)
-                )
+                Column(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
+                    BookingSummary(
+                        model = booking.summary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = { state.onBookingClick(booking.id) })
+                    )
+                    HorizontalDivider(
+                        Modifier.padding(start = 16.dp)
+                    )
+                }
             }
 
             if (state.loadingState == BookingListLoadingState.Appending) {
