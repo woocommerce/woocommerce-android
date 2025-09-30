@@ -21,7 +21,8 @@ class BookingsRestClient @Inject constructor(
     suspend fun fetchBookings(
         site: SiteModel,
         perPage: Int,
-        page: Int
+        page: Int,
+        filters: List<BookingsFilterOption>
     ): WooPayload<Array<BookingDto>> {
         val endpoint = WOOCOMMERCE.bookings.pathV2Bookings
 
@@ -32,11 +33,25 @@ class BookingsRestClient @Inject constructor(
             params = mapOf(
                 "per_page" to perPage.toString(),
                 "page" to page.toString()
-            )
+            ) + filters.toQueryParams()
         )
         return when (response) {
             is Success -> WooPayload(response.data)
             is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
+    private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> {
+        return buildMap {
+            this@toQueryParams.forEach { filter ->
+                when (filter) {
+                    is BookingsFilterOption.DateRange -> {
+                        filter.before?.let { set("start_date_before", it.toString()) }
+                        filter.after?.let { set("start_date_after", it.toString()) }
+                    }
+                    is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
+                }
+            }
         }
     }
 }

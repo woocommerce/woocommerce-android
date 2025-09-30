@@ -32,11 +32,11 @@ class BookingListHandlerTest : BaseUnitTest() {
     private val availablePages = 3
     private val bookingsRepository: BookingsRepository = mock {
         val results = MutableStateFlow(emptyList<Booking>())
-        on { observeBookings(any()) } doAnswer { invocation ->
+        on { observeBookings(any(), any()) } doAnswer { invocation ->
             val limit = invocation.getArgument<Int>(0)
             results.map { it.take(limit) }
         }
-        onBlocking { fetchBookings(any(), any()) } doAnswer InlineClassesAnswer { invocation ->
+        onBlocking { fetchBookings(any(), any(), any()) } doAnswer InlineClassesAnswer { invocation ->
             val page = invocation.getArgument<Int>(0)
             val perPage = invocation.getArgument<Int>(1)
             val canLoadMore = page < availablePages
@@ -54,7 +54,7 @@ class BookingListHandlerTest : BaseUnitTest() {
     @Test
     fun `given repository returns bookings, when observing bookings flow, then returns bookings`() = testBlocking {
         val sampleBookings = List(10) { getSampleBooking(it) }
-        given(bookingsRepository.observeBookings(any())).willReturn(flowOf(sampleBookings))
+        given(bookingsRepository.observeBookings(any(), any())).willReturn(flowOf(sampleBookings))
 
         val bookings = bookingListHandler.bookingsFlow.first()
 
@@ -75,7 +75,7 @@ class BookingListHandlerTest : BaseUnitTest() {
     fun `given repository fetch fails, when loading bookings with force refresh, then returns failure`() =
         testBlocking {
             val exception = Exception("Network error")
-            given(bookingsRepository.fetchBookings(page = any(), perPage = any()))
+            given(bookingsRepository.fetchBookings(page = any(), perPage = any(), filters = any()))
                 .willReturn(Result.failure(exception))
 
             val result = bookingListHandler.loadBookings(searchQuery = null, forceRefresh = true)
@@ -90,7 +90,7 @@ class BookingListHandlerTest : BaseUnitTest() {
             val result = bookingListHandler.loadMore()
 
             assertThat(result.isSuccess).isTrue()
-            verify(bookingsRepository, never()).fetchBookings(any(), any())
+            verify(bookingsRepository, never()).fetchBookings(any(), any(), any())
         }
 
     @Test
@@ -114,7 +114,11 @@ class BookingListHandlerTest : BaseUnitTest() {
         }
 
         assertThat(result?.isSuccess).isTrue()
-        verify(bookingsRepository, never()).fetchBookings(page = intThat { it > availablePages }, perPage = any())
+        verify(bookingsRepository, never()).fetchBookings(
+            page = intThat { it > availablePages },
+            perPage = any(),
+            filters = any()
+        )
     }
 
     @Test
@@ -141,7 +145,7 @@ class BookingListHandlerTest : BaseUnitTest() {
         val moreBookings = bookingListHandler.bookingsFlow.first()
 
         @Suppress("UnusedFlow")
-        verify(bookingsRepository).observeBookings(limit = eq(2 * BookingListHandler.PAGE_SIZE))
+        verify(bookingsRepository).observeBookings(limit = eq(2 * BookingListHandler.PAGE_SIZE), filters = any())
         assertThat(moreBookings).hasSize(2 * BookingListHandler.PAGE_SIZE)
     }
 

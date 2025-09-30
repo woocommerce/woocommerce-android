@@ -21,17 +21,27 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingListViewModelTest : BaseUnitTest() {
     private val bookingListHandler: BookingListHandler = mock {
         on { bookingsFlow } doReturn flowOf(emptyList())
-        onBlocking { loadBookings(searchQuery = anyOrNull(), forceRefresh = any()) } doReturn Result.success(Unit)
+        onBlocking {
+            loadBookings(
+                searchQuery = anyOrNull(),
+                forceRefresh = any(),
+                filters = any()
+            )
+        } doReturn Result.success(Unit)
         onBlocking { loadMore() } doReturn Result.success(Unit)
     }
+    private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
+    private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
 
     private lateinit var viewModel: BookingListViewModel
 
@@ -43,7 +53,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(bookings))
         viewModel = BookingListViewModel(
             savedStateHandle = SavedStateHandle(),
-            bookingListHandler = bookingListHandler
+            bookingListHandler = bookingListHandler,
+            filtersBuilder = filtersBuilder
         )
     }
 
@@ -57,7 +68,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        verify(bookingListHandler).loadBookings(searchQuery = eq(null), forceRefresh = eq(true))
+        verify(bookingListHandler).loadBookings(searchQuery = eq(null), forceRefresh = eq(true), filters = any())
 
         val state = viewModel.state.getOrAwaitValue().contentState
         assertThat(state.bookings).hasSize(1)
@@ -96,7 +107,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         verify(bookingListHandler, times(2)).loadBookings(
             searchQuery = eq(null),
-            forceRefresh = eq(true)
+            forceRefresh = eq(true),
+            filters = any()
         )
     }
 
@@ -136,7 +148,7 @@ class BookingListViewModelTest : BaseUnitTest() {
     fun `when booking handler fails to load, then show error snackbar`() = testBlocking {
         // GIVEN
         setup {
-            whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), forceRefresh = any()))
+            whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), forceRefresh = any(), filters = any()))
                 .thenReturn(Result.failure(Exception("Network error")))
         }
 
@@ -182,6 +194,30 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         val updatedState = viewModel.state.getOrAwaitValue()
         assertThat(updatedState.tabState.selectedTab).isEqualTo(BookingListTab.Upcoming)
+    }
+
+    @Test
+    fun `when tab is changed, then bookings are refetched`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.tabState.onTabChanged(BookingListTab.Upcoming)
+        advanceUntilIdle()
+
+        // THEN
+        verify(bookingListHandler).loadBookings(
+            searchQuery = eq(null),
+            forceRefresh = eq(true),
+            filters = eq(
+                listOfNotNull(
+                    with(filtersBuilder) {
+                        BookingListTab.Upcoming.asDateRangeFilter()
+                    }
+                )
+            )
+        )
     }
 
     private fun getSampleBooking(id: Int): Booking {

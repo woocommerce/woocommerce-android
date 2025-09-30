@@ -27,16 +27,17 @@ class BookingsStore @Inject constructor(
     suspend fun fetchBookings(
         site: SiteModel,
         perPage: Int = BookingsRestClient.DEFAULT_PER_PAGE,
-        page: Int = 1
+        page: Int = 1,
+        filters: List<BookingsFilterOption> = emptyList()
     ): WooResult<Boolean> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
-            val response = bookingsRestClient.fetchBookings(site, perPage, page)
+            val response = bookingsRestClient.fetchBookings(site, perPage, page, filters)
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    if (page == 1) {
+                    if (page == 1 && filters.isEmpty()) {
                         // Clear existing bookings when fetching the first page
-                        // TODO when supporting filters, we should only clear bookings if no filters are applied
+                        // TODO when we support text search, we should only clear if no search is applied
                         bookingsDao.deleteAllForSite(site.localId())
                     }
                     val entities = response.result.map { it.toEntity(site.localId()) }
@@ -53,8 +54,11 @@ class BookingsStore @Inject constructor(
         }
     }
 
-    fun observeBookings(site: SiteModel, limit: Int? = null): Flow<List<BookingEntity>> =
-        bookingsDao.observeBookings(site.localId(), limit)
+    fun observeBookings(
+        site: SiteModel,
+        limit: Int? = null,
+        filters: List<BookingsFilterOption> = emptyList()
+    ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters)
 
     private fun BookingDto.toEntity(localSiteId: LocalId): BookingEntity = BookingEntity(
         id = RemoteId(id),

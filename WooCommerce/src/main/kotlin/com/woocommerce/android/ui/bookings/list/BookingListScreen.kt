@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,7 @@ import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import kotlinx.coroutines.launch
 
 @Composable
 fun BookingListScreen(viewModel: BookingListViewModel) {
@@ -49,18 +52,28 @@ fun BookingListScreen(state: BookingListViewState) {
             )
         }
     ) { paddingValues ->
+        val coroutineScope = rememberCoroutineScope()
+        val lazyListState = rememberLazyListState()
+
         Column(modifier = Modifier.padding(paddingValues)) {
             WCPrimaryTabRow(
                 tabs = BookingListTab.entries,
                 selectedTab = state.tabState.selectedTab,
                 tabName = { it.name() },
-                onTabSelected = state.tabState.onTabChanged,
+                onTabSelected = {
+                    // Scroll to top when tab changes
+                    coroutineScope.launch {
+                        lazyListState.scrollToItem(0)
+                    }
+                    state.tabState.onTabChanged(it)
+                },
                 modifier = Modifier
             )
             when {
                 state.contentState.isNotEmpty() -> {
                     BookingList(
                         state = state.contentState,
+                        listState = lazyListState,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -93,6 +106,7 @@ fun BookingListScreen(state: BookingListViewState) {
 @Composable
 private fun BookingList(
     state: BookingListContentState,
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
     WCPullToRefreshBox(
@@ -101,7 +115,6 @@ private fun BookingList(
         state = rememberPullToRefreshState(),
         modifier = modifier
     ) {
-        val listState = rememberLazyListState()
         LazyColumn(
             state = listState,
             modifier = Modifier
