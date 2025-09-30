@@ -33,7 +33,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         onBlocking { loadMore() } doReturn Result.success(Unit)
     }
 
-    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private lateinit var viewModel: BookingListViewModel
 
     suspend fun setup(
         bookings: List<Booking> = emptyList(),
@@ -41,6 +41,10 @@ class BookingListViewModelTest : BaseUnitTest() {
     ) {
         prepareMocks()
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(bookings))
+        viewModel = BookingListViewModel(
+            savedStateHandle = SavedStateHandle(),
+            bookingListHandler = bookingListHandler
+        )
     }
 
     @Test
@@ -50,18 +54,14 @@ class BookingListViewModelTest : BaseUnitTest() {
         setup(bookings = bookings)
 
         // WHEN
-        val viewModel = BookingListViewModel(
-            savedStateHandle = savedStateHandle,
-            bookingListHandler = bookingListHandler
-        )
         advanceUntilIdle()
 
         // THEN
         verify(bookingListHandler).loadBookings(searchQuery = eq(null), forceRefresh = eq(true))
 
-        val state = viewModel.state.getOrAwaitValue()
+        val state = viewModel.state.getOrAwaitValue().contentState
         assertThat(state.bookings).hasSize(1)
-        assertThat(state.loadingState).isEqualTo(BookingListViewState.LoadingState.Idle)
+        assertThat(state.loadingState).isEqualTo(BookingListLoadingState.Idle)
     }
 
     @Test
@@ -74,14 +74,10 @@ class BookingListViewModelTest : BaseUnitTest() {
             setup(bookings = bookings)
 
             // WHEN
-            val viewModel = BookingListViewModel(
-                savedStateHandle = savedStateHandle,
-                bookingListHandler = bookingListHandler
-            )
             advanceUntilIdle()
 
             // THEN
-            val state = viewModel.state.getOrAwaitValue()
+            val state = viewModel.state.getOrAwaitValue().contentState
             assertThat(state.bookings).hasSize(2)
             assertThat(state.bookings[0].id).isEqualTo(booking1.id.value)
             assertThat(state.bookings[1].id).isEqualTo(booking2.id.value)
@@ -91,14 +87,9 @@ class BookingListViewModelTest : BaseUnitTest() {
     fun `when onRefresh is called, then bookings are refreshed`() = testBlocking {
         // GIVEN
         setup()
-        val viewModel = BookingListViewModel(
-            savedStateHandle = savedStateHandle,
-            bookingListHandler = bookingListHandler
-        )
-        advanceUntilIdle()
 
         // WHEN
-        val state = viewModel.state.getOrAwaitValue()
+        val state = viewModel.state.getOrAwaitValue().contentState
         state.onRefresh()
         advanceUntilIdle()
 
@@ -113,14 +104,9 @@ class BookingListViewModelTest : BaseUnitTest() {
     fun `when onLoadMore is called, then handler loadMore is invoked`() = testBlocking {
         // GIVEN
         setup()
-        val viewModel = BookingListViewModel(
-            savedStateHandle = savedStateHandle,
-            bookingListHandler = bookingListHandler
-        )
-        advanceUntilIdle()
 
         // WHEN
-        val state = viewModel.state.getOrAwaitValue()
+        val state = viewModel.state.getOrAwaitValue().contentState
         state.onLoadMore()
         advanceUntilIdle()
 
@@ -133,14 +119,9 @@ class BookingListViewModelTest : BaseUnitTest() {
         // GIVEN
         val bookingId = 123L
         setup()
-        val viewModel = BookingListViewModel(
-            savedStateHandle = savedStateHandle,
-            bookingListHandler = bookingListHandler
-        )
-        advanceUntilIdle()
 
         // WHEN
-        val state = viewModel.state.getOrAwaitValue()
+        val state = viewModel.state.getOrAwaitValue().contentState
         val events = viewModel.event.captureValues()
         state.onBookingClick(bookingId)
 
@@ -160,16 +141,12 @@ class BookingListViewModelTest : BaseUnitTest() {
         }
 
         // WHEN
-        val viewModel = BookingListViewModel(
-            savedStateHandle = savedStateHandle,
-            bookingListHandler = bookingListHandler
-        )
         advanceUntilIdle()
 
         // THEN
-        val state = viewModel.state.getOrAwaitValue()
+        val state = viewModel.state.getOrAwaitValue().contentState
         val event = viewModel.event.getOrAwaitValue()
-        assertThat(state.loadingState).isEqualTo(BookingListViewState.LoadingState.Idle)
+        assertThat(state.loadingState).isEqualTo(BookingListLoadingState.Idle)
         assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
     }
 
@@ -180,22 +157,31 @@ class BookingListViewModelTest : BaseUnitTest() {
             whenever(bookingListHandler.loadMore())
                 .thenReturn(Result.failure(Exception("Network error")))
         }
-        val viewModel = BookingListViewModel(
-            savedStateHandle = savedStateHandle,
-            bookingListHandler = bookingListHandler
-        )
-        advanceUntilIdle()
 
         // WHEN
-        val state = viewModel.state.getOrAwaitValue()
+        val state = viewModel.state.getOrAwaitValue().contentState
         state.onLoadMore()
         advanceUntilIdle()
 
         // THEN
-        val finalState = viewModel.state.getOrAwaitValue()
+        val finalState = viewModel.state.getOrAwaitValue().contentState
         val event = viewModel.event.getOrAwaitValue()
-        assertThat(finalState.loadingState).isEqualTo(BookingListViewState.LoadingState.Idle)
+        assertThat(finalState.loadingState).isEqualTo(BookingListLoadingState.Idle)
         assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
+    }
+
+    @Test
+    fun `when tab is changed, then state is updated`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.tabState.onTabChanged(BookingListTab.Upcoming)
+
+        // THEN
+        val updatedState = viewModel.state.getOrAwaitValue()
+        assertThat(updatedState.tabState.selectedTab).isEqualTo(BookingListTab.Upcoming)
     }
 
     private fun getSampleBooking(id: Int): Booking {

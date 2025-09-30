@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.bookings.list
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -24,6 +27,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -45,34 +49,41 @@ fun BookingListScreen(state: BookingListViewState) {
             )
         }
     ) { paddingValues ->
-        when {
-            state.bookings.isNotEmpty() -> {
-                BookingList(
-                    state = state,
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                )
-            }
+        Column(modifier = Modifier.padding(paddingValues)) {
+            WCPrimaryTabRow(
+                tabs = BookingListTab.entries,
+                selectedTab = state.tabState.selectedTab,
+                tabName = { it.name() },
+                onTabSelected = state.tabState.onTabChanged,
+                modifier = Modifier
+            )
+            when {
+                state.contentState.isNotEmpty() -> {
+                    BookingList(
+                        state = state.contentState,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
 
-            state.loadingState == BookingListViewState.LoadingState.Loading -> {
-                // TODO replace with shimmer
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                        .wrapContentSize()
-                )
-            }
+                state.contentState.loadingState == BookingListLoadingState.Loading -> {
+                    // TODO replace with shimmer
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize()
+                            .wrapContentSize()
+                    )
+                }
 
-            else -> {
-                // TODO replace with empty state
-                Text(
-                    text = "No bookings found",
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .wrapContentSize()
-                )
+                else -> {
+                    // TODO replace with empty state
+                    Text(
+                        text = "No bookings found",
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .wrapContentSize()
+                    )
+                }
             }
         }
     }
@@ -81,11 +92,11 @@ fun BookingListScreen(state: BookingListViewState) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BookingList(
-    state: BookingListViewState,
+    state: BookingListContentState,
     modifier: Modifier = Modifier
 ) {
     WCPullToRefreshBox(
-        isRefreshing = state.loadingState == BookingListViewState.LoadingState.Refreshing,
+        isRefreshing = state.loadingState == BookingListLoadingState.Refreshing,
         onRefresh = state.onRefresh,
         state = rememberPullToRefreshState(),
         modifier = modifier
@@ -97,18 +108,20 @@ private fun BookingList(
                 .fillMaxSize()
         ) {
             itemsIndexed(state.bookings) { _, booking ->
-                BookingSummary(
-                    model = booking.summary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = { state.onBookingClick(booking.id) })
-                )
-                HorizontalDivider(
-                    Modifier.padding(start = 16.dp)
-                )
+                Column(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
+                    BookingSummary(
+                        model = booking.summary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = { state.onBookingClick(booking.id) })
+                    )
+                    HorizontalDivider(
+                        Modifier.padding(start = 16.dp)
+                    )
+                }
             }
 
-            if (state.loadingState == BookingListViewState.LoadingState.Appending) {
+            if (state.loadingState == BookingListLoadingState.Appending) {
                 item {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -125,27 +138,40 @@ private fun BookingList(
 }
 
 @Composable
+private fun BookingListTab.name(): String = when (this) {
+    BookingListTab.Today -> stringResource(R.string.bookings_tab_today)
+    BookingListTab.Upcoming -> stringResource(R.string.bookings_tab_upcoming)
+    BookingListTab.All -> stringResource(R.string.bookings_tab_all)
+}
+
+@Composable
 @LightDarkThemePreviews
 private fun BookingListPreview() {
     WooThemeWithBackground {
         BookingListScreen(
             state = BookingListViewState(
-                bookings = List(3) {
-                    BookingListItem(
-                        id = it.toLong(),
-                        summary = com.woocommerce.android.ui.bookings.compose.BookingSummaryModel(
-                            date = "Aug 20, 2024",
-                            name = "Women’s Haircut",
-                            customerName = "Margarita Nikolaevna",
-                            attendanceStatus = com.woocommerce.android.ui.bookings.compose.AttendanceStatus.BOOKED,
-                            paymentStatus = com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus.PAID
+                contentState = BookingListContentState(
+                    bookings = List(20) {
+                        BookingListItem(
+                            id = it.toLong(),
+                            summary = com.woocommerce.android.ui.bookings.compose.BookingSummaryModel(
+                                date = "Aug 20, 2024",
+                                name = "Women’s Haircut",
+                                customerName = "Margarita Nikolaevna",
+                                attendanceStatus = com.woocommerce.android.ui.bookings.compose.AttendanceStatus.BOOKED,
+                                paymentStatus = com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus.PAID
+                            )
                         )
-                    )
-                },
-                loadingState = BookingListViewState.LoadingState.Idle,
-                onRefresh = {},
-                onLoadMore = {},
-                onBookingClick = {}
+                    },
+                    loadingState = BookingListLoadingState.Idle,
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onBookingClick = {}
+                ),
+                tabState = BookingListTabState(
+                    selectedTab = BookingListTab.Today,
+                    onTabChanged = {}
+                )
             )
         )
     }
