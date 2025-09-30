@@ -143,6 +143,13 @@ private fun BookingListTabs(
     tabState: BookingListTabState,
     modifier: Modifier = Modifier
 ) {
+    @Composable
+    fun BookingListTab.name(): String = when (this) {
+        BookingListTab.Today -> stringResource(R.string.bookings_tab_today)
+        BookingListTab.Upcoming -> stringResource(R.string.bookings_tab_upcoming)
+        BookingListTab.All -> stringResource(R.string.bookings_tab_all)
+    }
+
     val selectedTabIndex = BookingListTab.entries.indexOf(tabState.selectedTab)
     PrimaryTabRow(
         selectedTabIndex = selectedTabIndex,
@@ -155,7 +162,7 @@ private fun BookingListTabs(
                 onClick = { tabState.onTabChanged(tab) },
                 text = {
                     Text(
-                        text = tab.name,
+                        text = tab.name(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
