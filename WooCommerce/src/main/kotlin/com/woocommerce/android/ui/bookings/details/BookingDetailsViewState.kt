@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 
 data class BookingDetailsViewState(
     val toolbarTitle: String = "",
+    val orderId: Long = 0L,
     val bookingSummary: BookingSummaryModel = BookingSummaryModel(
         date = "05/07/2025, 11:00 AM",
         name = "Women’s Haircut",

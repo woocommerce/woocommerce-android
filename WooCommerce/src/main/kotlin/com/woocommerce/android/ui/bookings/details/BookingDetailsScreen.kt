@@ -37,7 +37,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun BookingDetailsScreen(
     viewModel: BookingDetailsViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onViewOrder: (Long) -> Unit
 ) {
     val viewState by viewModel.state.observeAsState()
 
@@ -46,7 +47,8 @@ fun BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
             onCancelBooking = viewModel::onCancelBooking,
-            onAttendanceStatusSelected = viewModel::onAttendanceStatusSelected
+            onAttendanceStatusSelected = viewModel::onAttendanceStatusSelected,
+            onViewOrder = onViewOrder
         )
     }
 }
@@ -56,7 +58,8 @@ fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
     onCancelBooking: () -> Unit,
-    onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit
+    onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit,
+    onViewOrder: (Long) -> Unit
 ) {
     val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
@@ -99,9 +102,9 @@ fun BookingDetailsScreen(
                 )
                 BookingPaymentSection(
                     model = viewState.bookingPaymentDetails,
-                    paymentStatus = viewState.bookingSummary.paymentStatus,
+                    paymentStatus = viewState.bookingSummary.status,
                     onMarkAsPaid = {},
-                    onViewOrder = {},
+                    onViewOrder = { onViewOrder(viewState.orderId) },
                     onMarkAsRefunded = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -143,7 +146,8 @@ private fun BookingDetailsPreview() {
             ),
             onBack = {},
             onCancelBooking = {},
-            onAttendanceStatusSelected = {}
+            onAttendanceStatusSelected = {},
+            onViewOrder = {}
         )
     }
 }
