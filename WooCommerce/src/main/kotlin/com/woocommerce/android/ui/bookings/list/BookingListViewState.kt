@@ -10,7 +10,8 @@ import java.time.format.FormatStyle
 
 data class BookingListViewState(
     val contentState: BookingListContentState,
-    val tabState: BookingListTabState
+    val tabState: BookingListTabState,
+    val controlsState: BookingListControlsState
 )
 
 data class BookingListContentState(
@@ -26,6 +27,11 @@ data class BookingListContentState(
 data class BookingListTabState(
     val selectedTab: BookingListTab,
     val onTabChanged: (BookingListTab) -> Unit
+)
+
+data class BookingListControlsState(
+    val onSortClick: () -> Unit,
+    val onFilterClick: () -> Unit
 )
 
 data class BookingListItem(
