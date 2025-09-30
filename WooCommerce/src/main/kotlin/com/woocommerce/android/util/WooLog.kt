@@ -50,7 +50,8 @@ object WooLog {
         GOOGLE_ADS,
         POS,
         CUSTOM_FIELDS,
-        SHIPPING_LABELS
+        SHIPPING_LABELS,
+        BOOKINGS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

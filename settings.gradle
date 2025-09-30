@@ -13,7 +13,8 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.gradle.develocity' version '3.19'
+    id 'com.gradle.develocity' version '4.2'
+    id "com.gradle.common-custom-user-data-gradle-plugin" version "2.4.0"
 }
 
 ext {
@@ -88,7 +89,7 @@ buildCache {
 def checkForRemoteBuildCacheOptimizedExperience() {
     assertSecretsApplied()
     checkDeveloperPropertiesMatchDefaults()
-    assertJava17Amazon()
+    assertJava21Amazon()
 }
 
 def assertSecretsApplied() {
@@ -111,13 +112,14 @@ def checkDeveloperPropertiesMatchDefaults() {
     }
 }
 
-boolean assertJava17Amazon() {
+boolean assertJava21Amazon() {
     def version = System.getProperty("java.version")
+    def expectedVersion = "21.0.6"
     def vendor = System.getProperty("java.vendor")
 
-    if (!(version.contains("17") && vendor.toLowerCase().contains("amazon"))) {
+    if (!(version.contains(expectedVersion) && vendor.toLowerCase().contains("amazon"))) {
         logger.error("Java version: $version, vendor: $vendor")
-        throw new GradleException("Java version is not 17 or vendor is not Amazon Corretto. This significantly reduces efficiency of remote build cache. Please set up the matching JDK.")
+        throw new GradleException("Java version is not $expectedVersion or vendor is not Amazon Corretto. This significantly reduces efficiency of remote build cache. Please set up the matching JDK.")
     }
 }
 

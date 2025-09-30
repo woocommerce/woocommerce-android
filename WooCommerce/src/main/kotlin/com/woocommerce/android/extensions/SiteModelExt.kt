@@ -1,6 +1,7 @@
 package com.woocommerce.android.extensions
 
 import android.text.TextUtils
+import com.woocommerce.android.ciab.CIABSiteGateKeeper.Companion.CIAB_GARDEN_NAME
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
@@ -78,3 +79,5 @@ val SiteModel?.isSitePublic: Boolean
 
 val SiteModel.isEligibleForAI: Boolean
     get() = isWPComAtomic || planActiveFeatures.orEmpty().contains("ai-assistant")
+
+fun SiteModel.isCIABSite() = isGardenSite && gardenName == CIAB_GARDEN_NAME
