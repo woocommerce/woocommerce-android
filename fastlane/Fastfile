@@ -43,6 +43,7 @@ FROZEN_STRINGS_PATH = File.join(Dir.pwd, 'resources', 'values', 'strings.xml')
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
     name: 'About Library',
+    github_token: ENV.fetch('AUTOMATTIC_GITHUB_TOKEN_READ_ONLY', nil),
     import_key: 'automattic-about', # key used in libs.versions.toml file to reference the version
     repository: 'Automattic/about-automattic-android',
     strings_file_path: 'library/src/main/res/values/strings.xml',
@@ -776,6 +777,7 @@ platform :android do
 
     REMOTE_LIBRARIES_STRINGS_PATHS.each do |lib|
       download_path = android_download_file_by_version(
+        github_token: lib[:github_token],
         library_name: lib[:name],
         import_key: lib[:import_key],
         repository: lib[:repository],

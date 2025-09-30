@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-26 13:54:04+0000
+Translation-Revision-Date: 2025-09-10 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">ממדי החבילה חייבים להיות גדולים מ-0.</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> כדי להוסיף את המוצר לעגלה</string>
+    <string name="woopos_cart_empty_scan_barcode">לסרוק ברקוד</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">יש להקיש על מוצר או </string>
+    <string name="woopos_orders_title">הזמנות</string>
+    <string name="woopos_settings_help_category">עזרה</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">תשלום באינטרנט</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">לא ניתן להעביר מוצרים לתוך המשלוח או מחוץ למשלוח.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">רכשת תווית עבור המשלוח הזה.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">המדינה שבה המוצר נוצר או הורכב.</string>
@@ -71,7 +79,6 @@ Language: he_IL
     <string name="woopos_scanning_setup_software_keyboard_message">מערכת Android מחשיבה בסורקי ברקוד בתור מקלדות פיזיות שעלולות להסתיר את המקלדת המופיעה על המסך. נוכל לבדוק את זה:</string>
     <string name="woopos_scanning_setup_software_keyboard_title">להציג את המקלדת שעל המסך</string>
     <string name="woopos_scanning_setup_success_message">הכול מוכן, אפשר להתחיל לסרוק מוצרים. בפעם הבאה שיהיה צורך לחבר את הסורק, אפשר להדליק את הסורק והוא יתחבר מחדש אוטומטית.</string>
-    <string name="woopos_barcode_scanning_title">הגדרה ראשונית של סורק הברקוד</string>
     <string name="woopos_cart_clear_all_button_content_description">הסמל \'להסיר פריטים בעגלת הקניות\'</string>
     <string name="product_selector_subscription_not_supported">מוצרי מינוי שניתנים להזמנה לא נתמכים ביצירת הזמנות</string>
     <string name="save_copy">לשמור עותק</string>
@@ -636,7 +643,6 @@ Language: he_IL
     <string name="analytics_spend_subtitle_value">הוצאה: ⁦%1$s⁩</string>
     <string name="analytics_custom_list_selection_button_description">לסנן בחירה</string>
     <string name="woopos_cart_empty_content_description">עגלת הקניות ריקה</string>
-    <string name="woopos_cart_empty_subtitle">יש להקיש על מוצר כדי\nלהוסיף את המוצר לעגלה</string>
     <string name="woopos_totals_main_error_label">לא ניתן היה לטעון סך כל</string>
     <string name="woopos_items_in_cart_multiple">%d פריטים</string>
     <string name="ai_product_creation_error_media_upload">נכשלה ההעלאה של תמונת המוצר שנבחרה.</string>

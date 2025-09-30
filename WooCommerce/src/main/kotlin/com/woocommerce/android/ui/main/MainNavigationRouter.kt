@@ -7,11 +7,10 @@ interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
     fun isChildFragmentShowing(): Boolean
 
-    fun showProductDetail(remoteProductId: Long, enableTrash: Boolean = false, popUpToProductList: Boolean = false)
+    fun showProductDetail(remoteProductId: Long, popUpToProductList: Boolean = false)
     fun showProductDetailWithSharedTransition(
         remoteProductId: Long,
         sharedView: View,
-        enableTrash: Boolean = false
     )
     fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long)
 

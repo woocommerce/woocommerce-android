@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-08-27 09:54:04+0000
+Translation-Revision-Date: 2025-09-09 17:54:07+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_invalid_dimension">Todas as dimensões do pacote devem ser maiores que 0.</string>
+    <string name="woopos_cart_empty_subtitle_suffix"> para adicionar ao carrinho</string>
+    <string name="woopos_cart_empty_scan_barcode">escaneie um código de barras</string>
+    <string name="woopos_cart_empty_subtitle_with_scanner">Toque em um produto ou </string>
+    <string name="woopos_orders_title">Pedidos</string>
+    <string name="woopos_settings_help_category">Ajuda</string>
+    <string name="orderfilters_sales_channel_filter_wp_admin">Painel WP Admin</string>
+    <string name="orderfilters_sales_channel_filter_web_checkout">Pagamento online</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Não é possível mover produtos para dentro ou fora dele.</string>
     <string name="woo_shipping_split_shipment_purchased_message_title">Você comprou uma etiqueta para este envio.</string>
     <string name="woo_shipping_labels_customs_origin_country_info">País onde o produto foi fabricado ou montado.</string>
@@ -69,7 +77,6 @@ Language: pt_BR
     <string name="woopos_scanning_setup_software_keyboard_message_two">Se o teclado não estiver visível, tente estas opções:</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">Acesse as configurações do dispositivo, pesquise \"teclado\" e ative a opção de mostrar teclado virtual quando o teclado físico estiver conectado. Essa opção pode estar nas configurações de teclado do seu aplicativo.</string>
     <string name="woopos_scanning_setup_software_keyboard_message">No Android, leitores de código de barras são reconhecidos como teclados físicos, o que pode ocultar o teclado virtual. Vejamos:</string>
-    <string name="woopos_barcode_scanning_title">Configuração inicial do leitor de código de barras</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Mostrar o teclado virtual</string>
     <string name="woopos_scanning_setup_success_message">Tudo pronto para começar a escanear produtos. Na próxima vez que precisar conectar seu leitor, basta ligá-lo para reconectá-lo automaticamente.</string>
     <string name="product_selector_subscription_not_supported">Produtos de assinatura não são aceitos na criação de pedidos</string>
@@ -635,7 +642,6 @@ Language: pt_BR
     <string name="ai_product_creation_image_scan_subtitle">Adicionar texto escaneado de uma imagem</string>
     <string name="analytics_google_ads_filter_spend">Gastos</string>
     <string name="analytics_spend_subtitle_value">Gastos: %1$s</string>
-    <string name="woopos_cart_empty_subtitle">Toque no produto para\nadicionar ao carrinho</string>
     <string name="woopos_items_in_cart_multiple">%d itens</string>
     <string name="woopos_cart_empty_content_description">O carrinho está vazio</string>
     <string name="woopos_totals_main_error_label">Não foi possível carregar o total</string>

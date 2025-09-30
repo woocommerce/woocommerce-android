@@ -38,8 +38,8 @@ import javax.inject.Inject
 class WooPosVariationsViewModel @Inject constructor(
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val getProductById: WooPosGetProductById,
-    private val variationsDataSource: WooPosVariationsDataSource,
-    private val variationsInDbDataSource: WooPosVariationsInDbDataSource,
+    variationsDataSource: WooPosVariationsDataSource,
+    variationsInDbDataSource: WooPosVariationsInDbDataSource,
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
@@ -92,7 +92,7 @@ class WooPosVariationsViewModel @Inject constructor(
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
-                buildProductsReloadingState()
+                buildReloadingState()
             } else {
                 WooPosVariationsViewState.Loading()
             }
@@ -110,26 +110,7 @@ class WooPosVariationsViewModel @Inject constructor(
                             result.result.isSuccess -> {
                                 val variations = result.result.getOrThrow()
                                 if (variations.isNotEmpty()) {
-                                    WooPosVariationsViewState.Content(
-                                        items = variations.map {
-                                            WooPosItemSelectionViewState.Product.Variation(
-                                                id = it.remoteVariationId,
-                                                name = it.getNameForPOS(
-                                                    mapper,
-                                                    getProductById(productId),
-                                                    resourceProvider
-                                                ),
-                                                productId = it.remoteProductId,
-                                                price = priceFormat(it.price),
-                                                imageUrl = it.image?.source
-                                            )
-                                        },
-                                        paginationState = if (loadMoreJob?.isActive == true) {
-                                            WooPosPaginationState.Loading
-                                        } else {
-                                            WooPosPaginationState.None
-                                        }
-                                    )
+                                    createContentState(variations, productId)
                                 } else {
                                     WooPosVariationsViewState.Empty()
                                 }
@@ -147,25 +128,11 @@ class WooPosVariationsViewModel @Inject constructor(
         if (variations.isEmpty()) {
             _viewState.value = WooPosVariationsViewState.Empty()
         } else {
-            _viewState.value = WooPosVariationsViewState.Content(
-                items = variations.map {
-                    WooPosItemSelectionViewState.Product.Variation(
-                        id = it.remoteVariationId,
-                        name = it.getNameForPOS(
-                            mapper,
-                            getProductById(productId),
-                            resourceProvider
-                        ),
-                        productId = it.remoteProductId,
-                        price = priceFormat(it.price),
-                        imageUrl = it.image?.source
-                    )
-                }
-            )
+            _viewState.value = createContentState(variations, productId)
         }
     }
 
-    private fun buildProductsReloadingState() =
+    private fun buildReloadingState() =
         when (val state = viewState.value) {
             is WooPosVariationsViewState.Content -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing
@@ -293,17 +260,17 @@ class WooPosVariationsViewModel @Inject constructor(
     }
 
     private fun performIncrementalSync() {
-        _viewState.value = buildProductsReloadingState()
+        _viewState.value = buildReloadingState()
 
         viewModelScope.launch {
             selectedSite.getOrNull()?.let { site ->
                 val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-                _viewState.value = getViewStateForSyncResult(syncResult)
+                _viewState.value = buildViewStateForSyncResult(syncResult)
             }
         }
     }
 
-    private fun getViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosVariationsViewState =
+    private fun buildViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosVariationsViewState =
         when (syncResult) {
             is PosLocalCatalogSyncResult.Success -> {
                 hidePTRIndicator()
@@ -339,5 +306,32 @@ class WooPosVariationsViewModel @Inject constructor(
 
     private fun onEndOfVariationsListReached(productId: Long, numOfVariations: Int) {
         loadMore(productId, numOfVariations)
+    }
+
+    private suspend fun createContentState(
+        variations: List<WooPosVariation>,
+        productId: Long
+    ): WooPosVariationsViewState.Content {
+        val parentProduct = getProductById(productId)
+        return WooPosVariationsViewState.Content(
+            items = variations.map { variation ->
+                WooPosItemSelectionViewState.Product.Variation(
+                    id = variation.remoteVariationId,
+                    name = variation.getNameForPOS(
+                        mapper,
+                        parentProduct,
+                        resourceProvider
+                    ),
+                    productId = variation.remoteProductId,
+                    price = priceFormat(variation.price),
+                    imageUrl = variation.image?.source
+                )
+            },
+            paginationState = if (loadMoreJob?.isActive == true) {
+                WooPosPaginationState.Loading
+            } else {
+                WooPosPaginationState.None
+            }
+        )
     }
 }
