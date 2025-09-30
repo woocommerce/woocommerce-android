@@ -37,6 +37,7 @@ class WooPosGetProductById @Inject constructor(
         }
     }
 
+    @Suppress("ReturnCount")
     private suspend fun getFromInMemoryCache(productId: Long): WooPosProductModel? {
         val cachedProduct = cache.getProductById(productId)
         if (cachedProduct != null) {

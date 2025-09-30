@@ -118,8 +118,6 @@ class WooPosVariationsViewModelTest {
             }
         }
     }
-    private val productMapper = mock<com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper>()
-    private val localCatalogStore = mock<org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore>()
 
     @Test
     fun `given variations from data source, when view model created, then view state updated correctly`() = runTest {
