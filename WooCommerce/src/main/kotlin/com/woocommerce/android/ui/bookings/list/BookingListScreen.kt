@@ -15,22 +15,19 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -53,8 +50,11 @@ fun BookingListScreen(state: BookingListViewState) {
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            BookingListTabs(
-                tabState = state.tabState,
+            WCPrimaryTabRow(
+                tabs = BookingListTab.entries,
+                selectedTab = state.tabState.selectedTab,
+                tabName = { it.name() },
+                onTabSelected = state.tabState.onTabChanged,
                 modifier = Modifier
             )
             when {
@@ -137,39 +137,11 @@ private fun BookingList(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BookingListTabs(
-    tabState: BookingListTabState,
-    modifier: Modifier = Modifier
-) {
-    @Composable
-    fun BookingListTab.name(): String = when (this) {
-        BookingListTab.Today -> stringResource(R.string.bookings_tab_today)
-        BookingListTab.Upcoming -> stringResource(R.string.bookings_tab_upcoming)
-        BookingListTab.All -> stringResource(R.string.bookings_tab_all)
-    }
-
-    val selectedTabIndex = BookingListTab.entries.indexOf(tabState.selectedTab)
-    PrimaryTabRow(
-        selectedTabIndex = selectedTabIndex,
-        containerColor = colorResource(id = R.color.color_toolbar),
-        modifier = modifier
-    ) {
-        BookingListTab.entries.forEach { tab ->
-            Tab(
-                selected = tab == tabState.selectedTab,
-                onClick = { tabState.onTabChanged(tab) },
-                text = {
-                    Text(
-                        text = tab.name(),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            )
-        }
-    }
+private fun BookingListTab.name(): String = when (this) {
+    BookingListTab.Today -> stringResource(R.string.bookings_tab_today)
+    BookingListTab.Upcoming -> stringResource(R.string.bookings_tab_upcoming)
+    BookingListTab.All -> stringResource(R.string.bookings_tab_all)
 }
 
 @Composable
