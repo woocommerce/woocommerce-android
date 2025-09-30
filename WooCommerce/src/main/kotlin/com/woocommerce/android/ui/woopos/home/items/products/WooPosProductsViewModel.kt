@@ -338,12 +338,12 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch {
             selectedSite.getOrNull()?.let { site ->
                 val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-                _viewState.value = getViewStateForSyncResult(syncResult)
+                _viewState.value = buildViewStateForSyncResult(syncResult)
             }
         }
     }
 
-    private fun getViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosProductsViewState =
+    private fun buildViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosProductsViewState =
         when (syncResult) {
             is PosLocalCatalogSyncResult.Success -> {
                 hidePTRIndicator()
