@@ -26,6 +26,16 @@ class BookingListViewModel @Inject constructor(
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
 
+    private val sortOptionsByTab = MutableStateFlow(
+        mapOf(
+            BookingListTab.Today to BookingListSortOption.NewestToOldest,
+            BookingListTab.Upcoming to BookingListSortOption.NewestToOldest,
+            BookingListTab.All to BookingListSortOption.NewestToOldest,
+        )
+    )
+
+    private val isSortSheetVisible = MutableStateFlow(false)
+
     private var bookingsFetchJob: Job? = null
     private var bookingsLoadMoreJob: Job? = null
 
@@ -44,8 +54,11 @@ class BookingListViewModel @Inject constructor(
 
     val state = combine(
         contentState,
-        selectedTab
-    ) { contentState, selectedTab ->
+        selectedTab,
+        sortOptionsByTab,
+        isSortSheetVisible
+    ) { contentState, selectedTab, sortOptionsByTab, sheetVisible ->
+        val sortOption = sortOptionsByTab[selectedTab] ?: BookingListSortOption.NewestToOldest
         BookingListViewState(
             contentState = contentState,
             tabState = BookingListTabState(
@@ -55,7 +68,16 @@ class BookingListViewModel @Inject constructor(
             controlsState = BookingListControlsState(
                 onSortClick = ::onSortClicked,
                 onFilterClick = ::onFilterClicked
-            )
+            ),
+            sortBottomSheetState = if (sheetVisible) {
+                BookingListSortBottomSheetState(
+                    selectedOption = sortOption,
+                    onSelect = ::onSortOptionSelected,
+                    onDismiss = ::onSortDismiss
+                )
+            } else {
+                null
+            }
         )
     }.asLiveData()
 
@@ -110,7 +132,19 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onSortClicked() {
-        // TODO Show sorting bottom sheet
+        isSortSheetVisible.value = true
+    }
+
+    private fun onSortOptionSelected(option: BookingListSortOption) {
+        val tab = selectedTab.value
+        sortOptionsByTab.value = sortOptionsByTab.value.toMutableMap()
+            .also { it[tab] = option }
+        isSortSheetVisible.value = false
+        // TODO Apply the selected sorting to the data for the active tab
+    }
+
+    private fun onSortDismiss() {
+        isSortSheetVisible.value = false
     }
 
     private fun onFilterClicked() {
