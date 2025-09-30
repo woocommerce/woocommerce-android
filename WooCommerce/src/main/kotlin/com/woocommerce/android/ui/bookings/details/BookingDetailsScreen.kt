@@ -121,7 +121,7 @@ private fun BookingDetailsPreview() {
                     name = "Women’s Haircut",
                     customerName = "Margarita Nikolaevna",
                     attendanceStatus = AttendanceStatus.CHECKED_IN,
-                    paymentStatus = BookingPaymentStatus.PAID
+                    paymentStatus = BookingPaymentStatus.Paid
                 ),
                 bookingsAppointmentDetails = BookingAppointmentDetailsModel(
                     date = "Monday, 05 July 2025",

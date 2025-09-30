@@ -13,7 +13,7 @@ data class BookingDetailsViewState(
         name = "Women’s Haircut",
         customerName = "Margarita Nikolaevna",
         attendanceStatus = AttendanceStatus.CHECKED_IN,
-        paymentStatus = BookingPaymentStatus.PAID
+        paymentStatus = BookingPaymentStatus.Paid
     ),
     val bookingsAppointmentDetails: BookingAppointmentDetailsModel = BookingAppointmentDetailsModel(
         date = "Monday, 05 July 2025",

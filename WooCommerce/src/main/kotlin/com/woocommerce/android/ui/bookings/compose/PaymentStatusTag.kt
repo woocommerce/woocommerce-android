@@ -24,31 +24,27 @@ fun BookingPaymentStatusTag(
     )
 }
 
-enum class BookingPaymentStatus(val key: String) {
-    UNPAID("unpaid"),
-    PENDING_CONFIRMATION("pending-confirmation"),
-    CONFIRMED("confirmed"),
-    PAID("paid"),
-    CANCELLED("cancelled"),
-    COMPLETE("complete");
-
-    companion object {
-        fun fromKey(key: String): BookingPaymentStatus {
-            return entries.firstOrNull { it.key == key } ?: UNPAID
-        }
-    }
+sealed interface BookingPaymentStatus {
+    data object Unpaid : BookingPaymentStatus
+    data object PendingConfirmation : BookingPaymentStatus
+    data object Confirmed : BookingPaymentStatus
+    data object Paid : BookingPaymentStatus
+    data object Cancelled : BookingPaymentStatus
+    data object Complete : BookingPaymentStatus
+    data class Unknown(val key: String) : BookingPaymentStatus
 }
 
 @Composable
 private fun BookingPaymentStatus.text(): String {
     return when (this) {
-        BookingPaymentStatus.UNPAID -> R.string.booking_payment_status_unpaid
-        BookingPaymentStatus.PENDING_CONFIRMATION -> R.string.booking_payment_status_pending_confirmation
-        BookingPaymentStatus.CONFIRMED -> R.string.booking_payment_status_confirmed
-        BookingPaymentStatus.PAID -> R.string.booking_payment_status_paid
-        BookingPaymentStatus.CANCELLED -> R.string.booking_payment_status_cancelled
-        BookingPaymentStatus.COMPLETE -> R.string.booking_payment_status_complete
-    }.let { stringResource(it) }
+        BookingPaymentStatus.Unpaid -> stringResource(R.string.booking_payment_status_unpaid)
+        BookingPaymentStatus.PendingConfirmation -> stringResource(R.string.booking_payment_status_pending_confirmation)
+        BookingPaymentStatus.Confirmed -> stringResource(R.string.booking_payment_status_confirmed)
+        BookingPaymentStatus.Paid -> stringResource(R.string.booking_payment_status_paid)
+        BookingPaymentStatus.Cancelled -> stringResource(R.string.booking_payment_status_cancelled)
+        BookingPaymentStatus.Complete -> stringResource(R.string.booking_payment_status_complete)
+        is BookingPaymentStatus.Unknown -> key
+    }
 }
 
 @Preview
@@ -56,7 +52,7 @@ private fun BookingPaymentStatus.text(): String {
 private fun PaymentStatusTagPreview() {
     WooThemeWithBackground {
         BookingPaymentStatusTag(
-            state = BookingPaymentStatus.PAID
+            state = BookingPaymentStatus.Paid
         )
     }
 }
@@ -66,7 +62,7 @@ private fun PaymentStatusTagPreview() {
 private fun PaymentStatusTagDarkPreview() {
     WooThemeWithBackground {
         BookingPaymentStatusTag(
-            state = BookingPaymentStatus.COMPLETE
+            state = BookingPaymentStatus.Complete
         )
     }
 }

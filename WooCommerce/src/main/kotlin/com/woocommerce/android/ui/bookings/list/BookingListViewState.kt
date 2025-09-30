@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -55,7 +56,17 @@ fun Booking.toUiModel(): BookingListItem {
             name = "Women’s Haircut",
             customerName = "Margarita Nikolaevna",
             attendanceStatus = AttendanceStatus.BOOKED,
-            paymentStatus = BookingPaymentStatus.fromKey(status)
+            paymentStatus = status.toUiModel()
         )
     )
+}
+
+private fun BookingEntity.Status.toUiModel(): BookingPaymentStatus = when (this) {
+    BookingEntity.Status.Paid -> BookingPaymentStatus.Paid
+    BookingEntity.Status.PendingConfirmation -> BookingPaymentStatus.PendingConfirmation
+    BookingEntity.Status.Cancelled -> BookingPaymentStatus.Cancelled
+    BookingEntity.Status.Complete -> BookingPaymentStatus.Complete
+    BookingEntity.Status.Confirmed -> BookingPaymentStatus.Confirmed
+    BookingEntity.Status.Unpaid -> BookingPaymentStatus.Unpaid
+    is BookingEntity.Status.Unknown -> BookingPaymentStatus.Unknown(this.key)
 }
