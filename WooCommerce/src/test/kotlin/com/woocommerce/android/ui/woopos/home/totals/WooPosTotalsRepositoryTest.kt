@@ -8,8 +8,6 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
-import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import com.woocommerce.android.util.DateUtils
@@ -25,7 +23,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 
 class WooPosTotalsRepositoryTest {
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
