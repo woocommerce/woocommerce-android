@@ -51,6 +51,10 @@ class BookingListViewModel @Inject constructor(
             tabState = BookingListTabState(
                 selectedTab = selectedTab,
                 onTabChanged = ::onTabChanged
+            ),
+            controlsState = BookingListControlsState(
+                onSortClick = ::onSortClicked,
+                onFilterClick = ::onFilterClicked
             )
         )
     }.asLiveData()
@@ -103,6 +107,14 @@ class BookingListViewModel @Inject constructor(
 
     private fun onTabChanged(tab: BookingListTab) {
         selectedTab.value = tab
+    }
+
+    private fun onSortClicked() {
+        // TODO Show sorting bottom sheet
+    }
+
+    private fun onFilterClicked() {
+        // TODO Show filter bottom sheet
     }
 
     private fun prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
