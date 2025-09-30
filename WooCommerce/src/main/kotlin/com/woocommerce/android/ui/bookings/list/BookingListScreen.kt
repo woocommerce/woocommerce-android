@@ -47,6 +47,7 @@ fun BookingListScreen(viewModel: BookingListViewModel) {
 
 @Composable
 fun BookingListScreen(state: BookingListViewState) {
+    state.sortBottomSheetState?.let { BookingSortBottomSheet(it) }
     Scaffold(
         topBar = {
             Toolbar(
@@ -224,7 +225,8 @@ private fun BookingListPreview() {
                 controlsState = BookingListControlsState(
                     onSortClick = {},
                     onFilterClick = {}
-                )
+                ),
+                sortBottomSheetState = null
             )
         )
     }
