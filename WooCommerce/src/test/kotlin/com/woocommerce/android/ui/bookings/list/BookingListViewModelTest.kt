@@ -34,7 +34,6 @@ class BookingListViewModelTest : BaseUnitTest() {
         onBlocking {
             loadBookings(
                 searchQuery = anyOrNull(),
-                forceRefresh = any(),
                 filters = any()
             )
         } doReturn Result.success(Unit)
@@ -68,7 +67,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        verify(bookingListHandler).loadBookings(searchQuery = eq(null), forceRefresh = eq(true), filters = any())
+        verify(bookingListHandler).loadBookings(searchQuery = eq(null), filters = any())
 
         val state = viewModel.state.getOrAwaitValue().contentState
         assertThat(state.bookings).hasSize(1)
@@ -107,7 +106,6 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         verify(bookingListHandler, times(2)).loadBookings(
             searchQuery = eq(null),
-            forceRefresh = eq(true),
             filters = any()
         )
     }
@@ -148,7 +146,7 @@ class BookingListViewModelTest : BaseUnitTest() {
     fun `when booking handler fails to load, then show error snackbar`() = testBlocking {
         // GIVEN
         setup {
-            whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), forceRefresh = any(), filters = any()))
+            whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), filters = any()))
                 .thenReturn(Result.failure(Exception("Network error")))
         }
 
@@ -209,7 +207,6 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         verify(bookingListHandler).loadBookings(
             searchQuery = eq(null),
-            forceRefresh = eq(true),
             filters = eq(
                 listOfNotNull(
                     with(filtersBuilder) {

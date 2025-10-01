@@ -43,7 +43,6 @@ class BookingListHandler @Inject constructor(
 
     suspend fun loadBookings(
         searchQuery: String? = null,
-        forceRefresh: Boolean = false,
         filters: List<BookingsFilterOption> = emptyList()
     ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
@@ -54,12 +53,7 @@ class BookingListHandler @Inject constructor(
         this.filters.value = filters
 
         return@withLock if (searchQuery == null) {
-            if (forceRefresh) {
-                fetchBookings()
-            } else {
-                // Load from DB only
-                Result.success(Unit)
-            }
+            fetchBookings()
         } else {
             searchResults.value = emptyList()
             if (searchQuery.isEmpty()) {

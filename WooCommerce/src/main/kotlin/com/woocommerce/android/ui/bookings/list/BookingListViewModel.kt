@@ -105,7 +105,6 @@ class BookingListViewModel @Inject constructor(
         loadingState.value = initialLoadingState
         bookingListHandler.loadBookings(
             searchQuery = searchQuery.value,
-            forceRefresh = true,
             filters = prepareFilters()
         ).onFailure {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
