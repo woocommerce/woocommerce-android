@@ -103,7 +103,9 @@ class WooPosOrdersViewModel @Inject constructor(
 
         loadingMoreOrdersJob?.cancel()
         loadingMoreOrdersJob = viewModelScope.launch {
-            val result = ordersDataSource.loadMore()
+            val normalizedQuery = currentSearchQuery.takeUnless { it.isNullOrEmpty() }
+            val result = ordersDataSource.loadMore(normalizedQuery)
+
             if (result.isSuccess) {
                 appendOrders(result.getOrThrow())
             } else {
