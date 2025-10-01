@@ -26,9 +26,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -57,6 +61,14 @@ fun BookingListScreen(state: BookingListViewState) {
                 title = stringResource(R.string.bookings_tab_title),
                 navigationIcon = null,
                 actions = {
+                    val focusRequester = remember { FocusRequester() }
+
+                    LaunchedEffect(state.searchState.isSearchActive) {
+                        if (state.searchState.isSearchActive) {
+                            focusRequester.requestFocus()
+                        }
+                    }
+
                     if (!state.searchState.isSearchActive) {
                         Icon(
                             imageVector = Icons.Default.Search,
@@ -87,6 +99,7 @@ fun BookingListScreen(state: BookingListViewState) {
                                 stringResource(R.string.bookings_search_hint)
                             },
                             modifier = Modifier
+                                .focusRequester(focusRequester)
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
                         )
