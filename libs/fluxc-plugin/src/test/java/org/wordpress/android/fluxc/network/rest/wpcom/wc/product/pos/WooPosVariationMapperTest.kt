@@ -27,7 +27,7 @@ class WooPosVariationMapperTest {
             stockStatus = "instock",
             manageStock = true,
             backordered = false,
-            attributes = JsonParser.parseString("""[{"id":1,"name":"Color","option":"Blue"},{"id":2,"name":"Size","option":"Large"}]"""),
+            attributesJson = JsonParser.parseString("""[{"id":1,"name":"Color","option":"Blue"},{"id":2,"name":"Size","option":"Large"}]"""),
             image = WooPosVariationApiResponse.VariationImage(
                 id = 789,
                 src = "https://example.com/image.jpg",
@@ -103,7 +103,7 @@ class WooPosVariationMapperTest {
         val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
-            attributes = JsonParser.parseString("[]")
+            attributesJson = JsonParser.parseString("[]")
         )
 
         // When
@@ -119,7 +119,7 @@ class WooPosVariationMapperTest {
         val response = WooPosVariationApiResponse(
             id = 123L,
             productId = 456L,
-            attributes = JsonParser.parseString("""[{"id":1,"name":"Color","option":"Red"},{"id":2,"name":"Size","option":"Medium"},{"id":3,"name":"Material","option":"Cotton"}]""")
+            attributesJson = JsonParser.parseString("""[{"id":1,"name":"Color","option":"Red"},{"id":2,"name":"Size","option":"Medium"},{"id":3,"name":"Material","option":"Cotton"}]""")
         )
 
         // When
