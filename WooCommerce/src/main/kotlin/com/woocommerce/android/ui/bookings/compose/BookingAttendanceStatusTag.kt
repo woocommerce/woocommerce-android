@@ -11,8 +11,8 @@ import com.woocommerce.android.ui.compose.component.WCTag
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun AttendanceStatusTag(
-    state: AttendanceStatus,
+fun BookingAttendanceStatusTag(
+    state: BookingAttendanceStatus,
     modifier: Modifier = Modifier,
 ) {
     WCTag(
@@ -24,17 +24,17 @@ fun AttendanceStatusTag(
     )
 }
 
-enum class AttendanceStatus {
+enum class BookingAttendanceStatus {
     BOOKED, CHECKED_IN, NO_SHOW, CANCELLED
 }
 
 @Composable
-fun AttendanceStatus.text(): String {
+fun BookingAttendanceStatus.text(): String {
     return when (this) {
-        AttendanceStatus.BOOKED -> R.string.booking_attendance_status_booked
-        AttendanceStatus.CHECKED_IN -> R.string.booking_attendance_status_checked_in
-        AttendanceStatus.CANCELLED -> R.string.booking_attendance_status_cancelled
-        AttendanceStatus.NO_SHOW -> R.string.booking_attendance_status_no_show
+        BookingAttendanceStatus.BOOKED -> R.string.booking_attendance_status_booked
+        BookingAttendanceStatus.CHECKED_IN -> R.string.booking_attendance_status_checked_in
+        BookingAttendanceStatus.CANCELLED -> R.string.booking_attendance_status_cancelled
+        BookingAttendanceStatus.NO_SHOW -> R.string.booking_attendance_status_no_show
     }.let { stringResource(it) }
 }
 
@@ -42,8 +42,8 @@ fun AttendanceStatus.text(): String {
 @Composable
 private fun AttendanceStatusTagPreview() {
     WooThemeWithBackground {
-        AttendanceStatusTag(
-            state = AttendanceStatus.BOOKED
+        BookingAttendanceStatusTag(
+            state = BookingAttendanceStatus.BOOKED
         )
     }
 }
@@ -52,8 +52,8 @@ private fun AttendanceStatusTagPreview() {
 @Composable
 private fun AttendanceStatusTagDarkPreview() {
     WooThemeWithBackground {
-        AttendanceStatusTag(
-            state = AttendanceStatus.CHECKED_IN
+        BookingAttendanceStatusTag(
+            state = BookingAttendanceStatus.CHECKED_IN
         )
     }
 }

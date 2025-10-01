@@ -20,13 +20,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
+import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
-import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
+import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -55,7 +55,7 @@ fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
     onCancelBooking: () -> Unit,
-    onAttendanceStatusSelected: (AttendanceStatus) -> Unit
+    onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit
 ) {
     val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
@@ -120,8 +120,8 @@ private fun BookingDetailsPreview() {
                     date = "05/07/2025, 11:00 AM",
                     name = "Women’s Haircut",
                     customerName = "Margarita Nikolaevna",
-                    attendanceStatus = AttendanceStatus.CHECKED_IN,
-                    paymentStatus = BookingPaymentStatus.PAID
+                    attendanceStatus = BookingAttendanceStatus.CHECKED_IN,
+                    status = BookingStatus.Paid
                 ),
                 bookingsAppointmentDetails = BookingAppointmentDetailsModel(
                     date = "Monday, 05 July 2025",

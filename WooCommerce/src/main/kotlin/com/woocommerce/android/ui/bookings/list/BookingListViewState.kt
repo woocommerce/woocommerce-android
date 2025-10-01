@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.bookings.list
 
 import com.woocommerce.android.ui.bookings.Booking
-import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
+import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -54,8 +55,18 @@ fun Booking.toUiModel(): BookingListItem {
             date = dateFormatter.format(start),
             name = "Women’s Haircut",
             customerName = "Margarita Nikolaevna",
-            attendanceStatus = AttendanceStatus.BOOKED,
-            paymentStatus = BookingPaymentStatus.fromKey(status)
+            attendanceStatus = BookingAttendanceStatus.BOOKED,
+            status = status.toUiModel()
         )
     )
+}
+
+private fun BookingEntity.Status.toUiModel(): BookingStatus = when (this) {
+    BookingEntity.Status.Paid -> BookingStatus.Paid
+    BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
+    BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
+    BookingEntity.Status.Complete -> BookingStatus.Complete
+    BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
+    BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
+    is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
 }

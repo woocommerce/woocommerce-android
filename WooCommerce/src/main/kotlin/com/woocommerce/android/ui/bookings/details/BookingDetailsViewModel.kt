@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -32,7 +32,7 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onAttendanceStatusSelected(status: AttendanceStatus) {
+    fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
         _state.update { current ->
             current.copy(
                 bookingSummary = current.bookingSummary.copy(attendanceStatus = status)
