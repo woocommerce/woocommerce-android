@@ -12,7 +12,11 @@ data class BookingListViewState(
     val contentState: BookingListContentState,
     val tabState: BookingListTabState,
     val searchState: BookingListSearchState
-)
+) {
+    // TODO combine with other filters when available
+    val areFiltersActive: Boolean
+        get() = tabState.selectedTab != BookingListTab.All
+}
 
 data class BookingListContentState(
     val bookings: List<BookingListItem>,

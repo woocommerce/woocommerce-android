@@ -82,8 +82,11 @@ fun BookingListScreen(state: BookingListViewState) {
                         WCSearchField(
                             value = state.searchState.query ?: "",
                             onValueChange = { state.searchState.onQueryChanged(it) },
-                            // TODO use a specific hint when filters are applied like what we do on other screens
-                            hint = stringResource(R.string.bookings_search_hint)
+                            hint = if (state.areFiltersActive) {
+                                stringResource(R.string.bookings_search_with_filters_hint)
+                            } else {
+                                stringResource(R.string.bookings_search_hint)
+                            }
                         )
                     }
                 }

@@ -4862,6 +4862,7 @@
     <string name="bookings_tab_upcoming">Upcoming</string>
     <string name="bookings_tab_all">All</string>
     <string name="bookings_search_hint">Search bookings</string>
+    <string name="bookings_search_with_filters_hint">Search filtered bookings</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
