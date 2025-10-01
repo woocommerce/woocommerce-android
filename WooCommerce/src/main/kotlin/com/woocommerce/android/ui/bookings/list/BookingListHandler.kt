@@ -34,7 +34,7 @@ class BookingListHandler @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val bookingsFlow: Flow<List<Booking>> = combine(searchQuery, filters, page) { query, filters, page ->
-        if (query == null) {
+        if (query.isNullOrEmpty()) {
             bookingsRepository.observeBookings(limit = page * PAGE_SIZE, filters)
         } else {
             searchResults
@@ -57,7 +57,7 @@ class BookingListHandler @Inject constructor(
         } else {
             searchResults.value = emptyList()
             if (searchQuery.isEmpty()) {
-                // If the query is empty, clear search results directly
+                // If the query is empty, return cached results directly
                 canLoadMore.set(false)
                 Result.success(Unit)
             } else {
