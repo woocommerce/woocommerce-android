@@ -10,7 +10,8 @@ import java.time.format.FormatStyle
 
 data class BookingListViewState(
     val contentState: BookingListContentState,
-    val tabState: BookingListTabState
+    val tabState: BookingListTabState,
+    val searchState: BookingListSearchState
 )
 
 data class BookingListContentState(
@@ -21,6 +22,14 @@ data class BookingListContentState(
     val onBookingClick: (Long) -> Unit,
 ) {
     fun isNotEmpty() = bookings.isNotEmpty()
+}
+
+data class BookingListSearchState(
+    val query: String?,
+    val onQueryChanged: (String?) -> Unit
+) {
+    val isSearchActive: Boolean
+        get() = query != null
 }
 
 data class BookingListTabState(

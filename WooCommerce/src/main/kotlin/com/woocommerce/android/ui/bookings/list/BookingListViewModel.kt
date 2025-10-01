@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -25,6 +26,12 @@ class BookingListViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
+    private val searchQuery = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = String::class.java,
+        key = "searchQuery"
+    )
 
     private var bookingsFetchJob: Job? = null
     private var bookingsLoadMoreJob: Job? = null
@@ -41,17 +48,27 @@ class BookingListViewModel @Inject constructor(
             onBookingClick = ::onBookingClick
         )
     }
+    private val searchState = searchQuery.map {
+        BookingListSearchState(
+            query = it,
+            onQueryChanged = { newQuery ->
+                searchQuery.value = newQuery
+            }
+        )
+    }
 
     val state = combine(
         contentState,
-        selectedTab
-    ) { contentState, selectedTab ->
+        selectedTab,
+        searchState
+    ) { contentState, selectedTab, searchState ->
         BookingListViewState(
             contentState = contentState,
             tabState = BookingListTabState(
                 selectedTab = selectedTab,
                 onTabChanged = ::onTabChanged
-            )
+            ),
+            searchState = searchState
         )
     }.asLiveData()
 

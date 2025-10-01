@@ -12,9 +12,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,6 +35,7 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
+import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.launch
@@ -48,7 +53,37 @@ fun BookingListScreen(state: BookingListViewState) {
         topBar = {
             Toolbar(
                 title = stringResource(R.string.bookings_tab_title),
-                navigationIcon = null
+                navigationIcon = null,
+                actions = {
+                    if (!state.searchState.isSearchActive) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(R.string.search),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .clickable(onClick = {
+                                    state.searchState.onQueryChanged("")
+                                })
+                                .padding(12.dp)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.back),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .clickable(onClick = {
+                                    state.searchState.onQueryChanged(null)
+                                })
+                                .padding(12.dp)
+                        )
+                        WCSearchField(
+                            value = state.searchState.query ?: "",
+                            onValueChange = { state.searchState.onQueryChanged(it) },
+                            hint = "Search bookings"
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -184,6 +219,10 @@ private fun BookingListPreview() {
                 tabState = BookingListTabState(
                     selectedTab = BookingListTab.Today,
                     onTabChanged = {}
+                ),
+                searchState = BookingListSearchState(
+                    query = null,
+                    onQueryChanged = {}
                 )
             )
         )
