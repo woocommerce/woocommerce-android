@@ -252,21 +252,21 @@ class WooPosOrdersViewModel @Inject constructor(
         )
     }
 
-    private fun appendOrders(
-        orders: List<Order>,
-        paginationState: WooPosPaginationState = WooPosPaginationState.None
-    ) {
+    private fun appendOrders(orders: List<Order>, paginationState: WooPosPaginationState = WooPosPaginationState.None) {
         val current = _state.value as? WooPosOrdersState.Content
         val existingItems = current?.items.orEmpty()
-        val currentSelectedId = current?.selectedOrderId
-            ?: existingItems.firstOrNull()?.id
-            ?: orders.firstOrNull()?.id
+        val selectedId = current?.selectedOrderId ?: existingItems.firstOrNull()?.id ?: orders.firstOrNull()?.id
+        val newItems = mapOrders(orders, selectedId)
 
-        val newItems = mapOrders(orders, currentSelectedId)
+        // Let's remove duplicates as it would crash when showing them
+        val mergedItems = LinkedHashMap<Long, OrderItemViewState>().apply {
+            existingItems.forEach { put(it.id, it) }
+            newItems.forEach { put(it.id, it) }
+        }.values.toList()
 
         _state.value = WooPosOrdersState.Content(
-            items = existingItems + newItems,
-            selectedOrderId = currentSelectedId,
+            items = mergedItems,
+            selectedOrderId = selectedId,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
