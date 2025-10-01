@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,11 +42,11 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel(savedState, resourceProvider)
 
         // When
-        viewModel.onAttendanceStatusSelected(com.woocommerce.android.ui.bookings.compose.AttendanceStatus.CANCELLED)
+        viewModel.onAttendanceStatusSelected(BookingAttendanceStatus.CANCELLED)
 
         // Then
         val updated = viewModel.state.value?.bookingSummary?.attendanceStatus
-        assertThat(updated).isEqualTo(com.woocommerce.android.ui.bookings.compose.AttendanceStatus.CANCELLED)
+        assertThat(updated).isEqualTo(BookingAttendanceStatus.CANCELLED)
     }
 
     private fun createViewModel(

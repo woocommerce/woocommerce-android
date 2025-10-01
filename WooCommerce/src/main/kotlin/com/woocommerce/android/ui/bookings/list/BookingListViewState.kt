@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.bookings.list
 
 import com.woocommerce.android.ui.bookings.Booking
-import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
@@ -55,7 +55,7 @@ fun Booking.toUiModel(): BookingListItem {
             date = dateFormatter.format(start),
             name = "Women’s Haircut",
             customerName = "Margarita Nikolaevna",
-            attendanceStatus = AttendanceStatus.BOOKED,
+            attendanceStatus = BookingAttendanceStatus.BOOKED,
             status = status.toUiModel()
         )
     )

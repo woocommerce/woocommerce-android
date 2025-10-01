@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.bookings.details
 
-import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -12,7 +12,7 @@ data class BookingDetailsViewState(
         date = "05/07/2025, 11:00 AM",
         name = "Women’s Haircut",
         customerName = "Margarita Nikolaevna",
-        attendanceStatus = AttendanceStatus.CHECKED_IN,
+        attendanceStatus = BookingAttendanceStatus.CHECKED_IN,
         status = BookingStatus.Paid
     ),
     val bookingsAppointmentDetails: BookingAppointmentDetailsModel = BookingAppointmentDetailsModel(
