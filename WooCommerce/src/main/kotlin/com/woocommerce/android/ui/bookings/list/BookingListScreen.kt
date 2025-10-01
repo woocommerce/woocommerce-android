@@ -61,7 +61,6 @@ fun BookingListScreen(state: BookingListViewState) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = stringResource(R.string.search),
-                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .clickable(onClick = {
                                     state.searchState.onQueryChanged("")
@@ -98,7 +97,7 @@ fun BookingListScreen(state: BookingListViewState) {
         val lazyListState = rememberLazyListState()
 
         Column(modifier = Modifier.padding(paddingValues)) {
-            AnimatedVisibility(!state.searchState.isSearchActive) {
+            AnimatedVisibility(true) {
                 WCPrimaryTabRow(
                     tabs = BookingListTab.entries,
                     selectedTab = state.tabState.selectedTab,
