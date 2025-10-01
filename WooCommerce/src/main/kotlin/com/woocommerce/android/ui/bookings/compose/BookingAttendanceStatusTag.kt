@@ -45,7 +45,7 @@ fun BookingAttendanceStatus.text(): String {
 @Composable
 fun BookingAttendanceStatus.backgroundColor(): Color {
     return when (this) {
-        BookingAttendanceStatus.NO_SHOW -> R.color.tag_bg_no_show
+        BookingAttendanceStatus.NO_SHOW -> R.color.tag_bg_booking_yellow
         BookingAttendanceStatus.BOOKED,
         BookingAttendanceStatus.CHECKED_IN,
         BookingAttendanceStatus.CANCELLED -> R.color.tagView_bg
