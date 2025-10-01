@@ -9,13 +9,16 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
@@ -32,12 +35,16 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentFailed
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentInProgress
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,6 +69,10 @@ class WooPosTotalsViewModel @Inject constructor(
     private val uiStringParser: UiStringParser,
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
     private val wooPosLogWrapper: WooPosLogWrapper,
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
+    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
+    private val selectedSite: SelectedSite,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -306,6 +317,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             cancelPaymentAction()
                         }
                         showSuccessfulPaymentState(event.paymentMethod)
+                        performIncrementalSync()
                     }
 
                     is ParentToChildrenEvent.CouponsRemoved -> {
@@ -574,6 +586,38 @@ class WooPosTotalsViewModel @Inject constructor(
             uiState.value = WooPosTotalsViewState.PaymentSuccess(
                 orderTotalText = orderTotalText
             )
+        }
+    }
+
+    private fun performIncrementalSync() {
+        if (!wooPosLocalCatalogM1Enabled()) {
+            wooPosLogWrapper.d("Skipping post-payment sync: Local catalog feature not enabled")
+            return
+        }
+
+        if (!networkStatus.isConnected()) {
+            wooPosLogWrapper.d("Skipping post-payment sync: No network connection")
+            return
+        }
+
+        appCoroutineScope.launch {
+            selectedSite.getOrNull()?.let { site ->
+                wooPosLogWrapper.d("Starting incremental sync after successful payment")
+                val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
+                when (syncResult) {
+                    is Success -> {
+                        wooPosLogWrapper.d(
+                            "Post-payment sync completed successfully: " +
+                                "${syncResult.productsSynced} products, " +
+                                "${syncResult.variationsSynced} variations synced " +
+                                "in ${syncResult.syncDurationMs}ms"
+                        )
+                    }
+                    is Failure -> {
+                        wooPosLogWrapper.e("Post-payment sync failed: ${syncResult.error}")
+                    }
+                }
+            } ?: wooPosLogWrapper.d("Skipping post-payment sync: No site selected")
         }
     }
 

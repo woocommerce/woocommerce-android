@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated
@@ -43,6 +44,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent.OnBackClicked
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -55,11 +57,13 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -154,6 +158,9 @@ class WooPosTotalsViewModelTest {
 
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock()
+    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository = mock()
+    private val appCoroutineScope: CoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
@@ -1709,5 +1716,9 @@ class WooPosTotalsViewModelTest {
             analyticsData = WooPosAnalyticsTrackingDataKeeper()
         ),
         wooPosLogWrapper = wooPosLogWrapper,
+        wooPosLocalCatalogM1Enabled = wooPosLocalCatalogM1Enabled,
+        localCatalogSyncRepository = localCatalogSyncRepository,
+        selectedSite = selectedSite,
+        appCoroutineScope = appCoroutineScope,
     )
 }
