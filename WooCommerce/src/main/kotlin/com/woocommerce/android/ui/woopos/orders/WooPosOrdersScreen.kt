@@ -42,8 +42,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -249,7 +252,7 @@ fun WooPosOrdersListPaneScreen(
     modifier: Modifier = Modifier,
     state: WooPosOrdersState.Content,
     onOrderSelected: (Long) -> Unit,
-    onEndOfOrdersListReached: () -> Unit,
+    onEndOfOrdersListReached: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -319,6 +322,12 @@ fun WooPosOrdersListPaneScreen(
                 OrdersPaginationLoadingRow()
             }
         }
+
+        if (state.paginationState == WooPosPaginationState.Error) {
+            item {
+                OrdersPaginationErrorRow(onEndOfOrdersListReached)
+            }
+        }
     }
 }
 
@@ -383,6 +392,18 @@ private fun OrdersPaginationLoadingRow() {
                 .alignByBaseline()
         )
     }
+}
+
+@Composable
+private fun OrdersPaginationErrorRow(onEndOfOrdersListReachedTryAgain: () -> Unit) {
+    WooPosPaginationErrorIndicator(
+        message = stringResource(id = R.string.woopos_orders_pagination_error_title),
+        description = stringResource(id = R.string.woopos_items_pagination_error_description),
+        primaryButton = Button(
+            text = stringResource(id = R.string.woopos_items_pagination_try_again_label),
+            click = { onEndOfOrdersListReachedTryAgain }
+        ),
+    )
 }
 
 @WooPosPreview
