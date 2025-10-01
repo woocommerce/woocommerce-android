@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -61,49 +64,10 @@ fun BookingListScreen(state: BookingListViewState) {
                 title = stringResource(R.string.bookings_tab_title),
                 navigationIcon = null,
                 actions = {
-                    val focusRequester = remember { FocusRequester() }
-
-                    LaunchedEffect(state.searchState.isSearchActive) {
-                        if (state.searchState.isSearchActive) {
-                            focusRequester.requestFocus()
-                        }
-                    }
-
-                    if (!state.searchState.isSearchActive) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = stringResource(R.string.search),
-                            modifier = Modifier
-                                .clickable(onClick = {
-                                    state.searchState.onQueryChanged("")
-                                })
-                                .padding(12.dp)
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.back),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier
-                                .clickable(onClick = {
-                                    state.searchState.onQueryChanged(null)
-                                })
-                                .padding(start = 16.dp)
-                        )
-                        WCSearchField(
-                            value = state.searchState.query ?: "",
-                            onValueChange = { state.searchState.onQueryChanged(it) },
-                            hint = if (state.areFiltersActive) {
-                                stringResource(R.string.bookings_search_with_filters_hint)
-                            } else {
-                                stringResource(R.string.bookings_search_hint)
-                            },
-                            modifier = Modifier
-                                .focusRequester(focusRequester)
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        )
-                    }
+                    SearchSection(
+                        searchState = state.searchState,
+                        areFiltersActive = state.areFiltersActive
+                    )
                 }
             )
         },
@@ -157,6 +121,61 @@ fun BookingListScreen(state: BookingListViewState) {
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SearchSection(
+    searchState: BookingListSearchState,
+    areFiltersActive: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(searchState.isSearchActive) {
+        if (searchState.isSearchActive) {
+            focusRequester.requestFocus()
+        }
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        if (!searchState.isSearchActive) {
+            IconButton(onClick = {
+                searchState.onQueryChanged("")
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(R.string.search)
+                )
+            }
+        } else {
+            IconButton(onClick = {
+                searchState.onQueryChanged(null)
+            }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.back),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            WCSearchField(
+                value = searchState.query ?: "",
+                onValueChange = { searchState.onQueryChanged(it) },
+                hint = if (areFiltersActive) {
+                    stringResource(R.string.bookings_search_with_filters_hint)
+                } else {
+                    stringResource(R.string.bookings_search_hint)
+                },
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
         }
     }
 }
