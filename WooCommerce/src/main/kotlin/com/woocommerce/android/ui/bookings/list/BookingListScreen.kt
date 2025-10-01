@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -86,7 +87,8 @@ fun BookingListScreen(state: BookingListViewState) {
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = WindowInsets()
     ) { paddingValues ->
         val coroutineScope = rememberCoroutineScope()
         val lazyListState = rememberLazyListState()
@@ -103,8 +105,7 @@ fun BookingListScreen(state: BookingListViewState) {
                             lazyListState.scrollToItem(0)
                         }
                         state.tabState.onTabChanged(it)
-                    },
-                    modifier = Modifier
+                    }
                 )
             }
 
