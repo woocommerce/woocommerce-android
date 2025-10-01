@@ -76,7 +76,7 @@ fun BookingListScreen(state: BookingListViewState) {
                                 .clickable(onClick = {
                                     state.searchState.onQueryChanged(null)
                                 })
-                                .padding(12.dp)
+                                .padding(start = 16.dp)
                         )
                         WCSearchField(
                             value = state.searchState.query ?: "",
@@ -85,7 +85,10 @@ fun BookingListScreen(state: BookingListViewState) {
                                 stringResource(R.string.bookings_search_with_filters_hint)
                             } else {
                                 stringResource(R.string.bookings_search_hint)
-                            }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
                         )
                     }
                 }
