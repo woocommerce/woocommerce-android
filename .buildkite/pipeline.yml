@@ -83,6 +83,7 @@ steps:
     steps:
 
       - label: "Unit tests"
+        key: unit-tests
         command: .buildkite/commands/run-unit-tests.sh
         plugins:
           - $CI_TOOLKIT
@@ -94,6 +95,19 @@ steps:
               buildkite_api_token: "$BUILDKITE_TOKEN_FOR_CLAUDE"
         artifact_paths:
           - "**/build/test-results/merged-test-results.xml"
+
+      - label: "💬 Comment Claude Analysis"
+        command: |
+          # Check if unit tests failed (matches both hard_failed and soft_failed outcomes)
+          if buildkite-agent step get outcome --step unit-tests | grep -q "failed"; then
+            comment_on_pr \
+              "## 🤖 Test Failure Analysis\n\nYour tests failed. Claude has analyzed the failures - [check the annotation](${BUILDKITE_BUILD_URL}/annotations#annotation-claude-analysis-${BUILDKITE_BUILD_ID}) for details."
+          fi
+        depends_on: unit-tests
+        allow_dependency_failure: true
+        if: build.pull_request.id != null
+        plugins:
+          - $CI_TOOLKIT
 
 #      - label: "Instrumented tests"
 #        command: .buildkite/commands/run-instrumented-tests.sh
