@@ -77,6 +77,9 @@ class BookingListViewModel @Inject constructor(
         )
     }.asLiveData()
 
+    val bottomNavigationVisible = searchState.map { !it.isSearchActive }
+        .asLiveData()
+
     init {
         monitorSearchAndFilterChanges()
     }
