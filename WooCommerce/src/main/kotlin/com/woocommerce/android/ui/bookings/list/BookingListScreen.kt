@@ -27,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.AttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
+import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -174,7 +174,7 @@ private fun BookingListPreview() {
                                 name = "Women’s Haircut",
                                 customerName = "Margarita Nikolaevna",
                                 attendanceStatus = AttendanceStatus.BOOKED,
-                                paymentStatus = BookingPaymentStatus.Paid
+                                status = BookingStatus.Paid
                             )
                         )
                     },

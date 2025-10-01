@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsMode
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
-import com.woocommerce.android.ui.bookings.compose.BookingPaymentStatus
+import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -121,7 +121,7 @@ private fun BookingDetailsPreview() {
                     name = "Women’s Haircut",
                     customerName = "Margarita Nikolaevna",
                     attendanceStatus = AttendanceStatus.CHECKED_IN,
-                    paymentStatus = BookingPaymentStatus.Paid
+                    status = BookingStatus.Paid
                 ),
                 bookingsAppointmentDetails = BookingAppointmentDetailsModel(
                     date = "Monday, 05 July 2025",
