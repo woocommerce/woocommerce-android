@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun BookingPaymentSection(
     model: BookingPaymentDetailsModel,
-    paymentStatus: BookingPaymentStatus,
+    status: BookingStatus,
     onMarkAsPaid: () -> Unit,
     onMarkAsRefunded: () -> Unit,
     onViewOrder: () -> Unit,
@@ -56,7 +56,7 @@ fun BookingPaymentSection(
                 thickness = 0.5.dp,
                 modifier = Modifier.padding(start = 16.dp)
             )
-            if (paymentStatus == BookingPaymentStatus.PAID) {
+            if (status == BookingStatus.Paid) {
                 WCOutlinedButton(
                     onClick = onMarkAsRefunded,
                     colors = ButtonDefaults.outlinedButtonColors(
@@ -140,7 +140,7 @@ private fun BookingPaymentSectionPreview() {
                 discount = "-",
                 total = "$59.50"
             ),
-            paymentStatus = BookingPaymentStatus.COMPLETE,
+            status = BookingStatus.Complete,
             onMarkAsPaid = {},
             onViewOrder = {},
             onMarkAsRefunded = {},
@@ -160,7 +160,7 @@ private fun BookingPaymentSectionWithRefundOptionPreview() {
                 discount = "-",
                 total = "$59.50"
             ),
-            paymentStatus = BookingPaymentStatus.PAID,
+            status = BookingStatus.Paid,
             onMarkAsPaid = {},
             onViewOrder = {},
             onMarkAsRefunded = {},

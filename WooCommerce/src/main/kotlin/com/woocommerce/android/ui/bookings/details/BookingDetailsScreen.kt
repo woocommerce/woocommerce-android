@@ -98,7 +98,7 @@ fun BookingDetailsScreen(
                 )
                 BookingPaymentSection(
                     model = viewState.bookingPaymentDetails,
-                    paymentStatus = viewState.bookingSummary.status,
+                    status = viewState.bookingSummary.status,
                     onMarkAsPaid = viewState.onMarkAsPaid,
                     onViewOrder = { onViewOrder(viewState.orderId) },
                     onMarkAsRefunded = viewState.onMarkAsRefunded,
