@@ -217,6 +217,60 @@ class BookingListViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `when search query is changed, then state is updated`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.searchState.onQueryChanged("test query")
+
+        // THEN
+        val updatedState = viewModel.state.getOrAwaitValue()
+        assertThat(updatedState.searchState.query).isEqualTo("test query")
+        assertThat(updatedState.searchState.isSearchActive).isTrue()
+    }
+
+    @Test
+    fun `when search query is changed, then bookings are refetched`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.searchState.onQueryChanged("test query")
+        advanceUntilIdle()
+
+        // THEN
+        verify(bookingListHandler).loadBookings(
+            searchQuery = eq("test query"),
+            filters = any()
+        )
+    }
+
+    @Test
+    fun `when search query is cleared, then isSearchActive becomes false and bookings are refetched`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.searchState.onQueryChanged("test query")
+        val stateWithQuery = viewModel.state.getOrAwaitValue()
+        stateWithQuery.searchState.onQueryChanged(null)
+        advanceUntilIdle()
+
+        // THEN
+        val clearedState = viewModel.state.getOrAwaitValue()
+        assertThat(clearedState.searchState.query).isNull()
+        assertThat(clearedState.searchState.isSearchActive).isFalse()
+        verify(bookingListHandler, times(2)).loadBookings(
+            searchQuery = eq(null),
+            filters = any()
+        )
+    }
+
     private fun getSampleBooking(id: Int): Booking {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(id.toLong()),

@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.ArgumentMatchers.intThat
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
@@ -36,16 +37,18 @@ class BookingListHandlerTest : BaseUnitTest() {
             val limit = invocation.getArgument<Int>(0)
             results.map { it.take(limit) }
         }
-        onBlocking { fetchBookings(any(), any(), any()) } doAnswer InlineClassesAnswer { invocation ->
+        onBlocking { fetchBookings(any(), any(), anyOrNull(), any()) } doAnswer InlineClassesAnswer { invocation ->
             val page = invocation.getArgument<Int>(0)
             val perPage = invocation.getArgument<Int>(1)
             val canLoadMore = page < availablePages
-            when (page) {
-                1 -> results.update { List(perPage) { getSampleBooking(it) } }
-                availablePages -> results.update { list -> list + List(5) { getSampleBooking(it + perPage) } }
-                else -> results.update { list -> list + List(perPage) { getSampleBooking(it + perPage) } }
+            val bookings = when (page) {
+                1 -> List(perPage) { getSampleBooking(it) }
+                availablePages -> List(5) { getSampleBooking(it + (page - 1) * perPage) }
+                else -> List(perPage) { getSampleBooking(it + (page - 1) * perPage) }
             }
-            Result.success(canLoadMore)
+            if (page == 1) results.update { emptyList() }
+            results.update { it + bookings }
+            Result.success(BookingsRepository.FetchResult(bookings, canLoadMore))
         }
     }
 
@@ -75,7 +78,7 @@ class BookingListHandlerTest : BaseUnitTest() {
     fun `given repository fetch fails, when loading bookings with force refresh, then returns failure`() =
         testBlocking {
             val exception = Exception("Network error")
-            given(bookingsRepository.fetchBookings(page = any(), perPage = any(), filters = any()))
+            given(bookingsRepository.fetchBookings(page = any(), perPage = any(), query = anyOrNull(), filters = any()))
                 .willReturn(Result.failure(exception))
 
             val result = bookingListHandler.loadBookings(searchQuery = null)
@@ -90,7 +93,12 @@ class BookingListHandlerTest : BaseUnitTest() {
             val result = bookingListHandler.loadMore()
 
             assertThat(result.isSuccess).isTrue()
-            verify(bookingsRepository, never()).fetchBookings(any(), any(), any())
+            verify(bookingsRepository, never()).fetchBookings(
+                page = any(),
+                perPage = any(),
+                query = anyOrNull(),
+                filters = any()
+            )
         }
 
     @Test
@@ -117,6 +125,7 @@ class BookingListHandlerTest : BaseUnitTest() {
         verify(bookingsRepository, never()).fetchBookings(
             page = intThat { it > availablePages },
             perPage = any(),
+            query = anyOrNull(),
             filters = any()
         )
     }
