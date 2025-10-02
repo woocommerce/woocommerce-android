@@ -59,13 +59,14 @@ fun BookingPaymentSection(
                 modifier = Modifier.padding(start = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
+            // TODO Change the logic and use Order info when available
             if (status == BookingStatus.Paid) {
                 WCOutlinedButton(
                     onClick = onMarkAsRefunded,
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.onSurface
                     ),
-                    text = stringResource(id = R.string.booking_payment_mark_as_refunded),
+                    text = stringResource(id = R.string.orderdetail_issue_refund_button),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
