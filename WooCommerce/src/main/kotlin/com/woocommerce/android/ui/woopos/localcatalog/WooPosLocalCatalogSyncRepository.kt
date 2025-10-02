@@ -42,7 +42,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     }
 
     suspend fun syncLocalCatalogIncremental(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
-        syncTimestampManager.clearAllSyncTimestamps()
         val lastSyncTimestamp = syncTimestampManager.getProductsLastSyncTimestamp() ?: 0L
         val modifiedAfterGmt = syncTimestampManager.formatTimestampForApi(lastSyncTimestamp)
 
