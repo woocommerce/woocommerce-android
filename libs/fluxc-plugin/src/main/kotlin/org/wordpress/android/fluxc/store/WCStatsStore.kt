@@ -22,8 +22,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStats
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient.OrderStatsApiUnit
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.VisitorStatsSummaryApiResponse
-import org.wordpress.android.fluxc.persistence.WCStatsSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.NewVisitorStatsDao
+import org.wordpress.android.fluxc.persistence.dao.RevenueStatsDao
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.entity.VisitorSummaryStatsEntity
 import org.wordpress.android.fluxc.persistence.entity.toDomainModel
@@ -42,6 +42,7 @@ class WCStatsStore @Inject internal constructor(
     private val coroutineEngine: CoroutineEngine,
     private val visitorSummaryStatsDao: VisitorSummaryStatsDao,
     private val newVisitorStatsDao: NewVisitorStatsDao,
+    private val revenueStatsDao: RevenueStatsDao,
 ) : Store(dispatcher) {
     companion object {
         private const val DATE_FORMAT_DAY = "yyyy-MM-dd"
@@ -416,7 +417,7 @@ class WCStatsStore @Inject internal constructor(
                     OnWCRevenueStatsChanged(granularity)
                         .also { it.error = error }
                 } else {
-                    WCStatsSqlUtils.insertOrUpdateRevenueStats(stats)
+                    revenueStatsDao.insert(stats)
                     OnWCRevenueStatsChanged(
                         granularity,
                         stats.startDate,
@@ -529,10 +530,10 @@ class WCStatsStore @Inject internal constructor(
         granularity: StatsGranularity,
         startDate: String,
         endDate: String
-    ) = WCStatsSqlUtils.getRevenueStatsForSiteIntervalAndDate(site, granularity, startDate, endDate)
+    ) = revenueStatsDao.getBySiteIntervalAndDate(site.localId(), granularity, startDate, endDate)
 
     suspend fun getRawRevenueStatsFromRangeId(
         site: SiteModel,
         revenueRangeId: String
-    ) = WCStatsSqlUtils.getRevenueStatsFromRangeId(site, revenueRangeId)
+    ) = revenueStatsDao.getBySiteAndRangeId(site.localId(), revenueRangeId)
 }

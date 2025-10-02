@@ -14,6 +14,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.WCStatsAction
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundleStats
 import org.wordpress.android.fluxc.model.WCGiftCardStats
@@ -90,7 +91,7 @@ class StatsRepositoryTests : BaseUnitTest() {
                 .thenReturn(emptyMap())
             whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
             whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))
-                .thenReturn(WCRevenueStatsModel())
+                .thenReturn(WCRevenueStatsModel(LocalId(1), "", "", "", "", "", ""))
 
             val result = sut.fetchStats(
                 range = defaultRange,
@@ -128,7 +129,7 @@ class StatsRepositoryTests : BaseUnitTest() {
         whenever(wcStatsStore.fetchNewVisitorStats(any())).thenReturn(visitorStatsResponse)
         whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
         whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))
-            .thenReturn(WCRevenueStatsModel())
+            .thenReturn(WCRevenueStatsModel(LocalId(1), "", "", "", "", "", ""))
 
         val result = sut.fetchStats(
             range = defaultRange,

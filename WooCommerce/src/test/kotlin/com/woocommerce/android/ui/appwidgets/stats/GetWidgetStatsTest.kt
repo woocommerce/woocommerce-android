@@ -16,6 +16,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import java.util.Calendar
@@ -49,7 +50,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
             "2020-11-01" to 3,
             "2020-12-01" to 4
         ),
-        revenue = WCRevenueStatsModel(),
+        revenue = WCRevenueStatsModel(LocalId(1), "", "", "", "", "", ""),
         currencyCode = "USD"
     )
 
