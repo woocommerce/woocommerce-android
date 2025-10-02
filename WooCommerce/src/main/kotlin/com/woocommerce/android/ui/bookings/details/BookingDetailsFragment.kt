@@ -23,7 +23,13 @@ class BookingDetailsFragment : BaseFragment() {
         return composeView {
             BookingDetailsScreen(
                 viewModel = viewModel,
-                onBack = { findNavController().popBackStack() }
+                onBack = { findNavController().popBackStack() },
+                onViewOrder = { orderId ->
+                    findNavController().navigate(
+                        BookingDetailsFragmentDirections
+                            .actionBookingDetailsFragmentToOrderDetailFragment(orderId)
+                    )
+                }
             )
         }
     }

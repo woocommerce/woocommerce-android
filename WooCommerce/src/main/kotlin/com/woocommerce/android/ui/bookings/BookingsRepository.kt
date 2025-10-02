@@ -5,6 +5,7 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 class BookingsRepository @Inject constructor(
@@ -40,4 +41,5 @@ class BookingsRepository @Inject constructor(
         )
 }
 
-typealias Booking = org.wordpress.android.fluxc.persistence.entity.BookingEntity
+typealias Booking = BookingEntity
+typealias BookingStatus = BookingEntity.Status

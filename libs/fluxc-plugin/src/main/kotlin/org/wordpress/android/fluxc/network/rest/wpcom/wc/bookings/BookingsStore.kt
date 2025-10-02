@@ -66,7 +66,7 @@ class BookingsStore @Inject constructor(
         start = Instant.ofEpochSecond(start),
         end = Instant.ofEpochSecond(end),
         allDay = allDay,
-        status = status,
+        status = BookingEntity.Status.fromKey(status),
         cost = cost,
         currency = currency,
         customerId = customerId,
