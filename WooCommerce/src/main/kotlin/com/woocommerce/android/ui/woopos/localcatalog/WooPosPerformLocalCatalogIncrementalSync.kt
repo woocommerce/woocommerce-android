@@ -11,18 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * Use case for performing incremental sync of the local catalog in background.
- *
- * This class encapsulates the common logic for triggering incremental sync that was duplicated
- * across multiple ViewModels (WooPosTotalsViewModel and WooPosSplashViewModel).
- *
- * The sync:
- * - Only runs when WOO_POS_LOCAL_CATALOG_M1 feature flag is enabled
- * - Only runs when network is connected
- * - Runs in application scope to survive ViewModel lifecycle
- * - Logs comprehensive information about sync results
- */
 class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
     private val selectedSite: SelectedSite,
@@ -31,41 +19,37 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
     private val wooPosLogWrapper: WooPosLogWrapper,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
-    /**
-     * Executes incremental sync in the background.
-     *
-     * @param reason A descriptive reason for the sync (e.g., "after successful payment", "on splash screen")
-     *               Used for logging to help with debugging and monitoring.
-     */
-    fun execute(reason: String) {
+    fun execute(reason: WooPosIncrementalSyncReason) {
+        val reasonDescription = reason.description
+
         if (!wooPosLocalCatalogM1Enabled()) {
-            wooPosLogWrapper.d("Skipping sync $reason: Local catalog feature not enabled")
+            wooPosLogWrapper.d("Skipping sync $reasonDescription: Local catalog feature not enabled")
             return
         }
 
         if (!networkStatus.isConnected()) {
-            wooPosLogWrapper.d("Skipping sync $reason: No network connection")
+            wooPosLogWrapper.d("Skipping sync $reasonDescription: No network connection")
             return
         }
 
         appCoroutineScope.launch {
             selectedSite.getOrNull()?.let { site ->
-                wooPosLogWrapper.d("Starting incremental sync $reason")
+                wooPosLogWrapper.d("Starting incremental sync $reasonDescription")
                 val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
                 when (syncResult) {
                     is Success -> {
                         wooPosLogWrapper.d(
-                            "Sync $reason completed successfully: " +
+                            "Sync $reasonDescription completed successfully: " +
                                 "${syncResult.productsSynced} products, " +
                                 "${syncResult.variationsSynced} variations synced " +
                                 "in ${syncResult.syncDurationMs}ms"
                         )
                     }
                     is Failure -> {
-                        wooPosLogWrapper.e("Sync $reason failed: ${syncResult.error}")
+                        wooPosLogWrapper.e("Sync $reasonDescription failed: ${syncResult.error}")
                     }
                 }
-            } ?: wooPosLogWrapper.d("Skipping sync $reason: No site selected")
+            } ?: wooPosLogWrapper.d("Skipping sync $reasonDescription: No site selected")
         }
     }
 }
