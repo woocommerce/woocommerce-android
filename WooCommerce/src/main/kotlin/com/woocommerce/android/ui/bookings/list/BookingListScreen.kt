@@ -39,6 +39,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
+import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
@@ -87,14 +88,6 @@ fun BookingListScreen(state: BookingListViewState) {
                 HorizontalDivider()
             }
             when {
-                state.contentState.isNotEmpty() -> {
-                    BookingList(
-                        state = state.contentState,
-                        listState = lazyListState,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-
                 state.contentState.loadingState == BookingListLoadingState.Loading -> {
                     // TODO replace with shimmer
                     CircularProgressIndicator(
@@ -102,6 +95,14 @@ fun BookingListScreen(state: BookingListViewState) {
                             .padding(paddingValues)
                             .fillMaxSize()
                             .wrapContentSize()
+                    )
+                }
+
+                state.contentState.isNotEmpty() -> {
+                    BookingList(
+                        state = state.contentState,
+                        listState = lazyListState,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
 
@@ -229,7 +230,7 @@ private fun BookingListPreview() {
                     bookings = List(20) {
                         BookingListItem(
                             id = it.toLong(),
-                            summary = com.woocommerce.android.ui.bookings.compose.BookingSummaryModel(
+                            summary = BookingSummaryModel(
                                 date = "Aug 20, 2024",
                                 name = "Women’s Haircut",
                                 customerName = "Margarita Nikolaevna",

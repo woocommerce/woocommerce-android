@@ -100,9 +100,11 @@ class BookingListViewModel @Inject constructor(
 
     private fun fetchBookings(initialLoadingState: BookingListLoadingState) = launch {
         loadingState.value = initialLoadingState
+        val sortOption = sortOptionsByTab.value[selectedTab.value] ?: BookingListSortOption.NewestToOldest
         bookingListHandler.loadBookings(
             forceRefresh = true,
-            filters = prepareFilters()
+            filters = prepareFilters(),
+            sortBy = sortOption
         ).onFailure {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
         }
@@ -141,7 +143,8 @@ class BookingListViewModel @Inject constructor(
         sortOptionsByTab.value = sortOptionsByTab.value.toMutableMap()
             .also { it[tab] = option }
         isSortSheetVisible.value = false
-        // TODO Apply the selected sorting to the data for the active tab
+        bookingsFetchJob?.cancel()
+        bookingsFetchJob = fetchBookings(BookingListLoadingState.Loading)
     }
 
     private fun onSortDismiss() {
