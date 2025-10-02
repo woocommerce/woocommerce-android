@@ -396,6 +396,7 @@ class WooPosOrdersDataSourceTest {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `given search first page with more pages, when loadMore with same query succeeds, then maps page2 and updates hasMorePages`() = runTest {
         // GIVEN
         val query = "abc"

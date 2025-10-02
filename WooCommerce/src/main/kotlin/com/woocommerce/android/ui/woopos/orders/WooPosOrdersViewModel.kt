@@ -81,7 +81,6 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     fun onEndOfOrdersListReached() {
         val currentState = _state.value
         if (currentState !is WooPosOrdersState.Content ||
@@ -98,6 +97,7 @@ class WooPosOrdersViewModel @Inject constructor(
         loadMoreIfPossible()
     }
 
+    @Suppress("ReturnCount")
     fun loadMoreIfPossible() {
         if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) return
         if (!ordersDataSource.hasMorePages) return
