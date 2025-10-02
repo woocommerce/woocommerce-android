@@ -8,4 +8,5 @@ package com.woocommerce.android.ui.woopos.localcatalog
  */
 enum class WooPosIncrementalSyncReason(val description: String) {
     AFTER_SUCCESSFUL_PAYMENT("after successful payment"),
+    ON_SPLASH_SCREEN("on splash screen"),
 }
