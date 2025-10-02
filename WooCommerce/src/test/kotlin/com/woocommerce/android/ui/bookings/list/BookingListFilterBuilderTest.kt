@@ -21,8 +21,8 @@ class BookingListFilterBuilderTest {
         }
 
         assertThat(filter).isNotNull()
-        assertThat(filter?.after).isEqualTo(Instant.parse("2025-01-01T00:00:00+02:00"))
-        assertThat(filter?.before).isEqualTo(Instant.parse("2025-01-01T23:59:59.999999999+02:00"))
+        assertThat(filter?.after).isEqualTo(Instant.parse("2025-01-01T00:00:00+00:00"))
+        assertThat(filter?.before).isEqualTo(Instant.parse("2025-01-01T23:59:59.999999999+00:00"))
     }
 
     @Test
