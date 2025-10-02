@@ -48,102 +48,102 @@ class WooPosFullSyncCheckUseCaseTest {
     @Test
     fun `given feature flag disabled, when checkAndTriggerSyncIfNeeded called, then does not trigger sync`() =
         runTest {
-            // Given
+            // GIVEN
             whenever(wooPosLocalCatalogM1Enabled()).thenReturn(false)
 
-            // When
+            // WHEN
             useCase.checkAndTriggerSyncIfNeeded()
 
-            // Then
+            // THEN
             verify(syncScheduler, never()).triggerManualFullCatalogSync()
         }
 
     @Test
     fun `given no site selected, when checkAndTriggerSyncIfNeeded called, then does not trigger sync`() =
         runTest {
-            // Given
+            // GIVEN
             whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
             whenever(selectedSite.getOrNull()).thenReturn(null)
 
-            // When
+            // WHEN
             useCase.checkAndTriggerSyncIfNeeded()
 
-            // Then
+            // THEN
             verify(syncScheduler, never()).triggerManualFullCatalogSync()
         }
 
     @Test
     fun `given no network connection, when checkAndTriggerSyncIfNeeded called, then does not trigger sync`() =
         runTest {
-            // Given
+            // GIVEN
             whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
             whenever(selectedSite.getOrNull()).thenReturn(mock<SiteModel>())
             whenever(networkStatus.isConnected()).thenReturn(false)
 
-            // When
+            // WHEN
             useCase.checkAndTriggerSyncIfNeeded()
 
-            // Then
+            // THEN
             verify(syncScheduler, never()).triggerManualFullCatalogSync()
         }
 
     @Test
     fun `given sync is running, when checkAndTriggerSyncIfNeeded called, then does not trigger sync`() =
         runTest {
-            // Given
+            // GIVEN
             givenAllPrerequisitesMet()
             whenever(syncScheduler.isPeriodicWorkRunning()).thenReturn(true)
 
-            // When
+            // WHEN
             useCase.checkAndTriggerSyncIfNeeded()
 
-            // Then
+            // THEN
             verify(syncScheduler, never()).triggerManualFullCatalogSync()
         }
 
     @Test
     fun `given no previous sync, when checkAndTriggerSyncIfNeeded called, then triggers sync`() =
         runTest {
-            // Given
+            // GIVEN
             givenAllPrerequisitesMet()
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(null)
 
-            // When
+            // WHEN
             useCase.checkAndTriggerSyncIfNeeded()
 
-            // Then
+            // THEN
             verify(syncScheduler).triggerManualFullCatalogSync()
         }
 
     @Test
     fun `given sync older than 24 hours, when checkAndTriggerSyncIfNeeded called, then triggers sync`() =
         runTest {
-            // Given
+            // GIVEN
             val currentTime = System.currentTimeMillis()
             val twentyFiveHoursAgo = currentTime - TWENTY_FIVE_HOURS_MILLIS
             givenAllPrerequisitesMet()
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(twentyFiveHoursAgo)
 
-            // When
+            // WHEN
             useCase.checkAndTriggerSyncIfNeeded()
 
-            // Then
+            // THEN
             verify(syncScheduler).triggerManualFullCatalogSync()
         }
 
     @Test
     fun `given sync newer than 24 hours, when checkAndTriggerSyncIfNeeded called, then does not trigger sync`() =
         runTest {
-            // Given
+            // GIVEN
             val currentTime = System.currentTimeMillis()
             val twoHoursAgo = currentTime - TWO_HOURS_MILLIS
             givenAllPrerequisitesMet()
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(twoHoursAgo)
 
-            // When
+            // WHEN
             useCase.checkAndTriggerSyncIfNeeded()
 
-            // Then
+            // THEN
             verify(syncScheduler, never()).triggerManualFullCatalogSync()
         }
 
