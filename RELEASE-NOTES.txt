@@ -9,6 +9,9 @@
 -----
 
 
+23.3.1
+-----
+- [***] Fix broken IPP flow [https://github.com/woocommerce/woocommerce-android/pull/14679[
 23.3
 -----
 - [Internal] Migration to POS specific product model [https://github.com/woocommerce/woocommerce-android/pull/14598]
