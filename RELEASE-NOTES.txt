@@ -9,6 +9,9 @@
 -----
 
 
+23.3.1
+-----
+- [***] Fix issue with In Person Payments card reader connection flow [https://github.com/woocommerce/woocommerce-android/pull/14681]
 23.3
 -----
 - [Internal] Migration to POS specific product model [https://github.com/woocommerce/woocommerce-android/pull/14598]
