@@ -14,6 +14,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
@@ -22,6 +23,11 @@ class WooPosFullSyncCheckUseCaseTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
+
+    companion object {
+        private val TWENTY_FIVE_HOURS_MILLIS = TimeUnit.HOURS.toMillis(25)
+        private val TWO_HOURS_MILLIS = TimeUnit.HOURS.toMillis(2)
+    }
 
     private val syncTimestampManager: WooPosSyncTimestampManager = mock()
     private val syncScheduler: WooPosLocalCatalogSyncScheduler = mock()
@@ -114,7 +120,7 @@ class WooPosFullSyncCheckUseCaseTest {
         runTest {
             // Given
             val currentTime = System.currentTimeMillis()
-            val twentyFiveHoursAgo = currentTime - (25 * 60 * 60 * 1000L)
+            val twentyFiveHoursAgo = currentTime - TWENTY_FIVE_HOURS_MILLIS
             givenAllPrerequisitesMet()
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(twentyFiveHoursAgo)
 
@@ -130,7 +136,7 @@ class WooPosFullSyncCheckUseCaseTest {
         runTest {
             // Given
             val currentTime = System.currentTimeMillis()
-            val twoHoursAgo = currentTime - (2 * 60 * 60 * 1000L)
+            val twoHoursAgo = currentTime - TWO_HOURS_MILLIS
             givenAllPrerequisitesMet()
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(twoHoursAgo)
 

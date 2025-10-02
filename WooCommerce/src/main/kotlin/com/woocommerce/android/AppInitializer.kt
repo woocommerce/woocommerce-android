@@ -44,8 +44,8 @@ import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncCheckUseCase
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
