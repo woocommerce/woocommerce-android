@@ -31,6 +31,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -204,9 +206,20 @@ fun WCSearchField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
+    var textFieldValueState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(text = value))
+    }
+    val lastValue by rememberUpdatedState(value)
+
     BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
+        value = textFieldValueState,
+        onValueChange = {
+            textFieldValueState = it
+            if (it.text != lastValue) {
+                // Update external value when changed
+                onValueChange(it.text)
+            }
+        },
         textStyle = TextStyle(
             color = colorResource(id = R.color.color_on_surface),
             textDirection = ContentOrLtr
