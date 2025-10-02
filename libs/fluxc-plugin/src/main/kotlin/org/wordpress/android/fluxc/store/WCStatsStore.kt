@@ -500,7 +500,7 @@ class WCStatsStore @Inject internal constructor(
         emitChange(onStatsChanged)
     }
 
-    fun getGrossRevenueStats(
+    suspend fun getGrossRevenueStats(
         site: SiteModel,
         granularity: StatsGranularity,
         startDate: String,
@@ -512,7 +512,7 @@ class WCStatsStore @Inject internal constructor(
         } ?: mapOf()
     }
 
-    fun getOrderCountStats(
+    suspend fun getOrderCountStats(
         site: SiteModel,
         granularity: StatsGranularity,
         startDate: String,
@@ -524,18 +524,14 @@ class WCStatsStore @Inject internal constructor(
         } ?: mapOf()
     }
 
-    fun getRawRevenueStats(
+    suspend fun getRawRevenueStats(
         site: SiteModel,
         granularity: StatsGranularity,
         startDate: String,
         endDate: String
-    ): WCRevenueStatsModel? {
-        return WCStatsSqlUtils.getRevenueStatsForSiteIntervalAndDate(
-            site, granularity, startDate, endDate
-        )
-    }
+    ) = WCStatsSqlUtils.getRevenueStatsForSiteIntervalAndDate(site, granularity, startDate, endDate)
 
-    fun getRawRevenueStatsFromRangeId(
+    suspend fun getRawRevenueStatsFromRangeId(
         site: SiteModel,
         revenueRangeId: String
     ) = WCStatsSqlUtils.getRevenueStatsFromRangeId(site, revenueRangeId)
