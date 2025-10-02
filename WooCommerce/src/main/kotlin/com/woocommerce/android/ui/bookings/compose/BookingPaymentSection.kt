@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -36,7 +38,6 @@ fun BookingPaymentSection(
         BookingSectionHeader(R.string.booking_payment_header)
         HorizontalDivider(thickness = 0.5.dp)
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surfaceContainer)
                 .padding(vertical = 16.dp)
@@ -52,10 +53,12 @@ fun BookingPaymentSection(
                 PaymentRow(label = R.string.discount, value = model.discount)
                 PaymentRow(label = R.string.total, value = model.total, fontWeight = FontWeight.Medium)
             }
+            Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(
                 thickness = 0.5.dp,
                 modifier = Modifier.padding(start = 16.dp)
             )
+            Spacer(modifier = Modifier.height(16.dp))
             if (status == BookingStatus.Paid) {
                 WCOutlinedButton(
                     onClick = onMarkAsRefunded,
@@ -76,6 +79,7 @@ fun BookingPaymentSection(
                         .padding(horizontal = 16.dp)
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
             WCOutlinedButton(
                 onClick = onViewOrder,
                 colors = ButtonDefaults.outlinedButtonColors(
