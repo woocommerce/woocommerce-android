@@ -72,7 +72,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         state.onAttendanceStatusSelected(BookingAttendanceStatus.CANCELLED)
 
         // Then
-        val updated = viewModel.state.value?.bookingSummary?.attendanceStatus
+        val updated = viewModel.state.value?.bookingUiState?.bookingSummary?.attendanceStatus
         assertThat(updated).isEqualTo(BookingAttendanceStatus.CANCELLED)
     }
 
@@ -92,9 +92,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         // Then
         val state = viewModel.state.getOrAwaitValue()
-        assertThat(state.bookingSummary).isNotNull
-        assertThat(state.bookingsAppointmentDetails).isNotNull
-        assertThat(state.bookingCustomerDetails).isNotNull
+        assertThat(state.bookingUiState).isNotNull
     }
 
     private fun createViewModel(

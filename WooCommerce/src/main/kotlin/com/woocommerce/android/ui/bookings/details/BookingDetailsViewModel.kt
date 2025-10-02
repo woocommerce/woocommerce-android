@@ -48,10 +48,15 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
-        _state.update { current ->
-            current.copy(
-                bookingSummary = current.bookingSummary?.copy(attendanceStatus = status)
-            )
+        val bookingState = _state.value.bookingUiState
+        if (bookingState != null) {
+            _state.update { current ->
+                current.copy(
+                    bookingUiState = bookingState.copy(
+                        bookingSummary = bookingState.bookingSummary.copy(attendanceStatus = status)
+                    )
+                )
+            }
         }
     }
 
@@ -70,24 +75,26 @@ class BookingDetailsViewModel @Inject constructor(
     private fun updateStateWithBooking(booking: Booking) = with(bookingMapper) {
         _state.update { current ->
             current.copy(
-                bookingSummary = booking.toBookingSummaryModel(),
-                bookingsAppointmentDetails = booking.toAppointmentDetailsModel(),
-                bookingCustomerDetails = BookingCustomerDetailsModel(
-                    name = "Margarita Nikolaevna",
-                    email = "margarita@example.com",
-                    phone = "+1 555-123-4567",
-                    billingAddressLines = listOf(
-                        "238 Willow Creek Drive",
-                        "Montgomery AL 36109",
-                        "United States"
+                bookingUiState = BookingUiState(
+                    bookingSummary = booking.toBookingSummaryModel(),
+                    bookingsAppointmentDetails = booking.toAppointmentDetailsModel(),
+                    bookingCustomerDetails = BookingCustomerDetailsModel(
+                        name = "Margarita Nikolaevna",
+                        email = "margarita@example.com",
+                        phone = "+1 555-123-4567",
+                        billingAddressLines = listOf(
+                            "238 Willow Creek Drive",
+                            "Montgomery AL 36109",
+                            "United States"
+                        )
+                    ),
+                    bookingPaymentDetails = BookingPaymentDetailsModel(
+                        service = "$55.00",
+                        tax = "$4.50",
+                        discount = "-",
+                        total = "$59.50"
                     )
                 ),
-                bookingPaymentDetails = BookingPaymentDetailsModel(
-                    service = "$55.00",
-                    tax = "$4.50",
-                    discount = "-",
-                    total = "$59.50"
-                )
             )
         }
     }
