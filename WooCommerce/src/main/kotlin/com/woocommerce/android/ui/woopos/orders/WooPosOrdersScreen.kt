@@ -83,6 +83,7 @@ fun WooPosOrdersScreen(
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
             onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
+            viewModel::onPaginationErrorTryAgain,
             onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
                 .weight(0.3f)
@@ -109,6 +110,7 @@ private fun OrdersList(
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
+    onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -214,6 +216,7 @@ private fun OrdersList(
                         state = state,
                         onOrderSelected = onOrderSelected,
                         onEndOfOrdersListReached = onEndOfOrdersListReached,
+                        onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                     )
                 }
             }
@@ -252,7 +255,8 @@ fun WooPosOrdersListPaneScreen(
     modifier: Modifier = Modifier,
     state: WooPosOrdersState.Content,
     onOrderSelected: (Long) -> Unit,
-    onEndOfOrdersListReached: () -> Unit
+    onEndOfOrdersListReached: () -> Unit,
+    onPaginationErrorTryAgain: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -325,7 +329,7 @@ fun WooPosOrdersListPaneScreen(
 
         if (state.paginationState == WooPosPaginationState.Error) {
             item {
-                OrdersPaginationErrorRow(onEndOfOrdersListReached)
+                OrdersPaginationErrorRow(onPaginationErrorTryAgain)
             }
         }
     }
@@ -395,14 +399,14 @@ private fun OrdersPaginationLoadingRow() {
 }
 
 @Composable
-private fun OrdersPaginationErrorRow(onEndOfOrdersListReachedTryAgain: () -> Unit) {
+private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
     WooPosPaginationErrorIndicator(
         message = stringResource(id = R.string.woopos_orders_pagination_error_title),
         description = stringResource(id = R.string.woopos_items_pagination_error_description),
         primaryButton = Button(
             text = stringResource(id = R.string.woopos_items_pagination_try_again_label),
             click = {
-                onEndOfOrdersListReachedTryAgain()
+                onPaginationErrorTryAgain()
             }
         ),
     )

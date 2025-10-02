@@ -85,21 +85,29 @@ class WooPosOrdersViewModel @Inject constructor(
     fun onEndOfOrdersListReached() {
         val currentState = _state.value
         if (currentState !is WooPosOrdersState.Content ||
-            currentState.paginationState == WooPosPaginationState.Loading ||
+            currentState.paginationState != WooPosPaginationState.None ||
             currentState.pullToRefreshState == WooPosPullToRefreshState.Refreshing
         ) {
             return
         }
 
-        if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) {
-            return
-        }
+        loadMoreIfPossible()
+    }
 
-        if (!ordersDataSource.hasMorePages) {
-            return
-        }
+    fun onPaginationErrorTryAgain() {
+        loadMoreIfPossible()
+    }
 
-        _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+    fun loadMoreIfPossible() {
+        if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) return
+        if (!ordersDataSource.hasMorePages) return
+
+        val currentState = _state.value
+        val newState = when (currentState) {
+            is WooPosOrdersState.Content -> currentState.copy(paginationState = WooPosPaginationState.Loading)
+            else -> return
+        }
+        _state.value = newState
 
         loadingMoreOrdersJob?.cancel()
         loadingMoreOrdersJob = viewModelScope.launch {
@@ -109,7 +117,7 @@ class WooPosOrdersViewModel @Inject constructor(
             if (result.isSuccess) {
                 appendOrders(result.getOrThrow())
             } else {
-                _state.value = currentState.copy(paginationState = WooPosPaginationState.Error)
+                _state.value = newState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
     }
