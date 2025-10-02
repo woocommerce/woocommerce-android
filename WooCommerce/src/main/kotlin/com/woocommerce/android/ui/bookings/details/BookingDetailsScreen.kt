@@ -76,34 +76,44 @@ fun BookingDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(innerPadding)
             ) {
-                BookingSummary(
-                    model = viewState.bookingSummary,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                BookingAppointmentDetails(
-                    model = viewState.bookingsAppointmentDetails,
-                    onCancelBooking = viewState.onCancelBooking,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                BookingCustomerDetails(
-                    model = viewState.bookingCustomerDetails,
-                    onEmailClick = {},
-                    onPhoneClick = {},
-                    modifier = Modifier.fillMaxWidth()
-                )
-                BookingAttendanceSection(
-                    status = viewState.bookingSummary.attendanceStatus,
-                    onClick = { showAttendanceSheet.value = true },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                BookingPaymentSection(
-                    model = viewState.bookingPaymentDetails,
-                    status = viewState.bookingSummary.status,
-                    onMarkAsPaid = { onViewOrder(viewState.orderId) },
-                    onViewOrder = { onViewOrder(viewState.orderId) },
-                    onMarkAsRefunded = { onViewOrder(viewState.orderId) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                viewState.bookingSummary?.let {
+                    BookingSummary(
+                        model = viewState.bookingSummary,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                viewState.bookingsAppointmentDetails?.let {
+                    BookingAppointmentDetails(
+                        model = viewState.bookingsAppointmentDetails,
+                        onCancelBooking = viewState.onCancelBooking,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                viewState.bookingCustomerDetails?.let {
+                    BookingCustomerDetails(
+                        model = viewState.bookingCustomerDetails,
+                        onEmailClick = {},
+                        onPhoneClick = {},
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                viewState.bookingSummary?.let {
+                    BookingAttendanceSection(
+                        status = viewState.bookingSummary.attendanceStatus,
+                        onClick = { showAttendanceSheet.value = true },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                viewState.bookingPaymentDetails?.let {
+                    BookingPaymentSection(
+                        model = viewState.bookingPaymentDetails,
+                        status = viewState.bookingSummary.status,
+                        onMarkAsPaid = { onViewOrder(viewState.orderId) },
+                        onViewOrder = { onViewOrder(viewState.orderId) },
+                        onMarkAsRefunded = { onViewOrder(viewState.orderId) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
             if (showAttendanceSheet.value) {
                 BookingAttendanceStatusBottomSheet(
