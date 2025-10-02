@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.bookings.list
 
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.Clock
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
@@ -27,7 +26,7 @@ class BookingListFiltersBuilder @Inject constructor(
 
             BookingListTab.Upcoming -> BookingsFilterOption.DateRange(
                 before = null,
-                after = Instant.now(clock)
+                after = LocalDate.now(clock).atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC).toInstant()
             )
 
             BookingListTab.All -> null
