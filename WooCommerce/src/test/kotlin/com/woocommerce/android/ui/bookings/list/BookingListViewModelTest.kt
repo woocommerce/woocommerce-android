@@ -278,7 +278,7 @@ class BookingListViewModelTest : BaseUnitTest() {
             start = Instant.now(),
             end = Instant.now() + Duration.ofDays(1),
             allDay = false,
-            status = "confirmed",
+            status = BookingEntity.Status.Confirmed,
             cost = "100.00",
             currency = "USD",
             customerId = 1L,

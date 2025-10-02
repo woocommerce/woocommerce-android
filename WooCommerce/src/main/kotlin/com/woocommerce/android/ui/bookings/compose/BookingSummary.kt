@@ -54,11 +54,11 @@ fun BookingSummary(
             modifier = Modifier
                 .padding(top = 8.dp)
         ) {
-            AttendanceStatusTag(
+            BookingAttendanceStatusTag(
                 state = model.attendanceStatus
             )
-            BookingPaymentStatusTag(
-                state = model.paymentStatus
+            BookingStatusTag(
+                state = model.status
             )
         }
     }
@@ -68,8 +68,8 @@ data class BookingSummaryModel(
     val date: String,
     val name: String,
     val customerName: String,
-    val attendanceStatus: AttendanceStatus,
-    val paymentStatus: BookingPaymentStatus,
+    val attendanceStatus: BookingAttendanceStatus,
+    val status: BookingStatus,
 )
 
 @Preview
@@ -81,8 +81,8 @@ private fun BookingSummaryPreview() {
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = AttendanceStatus.CHECKED_IN,
-                paymentStatus = BookingPaymentStatus.PAID
+                attendanceStatus = BookingAttendanceStatus.CHECKED_IN,
+                status = BookingStatus.Paid
             ),
             modifier = Modifier.fillMaxWidth()
         )
@@ -98,8 +98,8 @@ private fun BookingSummaryDarkPreview() {
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = AttendanceStatus.BOOKED,
-                paymentStatus = BookingPaymentStatus.PENDING_CONFIRMATION
+                attendanceStatus = BookingAttendanceStatus.BOOKED,
+                status = BookingStatus.PendingConfirmation
             ),
             modifier = Modifier.fillMaxWidth()
         )
