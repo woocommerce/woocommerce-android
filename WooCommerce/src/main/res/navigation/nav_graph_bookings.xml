@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/bookingListFragment"
         android:name="com.woocommerce.android.ui.bookings.list.BookingListFragment"
-        android:label="fragment_bookings" >
+        android:label="fragment_bookings">
         <action
             android:id="@+id/action_bookingListFragment_to_bookingDetailsFragment"
             app:destination="@id/bookingDetailsFragment" />
@@ -20,6 +20,13 @@
             android:name="bookingId"
             android:defaultValue="-1L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_bookingDetailsFragment_to_orderDetailFragment"
+            app:destination="@id/nav_graph_orders">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
     </fragment>
 
 </navigation>
