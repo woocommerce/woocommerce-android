@@ -28,10 +28,11 @@ class BookingsStore @Inject constructor(
         site: SiteModel,
         perPage: Int = BookingsRestClient.DEFAULT_PER_PAGE,
         page: Int = 1,
-        filters: List<BookingsFilterOption> = emptyList()
+        filters: List<BookingsFilterOption> = emptyList(),
+        order: BookingsOrderOption
     ): WooResult<Boolean> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
-            val response = bookingsRestClient.fetchBookings(site, perPage, page, filters)
+            val response = bookingsRestClient.fetchBookings(site, perPage, page, filters, order)
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
@@ -57,8 +58,9 @@ class BookingsStore @Inject constructor(
     fun observeBookings(
         site: SiteModel,
         limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList()
-    ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters)
+        filters: List<BookingsFilterOption> = emptyList(),
+        order: BookingsOrderOption
+    ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters, order)
 
     private fun BookingDto.toEntity(localSiteId: LocalId): BookingEntity = BookingEntity(
         id = RemoteId(id),

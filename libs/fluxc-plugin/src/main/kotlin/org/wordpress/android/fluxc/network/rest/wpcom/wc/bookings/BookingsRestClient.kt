@@ -22,7 +22,8 @@ class BookingsRestClient @Inject constructor(
         site: SiteModel,
         perPage: Int,
         page: Int,
-        filters: List<BookingsFilterOption>
+        filters: List<BookingsFilterOption>,
+        order: BookingsOrderOption
     ): WooPayload<Array<BookingDto>> {
         val endpoint = WOOCOMMERCE.bookings.pathV2Bookings
 
@@ -31,6 +32,8 @@ class BookingsRestClient @Inject constructor(
             path = endpoint,
             clazz = Array<BookingDto>::class.java,
             params = mapOf(
+                "orderby" to "start_date",
+                "order" to order.value,
                 "per_page" to perPage.toString(),
                 "page" to page.toString()
             ) + filters.toQueryParams()
