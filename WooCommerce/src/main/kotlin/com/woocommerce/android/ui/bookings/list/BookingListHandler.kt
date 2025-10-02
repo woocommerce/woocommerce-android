@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -29,13 +30,23 @@ class BookingListHandler @Inject constructor(
 
     private val searchQuery = MutableStateFlow<String?>(null)
     private val filters = MutableStateFlow<List<BookingsFilterOption>>(emptyList())
+    private val sortBy = MutableStateFlow(BookingListSortOption.NewestToOldest)
 
     private val searchResults = MutableStateFlow(emptyList<Booking>())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val bookingsFlow: Flow<List<Booking>> = combine(searchQuery, filters, page) { query, filters, page ->
+    val bookingsFlow: Flow<List<Booking>> = combine(
+        searchQuery,
+        filters,
+        page,
+        sortBy
+    ) { query, filters, page, sortBy ->
         if (query == null) {
-            bookingsRepository.observeBookings(limit = page * PAGE_SIZE, filters)
+            bookingsRepository.observeBookings(
+                limit = page * PAGE_SIZE,
+                filters = filters,
+                order = sortBy.toBookingsOrderOption()
+            )
         } else {
             searchResults
         }
@@ -44,7 +55,8 @@ class BookingListHandler @Inject constructor(
     suspend fun loadBookings(
         searchQuery: String? = null,
         forceRefresh: Boolean = false,
-        filters: List<BookingsFilterOption> = emptyList()
+        filters: List<BookingsFilterOption> = emptyList(),
+        sortBy: BookingListSortOption
     ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
         page.value = 1
@@ -52,6 +64,7 @@ class BookingListHandler @Inject constructor(
 
         this.searchQuery.value = searchQuery
         this.filters.value = filters
+        this.sortBy.value = sortBy
 
         return@withLock if (searchQuery == null) {
             if (forceRefresh) {
@@ -82,16 +95,23 @@ class BookingListHandler @Inject constructor(
     }
 
     private suspend fun fetchBookings(): Result<Unit> {
+        val order = sortBy.value.toBookingsOrderOption()
         return bookingsRepository.fetchBookings(
             page = page.value,
             perPage = PAGE_SIZE,
-            filters = filters.value
+            filters = filters.value,
+            order = order
         ).onSuccess { hasMorePages ->
             canLoadMore.set(hasMorePages)
             if (hasMorePages) {
                 page.update { it + 1 }
             }
         }.map { }
+    }
+
+    private fun BookingListSortOption.toBookingsOrderOption() = when (this) {
+        BookingListSortOption.NewestToOldest -> BookingsOrderOption.DESC
+        BookingListSortOption.OldestToNewest -> BookingsOrderOption.ASC
     }
 
     private suspend fun searchBookings(): Result<Unit> {
