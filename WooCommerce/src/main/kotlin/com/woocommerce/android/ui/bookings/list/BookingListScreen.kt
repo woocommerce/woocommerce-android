@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.bookings.list
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -77,20 +76,18 @@ fun BookingListScreen(state: BookingListViewState) {
         val lazyListState = rememberLazyListState()
 
         Column(modifier = Modifier.padding(paddingValues)) {
-            AnimatedVisibility(true) {
-                WCPrimaryTabRow(
-                    tabs = BookingListTab.entries,
-                    selectedTab = state.tabState.selectedTab,
-                    tabName = { it.name() },
-                    onTabSelected = {
-                        // Scroll to top when tab changes
-                        coroutineScope.launch {
-                            lazyListState.scrollToItem(0)
-                        }
-                        state.tabState.onTabChanged(it)
+            WCPrimaryTabRow(
+                tabs = BookingListTab.entries,
+                selectedTab = state.tabState.selectedTab,
+                tabName = { it.name() },
+                onTabSelected = {
+                    // Scroll to top when tab changes
+                    coroutineScope.launch {
+                        lazyListState.scrollToItem(0)
                     }
-                )
-            }
+                    state.tabState.onTabChanged(it)
+                }
+            )
 
             when {
                 state.contentState.isNotEmpty() -> {
