@@ -273,7 +273,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             appCoroutineScope.launch {
                 registerDevice(IF_NEEDED)
 
-                // Check if full sync was done in last 24h and trigger immediate sync if needed
                 posCatalogSyncCheck.checkAndTriggerSyncIfNeeded()
             }
         }
