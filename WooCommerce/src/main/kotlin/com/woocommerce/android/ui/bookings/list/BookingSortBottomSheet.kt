@@ -48,7 +48,12 @@ fun BookingSortBottomSheet(state: BookingListSortBottomSheetState) {
                 ListItem(
                     modifier = Modifier.clickable { state.onSelect(option) },
                     colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                    headlineContent = { Text(text = option.name(), fontWeight = FontWeight.Medium) },
+                    headlineContent = {
+                        Text(
+                            text = option.name(),
+                            fontWeight = FontWeight.Medium
+                        )
+                    },
                     trailingContent = {
                         if (state.selectedOption == option) {
                             Image(
@@ -65,7 +70,13 @@ fun BookingSortBottomSheet(state: BookingListSortBottomSheetState) {
 }
 
 @Composable
-private fun BookingListSortOption.name() = when (this) {
+fun BookingListSortOption.name() = when (this) {
     BookingListSortOption.NewestToOldest -> stringResource(R.string.bookings_sort_by_newest_to_oldest)
     BookingListSortOption.OldestToNewest -> stringResource(R.string.bookings_sort_by_oldest_to_newest)
+}
+
+@Composable
+fun BookingListSortOption.shortName() = when (this) {
+    BookingListSortOption.NewestToOldest -> stringResource(R.string.bookings_sort_by_newest_to_oldest_short)
+    BookingListSortOption.OldestToNewest -> stringResource(R.string.bookings_sort_by_oldest_to_newest_short)
 }

@@ -4863,6 +4863,10 @@
     <string name="bookings_tab_all">All</string>
     <string name="bookings_sort_by_oldest_to_newest">Oldest to newest</string>
     <string name="bookings_sort_by_newest_to_oldest">Newest to oldest</string>
+    <string name="bookings_sort_by_oldest_to_newest_short">Oldest</string>
+    <string name="bookings_sort_by_newest_to_oldest_short">Newest</string>
+    <string name="bookings_filters_default_title">Filters</string>
+    <string name="bookings_filters_count_title">Filters (%d)</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
