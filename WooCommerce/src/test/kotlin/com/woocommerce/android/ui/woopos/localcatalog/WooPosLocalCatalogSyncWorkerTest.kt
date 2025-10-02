@@ -7,6 +7,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -27,6 +28,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var accountRepository: AccountRepository = mock()
     private var selectedSite: SelectedSite = mock()
     private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
+    private var timestampManager: WooPosSyncTimestampManager = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
@@ -64,6 +66,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             accountRepository = accountRepository,
             selectedSite = selectedSite,
             syncRepository = syncRepository,
+            timestampManager = timestampManager,
             logger = logger,
             featureFlagM1Enabled = featureFlagM1Enabled,
         )
@@ -79,6 +82,19 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
+    }
+
+    @Test
+    fun `given successful sync, when doWork completes, then stores full sync completion timestamp`() = testBlocking {
+        // GIVEN
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(timestampManager).storeFullSyncLastCompletedTimestamp(any())
     }
 
     @Test

@@ -8,6 +8,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -21,6 +22,7 @@ constructor(
     private val accountRepository: AccountRepository,
     private val selectedSite: SelectedSite,
     private val syncRepository: WooPosLocalCatalogSyncRepository,
+    private val timestampManager: WooPosSyncTimestampManager,
     private val logger: WooPosLogWrapper,
     private val featureFlagM1Enabled: WooPosLocalCatalogM1Enabled,
 ) : CoroutineWorker(appContext, workerParams) {
@@ -56,6 +58,7 @@ constructor(
                     "Local catalog sync completed successfully. Products: ${syncResult.productsSynced}, " +
                         "Variations: ${syncResult.variationsSynced}, Duration: ${syncResult.syncDurationMs}ms"
                 )
+                timestampManager.storeFullSyncLastCompletedTimestamp(System.currentTimeMillis())
                 Result.success()
             }
 
