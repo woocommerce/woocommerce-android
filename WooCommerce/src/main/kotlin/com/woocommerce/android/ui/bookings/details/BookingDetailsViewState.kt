@@ -41,8 +41,6 @@ data class BookingDetailsViewState(
         discount = "-",
         total = "$59.50"
     ),
-    val onMarkAsPaid: () -> Unit = {},
-    val onMarkAsRefunded: () -> Unit = {},
     val onCancelBooking: () -> Unit = {},
     val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> }
 )
