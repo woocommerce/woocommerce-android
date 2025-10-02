@@ -52,7 +52,7 @@ class OrderMapper @Inject constructor(
             isCashPayment = CASH_PAYMENTS.contains(databaseEntity.paymentMethod),
             pricesIncludeTax = databaseEntity.pricesIncludeTax,
             customer = Order.Customer(
-                customerId = null,
+                customerId = if (databaseEntity.customerId > 0) databaseEntity.customerId else null,
                 billingAddress = databaseEntity.getBillingAddress().mapAddress(),
                 shippingAddress = databaseEntity.getShippingAddress().mapAddress(),
             ),

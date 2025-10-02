@@ -205,7 +205,7 @@ class OrderRestClient @Inject constructor(
                     orderDtoMapper.toDatabaseEntity(orderDto, site.localId())
                 }.orEmpty()
 
-                val canLoadMore = orderModels.size == WCOrderStore.NUM_ORDERS_PER_FETCH
+                val canLoadMore = orderModels.size == count
                 return FetchOrdersResponsePayload(
                     site = site,
                     ordersWithMeta = orderModels,
@@ -1285,6 +1285,7 @@ class OrderRestClient @Inject constructor(
             "fee_lines",
             "tax_lines",
             "id",
+            "customer_id",
             "line_items",
             "number",
             "payment_method",

@@ -3,10 +3,13 @@ package com.woocommerce.android.ui.woopos.home.items.variations
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
@@ -14,6 +17,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -33,11 +38,14 @@ import javax.inject.Inject
 class WooPosVariationsViewModel @Inject constructor(
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val getProductById: WooPosGetProductById,
-    private val variationsDataSource: WooPosVariationsDataSource,
+    private val dataSource: WooPosVariationsDataSourceInterface,
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
     private val mapper: WooPosVariationMapper,
+    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
+    private val selectedSite: SelectedSite,
 ) : ViewModel() {
 
     private val _viewState =
@@ -61,7 +69,7 @@ class WooPosVariationsViewModel @Inject constructor(
     ) {
         this.sourceType = sourceType
         viewModelScope.launch {
-            variationsDataSource.resetState()
+            dataSource.resetState()
         }
         loadVariations(
             productId = productId,
@@ -78,12 +86,12 @@ class WooPosVariationsViewModel @Inject constructor(
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
-                buildProductsReloadingState()
+                buildReloadingState()
             } else {
                 WooPosVariationsViewState.Loading()
             }
 
-            variationsDataSource.fetchFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
+            dataSource.fetchFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
                 when (result) {
                     is FetchResult.Cached -> {
                         if (result.data.isNotEmpty()) {
@@ -96,26 +104,7 @@ class WooPosVariationsViewModel @Inject constructor(
                             result.result.isSuccess -> {
                                 val variations = result.result.getOrThrow()
                                 if (variations.isNotEmpty()) {
-                                    WooPosVariationsViewState.Content(
-                                        items = variations.map {
-                                            WooPosItemSelectionViewState.Product.Variation(
-                                                id = it.remoteVariationId,
-                                                name = it.getNameForPOS(
-                                                    mapper,
-                                                    getProductById(productId),
-                                                    resourceProvider
-                                                ),
-                                                productId = it.remoteProductId,
-                                                price = priceFormat(it.price),
-                                                imageUrl = it.image?.source
-                                            )
-                                        },
-                                        paginationState = if (loadMoreJob?.isActive == true) {
-                                            WooPosPaginationState.Loading
-                                        } else {
-                                            WooPosPaginationState.None
-                                        }
-                                    )
+                                    createContentState(variations, productId)
                                 } else {
                                     WooPosVariationsViewState.Empty()
                                 }
@@ -133,25 +122,11 @@ class WooPosVariationsViewModel @Inject constructor(
         if (variations.isEmpty()) {
             _viewState.value = WooPosVariationsViewState.Empty()
         } else {
-            _viewState.value = WooPosVariationsViewState.Content(
-                items = variations.map {
-                    WooPosItemSelectionViewState.Product.Variation(
-                        id = it.remoteVariationId,
-                        name = it.getNameForPOS(
-                            mapper,
-                            getProductById(productId),
-                            resourceProvider
-                        ),
-                        productId = it.remoteProductId,
-                        price = priceFormat(it.price),
-                        imageUrl = it.image?.source
-                    )
-                }
-            )
+            _viewState.value = createContentState(variations, productId)
         }
     }
 
-    private fun buildProductsReloadingState() =
+    private fun buildReloadingState() =
         when (val state = viewState.value) {
             is WooPosVariationsViewState.Content -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing
@@ -176,7 +151,7 @@ class WooPosVariationsViewModel @Inject constructor(
             return
         }
 
-        if (!variationsDataSource.canLoadMore(numOfVariations)) {
+        if (!dataSource.canLoadMore(numOfVariations)) {
             return
         }
 
@@ -184,7 +159,7 @@ class WooPosVariationsViewModel @Inject constructor(
 
         loadMoreJob?.cancel()
         loadMoreJob = viewModelScope.launch {
-            val result = variationsDataSource.loadMore(productId)
+            val result = dataSource.loadMore(productId)
             _viewState.value = if (result.isSuccess) {
                 trackItemsNextPageLoaded()
                 WooPosVariationsViewState.Content(
@@ -224,14 +199,29 @@ class WooPosVariationsViewModel @Inject constructor(
             }
 
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
-                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
-                viewModelScope.launch {
-                    analyticsTracker.track(
-                        WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
-                            source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
-                            sourceType = sourceType,
-                        )
-                    )
+                when {
+                    wooPosLocalCatalogM1Enabled() -> {
+                        performIncrementalSync()
+                        viewModelScope.launch {
+                            analyticsTracker.track(
+                                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                                    source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                                    sourceType = sourceType,
+                                )
+                            )
+                        }
+                    }
+                    else -> {
+                        loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
+                        viewModelScope.launch {
+                            analyticsTracker.track(
+                                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                                    source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                                    sourceType = sourceType,
+                                )
+                            )
+                        }
+                    }
                 }
             }
 
@@ -263,7 +253,79 @@ class WooPosVariationsViewModel @Inject constructor(
         viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
     }
 
+    private fun performIncrementalSync() {
+        _viewState.value = buildReloadingState()
+
+        viewModelScope.launch {
+            selectedSite.getOrNull()?.let { site ->
+                val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
+                _viewState.value = buildViewStateForSyncResult(syncResult)
+            }
+        }
+    }
+
+    private fun buildViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosVariationsViewState =
+        when (syncResult) {
+            is PosLocalCatalogSyncResult.Success -> {
+                hidePTRIndicator()
+            }
+
+            is PosLocalCatalogSyncResult.Failure -> {
+                sendEventToParent(
+                    ChildToParentEvent.ToastMessageDisplayed(
+                        message = resourceProvider.getString(R.string.offline_error)
+                    )
+                )
+                hidePTRIndicator()
+            }
+        }
+
+    private fun hidePTRIndicator(): WooPosVariationsViewState = when (val currentState = _viewState.value) {
+        is WooPosVariationsViewState.Content -> currentState.copy(
+            pullToRefreshState = WooPosPullToRefreshState.Enabled
+        )
+
+        is WooPosVariationsViewState.Loading -> currentState.copy(
+            pullToRefreshState = WooPosPullToRefreshState.Enabled
+        )
+
+        is WooPosVariationsViewState.Error -> currentState.copy(
+            pullToRefreshState = WooPosPullToRefreshState.Enabled
+        )
+
+        is WooPosVariationsViewState.Empty -> currentState.copy(
+            pullToRefreshState = WooPosPullToRefreshState.Enabled
+        )
+    }
+
     private fun onEndOfVariationsListReached(productId: Long, numOfVariations: Int) {
         loadMore(productId, numOfVariations)
+    }
+
+    private suspend fun createContentState(
+        variations: List<WooPosVariation>,
+        productId: Long
+    ): WooPosVariationsViewState.Content {
+        val parentProduct = getProductById(productId)
+        return WooPosVariationsViewState.Content(
+            items = variations.map { variation ->
+                WooPosItemSelectionViewState.Product.Variation(
+                    id = variation.remoteVariationId,
+                    name = variation.getNameForPOS(
+                        mapper,
+                        parentProduct,
+                        resourceProvider
+                    ),
+                    productId = variation.remoteProductId,
+                    price = priceFormat(variation.price),
+                    imageUrl = variation.image?.source
+                )
+            },
+            paginationState = if (loadMoreJob?.isActive == true) {
+                WooPosPaginationState.Loading
+            } else {
+                WooPosPaginationState.None
+            }
+        )
     }
 }

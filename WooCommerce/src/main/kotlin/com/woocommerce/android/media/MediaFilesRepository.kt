@@ -87,7 +87,7 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
-    suspend fun getImageDimensions(uri: String): ImageDimensions {
+    suspend fun getImageDetails(uri: String): ImageDetails {
         return withContext(dispatchers.io) {
             try {
                 val options = Options().apply { inJustDecodeBounds = true }
@@ -99,11 +99,11 @@ class MediaFilesRepository @Inject constructor(
                     BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options)
                     parcelFileDescriptor.close()
                 }
-                return@withContext ImageDimensions(options.outWidth, options.outHeight)
+                return@withContext ImageDetails(options.outWidth, options.outHeight, options.outMimeType)
             } catch (e: IOException) {
-                WooLog.e(T.MEDIA, "MediaFilesRepository > Error getting image dimensions", e)
+                WooLog.e(T.MEDIA, "MediaFilesRepository > Error getting image details from uri: $uri", e)
+                return@withContext ImageDetails(width = 0, height = 0, mimeType = "")
             }
-            return@withContext ImageDimensions(width = 0, height = 0)
         }
     }
 
@@ -249,5 +249,9 @@ class MediaFilesRepository @Inject constructor(
         data class UploadFailure(val error: MediaUploadException) : UploadResult()
     }
 
-    data class ImageDimensions(val width: Int, val height: Int)
+    data class ImageDetails(
+        val width: Int,
+        val height: Int,
+        val mimeType: String
+    )
 }

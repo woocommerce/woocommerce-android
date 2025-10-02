@@ -17,6 +17,7 @@
     <include app:graph="@navigation/nav_graph_domain_change" />
     <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
     <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_bookings" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -400,10 +401,6 @@
             android:name="mode"
             app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
         <argument
-            android:name="isTrashEnabled"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
             android:name="images"
             android:defaultValue="@null"
             app:argType="string[]"
@@ -420,10 +417,6 @@
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
-        <argument
-            android:name="isTrashEnabled"
-            android:defaultValue="false"
-            app:argType="boolean" />
         <argument
             android:name="images"
             android:defaultValue="@null"

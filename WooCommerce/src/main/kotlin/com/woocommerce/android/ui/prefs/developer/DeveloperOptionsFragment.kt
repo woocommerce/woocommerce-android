@@ -41,6 +41,7 @@ class DeveloperOptionsFragment : BaseFragment() {
         observeEvents()
     }
 
+    @Suppress("MagicNumber")
     private fun observeEvents() {
         viewModel.event.observe(
             viewLifecycleOwner

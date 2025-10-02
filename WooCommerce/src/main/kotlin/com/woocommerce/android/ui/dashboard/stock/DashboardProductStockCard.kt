@@ -85,7 +85,6 @@ private fun HandleEvents(event: LiveData<Event>) {
                 is OpenProductDetail -> navController.navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
                         mode = ShowProduct(event.productId),
-                        isTrashEnabled = false
                     )
                 )
             }

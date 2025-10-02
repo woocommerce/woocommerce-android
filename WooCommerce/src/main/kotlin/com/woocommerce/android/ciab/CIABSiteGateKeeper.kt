@@ -1,6 +1,6 @@
 package com.woocommerce.android.ciab
 
-import androidx.annotation.VisibleForTesting
+import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
 import javax.inject.Inject
 
@@ -18,13 +18,10 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
         return !isFeatureSupported(feature)
     }
 
-    private fun isCurrentSiteCIAB(): Boolean {
-        val site = selectedSite.getOrNull() ?: return false
-        return site.isGardenSite && site.gardenName == CIAB_GARDEN_NAME
-    }
+    private fun isCurrentSiteCIAB(): Boolean =
+        selectedSite.getOrNull()?.isCIABSite() ?: false
 
     companion object Companion {
-        @VisibleForTesting
         const val CIAB_GARDEN_NAME = "commerce"
     }
 }

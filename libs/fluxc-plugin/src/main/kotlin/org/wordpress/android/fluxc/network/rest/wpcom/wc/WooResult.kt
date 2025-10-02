@@ -6,7 +6,10 @@ import org.wordpress.android.fluxc.network.rest.Header
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.Store
 
-data class WooPayload<T>(val result: T? = null) : Payload<WooError>() {
+data class WooPayload<T>(
+    val result: T? = null,
+    val headers: List<Header> = emptyList()
+) : Payload<WooError>() {
     constructor(error: WooError) : this() {
         this.error = error
     }
@@ -15,7 +18,7 @@ data class WooPayload<T>(val result: T? = null) : Payload<WooError>() {
 
     fun <R> asWooResult(mapper: (T) -> R): WooResult<R> = when {
         isError -> WooResult(error)
-        result != null -> WooResult(mapper(result))
+        result != null -> WooResult(mapper(result), headers)
         else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
     }
 }

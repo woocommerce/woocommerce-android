@@ -333,15 +333,16 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private suspend fun handleSimpleProductClicked(productId: Long): WooPosCartItemViewState {
-        val product = getProductById(productId)!!
+        val product = getProductById(productId) ?: error("Product not found: $productId")
+
         val itemNumber = getItemNumber()
         return product.toCartListItem(itemNumber)
     }
 
     private suspend fun handleVariationClicked(productId: Long, variationId: Long): WooPosCartItemViewState {
-        val product = getProductById(productId)!!
+        val product = getProductById(productId) ?: error("Product not found: $productId")
         val itemNumber = getItemNumber()
-        val productVariation = getVariationsById(productId, variationId)!!
+        val productVariation = getVariationsById(productId, variationId) ?: error("Variation not found: $variationId")
         return productVariation.toCartListItem(itemNumber, product)
     }
 
