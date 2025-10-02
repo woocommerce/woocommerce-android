@@ -137,7 +137,7 @@ class WooPosOrdersDataSourceTest {
         assertThat(first.orders).containsExactly(cachedOrder)
 
         val second = emissions[1] as LoadOrdersResult.Error
-        assertThat(second.message).isEqualTo("generic error")
+        assertThat(second.message).isEqualTo("[GENERIC_ERROR] generic error")
 
         verify(ordersCache).getAll()
         verify(ordersCache, never()).setAll(any())
@@ -276,7 +276,7 @@ class WooPosOrdersDataSourceTest {
         // THEN
         assertThat(result).isInstanceOf(SearchOrdersResult.Error::class.java)
         val error = result as SearchOrdersResult.Error
-        assertThat(error.message).isEqualTo("search error")
+        assertThat(error.message).isEqualTo("[GENERIC_ERROR] search error")
     }
 
     @Test
@@ -393,5 +393,78 @@ class WooPosOrdersDataSourceTest {
         val result = sut.loadMore()
         assertThat(result.isFailure).isTrue
         assertThat(sut.hasMorePages).isTrue // unchanged
+    }
+
+    @Test
+    fun `given search first page with more pages, when loadMore with same query succeeds, then maps page2 and updates hasMorePages`() = runTest {
+        // GIVEN
+        val query = "abc"
+        val e1 = OrderEntity(LocalOrRemoteId.LocalId(1), 11L)
+        val e2 = OrderEntity(LocalOrRemoteId.LocalId(1), 22L)
+        val mapped1 = OrderTestUtils.generateTestOrder(orderId = 11)
+        val mapped2 = OrderTestUtils.generateTestOrder(orderId = 22)
+        whenever(orderMapper.toAppModel(e1)).thenReturn(mapped1)
+        whenever(orderMapper.toAppModel(e2)).thenReturn(mapped2)
+        val page1Payload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = listOf(e1 to emptyList(), e2 to emptyList()),
+            canLoadMore = true
+        )
+        whenever(
+            orderRestClient.fetchOrders(
+                site = siteModel,
+                count = WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE,
+                page = 1,
+                orderBy = OrderRestClient.OrderBy.DATE,
+                sortOrder = OrderRestClient.SortOrder.DESCENDING,
+                statusFilter = null,
+                createdVia = "pos-rest-api",
+                searchQuery = query
+            )
+        ).thenReturn(page1Payload)
+        val first = sut.searchOrders(query)
+        assertThat(first).isInstanceOf(SearchOrdersResult.Success::class.java)
+        assertThat(sut.hasMorePages).isTrue
+        val e3 = OrderEntity(LocalOrRemoteId.LocalId(1), 33L)
+        val e4 = OrderEntity(LocalOrRemoteId.LocalId(1), 44L)
+        val mapped3 = OrderTestUtils.generateTestOrder(orderId = 33)
+        val mapped4 = OrderTestUtils.generateTestOrder(orderId = 44)
+        whenever(orderMapper.toAppModel(e3)).thenReturn(mapped3)
+        whenever(orderMapper.toAppModel(e4)).thenReturn(mapped4)
+        val page2Payload = WCOrderStore.FetchOrdersResponsePayload(
+            site = siteModel,
+            ordersWithMeta = listOf(e3 to emptyList(), e4 to emptyList()),
+            canLoadMore = false
+        )
+        whenever(
+            orderRestClient.fetchOrders(
+                site = siteModel,
+                count = WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE,
+                page = 2,
+                orderBy = OrderRestClient.OrderBy.DATE,
+                sortOrder = OrderRestClient.SortOrder.DESCENDING,
+                statusFilter = null,
+                createdVia = "pos-rest-api",
+                searchQuery = query
+            )
+        ).thenReturn(page2Payload)
+
+        // WHEN
+        val result = sut.loadMore(query)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue
+        assertThat(result.getOrThrow().map { it.id }).containsExactly(33L, 44L)
+        assertThat(sut.hasMorePages).isFalse
+        verify(orderRestClient).fetchOrders(
+            site = siteModel,
+            count = WooPosOrdersDataSource.POS_ORDERS_PAGE_SIZE,
+            page = 2,
+            orderBy = OrderRestClient.OrderBy.DATE,
+            sortOrder = OrderRestClient.SortOrder.DESCENDING,
+            statusFilter = null,
+            createdVia = "pos-rest-api",
+            searchQuery = query
+        )
     }
 }
