@@ -389,7 +389,6 @@ class WCStatsStore @Inject internal constructor(
      * Methods to support v4 revenue api changes
      */
     class OnWCRevenueStatsChanged(
-        val rowsAffected: Int,
         val granularity: StatsGranularity,
         val startDate: String? = null,
         val endDate: String? = null,
@@ -414,15 +413,14 @@ class WCStatsStore @Inject internal constructor(
 
             with(result) {
                 return@withDefaultContext if (isError || stats == null) {
-                    OnWCRevenueStatsChanged(0, granularity)
+                    OnWCRevenueStatsChanged(granularity)
                         .also { it.error = error }
                 } else {
-                    val rowsAffected = WCStatsSqlUtils.insertOrUpdateRevenueStats(stats)
+                    WCStatsSqlUtils.insertOrUpdateRevenueStats(stats)
                     OnWCRevenueStatsChanged(
-                        rowsAffected,
                         granularity,
                         stats.startDate,
-                        stats.endDate
+                        stats.endDate,
                     )
                 }
             }
@@ -490,11 +488,11 @@ class WCStatsStore @Inject internal constructor(
         val onStatsChanged = with(payload) {
             if (isError) {
                 return@with OnWCRevenueStatsChanged(
-                    0, granularity = StatsGranularity.YEARS
+                    granularity = StatsGranularity.YEARS
                 ).also { it.error = payload.error }
             } else {
                 return@with OnWCRevenueStatsChanged(
-                    0, granularity = StatsGranularity.YEARS
+                    granularity = StatsGranularity.YEARS
                 )
             }
         }

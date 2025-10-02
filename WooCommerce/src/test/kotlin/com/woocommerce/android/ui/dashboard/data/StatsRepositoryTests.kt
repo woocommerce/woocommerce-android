@@ -78,7 +78,6 @@ class StatsRepositoryTests : BaseUnitTest() {
             )
 
             val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(
-                rowsAffected = 2,
                 granularity = granularity,
                 startDate = startDate,
                 endDate = endDate
@@ -119,7 +118,6 @@ class StatsRepositoryTests : BaseUnitTest() {
         }
 
         val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(
-            rowsAffected = 2,
             granularity = granularity,
             startDate = startDate,
             endDate = endDate
@@ -157,7 +155,7 @@ class StatsRepositoryTests : BaseUnitTest() {
             date = startDate
         )
 
-        val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(0, granularity)
+        val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(granularity)
             .also { it.error = WCStatsStore.OrderStatsError() }
 
         whenever(selectedSite.get()).thenReturn(defaultSiteModel)
