@@ -401,7 +401,9 @@ private fun OrdersPaginationErrorRow(onEndOfOrdersListReachedTryAgain: () -> Uni
         description = stringResource(id = R.string.woopos_items_pagination_error_description),
         primaryButton = Button(
             text = stringResource(id = R.string.woopos_items_pagination_try_again_label),
-            click = { onEndOfOrdersListReachedTryAgain }
+            click = {
+                onEndOfOrdersListReachedTryAgain()
+            }
         ),
     )
 }

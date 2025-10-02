@@ -85,7 +85,7 @@ class WooPosOrdersViewModel @Inject constructor(
     fun onEndOfOrdersListReached() {
         val currentState = _state.value
         if (currentState !is WooPosOrdersState.Content ||
-            currentState.paginationState != WooPosPaginationState.None ||
+            currentState.paginationState == WooPosPaginationState.Loading ||
             currentState.pullToRefreshState == WooPosPullToRefreshState.Refreshing
         ) {
             return
