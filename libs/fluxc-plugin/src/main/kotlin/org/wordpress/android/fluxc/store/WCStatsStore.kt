@@ -106,10 +106,9 @@ class WCStatsStore @Inject internal constructor(
     ) : Payload<BaseNetworkError>()
 
     class FetchRevenueStatsAvailabilityResponsePayload(
-        val site: SiteModel,
-        val available: Boolean = false
+        val site: SiteModel
     ) : Payload<OrderStatsError>() {
-        constructor(error: OrderStatsError, site: SiteModel, available: Boolean) : this(site, available) {
+        constructor(error: OrderStatsError, site: SiteModel) : this(site) {
             this.error = error
         }
     }
@@ -394,7 +393,6 @@ class WCStatsStore @Inject internal constructor(
         val granularity: StatsGranularity,
         val startDate: String? = null,
         val endDate: String? = null,
-        val availability: Boolean = false
     ) : OnChanged<OrderStatsError>() {
         var causeOfChange: WCStatsAction? = null
     }
@@ -492,11 +490,11 @@ class WCStatsStore @Inject internal constructor(
         val onStatsChanged = with(payload) {
             if (isError) {
                 return@with OnWCRevenueStatsChanged(
-                    0, granularity = StatsGranularity.YEARS, availability = payload.available
+                    0, granularity = StatsGranularity.YEARS
                 ).also { it.error = payload.error }
             } else {
                 return@with OnWCRevenueStatsChanged(
-                    0, granularity = StatsGranularity.YEARS, availability = payload.available
+                    0, granularity = StatsGranularity.YEARS
                 )
             }
         }

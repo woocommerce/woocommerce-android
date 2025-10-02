@@ -161,12 +161,12 @@ class OrderStatsRestClient @Inject constructor(
 
             when (response) {
                 is WPAPIResponse.Success -> {
-                    val payload = FetchRevenueStatsAvailabilityResponsePayload(site, true)
+                    val payload = FetchRevenueStatsAvailabilityResponsePayload(site)
                     dispatcher.dispatch(WCStatsActionBuilder.newFetchedRevenueStatsAvailabilityAction(payload))
                 }
                 is WPAPIResponse.Error -> {
                     val orderError = response.error.toOrderError()
-                    val payload = FetchRevenueStatsAvailabilityResponsePayload(orderError, site, false)
+                    val payload = FetchRevenueStatsAvailabilityResponsePayload(orderError, site)
                     dispatcher.dispatch(WCStatsActionBuilder.newFetchedRevenueStatsAvailabilityAction(payload))
                 }
             }
