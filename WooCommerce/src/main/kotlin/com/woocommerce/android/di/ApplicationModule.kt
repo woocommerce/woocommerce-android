@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import org.wordpress.android.login.di.LoginServiceModule
+import java.time.Clock
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlin.annotation.AnnotationRetention.RUNTIME
@@ -71,6 +72,9 @@ abstract class ApplicationModule {
 
         @Provides
         fun providesFirebaseRemoteConfig() = Firebase.remoteConfig
+
+        @Provides
+        fun providesClock(): Clock = Clock.systemDefaultZone()
     }
 }
 

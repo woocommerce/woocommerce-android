@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.bookings.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,6 +30,25 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         // Then
         val state = viewModel.state.value
         assertThat(state?.toolbarTitle).isEqualTo("Booking #$bookingId")
+    }
+
+    @Test
+    fun `when onAttendanceStatusSelected called, then state updates with new status`() {
+        // Given
+        val bookingId = 456L
+        val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
+        val resourceProvider = mock<ResourceProvider> {
+            on { getString(R.string.booking_details_title, bookingId) } doReturn "Booking #$bookingId"
+        }
+        val viewModel = createViewModel(savedState, resourceProvider)
+
+        // When
+        val state = viewModel.state.getOrAwaitValue()
+        state.onAttendanceStatusSelected(BookingAttendanceStatus.CANCELLED)
+
+        // Then
+        val updated = viewModel.state.value?.bookingSummary?.attendanceStatus
+        assertThat(updated).isEqualTo(BookingAttendanceStatus.CANCELLED)
     }
 
     private fun createViewModel(

@@ -222,7 +222,7 @@ class WooPosSyncVariationsActionTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Failed.UnexpectedError::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Failed).error).isEqualTo("Failed to fetch variations")
+        assertThat((result as WooPosSyncVariationsResult.Failed).error).isEqualTo("Failed to sync variations")
     }
 
     @Test

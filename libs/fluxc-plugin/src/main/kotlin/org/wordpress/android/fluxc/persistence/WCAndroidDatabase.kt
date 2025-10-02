@@ -32,6 +32,7 @@ import org.wordpress.android.fluxc.persistence.converters.LongListConverter
 import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
 import org.wordpress.android.fluxc.persistence.converters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
+import org.wordpress.android.fluxc.persistence.dao.BookingsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
@@ -68,6 +69,7 @@ import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CustomerFromAnalyticsEntity
@@ -120,7 +122,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 65
+const val WC_DATABASE_VERSION = 66
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -169,6 +171,7 @@ const val WC_DATABASE_VERSION = 65
         WCGlobalAttributeModel::class,
         GatewayEntity::class,
         WCNewVisitorStatsModel::class,
+        BookingEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -216,6 +219,7 @@ const val WC_DATABASE_VERSION = 65
         AutoMigration(from = 61, to = 62),
         AutoMigration(from = 63, to = 64),
         AutoMigration(from = 64, to = 65),
+        AutoMigration(from = 65, to = 66),
     ]
 )
 @TypeConverters(
@@ -242,6 +246,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val visitorSummaryStatsDao: VisitorSummaryStatsDao
     abstract val shippingMethodDao: ShippingMethodDao
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
+    abstract val bookingsDao: BookingsDao
     internal abstract val locationsDao: LocationsDao
     internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
     internal abstract val customerDao: CustomerDao

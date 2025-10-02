@@ -64,14 +64,6 @@ class DeveloperOptionsFragment : BaseFragment() {
                         DeveloperOptionsFragmentDirections.actionDeveloperOptionsFragmentToApiFaker()
                     )
                 }
-
-                is DeveloperOptionsViewModel.DeveloperOptionsEvents.OpenBookingDetails -> {
-                    // Temporary navigation to Booking Details screen with a hardcoded booking ID
-                    val action = DeveloperOptionsFragmentDirections
-                        .actionDeveloperOptionsFragmentToBookingDetailsFragment()
-                    val args = action.arguments.apply { putLong("bookingId", 123L) }
-                    findNavController().navigate(action.actionId, args)
-                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.variations
 
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
@@ -17,9 +18,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsUIEvents
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -55,7 +56,6 @@ class WooPosVariationsViewModelTest {
 
     private val getProductById: WooPosGetProductById = mock()
     private val variationsDataSource: WooPosVariationsDataSource = mock()
-    private val variationsInDbDataSource: WooPosVariationsInDbDataSource = mock()
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
         on { invoke() } doReturn false // Default to using variationsDataSource
     }
@@ -68,6 +68,8 @@ class WooPosVariationsViewModelTest {
         onBlocking { invoke(null) }.thenReturn("$0.00")
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository = mock()
+    private val selectedSite: SelectedSite = mock()
     private val mapper: WooPosVariationMapper = mock {
         on { fromProductVariation(any()) } doAnswer { invocation ->
             val productVariation = invocation.arguments[0] as com.woocommerce.android.model.ProductVariation
@@ -757,13 +759,14 @@ class WooPosVariationsViewModelTest {
         WooPosVariationsViewModel(
             fromChildToParentEventSender,
             getProductById,
-            variationsDataSource,
-            variationsInDbDataSource,
+            variationsDataSource, // Since feature flag is false in test
             priceFormat,
             resourceProvider,
             analyticsTracker,
             wooPosLocalCatalogM1Enabled,
             mapper,
+            localCatalogSyncRepository,
+            selectedSite,
         ).let {
             it.init(productId, sourceType = sourceType)
             it

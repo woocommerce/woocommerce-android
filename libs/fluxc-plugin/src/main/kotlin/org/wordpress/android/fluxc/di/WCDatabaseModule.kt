@@ -122,6 +122,8 @@ interface WCDatabaseModule {
         @Provides internal fun provideGatewaysDao(database: WCAndroidDatabase) = database.gatewaysDao
 
         @Provides internal fun provideNewVisitorStatsDao(database: WCAndroidDatabase) = database.newVisitorStatsDao
+
+        @Provides internal fun provideBookingsDao(database: WCAndroidDatabase) = database.bookingsDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }
