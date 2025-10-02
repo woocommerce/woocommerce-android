@@ -6,8 +6,8 @@ import okhttp3.Interceptor.Chain
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Response
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.internal.EMPTY_RESPONSE
 import javax.inject.Inject
 
 private const val ARTIFICIAL_DELAY_MS = 500L
@@ -41,7 +41,7 @@ internal class ApiFakerInterceptor @Inject constructor(
                 .code(fakeResponse.statusCode)
                 // TODO check if it's safe to always use JSON as the content type
                 .body(
-                    fakeResponse.body?.toResponseBody("application/json".toMediaType()) ?: ResponseBody.EMPTY
+                    fakeResponse.body?.toResponseBody("application/json".toMediaType()) ?: EMPTY_RESPONSE
                 )
                 .addHeader("content-type", "application/json")
                 .build()
