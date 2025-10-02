@@ -5,6 +5,7 @@ import org.junit.Test
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.utils.json
 
+@Suppress("UnitTestNamingRule")
 class WCRevenueStatsModelTest {
     @Test
     fun `should assign null value if number of sold items exceeds integer range`() {
