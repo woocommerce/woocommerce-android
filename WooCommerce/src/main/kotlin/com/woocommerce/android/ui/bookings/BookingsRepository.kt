@@ -39,6 +39,12 @@ class BookingsRepository @Inject constructor(
             limit = limit,
             filters = filters
         )
+
+    fun observeBooking(bookingId: Long): Flow<Booking?> =
+        bookingsStore.observeBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId
+        )
 }
 
 typealias Booking = BookingEntity
