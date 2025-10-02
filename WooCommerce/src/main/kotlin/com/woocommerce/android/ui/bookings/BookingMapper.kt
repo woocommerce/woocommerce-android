@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsMode
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Duration
@@ -33,6 +34,13 @@ class BookingMapper @Inject constructor(
             customerName = "Margarita Nikolaevna",
             attendanceStatus = BookingAttendanceStatus.BOOKED,
             status = status.toUiModel()
+        )
+    }
+
+    fun Booking.toUiModel(): BookingListItem {
+        return BookingListItem(
+            id = id.value,
+            summary = toBookingSummaryModel()
         )
     }
 

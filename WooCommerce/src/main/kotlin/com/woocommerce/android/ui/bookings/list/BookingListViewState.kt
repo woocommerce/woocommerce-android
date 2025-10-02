@@ -1,13 +1,6 @@
 package com.woocommerce.android.ui.bookings.list
 
-import com.woocommerce.android.ui.bookings.Booking
-import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
-import org.wordpress.android.fluxc.persistence.entity.BookingEntity
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 data class BookingListViewState(
     val contentState: BookingListContentState,
@@ -40,33 +33,4 @@ enum class BookingListLoadingState {
 
 enum class BookingListTab {
     Today, Upcoming, All
-}
-
-fun Booking.toUiModel(): BookingListItem {
-    val dateFormatter = DateTimeFormatter.ofLocalizedDateTime(
-        FormatStyle.MEDIUM,
-        FormatStyle.SHORT
-    ).withZone(ZoneId.systemDefault())
-
-    // TODO replace the mocked details with real data when available from the API
-    return BookingListItem(
-        id = id.value,
-        summary = BookingSummaryModel(
-            date = dateFormatter.format(start),
-            name = "Women’s Haircut",
-            customerName = "Margarita Nikolaevna",
-            attendanceStatus = BookingAttendanceStatus.BOOKED,
-            status = status.toUiModel()
-        )
-    )
-}
-
-private fun BookingEntity.Status.toUiModel(): BookingStatus = when (this) {
-    BookingEntity.Status.Paid -> BookingStatus.Paid
-    BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
-    BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
-    BookingEntity.Status.Complete -> BookingStatus.Complete
-    BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
-    BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
-    is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
 }
