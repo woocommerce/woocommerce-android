@@ -32,7 +32,7 @@ class BookingListFilterBuilderTest {
         }
 
         assertThat(filter).isNotNull()
-        assertThat(filter?.after).isEqualTo(mockedNow)
+        assertThat(filter?.after).isEqualTo(Instant.parse("2025-01-01T23:59:59.999999999+00:00"))
         assertThat(filter?.before).isNull()
     }
 
