@@ -66,6 +66,7 @@ class BookingListViewModel @Inject constructor(
                 onTabChanged = ::onTabChanged
             ),
             controlsState = BookingListControlsState(
+                selectedSortOption = sortOption,
                 onSortClick = ::onSortClicked,
                 onFilterClick = ::onFilterClicked
             ),
