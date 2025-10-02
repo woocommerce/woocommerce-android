@@ -394,4 +394,71 @@ class WooPosOrdersViewModelTest {
         val selectedFlags = content.items.associate { it.id to it.isSelected }
         assertThat(selectedFlags[20L]).isTrue()
     }
+    @Test
+    fun `given search results and more pages, when end reached, then loadMore with query appends and pagination None`() = runTest {
+        // GIVEN
+        val query = "abc"
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(emptyList())) }
+        )
+        whenever(dataSource.searchOrders(query)).thenReturn(
+            SearchOrdersResult.Success(listOf(order(10), order(20)))
+        )
+        whenever(dataSource.hasMorePages).thenReturn(true)
+        whenever(dataSource.loadMore(query)).thenReturn(
+            Result.success(listOf(order(30), order(40)))
+        )
+
+        // WHEN
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        viewModel.onEndOfOrdersListReached()
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.items.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
+        assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
+        verify(dataSource).loadMore(query)
+    }
+
+    @Test
+    fun `given pagination error, when try again succeeds, then append next page and clear error`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1), order(2)))) }
+        )
+        whenever(dataSource.hasMorePages).thenReturn(true)
+
+        whenever(dataSource.loadMore()).thenReturn(
+            Result.failure(RuntimeException("boom"))
+        )
+
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onEndOfOrdersListReached()
+        advanceUntilIdle()
+
+        var content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.items.map { it.id }).containsExactly(1L, 2L)
+        assertThat(content.paginationState).isEqualTo(WooPosPaginationState.Error)
+
+        whenever(dataSource.loadMore()).thenReturn(Result.success(listOf(order(3), order(4))))
+        viewModel.onPaginationErrorTryAgain()
+        advanceUntilIdle()
+
+        // THEN
+        content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.items.map { it.id }).containsExactly(1L, 2L, 3L, 4L)
+        assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
+
+        verify(dataSource).loadOrders()
+        verify(dataSource, times(2)).loadMore()
+    }
 }
