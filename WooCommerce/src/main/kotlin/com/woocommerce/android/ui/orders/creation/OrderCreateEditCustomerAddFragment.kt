@@ -9,6 +9,7 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -36,7 +37,6 @@ import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -52,7 +52,7 @@ class OrderCreateEditCustomerAddFragment :
         private const val MENU_ITEM_DELETE_ID = Int.MAX_VALUE
     }
 
-    private val sharedViewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val addressViewModel by viewModels<AddressViewModel>()
 
     private val editingOfAddedCustomer: OrderCreateEditCustomerAddFragmentArgs by navArgs()

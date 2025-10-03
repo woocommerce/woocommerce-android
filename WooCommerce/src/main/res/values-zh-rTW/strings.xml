@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-10 09:54:04+0000
+Translation-Revision-Date: 2025-09-23 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">預訂</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">新增包裹詳細資料</string>
+    <string name="settings_enable_jetpack_app_passwords_message">啟用「應用程式密碼」，讓應用程式直接從你的 WooCommerce 網站擷取資料，無須透過 Jetpack 連線進行。</string>
+    <string name="settings_enable_jetpack_app_passwords_title">應用程式密碼</string>
+    <string name="experimental_features">實驗性功能</string>
+    <string name="orderdetail_view_customer_orders">檢視顧客訂單</string>
+    <string name="order_list_customer_filter_applied">已套用顧客篩選條件</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">包裹尺寸皆應大於 0。</string>
     <string name="woopos_cart_empty_subtitle_suffix"> 將其新增至購物車</string>
     <string name="woopos_cart_empty_scan_barcode">掃描條碼</string>
@@ -2454,8 +2461,6 @@ Language: zh_TW
     <string name="date_timeframe_last_quarter">上個季度</string>
     <string name="date_timeframe_last_month">上個月</string>
     <string name="date_timeframe_last_week">上週</string>
-    <string name="beta_features_simple_payments">輕鬆付款</string>
-    <string name="beta_features_add_ons">檢視附加元件</string>
     <string name="orders_empty_message_for_filtered_orders">很抱歉，我們找不到任何訂單</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">開啟設定</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">缺少所需的附近裝置權限</string>
@@ -3452,7 +3457,6 @@ Language: zh_TW
     <string name="order_refunds_amount_refund_progress_message">正在處理你的 %s 退款。請稍候…</string>
     <string name="orderdetail_refund_detail">%1$s，付款方式：%2$s</string>
     <string name="settings_enable_v4_stats_title">改善的統計資料</string>
-    <string name="beta_features">Beta 功能</string>
     <string name="orderdetail_payment_summary_onhold">等待透過 %s 支付的款項</string>
     <string name="orderdetail_payment_summary_completed">%1$s，付款方式：%2$s</string>
     <string name="dashboard_state_no_data">此期間沒有收益</string>

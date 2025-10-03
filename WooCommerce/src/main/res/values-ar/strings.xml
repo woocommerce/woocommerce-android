@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-09 11:54:07+0000
+Translation-Revision-Date: 2025-09-22 16:54:06+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">الحجوزات</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">إضافة تفاصيل الحزمة</string>
+    <string name="settings_enable_jetpack_app_passwords_message">قم بتمكين كلمات مرور التطبيق للسماح للتطبيق بجلب البيانات مباشرة من موقع WooCommerce الخاص بك بدلًا من القيام بذلك من خلال اتصال Jetpack.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">كلمات مرور التطبيق</string>
+    <string name="experimental_features">الميزات التجريبية</string>
+    <string name="orderdetail_view_customer_orders">عرض طلبات العملاء</string>
+    <string name="order_list_customer_filter_applied">تم تطبيق عامل تصفية العميل</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">ينبغي أن تكون أبعاد الحزمة أكبر من 0.</string>
     <string name="woopos_cart_empty_subtitle_suffix"> للإضافة إلى عربة التسوق</string>
     <string name="woopos_cart_empty_scan_barcode">مسح رمز شريطي ضوئيًا</string>
@@ -2454,8 +2461,6 @@ Language: ar
     <string name="date_timeframe_last_quarter">الربع الأخير</string>
     <string name="date_timeframe_last_month">الشهر الماضي</string>
     <string name="date_timeframe_last_week">الأسبوع الماضي</string>
-    <string name="beta_features_simple_payments">المدفوعات البسيطة</string>
-    <string name="beta_features_add_ons">عرض الوظائف الإضافية</string>
     <string name="orders_empty_message_for_filtered_orders">عذرًا، لم نتمكن من العثور على أي طلبات</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">فتح الإعدادات</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">صلاحية الأجهزة القريبة المطلوبة مفقودة</string>
@@ -3452,7 +3457,6 @@ Language: ar
     <string name="order_refunds_amount_refund_progress_message">تجري معالجة عملية استرداد الأموال الخاصة بك لـ %s. يُرجى الانتظار…</string>
     <string name="orderdetail_refund_detail">%1$s عبر %2$s</string>
     <string name="settings_enable_v4_stats_title">إحصاءات مُحسَّنة</string>
-    <string name="beta_features">ميزات بيتا</string>
     <string name="orderdetail_payment_summary_onhold">انتظار الدفع بواسطة %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s عبر %2$s</string>
     <string name="dashboard_state_no_data">لا توجد أي إيرادات في هذه الفترة</string>

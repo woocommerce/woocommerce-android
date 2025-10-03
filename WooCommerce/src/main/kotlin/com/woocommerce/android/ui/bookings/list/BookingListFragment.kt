@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -39,6 +40,7 @@ class BookingListFragment : TopLevelFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         handleEvents()
+        handleBottomNavigationVisibility()
     }
 
     private fun handleEvents() {
@@ -52,6 +54,16 @@ class BookingListFragment : TopLevelFragment() {
                 }
 
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+            }
+        }
+    }
+
+    private fun handleBottomNavigationVisibility() {
+        viewModel.bottomNavigationVisible.observe(viewLifecycleOwner) { isVisible ->
+            if (!isVisible) {
+                (activity as? MainActivity)?.hideBottomNav()
+            } else {
+                (activity as? MainActivity)?.showBottomNav()
             }
         }
     }

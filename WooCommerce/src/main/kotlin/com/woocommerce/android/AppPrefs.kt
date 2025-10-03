@@ -213,7 +213,11 @@ object AppPrefs {
 
         POS_TAB_VISIBILITY,
 
-        POS_LAUNCHABLE
+        POS_LAUNCHABLE,
+
+        WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN,
+
+        WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN
     }
 
     fun init(context: Context) {
@@ -1352,6 +1356,14 @@ object AppPrefs {
             Context.MODE_PRIVATE
         )
     }
+
+    var isWooPosSurveyNotificationCurrentUserShown: Boolean
+        get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN, false)
+        set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN, value)
+
+    var isWooPosSurveyNotificationPotentialUserShown: Boolean
+        get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, false)
+        set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
 
     enum class CardReaderOnboardingStatus {
         CARD_READER_ONBOARDING_COMPLETED,

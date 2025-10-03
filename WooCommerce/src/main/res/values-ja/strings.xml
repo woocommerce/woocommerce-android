@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-10 09:54:04+0000
+Translation-Revision-Date: 2025-09-24 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">予約</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">荷物の詳細を追加</string>
+    <string name="settings_enable_jetpack_app_passwords_message">アプリケーションパスワードを有効にすると、アプリが Jetpack 接続を介してデータを取得する代わりに、WooCommerce サイトから直接データを取得するようになります。</string>
+    <string name="settings_enable_jetpack_app_passwords_title">アプリケーションパスワード</string>
+    <string name="experimental_features">試験用の機能</string>
+    <string name="orderdetail_view_customer_orders">顧客注文を表示</string>
+    <string name="order_list_customer_filter_applied">顧客フィルターを適用しました</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">荷物の寸法はすべて0より大きくする必要があります。</string>
     <string name="woopos_cart_empty_subtitle_suffix"> お買い物カゴに追加</string>
     <string name="woopos_cart_empty_scan_barcode">バーコードをスキャンする</string>
@@ -2454,8 +2461,6 @@ Language: ja_JP
     <string name="date_timeframe_last_quarter">前四半期</string>
     <string name="date_timeframe_last_month">先月</string>
     <string name="date_timeframe_last_week">先週</string>
-    <string name="beta_features_simple_payments">シンプルペイメント</string>
-    <string name="beta_features_add_ons">アドオンを表示</string>
     <string name="orders_empty_message_for_filtered_orders">注文が見つかりませんでした</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">設定を開く</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">近くの端末に必要な権限がありません</string>
@@ -3452,7 +3457,6 @@ Language: ja_JP
     <string name="order_refunds_amount_refund_progress_message">%sの返金処理を実行中です。しばらくお待ちください…</string>
     <string name="orderdetail_refund_detail">%2$s により %1$s</string>
     <string name="settings_enable_v4_stats_title">強化された統計</string>
-    <string name="beta_features">ベータ版の機能</string>
     <string name="orderdetail_payment_summary_onhold">%s による決済待ち</string>
     <string name="orderdetail_payment_summary_completed">%2$s により %1$s</string>
     <string name="dashboard_state_no_data">この期間には収益がありません</string>
