@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 23.4
+We've improved the Blaze campaign experience! Creating campaigns now works smoothly for all products, including those with PDF thumbnails. Update today for a more reliable advertising experience.
+
 ## 23.3
 This update brings smoother performance for WordPress.com users, clearer shipping label creation with improved package and hazardous item selection, and easier access to all orders from a customer. We also fixed small UI glitches like notification icon sizing and delays on the site picker screen.
 
