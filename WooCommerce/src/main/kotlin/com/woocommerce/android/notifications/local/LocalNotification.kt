@@ -52,4 +52,16 @@ sealed class LocalNotification(
         delay = delay,
         delayUnit = TimeUnit.MILLISECONDS
     )
+
+    data class WooPosSurveyCurrentUserNotification(
+        override val siteId: Long,
+        override val delay: Long = 0,
+    ) : LocalNotification(
+        siteId = siteId,
+        title = R.string.local_notification_woo_pos_survey_current_user_title,
+        description = R.string.local_notification_woo_pos_survey_current_user_description,
+        type = LocalNotificationType.WOO_POS_SURVEY_CURRENT_USER_REMINDER,
+        delay = delay,
+        delayUnit = TimeUnit.MILLISECONDS
+    )
 }

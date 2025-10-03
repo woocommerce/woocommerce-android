@@ -38,7 +38,8 @@ class PreconditionCheckWorker @AssistedInject constructor(
             LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER,
             LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER -> proceedIfValidSiteAndBlazeAvailable(siteId)
 
-            LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER -> proceedIfValidSite(siteId)
+            LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER,
+            LocalNotificationType.WOO_POS_SURVEY_CURRENT_USER_REMINDER -> proceedIfValidSite(siteId)
 
             null -> cancelWork("Notification type is null. Cancelling work.")
         }

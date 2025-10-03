@@ -88,6 +88,10 @@ class LocalNotificationWorker @AssistedInject constructor(
                 appsPrefsWrapper.isWooPosSurveyNotificationPotentialUserShown = true
             }
 
+            LocalNotificationType.WOO_POS_SURVEY_CURRENT_USER_REMINDER -> {
+                appsPrefsWrapper.isWooPosSurveyNotificationCurrentUserShown = true
+            }
+
             else -> {}
         }
     }
