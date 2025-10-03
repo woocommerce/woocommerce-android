@@ -44,6 +44,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -80,6 +82,7 @@ fun WooPosOrdersScreen(
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
             onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
+            viewModel::onPaginationErrorTryAgain,
             onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
                 .weight(0.3f)
@@ -106,6 +109,7 @@ private fun OrdersList(
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
+    onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -211,6 +215,7 @@ private fun OrdersList(
                         state = state,
                         onOrderSelected = onOrderSelected,
                         onEndOfOrdersListReached = onEndOfOrdersListReached,
+                        onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                     )
                 }
             }
@@ -250,6 +255,7 @@ fun WooPosOrdersListPaneScreen(
     state: WooPosOrdersState.Content,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
+    onPaginationErrorTryAgain: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -319,6 +325,12 @@ fun WooPosOrdersListPaneScreen(
                 OrdersPaginationLoadingRow()
             }
         }
+
+        if (state.paginationState == WooPosPaginationState.Error) {
+            item {
+                OrdersPaginationErrorRow(onPaginationErrorTryAgain)
+            }
+        }
     }
 }
 
@@ -383,6 +395,19 @@ private fun OrdersPaginationLoadingRow() {
                 .alignByBaseline()
         )
     }
+}
+
+@Composable
+private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
+    WooPosPaginationErrorIndicator(
+        icon = null,
+        message = stringResource(id = R.string.woopos_orders_pagination_error_title),
+        description = stringResource(id = R.string.woopos_orders_pagination_error_content_description),
+        primaryButton = Button(
+            text = stringResource(id = R.string.woopos_coupons_pagination_try_again_label),
+            click = onPaginationErrorTryAgain
+        ),
+    )
 }
 
 @WooPosPreview
