@@ -3595,6 +3595,11 @@
     <!--
     Woo POS
     -->
+    <string name="woopos_home_syncing_catalog_title">Syncing product catalog</string>
+    <string name="woopos_home_sync_failed_title">Unable to sync</string>
+    <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
+    <string name="woopos_home_sync_failed_retry_button">Retry</string>
+
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout_button">Check out</string>

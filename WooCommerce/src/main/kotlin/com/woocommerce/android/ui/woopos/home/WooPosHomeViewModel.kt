@@ -14,6 +14,8 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.DialogState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatus
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInitialCatalogFullSync
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -31,6 +33,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
+    private val performInitialFullSync: WooPosPerformInitialCatalogFullSync,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedStateHandle.getStateFlow(
@@ -53,6 +56,36 @@ class WooPosHomeViewModel @Inject constructor(
         listenBottomEvents()
         viewModelScope.launch {
             soundHelper.preloadChaChing()
+        }
+        startCatalogSyncIfNeeded()
+    }
+
+    private fun startCatalogSyncIfNeeded() {
+        viewModelScope.launch {
+            performInitialFullSync().collect { syncStatus ->
+                when (syncStatus) {
+                    is WooPosFullSyncStatus.NotRequired -> {
+                        _state.value = _state.value.copy(
+                            catalogSyncState = WooPosHomeState.CatalogSyncState.Idle
+                        )
+                    }
+                    is WooPosFullSyncStatus.InProgress -> {
+                        _state.value = _state.value.copy(
+                            catalogSyncState = WooPosHomeState.CatalogSyncState.Syncing
+                        )
+                    }
+                    is WooPosFullSyncStatus.Success -> {
+                        _state.value = _state.value.copy(
+                            catalogSyncState = WooPosHomeState.CatalogSyncState.Success
+                        )
+                    }
+                    is WooPosFullSyncStatus.Failed -> {
+                        _state.value = _state.value.copy(
+                            catalogSyncState = WooPosHomeState.CatalogSyncState.Failed(syncStatus.error)
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -86,6 +119,10 @@ class WooPosHomeViewModel @Inject constructor(
                     _navigationEvent.emit(NavigationEvent.ExitPos)
                     analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed)
                 }
+            }
+
+            WooPosHomeUIEvent.RetryCatalogSyncClicked -> {
+                startCatalogSyncIfNeeded()
             }
 
             is WooPosHomeUIEvent.OnBarcodeEvent -> {

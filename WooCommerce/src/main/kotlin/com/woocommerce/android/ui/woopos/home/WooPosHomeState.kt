@@ -9,6 +9,7 @@ import kotlinx.parcelize.Parcelize
 data class WooPosHomeState(
     val screenPositionState: ScreenPositionState,
     val dialogState: DialogState = DialogState.Hidden,
+    val catalogSyncState: CatalogSyncState = CatalogSyncState.Idle,
 ) : Parcelable {
     @Parcelize
     sealed class ScreenPositionState : Parcelable {
@@ -44,5 +45,20 @@ data class WooPosHomeState(
             @IgnoredOnParcel
             val confirmButton: Int = R.string.woopos_exit_dialog_confirmation_confirm_button
         }
+    }
+
+    @Parcelize
+    sealed class CatalogSyncState : Parcelable {
+        @Parcelize
+        data object Idle : CatalogSyncState()
+
+        @Parcelize
+        data object Syncing : CatalogSyncState()
+
+        @Parcelize
+        data object Success : CatalogSyncState()
+
+        @Parcelize
+        data class Failed(val error: String) : CatalogSyncState()
     }
 }

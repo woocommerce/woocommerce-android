@@ -7,6 +7,8 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatus
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInitialCatalogFullSync
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
@@ -37,6 +39,7 @@ class WooPosHomeViewModelTest {
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val soundHelper: WooPosSoundHelper = mock()
+    private val performInitialFullSync: WooPosPerformInitialCatalogFullSync = mock()
 
     @Test
     fun `when order created, then pass event to cart`() =
@@ -341,11 +344,16 @@ class WooPosHomeViewModelTest {
         assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
     }
 
-    private fun createViewModel() = WooPosHomeViewModel(
-        childrenToParentEventReceiver,
-        parentToChildrenEventSender,
-        analyticsTracker,
-        soundHelper,
-        SavedStateHandle()
-    )
+    private fun createViewModel(): WooPosHomeViewModel {
+        whenever(performInitialFullSync.invoke()).thenReturn(flowOf(WooPosFullSyncStatus.NotRequired))
+
+        return WooPosHomeViewModel(
+            childrenToParentEventReceiver,
+            parentToChildrenEventSender,
+            analyticsTracker,
+            soundHelper,
+            performInitialFullSync,
+            SavedStateHandle()
+        )
+    }
 }
