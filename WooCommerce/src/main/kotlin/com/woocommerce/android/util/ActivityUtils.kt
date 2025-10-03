@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Parcelable
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.intentActivities
 import com.woocommerce.android.model.UiString
@@ -46,6 +47,16 @@ object ActivityUtils {
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:$phoneNumber")
 
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            onError(e)
+        }
+    }
+
+    fun sendSms(context: Context, phoneNumber: String, onError: (e: ActivityNotFoundException) -> Unit) {
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = "smsto:$phoneNumber".toUri()
         try {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
