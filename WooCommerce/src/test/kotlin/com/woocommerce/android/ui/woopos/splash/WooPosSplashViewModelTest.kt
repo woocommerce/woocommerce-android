@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.splash
 
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
@@ -29,7 +28,6 @@ class WooPosSplashViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val popularProductsProvider: WooPosPopularProductsProvider = mock()
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
-    private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
 
     @Rule
     @JvmField
@@ -160,6 +158,5 @@ class WooPosSplashViewModelTest {
         analyticsTracker,
         posCanBeLaunchedInTab,
         ordersCache,
-        performIncrementalSyncUseCase
     )
 }

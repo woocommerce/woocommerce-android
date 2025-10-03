@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
@@ -26,15 +24,12 @@ class WooPosSplashViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab,
     private val ordersCache: WooPosOrdersInMemoryCache,
-    performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
     val state: StateFlow<WooPosSplashState> = _state
 
     init {
         val splashScreenStartTime = System.currentTimeMillis()
-
-        performIncrementalSyncUseCase.execute(WooPosIncrementalSyncReason.ON_SPLASH_SCREEN)
 
         viewModelScope.launch {
             val launchability = posCanBeLaunchedInTab()
