@@ -4163,5 +4163,31 @@
     <string name="booking_payment_label_service">Service</string>
     <string name="booking_payment_mark_as_paid">Mark as paid</string>
     <string name="booking_payment_view_order">View order</string>
+    <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
+    <string name="about_automattic_main_page_title">About %1$s</string>
+    <string name="about_automattic_legal_page_title">Legal and More</string>
+    <string name="about_automattic_acknowledgements_page_title">Acknowledgements</string>
+    <string name="about_automattic_share_with_friends_item_title">Share with Friends</string>
+    <string name="about_automattic_rate_us_item_title">Rate Us</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="about_automattic_legal_and_more_item_title">Legal and More</string>
+    <string name="about_automattic_family_item_title">Automattic Family</string>
+    <string name="about_automattic_terms_of_service_item_title">Terms of Service</string>
+    <string name="about_automattic_privacy_policy_item_title">Privacy Policy</string>
+    <string name="about_automattic_california_privacy_notice_item_title">California Privacy Notice</string>
+    <string name="about_automattic_source_code_item_title">Source Code</string>
+    <string name="about_automattic_acknowledgements_item_title">Acknowledgements</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_version_label">Version %1$s</string>
+    <string name="about_automattic_logo_description">Automattic logo</string>
+    <string name="about_automattic_back_icon_description">Back icon</string>
+    <string name="about_automattic_app_icon_description">App icon</string>
 
 </resources>

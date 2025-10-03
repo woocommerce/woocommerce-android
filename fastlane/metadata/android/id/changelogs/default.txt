@@ -1,2 +1,0 @@
-23.3:
-Pembaruan ini memberikan performa yang lebih lancar untuk pengguna WordPress.com, pembuatan label pengiriman yang lebih jelas dengan pemilihan paket dan barang berisiko yang lebih baik, serta akses lebih mudah ke semua pesanan dari tiap pembeli. Kami juga memperbaiki gangguan kecil UI seperti ukuran ikon pemberitahuan dan penundaan di layar pemilih situs.
