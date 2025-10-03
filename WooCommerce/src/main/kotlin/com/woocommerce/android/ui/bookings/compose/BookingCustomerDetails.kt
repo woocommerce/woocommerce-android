@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,7 @@ fun BookingCustomerDetails(
                 value = model.email,
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.FileCopy,
+                        painter = painterResource(R.drawable.ic_email),
                         contentDescription = stringResource(id = R.string.booking_customer_label_email),
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -55,7 +56,7 @@ fun BookingCustomerDetails(
                 value = model.phone,
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.MoreHoriz,
+                        painter = painterResource(R.drawable.ic_menu_more_vert),
                         contentDescription = stringResource(id = R.string.booking_customer_label_phone),
                         tint = MaterialTheme.colorScheme.primary
                     )
