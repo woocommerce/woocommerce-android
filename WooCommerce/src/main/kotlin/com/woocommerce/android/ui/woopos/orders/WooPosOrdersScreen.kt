@@ -45,6 +45,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
@@ -57,6 +58,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.home.items.products.ProductsError
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -82,6 +84,7 @@ fun WooPosOrdersScreen(
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
             onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
+            onRetryClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
             viewModel::onPaginationErrorTryAgain,
             onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
@@ -109,6 +112,7 @@ private fun OrdersList(
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
+    onRetryClicked: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     modifier: Modifier = Modifier
@@ -181,19 +185,7 @@ private fun OrdersList(
                     }
                 }
 
-                is WooPosOrdersState.Error -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        WooPosText(
-                            text = state.message,
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(WooPosSpacing.Large.value)
-                        )
-                    }
-                }
+                is WooPosOrdersState.Error -> OrdersError { onRetryClicked() }
 
                 is WooPosOrdersState.Empty -> {
                     Column(
@@ -393,6 +385,23 @@ private fun OrdersPaginationLoadingRow() {
                 .width(72.dp)
                 .height(18.dp)
                 .alignByBaseline()
+        )
+    }
+}
+
+@Composable
+fun OrdersError(onRetryClicked: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        WooPosErrorScreen(
+            message = stringResource(id = R.string.woopos_orders_loading_error_title),
+            reason = stringResource(id = R.string.woopos_orders_loading_error_message),
+            primaryButton = Button(
+                text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
+                click = onRetryClicked
+            )
         )
     }
 }

@@ -97,6 +97,10 @@ class WooPosOrdersViewModel @Inject constructor(
         loadMoreIfPossible()
     }
 
+    fun onOrdersLoadingErrorRetryButtonClicked() {
+        loadOrders()
+    }
+
     @Suppress("ReturnCount")
     fun loadMoreIfPossible() {
         if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) return
