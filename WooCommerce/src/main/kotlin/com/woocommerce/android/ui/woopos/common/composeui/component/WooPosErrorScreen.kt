@@ -38,7 +38,8 @@ fun WooPosErrorScreen(
     secondaryButton: Button? = null
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
             .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             .padding(WooPosSpacing.XLarge.value.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
