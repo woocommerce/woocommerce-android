@@ -3762,7 +3762,7 @@
     <string name="woopos_coupons_pagination_error_description">Please check your internet connection and try again.</string>
 
     <string name="woopos_orders_pagination_error_title">Unable to load more orders</string>
-    <string name="woopos_orders_pagination_error_content_description">Tap to try again.</string>
+    <string name="woopos_orders_pagination_error_content_description">Please try again.</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>

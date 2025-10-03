@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -46,20 +44,17 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -404,53 +399,15 @@ private fun OrdersPaginationLoadingRow() {
 
 @Composable
 private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
-    WooPosPaginationErrorIndicatorContent(
+    WooPosPaginationErrorIndicator(
+        icon = null,
         message = stringResource(id = R.string.woopos_orders_pagination_error_title),
         description = stringResource(id = R.string.woopos_orders_pagination_error_content_description),
-        onRetry = onPaginationErrorTryAgain
+        primaryButton = Button(
+            text = stringResource(id = R.string.woopos_coupons_pagination_try_again_label),
+            click = onPaginationErrorTryAgain
+        ),
     )
-}
-
-@Composable
-private fun WooPosPaginationErrorIndicatorContent(
-    modifier: Modifier = Modifier,
-    message: String,
-    description: String,
-    onRetry: () -> Unit
-) {
-    val itemContentDescription = stringResource(
-        id = R.string.woopos_orders_pagination_error_content_description
-    )
-    WooPosCard(
-        modifier = modifier
-            .semantics { contentDescription = itemContentDescription }
-            .clickable { onRetry() },
-        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-        elevation = WooPosElevation.Medium,
-        shadowType = ShadowType.Soft,
-    ) {
-        Row(
-            modifier = Modifier
-                .heightIn(min = 64.dp)
-                .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Column {
-                WooPosText(
-                    text = message,
-                    style = WooPosTypography.BodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                WooPosText(
-                    text = description,
-                    style = WooPosTypography.BodyMedium,
-                    modifier = Modifier.padding(top = WooPosSpacing.Small.value.toAdaptivePadding())
-                )
-            }
-        }
-    }
 }
 
 @WooPosPreview
