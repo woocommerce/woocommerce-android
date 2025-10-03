@@ -12,11 +12,9 @@ import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlagV
 
 @Dao
 abstract class FeatureFlagConfigDao {
-    @Transaction
     @Query("SELECT * from FeatureFlagConfigurations")
     abstract fun getFeatureFlagList(): List<FeatureFlag>
 
-    @Transaction
     @Query("SELECT * from FeatureFlagConfigurations WHERE `key` = :key")
     abstract fun getFeatureFlag(key: String): List<FeatureFlag>
 
@@ -36,7 +34,6 @@ abstract class FeatureFlagConfigDao {
         }
     }
 
-    @Transaction
     @Query("DELETE FROM FeatureFlagConfigurations")
     abstract fun clear()
 
