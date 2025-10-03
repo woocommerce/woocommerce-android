@@ -394,6 +394,7 @@ class WooPosOrdersViewModelTest {
         val selectedFlags = content.items.associate { it.id to it.isSelected }
         assertThat(selectedFlags[20L]).isTrue()
     }
+
     @Test
     fun `given search results and more pages, when end reached, then loadMore with query appends and pagination None`() = runTest {
         // GIVEN
