@@ -265,12 +265,8 @@ class WooPosOrdersViewModel @Inject constructor(
         val selectedId = current?.selectedOrderId ?: existingItems.firstOrNull()?.id ?: orders.firstOrNull()?.id
         val newItems = mapOrders(orders, selectedId)
 
-        // Let's remove duplicates as it would crash when showing them
-        val existingIds = existingItems.mapTo(HashSet()) { it.id }
-        val mergedItems = existingItems + newItems.filterNot { it.id in existingIds }
-
         _state.value = WooPosOrdersState.Content(
-            items = mergedItems,
+            items = existingItems + newItems,
             selectedOrderId = selectedId,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
