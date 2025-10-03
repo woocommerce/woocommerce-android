@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-10 13:54:05+0000
+Translation-Revision-Date: 2025-09-23 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">Réservations</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Ajouter les détails du colis</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Activez les mots de passe d’applications pour permettre à l’application d’extraire directement des données de votre site WooCommerce plutôt que via la connexion Jetpack.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Mots de passe d’applications</string>
+    <string name="experimental_features">Fonctionnalités expérimentales</string>
+    <string name="orderdetail_view_customer_orders">Voir les commandes client</string>
+    <string name="order_list_customer_filter_applied">Filtre client appliqué</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">Les dimensions du colis doivent toutes être supérieures à 0.</string>
     <string name="woopos_cart_empty_subtitle_suffix"> pour l’ajouter au panier</string>
     <string name="woopos_cart_empty_scan_barcode">scanner un code-barres</string>
@@ -1352,8 +1359,8 @@ Language: fr
     <string name="store_onboarding_task_name_store_title">Donner un nom à votre boutique</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Activer la carte à puce NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Colis de provisions en petite quantité (marquages obligatoires)</string>
-    <string name="shipping_label_hazmat_option_lighters">Colis de briquets - Briquets autorisés</string>
     <string name="shipping_label_hazmat_option_limited_quantity">Colis expédiés par voie terrestre en quantités limitées : aérosols, spray désinfectants, peinture en aérosol, laque pour cheveux, propane, butane, produits d’entretien, etc. - Parfums, vernis à ongles, dissolvant, solvants, désinfectant pour les mains, alcool à friction, produits à base d’éthanol, etc. - Autres matériaux de surface en quantités limitées (cosmétiques, produits d’entretien, peintures, etc.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Colis de briquets - Briquets autorisés</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000 Consumer Commodity Package (codification pour les colis de produits de consommation) - Air Eligible ID8000 Consumer Commodity (codification pour les colis de produits de consommation éligibles à l’envoi par voie aérienne) (aérosols ininflammables, liquides combustibles inflammables, substances toxiques, divers matériaux dangereux)</string>
     <string name="shipping_label_hazmat_option_ground_only">Matériaux dangereux avec envoi uniquement par voie terrestre (pour les éléments non listés, mais qui sont limités à l’envoi par voie terrestre)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Colis de provisions en quantité exceptées (par exemple : petits volumes de liquides inflammables, corrosifs, toxiques ou matériaux dangereux pour l’environnement - marquage obligatoire)</string>
@@ -2454,10 +2461,8 @@ Language: fr
     <string name="date_timeframe_last_quarter">Trimestre dernier</string>
     <string name="date_timeframe_last_month">Mois dernier</string>
     <string name="date_timeframe_last_week">Semaine dernière</string>
-    <string name="beta_features_add_ons">Voir les modules</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Ouvrir les réglages</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Autorisation manquante pour les appareils à proximité</string>
-    <string name="beta_features_simple_payments">Paiements simplifiés</string>
     <string name="orders_empty_message_for_filtered_orders">Désolés, nous n’avons trouvé aucune commande.</string>
     <string name="order_detail_edit_address_state">État/Province</string>
     <string name="orderfilters_date_range_end_date">Date de fin</string>
@@ -3452,7 +3457,6 @@ Language: fr
     <string name="order_refunds_amount_refund_progress_message">Votre remboursement de %s est en cours de traitement. Veuillez patienter…</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistiques améliorées</string>
-    <string name="beta_features">Fonctionnalités bêta</string>
     <string name="orderdetail_payment_summary_onhold">Paiement en attente via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="dashboard_state_no_data">Pas de revenus durant cette période</string>
