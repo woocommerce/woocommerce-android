@@ -82,10 +82,8 @@ fun BookingListScreen(state: BookingListViewState) {
                 },
                 modifier = Modifier
             )
-            if (state.contentState.isNotEmpty()) {
-                BookingListControls(state.controlsState)
-                HorizontalDivider()
-            }
+            BookingListControls(state.controlsState)
+            HorizontalDivider()
             when {
                 state.contentState.isNotEmpty() -> {
                     BookingList(
