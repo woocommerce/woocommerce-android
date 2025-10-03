@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -26,7 +27,6 @@ import com.woocommerce.android.ui.products.ConfirmRemoveProductImageDialog
 import com.woocommerce.android.ui.products.ImageViewerFragment
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
-import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -46,7 +46,7 @@ class ProductImageViewerFragment :
     }
 
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
-    private val viewModel: ProductImagesViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_image_gallery)
+    private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
     private var isConfirmationShowing = false
     private var confirmationDialog: AlertDialog? = null

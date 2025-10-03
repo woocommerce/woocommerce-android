@@ -86,6 +86,7 @@ dependencies {
     api libs.eventbus.java
     api libs.squareup.okhttp3
     implementation libs.squareup.okhttp3.urlconnection
+    implementation libs.squareup.okhttp3.tls
     api libs.volley
     implementation libs.google.gson
 

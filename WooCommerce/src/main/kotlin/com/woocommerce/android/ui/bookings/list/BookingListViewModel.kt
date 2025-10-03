@@ -3,16 +3,22 @@ package com.woocommerce.android.ui.bookings.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
@@ -25,6 +31,12 @@ class BookingListViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
+    private val searchQuery = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = String::class.java,
+        key = "searchQuery"
+    )
 
     private val sortOptionsByTab = MutableStateFlow(
         mapOf(
@@ -51,13 +63,22 @@ class BookingListViewModel @Inject constructor(
             onBookingClick = ::onBookingClick
         )
     }
+    private val searchState = searchQuery.map {
+        BookingListSearchState(
+            query = it,
+            onQueryChanged = { newQuery ->
+                searchQuery.value = newQuery
+            }
+        )
+    }
 
     val state = combine(
         contentState,
         selectedTab,
         sortOptionsByTab,
-        isSortSheetVisible
-    ) { contentState, selectedTab, sortOptionsByTab, sheetVisible ->
+        isSortSheetVisible,
+        searchState
+    ) { contentState, selectedTab, sortOptionsByTab, sheetVisible, searchState ->
         val sortOption = sortOptionsByTab[selectedTab] ?: BookingListSortOption.NewestToOldest
         BookingListViewState(
             contentState = contentState,
@@ -78,23 +99,35 @@ class BookingListViewModel @Inject constructor(
                 )
             } else {
                 null
-            }
+            },
+            searchState = searchState
         )
     }.asLiveData()
 
+    val bottomNavigationVisible = searchState.map { !it.isSearchActive }
+        .asLiveData()
+
     init {
-        monitorFilterChanges()
+        monitorSearchAndFilterChanges()
     }
 
-    private fun monitorFilterChanges() {
+    @OptIn(FlowPreview::class)
+    private fun monitorSearchAndFilterChanges() {
         launch {
-            selectedTab.collectLatest {
-                // Cancel any ongoing fetch or load more operations
-                bookingsFetchJob?.cancel()
-                bookingsLoadMoreJob?.cancel()
+            val queryFlow = searchQuery
+                .drop(1) // Skip the initial value to avoid double fetch on init
+                .debounce {
+                    if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                }
 
-                bookingsFetchJob = fetchBookings(BookingListLoadingState.Loading)
-            }
+            merge(selectedTab, queryFlow)
+                .collectLatest {
+                    // Cancel any ongoing fetch or load more operations
+                    bookingsFetchJob?.cancel()
+                    bookingsLoadMoreJob?.cancel()
+
+                    bookingsFetchJob = fetchBookings(BookingListLoadingState.Loading)
+                }
         }
     }
 
@@ -102,7 +135,7 @@ class BookingListViewModel @Inject constructor(
         loadingState.value = initialLoadingState
         val sortOption = sortOptionsByTab.value[selectedTab.value] ?: BookingListSortOption.NewestToOldest
         bookingListHandler.loadBookings(
-            forceRefresh = true,
+            searchQuery = searchQuery.value,
             filters = prepareFilters(),
             sortBy = sortOption
         ).onFailure {

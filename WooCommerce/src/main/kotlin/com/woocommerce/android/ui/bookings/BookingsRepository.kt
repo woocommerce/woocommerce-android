@@ -16,20 +16,29 @@ class BookingsRepository @Inject constructor(
     suspend fun fetchBookings(
         page: Int,
         perPage: Int,
+        query: String? = null,
         filters: List<BookingsFilterOption> = emptyList(),
         order: BookingsOrderOption
-    ): Result<Boolean> {
+    ): Result<FetchResult> {
         val result = bookingsStore.fetchBookings(
             site = selectedSite.get(),
             perPage = perPage,
             page = page,
+            query = query,
             filters = filters,
             order = order
         )
         return if (result.isError) {
             Result.failure(WooException(result.error))
         } else {
-            Result.success(result.model!!)
+            Result.success(
+                result.model!!.let {
+                    FetchResult(
+                        bookings = it.bookings,
+                        hasMorePages = it.hasMorePages
+                    )
+                }
+            )
         }
     }
 
@@ -44,6 +53,11 @@ class BookingsRepository @Inject constructor(
             filters = filters,
             order = order
         )
+
+    data class FetchResult(
+        val bookings: List<Booking>,
+        val hasMorePages: Boolean
+    )
 }
 
 typealias Booking = BookingEntity

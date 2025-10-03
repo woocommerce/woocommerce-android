@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.filter
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,7 +23,6 @@ import com.woocommerce.android.ui.products.filter.ProductFilterOptionListAdapter
 import com.woocommerce.android.ui.products.list.ProductListFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,7 +32,7 @@ class ProductFilterOptionListFragment :
     BaseFragment(R.layout.fragment_product_filter_option_list),
     OnLoadMoreListener,
     OnProductFilterOptionClickListener {
-    private val viewModel: ProductFilterListViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_product_filters)
+    private val viewModel: ProductFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_product_filters)
 
     private val arguments: ProductFilterOptionListFragmentArgs by navArgs()
 
