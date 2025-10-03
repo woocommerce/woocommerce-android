@@ -210,7 +210,6 @@ class WooPosOrdersViewModel @Inject constructor(
     private fun loadOrders() {
         cancelJobs()
         loadingJob = viewModelScope.launch {
-            val currentState = _state.value
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
