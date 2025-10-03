@@ -35,6 +35,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -56,9 +57,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.home.items.products.ProductsError
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -79,6 +80,13 @@ fun WooPosOrdersScreen(
     if (state is WooPosOrdersState.Error) {
         OrdersError(
             onRetryClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked
+        )
+        return
+    }
+
+    if (state is WooPosOrdersState.Empty) {
+        OrdersEmpty(
+            onActionClicked = { viewModel::onOrdersEmptyActionClicked }
         )
         return
     }
@@ -119,7 +127,6 @@ private fun OrdersList(
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
-    onRetryClicked: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     modifier: Modifier = Modifier
@@ -192,20 +199,6 @@ private fun OrdersList(
                     }
                 }
 
-                is WooPosOrdersState.Empty -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        WooPosText(
-                            text = "No orders found",
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(WooPosSpacing.Large.value)
-                        )
-                    }
-                }
-
                 is WooPosOrdersState.Content -> {
                     WooPosOrdersListPaneScreen(
                         modifier = Modifier.fillMaxSize(),
@@ -216,6 +209,7 @@ private fun OrdersList(
                     )
                 }
 
+                is WooPosOrdersState.Empty -> { /* handled full-screen in parent */ }
                 is WooPosOrdersState.Error -> { /* handled full-screen in parent */ }
             }
 
@@ -392,6 +386,24 @@ private fun OrdersPaginationLoadingRow() {
                 .width(72.dp)
                 .height(18.dp)
                 .alignByBaseline()
+        )
+    }
+}
+
+@Composable
+fun OrdersEmpty(onActionClicked: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        WooPosItemsEmptyList(
+            modifier = Modifier.fillMaxSize(),
+            icon = painterResource(id = R.drawable.ic_woo_pos_orders_empty),
+            title = stringResource(id = R.string.woopos_orders_empty_list_title),
+            message = stringResource(id = R.string.woopos_orders_empty_list_message),
+            contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
+            actionLabel = stringResource(id = R.string.woopos_orders_empty_action_label),
+            onActionClicked = { onActionClicked() }
         )
     }
 }
