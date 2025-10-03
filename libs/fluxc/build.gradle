@@ -95,6 +95,8 @@ dependencies {
     implementation libs.androidx.room.runtime
     ksp libs.androidx.room.compiler
     implementation libs.androidx.room.ktx
+    implementation(libs.sqlite)
+    implementation(libs.sqlite.framework)
 
     // Dagger
     implementation libs.google.dagger
