@@ -99,7 +99,6 @@ fun WooPosOrdersScreen(
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
             onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
-            onRetryClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
             viewModel::onPaginationErrorTryAgain,
             onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
