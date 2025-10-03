@@ -15,7 +15,9 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.DialogState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatus
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInitialCatalogFullSync
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -34,6 +36,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
     private val performInitialFullSync: WooPosPerformInitialCatalogFullSync,
+    private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedStateHandle.getStateFlow(
@@ -68,6 +71,7 @@ class WooPosHomeViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             catalogSyncState = WooPosHomeState.CatalogSyncState.Idle
                         )
+                        incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
                     }
                     is WooPosFullSyncStatus.InProgress -> {
                         _state.value = _state.value.copy(
