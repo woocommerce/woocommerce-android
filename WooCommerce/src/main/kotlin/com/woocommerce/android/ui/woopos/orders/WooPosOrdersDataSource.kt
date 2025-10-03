@@ -33,7 +33,7 @@ class WooPosOrdersDataSource @Inject constructor(
     private val ordersCache: WooPosOrdersInMemoryCache
 ) {
     private val canLoadMore = AtomicBoolean(false)
-    private val page = AtomicInteger(0)
+    private val page = AtomicInteger(1)
 
     val hasMorePages: Boolean
         get() = canLoadMore.get()
