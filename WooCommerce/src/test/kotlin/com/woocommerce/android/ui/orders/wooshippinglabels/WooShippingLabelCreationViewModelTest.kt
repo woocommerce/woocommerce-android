@@ -9,6 +9,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -330,6 +332,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val file: File = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val createDefaultCustomsData = CreateDefaultCustomsData(mock())
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
+        on { isFeatureSupported(CIABAffectedFeature.WooShippingSplitShipments) } doReturn true
+    }
 
     private lateinit var sut: WooShippingLabelCreationViewModel
 
@@ -355,6 +360,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             observeShippingLabelStatus = observeShippingLabelStatus,
             downloadAndPrintInvoiceUseCase = mock(),
             analyticsTracker = analyticsTracker,
+            ciabSiteGateKeeper = ciabSiteGateKeeper,
             savedState = savedState
         )
     }
@@ -1808,5 +1814,31 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState.shipmentUIList[0].isPurchased).isTrue
         @Suppress("UnusedFlow")
         verify(observeShippingLabelStatus).invoke(orderId, inProgressLabel.labelId)
+    }
+
+    @Test
+    fun `given split shipments unsupported, when displaying shipments, then hide split option`() = testBlocking {
+        // The default `getShipments` mock already returns a shipment with multiple items
+        given(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooShippingSplitShipments))
+            .willReturn(false)
+
+        createViewModel()
+
+        val currentViewState = sut.viewState.value as DataState
+
+        assertThat(currentViewState.shouldShowSplitShipmentButton).isFalse
+    }
+
+    @Test
+    fun `given split shipments supported, when displaying shipments, then hide split option`() = testBlocking {
+        // The default `getShipments` mock already returns a shipment with multiple items
+        given(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooShippingSplitShipments))
+            .willReturn(true)
+
+        createViewModel()
+
+        val currentViewState = sut.viewState.value as DataState
+
+        assertThat(currentViewState.shouldShowSplitShipmentButton).isTrue
     }
 }

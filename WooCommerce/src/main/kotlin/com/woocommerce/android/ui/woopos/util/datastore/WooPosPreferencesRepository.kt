@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.util.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.tools.SelectedSite
@@ -15,6 +16,7 @@ class WooPosPreferencesRepository @Inject constructor(
 ) {
     private val recentProductSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_PRODUCT_SEARCHES_KEY)
     private val recentCouponSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_COUPON_SEARCHES_KEY)
+    private val wasOpenedOnceKey = booleanPreferencesKey(POS_WAS_OPENED_ONCE_KEY)
 
     val recentProductSearches: Flow<List<String>> = dataStore.data
         .map { preferences ->
@@ -26,6 +28,11 @@ class WooPosPreferencesRepository @Inject constructor(
         .map { preferences ->
             val searchesString = preferences[recentCouponSearchesSiteSpecificKey] ?: ""
             if (searchesString.isEmpty()) emptyList() else searchesString.split(",")
+        }
+
+    val wasOpenedOnce: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[wasOpenedOnceKey] ?: false
         }
 
     suspend fun addRecentProductSearch(search: String) {
@@ -56,12 +63,19 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun setWasOpenedOnce(wasOpened: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[wasOpenedOnceKey] = wasOpened
+        }
+    }
+
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.siteId}-$key")
 
     private companion object {
         const val RECENT_PRODUCT_SEARCHES_KEY = "recent_product_searches_key"
         const val RECENT_COUPON_SEARCHES_KEY = "recent_coupon_searches_key"
+        const val POS_WAS_OPENED_ONCE_KEY = "pos_was_opened_once_key"
 
         const val MAX_RECENT_SEARCHES_COUNT = 10
     }

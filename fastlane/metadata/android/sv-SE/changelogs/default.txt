@@ -1,2 +1,0 @@
-23.3:
-Den här uppdateringen ger smidigare prestanda för WordPress.com-användare, tydligare skapande av fraktetiketter med förbättrat paketval och val av farliga artiklar samt enklare åtkomst till alla beställningar från en kund. Vi har också åtgärdat några små gränssnittsbuggar, såsom storleken på aviseringsikonen och fördröjningarna på webbplatsväljarskärmen.

@@ -29,34 +29,33 @@ class WooPosSyncProductsAction @Inject constructor(
         pageSize: Int,
         maxPages: Int
     ): WooPosSyncProductsResult {
-        val fetchResult = runCatching {
-            fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
-        }
+        return runCatching {
+            val (products, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
 
-        if (fetchResult.isFailure) {
-            val error = fetchResult.exceptionOrNull()
-            logger.e("Failed to fetch products: ${error?.message}")
-            return when (error) {
-                is CatalogTooLargeException -> error.toSyncResult()
-                else -> WooPosSyncProductsResult.Failed.UnexpectedError(
-                    error?.message ?: "Failed to fetch products"
-                )
-            }
-        }
-
-        val (products, serverDate) = fetchResult.getOrThrow()
-        return posLocalCatalogStore.executeInTransaction {
-            // TBD local catalog We need to either remove products that are no longer present on the server
-            // or delete all products before we start inserting (low performance)
-            // or soft-delete all products before we start inserting
-            posLocalCatalogStore.upsertProducts(products)
+            posLocalCatalogStore.executeInTransaction {
+                // TBD local catalog We need to either remove products that are no longer present on the server
+                // or delete all products before we start inserting (low performance)
+                // or soft-delete all products before we start inserting
+                posLocalCatalogStore.upsertProducts(products)
+            }.fold(
+                onSuccess = {
+                    logger.d("Local Catalog transaction committed successfully")
+                    WooPosSyncProductsResult.Success(products.size, serverDate)
+                },
+                onFailure = { error ->
+                    handleTransactionError(error)
+                }
+            )
         }.fold(
-            onSuccess = {
-                logger.d("Local Catalog transaction committed successfully")
-                WooPosSyncProductsResult.Success(products.size, serverDate)
-            },
+            onSuccess = { result -> result },
             onFailure = { error ->
-                handleTransactionError(error)
+                logger.e("Failed to sync products: ${error.message}")
+                when (error) {
+                    is CatalogTooLargeException -> error.toSyncResult()
+                    else -> WooPosSyncProductsResult.Failed.UnexpectedError(
+                        error.message ?: "Failed to sync products"
+                    )
+                }
             }
         )
     }

@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -165,7 +165,6 @@ private fun HandleEvents(
                 is OpenTopPerformer -> navController.navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
                         mode = ShowProduct(event.productId),
-                        isTrashEnabled = false
                     )
                 )
 

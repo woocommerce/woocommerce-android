@@ -98,7 +98,7 @@ class WooPosTotalsRepository @Inject constructor(
         quantity: Int,
         itemData: WooPosItemsViewModel.ItemClickedData.Product.Simple
     ): Order.Item {
-        val productResult = getProductById(itemData.id)!!
+        val productResult = getProductById(itemData.id) ?: error("Product not found: ${itemData.id}")
         return Order.Item.EMPTY.copy(
             itemId = 0L,
             productId = itemData.id,
@@ -115,11 +115,11 @@ class WooPosTotalsRepository @Inject constructor(
         quantity: Int,
         itemData: WooPosItemsViewModel.ItemClickedData.Product.Variation
     ): Order.Item {
-        val productResult = getProductById(itemData.productId)!!
+        val productResult = getProductById(itemData.productId) ?: error("Product not found: ${itemData.productId}")
         val variationResult = getVariationById(
             productId = itemData.productId,
             variationId = itemData.id
-        )!!
+        ) ?: error("Variation not found: product=${itemData.productId}, variation=${itemData.id}")
         variationResult.getNameForPOS(variationMapper, productResult, resourceProvider)
         return Order.Item.EMPTY.copy(
             itemId = 0L,

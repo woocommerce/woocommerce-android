@@ -100,7 +100,7 @@ class WooPosProductsDataSourceTest {
     private val productMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     @Test
-    fun `given cached products, when loadProducts called, then should emit cached products first`() = runTest {
+    fun `given cached products, when fetchFirstPage called, then should emit cached products first`() = runTest {
         // GIVEN
         whenever(productsCache.getAll()).thenReturn(sampleProducts)
         whenever(
@@ -124,7 +124,7 @@ class WooPosProductsDataSourceTest {
         )
 
         // WHEN
-        val result = sut.loadProducts(forceRefreshProducts = false).first()
+        val result = sut.fetchFirstPage(forceRefresh = false).first()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
@@ -133,7 +133,7 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given cached products, when loadProducts called with forceRefresh, then should not emit cached products`() =
+    fun `given cached products, when fetchFirstPage called with forceRefresh, then should not emit cached products`() =
         runTest {
             // GIVEN
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
@@ -158,14 +158,14 @@ class WooPosProductsDataSourceTest {
             )
 
             // WHEN
-            val result = sut.loadProducts(forceRefreshProducts = true).first()
+            val result = sut.fetchFirstPage(forceRefresh = true).first()
 
             // THEN
             assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
         }
 
     @Test
-    fun `given no products in list cache, when loadProducts called, then should return empty list`() = runTest {
+    fun `given no products in list cache, when fetchFirstPage called, then should return empty list`() = runTest {
         // GIVEN
         whenever(productsCache.getAll()).thenReturn(emptyList())
         whenever(
@@ -189,7 +189,7 @@ class WooPosProductsDataSourceTest {
         )
 
         // WHEN
-        val result = sut.loadProducts(forceRefreshProducts = false).first()
+        val result = sut.fetchFirstPage(forceRefresh = false).first()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
@@ -198,7 +198,7 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given cached and remote products, when loadProducts called, then should emit remote products after cached products`() =
+    fun `given cached and remote products, when fetchFirstPage called, then should emit remote products after cached products`() =
         runTest {
             // GIVEN
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
@@ -244,7 +244,7 @@ class WooPosProductsDataSourceTest {
             )
 
             // WHEN
-            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
+            val flow = sut.fetchFirstPage(forceRefresh = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -288,7 +288,7 @@ class WooPosProductsDataSourceTest {
             )
 
             // WHEN
-            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
+            val flow = sut.fetchFirstPage(forceRefresh = false).toList()
 
             // THEN
             assertThat(flow.size).isEqualTo(2)
@@ -332,7 +332,7 @@ class WooPosProductsDataSourceTest {
                 productsTypesFilterConfig,
                 productMapper,
             )
-            sut.loadProducts(forceRefreshProducts = true).first()
+            sut.fetchFirstPage(forceRefresh = true).first()
 
             // WHEN
             val result = sut.loadMore()
@@ -393,7 +393,7 @@ class WooPosProductsDataSourceTest {
                 productsTypesFilterConfig,
                 productMapper,
             )
-            sut.loadProducts(forceRefreshProducts = true).first()
+            sut.fetchFirstPage(forceRefresh = true).first()
 
             // WHEN
             val result = sut.loadMore()
@@ -404,7 +404,7 @@ class WooPosProductsDataSourceTest {
         }
 
     @Test
-    fun `given no cached products and remote load fails, when loadProducts called, then should emit empty cache and then error`() =
+    fun `given no cached products and remote load fails, when fetchFirstPage called, then should emit empty cache and then error`() =
         runTest {
             // GIVEN
             whenever(productsIndex.getProductList()).thenReturn(emptyList())
@@ -437,7 +437,7 @@ class WooPosProductsDataSourceTest {
             )
 
             // WHEN
-            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
+            val flow = sut.fetchFirstPage(forceRefresh = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -448,7 +448,7 @@ class WooPosProductsDataSourceTest {
         }
 
     @Test
-    fun `given empty product list in cache, when loadProducts called, then should emit empty cache and empty remote result`() =
+    fun `given empty product list in cache, when fetchFirstPage called, then should emit empty cache and empty remote result`() =
         runTest {
             // GIVEN
             whenever(productsCache.getAll()).thenReturn(emptyList())
@@ -473,7 +473,7 @@ class WooPosProductsDataSourceTest {
             )
 
             // WHEN
-            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
+            val flow = sut.fetchFirstPage(forceRefresh = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -522,7 +522,7 @@ class WooPosProductsDataSourceTest {
         )
 
         // WHEN
-        val result = sut.loadProducts(forceRefreshProducts = false).first()
+        val result = sut.fetchFirstPage(forceRefresh = false).first()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)

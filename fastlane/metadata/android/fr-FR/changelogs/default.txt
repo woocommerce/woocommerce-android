@@ -1,2 +1,0 @@
-23.3 :
-Cette mise à jour améliore les performances pour les utilisateurs de WordPress.com, clarifie la création d’étiquettes d’expédition avec une sélection améliorée des colis et des articles dangereux, et facilite l’accès à toutes les commandes d’un client. Nous avons également corrigé de petits problèmes d’interface utilisateur comme le dimensionnement des icônes de notification et des délais sur l’écran du sélecteur de site.
