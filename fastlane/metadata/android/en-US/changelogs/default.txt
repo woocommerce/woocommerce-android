@@ -1,1 +1,1 @@
-This update brings smoother performance for WordPress.com users, clearer shipping label creation with improved package and hazardous item selection, and easier access to all orders from a customer. We also fixed small UI glitches like notification icon sizing and delays on the site picker screen.
+- [*] Fixed an issue where Blaze campaign creation could fail for products using PDF thumbnails as images [https://github.com/woocommerce/woocommerce-android/pull/14642]
