@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-10 13:54:07+0000
+Translation-Revision-Date: 2025-09-23 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">Prenotazioni</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Aggiungi dettagli pacco</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Attiva le password delle applicazioni per consentire all\'app di recuperare direttamente i dati dal tuo sito WooCommerce invece di farlo tramite la connessione Jetpack.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Password per applicazioni</string>
+    <string name="experimental_features">Funzionalità in fase sperimentale</string>
+    <string name="orderdetail_view_customer_orders">Visualizza ordini clienti</string>
+    <string name="order_list_customer_filter_applied">Filtro cliente applicato</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">Tutte le dimensioni del pacco devono essere superiori a 0.</string>
     <string name="woopos_cart_empty_subtitle_suffix"> per aggiungerlo al carrello</string>
     <string name="woopos_cart_empty_scan_barcode">scansiona un codice a barre</string>
@@ -2453,8 +2460,6 @@ Language: it
     <string name="date_timeframe_last_quarter">Trimestre precedente</string>
     <string name="date_timeframe_last_month">Mese precedente</string>
     <string name="date_timeframe_last_week">Settimana precedente</string>
-    <string name="beta_features_simple_payments">Pagamenti facili</string>
-    <string name="beta_features_add_ons">Visualizza componenti aggiuntivi</string>
     <string name="orders_empty_message_for_filtered_orders">Siamo spiacenti, non siamo riusciti a trovare alcun ordine</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Apri le impostazioni</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Autorizzazione, necessaria per i dispositivi nelle vicinanze, mancante</string>
@@ -3451,7 +3456,6 @@ Language: it
     <string name="order_refunds_amount_refund_progress_message">Il rimborso per %s è in fase di elaborazione. Attendi…</string>
     <string name="orderdetail_refund_detail">%1$s tramite %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistiche migliorate</string>
-    <string name="beta_features">Funzionalità beta</string>
     <string name="orderdetail_payment_summary_onhold">In attesa di pagamento tramite %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s tramite %2$s</string>
     <string name="dashboard_state_no_data">Nessuna entrata per questo periodo</string>

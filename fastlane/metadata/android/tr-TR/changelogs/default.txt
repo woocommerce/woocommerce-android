@@ -1,0 +1,2 @@
+23.3:
+Bu güncelleme, WordPress.com kullanıcıları için daha sorunsuz performans, iyileştirilmiş paket ve tehlikeli öğe seçimiyle daha net gönderim etiketi oluşturma ve bir müşteriden gelen tüm siparişlere daha kolay erişim sağlar. Bildirim simgesi boyutlandırma ve site seçici ekranındaki gecikmeler gibi küçük kullanıcı arayüzü hatalarını da düzelttik.
