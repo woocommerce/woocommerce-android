@@ -47,7 +47,7 @@ class WooPosOrdersDataSource @Inject constructor(
         val cached = ordersCache.getAll()
         if (cached.isNotEmpty()) emit(LoadOrdersResult.SuccessCache(cached))
 
-        val result = fetchAndMap(reset = true)
+        val result = loadFirstPage()
         result.onSuccess {
             ordersCache.setAll(it)
             emit(LoadOrdersResult.SuccessRemote(it))
@@ -57,7 +57,7 @@ class WooPosOrdersDataSource @Inject constructor(
     }
 
     suspend fun searchOrders(searchQuery: String): SearchOrdersResult {
-        val result = fetchAndMap(searchQuery, reset = true)
+        val result = loadFirstPage(searchQuery)
         return result.fold(
             onSuccess = { SearchOrdersResult.Success(it) },
             onFailure = { SearchOrdersResult.Error(it.message ?: UNKNOWN_ERROR) }
@@ -65,17 +65,19 @@ class WooPosOrdersDataSource @Inject constructor(
     }
 
     suspend fun loadMore(searchQuery: String? = null): Result<List<Order>> =
-        withContext(Dispatchers.IO) { fetchAndMap(searchQuery) }
+        withContext(Dispatchers.IO) { loadNextPage(searchQuery) }
 
-    private suspend fun fetchAndMap(
-        searchQuery: String? = null,
-        reset: Boolean = false
-    ): Result<List<Order>> {
-        if (reset) {
-            page.set(1)
-            canLoadMore.set(false)
-        }
+    private suspend fun loadFirstPage(searchQuery: String? = null): Result<List<Order>> {
+        page.set(1)
+        canLoadMore.set(false)
+        return fetchAndMap(searchQuery)
+    }
 
+    private suspend fun loadNextPage(searchQuery: String? = null): Result<List<Order>> {
+        return fetchAndMap(searchQuery)
+    }
+
+    private suspend fun fetchAndMap(searchQuery: String? = null): Result<List<Order>> {
         val result = fetchOrdersFromRemote(page.get(), searchQuery)
         return if (result.isError) {
             Result.failure(result.error.toThrowable())
