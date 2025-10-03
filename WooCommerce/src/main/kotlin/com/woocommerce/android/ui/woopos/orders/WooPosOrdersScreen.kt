@@ -79,13 +79,15 @@ fun WooPosOrdersScreen(
 
     if (state is WooPosOrdersState.Error) {
         OrdersError(
-            onRetryClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked
+            onRetryClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
+            onBackClicked = onBackClicked
         )
         return
     }
 
     if (state is WooPosOrdersState.Empty) {
         OrdersEmpty(
+            onBackClicked = onBackClicked,
             onActionClicked = { viewModel::onOrdersEmptyActionClicked }
         )
         return
@@ -390,10 +392,12 @@ private fun OrdersPaginationLoadingRow() {
 }
 
 @Composable
-fun OrdersEmpty(onActionClicked: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+fun OrdersEmpty(
+    onBackClicked: () -> Unit,
+    onActionClicked: () -> Unit
+) {
+    OrdersScaffoldWithToolbar(
+        onBackClicked = onBackClicked
     ) {
         WooPosItemsEmptyList(
             modifier = Modifier.fillMaxSize(),
@@ -402,16 +406,18 @@ fun OrdersEmpty(onActionClicked: () -> Unit) {
             message = stringResource(id = R.string.woopos_orders_empty_list_message),
             contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
             actionLabel = stringResource(id = R.string.woopos_orders_empty_action_label),
-            onActionClicked = { onActionClicked() }
+            onActionClicked = onActionClicked
         )
     }
 }
 
 @Composable
-fun OrdersError(onRetryClicked: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+fun OrdersError(
+    onBackClicked: () -> Unit,
+    onRetryClicked: () -> Unit
+) {
+    OrdersScaffoldWithToolbar(
+        onBackClicked = onBackClicked
     ) {
         WooPosErrorScreen(
             message = stringResource(id = R.string.woopos_orders_loading_error_title),
@@ -421,6 +427,26 @@ fun OrdersError(onRetryClicked: () -> Unit) {
                 click = onRetryClicked
             )
         )
+    }
+}
+
+@Composable
+private fun OrdersScaffoldWithToolbar(
+    onBackClicked: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        WooPosToolbar(
+            titleText = stringResource(R.string.woopos_orders_title),
+            onBackClicked = onBackClicked,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            content()
+        }
     }
 }
 
