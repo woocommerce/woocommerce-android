@@ -267,10 +267,8 @@ class WooPosOrdersViewModel @Inject constructor(
         val newItems = mapOrders(orders, selectedId)
 
         // Let's remove duplicates as it would crash when showing them
-        val mergedItems = LinkedHashMap<Long, OrderItemViewState>().apply {
-            existingItems.forEach { put(it.id, it) }
-            newItems.forEach { put(it.id, it) }
-        }.values.toList()
+        val existingIds = existingItems.mapTo(HashSet()) { it.id }
+        val mergedItems = existingItems + newItems.filterNot { it.id in existingIds }
 
         _state.value = WooPosOrdersState.Content(
             items = mergedItems,
