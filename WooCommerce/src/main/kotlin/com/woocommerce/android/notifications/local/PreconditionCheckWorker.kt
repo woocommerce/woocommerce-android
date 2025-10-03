@@ -38,6 +38,8 @@ class PreconditionCheckWorker @AssistedInject constructor(
             LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER,
             LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER -> proceedIfValidSiteAndBlazeAvailable(siteId)
 
+            LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER -> proceedIfValidSite(siteId)
+
             null -> cancelWork("Notification type is null. Cancelling work.")
         }
     }
@@ -54,6 +56,23 @@ class PreconditionCheckWorker @AssistedInject constructor(
 
         observeBlazeWidgetStatus().first() != DashboardWidget.Status.Available -> {
             cancelWork("Blaze is not available. Cancelling local notification work.")
+        }
+
+        siteStore.getSiteBySiteId(siteId) == null -> {
+            cancelWork("The site linked to the notifications doesn't exist in the db. Cancelling work.")
+        }
+
+        else -> Result.success()
+    }
+
+    private fun proceedIfValidSite(siteId: Long) = when {
+        siteId == 0L -> {
+            val message = "Site id is missing. Cancelling local notification work."
+            crashLogging.sendReport(
+                exception = Exception(message),
+                message = "PreconditionCheckWorker: cancelling work"
+            )
+            cancelWork(message)
         }
 
         siteStore.getSiteBySiteId(siteId) == null -> {
