@@ -1,0 +1,2 @@
+23.3:
+Esta actualización proporciona un rendimiento más fluido para los usuarios de WordPress.com, una creación de etiquetas de envío más clara con una selección mejorada de paquetes y artículos peligrosos, y un acceso más fácil a todos los pedidos de un cliente. También hemos corregido pequeños fallos en la interfaz de usuario, como el tamaño del icono de notificación y los retrasos en la pantalla del selector de sitios.
