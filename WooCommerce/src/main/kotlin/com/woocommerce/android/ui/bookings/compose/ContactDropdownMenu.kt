@@ -1,17 +1,19 @@
 package com.woocommerce.android.ui.bookings.compose
 
+import android.content.Context
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.PhoneContactOption
+import com.woocommerce.android.util.getAvailablePhoneContactOptions
+import com.woocommerce.android.util.stringRes
 import org.wordpress.android.util.ToastUtils
-
-private const val WHATSAPP_PACKAGE_NAME = "com.whatsapp"
-private const val TELEGRAM_PACKAGE_NAME = "org.telegram.messenger"
 
 @Composable
 fun ContactDropdownMenu(
@@ -20,50 +22,52 @@ fun ContactDropdownMenu(
     onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current
+    val contactOptions = remember { context.getAvailablePhoneContactOptions() }
 
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
     ) {
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.orderdetail_call_customer)) },
-            onClick = {
-                ActivityUtils.dialPhoneNumber(context, phone) { error ->
-                    ToastUtils.showToast(context, R.string.error_no_phone_app)
-                }
-                onDismissRequest()
-            }
-        )
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.orderdetail_message_customer)) },
-            onClick = {
-                ActivityUtils.sendSms(context, phone) {
-                    ToastUtils.showToast(context, R.string.error_no_sms_app)
-                }
-                onDismissRequest()
-            }
-        )
-        if (ActivityUtils.isAppInstalled(context, WHATSAPP_PACKAGE_NAME)) {
+        contactOptions.forEach { contactOption ->
             DropdownMenuItem(
-                text = {
-                    Text(stringResource(R.string.orderdetail_message_customer_using_whatsapp))
-                },
+                text = { Text(stringResource(contactOption.stringRes)) },
                 onClick = {
-                    ActivityUtils.openWhatsApp(context, phone)
-                    onDismissRequest()
-                }
-            )
-        }
-        if (ActivityUtils.isAppInstalled(context, TELEGRAM_PACKAGE_NAME)) {
-            DropdownMenuItem(
-                text = {
-                    Text(stringResource(R.string.orderdetail_message_customer_using_telegram))
-                },
-                onClick = {
-                    ActivityUtils.openTelegram(context, phone)
+                    contactOption.action(context, phone)
                     onDismissRequest()
                 }
             )
         }
     }
 }
+
+private val PhoneContactOption.action: (Context, String) -> Unit
+    get() = when (this) {
+        PhoneContactOption.CALL -> {
+            // This is the lambda being returned. It must define its parameters.
+            { context, phone ->
+                ActivityUtils.dialPhoneNumber(context, phone) {
+                    ToastUtils.showToast(context, R.string.error_no_phone_app)
+                }
+            }
+        }
+
+        PhoneContactOption.SMS -> {
+            { context, phone ->
+                ActivityUtils.sendSms(context, phone) {
+                    ToastUtils.showToast(context, R.string.error_no_sms_app)
+                }
+            }
+        }
+
+        PhoneContactOption.WHATSAPP -> {
+            { context, phone ->
+                ActivityUtils.openWhatsApp(context, phone)
+            }
+        }
+
+        PhoneContactOption.TELEGRAM -> {
+            { context, phone ->
+                ActivityUtils.openTelegram(context, phone)
+            }
+        }
+    }
