@@ -76,6 +76,13 @@ fun WooPosOrdersScreen(
     val onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) }
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 
+    if (state is WooPosOrdersState.Error) {
+        OrdersError(
+            onRetryClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked
+        )
+        return
+    }
+
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersList(
             state = state,
@@ -185,8 +192,6 @@ private fun OrdersList(
                     }
                 }
 
-                is WooPosOrdersState.Error -> OrdersError { onRetryClicked() }
-
                 is WooPosOrdersState.Empty -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -210,6 +215,8 @@ private fun OrdersList(
                         onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                     )
                 }
+
+                is WooPosOrdersState.Error -> { /* handled full-screen in parent */ }
             }
 
             PullRefreshIndicator(

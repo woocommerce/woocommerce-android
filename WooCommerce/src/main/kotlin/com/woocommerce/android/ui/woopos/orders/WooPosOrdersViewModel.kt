@@ -98,6 +98,7 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     fun onOrdersLoadingErrorRetryButtonClicked() {
+        _state.value = WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
         loadOrders()
     }
 
