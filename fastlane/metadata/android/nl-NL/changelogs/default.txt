@@ -1,0 +1,2 @@
+23.3:
+Deze update zorgt voor betere prestaties voor gebruikers van WordPress.com, duidelijkere aanmaak van verzendlabels met verbeterde pakketselectie en selectie van gevaarlijke artikelen, en eenvoudigere toegang tot alle bestellingen van een klant. We hebben ook kleine UI-glitches opgelost, zoals de grootte van het meldingspictogram en vertragingen op het sitekiezer-scherm

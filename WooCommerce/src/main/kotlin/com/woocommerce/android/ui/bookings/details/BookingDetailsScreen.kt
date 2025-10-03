@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
+import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -36,7 +37,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun BookingDetailsScreen(
     viewModel: BookingDetailsViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onViewOrder: (Long) -> Unit
 ) {
     val viewState by viewModel.state.observeAsState()
 
@@ -44,8 +46,7 @@ fun BookingDetailsScreen(
         BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
-            onCancelBooking = viewModel::onCancelBooking,
-            onAttendanceStatusSelected = viewModel::onAttendanceStatusSelected
+            onViewOrder = onViewOrder,
         )
     }
 }
@@ -54,8 +55,7 @@ fun BookingDetailsScreen(
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
-    onCancelBooking: () -> Unit,
-    onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit
+    onViewOrder: (Long) -> Unit,
 ) {
     val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
@@ -82,7 +82,7 @@ fun BookingDetailsScreen(
                 )
                 BookingAppointmentDetails(
                     model = viewState.bookingsAppointmentDetails,
-                    onCancelBooking = onCancelBooking,
+                    onCancelBooking = viewState.onCancelBooking,
                     modifier = Modifier.fillMaxWidth()
                 )
                 BookingCustomerDetails(
@@ -96,11 +96,19 @@ fun BookingDetailsScreen(
                     onClick = { showAttendanceSheet.value = true },
                     modifier = Modifier.fillMaxWidth()
                 )
+                BookingPaymentSection(
+                    model = viewState.bookingPaymentDetails,
+                    status = viewState.bookingSummary.status,
+                    onMarkAsPaid = { onViewOrder(viewState.orderId) },
+                    onViewOrder = { onViewOrder(viewState.orderId) },
+                    onMarkAsRefunded = { onViewOrder(viewState.orderId) },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
             if (showAttendanceSheet.value) {
                 BookingAttendanceStatusBottomSheet(
                     onSelect = { status ->
-                        onAttendanceStatusSelected(status)
+                        viewState.onAttendanceStatusSelected(status)
                     },
                     onDismiss = { showAttendanceSheet.value = false }
                 )
@@ -133,8 +141,7 @@ private fun BookingDetailsPreview() {
                 )
             ),
             onBack = {},
-            onCancelBooking = {},
-            onAttendanceStatusSelected = {}
+            onViewOrder = {}
         )
     }
 }

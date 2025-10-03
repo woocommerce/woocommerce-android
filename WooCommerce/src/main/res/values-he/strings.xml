@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-10 09:54:05+0000
+Translation-Revision-Date: 2025-09-25 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">הזמנות</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">להוסיף את פרטי החבילה</string>
+    <string name="settings_enable_jetpack_app_passwords_message">יש להפעיל את סיסמאות האפליקציה כדי לאפשר לאפליקציה לאחזר נתונים ישירות מאתר WooCommerce במקום דרך החיבור של Jetpack.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">סיסמאות אפליקציה</string>
+    <string name="experimental_features">אפשרויות ניסיוניות</string>
+    <string name="orderdetail_view_customer_orders">להציג הזמנות לקוח</string>
+    <string name="order_list_customer_filter_applied">המסננים של הלקוח הוחלו</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">ממדי החבילה חייבים להיות גדולים מ-0.</string>
     <string name="woopos_cart_empty_subtitle_suffix"> כדי להוסיף את המוצר לעגלה</string>
     <string name="woopos_cart_empty_scan_barcode">לסרוק ברקוד</string>
@@ -2454,8 +2461,6 @@ Language: he_IL
     <string name="date_timeframe_last_quarter">הרבעון הקודם</string>
     <string name="date_timeframe_last_month">החודש הקודם</string>
     <string name="date_timeframe_last_week">השבוע הקודם</string>
-    <string name="beta_features_simple_payments">תשלומים פשוטים</string>
-    <string name="beta_features_add_ons">להציג הרחבות</string>
     <string name="orders_empty_message_for_filtered_orders">מצטערים, לא הצלחנו למצוא הזמנות</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">לפתוח את ההגדרות</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">חסרה הרשאה שנדרשת למכשירים בסביבה</string>
@@ -3452,7 +3457,6 @@ Language: he_IL
     <string name="orderdetail_issue_refund_button">נמצאה בעיה</string>
     <string name="orderdetail_refund_detail">%1$s דרך %2$s</string>
     <string name="settings_enable_v4_stats_title">נתונים סטטיסטיים משופרים</string>
-    <string name="beta_features">תכונות ביתא</string>
     <string name="orderdetail_payment_summary_onhold">ממתין לתשלום דרך %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s דרך %2$s</string>
     <string name="dashboard_state_no_data">אין רווחים בתקופה זאת</string>

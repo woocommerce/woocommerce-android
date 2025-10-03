@@ -1,0 +1,2 @@
+23.3:
+Questo aggiornamento offre prestazioni più fluide agli utenti di WordPress.com, rende più chiara la creazione delle etichette di spedizione grazie a una migliore selezione di imballaggi e articoli pericolosi, e facilita l'accesso a tutti gli ordini di un cliente. Abbiamo inoltre risolto alcune piccole imperfezioni dell'interfaccia, come il dimensionamento dell'icona di notifica e i ritardi nella schermata di selezione del sito.

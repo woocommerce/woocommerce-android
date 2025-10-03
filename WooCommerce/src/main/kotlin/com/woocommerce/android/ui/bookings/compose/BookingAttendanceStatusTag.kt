@@ -1,13 +1,17 @@
 package com.woocommerce.android.ui.bookings.compose
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCTag
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -17,7 +21,7 @@ fun BookingAttendanceStatusTag(
 ) {
     WCTag(
         text = state.text(),
-        backgroundColor = colorResource(R.color.tagView_bg),
+        backgroundColor = state.backgroundColor(),
         textColor = colorResource(R.color.tagView_text),
         fontWeight = FontWeight.Normal,
         modifier = modifier
@@ -38,6 +42,16 @@ fun BookingAttendanceStatus.text(): String {
     }.let { stringResource(it) }
 }
 
+@Composable
+fun BookingAttendanceStatus.backgroundColor(): Color {
+    return when (this) {
+        BookingAttendanceStatus.NO_SHOW -> R.color.tag_bg_booking_yellow
+        BookingAttendanceStatus.BOOKED,
+        BookingAttendanceStatus.CHECKED_IN,
+        BookingAttendanceStatus.CANCELLED -> R.color.tagView_bg
+    }.let { colorResource(it) }
+}
+
 @Preview
 @Composable
 private fun AttendanceStatusTagPreview() {
@@ -54,6 +68,17 @@ private fun AttendanceStatusTagDarkPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
             state = BookingAttendanceStatus.CHECKED_IN
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun AttendanceStatusTagNoShowPreview() {
+    WooThemeWithBackground {
+        BookingAttendanceStatusTag(
+            state = BookingAttendanceStatus.NO_SHOW,
+            modifier = Modifier.padding(10.dp)
         )
     }
 }
