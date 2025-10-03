@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-10 13:54:06+0000
+Translation-Revision-Date: 2025-09-23 13:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">Bokningar</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Lägg till paketinformation</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Aktivera applikationslösenord för att låta appen hämta data direkt från din WooCommerce-webbplats istället för att göra det via en Jetpack-anslutning.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Applikationslösenord</string>
+    <string name="experimental_features">Experimentella funktioner</string>
+    <string name="orderdetail_view_customer_orders">Visa kundbeställningar</string>
+    <string name="order_list_customer_filter_applied">Kundfilter tillämpat</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">Alla paketdimensioner ska alla vara större än 0.</string>
     <string name="woopos_cart_empty_subtitle_suffix"> för att lägga till den i varukorgen</string>
     <string name="woopos_cart_empty_scan_barcode">skanna en streckkod</string>
@@ -2454,8 +2461,6 @@ Language: sv_SE
     <string name="date_timeframe_last_quarter">Förra kvartalet</string>
     <string name="date_timeframe_last_month">Förra månaden</string>
     <string name="date_timeframe_last_week">Förra veckan</string>
-    <string name="beta_features_simple_payments">Enkla betalningar</string>
-    <string name="beta_features_add_ons">Visa utökningar</string>
     <string name="orders_empty_message_for_filtered_orders">Vi kunde inte hitta några beställningar</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Öppna inställningar</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Saknar nödvändig behörighet för enheter i närheten</string>
@@ -3452,7 +3457,6 @@ Language: sv_SE
     <string name="orderdetail_issue_refund_button">Utfärda återbetalning</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Förbättrad statistik</string>
-    <string name="beta_features">Betafunktioner</string>
     <string name="orderdetail_payment_summary_onhold">Väntar på betalning via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="dashboard_state_no_data">Inga inkomster denna period</string>

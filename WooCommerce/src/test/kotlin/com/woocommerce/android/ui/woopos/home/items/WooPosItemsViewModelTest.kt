@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -53,6 +54,7 @@ class WooPosItemsViewModelTest {
     private val couponCreationFacade: WooPosCouponCreationFacade = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
+    private val preferencesRepository: WooPosPreferencesRepository = mock()
 
     @Before
     fun setup() {
@@ -435,6 +437,17 @@ class WooPosItemsViewModelTest {
         verify(searchHelper).updateLoadingState(isLoading = false)
     }
 
+    @Test
+    fun `when view model created, then wasOpenedOnce is set to true`() = runTest {
+        // GIVEN
+
+        // WHEN
+        createViewModel()
+
+        // THEN
+        verify(preferencesRepository).setWasOpenedOnce(true)
+    }
+
     private fun createViewModel(): WooPosItemsViewModel {
         return WooPosItemsViewModel(
             searchHelper = searchHelper,
@@ -442,6 +455,7 @@ class WooPosItemsViewModelTest {
             couponCreationFacade = couponCreationFacade,
             fromChildToParentEventSender = fromChildToParentEventSender,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            preferencesRepository = preferencesRepository,
             analyticsTracker = analyticsTracker,
         )
     }
