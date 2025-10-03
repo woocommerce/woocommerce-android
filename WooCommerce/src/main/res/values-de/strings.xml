@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-10 13:54:06+0000
+Translation-Revision-Date: 2025-09-23 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">Buchungen</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Verpackungsdetails hinzufügen</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Aktiviere Anwendungspasswörter, damit die App Daten direkt von deiner WooCommerce-Website abrufen kann, anstatt dies über eine Jetpack-Verbindung zu tun.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Anwendungs-Passwörter</string>
+    <string name="experimental_features">Experimentelle Funktionen</string>
+    <string name="orderdetail_view_customer_orders">Kundenbestellungen anzeigen</string>
+    <string name="order_list_customer_filter_applied">Kundenfilter angewendet</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">Verpackungsabmessungen sollten alle größer als 0 sein.</string>
     <string name="woopos_cart_empty_subtitle_suffix"> es dem Warenkorb hinzuzufügen</string>
     <string name="woopos_cart_empty_scan_barcode">scanne den Barcode, um</string>
@@ -2454,8 +2461,6 @@ Language: de
     <string name="card_reader_payment_failed_card_not_supported">Diese Art von Kauf wird von der Karte nicht unterstützt</string>
     <string name="analytics_date_range_from_date">im Vergleich zum vorherigen Zeitraum (%1$s)</string>
     <string name="date_timeframe_month_to_date">Bisheriger Monat</string>
-    <string name="beta_features_simple_payments">Einfaches Bezahlen</string>
-    <string name="beta_features_add_ons">Add-ons anzeigen</string>
     <string name="orders_empty_message_for_filtered_orders">Leider wurden keine Bestellungen gefunden.</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Einstellungen öffnen</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Erforderliche Rechte für Geräte in der Nähe fehlen</string>
@@ -3452,7 +3457,6 @@ Language: de
     <string name="order_refunds_amount_refund_progress_message">Deine Rückerstattung für %s wird verarbeitet. Bitte warten …</string>
     <string name="orderdetail_refund_detail">%1$s per %2$s</string>
     <string name="settings_enable_v4_stats_title">Verbesserte Statistiken</string>
-    <string name="beta_features">Betafunktionen</string>
     <string name="orderdetail_payment_summary_onhold">Warten auf Zahlung per %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s per %2$s</string>
     <string name="dashboard_state_no_data">Keine Einnahmen in diesem Zeitraum</string>

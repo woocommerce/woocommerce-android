@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -49,7 +49,7 @@ import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.Da
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import java.util.*
+import java.util.Date
 
 @Composable
 fun DashboardCouponsCard(
