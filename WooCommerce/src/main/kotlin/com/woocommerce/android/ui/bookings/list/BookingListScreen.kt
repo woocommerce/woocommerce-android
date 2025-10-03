@@ -100,7 +100,7 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
             )
             BookingListControls(state.controlsState)
-            HorizontalDivider()
+            HorizontalDivider(thickness = 0.5.dp)
 
             when {
                 state.contentState.isNotEmpty() -> {
