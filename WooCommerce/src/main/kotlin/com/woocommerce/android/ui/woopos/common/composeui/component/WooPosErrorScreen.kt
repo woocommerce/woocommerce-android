@@ -78,7 +78,7 @@ fun WooPosErrorScreen(
                     text = it.text,
                     onClick = it.click,
                     modifier = Modifier
-                        .fillMaxWidth(.5f)
+                        .fillMaxWidth(.3f)
                         .height(80.dp)
                 )
             }
@@ -88,7 +88,7 @@ fun WooPosErrorScreen(
                     text = it.text,
                     onClick = it.click,
                     modifier = Modifier
-                        .fillMaxWidth(.5f)
+                        .fillMaxWidth(.3f)
                         .height(80.dp)
                 )
             }

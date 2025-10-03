@@ -621,7 +621,7 @@ private fun WooPosItemsEmptyListInternal(
                     text = actionLabel,
                     onClick = onActionClicked,
                     modifier = Modifier
-                        .fillMaxWidth(0.5f)
+                        .fillMaxWidth(0.3f)
                         .height(80.dp)
                 )
             }
