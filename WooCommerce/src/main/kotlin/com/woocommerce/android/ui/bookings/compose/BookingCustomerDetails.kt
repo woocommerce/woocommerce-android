@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,14 +28,15 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ActivityUtils
 
 @Composable
 fun BookingCustomerDetails(
     model: BookingCustomerDetailsModel,
-    onEmailClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var phoneMenuExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(modifier = modifier) {
         BookingSectionHeader(R.string.booking_customer_details_header)
@@ -53,7 +55,9 @@ fun BookingCustomerDetails(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 },
-                modifier = Modifier.clickable { onEmailClick() }
+                modifier = Modifier.clickable {
+                    ActivityUtils.sendEmail(context, model.email)
+                }
             )
             CustomerDetailsRow(
                 value = model.phone,
@@ -156,7 +160,6 @@ private fun BookingCustomerDetailsPreview() {
                     "AL 36109"
                 )
             ),
-            onEmailClick = {},
             modifier = Modifier.fillMaxWidth()
         )
     }
