@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
+import org.wordpress.android.fluxc.utils.extensions.filterNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,6 +23,7 @@ class BookingsRestClient @Inject constructor(
         site: SiteModel,
         perPage: Int,
         page: Int,
+        query: String?,
         filters: List<BookingsFilterOption>
     ): WooPayload<Array<BookingDto>> {
         val endpoint = WOOCOMMERCE.bookings.pathV2Bookings
@@ -32,8 +34,9 @@ class BookingsRestClient @Inject constructor(
             clazz = Array<BookingDto>::class.java,
             params = mapOf(
                 "per_page" to perPage.toString(),
-                "page" to page.toString()
-            ) + filters.toQueryParams()
+                "page" to page.toString(),
+                "search" to query
+            ).filterNotNull() + filters.toQueryParams()
         )
         return when (response) {
             is Success -> WooPayload(response.data)
