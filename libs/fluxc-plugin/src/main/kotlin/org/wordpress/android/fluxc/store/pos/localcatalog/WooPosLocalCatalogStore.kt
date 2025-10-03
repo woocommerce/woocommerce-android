@@ -65,6 +65,20 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Gets the count of products in the local database for a given site.
+     *
+     * @param [siteId] The local site ID
+     * @return Result containing the product count or error
+     */
+    suspend fun getProductCount(
+        siteId: LocalOrRemoteId.LocalId
+    ): Result<Int> =
+        coroutineEngine.withDefaultContext(API, this, "getProductCount") {
+            val count = posProductDao.getProductCount(siteId)
+            Result.success(count)
+        }
+
+    /**
      * Executes a block of code within a database transaction.
      * If the block throws an exception, the transaction is rolled back.
      *
