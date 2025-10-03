@@ -1,1 +1,1 @@
-- [*] Fixed an issue where Blaze campaign creation could fail for products using PDF thumbnails as images [https://github.com/woocommerce/woocommerce-android/pull/14642]
+We've improved the Blaze campaign experience! Creating campaigns now works smoothly for all products, including those with PDF thumbnails. Update today for a more reliable advertising experience.
