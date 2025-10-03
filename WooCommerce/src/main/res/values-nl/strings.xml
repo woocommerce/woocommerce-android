@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-10 13:54:05+0000
+Translation-Revision-Date: 2025-09-23 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">Reserveringen</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Pakketgegevens toevoegen</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Schakel applicatiewachtwoorden in om de app rechtstreeks gegevens van je WooCommerce-site te laten ophalen in plaats van dit te doen via de Jetpack-verbinding.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Applicatiewachtwoorden</string>
+    <string name="experimental_features">Experimentele functies</string>
+    <string name="orderdetail_view_customer_orders">Klantenbestellingen bekijken</string>
+    <string name="order_list_customer_filter_applied">Klantfilter toegepast</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">De afmetingen van het pakket moeten allemaal groter zijn dan 0.</string>
     <string name="woopos_cart_empty_subtitle_suffix"> om aan de winkelwagen toe te voegen</string>
     <string name="woopos_cart_empty_scan_barcode">streepjescode scannen</string>
@@ -2454,8 +2461,6 @@ Language: nl
     <string name="date_timeframe_last_quarter">Afgelopen kwartaal</string>
     <string name="date_timeframe_last_month">Afgelopen maand</string>
     <string name="date_timeframe_last_week">Afgelopen week</string>
-    <string name="beta_features_simple_payments">Eenvoudig betalen</string>
-    <string name="beta_features_add_ons">Add-ons bekijken</string>
     <string name="orders_empty_message_for_filtered_orders">Helaas kunnen we geen bestellingen vinden.</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Instellingen openen</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Vereiste toestemming voor nabije apparaten ontbreekt</string>
@@ -3452,7 +3457,6 @@ Language: nl
     <string name="order_refunds_amount_refund_progress_message">Je restitutie van %s is in behandeling genomen. Een moment geduld…</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
-    <string name="beta_features">Bèta-functies</string>
     <string name="orderdetail_payment_summary_onhold">Wachten op betaling via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="dashboard_state_no_data">Geen omzet deze periode</string>

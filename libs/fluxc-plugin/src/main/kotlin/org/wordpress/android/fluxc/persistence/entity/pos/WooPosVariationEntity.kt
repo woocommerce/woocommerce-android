@@ -27,7 +27,7 @@ data class WooPosVariationEntity(
     val stockStatus: String = "",
     val manageStock: Boolean = false,
     val backordered: Boolean = false,
-    val attributesJson: String = "",
+    val attributesJson: String = "[]",
     val imageUrl: String = "",
     val status: String = "",
     val lastUpdated: String = "",

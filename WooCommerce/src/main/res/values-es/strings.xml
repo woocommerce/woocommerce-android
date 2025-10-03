@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-11 09:54:09+0000
+Translation-Revision-Date: 2025-09-23 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">Reservas</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Añadir detalles del paquete</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Habilita las contraseñas de aplicación para que la aplicación pueda obtener directamente los datos de tu sitio de WooCommerce en lugar de hacerlo a través de la conexión de Jetpack.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Contraseñas de aplicación</string>
+    <string name="experimental_features">Funciones experimentales</string>
+    <string name="orderdetail_view_customer_orders">Ver los pedidos de los clientes</string>
+    <string name="order_list_customer_filter_applied">Filtro de cliente aplicado</string>
     <string name="woopos_cart_empty_subtitle_suffix"> añadirlo al carrito</string>
     <string name="woopos_cart_empty_scan_barcode">Escanear código de barras</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">Toca un producto para </string>
@@ -998,7 +1005,6 @@ Language: es
     <string name="blaze_campaign_edit_ad_change_tagline_title">Descripción corta</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Aplicar</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s días</string>
-    <string name="blaze_campaign_budget_impressions_info">Las impresiones reflejan la frecuencia con la que aparece tu anuncio a los clientes potenciales.\n\n\n        Aunque no se pueden garantizar cifras exactas debido a las fluctuaciones del tráfico en línea y del comportamiento de los usuarios, nuestro objetivo es que las impresiones reales de tu anuncio coincidan lo más posible con el recuento objetivo.\n\n\n        No olvides que las impresiones tienen que ver con la visibilidad, no con la acción de los lectores.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Hecho</string>
     <string name="blaze_campaign_budget_impressions_title">Impresiones</string>
     <string name="blaze_campaign_budget_update_button">Actualizar</string>
@@ -1010,6 +1016,7 @@ Language: es
     <string name="blaze_campaign_edit_ad_change_image_button">Cambiar imagen</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s al día</string>
     <string name="blaze_campaign_preview_days_duration">%1$s días desde %2$s</string>
+    <string name="blaze_campaign_budget_impressions_info">Las impresiones reflejan la frecuencia con la que aparece tu anuncio a los clientes potenciales.\n\n\n        Aunque no se pueden garantizar cifras exactas debido a las fluctuaciones del tráfico en línea y del comportamiento de los usuarios, nuestro objetivo es que las impresiones reales de tu anuncio coincidan lo más posible con el recuento objetivo.\n\n\n        No olvides que las impresiones tienen que ver con la visibilidad, no con la acción de los lectores.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Fecha de inicio</string>
     <string name="product_creation_survey_button_dont_show_again">No volver a mostrar</string>
     <string name="product_creation_survey_button_remind_me_later">Recordármelo más tarde</string>
@@ -2454,8 +2461,6 @@ Language: es
     <string name="date_timeframe_last_month">Último mes</string>
     <string name="date_timeframe_last_week">Última semana</string>
     <string name="card_reader_payment_failed_insufficient_funds">Se ha rechazado el pago porque no hay fondos suficientes.</string>
-    <string name="beta_features_simple_payments">Pagos simples</string>
-    <string name="beta_features_add_ons">Ver complementos</string>
     <string name="orders_empty_message_for_filtered_orders">Lo sentimos, no hemos encontrado ningún pedido.</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Abrir la configuración</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Falta el permiso obligatorio de los dispositivos cercanos</string>
@@ -3452,7 +3457,6 @@ Language: es
     <string name="order_refunds_amount_refund_progress_message">Tu reembolso de %s se está procesando. Por favor, espera…</string>
     <string name="orderdetail_refund_detail">%1$s a través de %2$s</string>
     <string name="settings_enable_v4_stats_title">Mejora de las estadísticas</string>
-    <string name="beta_features">Funciones beta</string>
     <string name="orderdetail_payment_summary_onhold">Pago pendiente a través de %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s a través de %2$s</string>
     <string name="dashboard_state_no_data">Sin ingresos durante este periodo</string>

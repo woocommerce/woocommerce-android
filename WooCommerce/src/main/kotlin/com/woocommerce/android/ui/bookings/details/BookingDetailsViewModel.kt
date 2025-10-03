@@ -21,7 +21,12 @@ class BookingDetailsViewModel @Inject constructor(
 
     private val navArgs: BookingDetailsFragmentArgs by savedState.navArgs()
 
-    private val _state = MutableStateFlow(BookingDetailsViewState())
+    private val _state = MutableStateFlow(
+        BookingDetailsViewState(
+            onCancelBooking = ::onCancelBooking,
+            onAttendanceStatusSelected = ::onAttendanceStatusSelected,
+        )
+    )
     val state: LiveData<BookingDetailsViewState> = _state.asLiveData()
 
     init {
@@ -32,7 +37,7 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
+    private fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
         _state.update { current ->
             current.copy(
                 bookingSummary = current.bookingSummary.copy(attendanceStatus = status)
@@ -40,7 +45,7 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onCancelBooking() {
+    private fun onCancelBooking() {
         // TODO Add logic to Cancel booking
     }
 }

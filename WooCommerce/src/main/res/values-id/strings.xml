@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-11 09:54:08+0000
+Translation-Revision-Date: 2025-09-23 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">Pemesanan</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Tambahkan Rincian Paket</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Aktifkan kata sandi aplikasi agar aplikasi dapat mengambil data secara langsung dari situs WooCommerce Anda, tanpa melalui koneksi Jetpack.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Kata Sandi Aplikasi</string>
+    <string name="experimental_features">Fitur eksperimental</string>
+    <string name="orderdetail_view_customer_orders">Lihat pesanan pelanggan</string>
+    <string name="order_list_customer_filter_applied">Penyaring pelanggan diterapkan</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">Semua ukuran paket harus lebih besar dari 0.</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">Ketuk pada produk atau </string>
     <string name="woopos_orders_title">Pesanan</string>
@@ -2454,8 +2461,6 @@ Language: id
     <string name="date_timeframe_last_quarter">Kuartal Terakhir</string>
     <string name="date_timeframe_last_month">Bulan Terakhir</string>
     <string name="date_timeframe_last_week">Minggu Terakhir</string>
-    <string name="beta_features_simple_payments">Simple payments</string>
-    <string name="beta_features_add_ons">Lihat Add-on</string>
     <string name="orders_empty_message_for_filtered_orders">Maaf, kami tidak menemukan pesanan</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Buka pengaturan</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Izin perangkat terdekat tidak ditemukan</string>
@@ -3452,7 +3457,6 @@ Language: id
     <string name="order_refunds_amount_refund_progress_message">Pengembalian dana Anda untuk %s sedang diproses. Harap tunggu…</string>
     <string name="orderdetail_refund_detail">%1$s melalui %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
-    <string name="beta_features">Fitur-fitur Beta</string>
     <string name="orderdetail_payment_summary_onhold">Menunggu pembayaran melalui %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s melalui %2$s</string>
     <string name="dashboard_state_no_data">Tidak ada pendapatan dalam periode ini</string>

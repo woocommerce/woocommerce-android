@@ -1,0 +1,2 @@
+23.3:
+Dieses Update sorgt für eine reibungslosere Performance für Benutzer von WordPress.com, eine übersichtlichere Erstellung von Versandetiketten mit verbesserter Auswahl von Paketen und gefährlichen Artikeln sowie einen einfacheren Zugriff auf alle Bestellungen eines Kunden. Wir haben auch kleine UI-Fehler wie die Größe des Benachrichtigungs-Icons und Verzögerungen auf dem Bildschirm der Website-Auswahl behoben.
