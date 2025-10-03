@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 @Composable
 fun WooPosPaginationErrorIndicator(
     modifier: Modifier = Modifier,
-    icon: Painter = painterResource(id = R.drawable.ic_woo_pos_error_x),
+    icon: Painter? = painterResource(id = R.drawable.ic_woo_pos_error_x),
     message: String,
     description: String,
     primaryButton: Button,
@@ -55,15 +55,16 @@ fun WooPosPaginationErrorIndicator(
 @Composable
 private fun WooPosPaginationErrorIndicatorContent(
     modifier: Modifier,
-    icon: Painter,
+    icon: Painter? = null, // optional
     message: String,
     description: String,
     primaryButton: Button
 ) {
-    val itemContentDescription = stringResource(id = R.string.woopos_items_pagination_error_content_description)
+    val itemContentDescription =
+        stringResource(id = R.string.woopos_items_pagination_error_content_description)
+
     WooPosCard(
-        modifier = modifier
-            .semantics { contentDescription = itemContentDescription },
+        modifier = modifier.semantics { contentDescription = itemContentDescription },
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
@@ -80,31 +81,37 @@ private fun WooPosPaginationErrorIndicatorContent(
                 horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
                 modifier = Modifier.weight(1f)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(112.dp)
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .size(54.dp)
-                            .align(Alignment.Center),
-                        painter = icon,
-                        contentDescription = stringResource(R.string.woopos_error_icon_content_description),
-                        tint = WooPosTheme.colors.unspecified,
-                    )
+                if (icon != null) {
+                    Box(
+                        modifier = Modifier.size(112.dp)
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(54.dp)
+                                .align(Alignment.Center),
+                            painter = icon,
+                            contentDescription = stringResource(R.string.woopos_error_icon_content_description),
+                            tint = WooPosTheme.colors.unspecified,
+                        )
+                    }
                 }
-                Column {
+
+                Column(
+                    modifier = if (icon == null) {
+                        Modifier.padding(start = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    } else {
+                        Modifier
+                    }
+                ) {
                     WooPosText(
                         text = message,
                         style = WooPosTypography.BodyLarge,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
+                        fontWeight = FontWeight.Bold
                     )
                     WooPosText(
                         text = description,
                         style = WooPosTypography.BodyMedium,
-                        modifier = Modifier.padding(top = WooPosSpacing.Small.value.toAdaptivePadding()),
-                        maxLines = 1,
+                        modifier = Modifier.padding(top = WooPosSpacing.Small.value.toAdaptivePadding())
                     )
                 }
             }
