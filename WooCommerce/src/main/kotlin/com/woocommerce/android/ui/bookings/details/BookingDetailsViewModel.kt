@@ -75,6 +75,7 @@ class BookingDetailsViewModel @Inject constructor(
     private fun updateStateWithBooking(booking: Booking) = with(bookingMapper) {
         _state.update { current ->
             current.copy(
+                orderId = booking.orderId,
                 bookingUiState = BookingUiState(
                     bookingSummary = booking.toBookingSummaryModel(),
                     bookingsAppointmentDetails = booking.toAppointmentDetailsModel(),
