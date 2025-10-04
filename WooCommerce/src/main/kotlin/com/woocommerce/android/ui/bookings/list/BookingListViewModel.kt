@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
@@ -119,15 +120,24 @@ class BookingListViewModel @Inject constructor(
                 .debounce {
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
+            val sortFlow = selectedTab.flatMapLatest { tab ->
+                sortOptionsByTab.map { it[tab] ?: BookingListSortOption.NewestToOldest }
+                    .drop(1) // Skip the initial value to avoid double fetch on init
+            }
 
-            merge(selectedTab, queryFlow)
-                .collectLatest {
-                    // Cancel any ongoing fetch or load more operations
-                    bookingsFetchJob?.cancel()
-                    bookingsLoadMoreJob?.cancel()
+            merge(selectedTab, queryFlow, sortFlow).collectLatest {
+                // Cancel any ongoing fetch or load more operations
+                bookingsFetchJob?.cancel()
+                bookingsLoadMoreJob?.cancel()
 
-                    bookingsFetchJob = fetchBookings(BookingListLoadingState.Loading)
-                }
+                bookingsFetchJob = fetchBookings(
+                    initialLoadingState = if (it is BookingListSortOption) {
+                        BookingListLoadingState.Refreshing
+                    } else {
+                        BookingListLoadingState.Loading
+                    }
+                )
+            }
         }
     }
 
@@ -176,8 +186,6 @@ class BookingListViewModel @Inject constructor(
         sortOptionsByTab.value = sortOptionsByTab.value.toMutableMap()
             .also { it[tab] = option }
         isSortSheetVisible.value = false
-        bookingsFetchJob?.cancel()
-        bookingsFetchJob = fetchBookings(BookingListLoadingState.Loading)
     }
 
     private fun onSortDismiss() {
