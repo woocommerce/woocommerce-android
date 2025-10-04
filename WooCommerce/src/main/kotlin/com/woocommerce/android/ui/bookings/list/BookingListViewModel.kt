@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
@@ -39,13 +38,7 @@ class BookingListViewModel @Inject constructor(
         key = "searchQuery"
     )
 
-    private val sortOptionsByTab = MutableStateFlow(
-        mapOf(
-            BookingListTab.Today to BookingListSortOption.NewestToOldest,
-            BookingListTab.Upcoming to BookingListSortOption.NewestToOldest,
-            BookingListTab.All to BookingListSortOption.NewestToOldest,
-        )
-    )
+    private val sortOption = savedStateHandle.getStateFlow(viewModelScope, BookingListSortOption.NewestToOldest)
 
     private val isSortSheetVisible = MutableStateFlow(false)
 
@@ -76,11 +69,10 @@ class BookingListViewModel @Inject constructor(
     val state = combine(
         contentState,
         selectedTab,
-        sortOptionsByTab,
+        sortOption,
         isSortSheetVisible,
         searchState
-    ) { contentState, selectedTab, sortOptionsByTab, sheetVisible, searchState ->
-        val sortOption = sortOptionsByTab[selectedTab] ?: BookingListSortOption.NewestToOldest
+    ) { contentState, selectedTab, sortOption, sheetVisible, searchState ->
         BookingListViewState(
             contentState = contentState,
             tabState = BookingListTabState(
@@ -120,10 +112,7 @@ class BookingListViewModel @Inject constructor(
                 .debounce {
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
-            val sortFlow = selectedTab.flatMapLatest { tab ->
-                sortOptionsByTab.map { it[tab] ?: BookingListSortOption.NewestToOldest }
-                    .drop(1) // Skip the initial value to avoid double fetch on init
-            }
+            val sortFlow = sortOption.drop(1) // Skip the initial value to avoid double fetch on init
 
             merge(selectedTab, queryFlow, sortFlow).collectLatest {
                 // Cancel any ongoing fetch or load more operations
@@ -143,11 +132,10 @@ class BookingListViewModel @Inject constructor(
 
     private fun fetchBookings(initialLoadingState: BookingListLoadingState) = launch {
         loadingState.value = initialLoadingState
-        val sortOption = sortOptionsByTab.value[selectedTab.value] ?: BookingListSortOption.NewestToOldest
         bookingListHandler.loadBookings(
             searchQuery = searchQuery.value,
             filters = prepareFilters(),
-            sortBy = sortOption
+            sortBy = sortOption.value
         ).onFailure {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
         }
@@ -182,9 +170,7 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onSortOptionSelected(option: BookingListSortOption) {
-        val tab = selectedTab.value
-        sortOptionsByTab.value = sortOptionsByTab.value.toMutableMap()
-            .also { it[tab] = option }
+        sortOption.value = option
         isSortSheetVisible.value = false
     }
 
