@@ -104,6 +104,14 @@ fun BookingListScreen(state: BookingListViewState) {
             HorizontalDivider(thickness = 0.5.dp)
 
             when {
+                state.contentState.isNotEmpty() -> {
+                    BookingList(
+                        state = state.contentState,
+                        listState = lazyListState,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
                 state.contentState.loadingState == BookingListLoadingState.Loading -> {
                     // TODO replace with shimmer
                     CircularProgressIndicator(
@@ -111,14 +119,6 @@ fun BookingListScreen(state: BookingListViewState) {
                             .padding(paddingValues)
                             .fillMaxSize()
                             .wrapContentSize()
-                    )
-                }
-
-                state.contentState.isNotEmpty() -> {
-                    BookingList(
-                        state = state.contentState,
-                        listState = lazyListState,
-                        modifier = Modifier.fillMaxSize()
                     )
                 }
 
