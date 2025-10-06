@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -27,7 +28,8 @@ import javax.inject.Inject
 class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookingListHandler: BookingListHandler,
-    private val filtersBuilder: BookingListFiltersBuilder
+    private val filtersBuilder: BookingListFiltersBuilder,
+    private val bookingMapper: BookingMapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
@@ -52,7 +54,9 @@ class BookingListViewModel @Inject constructor(
     private var bookingsLoadMoreJob: Job? = null
 
     private val contentState = combine(
-        bookingListHandler.bookingsFlow.map { bookings -> bookings.map { it.toUiModel() } },
+        bookingListHandler.bookingsFlow.map { bookings ->
+            with(bookingMapper) { bookings.map { it.toListItem() } }
+        },
         loadingState
     ) { bookings, loadingState ->
         BookingListContentState(

@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.bookings.list
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.Booking
+import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -41,6 +43,8 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
     private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
     private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
+    private val currencyFormatter = mock<CurrencyFormatter>()
+    private val bookingMapper = BookingMapper(currencyFormatter)
 
     private lateinit var viewModel: BookingListViewModel
 
@@ -53,7 +57,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         viewModel = BookingListViewModel(
             savedStateHandle = SavedStateHandle(),
             bookingListHandler = bookingListHandler,
-            filtersBuilder = filtersBuilder
+            filtersBuilder = filtersBuilder,
+            bookingMapper = bookingMapper,
         )
     }
 
