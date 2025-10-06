@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -35,6 +37,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val syncStatusChecker: WooPosFullSyncStatusChecker,
 ) : ViewModel() {
     private var preservedStateBeforeOpeningVariations: WooPosItemsToolbarViewState? = null
     private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(initialState())
@@ -45,6 +48,9 @@ class WooPosItemsViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
+    private val _catalogSyncBannerState = MutableStateFlow<CatalogSyncBannerState>(CatalogSyncBannerState.Hidden)
+    val catalogSyncBannerState: StateFlow<CatalogSyncBannerState> = _catalogSyncBannerState
+
     init {
         listenUpEvents()
         searchHelper.initialize(
@@ -54,6 +60,18 @@ class WooPosItemsViewModel @Inject constructor(
 
         viewModelScope.launch {
             preferencesRepository.setWasOpenedOnce(true)
+        }
+
+        checkSyncStatusAndUpdateBanner()
+    }
+
+    private fun checkSyncStatusAndUpdateBanner() {
+        viewModelScope.launch {
+            val requirement = syncStatusChecker.checkSyncRequirement()
+            _catalogSyncBannerState.value = when (requirement) {
+                is WooPosFullSyncRequirement.Overdue -> CatalogSyncBannerState.OverdueWarning
+                else -> CatalogSyncBannerState.Hidden
+            }
         }
     }
 
@@ -240,5 +258,10 @@ class WooPosItemsViewModel @Inject constructor(
 
         @Parcelize
         data class Coupon(override val id: Long, val couponCode: String) : ItemClickedData(id), Parcelable
+    }
+
+    sealed class CatalogSyncBannerState {
+        data object Hidden : CatalogSyncBannerState()
+        data object OverdueWarning : CatalogSyncBannerState()
     }
 }

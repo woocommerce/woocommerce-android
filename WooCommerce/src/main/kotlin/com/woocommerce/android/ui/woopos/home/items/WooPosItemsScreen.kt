@@ -65,6 +65,7 @@ fun WooPosItemsScreen(
     WooPosItemsScreen(
         modifier = modifier,
         itemsStateFlow = productsViewModel.viewState,
+        catalogSyncBannerStateFlow = productsViewModel.catalogSyncBannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
         catalogSyncState = catalogSyncState,
@@ -78,6 +79,7 @@ fun WooPosItemsScreen(
 private fun WooPosItemsScreen(
     modifier: Modifier = Modifier,
     itemsStateFlow: StateFlow<WooPosItemsToolbarViewState>,
+    catalogSyncBannerStateFlow: StateFlow<WooPosItemsViewModel.CatalogSyncBannerState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     catalogSyncState: CatalogSyncState,
@@ -85,10 +87,12 @@ private fun WooPosItemsScreen(
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
 ) {
     val state = itemsStateFlow.collectAsState()
+    val bannerState = catalogSyncBannerStateFlow.collectAsState()
 
     MainItemsList(
         modifier = modifier,
         state = state,
+        bannerState = bannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
         catalogSyncState = catalogSyncState,
@@ -120,6 +124,7 @@ private fun WooPosItemsScreen(
 private fun MainItemsList(
     modifier: Modifier,
     state: State<WooPosItemsToolbarViewState>,
+    bannerState: State<WooPosItemsViewModel.CatalogSyncBannerState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     catalogSyncState: CatalogSyncState,
@@ -147,6 +152,14 @@ private fun MainItemsList(
                 onSearchEvent = onSearchEvent,
                 onBackClicked = onBackClicked,
                 onAddCouponEvent = onAddCouponEvent,
+            )
+
+            WooPosRefreshCatalogBanner(
+                bannerState = bannerState.value,
+                modifier = Modifier.padding(
+                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    vertical = WooPosSpacing.Small.value.toAdaptivePadding(),
+                )
             )
 
             val currentState = state.value
@@ -308,10 +321,12 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
             tabs = tabs()
         )
     )
+    val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncBannerState.OverdueWarning)
     WooPosTheme {
         WooPosItemsScreen(
             modifier = modifier,
             itemsStateFlow = productState,
+            catalogSyncBannerStateFlow = bannerState,
             productsViewState = rememberLazyListState(),
             couponsListState = rememberLazyListState(),
             catalogSyncState = CatalogSyncState.Idle,
@@ -336,10 +351,12 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
             tabs = tabs()
         )
     )
+    val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncBannerState.OverdueWarning)
     WooPosTheme {
         WooPosItemsScreen(
             modifier = modifier,
             itemsStateFlow = productState,
+            catalogSyncBannerStateFlow = bannerState,
             productsViewState = rememberLazyListState(),
             couponsListState = rememberLazyListState(),
             catalogSyncState = CatalogSyncState.Idle,
