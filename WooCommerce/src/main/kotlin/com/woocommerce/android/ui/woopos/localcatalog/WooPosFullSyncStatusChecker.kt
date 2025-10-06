@@ -18,6 +18,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val localCatalogStore: WooPosLocalCatalogStore,
     private val wooPosLogWrapper: WooPosLogWrapper
 ) {
+    @Suppress("ReturnCount")
     suspend fun checkSyncRequirement(): WooPosFullSyncRequirement {
         if (!wooPosLocalCatalogM1Enabled()) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog feature not enabled")
