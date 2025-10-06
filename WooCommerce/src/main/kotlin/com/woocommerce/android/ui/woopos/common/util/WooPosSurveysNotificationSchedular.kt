@@ -22,11 +22,7 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
     }
 
     suspend fun schedularPotentialUserSurveyNotification() {
-        if (FeatureFlag.WOO_POS_SURVEYS.isEnabled() &&
-            !appPrefs.isWooPosSurveyNotificationPotentialUserShown &&
-            isAllowedCountry() &&
-            !wooPosPreferencesRepository.wasOpenedOnce.first()
-        ) {
+        if (!appPrefs.isWooPosSurveyNotificationPotentialUserShown && areNotificationsAllowed()) {
             localNotificationScheduler.scheduleNotification(
                 LocalNotification.WooPosSurveyPotentialUserNotification(
                     siteId = selectedSite.siteId
@@ -34,6 +30,11 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
             )
         }
     }
+
+    private suspend fun areNotificationsAllowed(): Boolean =
+        isAllowedCountry() &&
+            !wooPosPreferencesRepository.wasOpenedOnce.first() &&
+            FeatureFlag.WOO_POS_SURVEYS.isEnabled()
 
     private suspend fun isAllowedCountry(): Boolean {
         val countryCode = wooCommerceStore.getSiteSettingsAsync(selectedSite)?.countryCode

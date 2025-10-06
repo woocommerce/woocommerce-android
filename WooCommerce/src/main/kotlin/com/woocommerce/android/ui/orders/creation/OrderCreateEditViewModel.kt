@@ -88,7 +88,6 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
-import com.woocommerce.android.model.Product as ModelProduct
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
@@ -185,6 +184,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
