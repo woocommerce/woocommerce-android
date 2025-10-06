@@ -7,8 +7,9 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatus
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInitialCatalogFullSync
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
@@ -17,6 +18,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -40,8 +42,10 @@ class WooPosHomeViewModelTest {
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val soundHelper: WooPosSoundHelper = mock()
-    private val performInitialFullSync: WooPosPerformInitialCatalogFullSync = mock()
+    private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
+    private val performInitialFullSync: WooPosPerformInstantCatalogFullSync = mock()
     private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync = mock()
+    private val syncScheduler: com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler = mock()
 
     @Test
     fun `when order created, then pass event to cart`() =
@@ -347,15 +351,17 @@ class WooPosHomeViewModelTest {
     }
 
     private fun createViewModel(): WooPosHomeViewModel {
-        whenever(performInitialFullSync.invoke()).thenReturn(flowOf(WooPosFullSyncStatus.NotRequired))
+        whenever(runBlocking { syncStatusChecker.checkSyncRequirement() }).thenReturn(WooPosFullSyncRequirement.NotRequired)
 
         return WooPosHomeViewModel(
             childrenToParentEventReceiver,
             parentToChildrenEventSender,
             analyticsTracker,
             soundHelper,
+            syncStatusChecker,
             performInitialFullSync,
             incrementalSync,
+            syncScheduler,
             SavedStateHandle()
         )
     }
