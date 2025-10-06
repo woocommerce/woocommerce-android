@@ -218,6 +218,57 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when onSortClick is called, then bottom sheet is shown`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.controlsState.onSortClick()
+
+        // THEN
+        val withSheet = viewModel.state.getOrAwaitValue()
+        assertThat(withSheet.sortBottomSheetState).isNotNull()
+    }
+
+    @Test
+    fun `when selecting sort in one tab, then other tabs keep their own selection`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // Open sheet on Today and select OldestToNewest
+        val s1 = viewModel.state.getOrAwaitValue()
+        s1.controlsState.onSortClick()
+        val sheet1 = viewModel.state.getOrAwaitValue().sortBottomSheetState!!
+        sheet1.onSelect(BookingListSortOption.OldestToNewest)
+
+        // Sheet should be hidden after selection
+        val afterSelectToday = viewModel.state.getOrAwaitValue()
+        assertThat(afterSelectToday.sortBottomSheetState).isNull()
+
+        // Re-open and ensure Today remembers OldestToNewest
+        afterSelectToday.controlsState.onSortClick()
+        val sheetTodayAgain = viewModel.state.getOrAwaitValue().sortBottomSheetState!!
+        assertThat(sheetTodayAgain.selectedOption).isEqualTo(BookingListSortOption.OldestToNewest)
+        sheetTodayAgain.onDismiss()
+
+        // Switch to Upcoming and verify default is NewestToOldest
+        val stateAfterDismiss = viewModel.state.getOrAwaitValue()
+        stateAfterDismiss.tabState.onTabChanged(BookingListTab.Upcoming)
+        val upcomingState = viewModel.state.getOrAwaitValue()
+        upcomingState.controlsState.onSortClick()
+        val sheetUpcoming = viewModel.state.getOrAwaitValue().sortBottomSheetState!!
+        assertThat(sheetUpcoming.selectedOption).isEqualTo(BookingListSortOption.NewestToOldest)
+
+        // Switch back to Today and ensure it still holds its own selection (OldestToNewest)
+        upcomingState.tabState.onTabChanged(BookingListTab.Today)
+        val backToToday = viewModel.state.getOrAwaitValue()
+        backToToday.controlsState.onSortClick()
+        val sheetBackToToday = viewModel.state.getOrAwaitValue().sortBottomSheetState!!
+        assertThat(sheetBackToToday.selectedOption).isEqualTo(BookingListSortOption.OldestToNewest)
+    }
+
+    @Test
     fun `when search query is changed, then state is updated`() = testBlocking {
         // GIVEN
         setup()
