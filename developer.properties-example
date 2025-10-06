@@ -9,4 +9,4 @@ use_remote_build_cache_locally=false
 wc.in_app_update_type=0
 wc.jitm_testing_json_file_name=
 wc.force_password_login=false
-enable_leak_canary=true
+enable_leak_canary=false
