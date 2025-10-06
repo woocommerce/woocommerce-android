@@ -45,7 +45,6 @@ class WooPosHomeViewModelTest {
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
     private val performInitialFullSync: WooPosPerformInstantCatalogFullSync = mock()
     private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync = mock()
-    private val syncScheduler: com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler = mock()
 
     @Test
     fun `when order created, then pass event to cart`() =
@@ -351,7 +350,9 @@ class WooPosHomeViewModelTest {
     }
 
     private fun createViewModel(): WooPosHomeViewModel {
-        whenever(runBlocking { syncStatusChecker.checkSyncRequirement() }).thenReturn(WooPosFullSyncRequirement.NotRequired)
+        whenever(runBlocking { syncStatusChecker.checkSyncRequirement() }).thenReturn(
+            WooPosFullSyncRequirement.NotRequired
+        )
 
         return WooPosHomeViewModel(
             childrenToParentEventReceiver,
@@ -361,7 +362,6 @@ class WooPosHomeViewModelTest {
             syncStatusChecker,
             performInitialFullSync,
             incrementalSync,
-            syncScheduler,
             SavedStateHandle()
         )
     }
