@@ -55,7 +55,7 @@ class BookingListViewModel @Inject constructor(
 
     private val contentState = combine(
         bookingListHandler.bookingsFlow.map { bookings ->
-            with(bookingMapper) { bookings.map { it.toUiModel() } }
+            with(bookingMapper) { bookings.map { it.toListItem() } }
         },
         loadingState
     ) { bookings, loadingState ->

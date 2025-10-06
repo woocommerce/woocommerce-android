@@ -37,7 +37,7 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    fun Booking.toUiModel(): BookingListItem {
+    fun Booking.toListItem(): BookingListItem {
         return BookingListItem(
             id = id.value,
             summary = toBookingSummaryModel()
