@@ -3210,6 +3210,10 @@
     <string name="local_notification_blaze_no_campaign_reminder_description">Promote your products with Blaze Ads and increase your sales now.</string>
     <string name="local_notification_blaze_abandoned_campaign_reminder_title">Thinking about boosting your sales?</string>
     <string name="local_notification_blaze_abandoned_campaign_reminder_description">Get your products seen by millions with Blaze and boost your sales</string>
+    <string name="local_notification_woo_pos_survey_potential_user_title">Thinking about in-person sales?</string>
+    <string name="local_notification_woo_pos_survey_potential_user_description">Help us build tools you\'d actually use. 2-minute survey to build tools you\'ll love.</string>
+    <string name="local_notification_woo_pos_survey_current_user_title">How\'s POS working for you?</string>
+    <string name="local_notification_woo_pos_survey_current_user_description">Share your experience in 2 minutes and help us improve.</string>
 
     <!--
     First product published congratulatory feature

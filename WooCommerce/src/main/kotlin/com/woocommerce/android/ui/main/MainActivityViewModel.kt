@@ -19,6 +19,8 @@ import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER
 import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER
+import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS_SURVEY_CURRENT_USER_REMINDER
+import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -286,6 +288,9 @@ class MainActivityViewModel @Inject constructor(
                 when (it) {
                     BLAZE_NO_CAMPAIGN_REMINDER,
                     BLAZE_ABANDONED_CAMPAIGN_REMINDER -> triggerEvent(LaunchBlazeCampaignCreation)
+
+                    WOO_POS_SURVEY_POTENTIAL_USER_REMINDER,
+                    WOO_POS_SURVEY_CURRENT_USER_REMINDER -> error("POS Survey notifications are not implemented yet")
                 }
             }
         }

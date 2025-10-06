@@ -39,6 +39,10 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var isSiteWPComSuspended by AppPrefs::isSiteWPComSuspended
 
+    var isWooPosSurveyNotificationPotentialUserShown by AppPrefs::isWooPosSurveyNotificationPotentialUserShown
+
+    var isWooPosSurveyNotificationCurrentUserShown by AppPrefs::isWooPosSurveyNotificationCurrentUserShown
+
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated
 
