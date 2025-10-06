@@ -5,9 +5,14 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.woocommerce.android.R
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PhoneContactOption
@@ -22,7 +27,12 @@ fun ContactDropdownMenu(
     onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current
-    val contactOptions = remember { context.getAvailablePhoneContactOptions() }
+    var contactOptions by remember { mutableStateOf(emptyList<PhoneContactOption>()) }
+
+    // Update the available contact options when the composable enters the RESUMED state
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        contactOptions = context.getAvailablePhoneContactOptions()
+    }
 
     DropdownMenu(
         expanded = expanded,
