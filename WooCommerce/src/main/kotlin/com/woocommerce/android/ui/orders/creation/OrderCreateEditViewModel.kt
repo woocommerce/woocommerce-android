@@ -210,6 +210,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val totalsHelper: OrderCreateEditTotalsHelper,
     private val feedbackRepository: FeedbackRepository,
     private val fetchProductByIdentifier: FetchProductByIdentifier,
+    private val scheduleWooPosSurveyNotification: ScheduleWooPosSurveyNotification,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -1381,6 +1382,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
+                    scheduleWooPosSurveyNotification()
                     onSuccess(it)
                 },
                 onFailure = {
