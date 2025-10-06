@@ -55,6 +55,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonModifier
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
@@ -620,9 +621,7 @@ private fun WooPosItemsEmptyListInternal(
                 WooPosButton(
                     text = actionLabel,
                     onClick = onActionClicked,
-                    modifier = Modifier
-                        .fillMaxWidth(0.3f)
-                        .height(80.dp)
+                    modifier = WooPosButtonModifier
                 )
             }
         }
