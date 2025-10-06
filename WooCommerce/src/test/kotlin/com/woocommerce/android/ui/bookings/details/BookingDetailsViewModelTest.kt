@@ -11,12 +11,13 @@ import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -28,44 +29,42 @@ import java.time.Instant
 class BookingDetailsViewModelTest : BaseUnitTest() {
 
     private val currencyFormatter = mock<CurrencyFormatter>()
+    private val resourceProvider = mock<ResourceProvider>()
     private val bookingMapper = BookingMapper(currencyFormatter)
 
-    private val bookingFlow = MutableSharedFlow<Booking>()
+    private val initialBooking = getSampleBooking(1)
+    private val bookingFlow = MutableStateFlow(initialBooking)
 
     @Before
     fun setup() {
         whenever(currencyFormatter.formatCurrency(any<String>(), any<String>(), any())).thenReturn("$0.00")
+        whenever(
+            resourceProvider.getString(
+                eq(R.string.booking_details_title),
+                any()
+            )
+        ).thenReturn("Booking #${initialBooking.id.value}")
     }
 
     @Test
-    fun `given bookingId in SavedStateHandle, when ViewModel created, then toolbar title formatted`() {
+    fun `given booking, when emitted after ViewModel created, then toolbar title uses booking id`() = testBlocking {
         // Given
-        val bookingId = 123L
-        val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
-        val resourceProvider = mock<ResourceProvider> {
-            on { getString(R.string.booking_details_title, bookingId) } doReturn "Booking #$bookingId"
-        }
+        val savedState = SavedStateHandle(mapOf("bookingId" to 123L))
+        val expectedBookingId = 1L
 
         // When
-        val viewModel = createViewModel(savedState, resourceProvider)
+        val viewModel = createViewModel(savedState)
 
         // Then
-        val state = viewModel.state.value
-        assertThat(state?.toolbarTitle).isEqualTo("Booking #$bookingId")
+        val state = viewModel.state.getOrAwaitValue()
+        assertThat(state.toolbarTitle).isEqualTo("Booking #$expectedBookingId")
     }
 
     @Test
-    fun `when onAttendanceStatusSelected called, then state updates with new status`() {
+    fun `when onAttendanceStatusSelected called, then state updates with new status`() = testBlocking {
         // Given
-        val bookingId = 456L
-        val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
-        val resourceProvider = mock<ResourceProvider> {
-            on { getString(R.string.booking_details_title, bookingId) } doReturn "Booking #$bookingId"
-        }
-        val viewModel = createViewModel(savedState, resourceProvider)
-
-        val booking = getSampleBooking(1)
-        testBlocking { bookingFlow.emit(booking) }
+        val savedState = SavedStateHandle(mapOf("bookingId" to 456L))
+        val viewModel = createViewModel(savedState)
 
         // When
         val state = viewModel.state.getOrAwaitValue()
@@ -77,14 +76,10 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given booking emitted, when observed by ViewModel, then state contains mapped objects`() = testBlocking {
+    fun `given booking emitted, when observed by ViewModel, then state is updated`() = testBlocking {
         // Given
-        val bookingId = 789L
-        val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
-        val resourceProvider = mock<ResourceProvider> {
-            on { getString(R.string.booking_details_title, bookingId) } doReturn "Booking #$bookingId"
-        }
-        val viewModel = createViewModel(savedState, resourceProvider)
+        val savedState = SavedStateHandle(mapOf("bookingId" to 789L))
+        val viewModel = createViewModel(savedState)
 
         // When
         val booking = getSampleBooking(2)
@@ -93,11 +88,11 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         // Then
         val state = viewModel.state.getOrAwaitValue()
         assertThat(state.bookingUiState).isNotNull
+        assertThat(state.orderId).isEqualTo(2L)
     }
 
     private fun createViewModel(
         savedState: SavedStateHandle,
-        resourceProvider: ResourceProvider
     ): BookingDetailsViewModel {
         val bookingsRepository = mock<BookingsRepository> {
             on { observeBooking(any()) } doReturn bookingFlow
@@ -128,7 +123,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             dateCreated = Instant.now(),
             dateModified = Instant.now(),
             googleCalendarEventId = "",
-            orderId = 1L,
+            orderId = id.toLong(),
             orderItemId = 1L,
             parentId = 0L,
             personCounts = listOf(1L),
