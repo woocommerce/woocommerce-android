@@ -41,7 +41,6 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -77,31 +76,45 @@ fun WooPosOrdersScreen(
     val onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) }
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 
-    if (state is WooPosOrdersState.Error) {
-        OrdersError(
-            onRetryClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
-            onBackClicked = onBackClicked
-        )
-        return
-    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (val currentState = state) {
+            is WooPosOrdersState.Content -> OrdersContent(currentState, viewModel)
+            is WooPosOrdersState.Empty -> OrdersEmpty(
+                onActionClicked = { viewModel::onOrdersEmptyActionClicked }
+            )
 
-    if (state is WooPosOrdersState.Empty) {
-        OrdersEmpty(
-            onBackClicked = onBackClicked,
-            onActionClicked = { viewModel::onOrdersEmptyActionClicked }
-        )
-        return
-    }
+            is WooPosOrdersState.Error -> OrdersError(
+                onRetryClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked
+            )
 
+            is WooPosOrdersState.Loading -> {
+                // full screen loading state
+            }
+        }
+
+        if (state.searchInputState is WooPosSearchInputState.Closed) {
+            WooPosToolbar(
+                titleText = stringResource(R.string.woopos_orders_title),
+                onBackClicked = onBackClicked,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun OrdersContent(
+    state: WooPosOrdersState.Content,
+    viewModel: WooPosOrdersViewModel
+) {
     Row(modifier = Modifier.fillMaxSize()) {
-        OrdersList(
+        OrdersListPane(
             state = state,
-            onBackClicked = onBackClicked,
             onRefresh = viewModel::onRefresh,
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = viewModel::onOrderSelected,
             onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
-            viewModel::onPaginationErrorTryAgain,
+            onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
             onSearchEvent = viewModel::onSearchEvent,
             modifier = Modifier
                 .weight(0.3f)
@@ -110,20 +123,19 @@ fun WooPosOrdersScreen(
         )
 
         OrderDetails(
-            state = state,
             modifier = Modifier
                 .weight(0.7f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .background(MaterialTheme.colorScheme.surfaceContainerLow),
+            order = state.items.find { it.id == state.selectedOrderId },
         )
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun OrdersList(
-    state: WooPosOrdersState,
-    onBackClicked: () -> Unit,
+private fun OrdersListPane(
+    state: WooPosOrdersState.Content,
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
@@ -133,40 +145,17 @@ private fun OrdersList(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        ConstraintLayout(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
         ) {
-            val (toolbar, searchInput) = createRefs()
-
-            if (state.searchInputState is WooPosSearchInputState.Closed) {
-                WooPosToolbar(
-                    titleText = stringResource(R.string.woopos_orders_title),
-                    onBackClicked = onBackClicked,
-                    modifier = Modifier.constrainAs(toolbar) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
-                )
-            }
             WooPosSearchInput(
                 state = state.searchInputState,
                 onEvent = onSearchEvent,
                 modifier = Modifier
                     .statusBarsPadding()
-                    .constrainAs(searchInput) {
-                        if (state.searchInputState is WooPosSearchInputState.Open) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            width = androidx.constraintlayout.compose.Dimension.fillToConstraints
-                        } else {
-                            end.linkTo(parent.end)
-                        }
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
+                    .align(Alignment.CenterEnd)
             )
         }
 
@@ -185,34 +174,13 @@ private fun OrdersList(
                     enabled = state.pullToRefreshState != WooPosPullToRefreshState.Disabled
                 )
         ) {
-            when (state) {
-                is WooPosOrdersState.Loading -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        WooPosText(
-                            text = stringResource(R.string.loading),
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(WooPosSpacing.Large.value)
-                        )
-                    }
-                }
-
-                is WooPosOrdersState.Content -> {
-                    WooPosOrdersListPaneScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        state = state,
-                        onOrderSelected = onOrderSelected,
-                        onEndOfOrdersListReached = onEndOfOrdersListReached,
-                        onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                    )
-                }
-
-                is WooPosOrdersState.Empty -> { /* handled full-screen in parent */ }
-                is WooPosOrdersState.Error -> { /* handled full-screen in parent */ }
-            }
+            OrdersList(
+                modifier = Modifier.fillMaxSize(),
+                state = state,
+                onOrderSelected = onOrderSelected,
+                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+            )
 
             PullRefreshIndicator(
                 refreshing = isRefreshing,
@@ -228,23 +196,7 @@ private fun OrdersList(
 }
 
 @Composable
-private fun OrderDetails(
-    state: WooPosOrdersState,
-    modifier: Modifier = Modifier
-) {
-    val selectedItem: OrderItemViewState? = when (state) {
-        is WooPosOrdersState.Content -> state.items.firstOrNull { it.id == state.selectedOrderId }
-        else -> null
-    }
-
-    WooPosOrdersDetailPaneScreen(
-        selected = selectedItem,
-        modifier = modifier.fillMaxSize()
-    )
-}
-
-@Composable
-fun WooPosOrdersListPaneScreen(
+private fun OrdersList(
     modifier: Modifier = Modifier,
     state: WooPosOrdersState.Content,
     onOrderSelected: (Long) -> Unit,
@@ -329,14 +281,14 @@ fun WooPosOrdersListPaneScreen(
 }
 
 @Composable
-fun WooPosOrdersDetailPaneScreen(
-    selected: OrderItemViewState?,
-    modifier: Modifier = Modifier
+private fun OrderDetails(
+    modifier: Modifier = Modifier,
+    order: OrderItemViewState?,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         WooPosToolbar(
             modifier = Modifier.fillMaxWidth(),
-            titleText = selected?.title ?: "--",
+            titleText = order?.title ?: "--",
             titleFontWeight = FontWeight.Bold
         )
         Column(
@@ -393,61 +345,31 @@ private fun OrdersPaginationLoadingRow() {
 
 @Composable
 fun OrdersEmpty(
-    onBackClicked: () -> Unit,
     onActionClicked: () -> Unit
 ) {
-    OrdersScaffoldWithToolbar(
-        onBackClicked = onBackClicked
-    ) {
-        WooPosItemsEmptyList(
-            modifier = Modifier.fillMaxSize(),
-            icon = painterResource(id = R.drawable.ic_woo_pos_orders_empty),
-            title = stringResource(id = R.string.woopos_orders_empty_list_title),
-            message = stringResource(id = R.string.woopos_orders_empty_list_message),
-            contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
-            actionLabel = stringResource(id = R.string.woopos_orders_empty_action_label),
-            onActionClicked = onActionClicked
-        )
-    }
+    WooPosItemsEmptyList(
+        modifier = Modifier.fillMaxSize(),
+        icon = painterResource(id = R.drawable.ic_woo_pos_orders_empty),
+        title = stringResource(id = R.string.woopos_orders_empty_list_title),
+        message = stringResource(id = R.string.woopos_orders_empty_list_message),
+        contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
+        actionLabel = stringResource(id = R.string.woopos_orders_empty_action_label),
+        onActionClicked = onActionClicked
+    )
 }
 
 @Composable
 fun OrdersError(
-    onBackClicked: () -> Unit,
     onRetryClicked: () -> Unit
 ) {
-    OrdersScaffoldWithToolbar(
-        onBackClicked = onBackClicked
-    ) {
-        WooPosErrorScreen(
-            message = stringResource(id = R.string.woopos_orders_loading_error_title),
-            reason = stringResource(id = R.string.woopos_orders_loading_error_message),
-            primaryButton = Button(
-                text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
-                click = onRetryClicked
-            )
+    WooPosErrorScreen(
+        message = stringResource(id = R.string.woopos_orders_loading_error_title),
+        reason = stringResource(id = R.string.woopos_orders_loading_error_message),
+        primaryButton = Button(
+            text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
+            click = onRetryClicked
         )
-    }
-}
-
-@Composable
-private fun OrdersScaffoldWithToolbar(
-    onBackClicked: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        WooPosToolbar(
-            titleText = stringResource(R.string.woopos_orders_title),
-            onBackClicked = onBackClicked,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            content()
-        }
-    }
+    )
 }
 
 @Composable
