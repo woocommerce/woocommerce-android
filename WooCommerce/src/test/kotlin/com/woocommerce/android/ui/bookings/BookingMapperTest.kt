@@ -73,7 +73,7 @@ class BookingMapperTest : BaseUnitTest() {
 
         whenever(currencyFormatter.formatCurrency(eq("55.00"), eq("USD"), eq(true))).thenReturn("$55.00")
 
-        val expectedDate = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy")
+        val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
             .withZone(ZoneOffset.UTC)
             .format(start)
         val timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC)

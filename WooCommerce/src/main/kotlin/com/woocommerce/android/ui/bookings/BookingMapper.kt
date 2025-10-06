@@ -21,7 +21,7 @@ class BookingMapper @Inject constructor(
         FormatStyle.SHORT
     ).withZone(ZoneOffset.UTC)
 
-    private val detailsDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy")
+    private val detailsDateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
         .withZone(ZoneOffset.UTC)
     private val timeRangeFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
         .withZone(ZoneOffset.UTC)
