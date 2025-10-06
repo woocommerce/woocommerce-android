@@ -39,8 +39,8 @@ class WooPosPerformFullCatalogSyncUseCaseTest {
         val result = useCase().first()
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosFullSyncStatus.Failed::class.java)
-        assertThat((result as WooPosFullSyncStatus.Failed).error).isEqualTo("No site selected")
+        assertThat(result).isInstanceOf(WooPosFullSyncState.Failed::class.java)
+        assertThat((result as WooPosFullSyncState.Failed).error).isEqualTo("No site selected")
     }
 
     @Test
@@ -58,15 +58,15 @@ class WooPosPerformFullCatalogSyncUseCaseTest {
         whenever(syncRepository.syncLocalCatalogFull(site)).thenReturn(syncResult)
 
         // WHEN
-        val results = mutableListOf<WooPosFullSyncStatus>()
+        val results = mutableListOf<WooPosFullSyncState>()
         useCase().collect { status ->
             results.add(status)
         }
 
         // THEN
         assertThat(results).hasSize(2)
-        assertThat(results[0]).isEqualTo(WooPosFullSyncStatus.InProgress)
-        assertThat(results[1]).isEqualTo(WooPosFullSyncStatus.Success)
+        assertThat(results[0]).isEqualTo(WooPosFullSyncState.InProgress)
+        assertThat(results[1]).isEqualTo(WooPosFullSyncState.Success)
         verify(syncTimestampManager).storeFullSyncLastCompletedTimestamp(any())
     }
 
@@ -81,15 +81,15 @@ class WooPosPerformFullCatalogSyncUseCaseTest {
         whenever(syncRepository.syncLocalCatalogFull(site)).thenReturn(syncResult)
 
         // WHEN
-        val results = mutableListOf<WooPosFullSyncStatus>()
+        val results = mutableListOf<WooPosFullSyncState>()
         useCase().collect { status ->
             results.add(status)
         }
 
         // THEN
         assertThat(results).hasSize(2)
-        assertThat(results[0]).isEqualTo(WooPosFullSyncStatus.InProgress)
-        assertThat(results[1]).isInstanceOf(WooPosFullSyncStatus.Failed::class.java)
-        assertThat((results[1] as WooPosFullSyncStatus.Failed).error).isEqualTo("Network error")
+        assertThat(results[0]).isEqualTo(WooPosFullSyncState.InProgress)
+        assertThat(results[1]).isInstanceOf(WooPosFullSyncState.Failed::class.java)
+        assertThat((results[1] as WooPosFullSyncState.Failed).error).isEqualTo("Network error")
     }
 }

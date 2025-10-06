@@ -15,7 +15,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.DialogState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatus
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncState
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
@@ -81,17 +81,17 @@ class WooPosHomeViewModel @Inject constructor(
                 is WooPosFullSyncRequirement.BlockingRequired -> {
                     performInitialFullSync().collect { syncStatus ->
                         when (syncStatus) {
-                            is WooPosFullSyncStatus.InProgress -> {
+                            is WooPosFullSyncState.InProgress -> {
                                 _state.value = _state.value.copy(
                                     catalogSyncState = WooPosHomeState.CatalogSyncState.Syncing
                                 )
                             }
-                            is WooPosFullSyncStatus.Success -> {
+                            is WooPosFullSyncState.Success -> {
                                 _state.value = _state.value.copy(
                                     catalogSyncState = WooPosHomeState.CatalogSyncState.Success
                                 )
                             }
-                            is WooPosFullSyncStatus.Failed -> {
+                            is WooPosFullSyncState.Failed -> {
                                 _state.value = _state.value.copy(
                                     catalogSyncState = WooPosHomeState.CatalogSyncState.Failed(syncStatus.error)
                                 )
