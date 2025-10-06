@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.orders
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -83,15 +80,11 @@ object OrderCustomerHelper {
             )
         )
 
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("smsto:$phone")
-        try {
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
+        ActivityUtils.sendSms(context, phone) { error ->
             AnalyticsTracker.track(
                 AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                e.javaClass.simpleName,
+                error.javaClass.simpleName,
                 "No SMS app was found"
             )
 

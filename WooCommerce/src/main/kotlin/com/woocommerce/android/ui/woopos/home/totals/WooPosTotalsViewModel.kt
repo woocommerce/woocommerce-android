@@ -32,6 +32,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentFailed
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentInProgress
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
@@ -62,6 +64,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val uiStringParser: UiStringParser,
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
     private val wooPosLogWrapper: WooPosLogWrapper,
+    private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -306,6 +309,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             cancelPaymentAction()
                         }
                         showSuccessfulPaymentState(event.paymentMethod)
+                        performIncrementalSyncUseCase.execute(WooPosIncrementalSyncReason.AFTER_SUCCESSFUL_PAYMENT)
                     }
 
                     is ParentToChildrenEvent.CouponsRemoved -> {

@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent.OnBackClicked
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -154,6 +155,7 @@ class WooPosTotalsViewModelTest {
 
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
@@ -1709,5 +1711,6 @@ class WooPosTotalsViewModelTest {
             analyticsData = WooPosAnalyticsTrackingDataKeeper()
         ),
         wooPosLogWrapper = wooPosLogWrapper,
+        performIncrementalSyncUseCase = performIncrementalSyncUseCase,
     )
 }

@@ -2,36 +2,42 @@ package com.woocommerce.android.ui.bookings.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.FileCopy
-import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ActivityUtils
 
 @Composable
 fun BookingCustomerDetails(
     model: BookingCustomerDetailsModel,
-    onEmailClick: () -> Unit,
-    onPhoneClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var phoneMenuExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
     Column(modifier = modifier) {
         BookingSectionHeader(R.string.booking_customer_details_header)
         Column(
@@ -44,23 +50,32 @@ fun BookingCustomerDetails(
                 value = model.email,
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.FileCopy,
+                        painter = painterResource(R.drawable.ic_email),
                         contentDescription = stringResource(id = R.string.booking_customer_label_email),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 },
-                modifier = Modifier.clickable { onEmailClick() }
+                modifier = Modifier.clickable {
+                    ActivityUtils.sendEmail(context, model.email)
+                }
             )
             CustomerDetailsRow(
                 value = model.phone,
                 trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.MoreHoriz,
-                        contentDescription = stringResource(id = R.string.booking_customer_label_phone),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                    Box {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_menu_more_vert),
+                            contentDescription = stringResource(id = R.string.booking_customer_label_phone),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        ContactDropdownMenu(
+                            expanded = phoneMenuExpanded,
+                            phone = model.phone,
+                            onDismissRequest = { phoneMenuExpanded = false }
+                        )
+                    }
                 },
-                modifier = Modifier.clickable { onPhoneClick() }
+                modifier = Modifier.clickable { phoneMenuExpanded = true }
             )
             Column(
                 modifier = Modifier
@@ -145,8 +160,6 @@ private fun BookingCustomerDetailsPreview() {
                     "AL 36109"
                 )
             ),
-            onEmailClick = {},
-            onPhoneClick = {},
             modifier = Modifier.fillMaxWidth()
         )
     }

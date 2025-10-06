@@ -90,8 +90,6 @@ fun BookingDetailsScreen(
                     )
                     BookingCustomerDetails(
                         model = viewState.bookingUiState.bookingCustomerDetails,
-                        onEmailClick = {},
-                        onPhoneClick = {},
                         modifier = Modifier.fillMaxWidth()
                     )
                     BookingAttendanceSection(

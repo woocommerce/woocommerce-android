@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.categories
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -16,7 +17,6 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +29,7 @@ class ParentCategoryListFragment :
     OnProductCategoryClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: AddProductCategoryViewModel by fixedHiltNavGraphViewModels(
+    private val viewModel: AddProductCategoryViewModel by hiltNavGraphViewModels(
         navGraphId = R.id.nav_graph_add_product_category
     )
 

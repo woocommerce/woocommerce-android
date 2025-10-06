@@ -3,17 +3,23 @@ package com.woocommerce.android.ui.bookings.list
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
@@ -27,6 +33,22 @@ class BookingListViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
+    private val searchQuery = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = String::class.java,
+        key = "searchQuery"
+    )
+
+    private val sortOptionsByTab = MutableStateFlow(
+        mapOf(
+            BookingListTab.Today to BookingListSortOption.NewestToOldest,
+            BookingListTab.Upcoming to BookingListSortOption.NewestToOldest,
+            BookingListTab.All to BookingListSortOption.NewestToOldest,
+        )
+    )
+
+    private val isSortSheetVisible = MutableStateFlow(false)
 
     private var bookingsFetchJob: Job? = null
     private var bookingsLoadMoreJob: Job? = null
@@ -45,40 +67,78 @@ class BookingListViewModel @Inject constructor(
             onBookingClick = ::onBookingClick
         )
     }
+    private val searchState = searchQuery.map {
+        BookingListSearchState(
+            query = it,
+            onQueryChanged = { newQuery ->
+                searchQuery.value = newQuery
+            }
+        )
+    }
 
     val state = combine(
         contentState,
-        selectedTab
-    ) { contentState, selectedTab ->
+        selectedTab,
+        sortOptionsByTab,
+        isSortSheetVisible,
+        searchState
+    ) { contentState, selectedTab, sortOptionsByTab, sheetVisible, searchState ->
+        val sortOption = sortOptionsByTab[selectedTab] ?: BookingListSortOption.NewestToOldest
         BookingListViewState(
             contentState = contentState,
             tabState = BookingListTabState(
                 selectedTab = selectedTab,
                 onTabChanged = ::onTabChanged
-            )
+            ),
+            controlsState = BookingListControlsState(
+                selectedSortOption = sortOption,
+                onSortClick = ::onSortClicked,
+                onFilterClick = ::onFilterClicked
+            ),
+            sortBottomSheetState = if (sheetVisible) {
+                BookingListSortBottomSheetState(
+                    selectedOption = sortOption,
+                    onSelect = ::onSortOptionSelected,
+                    onDismiss = ::onSortDismiss
+                )
+            } else {
+                null
+            },
+            searchState = searchState
         )
     }.asLiveData()
 
+    val bottomNavigationVisible = searchState.map { !it.isSearchActive }
+        .asLiveData()
+
     init {
-        monitorFilterChanges()
+        monitorSearchAndFilterChanges()
     }
 
-    private fun monitorFilterChanges() {
+    @OptIn(FlowPreview::class)
+    private fun monitorSearchAndFilterChanges() {
         launch {
-            selectedTab.collectLatest {
-                // Cancel any ongoing fetch or load more operations
-                bookingsFetchJob?.cancel()
-                bookingsLoadMoreJob?.cancel()
+            val queryFlow = searchQuery
+                .drop(1) // Skip the initial value to avoid double fetch on init
+                .debounce {
+                    if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                }
 
-                bookingsFetchJob = fetchBookings(BookingListLoadingState.Loading)
-            }
+            merge(selectedTab, queryFlow)
+                .collectLatest {
+                    // Cancel any ongoing fetch or load more operations
+                    bookingsFetchJob?.cancel()
+                    bookingsLoadMoreJob?.cancel()
+
+                    bookingsFetchJob = fetchBookings(BookingListLoadingState.Loading)
+                }
         }
     }
 
     private fun fetchBookings(initialLoadingState: BookingListLoadingState) = launch {
         loadingState.value = initialLoadingState
         bookingListHandler.loadBookings(
-            forceRefresh = true,
+            searchQuery = searchQuery.value,
             filters = prepareFilters()
         ).onFailure {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
@@ -107,6 +167,26 @@ class BookingListViewModel @Inject constructor(
 
     private fun onTabChanged(tab: BookingListTab) {
         selectedTab.value = tab
+    }
+
+    private fun onSortClicked() {
+        isSortSheetVisible.value = true
+    }
+
+    private fun onSortOptionSelected(option: BookingListSortOption) {
+        val tab = selectedTab.value
+        sortOptionsByTab.value = sortOptionsByTab.value.toMutableMap()
+            .also { it[tab] = option }
+        isSortSheetVisible.value = false
+        // TODO Apply the selected sorting to the data for the active tab
+    }
+
+    private fun onSortDismiss() {
+        isSortSheetVisible.value = false
+    }
+
+    private fun onFilterClicked() {
+        // TODO Show filter bottom sheet
     }
 
     private fun prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
