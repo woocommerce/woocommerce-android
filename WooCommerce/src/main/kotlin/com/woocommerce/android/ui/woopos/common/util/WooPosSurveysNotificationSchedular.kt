@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation
+package com.woocommerce.android.ui.woopos.common.util
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.local.LocalNotification
