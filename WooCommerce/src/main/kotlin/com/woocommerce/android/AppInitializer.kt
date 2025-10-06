@@ -44,7 +44,6 @@ import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncCheckUseCase
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
@@ -166,8 +165,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var posLocalCatalogScheduler: WooPosLocalCatalogSyncScheduler
 
-    @Inject lateinit var posCatalogSyncCheck: WooPosFullSyncCheckUseCase
-
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
@@ -272,8 +269,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
             appCoroutineScope.launch {
                 registerDevice(IF_NEEDED)
-
-                posCatalogSyncCheck.checkAndTriggerSyncIfNeeded()
             }
         }
     }

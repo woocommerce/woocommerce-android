@@ -9,12 +9,6 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-sealed class WooPosFullSyncStatus {
-    data object InProgress : WooPosFullSyncStatus()
-    data object Success : WooPosFullSyncStatus()
-    data class Failed(val error: String) : WooPosFullSyncStatus()
-}
-
 class WooPosPerformInstantCatalogFullSync @Inject constructor(
     private val syncRepository: WooPosLocalCatalogSyncRepository,
     private val syncTimestampManager: WooPosSyncTimestampManager,
@@ -22,7 +16,7 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooPosLogWrapper: WooPosLogWrapper
 ) {
-    operator fun invoke(): Flow<WooPosFullSyncStatus> = flow {
+    operator fun invoke(): Flow<WooPosFullSyncState> = flow {
         if (syncScheduler.isOneTimeWorkRunning()) {
             monitorWorkerProgress()
         } else {
@@ -30,9 +24,9 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
         }
     }
 
-    private suspend fun FlowCollector<WooPosFullSyncStatus>.monitorWorkerProgress() {
+    private suspend fun FlowCollector<WooPosFullSyncState>.monitorWorkerProgress() {
         wooPosLogWrapper.d("One-time full sync worker already running, monitoring progress")
-        emit(WooPosFullSyncStatus.InProgress)
+        emit(WooPosFullSyncState.InProgress)
 
         var workerStillRunning = true
         while (workerStillRunning) {
@@ -40,28 +34,28 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
             val completedTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
             if (completedTimestamp != null) {
                 wooPosLogWrapper.d("One-time worker completed successfully")
-                emit(WooPosFullSyncStatus.Success)
+                emit(WooPosFullSyncState.Success)
                 return
             }
             workerStillRunning = syncScheduler.isOneTimeWorkRunning()
             if (!workerStillRunning) {
                 wooPosLogWrapper.e("One-time worker stopped without success")
-                emit(WooPosFullSyncStatus.Failed("Background sync worker failed"))
+                emit(WooPosFullSyncState.Failed("Background sync worker failed"))
                 return
             }
         }
     }
 
-    private suspend fun FlowCollector<WooPosFullSyncStatus>.performBlockingSync() {
+    private suspend fun FlowCollector<WooPosFullSyncState>.performBlockingSync() {
         val site = selectedSite.getOrNull()
         if (site == null) {
             wooPosLogWrapper.e("Cannot perform blocking sync: No site selected")
-            emit(WooPosFullSyncStatus.Failed("No site selected"))
+            emit(WooPosFullSyncState.Failed("No site selected"))
             return
         }
 
         wooPosLogWrapper.d("Starting blocking full sync")
-        emit(WooPosFullSyncStatus.InProgress)
+        emit(WooPosFullSyncState.InProgress)
 
         val syncResult = syncRepository.syncLocalCatalogFull(site)
         when (syncResult) {
@@ -73,11 +67,11 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
                         "${syncResult.variationsSynced} variations synced " +
                         "in ${syncResult.syncDurationMs}ms"
                 )
-                emit(WooPosFullSyncStatus.Success)
+                emit(WooPosFullSyncState.Success)
             }
             is PosLocalCatalogSyncResult.Failure -> {
                 wooPosLogWrapper.e("Blocking full sync failed: ${syncResult.error}")
-                emit(WooPosFullSyncStatus.Failed(syncResult.error))
+                emit(WooPosFullSyncState.Failed(syncResult.error))
             }
         }
     }
@@ -85,4 +79,10 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
     companion object {
         private const val WORKER_STATUS_CHECK_INTERVAL_MS = 1000L
     }
+}
+
+sealed class WooPosFullSyncState {
+    data object InProgress : WooPosFullSyncState()
+    data object Success : WooPosFullSyncState()
+    data class Failed(val error: String) : WooPosFullSyncState()
 }
