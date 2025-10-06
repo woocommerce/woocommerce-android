@@ -5,16 +5,23 @@ import com.woocommerce.android.notifications.local.LocalNotification
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.util.FeatureFlag
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class ScheduleWooPosSurveyNotification @Inject constructor(
+class WooPosSurveysNotificationSchedular @Inject constructor(
     private val localNotificationScheduler: LocalNotificationScheduler,
-    private val appPrefsWrapper: AppPrefsWrapper,
+    private val appPrefs: AppPrefsWrapper,
     private val selectedSite: SiteModel,
+    private val wooCommerceStore: WooCommerceStore,
 ) {
-    operator fun invoke() {
+    companion object {
+        private val ALLOWED_COUNTRIES = setOf("us", "gb")
+    }
+
+    suspend fun schedularPotentialUserSurveyNotification() {
         if (FeatureFlag.WOO_POS_SURVEYS.isEnabled() &&
-            !appPrefsWrapper.isWooPosSurveyNotificationPotentialUserShown
+            !appPrefs.isWooPosSurveyNotificationPotentialUserShown &&
+            isAllowedCountry()
         ) {
             localNotificationScheduler.scheduleNotification(
                 LocalNotification.WooPosSurveyPotentialUserNotification(
@@ -22,5 +29,10 @@ class ScheduleWooPosSurveyNotification @Inject constructor(
                 )
             )
         }
+    }
+
+    private suspend fun isAllowedCountry(): Boolean {
+        val countryCode = wooCommerceStore.getSiteSettingsAsync(selectedSite)?.countryCode
+        return countryCode?.lowercase() in ALLOWED_COUNTRIES
     }
 }

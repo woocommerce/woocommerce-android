@@ -88,6 +88,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.model.Product as ModelProduct
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
@@ -183,7 +184,6 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
-import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -210,7 +210,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val totalsHelper: OrderCreateEditTotalsHelper,
     private val feedbackRepository: FeedbackRepository,
     private val fetchProductByIdentifier: FetchProductByIdentifier,
-    private val scheduleWooPosSurveyNotification: ScheduleWooPosSurveyNotification,
+    private val wooPosSurveysNotificationSchedular: WooPosSurveysNotificationSchedular,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -1382,7 +1382,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
-                    scheduleWooPosSurveyNotification()
+                    wooPosSurveysNotificationSchedular.schedularPotentialUserSurveyNotification()
                     onSuccess(it)
                 },
                 onFailure = {
