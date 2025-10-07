@@ -19,12 +19,14 @@ class BookingsRestClient @Inject constructor(
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
     }
 
+    @Suppress("LongParameterList")
     suspend fun fetchBookings(
         site: SiteModel,
         perPage: Int,
         page: Int,
         query: String?,
-        filters: List<BookingsFilterOption>
+        filters: List<BookingsFilterOption>,
+        order: BookingsOrderOption
     ): WooPayload<Array<BookingDto>> {
         val endpoint = WOOCOMMERCE.bookings.pathV2Bookings
 
@@ -33,6 +35,8 @@ class BookingsRestClient @Inject constructor(
             path = endpoint,
             clazz = Array<BookingDto>::class.java,
             params = mapOf(
+                "orderby" to "start_date",
+                "order" to order.value,
                 "per_page" to perPage.toString(),
                 "page" to page.toString(),
                 "search" to query
@@ -52,6 +56,7 @@ class BookingsRestClient @Inject constructor(
                         filter.before?.let { set("start_date_before", it.toString()) }
                         filter.after?.let { set("start_date_after", it.toString()) }
                     }
+
                     is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
                 }
             }

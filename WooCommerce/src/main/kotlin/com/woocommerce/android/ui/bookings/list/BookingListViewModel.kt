@@ -40,13 +40,7 @@ class BookingListViewModel @Inject constructor(
         key = "searchQuery"
     )
 
-    private val sortOptionsByTab = MutableStateFlow(
-        mapOf(
-            BookingListTab.Today to BookingListSortOption.NewestToOldest,
-            BookingListTab.Upcoming to BookingListSortOption.NewestToOldest,
-            BookingListTab.All to BookingListSortOption.NewestToOldest,
-        )
-    )
+    private val sortOption = savedStateHandle.getStateFlow(viewModelScope, BookingListSortOption.NewestToOldest)
 
     private val isSortSheetVisible = MutableStateFlow(false)
 
@@ -79,11 +73,10 @@ class BookingListViewModel @Inject constructor(
     val state = combine(
         contentState,
         selectedTab,
-        sortOptionsByTab,
+        sortOption,
         isSortSheetVisible,
         searchState
-    ) { contentState, selectedTab, sortOptionsByTab, sheetVisible, searchState ->
-        val sortOption = sortOptionsByTab[selectedTab] ?: BookingListSortOption.NewestToOldest
+    ) { contentState, selectedTab, sortOption, sheetVisible, searchState ->
         BookingListViewState(
             contentState = contentState,
             tabState = BookingListTabState(
@@ -123,15 +116,21 @@ class BookingListViewModel @Inject constructor(
                 .debounce {
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
+            val sortFlow = sortOption.drop(1) // Skip the initial value to avoid double fetch on init
 
-            merge(selectedTab, queryFlow)
-                .collectLatest {
-                    // Cancel any ongoing fetch or load more operations
-                    bookingsFetchJob?.cancel()
-                    bookingsLoadMoreJob?.cancel()
+            merge(selectedTab, queryFlow, sortFlow).collectLatest {
+                // Cancel any ongoing fetch or load more operations
+                bookingsFetchJob?.cancel()
+                bookingsLoadMoreJob?.cancel()
 
-                    bookingsFetchJob = fetchBookings(BookingListLoadingState.Loading)
-                }
+                bookingsFetchJob = fetchBookings(
+                    initialLoadingState = if (it is BookingListSortOption) {
+                        BookingListLoadingState.Refreshing
+                    } else {
+                        BookingListLoadingState.Loading
+                    }
+                )
+            }
         }
     }
 
@@ -139,7 +138,8 @@ class BookingListViewModel @Inject constructor(
         loadingState.value = initialLoadingState
         bookingListHandler.loadBookings(
             searchQuery = searchQuery.value,
-            filters = prepareFilters()
+            filters = prepareFilters(),
+            sortBy = sortOption.value
         ).onFailure {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
         }
@@ -174,11 +174,8 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onSortOptionSelected(option: BookingListSortOption) {
-        val tab = selectedTab.value
-        sortOptionsByTab.value = sortOptionsByTab.value.toMutableMap()
-            .also { it[tab] = option }
+        sortOption.value = option
         isSortSheetVisible.value = false
-        // TODO Apply the selected sorting to the data for the active tab
     }
 
     private fun onSortDismiss() {
