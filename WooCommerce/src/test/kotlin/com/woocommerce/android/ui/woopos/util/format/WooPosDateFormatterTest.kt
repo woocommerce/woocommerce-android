@@ -212,7 +212,7 @@ class WooPosDateFormatterTest {
     }
 
     @Test
-    fun `when time format changes during runtime, formatter uses new format`() {
+    fun `when time format changes during runtime, then formatter uses new format`() {
         // GIVEN
         val now = ZonedDateTime.ofInstant(fixedInstant, fixedClock.zone)
         val earlierToday = now.minusHours(3)
