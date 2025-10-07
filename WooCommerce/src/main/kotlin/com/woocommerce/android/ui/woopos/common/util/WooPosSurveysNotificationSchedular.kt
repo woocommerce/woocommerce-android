@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesReposit
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class WooPosSurveysNotificationSchedular @Inject constructor(
@@ -35,6 +36,7 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
         if (!appPrefs.isWooPosSurveyNotificationCurrentUserShown && areNotificationsAllowed()) {
             localNotificationScheduler.scheduleNotification(
                 LocalNotification.WooPosSurveyCurrentUserNotification(
+                    delay = TimeUnit.MINUTES.toMillis(5),
                     siteId = selectedSite.get().siteId
                 )
             )
