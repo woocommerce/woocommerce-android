@@ -69,7 +69,7 @@ class WooPosItemsViewModel @Inject constructor(
         viewModelScope.launch {
             val requirement = syncStatusChecker.checkSyncRequirement()
             _catalogSyncBannerState.value = when (requirement) {
-                is WooPosFullSyncRequirement.Overdue -> CatalogSyncBannerState.OverdueWarning
+                is WooPosFullSyncRequirement.Overdue -> CatalogSyncBannerState.OverdueSyncWarning
                 else -> CatalogSyncBannerState.Hidden
             }
         }
@@ -95,6 +95,9 @@ class WooPosItemsViewModel @Inject constructor(
             }
 
             is WooPosItemsUIEvent.AddCouponIconClicked -> createAndAddCoupon()
+            WooPosItemsUIEvent.SyncOverdueBannerDismissed -> {
+                _catalogSyncBannerState.value = CatalogSyncBannerState.Hidden
+            }
         }
     }
 
@@ -262,6 +265,6 @@ class WooPosItemsViewModel @Inject constructor(
 
     sealed class CatalogSyncBannerState {
         data object Hidden : CatalogSyncBannerState()
-        data object OverdueWarning : CatalogSyncBannerState()
+        data object OverdueSyncWarning : CatalogSyncBannerState()
     }
 }

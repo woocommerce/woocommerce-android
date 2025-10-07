@@ -40,7 +40,7 @@ fun WooPosRefreshCatalogBanner(
     onDismiss: () -> Unit
 ) {
     AnimatedVisibility(
-        visible = bannerState is WooPosItemsViewModel.CatalogSyncBannerState.OverdueWarning,
+        visible = bannerState is WooPosItemsViewModel.CatalogSyncBannerState.OverdueSyncWarning,
         enter = fadeIn(
             animationSpec = tween(durationMillis = 180)
         ) + scaleIn(
@@ -104,7 +104,7 @@ fun WooPosRefreshCatalogBanner(
 fun WooPosRefreshCatalogBannerPreview() {
     WooPosTheme {
         WooPosRefreshCatalogBanner(
-            bannerState = WooPosItemsViewModel.CatalogSyncBannerState.OverdueWarning,
+            bannerState = WooPosItemsViewModel.CatalogSyncBannerState.OverdueSyncWarning,
             onDismiss = {}
         )
     }

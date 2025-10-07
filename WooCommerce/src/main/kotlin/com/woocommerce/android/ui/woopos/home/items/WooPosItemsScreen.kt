@@ -324,7 +324,7 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
             tabs = tabs()
         )
     )
-    val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncBannerState.OverdueWarning)
+    val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncBannerState.OverdueSyncWarning)
     WooPosTheme {
         WooPosItemsScreen(
             modifier = modifier,
@@ -354,7 +354,7 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
             tabs = tabs()
         )
     )
-    val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncBannerState.OverdueWarning)
+    val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncBannerState.OverdueSyncWarning)
     WooPosTheme {
         WooPosItemsScreen(
             modifier = modifier,
