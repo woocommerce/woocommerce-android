@@ -3655,7 +3655,7 @@
     <string name="woopos_settings_local_catalog_cellular_data">Allow full update on cellular data</string>
     <string name="woopos_settings_local_catalog_cellular_data_subtitle">Download catalog updates using mobile data</string>
     <string name="woopos_settings_local_catalog_actions">Manual Catalog Update</string>
-    <string name="woopos_settings_local_catalog_refresh_description">Use this refresh only when something seems off - POS keeps data current automatically.x</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Use this refresh only when something seems off - POS keeps data current automatically.</string>
     <string name="woopos_settings_local_catalog_refresh_button">Refresh Catalog</string>
 
     <string name="woopos_date_never">Never</string>
