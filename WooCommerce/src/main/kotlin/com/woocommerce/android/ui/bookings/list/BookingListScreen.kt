@@ -268,18 +268,20 @@ private fun BookingListControls(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        OutlinedButton(
-            modifier = Modifier.defaultMinSize(minWidth = 88.dp, minHeight = 36.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            colors = ButtonDefaults.outlinedButtonColors().copy(
-                contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            ),
-            onClick = state.onFilterClick,
-        ) {
-            Text(
-                text = stringResource(R.string.bookings_filters_default_title),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+        if (state.isFilterButtonVisible) {
+            OutlinedButton(
+                modifier = Modifier.defaultMinSize(minWidth = 88.dp, minHeight = 36.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                colors = ButtonDefaults.outlinedButtonColors().copy(
+                    contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                ),
+                onClick = state.onFilterClick,
+            ) {
+                Text(
+                    text = stringResource(R.string.bookings_filters_default_title),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }
@@ -321,6 +323,7 @@ private fun BookingListPreview() {
                 ),
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
+                    isFilterButtonVisible = true,
                     onSortClick = {},
                     onFilterClick = {}
                 ),
