@@ -45,6 +45,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
@@ -56,7 +57,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -347,7 +347,7 @@ private fun OrdersPaginationLoadingRow() {
 fun OrdersEmpty(
     onActionClicked: () -> Unit
 ) {
-    WooPosItemsEmptyList(
+    WooPosEmptyScreen(
         modifier = Modifier.fillMaxSize(),
         icon = painterResource(id = R.drawable.ic_woo_pos_orders_empty),
         title = stringResource(id = R.string.woopos_orders_empty_list_title),
