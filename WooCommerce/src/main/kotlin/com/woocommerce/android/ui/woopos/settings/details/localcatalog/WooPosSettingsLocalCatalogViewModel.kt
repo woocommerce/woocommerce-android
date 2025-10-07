@@ -33,20 +33,18 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
 
-            // Get timestamps for products and variations
             val productsTimestamp = syncTimestampManager.getProductsLastSyncTimestamp()
             val variationsTimestamp = syncTimestampManager.getVariationsLastSyncTimestamp()
 
-            // Format timestamps for display
             val formattedTimestamp = dateFormatter.formatCatalogLastUpdate(
                 productsTimestamp,
                 variationsTimestamp
             )
 
             val catalogStatus = CatalogStatus(
-                catalogSize = "8.3 MB", // TODO: Replace with actual catalog size
+                catalogSize = "8.3 MB", // TBD local catalog: Replace with actual catalog size
                 lastUpdate = formattedTimestamp,
-                lastFullUpdate = formattedTimestamp // TODO: Replace with full sync timestamp
+                lastFullUpdate = formattedTimestamp // TBD local catalog: Replace with full sync timestamp
             )
 
             _state.update {
@@ -63,8 +61,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
             _state.update {
                 it.copy(allowCellularDataUpdate = !it.allowCellularDataUpdate)
             }
-
-            // TODO: Save preference to shared preferences or data store
+            // TBD local catalog: Save preference to shared preferences or data store
         }
     }
 
@@ -79,7 +76,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                     loadCatalogStatus()
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
-                    // TODO: Handle errors
+                    // TBD local catalog: Handle errors
                 }
             }
 
