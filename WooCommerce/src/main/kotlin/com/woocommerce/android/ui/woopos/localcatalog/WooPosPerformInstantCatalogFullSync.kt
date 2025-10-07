@@ -52,8 +52,6 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
     private suspend fun FlowCollector<WooPosFullSyncState>.monitorPeriodicWorkerProgress() {
         emit(WooPosFullSyncState.InProgress)
 
-        // For periodic worker, we need to observe it via a different method
-        // Since getWorkInfosForUniqueWorkFlow returns a list, we'll get the first active one
         val finalWorkInfo = syncScheduler.observePeriodicWorkInfo()
             .filter { workInfo ->
                 workInfo?.state?.isFinished == true
