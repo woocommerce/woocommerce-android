@@ -16,7 +16,6 @@ class WooPosSettingsCategoriesViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow(createInitialState())
     val state: StateFlow<WooPosSettingsCategoriesState> = _state.asStateFlow()
-    
     private fun createInitialState(): WooPosSettingsCategoriesState {
         val allCategories = WooPosSettingsCategory.entries
         val visibleCategories = if (FeatureFlag.WOO_POS_LOCAL_CATALOG_M1.isEnabled(context)) {
@@ -24,7 +23,6 @@ class WooPosSettingsCategoriesViewModel @Inject constructor(
         } else {
             allCategories.filter { it != WooPosSettingsCategory.LOCAL_CATALOG }
         }
-        
         return WooPosSettingsCategoriesState(categories = visibleCategories)
     }
 }
