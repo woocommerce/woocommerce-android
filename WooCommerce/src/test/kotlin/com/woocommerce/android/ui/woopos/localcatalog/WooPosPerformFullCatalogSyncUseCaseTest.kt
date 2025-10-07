@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -33,7 +34,8 @@ class WooPosPerformFullCatalogSyncUseCaseTest {
     fun `given no site selected, when invoke called, then returns Failed`() = runTest {
         // GIVEN
         whenever(selectedSite.getOrNull()).thenReturn(null)
-        whenever(syncScheduler.isOneTimeWorkRunning()).thenReturn(false)
+        whenever(syncScheduler.observeOneTimeWorkStatus()).thenReturn(flowOf(false))
+        whenever(syncScheduler.observePeriodicWorkStatus()).thenReturn(flowOf(false))
 
         // WHEN
         val result = useCase().first()
@@ -54,7 +56,8 @@ class WooPosPerformFullCatalogSyncUseCaseTest {
         )
 
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(syncScheduler.isOneTimeWorkRunning()).thenReturn(false)
+        whenever(syncScheduler.observeOneTimeWorkStatus()).thenReturn(flowOf(false))
+        whenever(syncScheduler.observePeriodicWorkStatus()).thenReturn(flowOf(false))
         whenever(syncRepository.syncLocalCatalogFull(site)).thenReturn(syncResult)
 
         // WHEN
@@ -77,7 +80,8 @@ class WooPosPerformFullCatalogSyncUseCaseTest {
         val syncResult = PosLocalCatalogSyncResult.Failure.UnexpectedError("Network error")
 
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(syncScheduler.isOneTimeWorkRunning()).thenReturn(false)
+        whenever(syncScheduler.observeOneTimeWorkStatus()).thenReturn(flowOf(false))
+        whenever(syncScheduler.observePeriodicWorkStatus()).thenReturn(flowOf(false))
         whenever(syncRepository.syncLocalCatalogFull(site)).thenReturn(syncResult)
 
         // WHEN
