@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
 /**
- * Represents the sort order for bookings. Only two values are allowed by the API: "asc" and "desc".
+ * Represents the sort order for bookings.
  *
  * Use [value] when building query parameters.
  */
