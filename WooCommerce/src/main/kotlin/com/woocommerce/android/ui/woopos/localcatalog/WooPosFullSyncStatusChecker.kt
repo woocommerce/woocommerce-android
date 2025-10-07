@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManag
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.days
 
 class WooPosFullSyncStatusChecker @Inject constructor(
     private val syncTimestampManager: WooPosSyncTimestampManager,
@@ -27,8 +27,8 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 
         val site = selectedSite.getOrNull()
         if (site == null) {
-            wooPosLogWrapper.d("Full sync check skipped: No site selected")
-            return WooPosFullSyncRequirement.NotRequired
+            wooPosLogWrapper.e("Full sync check failed: No site selected")
+            return WooPosFullSyncRequirement.Error("No site selected")
         }
 
         if (!networkStatus.isConnected()) {
@@ -72,7 +72,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     }
 
     companion object {
-        private val FULL_SYNC_OVERDUE_THRESHOLD = 24.hours
+        private val FULL_SYNC_OVERDUE_THRESHOLD = 7.days
     }
 }
 

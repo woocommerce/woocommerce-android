@@ -95,7 +95,7 @@ class WooPosSyncTimestampRepository @Inject constructor(
     suspend fun getFullSyncLastCompletedTimestamp(): Long? {
         val key = buildSiteSpecificKey(FULL_SYNC_TIMESTAMP_KEY)
         return if (key != null) {
-            dataStore.data.first()[key]?.toLong()
+            dataStore.data.first()[key]?.toLongOrNull()
         } else {
             null
         }
