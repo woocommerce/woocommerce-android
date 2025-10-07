@@ -68,26 +68,22 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
         }
     }
 
-    fun refreshCatalog() {
+    fun runFullCatalogSync() {
         viewModelScope.launch {
             _state.update { it.copy(isRefreshing = true) }
-            
-            // TODO: Trigger actual catalog refresh through repository
-            delay(3000) // Simulate refresh operation
-            
-            // Update with new status after refresh
-            val updatedStatus = CatalogStatus(
-                catalogSize = "8.5 MB",
-                lastUpdate = "Just now",
-                lastFullUpdate = "Just now"
-            )
-            
-            _state.update {
-                it.copy(
-                    catalogStatus = updatedStatus,
-                    isRefreshing = false
-                )
+
+            val result = localCatalogSyncRepository.syncLocalCatalogFull(selectedSite.get())
+
+            when (result) {
+                is PosLocalCatalogSyncResult.Success -> {
+                    loadCatalogStatus()
+                }
+                is PosLocalCatalogSyncResult.Failure -> {
+                    // TODO: Handle errors
+                }
             }
+
+            _state.update { it.copy(isRefreshing = false) }
         }
     }
 }

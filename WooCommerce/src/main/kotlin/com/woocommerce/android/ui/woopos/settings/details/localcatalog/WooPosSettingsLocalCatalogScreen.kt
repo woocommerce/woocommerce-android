@@ -47,7 +47,7 @@ fun WooPosSettingsLocalCatalogScreen(
     WooPosSettingsLocalCatalogScreen(
         state = state,
         onToggleCellularData = viewModel::toggleCellularDataUpdate,
-        onRefreshCatalog = viewModel::refreshCatalog,
+        onRefreshCatalog = viewModel::runFullCatalogSync,
         modifier = modifier
     )
 }
