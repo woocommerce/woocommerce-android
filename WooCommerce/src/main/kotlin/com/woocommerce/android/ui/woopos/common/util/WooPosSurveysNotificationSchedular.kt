@@ -23,7 +23,10 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
     }
 
     suspend fun schedularPotentialUserSurveyNotification() {
-        if (!appPrefs.isWooPosSurveyNotificationPotentialUserShown && areNotificationsAllowed()) {
+        if (!appPrefs.isWooPosSurveyNotificationPotentialUserShown &&
+            !wooPosPreferencesRepository.wasOpenedOnce.first() &&
+            areNotificationsAllowed()
+        ) {
             localNotificationScheduler.scheduleNotification(
                 LocalNotification.WooPosSurveyPotentialUserNotification(
                     siteId = selectedSite.get().siteId
@@ -33,7 +36,10 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
     }
 
     suspend fun schedularCurrentUserSurveyNotification() {
-        if (!appPrefs.isWooPosSurveyNotificationCurrentUserShown && areNotificationsAllowed()) {
+        if (!appPrefs.isWooPosSurveyNotificationCurrentUserShown &&
+            wooPosPreferencesRepository.wasOpenedOnce.first() &&
+            areNotificationsAllowed()
+        ) {
             localNotificationScheduler.scheduleNotification(
                 LocalNotification.WooPosSurveyCurrentUserNotification(
                     delay = TimeUnit.MINUTES.toMillis(5),
@@ -44,9 +50,7 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
     }
 
     private suspend fun areNotificationsAllowed(): Boolean =
-        isAllowedCountry() &&
-            !wooPosPreferencesRepository.wasOpenedOnce.first() &&
-            FeatureFlag.WOO_POS_SURVEYS.isEnabled()
+        isAllowedCountry() && FeatureFlag.WOO_POS_SURVEYS.isEnabled()
 
     private suspend fun isAllowedCountry(): Boolean {
         val countryCode = wooCommerceStore.getSiteSettingsAsync(selectedSite.get())?.countryCode
