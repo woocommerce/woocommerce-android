@@ -49,6 +49,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
+import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
@@ -267,18 +268,20 @@ private fun BookingListControls(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        OutlinedButton(
-            modifier = Modifier.defaultMinSize(minWidth = 88.dp, minHeight = 36.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            colors = ButtonDefaults.outlinedButtonColors().copy(
-                contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            ),
-            onClick = state.onFilterClick,
-        ) {
-            Text(
-                text = stringResource(R.string.bookings_filters_default_title),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+        if (state.isFilterButtonVisible) {
+            OutlinedButton(
+                modifier = Modifier.defaultMinSize(minWidth = 88.dp, minHeight = 36.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                colors = ButtonDefaults.outlinedButtonColors().copy(
+                    contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                ),
+                onClick = state.onFilterClick,
+            ) {
+                Text(
+                    text = stringResource(R.string.bookings_filters_default_title),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }
@@ -300,7 +303,7 @@ private fun BookingListPreview() {
                     bookings = List(20) {
                         BookingListItem(
                             id = it.toLong(),
-                            summary = com.woocommerce.android.ui.bookings.compose.BookingSummaryModel(
+                            summary = BookingSummaryModel(
                                 date = "Aug 20, 2024",
                                 name = "Women’s Haircut",
                                 customerName = "Margarita Nikolaevna",
@@ -320,6 +323,7 @@ private fun BookingListPreview() {
                 ),
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
+                    isFilterButtonVisible = true,
                     onSortClick = {},
                     onFilterClick = {}
                 ),
