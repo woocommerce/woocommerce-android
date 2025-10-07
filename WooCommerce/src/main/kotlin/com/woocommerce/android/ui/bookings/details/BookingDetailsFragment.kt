@@ -43,7 +43,7 @@ class BookingDetailsFragment : BaseFragment() {
                         BookingDetailsFragmentDirections
                             .actionBookingDetailsFragmentToBookingNoteFragment(args.bookingId)
                     )
-                }
+                },
             )
         }
     }

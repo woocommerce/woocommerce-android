@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
+import com.woocommerce.android.ui.compose.modifier.detailsPanePadding
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -94,6 +95,7 @@ fun BookingDetailsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .detailsPanePadding(),
         ) {
             Column(
                 modifier = Modifier
