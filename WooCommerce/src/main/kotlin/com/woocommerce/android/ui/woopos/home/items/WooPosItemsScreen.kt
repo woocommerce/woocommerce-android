@@ -151,7 +151,8 @@ private fun MainItemsList(
                 onAddCouponEvent = onAddCouponEvent,
             )
 
-            Spacer(modifier =
+            Spacer(
+                modifier =
                 Modifier
                     .height(WooPosSpacing.Small.value)
                     .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
