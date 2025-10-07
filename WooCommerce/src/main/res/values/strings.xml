@@ -3645,6 +3645,12 @@
     <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>
     <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
+
+    <string name="woopos_date_never">Never</string>
+    <string name="woopos_date_just_now">Just now</string>
+    <string name="woopos_date_today_at">Today at %s</string>
+    <string name="woopos_date_yesterday_at">Yesterday at %s</string>
+
     <string name="woopos_settings_barcode_scanner_detail_title">Barcode Scanner Settings</string>
     <string name="woopos_settings_barcode_scanner_setup_title">Scanner Setup</string>
     <string name="woopos_settings_barcode_scanner_setup_subtitle">Configure and test your barcode scanner</string>
