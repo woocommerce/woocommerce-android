@@ -137,9 +137,16 @@ fun BookingListScreen(state: BookingListViewState) {
                         .padding(32.dp)
 
                     if (state.searchState.isSearchActive) {
-                        EmptySearchResultsView(state.searchState.query.orEmpty(), modifier)
+                        EmptySearchResultsView(
+                            query = state.searchState.query.orEmpty(),
+                            modifier = modifier
+                        )
                     } else {
-                        EmptyView(state, modifier)
+                        EmptyView(
+                            selectedTab = state.tabState.selectedTab,
+                            areFiltersActive = state.areFiltersActive,
+                            modifier = modifier
+                        )
                     }
                 }
             }
@@ -297,7 +304,8 @@ private fun BookingListControls(
 
 @Composable
 private fun EmptyView(
-    state: BookingListViewState,
+    selectedTab: BookingListTab,
+    areFiltersActive: Boolean,
     modifier: Modifier
 ) {
     Column(
@@ -314,7 +322,7 @@ private fun EmptyView(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = when (state.tabState.selectedTab) {
+            text = when (selectedTab) {
                 BookingListTab.Today -> stringResource(R.string.bookings_empty_state_title_today)
                 BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_title_upcoming)
                 BookingListTab.All -> stringResource(R.string.bookings_empty_state_title_default)
@@ -326,11 +334,11 @@ private fun EmptyView(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = when (state.tabState.selectedTab) {
+            text = when (selectedTab) {
                 BookingListTab.Today -> stringResource(R.string.bookings_empty_state_description_today)
                 BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming)
                 else -> {
-                    if (state.areFiltersActive) {
+                    if (areFiltersActive) {
                         stringResource(R.string.bookings_empty_state_description_with_filters)
                     } else {
                         stringResource(R.string.bookings_empty_state_description_default)
@@ -342,7 +350,7 @@ private fun EmptyView(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        if (state.areFiltersActive) {
+        if (areFiltersActive) {
             Spacer(Modifier.height(24.dp))
             WCColoredButton(
                 text = stringResource(R.string.bookings_empty_state_change_filters_button),
