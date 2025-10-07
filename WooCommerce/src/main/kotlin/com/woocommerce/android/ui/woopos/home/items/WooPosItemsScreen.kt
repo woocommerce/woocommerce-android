@@ -160,7 +160,6 @@ private fun MainItemsList(
 
             WooPosRefreshCatalogBanner(
                 bannerState = bannerState.value,
-                modifier = Modifier,
                 onDismiss = onSyncWarningBannerDismissed
             )
 

@@ -72,7 +72,6 @@ private fun WooPosCouponsScreen(
         when (val itemsState = state.value) {
             is WooPosCouponsViewState.Content -> {
                 WooPosItemList(
-                    modifier = Modifier,
                     state = itemsState,
                     listState = listState,
                     onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id, item.name)) },
@@ -86,9 +85,7 @@ private fun WooPosCouponsScreen(
                 }
             }
 
-            is WooPosCouponsViewState.Loading -> WooPosItemsLoadingIndicator(
-                modifier = Modifier
-            )
+            is WooPosCouponsViewState.Loading -> WooPosItemsLoadingIndicator()
 
             is WooPosCouponsViewState.Empty -> WooPosItemsEmptyList(
                 modifier = Modifier.fillMaxSize(),
