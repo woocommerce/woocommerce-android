@@ -84,7 +84,7 @@ fun BookingListScreen(state: BookingListViewState) {
                 actions = {
                     SearchSection(
                         searchState = state.searchState,
-                        areFiltersActive = state.areFiltersActive
+                        areFiltersActive = state.areFiltersActive || state.tabState.selectedTab != BookingListTab.All
                     )
                 }
             )
