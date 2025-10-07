@@ -3,22 +3,22 @@ package com.woocommerce.android.ui.woopos.util.format
 import android.content.Context
 import com.woocommerce.android.R
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
-import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 
 class WooPosDateFormatter @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val clock: Clock
 ) {
 
     private val timeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault())
     private val dateTimeThisYearFormatter = DateTimeFormatter.ofPattern("MMM d 'at' h:mm a", Locale.getDefault())
     private val dateTimeWithYearFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy 'at' h:mm a", Locale.getDefault())
-    private val systemZone = ZoneId.systemDefault()
 
     /**
      * Formats the older of two timestamps (products and variations) into a user-friendly string.
@@ -49,15 +49,15 @@ class WooPosDateFormatter @Inject constructor(
      */
     private fun formatLastUpdateTimestamp(timestamp: Long): String {
         val instant = Instant.ofEpochMilli(timestamp)
-        val now = Instant.now()
+        val now = clock.instant()
         val duration = Duration.between(instant, now)
 
         if (duration.toMinutes() < 1) {
             return context.getString(R.string.woopos_date_just_now)
         }
 
-        val dateTime = ZonedDateTime.ofInstant(instant, systemZone)
-        val nowDateTime = ZonedDateTime.ofInstant(now, systemZone)
+        val dateTime = ZonedDateTime.ofInstant(instant, clock.zone)
+        val nowDateTime = ZonedDateTime.ofInstant(now, clock.zone)
         val date = dateTime.toLocalDate()
         val today = nowDateTime.toLocalDate()
         val formattedTime = dateTime.format(timeFormatter)
