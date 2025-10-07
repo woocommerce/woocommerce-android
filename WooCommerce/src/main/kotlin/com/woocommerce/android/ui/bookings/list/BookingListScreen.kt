@@ -134,7 +134,6 @@ fun BookingListScreen(state: BookingListViewState) {
                     val modifier = Modifier
                         .background(MaterialTheme.colorScheme.surface)
                         .fillMaxSize()
-                        .padding(paddingValues)
                         .padding(32.dp)
 
                     if (state.searchState.isSearchActive) {
@@ -376,9 +375,8 @@ private fun EmptySearchResultsView(query: String, modifier: Modifier) {
         modifier = modifier
     ) {
         Image(
-            painter = painterResource(R.drawable.search_failed_illustration),
-            contentDescription = null,
-            modifier = Modifier.size(64.dp)
+            painter = painterResource(R.drawable.img_empty_search),
+            contentDescription = null
         )
 
         Spacer(modifier = Modifier.height(24.dp))
