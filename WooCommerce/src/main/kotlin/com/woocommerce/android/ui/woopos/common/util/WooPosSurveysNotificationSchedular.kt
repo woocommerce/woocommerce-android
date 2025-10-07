@@ -31,6 +31,16 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
         }
     }
 
+    suspend fun schedularCurrentUserSurveyNotification() {
+        if (!appPrefs.isWooPosSurveyNotificationCurrentUserShown && areNotificationsAllowed()) {
+            localNotificationScheduler.scheduleNotification(
+                LocalNotification.WooPosSurveyCurrentUserNotification(
+                    siteId = selectedSite.get().siteId
+                )
+            )
+        }
+    }
+
     private suspend fun areNotificationsAllowed(): Boolean =
         isAllowedCountry() &&
             !wooPosPreferencesRepository.wasOpenedOnce.first() &&
