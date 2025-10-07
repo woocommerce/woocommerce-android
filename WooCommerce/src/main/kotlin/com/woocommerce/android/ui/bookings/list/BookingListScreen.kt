@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.list
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +12,9 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -44,6 +47,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
@@ -123,13 +128,17 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
 
                 else -> {
-                    // TODO replace with empty state
-                    Text(
-                        text = "No bookings found",
-                        modifier = Modifier
-                            .padding(paddingValues)
-                            .wrapContentSize()
-                    )
+                    val modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surface)
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(32.dp)
+
+                    if (state.searchState.isSearchActive) {
+                        EmptySearchResultsView(state.searchState.query.orEmpty(), modifier)
+                    } else {
+                        EmptyView(state, modifier)
+                    }
                 }
             }
         }
@@ -285,6 +294,79 @@ private fun BookingListControls(
 }
 
 @Composable
+private fun EmptyView(
+    state: BookingListViewState,
+    modifier: Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+    ) {
+        Image(
+            painter = painterResource(R.drawable.img_calendar_grey),
+            contentDescription = null,
+            modifier = Modifier.size(64.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = when (state.tabState.selectedTab) {
+                BookingListTab.Today -> stringResource(R.string.bookings_empty_state_title_today)
+                BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_title_upcoming)
+                BookingListTab.All -> stringResource(R.string.bookings_empty_state_title_default)
+            },
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = when (state.tabState.selectedTab) {
+                BookingListTab.Today -> stringResource(R.string.bookings_empty_state_description_today)
+                BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming)
+                else -> {
+                    if (state.areFiltersActive) {
+                        TODO()
+                    } else {
+                        stringResource(R.string.bookings_empty_state_description_default)
+                    }
+                }
+            },
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun EmptySearchResultsView(query: String, modifier: Modifier) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+    ) {
+        Image(
+            painter = painterResource(R.drawable.search_failed_illustration),
+            contentDescription = null,
+            modifier = Modifier.size(64.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = annotatedStringResLegacy(R.string.bookings_search_no_results, query),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Normal,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
 private fun BookingListTab.name(): String = when (this) {
     BookingListTab.Today -> stringResource(R.string.bookings_tab_today)
     BookingListTab.Upcoming -> stringResource(R.string.bookings_tab_upcoming)
@@ -327,6 +409,70 @@ private fun BookingListPreview() {
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(
                     query = null,
+                    onQueryChanged = {}
+                )
+            )
+        )
+    }
+}
+
+@Composable
+@LightDarkThemePreviews
+private fun EmptyViewPreview() {
+    WooThemeWithBackground {
+        BookingListScreen(
+            state = BookingListViewState(
+                contentState = BookingListContentState(
+                    bookings = emptyList(),
+                    loadingState = BookingListLoadingState.Idle,
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onBookingClick = {}
+                ),
+                tabState = BookingListTabState(
+                    selectedTab = BookingListTab.All,
+                    onTabChanged = {}
+                ),
+                controlsState = BookingListControlsState(
+                    selectedSortOption = BookingListSortOption.NewestToOldest,
+                    onSortClick = {},
+                    onFilterClick = {}
+                ),
+                sortBottomSheetState = null,
+                searchState = BookingListSearchState(
+                    query = null,
+                    onQueryChanged = {}
+                )
+            )
+        )
+    }
+}
+
+@Composable
+@LightDarkThemePreviews
+private fun EmptySearchResultsViewPreview() {
+    WooThemeWithBackground {
+        BookingListScreen(
+            state = BookingListViewState(
+                contentState = BookingListContentState(
+                    bookings = emptyList(),
+                    loadingState = BookingListLoadingState.Idle,
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onBookingClick = {}
+                ),
+                tabState = BookingListTabState(
+                    selectedTab = BookingListTab.All,
+                    onTabChanged = {}
+                ),
+                controlsState = BookingListControlsState(
+                    selectedSortOption = BookingListSortOption.NewestToOldest,
+                    onSortClick = {},
+                    onFilterClick = {}
+                ),
+                sortBottomSheetState = null,
+                searchState = BookingListSearchState(
+                    query = "Haircut",
                     onQueryChanged = {}
                 )
             )
