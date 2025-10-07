@@ -49,6 +49,12 @@ class BookingsRepository @Inject constructor(
             filters = filters
         )
 
+    fun observeBooking(bookingId: Long): Flow<Booking?> =
+        bookingsStore.observeBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId
+        )
+
     data class FetchResult(
         val bookings: List<Booking>,
         val hasMorePages: Boolean
