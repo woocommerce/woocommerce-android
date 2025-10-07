@@ -39,7 +39,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -98,7 +98,7 @@ private fun AccountMismatchErrorScreen(
 
         if (viewState.showJetpackTermsConsent) {
             val context = LocalContext.current
-            val consent = annotatedStringRes(
+            val consent = clickableAnnotatedStringRes(
                 stringResId = R.string.login_jetpack_connection_consent,
                 onUrlClick = { url ->
                     when (url) {

@@ -55,6 +55,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -383,7 +384,7 @@ private fun EmptySearchResultsView(query: String, modifier: Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = annotatedStringResLegacy(R.string.bookings_search_no_results, query),
+            text = annotatedStringRes(R.string.bookings_search_no_results, query),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Normal,
             textAlign = TextAlign.Center

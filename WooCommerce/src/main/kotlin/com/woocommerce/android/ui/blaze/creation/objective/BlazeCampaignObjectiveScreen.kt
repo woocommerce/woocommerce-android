@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveViewModel.ObjectiveItem
 import com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveViewModel.ObjectiveViewState
-import com.woocommerce.android.ui.compose.annotatedStringResLegacy
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.BottomSheetSwitchColors
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCSwitch
@@ -184,7 +184,7 @@ fun ObjectiveListItem(
             )
             if (isSelected) {
                 Text(
-                    text = annotatedStringResLegacy(
+                    text = annotatedStringRes(
                         stringResId = R.string.blaze_campaign_objective_good_for,
                         suitableForDescription
                     ),

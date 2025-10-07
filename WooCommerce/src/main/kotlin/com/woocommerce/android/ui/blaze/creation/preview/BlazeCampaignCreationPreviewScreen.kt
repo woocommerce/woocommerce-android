@@ -60,7 +60,7 @@ import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPr
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -142,7 +142,7 @@ private fun ConfirmationFooter(
     onTosAccepted: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
-    val campaignTosText = annotatedStringRes(
+    val campaignTosText = clickableAnnotatedStringRes(
         stringResId = previewState.campaignDetails.campaignTosText.stringRes,
         onUrlClick = { ChromeCustomTabUtils.launchUrl(context, AppUrls.BLAZE_CANCEL_INSTRUCTIONS) },
         args = previewState.campaignDetails.campaignTosText.params.map { it.getText() }.toTypedArray()
