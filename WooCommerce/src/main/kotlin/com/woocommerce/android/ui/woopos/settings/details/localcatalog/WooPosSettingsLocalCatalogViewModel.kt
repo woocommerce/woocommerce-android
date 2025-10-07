@@ -2,8 +2,12 @@ package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
+import com.woocommerce.android.ui.woopos.util.format.WooPosDateFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +16,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosSettingsLocalCatalogViewModel @Inject constructor() : ViewModel() {
+class WooPosSettingsLocalCatalogViewModel @Inject constructor(
+    private val syncTimestampManager: WooPosSyncTimestampManager,
+    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
+    private val selectedSite: SelectedSite,
+    private val dateFormatter: WooPosDateFormatter,
+) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsLocalCatalogState())
     val state: StateFlow<WooPosSettingsLocalCatalogState> = _state.asStateFlow()
 
@@ -23,19 +32,26 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor() : ViewModel() {
     private fun loadCatalogStatus() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            
-            // TODO: Replace with actual repository call to fetch catalog status
-            delay(1000) // Simulate network call
-            
-            val mockStatus = CatalogStatus(
-                catalogSize = "8.3 MB",
-                lastUpdate = "5 minutes ago",
-                lastFullUpdate = "Today at 9:15 AM"
+
+            // Get timestamps for products and variations
+            val productsTimestamp = syncTimestampManager.getProductsLastSyncTimestamp()
+            val variationsTimestamp = syncTimestampManager.getVariationsLastSyncTimestamp()
+
+            // Format timestamps for display
+            val formattedTimestamp = dateFormatter.formatCatalogLastUpdate(
+                productsTimestamp,
+                variationsTimestamp
             )
-            
+
+            val catalogStatus = CatalogStatus(
+                catalogSize = "8.3 MB", // TODO: Replace with actual catalog size
+                lastUpdate = formattedTimestamp,
+                lastFullUpdate = formattedTimestamp // TODO: Replace with full sync timestamp
+            )
+
             _state.update {
                 it.copy(
-                    catalogStatus = mockStatus,
+                    catalogStatus = catalogStatus,
                     isLoading = false
                 )
             }
@@ -47,7 +63,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor() : ViewModel() {
             _state.update {
                 it.copy(allowCellularDataUpdate = !it.allowCellularDataUpdate)
             }
-            
+
             // TODO: Save preference to shared preferences or data store
         }
     }
