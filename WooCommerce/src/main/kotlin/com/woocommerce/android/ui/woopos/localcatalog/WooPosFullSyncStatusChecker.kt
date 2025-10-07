@@ -27,8 +27,8 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 
         val site = selectedSite.getOrNull()
         if (site == null) {
-            wooPosLogWrapper.d("Full sync check skipped: No site selected")
-            return WooPosFullSyncRequirement.NotRequired
+            wooPosLogWrapper.e("Full sync check failed: No site selected")
+            return WooPosFullSyncRequirement.Error("No site selected")
         }
 
         if (!networkStatus.isConnected()) {
