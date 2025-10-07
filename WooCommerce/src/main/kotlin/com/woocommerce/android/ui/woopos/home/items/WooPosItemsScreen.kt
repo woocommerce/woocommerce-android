@@ -116,6 +116,7 @@ private fun WooPosItemsScreen(
         },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
         onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked) },
+        onSyncWarningBannerDismissed = { onUIEvent(WooPosItemsUIEvent.SyncOverdueBannerDismissed) },
     )
 }
 
@@ -132,15 +133,11 @@ private fun MainItemsList(
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onAddCouponEvent: () -> Unit,
     onBackClicked: () -> Unit,
+    onSyncWarningBannerDismissed: () -> Unit,
     onRetryCatalogSync: () -> Unit = {},
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        Column(
-            modifier.fillMaxHeight()
-        ) {
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier.fillMaxHeight()) {
             WooPosItemsToolbar(
                 modifier = Modifier
                     .statusBarsPadding()
@@ -154,13 +151,19 @@ private fun MainItemsList(
                 onAddCouponEvent = onAddCouponEvent,
             )
 
+            Spacer(modifier =
+                Modifier
+                    .height(WooPosSpacing.Small.value)
+                    .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+            )
+
             WooPosRefreshCatalogBanner(
                 bannerState = bannerState.value,
-                modifier = Modifier.padding(
-                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                    vertical = WooPosSpacing.Small.value.toAdaptivePadding(),
-                )
+                modifier = Modifier,
+                onDismiss = onSyncWarningBannerDismissed
             )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
             val currentState = state.value
 

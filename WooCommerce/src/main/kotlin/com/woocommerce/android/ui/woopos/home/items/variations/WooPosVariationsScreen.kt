@@ -103,7 +103,6 @@ private fun WooPosVariationsScreens(
         when (val itemsState = itemState.value) {
             is WooPosVariationsViewState.Content -> {
                 WooPosItemList(
-                    modifier = Modifier.padding(top = WooPosSpacing.Large.value),
                     state = itemsState,
                     listState = listState,
                     onItemClicked = {
@@ -122,16 +121,12 @@ private fun WooPosVariationsScreens(
             }
 
             is WooPosVariationsViewState.Loading -> {
-                WooPosItemsLoadingIndicator(
-                    modifier = Modifier.padding(top = WooPosSpacing.Large.value),
-                )
+                WooPosItemsLoadingIndicator()
             }
 
             is WooPosVariationsViewState.Error -> {
                 VariationsError(
-                    modifier = Modifier
-                        .width(640.dp)
-                        .padding(top = WooPosSpacing.Large.value)
+                    modifier = Modifier.width(640.dp)
                 ) {
                     onRetryClicked()
                 }
@@ -139,8 +134,7 @@ private fun WooPosVariationsScreens(
 
             is WooPosVariationsViewState.Empty -> {
                 WooPosItemsEmptyList(
-                    modifier = Modifier.fillMaxSize()
-                        .padding(top = WooPosSpacing.Large.value),
+                    modifier = Modifier.fillMaxSize(),
                     title = stringResource(id = R.string.woopos_variations_empty_list_title),
                     message = stringResource(id = R.string.woopos_variations_empty_list_message),
                     contentDescription = stringResource(

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.items.coupons
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -21,7 +20,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
@@ -74,7 +72,7 @@ private fun WooPosCouponsScreen(
         when (val itemsState = state.value) {
             is WooPosCouponsViewState.Content -> {
                 WooPosItemList(
-                    modifier = Modifier.padding(top = WooPosSpacing.Large.value),
+                    modifier = Modifier,
                     state = itemsState,
                     listState = listState,
                     onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id, item.name)) },
@@ -89,7 +87,7 @@ private fun WooPosCouponsScreen(
             }
 
             is WooPosCouponsViewState.Loading -> WooPosItemsLoadingIndicator(
-                modifier = Modifier.padding(top = WooPosSpacing.Large.value)
+                modifier = Modifier
             )
 
             is WooPosCouponsViewState.Empty -> WooPosItemsEmptyList(
