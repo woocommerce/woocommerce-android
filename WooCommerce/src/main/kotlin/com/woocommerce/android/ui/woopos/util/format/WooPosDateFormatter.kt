@@ -13,12 +13,24 @@ import javax.inject.Inject
 
 class WooPosDateFormatter @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val clock: Clock
+    private val clock: Clock,
+    private val is24HourFormat: Is24HourFormat,
 ) {
 
-    private val timeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault())
-    private val dateTimeThisYearFormatter = DateTimeFormatter.ofPattern("MMM d 'at' h:mm a", Locale.getDefault())
-    private val dateTimeWithYearFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy 'at' h:mm a", Locale.getDefault())
+    private fun getTimeFormatter(): DateTimeFormatter {
+        val pattern = if (is24HourFormat()) "HH:mm" else "h:mm a"
+        return DateTimeFormatter.ofPattern(pattern, Locale.getDefault())
+    }
+
+    private fun getDateTimeThisYearFormatter(): DateTimeFormatter {
+        val timePattern = if (is24HourFormat()) "HH:mm" else "h:mm a"
+        return DateTimeFormatter.ofPattern("MMM d 'at' $timePattern", Locale.getDefault())
+    }
+
+    private fun getDateTimeWithYearFormatter(): DateTimeFormatter {
+        val timePattern = if (is24HourFormat()) "HH:mm" else "h:mm a"
+        return DateTimeFormatter.ofPattern("MMM d, yyyy 'at' $timePattern", Locale.getDefault())
+    }
 
     /**
      * Formats the older of two timestamps (products and variations) into a user-friendly string.
@@ -60,7 +72,7 @@ class WooPosDateFormatter @Inject constructor(
         val nowDateTime = ZonedDateTime.ofInstant(now, clock.zone)
         val date = dateTime.toLocalDate()
         val today = nowDateTime.toLocalDate()
-        val formattedTime = dateTime.format(timeFormatter)
+        val formattedTime = dateTime.format(getTimeFormatter())
 
         return when {
             date == today -> {
@@ -70,10 +82,10 @@ class WooPosDateFormatter @Inject constructor(
                 context.getString(R.string.woopos_date_yesterday_at, formattedTime)
             }
             date.year == today.year -> {
-                dateTime.format(dateTimeThisYearFormatter)
+                dateTime.format(getDateTimeThisYearFormatter())
             }
             else -> {
-                dateTime.format(dateTimeWithYearFormatter)
+                dateTime.format(getDateTimeWithYearFormatter())
             }
         }
     }

@@ -19,12 +19,12 @@ class WooPosDateFormatterTest {
     private val context: Context = mock()
     private val fixedInstant = Instant.parse("2024-01-15T15:30:00Z")
     private val fixedClock = Clock.fixed(fixedInstant, ZoneId.of("UTC"))
-    private lateinit var formatter: WooPosDateFormatter
+    private val is24HourFormat: Is24HourFormat = mock()
+    private var formatter: WooPosDateFormatter = WooPosDateFormatter(context, fixedClock, is24HourFormat)
 
     @Before
     fun setup() {
-        formatter = WooPosDateFormatter(context, fixedClock)
-
+        whenever(is24HourFormat()).thenReturn(false)
         whenever(context.getString(R.string.woopos_date_never)).thenReturn("Never")
         whenever(context.getString(R.string.woopos_date_just_now)).thenReturn("Just now")
         whenever(context.getString(eq(R.string.woopos_date_today_at), any())).thenAnswer { invocation ->
@@ -194,5 +194,40 @@ class WooPosDateFormatterTest {
 
         // THEN
         assertThat(result).isEqualTo("Yesterday at 11:59 PM")
+    }
+
+    @Test
+    fun `when 24-hour format is enabled, then formatLastUpdateTimestamp uses 24-hour time`() {
+        // GIVEN
+        whenever(is24HourFormat()).thenReturn(true)
+        val now = ZonedDateTime.ofInstant(fixedInstant, fixedClock.zone)
+        val earlierToday = now.minusHours(3)
+        val timestamp = earlierToday.toInstant().toEpochMilli()
+
+        // WHEN
+        val result = formatter.formatCatalogLastUpdate(timestamp, null)
+
+        // THEN
+        assertThat(result).isEqualTo("Today at 12:30")
+    }
+
+    @Test
+    fun `when time format changes during runtime, then formatter uses new format`() {
+        // GIVEN
+        val now = ZonedDateTime.ofInstant(fixedInstant, fixedClock.zone)
+        val earlierToday = now.minusHours(3)
+        val timestamp = earlierToday.toInstant().toEpochMilli()
+
+        // WHEN - First with 12-hour format
+        whenever(is24HourFormat()).thenReturn(false)
+        val result12Hour = formatter.formatCatalogLastUpdate(timestamp, null)
+
+        // WHEN - Then with 24-hour format
+        whenever(is24HourFormat()).thenReturn(true)
+        val result24Hour = formatter.formatCatalogLastUpdate(timestamp, null)
+
+        // THEN
+        assertThat(result12Hour).isEqualTo("Today at 12:30 PM")
+        assertThat(result24Hour).isEqualTo("Today at 12:30")
     }
 }
