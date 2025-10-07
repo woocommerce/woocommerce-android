@@ -20,6 +20,7 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
 ) {
     companion object {
         private val ALLOWED_COUNTRIES = setOf("us", "gb")
+        private const val CURRENT_USER_NOTIFICATION_DELAY_MINUTES = 5L
     }
 
     suspend fun schedularPotentialUserSurveyNotification() {
@@ -42,7 +43,7 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
         ) {
             localNotificationScheduler.scheduleNotification(
                 LocalNotification.WooPosSurveyCurrentUserNotification(
-                    delay = TimeUnit.MINUTES.toMillis(5),
+                    delay = TimeUnit.MINUTES.toMillis(CURRENT_USER_NOTIFICATION_DELAY_MINUTES),
                     siteId = selectedSite.get().siteId
                 )
             )
