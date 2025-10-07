@@ -8,6 +8,7 @@
 23.4
 -----
 - [*] Fixed an issue where Blaze campaign creation could fail for products using PDF thumbnails as images [https://github.com/woocommerce/woocommerce-android/pull/14642]
+- [*] Fixed a rare media upload error [https://github.com/woocommerce/woocommerce-android/pull/14716]
 
 23.3.1
 -----
