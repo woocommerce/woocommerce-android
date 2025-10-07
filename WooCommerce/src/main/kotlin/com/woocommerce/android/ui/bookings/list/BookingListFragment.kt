@@ -4,21 +4,47 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentBookingListBinding
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.util.TabletLayoutSetupHelper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-@AndroidEntryPoint
-class BookingListFragment : TopLevelFragment() {
+private const val TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY = "non_root_navigation_in_detail_pane"
 
+@AndroidEntryPoint
+class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
+    @Inject
+    lateinit var tabletLayoutSetupHelper: TabletLayoutSetupHelper
+
+    private var _binding: FragmentBookingListBinding? = null
+    private val binding get() = _binding!!
+
+    override val twoPaneLayoutGuideline
+        get() = binding.twoPaneLayoutGuideline
+    override val listPaneContainer: View
+        get() = binding.listPaneContainer
+    override val detailPaneContainer: View
+        get() = binding.detailNavContainer
+    override var twoPanesWereShownBeforeConfigChange: Boolean = false
+    override val listFragment: Fragment
+        get() = this
+    override val navigation
+        get() = TabletLayoutSetupHelper.Screen.Navigation(
+            detailsNavGraphId = R.navigation.nav_graph_bookings_details,
+            detailsInitialBundle = null
+        )
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -34,14 +60,33 @@ class BookingListFragment : TopLevelFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
-            BookingListScreen(viewModel)
+        _binding = FragmentBookingListBinding.inflate(inflater, container, false)
+        binding.bookingListCompose.setContent {
+            WooTheme {
+                BookingListScreen(viewModel)
+            }
         }
+        return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        twoPanesWereShownBeforeConfigChange = savedInstanceState?.getBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            false
+        ) ?: false
+        tabletLayoutSetupHelper.onRootFragmentCreated(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         handleEvents()
         handleBottomNavigationVisibility()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun handleEvents() {
@@ -50,11 +95,19 @@ class BookingListFragment : TopLevelFragment() {
                 is BookingListViewModel.NavigateToFilters -> findNavController().navigate(
                     BookingListFragmentDirections.actionBookingListFragmentToBookingFilterList()
                 )
-
-                is BookingListViewModel.NavigateToBookingDetails -> findNavController().navigate(
-                    BookingListFragmentDirections.actionBookingListFragmentToBookingDetailsFragment(event.bookingId)
-                )
-
+                is BookingListViewModel.NavigateToBookingDetails -> {
+                    tabletLayoutSetupHelper.openItemDetails(
+                        tabletNavigateTo = {
+                            R.id.nav_graph_bookings_details to bundleOf("bookingId" to event.bookingId)
+                        },
+                        navigateWithPhoneNavigation = {
+                            findNavController().navigate(
+                                BookingListFragmentDirections
+                                    .actionBookingListFragmentToBookingDetailsFragment(event.bookingId)
+                            )
+                        }
+                    )
+                }
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
@@ -68,5 +121,13 @@ class BookingListFragment : TopLevelFragment() {
                 (activity as? MainActivity)?.showBottomNav()
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            _binding?.detailNavContainer?.isVisible == true && _binding?.listPaneContainer?.isVisible == true
+        )
+        super.onSaveInstanceState(outState)
     }
 }
