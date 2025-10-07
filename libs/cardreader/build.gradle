@@ -35,8 +35,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     runtimeOnly(libs.kotlinx.coroutines.android)
 
+    testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
-    testRuntimeOnly(libs.kotlin.test.junit)
+    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.assertj.core)
     testImplementation(libs.kotlinx.coroutines.test)
 }
