@@ -7,6 +7,7 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 
 @Dao
@@ -18,11 +19,14 @@ interface BookingsDao {
             AND (:startDateBefore IS NULL OR start < :startDateBefore)
             AND (:startDateAfter IS NULL OR start > :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
-            ORDER BY dateCreated DESC
+            ORDER BY
+                CASE WHEN :order = 'ASC' THEN start END ASC,
+                CASE WHEN :order = 'DESC' THEN start END DESC
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
             """
     }
 
+    @Suppress("LongParameterList")
     @Query(DEFAULT_SELECT_QUERY)
     fun observeBookings(
         localSiteId: LocalId,
@@ -30,8 +34,10 @@ interface BookingsDao {
         startDateBefore: Long?,
         startDateAfter: Long?,
         customerId: Long?,
+        order: BookingsOrderOption
     ): Flow<List<BookingEntity>>
 
+    @Suppress("LongParameterList")
     @Query(DEFAULT_SELECT_QUERY)
     suspend fun getBookings(
         localSiteId: LocalId,
@@ -39,6 +45,7 @@ interface BookingsDao {
         startDateBefore: Long?,
         startDateAfter: Long?,
         customerId: Long?,
+        order: BookingsOrderOption
     ): List<BookingEntity>
 
     @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id = :bookingId LIMIT 1")
@@ -56,7 +63,8 @@ interface BookingsDao {
     fun observeBookings(
         localSiteId: LocalId,
         limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList()
+        filters: List<BookingsFilterOption> = emptyList(),
+        order: BookingsOrderOption
     ): Flow<List<BookingEntity>> {
         val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
         val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
@@ -67,13 +75,15 @@ interface BookingsDao {
             startDateBefore = dateRangeFilter?.before?.epochSecond,
             startDateAfter = dateRangeFilter?.after?.epochSecond,
             customerId = customerFilter?.customerId,
+            order = order
         )
     }
 
     suspend fun getBookings(
         localSiteId: LocalId,
         limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList()
+        filters: List<BookingsFilterOption> = emptyList(),
+        order: BookingsOrderOption
     ): List<BookingEntity> {
         val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
         val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
@@ -84,6 +94,7 @@ interface BookingsDao {
             startDateBefore = dateRangeFilter?.before?.epochSecond,
             startDateAfter = dateRangeFilter?.after?.epochSecond,
             customerId = customerFilter?.customerId,
+            order = order
         )
     }
 }

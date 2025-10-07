@@ -36,7 +36,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         onBlocking {
             loadBookings(
                 searchQuery = anyOrNull(),
-                filters = any()
+                filters = any(),
+                sortBy = any()
             )
         } doReturn Result.success(Unit)
         onBlocking { loadMore() } doReturn Result.success(Unit)
@@ -72,7 +73,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        verify(bookingListHandler).loadBookings(searchQuery = eq(null), filters = any())
+        verify(bookingListHandler).loadBookings(searchQuery = eq(null), filters = any(), sortBy = any())
 
         val state = viewModel.state.getOrAwaitValue().contentState
         assertThat(state.bookings).hasSize(1)
@@ -111,7 +112,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         verify(bookingListHandler, times(2)).loadBookings(
             searchQuery = eq(null),
-            filters = any()
+            filters = any(),
+            sortBy = any()
         )
     }
 
@@ -151,7 +153,7 @@ class BookingListViewModelTest : BaseUnitTest() {
     fun `when booking handler fails to load, then show error snackbar`() = testBlocking {
         // GIVEN
         setup {
-            whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), filters = any()))
+            whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), filters = any(), sortBy = any()))
                 .thenReturn(Result.failure(Exception("Network error")))
         }
 
@@ -218,7 +220,8 @@ class BookingListViewModelTest : BaseUnitTest() {
                         BookingListTab.Upcoming.asDateRangeFilter()
                     }
                 )
-            )
+            ),
+            sortBy = any()
         )
     }
 
@@ -234,43 +237,6 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         val withSheet = viewModel.state.getOrAwaitValue()
         assertThat(withSheet.sortBottomSheetState).isNotNull()
-    }
-
-    @Test
-    fun `when selecting sort in one tab, then other tabs keep their own selection`() = testBlocking {
-        // GIVEN
-        setup()
-
-        // Open sheet on Today and select OldestToNewest
-        val s1 = viewModel.state.getOrAwaitValue()
-        s1.controlsState.onSortClick()
-        val sheet1 = viewModel.state.getOrAwaitValue().sortBottomSheetState!!
-        sheet1.onSelect(BookingListSortOption.OldestToNewest)
-
-        // Sheet should be hidden after selection
-        val afterSelectToday = viewModel.state.getOrAwaitValue()
-        assertThat(afterSelectToday.sortBottomSheetState).isNull()
-
-        // Re-open and ensure Today remembers OldestToNewest
-        afterSelectToday.controlsState.onSortClick()
-        val sheetTodayAgain = viewModel.state.getOrAwaitValue().sortBottomSheetState!!
-        assertThat(sheetTodayAgain.selectedOption).isEqualTo(BookingListSortOption.OldestToNewest)
-        sheetTodayAgain.onDismiss()
-
-        // Switch to Upcoming and verify default is NewestToOldest
-        val stateAfterDismiss = viewModel.state.getOrAwaitValue()
-        stateAfterDismiss.tabState.onTabChanged(BookingListTab.Upcoming)
-        val upcomingState = viewModel.state.getOrAwaitValue()
-        upcomingState.controlsState.onSortClick()
-        val sheetUpcoming = viewModel.state.getOrAwaitValue().sortBottomSheetState!!
-        assertThat(sheetUpcoming.selectedOption).isEqualTo(BookingListSortOption.NewestToOldest)
-
-        // Switch back to Today and ensure it still holds its own selection (OldestToNewest)
-        upcomingState.tabState.onTabChanged(BookingListTab.Today)
-        val backToToday = viewModel.state.getOrAwaitValue()
-        backToToday.controlsState.onSortClick()
-        val sheetBackToToday = viewModel.state.getOrAwaitValue().sortBottomSheetState!!
-        assertThat(sheetBackToToday.selectedOption).isEqualTo(BookingListSortOption.OldestToNewest)
     }
 
     @Test
@@ -301,7 +267,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         verify(bookingListHandler).loadBookings(
             searchQuery = eq("test query"),
-            filters = any()
+            filters = any(),
+            sortBy = any()
         )
     }
 
@@ -323,7 +290,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         assertThat(clearedState.searchState.isSearchActive).isFalse()
         verify(bookingListHandler, times(2)).loadBookings(
             searchQuery = eq(null),
-            filters = any()
+            filters = any(),
+            sortBy = any()
         )
     }
 
