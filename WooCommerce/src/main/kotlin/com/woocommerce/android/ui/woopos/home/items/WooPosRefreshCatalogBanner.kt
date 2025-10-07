@@ -65,7 +65,9 @@ fun WooPosRefreshCatalogBanner(
                     painter = painterResource(id = R.drawable.ic_woo_pos_info_banner),
                     tint = MaterialTheme.colorScheme.onSurface,
                     contentDescription = null,
-                    modifier = Modifier.size(48.dp).align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .size(48.dp)
+                        .align(Alignment.CenterVertically)
                 )
                 Column(
                     verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
