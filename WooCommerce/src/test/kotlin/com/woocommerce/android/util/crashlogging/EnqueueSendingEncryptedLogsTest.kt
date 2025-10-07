@@ -6,7 +6,6 @@ import com.automattic.encryptedlogging.EncryptedLogging
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestScope
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -36,7 +35,6 @@ class EnqueueSendingEncryptedLogsTest : BaseUnitTest() {
             encryptedLogging = encryptedLogging,
             encryptedLogsFileProvider = encryptedLogsFileProvider,
             networkStatus = networkStatus,
-            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
         )
     }
 
