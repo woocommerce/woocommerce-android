@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.list
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -39,7 +40,15 @@ class BookingListViewModel @Inject constructor(
     private val bookingListHandler: BookingListHandler,
     private val filtersBuilder: BookingListFiltersBuilder,
     private val bookingMapper: BookingMapper,
+    private val isWindowClassLargeThanCompact: com.woocommerce.android.util.IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedStateHandle) {
+
+    companion object {
+        @VisibleForTesting
+        const val KEY_BOOKING_SELECTED_ON_BIG_SCREEN = "key_booking_selected_on_big_screen"
+    }
+
+    private val stateHandle = savedStateHandle
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
     private val searchQuery = savedStateHandle.getNullableStateFlow(
@@ -55,13 +64,30 @@ class BookingListViewModel @Inject constructor(
 
     private val sortOption = savedStateHandle.getStateFlow(viewModelScope, BookingListSortOption.NewestToOldest)
 
+    private var selectedBookingIdOnBigScreen: Long?
+        get() = stateHandle[KEY_BOOKING_SELECTED_ON_BIG_SCREEN]
+        set(value) = stateHandle.set(KEY_BOOKING_SELECTED_ON_BIG_SCREEN, value)
+
     private val isSortSheetVisible = MutableStateFlow(false)
 
     private var bookingsFetchJob: Job? = null
     private var bookingsLoadMoreJob: Job? = null
 
+    private fun openFirstLoadedBookingOnTablet(bookings: List<com.woocommerce.android.ui.bookings.Booking>) {
+        if (isWindowClassLargeThanCompact()) {
+            if (bookings.isNotEmpty()) {
+                if (selectedBookingIdOnBigScreen == null) {
+                    val firstId = bookings.first().id.value
+                    selectedBookingIdOnBigScreen = firstId
+                    triggerEvent(NavigateToBookingDetails(firstId))
+                }
+            }
+        }
+    }
+
     private val contentState = combine(
         bookingListHandler.bookingsFlow.map { bookings ->
+            openFirstLoadedBookingOnTablet(bookings)
             with(bookingMapper) { bookings.map { it.toListItem() } }
         },
         loadingState
@@ -225,6 +251,9 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onBookingClick(bookingId: Long) {
+        if (isWindowClassLargeThanCompact()) {
+            selectedBookingIdOnBigScreen = bookingId
+        }
         triggerEvent(NavigateToBookingDetails(bookingId))
     }
 
