@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
@@ -326,7 +327,11 @@ class WCOrderStore @Inject internal constructor(
         )
     }
 
-    data class OrderError(val type: OrderErrorType = GENERIC_ERROR, val message: String = "") : OnChangedError
+    data class OrderError(
+        val type: OrderErrorType = GENERIC_ERROR,
+        val message: String = "",
+        val networkError: WPAPINetworkError? = null
+    ) : OnChangedError
 
     enum class OrderErrorType {
         INVALID_PARAM,
