@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,7 +37,8 @@ fun WooPosErrorScreen(
     secondaryButton: Button? = null
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
             .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             .padding(WooPosSpacing.XLarge.value.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -77,9 +77,7 @@ fun WooPosErrorScreen(
                 WooPosButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = Modifier
-                        .fillMaxWidth(.5f)
-                        .height(80.dp)
+                    modifier = WooPosErrorAndEmptyStateButtonModifier
                 )
             }
             secondaryButton?.let {
@@ -87,9 +85,7 @@ fun WooPosErrorScreen(
                 WooPosOutlinedButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = Modifier
-                        .fillMaxWidth(.5f)
-                        .height(80.dp)
+                    modifier = WooPosErrorAndEmptyStateButtonModifier
                 )
             }
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
