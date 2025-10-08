@@ -315,9 +315,9 @@ private fun EmptyView(
             .fillMaxSize()
             .padding(32.dp)
 
-        if (state.searchState.isSearchActive) {
+        if (state.searchState.query?.isNotEmpty() == true) {
             EmptySearchResultsView(
-                query = state.searchState.query.orEmpty(),
+                query = state.searchState.query,
                 modifier = innerEmptyViewModifier
             )
         } else {
