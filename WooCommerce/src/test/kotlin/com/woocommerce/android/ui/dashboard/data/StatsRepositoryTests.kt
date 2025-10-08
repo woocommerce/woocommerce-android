@@ -98,7 +98,8 @@ class StatsRepositoryTests : BaseUnitTest() {
                 revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
                 visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
                 forced = true,
-                includeVisitorStats = true
+                includeVisitorStats = true,
+                medium = "Widget",
             )
 
             val model = result.getOrNull()
@@ -136,7 +137,8 @@ class StatsRepositoryTests : BaseUnitTest() {
             revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             forced = true,
-            includeVisitorStats = true
+            includeVisitorStats = true,
+            medium = "Widget",
         )
 
         val model = result.getOrNull()
@@ -169,7 +171,8 @@ class StatsRepositoryTests : BaseUnitTest() {
             revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             forced = true,
-            includeVisitorStats = true
+            includeVisitorStats = true,
+            medium = "Widget",
         )
 
         assertThat(result.isFailure).isEqualTo(true)

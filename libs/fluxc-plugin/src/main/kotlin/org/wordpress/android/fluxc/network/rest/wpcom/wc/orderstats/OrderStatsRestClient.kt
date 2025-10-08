@@ -70,6 +70,7 @@ class OrderStatsRestClient @Inject constructor(
      * Possible non-generic errors:
      * [OrderStatsErrorType.INVALID_PARAM] if [granularity], [startDate], or [endDate] are invalid or incompatible
      */
+    @Suppress("LongParameterList")
     suspend fun fetchRevenueStats(
         site: SiteModel,
         granularity: StatsGranularity,
@@ -77,7 +78,7 @@ class OrderStatsRestClient @Inject constructor(
         endDate: String,
         perPage: Int,
         forceRefresh: Boolean = false,
-        revenueRangeId: String = "",
+        revenueRangeId: String,
         dateType: String = "date_created",
     ): FetchRevenueStatsResponsePayload {
         val url = WOOCOMMERCE.reports.revenue.stats.pathV4Analytics

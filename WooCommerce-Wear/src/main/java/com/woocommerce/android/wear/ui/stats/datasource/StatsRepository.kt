@@ -16,6 +16,7 @@ import com.woocommerce.android.wear.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.wear.extensions.getSiteId
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StoreStatsData.RevenueData
+import com.woocommerce.android.wear.ui.stats.range.StatsTimeRange
 import com.woocommerce.android.wear.ui.stats.range.TodayRangeData
 import com.woocommerce.android.wear.util.DateUtils
 import com.woocommerce.commons.DataParameters.ORDERS_COUNT
@@ -61,7 +62,8 @@ class StatsRepository @Inject constructor(
                 site = selectedSite,
                 granularity = StatsGranularity.DAYS,
                 startDate = todayRange.start.formatToYYYYmmDDhhmmss(),
-                endDate = todayRange.end.formatToYYYYmmDDhhmmss()
+                endDate = todayRange.end.formatToYYYYmmDDhhmmss(),
+                revenueRangeId = StatsTimeRange(todayRange.start, todayRange.end).toRevenueRangeId("Wear")
             )
         )
 
@@ -74,6 +76,12 @@ class StatsRepository @Inject constructor(
                 result.endDate.orEmpty()
             ).let { Result.success(it) }
         }
+    }
+
+    fun StatsTimeRange.toRevenueRangeId(medium: String): String {
+        return medium +
+            dateUtils.getYearMonthDayStringFromDate(start) +
+            dateUtils.getYearMonthDayStringFromDate(end)
     }
 
     suspend fun fetchVisitorStats(

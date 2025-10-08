@@ -374,4 +374,6 @@ object DateUtils {
     }
 
     fun getDatePeriod(startDate: String, endDate: String) = "$startDate-$endDate"
+
+    fun getYearMonthDayStringFromDate(date: Date): String = formatDate(DATE_FORMAT_DEFAULT, date)
 }

@@ -63,7 +63,7 @@ class StatsRepository @Inject constructor(
         range: StatsTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
-        revenueRangeId: String = ""
+        revenueRangeId: String,
     ): Result<WCRevenueStatsModel?> = fetchRevenueStats(
         range = range,
         granularity = granularity,
@@ -76,7 +76,7 @@ class StatsRepository @Inject constructor(
         range: StatsTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
-        revenueRangeId: String = "",
+        revenueRangeId: String,
         site: SiteModel
     ): Result<WCRevenueStatsModel?> {
         val result = wcStatsStore.fetchRevenueStats(
@@ -308,13 +308,15 @@ class StatsRepository @Inject constructor(
      * Even if the includeVisitorStats flag is set to true, errors fetching visitor
      * will be handled as null and only errors fetching the revenue stats will be processed.
      */
+    @Suppress("LongParameterList")
     suspend fun fetchStats(
         range: StatsTimeRange,
         revenueStatsGranularity: StatsGranularity,
         visitorStatsGranularity: StatsGranularity,
         forced: Boolean,
         includeVisitorStats: Boolean,
-        site: SiteModel = selectedSite.get()
+        site: SiteModel = selectedSite.get(),
+        medium: String,
     ): Result<SiteStats> = coroutineScope {
         val fetchVisitorStats = if (includeVisitorStats) {
             async {
@@ -334,6 +336,7 @@ class StatsRepository @Inject constructor(
                 range = range,
                 granularity = revenueStatsGranularity,
                 forced = forced,
+                revenueRangeId = range.toRevenueRangeId(medium),
                 site = site
             )
         }
@@ -355,6 +358,12 @@ class StatsRepository @Inject constructor(
                 )
             )
         }
+    }
+
+    fun StatsTimeRange.toRevenueRangeId(medium: String): String {
+        return medium +
+            DateUtils.getYearMonthDayStringFromDate(start) +
+            DateUtils.getYearMonthDayStringFromDate(end)
     }
 
     private fun supportsProductOnlyLeaderboardAndReportEndpoint(): Boolean {

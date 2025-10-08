@@ -385,7 +385,13 @@ class WCStatsStoreTest {
             )
             val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
             val endDate = DateUtils.getEndDateForSite(it)
-            val payload = FetchRevenueStatsPayload(it, StatsGranularity.DAYS, startDate, endDate)
+            val payload = FetchRevenueStatsPayload(
+                site = it,
+                granularity = StatsGranularity.DAYS,
+                startDate = startDate,
+                endDate = endDate,
+                revenueRangeId = "$startDate$endDate",
+            )
             wcStatsStore.fetchRevenueStats(payload)
 
             val timeOnSite = getCurrentDateTimeForSite(it, "yyyy-MM-dd'T'00:00:00")
@@ -430,7 +436,13 @@ class WCStatsStoreTest {
             )
             val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
             val endDate = DateUtils.getEndDateForSite(it)
-            val payload = FetchRevenueStatsPayload(it, StatsGranularity.DAYS, startDate, endDate)
+            val payload = FetchRevenueStatsPayload(
+                site = it,
+                granularity = StatsGranularity.DAYS,
+                startDate = startDate,
+                endDate = endDate,
+                revenueRangeId = "$startDate$endDate",
+            )
             wcStatsStore.fetchRevenueStats(payload)
 
             val timeOnSite = getCurrentDateTimeForSite(it, "yyyy-MM-dd'T'00:00:00")
@@ -482,8 +494,13 @@ class WCStatsStoreTest {
             )
             val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
             val endDate = DateUtils.formatDate("yyyy-MM-dd", Date())
-
-            val payload = FetchRevenueStatsPayload(it, StatsGranularity.DAYS, startDate, endDate)
+            val payload = FetchRevenueStatsPayload(
+                site = it,
+                granularity = StatsGranularity.DAYS,
+                startDate = startDate,
+                endDate = endDate,
+                revenueRangeId = "$startDate$endDate",
+            )
             wcStatsStore.fetchRevenueStats(payload)
 
             val timeOnSite = getCurrentDateTimeForSite(it, "yyyy-MM-dd'T'00:00:00")
@@ -527,7 +544,13 @@ class WCStatsStoreTest {
             )
             val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
             val endDate = DateUtils.getEndDateForSite(it)
-            val payload = FetchRevenueStatsPayload(it, StatsGranularity.DAYS, startDate, endDate)
+            val payload = FetchRevenueStatsPayload(
+                site = it,
+                granularity = StatsGranularity.DAYS,
+                startDate = startDate,
+                endDate = endDate,
+                revenueRangeId = "$startDate$endDate",
+            )
             wcStatsStore.fetchRevenueStats(payload)
 
             val timeOnSite = getCurrentDateTimeForSite(it, "yyyy-MM-dd'T'00:00:00")
@@ -587,10 +610,11 @@ class WCStatsStoreTest {
         )
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site1,
-                currentDayGranularity,
-                currentDayStatsModel.startDate,
-                currentDayStatsModel.endDate
+                site = site1,
+                granularity = currentDayGranularity,
+                startDate = currentDayStatsModel.startDate,
+                endDate = currentDayStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
@@ -634,10 +658,11 @@ class WCStatsStoreTest {
         ).thenReturn(currentWeekPayload)
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site1,
-                currentWeekGranularity,
-                currentWeekStatsModel.startDate,
-                currentWeekStatsModel.endDate
+                site = site1,
+                granularity = currentWeekGranularity,
+                startDate = currentWeekStatsModel.startDate,
+                endDate = currentWeekStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
@@ -681,10 +706,11 @@ class WCStatsStoreTest {
         ).thenReturn(currentMonthPayload)
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site1,
-                currentMonthGranularity,
-                currentMonthStatsModel.startDate,
-                currentMonthStatsModel.endDate
+                site = site1,
+                granularity = currentMonthGranularity,
+                startDate = currentMonthStatsModel.startDate,
+                endDate = currentMonthStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
@@ -728,10 +754,11 @@ class WCStatsStoreTest {
         ).thenReturn(allSiteCurrentDayPayload)
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site2,
-                allSiteCurrentDayGranularity,
-                altSiteOrderStatsModel.startDate,
-                altSiteOrderStatsModel.endDate
+                site = site2,
+                granularity = allSiteCurrentDayGranularity,
+                startDate = altSiteOrderStatsModel.startDate,
+                endDate = altSiteOrderStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
@@ -768,10 +795,11 @@ class WCStatsStoreTest {
         ).thenReturn(nonExistentPayload)
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site2,
-                nonExistentSiteGranularity,
-                altSiteOrderStatsModel.startDate,
-                altSiteOrderStatsModel.endDate
+                site = site2,
+                granularity = nonExistentSiteGranularity,
+                startDate = altSiteOrderStatsModel.startDate,
+                endDate = altSiteOrderStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
@@ -810,7 +838,8 @@ class WCStatsStoreTest {
                 site = site2,
                 granularity = StatsGranularity.YEARS,
                 startDate = "2019-01-01",
-                endDate = "2019-01-07"
+                endDate = "2019-01-07",
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 

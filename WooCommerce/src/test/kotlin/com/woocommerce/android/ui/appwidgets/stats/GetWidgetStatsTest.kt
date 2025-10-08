@@ -129,8 +129,17 @@ class GetWidgetStatsTest : BaseUnitTest() {
             whenever(networkStatus.isConnected()).thenReturn(true)
 
             // Given fetching the stats fails
-            whenever(statsRepository.fetchStats(any(), any(), any(), eq(true), eq(true), eq(defaultSiteModel)))
-                .thenReturn(Result.failure(Exception(defaultErrorMessage)))
+            whenever(
+                statsRepository.fetchStats(
+                    any(),
+                    any(),
+                    any(),
+                    eq(true),
+                    eq(true),
+                    eq(defaultSiteModel),
+                    eq("Widget"),
+                )
+            ).thenReturn(Result.failure(Exception(defaultErrorMessage)))
 
             // When GetWidgetStats is invoked
             val result = sut.invoke(defaultRange, defaultSiteModel)
@@ -149,8 +158,17 @@ class GetWidgetStatsTest : BaseUnitTest() {
             whenever(networkStatus.isConnected()).thenReturn(true)
 
             // Given fetching the stats succeed
-            whenever(statsRepository.fetchStats(any(), any(), any(), eq(true), eq(true), eq(defaultSiteModel)))
-                .thenReturn(Result.success(defaultResponse))
+            whenever(
+                statsRepository.fetchStats(
+                    any(),
+                    any(),
+                    any(),
+                    eq(true),
+                    eq(true),
+                    eq(defaultSiteModel),
+                    eq("Widget"),
+                )
+            ).thenReturn(Result.success(defaultResponse))
 
             // When GetWidgetStats is invoked
             val result = sut.invoke(defaultRange, defaultSiteModel)
