@@ -43,15 +43,15 @@ class BookingsStore @Inject internal constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    if (page == 1 && filters.isEmpty() && query.isNullOrEmpty()) {
-                        // Clear existing bookings when fetching the first page
-                        bookingsDao.deleteAllForSite(site.localId())
-                    }
-
                     val orderIds = response.result.map { it.orderId }.distinct().filterNot { it == 0L }
                     val ordersResult = fetchOrders(site, orderIds)
                     if (ordersResult.isError) {
                         return@withDefaultContext WooResult(ordersResult.error)
+                    }
+
+                    if (page == 1 && filters.isEmpty() && query.isNullOrEmpty()) {
+                        // Clear existing bookings when fetching the first page
+                        bookingsDao.deleteAllForSite(site.localId())
                     }
 
                     val entities = response.result.map {
