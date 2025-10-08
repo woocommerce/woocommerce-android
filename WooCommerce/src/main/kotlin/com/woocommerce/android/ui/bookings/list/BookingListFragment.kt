@@ -4,15 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBookingListBinding
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.bookings.BookingsCommunicationViewModel
 import com.woocommerce.android.ui.bookings.details.BookingDetailsFragment
 import com.woocommerce.android.ui.bookings.details.BookingDetailsFragmentArgs
 import com.woocommerce.android.ui.compose.theme.WooTheme
@@ -53,6 +54,7 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
         get() = AppBarStatus.Hidden
 
     private val viewModel: BookingListViewModel by viewModels()
+    private val bookingsCommunicationViewModel: BookingsCommunicationViewModel by activityViewModels()
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -102,9 +104,9 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
                 is BookingListViewModel.NavigateToBookingDetails -> {
                     tabletLayoutSetupHelper.openItemDetails(
                         tabletNavigateTo = {
-                            R.id.nav_graph_bookings_details to bundleOf(
-                                "mode" to BookingDetailsFragment.Mode.ShowBooking(event.bookingId)
-                            )
+                            R.id.nav_graph_bookings_details to BookingDetailsFragmentArgs(
+                                mode = BookingDetailsFragment.Mode.ShowBooking(event.bookingId)
+                            ).toBundle()
                         },
                         navigateWithPhoneNavigation = {
                             findNavController().navigate(
@@ -117,6 +119,23 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
                     )
                 }
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+            }
+        }
+
+        bookingsCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is BookingsCommunicationViewModel.CommunicationEvent.BookingSelected -> {
+                    tabletLayoutSetupHelper.openItemDetails(
+                        tabletNavigateTo = {
+                            R.id.nav_graph_bookings_details to BookingDetailsFragmentArgs(
+                                mode = BookingDetailsFragment.Mode.ShowBooking(event.bookingId)
+                            ).toBundle()
+                        },
+                        navigateWithPhoneNavigation = { /* No-op, won't happen */ }
+                    )
+                }
+
+                else -> event.isHandled = false
             }
         }
     }
