@@ -34,7 +34,7 @@ class BookingMapper @Inject constructor(
             name = order.productInfo.name.ifEmpty { "-" },
             customerName = order.customerInfo.let {
                 "${it.billingFirstName} ${it.billingLastName}"
-            }.trim().ifEmpty { "Guest" },
+            }.trim(),
             attendanceStatus = BookingAttendanceStatus.BOOKED,
             status = status.toUiModel()
         )
@@ -62,7 +62,7 @@ class BookingMapper @Inject constructor(
 
     fun BookingCustomerInfo.toCustomerDetailsModel(): BookingCustomerDetailsModel {
         return BookingCustomerDetailsModel(
-            name = "$billingFirstName $billingLastName".trim().ifEmpty { "Guest" },
+            name = "$billingFirstName $billingLastName".trim(),
             email = billingEmail.ifEmpty { null },
             phone = billingPhone.ifEmpty { null },
             billingAddressLines = listOfNotNull(

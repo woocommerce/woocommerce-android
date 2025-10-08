@@ -45,7 +45,7 @@ fun BookingCustomerDetails(
                 .background(color = MaterialTheme.colorScheme.surfaceContainer)
         ) {
             HorizontalDivider(thickness = 0.5.dp)
-            CustomerDetailsRow(value = model.name)
+            CustomerDetailsRow(value = model.name.ifEmpty { stringResource(R.string.orderdetail_customer_name_default) })
             model.email?.let { email ->
                 CustomerDetailsRow(
                     value = email,
