@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -70,16 +69,7 @@ class BookingDetailsViewModel @Inject constructor(
             }
         },
         bookingsAppointmentDetails = booking.toAppointmentDetailsModel(),
-        bookingCustomerDetails = BookingCustomerDetailsModel(
-            name = "Margarita Nikolaevna",
-            email = "margarita@example.com",
-            phone = "+1 555-123-4567",
-            billingAddressLines = listOf(
-                "238 Willow Creek Drive",
-                "Montgomery AL 36109",
-                "United States"
-            )
-        ),
+        bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
         bookingPaymentDetails = BookingPaymentDetailsModel(
             service = "$55.00",
             tax = "$4.50",
