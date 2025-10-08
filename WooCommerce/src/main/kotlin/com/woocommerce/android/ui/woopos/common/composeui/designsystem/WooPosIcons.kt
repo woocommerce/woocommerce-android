@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.ui.woopos.common.composeui.designsystem
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -55,6 +56,21 @@ object WooPosIcons {
         get() = exit(
             color = Color.White
         )
+
+    val CouponsEmpty: ImageVector
+        @Composable
+        get() {
+            val tertiaryColor = if (isSystemInDarkTheme()) {
+                Color(0xFF720EEC)
+            } else {
+                Color(0xFF3C087E)
+            }
+            return couponsEmpty(
+                primaryColor = MaterialTheme.colorScheme.primary,
+                secondaryColor = MaterialTheme.colorScheme.secondary,
+                tertiaryColor = tertiaryColor
+            )
+        }
 
     private fun notFound(
         primaryColor: Color,
@@ -440,6 +456,114 @@ object WooPosIcons {
                 curveToRelative(1.1f, 0f, 2f, -0.9f, 2f, -2f)
                 verticalLineTo(5f)
                 curveToRelative(0f, -1.1f, -0.9f, -2f, -2f, -2f)
+                close()
+            }
+        }.build()
+    }
+
+    private fun couponsEmpty(
+        primaryColor: Color,
+        secondaryColor: Color,
+        tertiaryColor: Color
+    ): ImageVector {
+        return ImageVector.Builder(
+            name = "CouponsEmpty",
+            defaultWidth = 104.dp,
+            defaultHeight = 87.dp,
+            viewportWidth = 104f,
+            viewportHeight = 87f
+        ).apply {
+            path(fill = SolidColor(primaryColor)) {
+                moveTo(98.99f, 48.45f)
+                curveTo(98.26f, 46.7f, 95.82f, 47.05f, 95.11f, 45.35f)
+                curveTo(94.4f, 43.64f, 96.38f, 42.16f, 95.65f, 40.41f)
+                curveTo(94.93f, 38.66f, 92.48f, 39.01f, 91.77f, 37.3f)
+                curveTo(91.07f, 35.6f, 93.05f, 34.12f, 92.32f, 32.37f)
+                curveTo(91.59f, 30.62f, 89.15f, 30.97f, 88.44f, 29.26f)
+                curveTo(87.73f, 27.56f, 89.71f, 26.07f, 88.98f, 24.32f)
+                curveTo(88.26f, 22.57f, 85.81f, 22.92f, 85.1f, 21.22f)
+                curveTo(84.4f, 19.51f, 86.38f, 18.03f, 85.65f, 16.28f)
+                curveTo(84.92f, 14.53f, 82.48f, 14.88f, 81.77f, 13.17f)
+                curveTo(81.06f, 11.47f, 83.04f, 9.99f, 82.31f, 8.24f)
+                curveTo(81.59f, 6.49f, 79.14f, 6.84f, 78.43f, 5.13f)
+                curveTo(77.78f, 3.55f, 79.51f, 1.95f, 79.2f, 0.33f)
+                lineTo(0f, 32.97f)
+                curveTo(0.73f, 34.72f, 3.17f, 34.37f, 3.88f, 36.08f)
+                curveTo(4.59f, 37.78f, 2.61f, 39.26f, 3.33f, 41.01f)
+                curveTo(4.06f, 42.76f, 6.51f, 42.41f, 7.21f, 44.12f)
+                curveTo(7.92f, 45.82f, 5.94f, 47.31f, 6.67f, 49.06f)
+                curveTo(7.4f, 50.8f, 9.84f, 50.46f, 10.55f, 52.16f)
+                curveTo(11.26f, 53.87f, 9.28f, 55.35f, 10f, 57.1f)
+                curveTo(10.73f, 58.85f, 13.18f, 58.5f, 13.88f, 60.21f)
+                curveTo(14.59f, 61.91f, 12.61f, 63.39f, 13.34f, 65.14f)
+                curveTo(14.07f, 66.89f, 16.51f, 66.54f, 17.22f, 68.25f)
+                curveTo(17.93f, 69.95f, 15.95f, 71.44f, 16.67f, 73.19f)
+                curveTo(17.4f, 74.93f, 19.85f, 74.59f, 20.55f, 76.29f)
+                curveTo(21.21f, 77.87f, 19.47f, 79.48f, 19.79f, 81.1f)
+                lineTo(40.72f, 72.44f)
+                lineTo(99f, 48.46f)
+                lineTo(98.99f, 48.45f)
+                close()
+            }
+            path(fill = SolidColor(tertiaryColor)) {
+                moveTo(19.78f, 81.1f)
+                lineTo(40.71f, 72.44f)
+                lineTo(75.67f, 58.06f)
+                horizontalLineTo(10.77f)
+                curveTo(11.8f, 58.8f, 13.34f, 58.92f, 13.88f, 60.21f)
+                curveTo(14.59f, 61.92f, 12.6f, 63.4f, 13.33f, 65.15f)
+                curveTo(14.06f, 66.9f, 16.5f, 66.55f, 17.21f, 68.25f)
+                curveTo(17.92f, 69.96f, 15.94f, 71.44f, 16.67f, 73.19f)
+                curveTo(17.4f, 74.94f, 19.84f, 74.59f, 20.55f, 76.3f)
+                curveTo(21.2f, 77.88f, 19.47f, 79.48f, 19.79f, 81.1f)
+                lineTo(19.78f, 81.1f)
+                close()
+            }
+            path(fill = SolidColor(secondaryColor)) {
+                moveTo(92.23f, 60.99f)
+                curveTo(92.23f, 54.49f, 97.5f, 49.23f, 104f, 49.23f)
+                verticalLineTo(34.98f)
+                horizontalLineTo(25.82f)
+                verticalLineTo(49.23f)
+                curveTo(32.32f, 49.23f, 37.59f, 54.49f, 37.59f, 60.99f)
+                curveTo(37.59f, 67.48f, 32.32f, 72.75f, 25.82f, 72.75f)
+                verticalLineTo(86.99f)
+                horizontalLineTo(104f)
+                verticalLineTo(72.75f)
+                curveTo(97.5f, 72.75f, 92.23f, 67.48f, 92.23f, 60.99f)
+                close()
+            }
+            path(fill = SolidColor(primaryColor)) {
+                moveTo(50.92f, 54.75f)
+                curveTo(50.92f, 51.19f, 53.46f, 48.42f, 57.34f, 48.42f)
+                curveTo(61.21f, 48.42f, 63.79f, 51.19f, 63.79f, 54.75f)
+                curveTo(63.79f, 58.32f, 61.25f, 61.02f, 57.34f, 61.02f)
+                curveTo(53.43f, 61.02f, 50.92f, 58.28f, 50.92f, 54.75f)
+                close()
+                moveTo(60.37f, 54.75f)
+                curveTo(60.37f, 52.66f, 59.08f, 51.38f, 57.33f, 51.38f)
+                curveTo(55.58f, 51.38f, 54.33f, 52.66f, 54.33f, 54.75f)
+                curveTo(54.33f, 56.84f, 55.62f, 58.05f, 57.33f, 58.05f)
+                curveTo(59.04f, 58.05f, 60.37f, 56.76f, 60.37f, 54.75f)
+                close()
+                moveTo(54.87f, 74.1f)
+                lineTo(71.03f, 48.8f)
+                horizontalLineTo(73.92f)
+                lineTo(57.71f, 74.1f)
+                horizontalLineTo(54.86f)
+                horizontalLineTo(54.87f)
+                close()
+                moveTo(64.85f, 68.3f)
+                curveTo(64.85f, 64.73f, 67.39f, 61.93f, 71.26f, 61.93f)
+                curveTo(75.14f, 61.93f, 77.72f, 64.73f, 77.72f, 68.3f)
+                curveTo(77.72f, 71.86f, 75.13f, 74.56f, 71.26f, 74.56f)
+                curveTo(67.4f, 74.56f, 64.85f, 71.83f, 64.85f, 68.3f)
+                close()
+                moveTo(74.3f, 68.3f)
+                curveTo(74.3f, 66.21f, 73.01f, 64.92f, 71.26f, 64.92f)
+                curveTo(69.51f, 64.92f, 68.26f, 66.21f, 68.26f, 68.3f)
+                curveTo(68.26f, 70.39f, 69.52f, 71.6f, 71.26f, 71.6f)
+                curveTo(73f, 71.6f, 74.3f, 70.34f, 74.3f, 68.3f)
                 close()
             }
         }.build()

@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -22,6 +21,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
@@ -94,7 +94,7 @@ private fun WooPosCouponsScreen(
 
             is WooPosCouponsViewState.Empty -> WooPosEmptyScreen(
                 modifier = Modifier.fillMaxSize(),
-                icon = painterResource(id = R.drawable.img_empty_coupon_list),
+                icon = WooPosIcons.CouponsEmpty,
                 title = stringResource(id = R.string.woopos_coupons_empty_list_title),
                 message = stringResource(id = R.string.woopos_coupons_empty_list_message),
                 contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
@@ -154,7 +154,7 @@ fun CouponsDisabledError() {
         WooPosErrorScreen(
             message = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_title),
             reason = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_message),
-            icon = painterResource(id = R.drawable.img_empty_coupon_list),
+            icon = WooPosIcons.CouponsEmpty,
         )
     }
 }
