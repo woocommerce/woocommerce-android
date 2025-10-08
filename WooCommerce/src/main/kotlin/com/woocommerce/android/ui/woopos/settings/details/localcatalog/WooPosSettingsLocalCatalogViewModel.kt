@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.ui.woopos.util.format.WooPosDateFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,6 +23,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
     private val selectedSite: SelectedSite,
     private val dateFormatter: WooPosDateFormatter,
+    private val preferencesRepository: WooPosPreferencesRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsLocalCatalogState())
     val state: StateFlow<WooPosSettingsLocalCatalogState> = _state.asStateFlow()
@@ -47,9 +50,12 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 lastFullUpdate = formattedTimestamp // TBD local catalog: Replace with full sync timestamp
             )
 
+            val allowCellularDataUpdate = preferencesRepository.allowCellularDataUpdate.first()
+
             _state.update {
                 it.copy(
                     catalogStatus = catalogStatus,
+                    allowCellularDataUpdate = allowCellularDataUpdate,
                     isLoading = false
                 )
             }
@@ -58,10 +64,11 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
 
     fun toggleCellularDataUpdate() {
         viewModelScope.launch {
+            val newValue = !_state.value.allowCellularDataUpdate
             _state.update {
-                it.copy(allowCellularDataUpdate = !it.allowCellularDataUpdate)
+                it.copy(allowCellularDataUpdate = newValue)
             }
-            // TBD local catalog: Save preference to shared preferences or data store
+            preferencesRepository.setAllowCellularDataUpdate(newValue)
         }
     }
 
