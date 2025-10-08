@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -29,13 +30,23 @@ class BookingListHandler @Inject constructor(
 
     private val searchQuery = MutableStateFlow<String?>(null)
     private val filters = MutableStateFlow<List<BookingsFilterOption>>(emptyList())
+    private val sortBy = MutableStateFlow(BookingListSortOption.NewestToOldest)
 
     private val searchResults = MutableStateFlow(emptyList<Booking>())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val bookingsFlow: Flow<List<Booking>> = combine(searchQuery, filters, page) { query, filters, page ->
-        if (query == null) {
-            bookingsRepository.observeBookings(limit = page * PAGE_SIZE, filters)
+    val bookingsFlow: Flow<List<Booking>> = combine(
+        searchQuery,
+        filters,
+        page,
+        sortBy
+    ) { query, filters, page, sortBy ->
+        if (query.isNullOrEmpty()) {
+            bookingsRepository.observeBookings(
+                limit = page * PAGE_SIZE,
+                filters = filters,
+                order = sortBy.toBookingsOrderOption()
+            )
         } else {
             searchResults
         }
@@ -43,8 +54,8 @@ class BookingListHandler @Inject constructor(
 
     suspend fun loadBookings(
         searchQuery: String? = null,
-        forceRefresh: Boolean = false,
-        filters: List<BookingsFilterOption> = emptyList()
+        filters: List<BookingsFilterOption> = emptyList(),
+        sortBy: BookingListSortOption
     ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
         page.value = 1
@@ -52,49 +63,49 @@ class BookingListHandler @Inject constructor(
 
         this.searchQuery.value = searchQuery
         this.filters.value = filters
+        this.sortBy.value = sortBy
 
         return@withLock if (searchQuery == null) {
-            if (forceRefresh) {
-                fetchBookings()
-            } else {
-                // Load from DB only
-                Result.success(Unit)
-            }
+            fetchBookings()
         } else {
             searchResults.value = emptyList()
             if (searchQuery.isEmpty()) {
-                // If the query is empty, clear search results directly
+                // If the query is empty, return cached results directly
                 canLoadMore.set(false)
                 Result.success(Unit)
             } else {
-                searchBookings()
+                fetchBookings()
             }
         }
     }
 
     suspend fun loadMore(): Result<Unit> = mutex.withLock {
         if (!canLoadMore.get()) return@withLock Result.success(Unit)
-        return if (searchQuery.value == null) {
-            fetchBookings()
-        } else {
-            searchBookings()
-        }
+        return fetchBookings()
     }
 
     private suspend fun fetchBookings(): Result<Unit> {
+        val isSearching = !searchQuery.value.isNullOrEmpty()
+        val order = sortBy.value.toBookingsOrderOption()
         return bookingsRepository.fetchBookings(
             page = page.value,
             perPage = PAGE_SIZE,
-            filters = filters.value
-        ).onSuccess { hasMorePages ->
-            canLoadMore.set(hasMorePages)
-            if (hasMorePages) {
+            query = searchQuery.value,
+            filters = filters.value,
+            order = order
+        ).onSuccess { result ->
+            canLoadMore.set(result.hasMorePages)
+            if (result.hasMorePages) {
                 page.update { it + 1 }
+            }
+            if (isSearching) {
+                searchResults.update { it + result.bookings }
             }
         }.map { }
     }
 
-    private suspend fun searchBookings(): Result<Unit> {
-        TODO("Not yet implemented")
+    private fun BookingListSortOption.toBookingsOrderOption() = when (this) {
+        BookingListSortOption.NewestToOldest -> BookingsOrderOption.DESC
+        BookingListSortOption.OldestToNewest -> BookingsOrderOption.ASC
     }
 }

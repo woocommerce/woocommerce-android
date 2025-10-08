@@ -4,48 +4,87 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.Booking
+import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
 
 @HiltViewModel
 class BookingDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     resourceProvider: ResourceProvider,
+    bookingsRepository: BookingsRepository,
+    private val bookingMapper: BookingMapper,
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: BookingDetailsFragmentArgs by savedState.navArgs()
 
-    private val _state = MutableStateFlow(
-        BookingDetailsViewState(
-            onCancelBooking = ::onCancelBooking,
-            onAttendanceStatusSelected = ::onAttendanceStatusSelected,
-        )
-    )
-    val state: LiveData<BookingDetailsViewState> = _state.asLiveData()
+    private val booking = bookingsRepository.observeBooking(navArgs.bookingId)
 
-    init {
-        _state.update {
-            it.copy(
-                toolbarTitle = resourceProvider.getString(R.string.booking_details_title, navArgs.bookingId),
+    // Temporary, the booking status should come from the stored object
+    private val bookingAttendanceStatus = MutableStateFlow<BookingAttendanceStatus?>(null)
+
+    val state: LiveData<BookingDetailsViewState> = combine(
+        booking.filterNotNull(),
+        bookingAttendanceStatus
+    ) { booking, attendanceStatus ->
+        with(bookingMapper) {
+            BookingDetailsViewState(
+                toolbarTitle = resourceProvider.getString(R.string.booking_details_title, booking.id.value),
+                orderId = booking.orderId,
+                bookingUiState = buildBookingUiState(booking, attendanceStatus),
+                onCancelBooking = ::onCancelBooking,
+                onAttendanceStatusSelected = ::onAttendanceStatusSelected
             )
         }
-    }
+    }.asLiveData()
 
     private fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
-        _state.update { current ->
-            current.copy(
-                bookingSummary = current.bookingSummary.copy(attendanceStatus = status)
-            )
-        }
+        // Temporary, the booking status should come from the stored object
+        bookingAttendanceStatus.value = status
     }
 
     private fun onCancelBooking() {
         // TODO Add logic to Cancel booking
     }
+
+    private fun BookingMapper.buildBookingUiState(
+        booking: Booking,
+        attendanceStatus: BookingAttendanceStatus?
+    ): BookingUiState = BookingUiState(
+        bookingSummary = booking.toBookingSummaryModel().let {
+            if (attendanceStatus != null) {
+                it.copy(attendanceStatus = attendanceStatus)
+            } else {
+                it
+            }
+        },
+        bookingsAppointmentDetails = booking.toAppointmentDetailsModel(),
+        bookingCustomerDetails = BookingCustomerDetailsModel(
+            name = "Margarita Nikolaevna",
+            email = "margarita@example.com",
+            phone = "+1 555-123-4567",
+            billingAddressLines = listOf(
+                "238 Willow Creek Drive",
+                "Montgomery AL 36109",
+                "United States"
+            )
+        ),
+        bookingPaymentDetails = BookingPaymentDetailsModel(
+            service = "$55.00",
+            tax = "$4.50",
+            discount = "-",
+            total = "$59.50"
+        )
+    )
 }

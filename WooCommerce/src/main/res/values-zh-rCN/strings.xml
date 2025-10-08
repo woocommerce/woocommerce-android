@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-09 15:54:05+0000
+Translation-Revision-Date: 2025-09-23 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">预订</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">添加包裹详细信息</string>
+    <string name="settings_enable_jetpack_app_passwords_message">启用应用程序密码，让应用程序直接从您的 WooCommerce 站点获取数据，而不是通过 Jetpack 连接获取数据。</string>
+    <string name="settings_enable_jetpack_app_passwords_title">应用程序密码</string>
+    <string name="experimental_features">实验性功能</string>
+    <string name="orderdetail_view_customer_orders">查看客户订单</string>
+    <string name="order_list_customer_filter_applied">已应用客户筛选条件</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">所有包装尺寸参数均应大于 0。</string>
     <string name="woopos_cart_empty_subtitle_suffix"> 以将其添加到购物车</string>
     <string name="woopos_cart_empty_scan_barcode">扫描条形码</string>
@@ -2454,8 +2461,6 @@ Language: zh_CN
     <string name="date_timeframe_last_quarter">上一季度</string>
     <string name="date_timeframe_last_month">上月</string>
     <string name="date_timeframe_last_week">上周</string>
-    <string name="beta_features_simple_payments">简单付款</string>
-    <string name="beta_features_add_ons">查看插件</string>
     <string name="orders_empty_message_for_filtered_orders">抱歉，我们找不到任何订单</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">打开设置</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">缺少必需的附近设备权限</string>
@@ -3452,7 +3457,6 @@ Language: zh_CN
     <string name="orderdetail_issue_refund_button">发放退款</string>
     <string name="orderdetail_refund_detail">%1$s（通过 %2$s）</string>
     <string name="settings_enable_v4_stats_title">经改进的统计页面</string>
-    <string name="beta_features">测试版功能</string>
     <string name="orderdetail_payment_summary_onhold">等待通过 %s支付</string>
     <string name="orderdetail_payment_summary_completed">%1$s（通过 %2$s）</string>
     <string name="dashboard_state_no_data">此时间段内没有收入</string>

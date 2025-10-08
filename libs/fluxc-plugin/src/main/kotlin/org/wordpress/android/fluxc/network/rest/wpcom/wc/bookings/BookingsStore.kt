@@ -28,16 +28,17 @@ class BookingsStore @Inject constructor(
         site: SiteModel,
         perPage: Int = BookingsRestClient.DEFAULT_PER_PAGE,
         page: Int = 1,
-        filters: List<BookingsFilterOption> = emptyList()
-    ): WooResult<Boolean> {
+        query: String? = null,
+        filters: List<BookingsFilterOption> = emptyList(),
+        order: BookingsOrderOption
+    ): WooResult<BookingsFetchResult> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
-            val response = bookingsRestClient.fetchBookings(site, perPage, page, filters)
+            val response = bookingsRestClient.fetchBookings(site, perPage, page, query, filters, order)
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    if (page == 1 && filters.isEmpty()) {
+                    if (page == 1 && filters.isEmpty() && query.isNullOrEmpty()) {
                         // Clear existing bookings when fetching the first page
-                        // TODO when we support text search, we should only clear if no search is applied
                         bookingsDao.deleteAllForSite(site.localId())
                     }
                     val entities = response.result.map { it.toEntity(site.localId()) }
@@ -45,8 +46,13 @@ class BookingsStore @Inject constructor(
                     val totalPages = headersParser.getTotalPages(response.headers)
                     // Determine if we can load more from the total pages header if available, otherwise
                     // infer it from the number of items returned
-                    val canLoadMore = (totalPages?.let { it > page }) ?: (entities.size == perPage)
-                    WooResult(canLoadMore)
+                    val hasMorePages = (totalPages?.let { it > page }) ?: (entities.size == perPage)
+                    WooResult(
+                        BookingsFetchResult(
+                            bookings = entities,
+                            hasMorePages = hasMorePages
+                        )
+                    )
                 }
 
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
@@ -57,8 +63,14 @@ class BookingsStore @Inject constructor(
     fun observeBookings(
         site: SiteModel,
         limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList()
-    ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters)
+        filters: List<BookingsFilterOption> = emptyList(),
+        order: BookingsOrderOption
+    ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters, order)
+
+    fun observeBooking(
+        site: SiteModel,
+        bookingId: Long
+    ): Flow<BookingEntity?> = bookingsDao.observeBooking(site.localId(), bookingId)
 
     private fun BookingDto.toEntity(localSiteId: LocalId): BookingEntity = BookingEntity(
         id = RemoteId(id),

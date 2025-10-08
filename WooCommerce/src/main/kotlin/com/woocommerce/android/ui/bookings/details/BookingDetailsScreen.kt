@@ -26,6 +26,8 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
+import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
@@ -76,43 +78,43 @@ fun BookingDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(innerPadding)
             ) {
-                BookingSummary(
-                    model = viewState.bookingSummary,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                BookingAppointmentDetails(
-                    model = viewState.bookingsAppointmentDetails,
-                    onCancelBooking = viewState.onCancelBooking,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                BookingCustomerDetails(
-                    model = viewState.bookingCustomerDetails,
-                    onEmailClick = {},
-                    onPhoneClick = {},
-                    modifier = Modifier.fillMaxWidth()
-                )
-                BookingAttendanceSection(
-                    status = viewState.bookingSummary.attendanceStatus,
-                    onClick = { showAttendanceSheet.value = true },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                BookingPaymentSection(
-                    model = viewState.bookingPaymentDetails,
-                    status = viewState.bookingSummary.status,
-                    onMarkAsPaid = { onViewOrder(viewState.orderId) },
-                    onViewOrder = { onViewOrder(viewState.orderId) },
-                    onMarkAsRefunded = { onViewOrder(viewState.orderId) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                viewState.bookingUiState?.let {
+                    BookingSummary(
+                        model = viewState.bookingUiState.bookingSummary,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    BookingAppointmentDetails(
+                        model = viewState.bookingUiState.bookingsAppointmentDetails,
+                        onCancelBooking = viewState.onCancelBooking,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    BookingCustomerDetails(
+                        model = viewState.bookingUiState.bookingCustomerDetails,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    BookingAttendanceSection(
+                        status = viewState.bookingUiState.bookingSummary.attendanceStatus,
+                        onClick = { showAttendanceSheet.value = true },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    BookingPaymentSection(
+                        model = viewState.bookingUiState.bookingPaymentDetails,
+                        status = viewState.bookingUiState.bookingSummary.status,
+                        onMarkAsPaid = { onViewOrder(viewState.orderId) },
+                        onViewOrder = { onViewOrder(viewState.orderId) },
+                        onMarkAsRefunded = { onViewOrder(viewState.orderId) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
-            if (showAttendanceSheet.value) {
-                BookingAttendanceStatusBottomSheet(
-                    onSelect = { status ->
-                        viewState.onAttendanceStatusSelected(status)
-                    },
-                    onDismiss = { showAttendanceSheet.value = false }
-                )
-            }
+        }
+        if (showAttendanceSheet.value) {
+            BookingAttendanceStatusBottomSheet(
+                onSelect = { status ->
+                    viewState.onAttendanceStatusSelected(status)
+                },
+                onDismiss = { showAttendanceSheet.value = false }
+            )
         }
     }
 }
@@ -124,21 +126,39 @@ private fun BookingDetailsPreview() {
         BookingDetailsScreen(
             viewState = BookingDetailsViewState(
                 toolbarTitle = "Booking #12345",
-                bookingSummary = BookingSummaryModel(
-                    date = "05/07/2025, 11:00 AM",
-                    name = "Women’s Haircut",
-                    customerName = "Margarita Nikolaevna",
-                    attendanceStatus = BookingAttendanceStatus.CHECKED_IN,
-                    status = BookingStatus.Paid
+                bookingUiState = BookingUiState(
+                    bookingSummary = BookingSummaryModel(
+                        date = "05/07/2025, 11:00 AM",
+                        name = "Women’s Haircut",
+                        customerName = "Margarita Nikolaevna",
+                        attendanceStatus = BookingAttendanceStatus.CHECKED_IN,
+                        status = BookingStatus.Paid
+                    ),
+                    bookingsAppointmentDetails = BookingAppointmentDetailsModel(
+                        date = "Monday, 05 July 2025",
+                        time = "11:00 am - 12:00 pm",
+                        staff = "Marianne Renoir",
+                        location = "238 Willow Creek Drive, Montgomery AL 36109",
+                        duration = "60 min",
+                        price = "$55.00"
+                    ),
+                    bookingCustomerDetails = BookingCustomerDetailsModel(
+                        name = "Margarita Nikolaevna",
+                        email = "margarita@example.com",
+                        phone = "+1 555-123-4567",
+                        billingAddressLines = listOf(
+                            "238 Willow Creek Drive",
+                            "Montgomery AL 36109",
+                            "United States"
+                        )
+                    ),
+                    bookingPaymentDetails = BookingPaymentDetailsModel(
+                        service = "$55.00",
+                        tax = "$4.50",
+                        discount = "-",
+                        total = "$59.50"
+                    )
                 ),
-                bookingsAppointmentDetails = BookingAppointmentDetailsModel(
-                    date = "Monday, 05 July 2025",
-                    time = "11:00 am - 12:00 pm",
-                    staff = "Marianne Renoir",
-                    location = "238 Willow Creek Drive, Montgomery AL 36109",
-                    duration = "60 min",
-                    price = "$55.00"
-                )
             ),
             onBack = {},
             onViewOrder = {}

@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-09-11 09:54:06+0000
+Translation-Revision-Date: 2025-09-25 10:54:06+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="bookings_tab_title">Rezervasyonlar</string>
+    <string name="woo_shipping_labels_package_creation_add_package_details">Paket Ayrıntıları Ekle</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Uygulamanın Jetpack bağlantısı aracılığıyla yapmak yerine WooCommerce sitenizden verileri doğrudan almasını sağlamak için uygulama şifrelerini etkinleştirin.</string>
+    <string name="settings_enable_jetpack_app_passwords_title">Uygulama Şifreleri</string>
+    <string name="experimental_features">Deneysel özellikler</string>
+    <string name="orderdetail_view_customer_orders">Müşteri siparişlerini görüntüle</string>
+    <string name="order_list_customer_filter_applied">Müşteri filtresi uygulandı</string>
     <string name="woo_shipping_labels_package_creation_invalid_dimension">Paket boyutlarının tamamı 0\'dan büyük olmalıdır.</string>
     <string name="woopos_cart_empty_subtitle_suffix"> bir barkodu okutun</string>
     <string name="woopos_cart_empty_scan_barcode">bir ürüne dokunun veya</string>
@@ -2453,8 +2460,6 @@ Language: tr
     <string name="date_timeframe_last_quarter">Geçen çeyrek</string>
     <string name="date_timeframe_last_month">Geçen ay</string>
     <string name="date_timeframe_last_week">Geçen hafta</string>
-    <string name="beta_features_simple_payments">Basit ödemeler</string>
-    <string name="beta_features_add_ons">Eklentileri Görüntüle</string>
     <string name="orders_empty_message_for_filtered_orders">Maalesef hiç sipariş bulunamadı</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Ayarları aç</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Yakındaki cihazla ilgili gerekli izin eksik</string>
@@ -3451,7 +3456,6 @@ Language: tr
     <string name="orderdetail_issue_refund_button">Para iadesi düzenle</string>
     <string name="orderdetail_refund_detail">%2$s üzerinden %1$s</string>
     <string name="settings_enable_v4_stats_title">İyileştirilmiş istatistikler</string>
-    <string name="beta_features">Beta özellikler</string>
     <string name="orderdetail_payment_summary_onhold">%s üzerinden ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%2$s üzerinden %1$s</string>
     <string name="dashboard_state_no_data">Bu dönemde hiç gelir yok</string>

@@ -84,6 +84,14 @@ class LocalNotificationWorker @AssistedInject constructor(
                 appsPrefsWrapper.isBlazeAbandonedCampaignReminderShown = true
             }
 
+            LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER -> {
+                appsPrefsWrapper.isWooPosSurveyNotificationPotentialUserShown = true
+            }
+
+            LocalNotificationType.WOO_POS_SURVEY_CURRENT_USER_REMINDER -> {
+                appsPrefsWrapper.isWooPosSurveyNotificationCurrentUserShown = true
+            }
+
             else -> {}
         }
     }

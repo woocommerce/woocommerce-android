@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -21,9 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -46,7 +42,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -54,7 +49,6 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
@@ -534,102 +528,6 @@ private fun ItemsLoadingItem() {
 }
 
 @Composable
-fun WooPosItemsEmptyList(
-    modifier: Modifier = Modifier,
-    title: String,
-    message: String,
-    contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
-) {
-    WooPosItemsEmptyListInternal(
-        modifier = modifier,
-        title = title,
-        message = message,
-        contentDescription = contentDescription,
-        icon = icon,
-        actionLabel = null,
-        onActionClicked = null
-    )
-}
-
-@Composable
-fun WooPosItemsEmptyList(
-    modifier: Modifier = Modifier,
-    title: String,
-    message: String,
-    contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
-    actionLabel: String,
-    onActionClicked: (() -> Unit),
-) {
-    WooPosItemsEmptyListInternal(
-        modifier = modifier,
-        title = title,
-        message = message,
-        contentDescription = contentDescription,
-        icon = icon,
-        actionLabel = actionLabel,
-        onActionClicked = onActionClicked
-    )
-}
-
-@Composable
-private fun WooPosItemsEmptyListInternal(
-    modifier: Modifier = Modifier,
-    title: String,
-    message: String,
-    contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
-    actionLabel: String?,
-    onActionClicked: (() -> Unit)? = null,
-) {
-    Box(
-        modifier = modifier.verticalScroll(rememberScrollState()),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                modifier = Modifier.size(148.dp),
-                painter = icon,
-                contentDescription = contentDescription,
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-
-            WooPosText(
-                text = title,
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-            WooPosText(
-                text = message,
-                style = WooPosTypography.BodyLarge,
-                fontWeight = FontWeight.Normal,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-
-            if (onActionClicked != null && actionLabel != null) {
-                WooPosButton(
-                    text = actionLabel,
-                    onClick = onActionClicked,
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .height(80.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun InfiniteListHandler(
     listState: LazyListState,
     state: WooPosContentViewState,
@@ -698,19 +596,6 @@ fun ItemListPreview() {
             onItemClicked = {},
             onEndOfProductsListReached = {},
             onErrorWhilePaginating = {}
-        )
-    }
-}
-
-@WooPosPreview
-@Composable
-fun EmptyListPreview() {
-    WooPosTheme {
-        WooPosItemsEmptyList(
-            modifier = Modifier.fillMaxSize(),
-            title = "Empty List",
-            message = "This list is empty",
-            contentDescription = ""
         )
     }
 }

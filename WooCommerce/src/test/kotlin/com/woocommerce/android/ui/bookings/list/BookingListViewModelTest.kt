@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.bookings.list
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.Booking
+import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -34,14 +36,16 @@ class BookingListViewModelTest : BaseUnitTest() {
         onBlocking {
             loadBookings(
                 searchQuery = anyOrNull(),
-                forceRefresh = any(),
-                filters = any()
+                filters = any(),
+                sortBy = any()
             )
         } doReturn Result.success(Unit)
         onBlocking { loadMore() } doReturn Result.success(Unit)
     }
     private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
     private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
+    private val currencyFormatter = mock<CurrencyFormatter>()
+    private val bookingMapper = BookingMapper(currencyFormatter)
 
     private lateinit var viewModel: BookingListViewModel
 
@@ -54,7 +58,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         viewModel = BookingListViewModel(
             savedStateHandle = SavedStateHandle(),
             bookingListHandler = bookingListHandler,
-            filtersBuilder = filtersBuilder
+            filtersBuilder = filtersBuilder,
+            bookingMapper = bookingMapper,
         )
     }
 
@@ -68,7 +73,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        verify(bookingListHandler).loadBookings(searchQuery = eq(null), forceRefresh = eq(true), filters = any())
+        verify(bookingListHandler).loadBookings(searchQuery = eq(null), filters = any(), sortBy = any())
 
         val state = viewModel.state.getOrAwaitValue().contentState
         assertThat(state.bookings).hasSize(1)
@@ -107,8 +112,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         verify(bookingListHandler, times(2)).loadBookings(
             searchQuery = eq(null),
-            forceRefresh = eq(true),
-            filters = any()
+            filters = any(),
+            sortBy = any()
         )
     }
 
@@ -148,7 +153,7 @@ class BookingListViewModelTest : BaseUnitTest() {
     fun `when booking handler fails to load, then show error snackbar`() = testBlocking {
         // GIVEN
         setup {
-            whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), forceRefresh = any(), filters = any()))
+            whenever(bookingListHandler.loadBookings(searchQuery = anyOrNull(), filters = any(), sortBy = any()))
                 .thenReturn(Result.failure(Exception("Network error")))
         }
 
@@ -209,14 +214,84 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         verify(bookingListHandler).loadBookings(
             searchQuery = eq(null),
-            forceRefresh = eq(true),
             filters = eq(
                 listOfNotNull(
                     with(filtersBuilder) {
                         BookingListTab.Upcoming.asDateRangeFilter()
                     }
                 )
-            )
+            ),
+            sortBy = any()
+        )
+    }
+
+    @Test
+    fun `when onSortClick is called, then bottom sheet is shown`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.controlsState.onSortClick()
+
+        // THEN
+        val withSheet = viewModel.state.getOrAwaitValue()
+        assertThat(withSheet.sortBottomSheetState).isNotNull()
+    }
+
+    @Test
+    fun `when search query is changed, then state is updated`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.searchState.onQueryChanged("test query")
+
+        // THEN
+        val updatedState = viewModel.state.getOrAwaitValue()
+        assertThat(updatedState.searchState.query).isEqualTo("test query")
+        assertThat(updatedState.searchState.isSearchActive).isTrue()
+    }
+
+    @Test
+    fun `when search query is changed, then bookings are refetched`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.searchState.onQueryChanged("test query")
+        advanceUntilIdle()
+
+        // THEN
+        verify(bookingListHandler).loadBookings(
+            searchQuery = eq("test query"),
+            filters = any(),
+            sortBy = any()
+        )
+    }
+
+    @Test
+    fun `when search query is cleared, then isSearchActive becomes false and bookings are refetched`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.searchState.onQueryChanged("test query")
+        val stateWithQuery = viewModel.state.getOrAwaitValue()
+        stateWithQuery.searchState.onQueryChanged(null)
+        advanceUntilIdle()
+
+        // THEN
+        val clearedState = viewModel.state.getOrAwaitValue()
+        assertThat(clearedState.searchState.query).isNull()
+        assertThat(clearedState.searchState.isSearchActive).isFalse()
+        verify(bookingListHandler, times(2)).loadBookings(
+            searchQuery = eq(null),
+            filters = any(),
+            sortBy = any()
         )
     }
 

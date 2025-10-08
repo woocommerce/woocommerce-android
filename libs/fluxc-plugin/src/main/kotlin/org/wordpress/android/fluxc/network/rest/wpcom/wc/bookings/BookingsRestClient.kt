@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
+import org.wordpress.android.fluxc.utils.extensions.filterNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,11 +19,14 @@ class BookingsRestClient @Inject constructor(
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
     }
 
+    @Suppress("LongParameterList")
     suspend fun fetchBookings(
         site: SiteModel,
         perPage: Int,
         page: Int,
-        filters: List<BookingsFilterOption>
+        query: String?,
+        filters: List<BookingsFilterOption>,
+        order: BookingsOrderOption
     ): WooPayload<Array<BookingDto>> {
         val endpoint = WOOCOMMERCE.bookings.pathV2Bookings
 
@@ -31,9 +35,12 @@ class BookingsRestClient @Inject constructor(
             path = endpoint,
             clazz = Array<BookingDto>::class.java,
             params = mapOf(
+                "orderby" to "start_date",
+                "order" to order.value,
                 "per_page" to perPage.toString(),
-                "page" to page.toString()
-            ) + filters.toQueryParams()
+                "page" to page.toString(),
+                "search" to query
+            ).filterNotNull() + filters.toQueryParams()
         )
         return when (response) {
             is Success -> WooPayload(response.data)
@@ -49,6 +56,7 @@ class BookingsRestClient @Inject constructor(
                         filter.before?.let { set("start_date_before", it.toString()) }
                         filter.after?.let { set("start_date_after", it.toString()) }
                     }
+
                     is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
                 }
             }

@@ -10,7 +10,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
-@Suppress("UnitTestNamingRule")
 class AppPrefsTest {
     @Before
     fun setup() {
@@ -592,5 +591,45 @@ class AppPrefsTest {
         AppPrefs.clearPOSLaunchableForSite(siteId)
 
         assertThat(AppPrefs.isPOSLaunchableForSite(siteId)).isFalse
+    }
+
+    @Test
+    fun givenWooPosSurveyNotificationCurrentUserShownNotSetThenReturnFalseByDefault() {
+        assertThat(AppPrefs.isWooPosSurveyNotificationCurrentUserShown).isFalse
+    }
+
+    @Test
+    fun givenWooPosSurveyNotificationCurrentUserShownSetToTrueThenReturnTrue() {
+        AppPrefs.isWooPosSurveyNotificationCurrentUserShown = true
+
+        assertThat(AppPrefs.isWooPosSurveyNotificationCurrentUserShown).isTrue
+    }
+
+    @Test
+    fun givenWooPosSurveyNotificationCurrentUserShownSetToFalseThenReturnFalse() {
+        AppPrefs.isWooPosSurveyNotificationCurrentUserShown = true
+        AppPrefs.isWooPosSurveyNotificationCurrentUserShown = false
+
+        assertThat(AppPrefs.isWooPosSurveyNotificationCurrentUserShown).isFalse
+    }
+
+    @Test
+    fun givenWooPosSurveyNotificationPotentialUserShownNotSetThenReturnFalseByDefault() {
+        assertThat(AppPrefs.isWooPosSurveyNotificationPotentialUserShown).isFalse
+    }
+
+    @Test
+    fun givenWooPosSurveyNotificationPotentialUserShownSetToTrueThenReturnTrue() {
+        AppPrefs.isWooPosSurveyNotificationPotentialUserShown = true
+
+        assertThat(AppPrefs.isWooPosSurveyNotificationPotentialUserShown).isTrue
+    }
+
+    @Test
+    fun givenWooPosSurveyNotificationPotentialUserShownSetToFalseThenReturnFalse() {
+        AppPrefs.isWooPosSurveyNotificationPotentialUserShown = true
+        AppPrefs.isWooPosSurveyNotificationPotentialUserShown = false
+
+        assertThat(AppPrefs.isWooPosSurveyNotificationPotentialUserShown).isFalse
     }
 }
