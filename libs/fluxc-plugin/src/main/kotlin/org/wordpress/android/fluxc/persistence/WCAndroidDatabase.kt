@@ -31,6 +31,7 @@ import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConver
 import org.wordpress.android.fluxc.persistence.converters.LocalIdConverter
 import org.wordpress.android.fluxc.persistence.converters.LongListConverter
 import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
+import org.wordpress.android.fluxc.persistence.converters.StatsGranularityConverter
 import org.wordpress.android.fluxc.persistence.converters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
@@ -234,6 +235,7 @@ const val WC_DATABASE_VERSION = 67
         RemoteIdConverter::class,
         BigDecimalConverter::class,
         CurrencyPositionConverter::class,
+        StatsGranularityConverter::class,
     ]
 )
 abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
@@ -278,13 +280,15 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     companion object {
         fun buildDb(
             applicationContext: Context,
-            currencyPositionConverter: CurrencyPositionConverter
+            currencyPositionConverter: CurrencyPositionConverter,
+            statsGranularityConverter: StatsGranularityConverter,
         ) = Room.databaseBuilder(
             applicationContext,
             WCAndroidDatabase::class.java,
             "wc-android-database"
         ).allowMainThreadQueries()
             .addTypeConverter(currencyPositionConverter)
+            .addTypeConverter(statsGranularityConverter)
             .fallbackToDestructiveMigrationOnDowngrade()
             .fallbackToDestructiveMigrationFrom(1, 2)
             .addMigrations(MIGRATION_3_4)

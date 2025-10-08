@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.TransactionExecutor
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConverter
+import org.wordpress.android.fluxc.persistence.converters.StatsGranularityConverter
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
@@ -27,8 +28,16 @@ interface WCDatabaseModule {
     companion object {
         @Singleton
         @Provides
-        fun provideDatabase(context: Context, currencyPositionConverter: CurrencyPositionConverter): WCAndroidDatabase {
-            return WCAndroidDatabase.buildDb(context, currencyPositionConverter)
+        fun provideDatabase(
+            context: Context,
+            currencyPositionConverter: CurrencyPositionConverter,
+            statsGranularityConverter: StatsGranularityConverter,
+        ): WCAndroidDatabase {
+            return WCAndroidDatabase.buildDb(
+                context,
+                currencyPositionConverter,
+                statsGranularityConverter,
+            )
         }
 
         @Provides internal fun provideAddonsDao(database: WCAndroidDatabase): AddonsDao {
