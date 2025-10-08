@@ -34,7 +34,7 @@ data class BookingEntity(
     val parentId: Long,
     val personCounts: List<Long>?,
     val localTimezone: String,
-    @Embedded("order_") val order: BookingOrderInfo?
+    @Embedded("order_") val order: BookingOrderInfo
 ) {
     sealed interface Status {
         val key: String

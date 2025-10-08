@@ -125,7 +125,7 @@ class BookingsStore @Inject constructor(
         parentId = parentId,
         personCounts = personCounts?.map { it.toLong() },
         localTimezone = localTimezone,
-        order = orderEntity?.toBookingOrderInfo(productId)
+        order = orderEntity?.toBookingOrderInfo(productId) ?: BookingOrderInfo()
     )
 
     private suspend fun OrderEntity.toBookingOrderInfo(
