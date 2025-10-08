@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +23,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -108,13 +111,13 @@ fun BookingListScreen(state: BookingListViewState) {
                     state.tabState.onTabChanged(it)
                 }
             )
-            BookingListControls(state.controlsState)
             HorizontalDivider(thickness = 0.5.dp)
 
             when {
                 state.contentState.isNotEmpty() -> {
                     BookingList(
                         state = state.contentState,
+                        controlsState = state.controlsState,
                         listState = lazyListState,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -131,23 +134,12 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
 
                 else -> {
-                    val modifier = Modifier
-                        .background(MaterialTheme.colorScheme.surface)
-                        .fillMaxSize()
-                        .padding(32.dp)
-
-                    if (state.searchState.isSearchActive) {
-                        EmptySearchResultsView(
-                            query = state.searchState.query.orEmpty(),
-                            modifier = modifier
-                        )
-                    } else {
-                        EmptyView(
-                            selectedTab = state.tabState.selectedTab,
-                            areFiltersActive = state.areFiltersActive,
-                            modifier = modifier
-                        )
-                    }
+                    EmptyView(
+                        state = state,
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.surface)
+                            .fillMaxSize()
+                    )
                 }
             }
         }
@@ -213,6 +205,7 @@ private fun SearchSection(
 @Composable
 private fun BookingList(
     state: BookingListContentState,
+    controlsState: BookingListControlsState,
     listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
@@ -227,6 +220,10 @@ private fun BookingList(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            stickyHeader {
+                BookingListControls(controlsState)
+            }
+
             itemsIndexed(state.bookings) { _, booking ->
                 Column(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
                     BookingSummary(
@@ -304,6 +301,37 @@ private fun BookingListControls(
 
 @Composable
 private fun EmptyView(
+    state: BookingListViewState,
+    modifier: Modifier
+) {
+    Column(
+        modifier
+            .verticalScroll(rememberScrollState())
+            .height(IntrinsicSize.Max)
+    ) {
+        BookingListControls(state.controlsState)
+
+        val innerEmptyViewModifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp)
+
+        if (state.searchState.isSearchActive) {
+            EmptySearchResultsView(
+                query = state.searchState.query.orEmpty(),
+                modifier = innerEmptyViewModifier
+            )
+        } else {
+            EmptyListView(
+                selectedTab = state.tabState.selectedTab,
+                areFiltersActive = state.areFiltersActive,
+                modifier = innerEmptyViewModifier
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyListView(
     selectedTab: BookingListTab,
     areFiltersActive: Boolean,
     modifier: Modifier
