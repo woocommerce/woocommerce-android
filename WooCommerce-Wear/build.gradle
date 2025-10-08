@@ -157,6 +157,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.text.google.fonts)
 
     // Android Support
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.compose)
