@@ -17,6 +17,7 @@ class WooPosPreferencesRepository @Inject constructor(
     private val recentProductSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_PRODUCT_SEARCHES_KEY)
     private val recentCouponSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_COUPON_SEARCHES_KEY)
     private val wasOpenedOnceKey = booleanPreferencesKey(POS_WAS_OPENED_ONCE_KEY)
+    private val allowCellularDataUpdateKey = booleanPreferencesKey(ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY)
 
     val recentProductSearches: Flow<List<String>> = dataStore.data
         .map { preferences ->
@@ -33,6 +34,11 @@ class WooPosPreferencesRepository @Inject constructor(
     val wasOpenedOnce: Flow<Boolean> = dataStore.data
         .map { preferences ->
             preferences[wasOpenedOnceKey] ?: false
+        }
+
+    val allowCellularDataUpdate: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[allowCellularDataUpdateKey] ?: false
         }
 
     suspend fun addRecentProductSearch(search: String) {
@@ -69,6 +75,12 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun setAllowCellularDataUpdate(allow: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[allowCellularDataUpdateKey] = allow
+        }
+    }
+
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.siteId}-$key")
 
@@ -76,6 +88,7 @@ class WooPosPreferencesRepository @Inject constructor(
         const val RECENT_PRODUCT_SEARCHES_KEY = "recent_product_searches_key"
         const val RECENT_COUPON_SEARCHES_KEY = "recent_coupon_searches_key"
         const val POS_WAS_OPENED_ONCE_KEY = "pos_was_opened_once_key"
+        const val ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY = "allow_full_sync_on_cellular_data_key"
 
         const val MAX_RECENT_SEARCHES_COUNT = 10
     }
