@@ -4303,6 +4303,7 @@
     <string name="booking_note_screen_update_error">Error saving booking note</string>
     <string name="booking_cancel_error">Error cancelling the booking</string>
     <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
+    <string name="booking_not_selected">Booking not selected</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

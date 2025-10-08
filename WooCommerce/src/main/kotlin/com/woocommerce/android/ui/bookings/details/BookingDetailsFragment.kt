@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.details
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -39,10 +41,12 @@ class BookingDetailsFragment : BaseFragment() {
                     )
                 },
                 onViewNotes = {
-                    findNavController().navigate(
-                        BookingDetailsFragmentDirections
-                            .actionBookingDetailsFragmentToBookingNoteFragment(args.bookingId)
-                    )
+                    (args.mode as? Mode.ShowBooking)?.bookingId?.let {
+                        findNavController().navigate(
+                            BookingDetailsFragmentDirections
+                                .actionBookingDetailsFragmentToBookingNoteFragment(it)
+                        )
+                    }
                 },
             )
         }
@@ -61,5 +65,14 @@ class BookingDetailsFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    @Parcelize
+    sealed class Mode : Parcelable {
+        @Parcelize
+        data object Empty : Mode()
+
+        @Parcelize
+        data class ShowBooking(val bookingId: Long) : Mode()
     }
 }

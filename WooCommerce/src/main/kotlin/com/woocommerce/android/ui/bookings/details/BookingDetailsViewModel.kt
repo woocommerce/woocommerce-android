@@ -25,6 +25,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -46,8 +47,13 @@ class BookingDetailsViewModel @Inject constructor(
 
     private val navArgs: BookingDetailsFragmentArgs by savedState.navArgs()
 
-    private val booking = bookingsRepository.observeBooking(navArgs.bookingId)
-        .shareIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
+    private val bookingId: Long? = (navArgs.mode as? BookingDetailsFragment.Mode.ShowBooking)?.bookingId
+    private val booking = if (bookingId != null) {
+        bookingsRepository.observeBooking(bookingId)
+            .shareIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
+    } else {
+        flowOf(null)
+    }
 
     private val resource = booking.flatMapLatest { booking ->
         booking?.resourceId?.let { bookingsRepository.observeResource(it) } ?: flowOf(null)
@@ -131,19 +137,16 @@ class BookingDetailsViewModel @Inject constructor(
         fetchBooking(BookingDetailsLoadingState.Loading)
     }
 
-    private fun fetchBooking(
-        initialLoadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing
-    ) {
+    private fun fetchBooking(initialLoadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing) {
         launch {
             if (!networkStatus.isConnected()) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
             }
-
             loadingState.value = initialLoadingState
 
             val bookingTask = async {
-                bookingsRepository.fetchBooking(navArgs.bookingId)
+                bookingsRepository.fetchBooking(bookingId ?: 0L)
             }
             val resourceTask = async {
                 val booking = booking.first() ?: bookingTask.await().getOrNull()
@@ -168,7 +171,7 @@ class BookingDetailsViewModel @Inject constructor(
             attendanceUpdateStatus.value = AttendanceUpdateStatus.InProgress
             val attendanceStatus = status.toDataModel() ?: return@launch
             bookingsRepository.updateAttendanceStatus(
-                bookingId = navArgs.bookingId,
+                bookingId = bookingId ?: 0L,
                 attendanceStatus = attendanceStatus
             ).onFailure {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_attendance_status_error))
@@ -195,7 +198,7 @@ class BookingDetailsViewModel @Inject constructor(
     private fun onConfirmCancelBooking() = launch {
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
-        bookingsRepository.cancelBooking(navArgs.bookingId)
+        bookingsRepository.cancelBooking(bookingId ?: 0L)
             .onFailure {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
             }
@@ -208,7 +211,7 @@ class BookingDetailsViewModel @Inject constructor(
             return@launch
         }
         paymentUpdateStatus.value = PaymentUpdateStatus.InProgress
-        bookingsRepository.markAsPaid(navArgs.bookingId)
+        bookingsRepository.markAsPaid(bookingId ?: 0L)
             .onFailure {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_mark_as_paid_error))
             }

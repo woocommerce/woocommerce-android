@@ -13,6 +13,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBookingListBinding
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.bookings.details.BookingDetailsFragment
+import com.woocommerce.android.ui.bookings.details.BookingDetailsFragmentArgs
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -43,7 +45,9 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
     override val navigation
         get() = TabletLayoutSetupHelper.Screen.Navigation(
             detailsNavGraphId = R.navigation.nav_graph_bookings_details,
-            detailsInitialBundle = null
+            detailsInitialBundle = BookingDetailsFragmentArgs(
+                mode = BookingDetailsFragment.Mode.Empty
+            ).toBundle()
         )
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -98,12 +102,16 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
                 is BookingListViewModel.NavigateToBookingDetails -> {
                     tabletLayoutSetupHelper.openItemDetails(
                         tabletNavigateTo = {
-                            R.id.nav_graph_bookings_details to bundleOf("bookingId" to event.bookingId)
+                            R.id.nav_graph_bookings_details to bundleOf(
+                                "mode" to BookingDetailsFragment.Mode.ShowBooking(event.bookingId)
+                            )
                         },
                         navigateWithPhoneNavigation = {
                             findNavController().navigate(
                                 BookingListFragmentDirections
-                                    .actionBookingListFragmentToBookingDetailsFragment(event.bookingId)
+                                    .actionBookingListFragmentToBookingDetailsFragment(
+                                        BookingDetailsFragment.Mode.ShowBooking(event.bookingId)
+                                    )
                             )
                         }
                     )

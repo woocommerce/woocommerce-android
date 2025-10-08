@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.details
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,16 +18,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
@@ -114,6 +121,8 @@ fun BookingDetailsScreen(
                             markAsPaidInProgress = viewState.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
                         )
                     }
+
+                    else -> BookingDetailsEmptyScreen()
                 }
             }
         }
@@ -219,6 +228,22 @@ private fun BookingDetailsLoading() {
     }
 }
 
+@Composable
+fun BookingDetailsEmptyScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.img_woo_generic_error),
+            contentDescription = null
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+        Text(text = stringResource(R.string.booking_not_selected))
+    }
+}
+
 @LightDarkThemePreviews
 @Composable
 private fun BookingDetailsPreview() {
@@ -276,6 +301,22 @@ private fun BookingDetailsPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun BookingDetailsLoadingPreview() {
+    WooThemeWithBackground {
+        BookingDetailsScreen(
+            viewState = BookingDetailsViewState(
+                toolbarTitle = "",
+                bookingUiState = null,
+            ),
+            onBack = {},
+            onViewOrder = {},
+            onViewNotes = {},
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun BookingDetailsEmptyPreview() {
     WooThemeWithBackground {
         BookingDetailsScreen(
             viewState = BookingDetailsViewState(

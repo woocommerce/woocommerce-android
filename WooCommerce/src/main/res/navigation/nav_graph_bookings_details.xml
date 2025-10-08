@@ -11,9 +11,8 @@
         android:name="com.woocommerce.android.ui.bookings.details.BookingDetailsFragment"
         android:label="BookingDetailsFragment">
         <argument
-            android:name="bookingId"
-            android:defaultValue="-1L"
-            app:argType="long" />
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.bookings.details.BookingDetailsFragment$Mode" />
         <action
             android:id="@+id/action_bookingDetailsFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders">
