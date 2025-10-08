@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
+import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -21,10 +22,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BookingsStore @Inject constructor(
+class BookingsStore @Inject internal constructor(
     private val bookingsRestClient: BookingsRestClient,
     private val ordersRestClient: OrderRestClient,
     private val bookingsDao: BookingsDao,
+    private val productsDao: ProductsDao,
     private val headersParser: HeadersParser,
     private val coroutineEngine: CoroutineEngine,
 ) {
@@ -125,7 +127,11 @@ class BookingsStore @Inject constructor(
         parentId = parentId,
         personCounts = personCounts?.map { it.toLong() },
         localTimezone = localTimezone,
-        order = orderEntity?.toBookingOrderInfo(productId) ?: BookingOrderInfo()
+        order = orderEntity?.toBookingOrderInfo(productId) ?: BookingOrderInfo(
+            productInfo = productsDao.getProduct(localSiteId.value, productId)?.let {
+                BookingProductInfo(name = it.name)
+            } ?: BookingProductInfo()
+        )
     )
 
     private suspend fun OrderEntity.toBookingOrderInfo(
