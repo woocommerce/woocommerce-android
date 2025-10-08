@@ -8,9 +8,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBookingListBinding
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.bookings.BookingsCommunicationViewModel
@@ -41,6 +43,7 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
     override val detailPaneContainer: View
         get() = binding.detailNavContainer
     override var twoPanesWereShownBeforeConfigChange: Boolean = false
+    override val automaticallyAdjustLayoutAfterConfigChange: Boolean = false
     override val listFragment: Fragment
         get() = this
     override val navigation
@@ -88,6 +91,7 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
         super.onViewCreated(view, savedInstanceState)
         handleEvents()
         handleBottomNavigationVisibility()
+        handleTwoPaneToOnePaneConversionIfNeeded()
     }
 
     override fun onDestroyView() {
@@ -146,6 +150,39 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
                 (activity as? MainActivity)?.hideBottomNav()
             } else {
                 (activity as? MainActivity)?.showBottomNav()
+            }
+        }
+    }
+
+    private fun handleTwoPaneToOnePaneConversionIfNeeded() {
+        val isNowSinglePane = !requireContext().isTwoPanesShouldBeUsed
+        if (isNowSinglePane && twoPanesWereShownBeforeConfigChange) {
+            // Reset the flag to avoid re-triggering on future recreations
+            twoPanesWereShownBeforeConfigChange = false
+
+            // Show the list pane only in this fragment
+            tabletLayoutSetupHelper.displayListPaneOnly(this)
+
+            // Read the current state of the details NavHost to get the booking being displayed (if any)
+            val navHost = childFragmentManager.findFragmentById(R.id.detail_nav_container) as? NavHostFragment
+            val argsBundle = navHost?.navController?.currentBackStackEntry?.arguments
+            if (argsBundle != null) {
+                val args = BookingDetailsFragmentArgs.fromBundle(argsBundle)
+                when (val mode = args.mode) {
+                    is BookingDetailsFragment.Mode.ShowBooking -> {
+                        // Re-open details with phone navigation to ensure full-screen and proper back behavior
+                        findNavController().navigate(
+                            BookingListFragmentDirections
+                                .actionBookingListFragmentToBookingDetailsFragment(
+                                    BookingDetailsFragment.Mode.ShowBooking(mode.bookingId)
+                                )
+                        )
+                    }
+
+                    is BookingDetailsFragment.Mode.Empty -> {
+                        // No booking was selected; nothing to re-open
+                    }
+                }
             }
         }
     }
