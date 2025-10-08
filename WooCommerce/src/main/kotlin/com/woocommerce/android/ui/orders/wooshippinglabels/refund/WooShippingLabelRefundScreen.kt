@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringResLegacy
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -78,7 +78,7 @@ fun WooShippingLabelRefundScreen(
 
             purchaseDate?.let {
                 Text(
-                    text = annotatedStringResLegacy(
+                    text = annotatedStringRes(
                         stringResId = R.string.woo_shipping_refund_purchase_date,
                         it
                     ),
@@ -89,7 +89,7 @@ fun WooShippingLabelRefundScreen(
 
             refundableAmount?.let {
                 Text(
-                    text = annotatedStringResLegacy(
+                    text = annotatedStringRes(
                         stringResId = R.string.woo_shipping_refund_amount_eligible_for_refund,
                         it
                     ),

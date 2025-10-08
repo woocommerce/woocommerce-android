@@ -48,7 +48,7 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -137,7 +137,7 @@ private fun DomainDashboard(
                     imageVector = ImageVector.vectorResource(id = drawable.ic_info_outline_20dp),
                     contentDescription = stringResource(string.domains_learn_more)
                 )
-                val text = annotatedStringRes(
+                val text = clickableAnnotatedStringRes(
                     stringResId = string.domains_learn_more,
                     onUrlClick = { onLearnMoreButtonTapped() }
                 )

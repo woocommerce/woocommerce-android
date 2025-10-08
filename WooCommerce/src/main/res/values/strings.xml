@@ -4153,6 +4153,16 @@
     <string name="bookings_sort_by_newest_to_oldest_short">Newest</string>
     <string name="bookings_filters_default_title">Filters</string>
     <string name="bookings_filters_count_title">Filters (%d)</string>
+    <string name="bookings_empty_state_title_default">No bookings found</string>
+    <string name="bookings_empty_state_title_today">No bookings today</string>
+    <string name="bookings_empty_state_title_upcoming">No upcoming bookings</string>
+    <string name="bookings_empty_state_description_default">Incoming bookings will appear here, where you can view and manage them.</string>
+    <string name="bookings_empty_state_description_today">You don’t have any appointments or events scheduled for today.</string>
+    <string name="bookings_empty_state_description_upcoming">You don’t have any future appointments or events scheduled scheduled yet.</string>
+    <string name="bookings_search_no_results"><![CDATA[We’re sorry, we couldn’t find results for <b>\"%s\"</b>]]></string>
+    <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
+    <string name="bookings_empty_state_change_filters_button">Change filters</string>
+    <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
@@ -4217,5 +4227,4 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
-
 </resources>

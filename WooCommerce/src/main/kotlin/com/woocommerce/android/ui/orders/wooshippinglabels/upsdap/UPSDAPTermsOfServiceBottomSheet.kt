@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -169,7 +169,7 @@ private fun Conditions(
     ) {
         CheckboxWithTitle(
             checked = conditionsState.isTermsOfServiceChecked,
-            title = annotatedStringRes(
+            title = clickableAnnotatedStringRes(
                 stringResId = R.string.wpp_shipping_ups_tos_condition_terms,
                 onUrlClick = onUrlClicked
             ),
@@ -178,7 +178,7 @@ private fun Conditions(
 
         CheckboxWithTitle(
             checked = conditionsState.isProhibitedItemsChecked,
-            title = annotatedStringRes(
+            title = clickableAnnotatedStringRes(
                 stringResId = R.string.wpp_shipping_ups_tos_condition_prohibited_items,
                 onUrlClick = onUrlClicked
             ),
@@ -187,7 +187,7 @@ private fun Conditions(
 
         CheckboxWithTitle(
             checked = conditionsState.isTechnologyAgreementChecked,
-            title = annotatedStringRes(
+            title = clickableAnnotatedStringRes(
                 stringResId = R.string.wpp_shipping_ups_tos_condition_technology_agreement,
                 onUrlClick = onUrlClicked
             ),
