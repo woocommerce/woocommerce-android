@@ -14,12 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -31,7 +31,7 @@ fun WooPosEmptyScreen(
     title: String,
     message: String,
     contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
+    icon: ImageVector = WooPosIcons.NotFound,
 ) {
     WooPosItemsEmptyListInternal(
         modifier = modifier,
@@ -50,11 +50,51 @@ fun WooPosEmptyScreen(
     title: String,
     message: String,
     contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
+    icon: ImageVector = WooPosIcons.NotFound,
     actionLabel: String,
     onActionClicked: (() -> Unit),
 ) {
     WooPosItemsEmptyListInternal(
+        modifier = modifier,
+        title = title,
+        message = message,
+        contentDescription = contentDescription,
+        icon = icon,
+        actionLabel = actionLabel,
+        onActionClicked = onActionClicked
+    )
+}
+
+@Composable
+fun WooPosEmptyScreen(
+    modifier: Modifier = Modifier,
+    title: String,
+    message: String,
+    contentDescription: String,
+    icon: Painter,
+) {
+    WooPosItemsEmptyListInternalPainter(
+        modifier = modifier,
+        title = title,
+        message = message,
+        contentDescription = contentDescription,
+        icon = icon,
+        actionLabel = null,
+        onActionClicked = null
+    )
+}
+
+@Composable
+fun WooPosEmptyScreen(
+    modifier: Modifier = Modifier,
+    title: String,
+    message: String,
+    contentDescription: String,
+    icon: Painter,
+    actionLabel: String,
+    onActionClicked: (() -> Unit),
+) {
+    WooPosItemsEmptyListInternalPainter(
         modifier = modifier,
         title = title,
         message = message,
@@ -71,7 +111,61 @@ private fun WooPosItemsEmptyListInternal(
     title: String,
     message: String,
     contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
+    icon: ImageVector = WooPosIcons.NotFound,
+    actionLabel: String?,
+    onActionClicked: (() -> Unit)? = null,
+) {
+    Box(
+        modifier = modifier.verticalScroll(rememberScrollState()),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                modifier = Modifier.size(148.dp),
+                imageVector = icon,
+                contentDescription = contentDescription,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+            WooPosText(
+                text = title,
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+            WooPosText(
+                text = message,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+            if (onActionClicked != null && actionLabel != null) {
+                WooPosButton(
+                    text = actionLabel,
+                    onClick = onActionClicked,
+                    modifier = WooPosErrorAndEmptyStateButtonModifier
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WooPosItemsEmptyListInternalPainter(
+    modifier: Modifier = Modifier,
+    title: String,
+    message: String,
+    contentDescription: String,
+    icon: Painter,
     actionLabel: String?,
     onActionClicked: (() -> Unit)? = null,
 ) {

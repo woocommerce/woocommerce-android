@@ -35,7 +35,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -54,6 +53,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -349,7 +349,7 @@ fun OrdersEmpty(
 ) {
     WooPosEmptyScreen(
         modifier = Modifier.fillMaxSize(),
-        icon = painterResource(id = R.drawable.ic_woo_pos_orders_empty),
+        icon = WooPosIcons.OrdersEmpty,
         title = stringResource(id = R.string.woopos_orders_empty_list_title),
         message = stringResource(id = R.string.woopos_orders_empty_list_message),
         contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),

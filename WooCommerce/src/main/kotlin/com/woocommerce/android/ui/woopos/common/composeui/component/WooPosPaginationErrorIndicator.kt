@@ -14,8 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -25,6 +24,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 @Composable
 fun WooPosPaginationErrorIndicator(
     modifier: Modifier = Modifier,
-    icon: Painter? = painterResource(id = R.drawable.ic_woo_pos_error_x),
+    icon: ImageVector? = WooPosIcons.ErrorX,
     message: String,
     description: String,
     primaryButton: Button,
@@ -55,7 +55,7 @@ fun WooPosPaginationErrorIndicator(
 @Composable
 private fun WooPosPaginationErrorIndicatorContent(
     modifier: Modifier,
-    icon: Painter? = null, // optional
+    icon: ImageVector? = null,
     message: String,
     description: String,
     primaryButton: Button
@@ -89,7 +89,7 @@ private fun WooPosPaginationErrorIndicatorContent(
                             modifier = Modifier
                                 .size(54.dp)
                                 .align(Alignment.Center),
-                            painter = icon,
+                            imageVector = icon,
                             contentDescription = stringResource(R.string.woopos_error_icon_content_description),
                             tint = WooPosTheme.colors.unspecified,
                         )

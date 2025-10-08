@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -30,7 +31,46 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 @Composable
 fun WooPosErrorScreen(
     modifier: Modifier = Modifier,
-    icon: Painter = painterResource(id = R.drawable.ic_woo_pos_error_x),
+    icon: ImageVector = WooPosIcons.ErrorX,
+    message: String,
+    reason: String,
+    primaryButton: Button? = null,
+    secondaryButton: Button? = null
+) {
+    WooPosErrorScreenInternal(
+        modifier = modifier,
+        iconVector = icon,
+        message = message,
+        reason = reason,
+        primaryButton = primaryButton,
+        secondaryButton = secondaryButton
+    )
+}
+
+@Composable
+fun WooPosErrorScreen(
+    modifier: Modifier = Modifier,
+    icon: Painter,
+    message: String,
+    reason: String,
+    primaryButton: Button? = null,
+    secondaryButton: Button? = null
+) {
+    WooPosErrorScreenInternal(
+        modifier = modifier,
+        iconPainter = icon,
+        message = message,
+        reason = reason,
+        primaryButton = primaryButton,
+        secondaryButton = secondaryButton
+    )
+}
+
+@Composable
+private fun WooPosErrorScreenInternal(
+    modifier: Modifier = Modifier,
+    iconVector: ImageVector? = null,
+    iconPainter: Painter? = null,
     message: String,
     reason: String,
     primaryButton: Button? = null,
@@ -48,12 +88,20 @@ fun WooPosErrorScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Icon(
-                modifier = Modifier.size(80.dp),
-                painter = icon,
-                contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
-                tint = WooPosTheme.colors.unspecified,
-            )
+            when {
+                iconVector != null -> Icon(
+                    modifier = Modifier.size(80.dp),
+                    imageVector = iconVector,
+                    contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
+                    tint = WooPosTheme.colors.unspecified,
+                )
+                iconPainter != null -> Icon(
+                    modifier = Modifier.size(80.dp),
+                    painter = iconPainter,
+                    contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
+                    tint = WooPosTheme.colors.unspecified,
+                )
+            }
 
             Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
