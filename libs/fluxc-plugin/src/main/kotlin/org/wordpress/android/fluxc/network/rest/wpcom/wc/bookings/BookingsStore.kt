@@ -91,6 +91,7 @@ class BookingsStore @Inject constructor(
         orderItemId = orderItemId,
         parentId = parentId,
         personCounts = personCounts?.map { it.toLong() },
-        localTimezone = localTimezone
+        localTimezone = localTimezone,
+        order = null
     )
 }
