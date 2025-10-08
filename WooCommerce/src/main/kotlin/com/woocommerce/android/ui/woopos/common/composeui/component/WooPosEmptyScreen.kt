@@ -72,25 +72,6 @@ fun WooPosEmptyScreen(
     message: String,
     contentDescription: String,
     icon: Painter,
-) {
-    WooPosItemsEmptyListInternalPainter(
-        modifier = modifier,
-        title = title,
-        message = message,
-        contentDescription = contentDescription,
-        icon = icon,
-        actionLabel = null,
-        onActionClicked = null
-    )
-}
-
-@Composable
-fun WooPosEmptyScreen(
-    modifier: Modifier = Modifier,
-    title: String,
-    message: String,
-    contentDescription: String,
-    icon: Painter,
     actionLabel: String,
     onActionClicked: (() -> Unit),
 ) {
