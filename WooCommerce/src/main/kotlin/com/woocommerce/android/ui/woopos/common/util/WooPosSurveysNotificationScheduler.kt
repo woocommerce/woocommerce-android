@@ -8,9 +8,10 @@ import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesReposit
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class WooPosSurveysNotificationSchedular @Inject constructor(
+class WooPosSurveysNotificationScheduler @Inject constructor(
     private val localNotificationScheduler: LocalNotificationScheduler,
     private val appPrefs: AppPrefsWrapper,
     private val wooPosPreferencesRepository: WooPosPreferencesRepository,
@@ -19,10 +20,14 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
 ) {
     companion object {
         private val ALLOWED_COUNTRIES = setOf("us", "gb")
+        private const val CURRENT_USER_NOTIFICATION_DELAY_MINUTES = 5L
     }
 
-    suspend fun schedularPotentialUserSurveyNotification() {
-        if (!appPrefs.isWooPosSurveyNotificationPotentialUserShown && areNotificationsAllowed()) {
+    suspend fun schedulePotentialUserSurveyNotification() {
+        if (!appPrefs.isWooPosSurveyNotificationPotentialUserShown &&
+            !wooPosPreferencesRepository.wasOpenedOnce.first() &&
+            areNotificationsAllowed()
+        ) {
             localNotificationScheduler.scheduleNotification(
                 LocalNotification.WooPosSurveyPotentialUserNotification(
                     siteId = selectedSite.get().siteId
@@ -31,10 +36,22 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
         }
     }
 
+    suspend fun scheduleCurrentUserSurveyNotification() {
+        if (!appPrefs.isWooPosSurveyNotificationCurrentUserShown &&
+            wooPosPreferencesRepository.wasOpenedOnce.first() &&
+            areNotificationsAllowed()
+        ) {
+            localNotificationScheduler.scheduleNotification(
+                LocalNotification.WooPosSurveyCurrentUserNotification(
+                    delay = TimeUnit.MINUTES.toMillis(CURRENT_USER_NOTIFICATION_DELAY_MINUTES),
+                    siteId = selectedSite.get().siteId
+                )
+            )
+        }
+    }
+
     private suspend fun areNotificationsAllowed(): Boolean =
-        isAllowedCountry() &&
-            !wooPosPreferencesRepository.wasOpenedOnce.first() &&
-            FeatureFlag.WOO_POS_SURVEYS.isEnabled()
+        isAllowedCountry() && FeatureFlag.WOO_POS_SURVEYS.isEnabled()
 
     private suspend fun isAllowedCountry(): Boolean {
         val countryCode = wooCommerceStore.getSiteSettingsAsync(selectedSite.get())?.countryCode
