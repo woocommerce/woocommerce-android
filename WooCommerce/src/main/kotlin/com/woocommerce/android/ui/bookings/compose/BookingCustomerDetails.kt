@@ -46,37 +46,41 @@ fun BookingCustomerDetails(
         ) {
             HorizontalDivider(thickness = 0.5.dp)
             CustomerDetailsRow(value = model.name)
-            CustomerDetailsRow(
-                value = model.email,
-                trailingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_email),
-                        contentDescription = stringResource(id = R.string.booking_customer_label_email),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                },
-                modifier = Modifier.clickable {
-                    ActivityUtils.sendEmail(context, model.email)
-                }
-            )
-            CustomerDetailsRow(
-                value = model.phone,
-                trailingIcon = {
-                    Box {
+            model.email?.let { email ->
+                CustomerDetailsRow(
+                    value = email,
+                    trailingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_menu_more_vert),
-                            contentDescription = stringResource(id = R.string.booking_customer_label_phone),
+                            painter = painterResource(R.drawable.ic_email),
+                            contentDescription = stringResource(id = R.string.booking_customer_label_email),
                             tint = MaterialTheme.colorScheme.primary
                         )
-                        ContactDropdownMenu(
-                            expanded = phoneMenuExpanded,
-                            phone = model.phone,
-                            onDismissRequest = { phoneMenuExpanded = false }
-                        )
+                    },
+                    modifier = Modifier.clickable {
+                        ActivityUtils.sendEmail(context, email)
                     }
-                },
-                modifier = Modifier.clickable { phoneMenuExpanded = true }
-            )
+                )
+            }
+            model.phone?.let { phone ->
+                CustomerDetailsRow(
+                    value = phone,
+                    trailingIcon = {
+                        Box {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_menu_more_vert),
+                                contentDescription = stringResource(id = R.string.booking_customer_label_phone),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            ContactDropdownMenu(
+                                expanded = phoneMenuExpanded,
+                                phone = phone,
+                                onDismissRequest = { phoneMenuExpanded = false }
+                            )
+                        }
+                    },
+                    modifier = Modifier.clickable { phoneMenuExpanded = true }
+                )
+            }
             Column(
                 modifier = Modifier
                     .padding(vertical = 12.dp, horizontal = 16.dp)
@@ -140,8 +144,8 @@ private fun CustomerDetailsRow(
 
 data class BookingCustomerDetailsModel(
     val name: String,
-    val email: String,
-    val phone: String,
+    val email: String?,
+    val phone: String?,
     val billingAddressLines: List<String>,
 )
 

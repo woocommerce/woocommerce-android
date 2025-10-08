@@ -63,8 +63,8 @@ class BookingMapper @Inject constructor(
     fun BookingCustomerInfo.toCustomerDetailsModel(): BookingCustomerDetailsModel {
         return BookingCustomerDetailsModel(
             name = "$billingFirstName $billingLastName".trim().ifEmpty { "Guest" },
-            email = billingEmail.ifEmpty { "-" },
-            phone = billingPhone.ifEmpty { "-" },
+            email = billingEmail.ifEmpty { null },
+            phone = billingPhone.ifEmpty { null },
             billingAddressLines = listOfNotNull(
                 billingAddress1,
                 billingAddress2,
