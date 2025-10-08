@@ -44,7 +44,7 @@ import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.woopos.common.util.WooPosSurveysNotificationSchedular
+import com.woocommerce.android.ui.woopos.common.util.WooPosSurveysNotificationScheduler
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
@@ -166,7 +166,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var posLocalCatalogScheduler: WooPosLocalCatalogSyncScheduler
 
-    @Inject lateinit var wooPosSurveysNotificationSchedular: Lazy<WooPosSurveysNotificationSchedular>
+    @Inject lateinit var wooPosSurveysNotificationScheduler: Lazy<WooPosSurveysNotificationScheduler>
 
     private var connectionReceiverRegistered = false
 
@@ -325,7 +325,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
                         add(async { jitmStoreInMemoryCache.init() })
                         add(async { trackStoreSnapshot() })
-                        add(async { wooPosSurveysNotificationSchedular.get().schedularCurrentUserSurveyNotification() })
+                        add(async { wooPosSurveysNotificationScheduler.get().scheduleCurrentUserSurveyNotification() })
                     }.awaitAll()
                 }
             }

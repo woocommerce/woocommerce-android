@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class WooPosSurveysNotificationSchedular @Inject constructor(
+class WooPosSurveysNotificationScheduler @Inject constructor(
     private val localNotificationScheduler: LocalNotificationScheduler,
     private val appPrefs: AppPrefsWrapper,
     private val wooPosPreferencesRepository: WooPosPreferencesRepository,
@@ -23,7 +23,7 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
         private const val CURRENT_USER_NOTIFICATION_DELAY_MINUTES = 5L
     }
 
-    suspend fun schedularPotentialUserSurveyNotification() {
+    suspend fun schedulePotentialUserSurveyNotification() {
         if (!appPrefs.isWooPosSurveyNotificationPotentialUserShown &&
             !wooPosPreferencesRepository.wasOpenedOnce.first() &&
             areNotificationsAllowed()
@@ -36,7 +36,7 @@ class WooPosSurveysNotificationSchedular @Inject constructor(
         }
     }
 
-    suspend fun schedularCurrentUserSurveyNotification() {
+    suspend fun scheduleCurrentUserSurveyNotification() {
         if (!appPrefs.isWooPosSurveyNotificationCurrentUserShown &&
             wooPosPreferencesRepository.wasOpenedOnce.first() &&
             areNotificationsAllowed()

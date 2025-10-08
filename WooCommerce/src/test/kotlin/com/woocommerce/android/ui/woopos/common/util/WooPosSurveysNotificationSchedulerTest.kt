@@ -23,7 +23,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 
 @ExperimentalCoroutinesApi
-class WooPosSurveysNotificationSchedularTest {
+class WooPosSurveysNotificationSchedulerTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -33,7 +33,7 @@ class WooPosSurveysNotificationSchedularTest {
     private lateinit var wooPosPreferencesRepository: WooPosPreferencesRepository
     private lateinit var selectedSite: SelectedSite
     private lateinit var wooCommerceStore: WooCommerceStore
-    private lateinit var schedular: WooPosSurveysNotificationSchedular
+    private lateinit var scheduler: WooPosSurveysNotificationScheduler
     private lateinit var siteModel: SiteModel
 
     @Before
@@ -49,7 +49,7 @@ class WooPosSurveysNotificationSchedularTest {
 
         whenever(selectedSite.get()).thenReturn(siteModel)
 
-        schedular = WooPosSurveysNotificationSchedular(
+        scheduler = WooPosSurveysNotificationScheduler(
             localNotificationScheduler = localNotificationScheduler,
             appPrefs = appPrefs,
             wooPosPreferencesRepository = wooPosPreferencesRepository,
@@ -59,14 +59,14 @@ class WooPosSurveysNotificationSchedularTest {
     }
 
     @Test
-    fun `given all conditions met, when schedularPotentialUserSurveyNotification called, then notification scheduled`() =
+    fun `given all conditions met, when schedulePotentialUserSurveyNotification called, then notification scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularPotentialUserSurveyNotification()
+            scheduler.schedulePotentialUserSurveyNotification()
 
             verify(localNotificationScheduler).scheduleNotification(
                 LocalNotification.WooPosSurveyPotentialUserNotification(siteId = 123L)
@@ -74,53 +74,53 @@ class WooPosSurveysNotificationSchedularTest {
         }
 
     @Test
-    fun `given notification already shown, when schedularPotentialUserSurveyNotification called, then notification not scheduled`() =
+    fun `given notification already shown, when schedulePotentialUserSurveyNotification called, then notification not scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(true)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularPotentialUserSurveyNotification()
+            scheduler.schedulePotentialUserSurveyNotification()
 
             verify(localNotificationScheduler, never()).scheduleNotification(any())
         }
 
     @Test
-    fun `given country not allowed, when schedularPotentialUserSurveyNotification called, then notification not scheduled`() =
+    fun `given country not allowed, when schedulePotentialUserSurveyNotification called, then notification not scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "FR")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularPotentialUserSurveyNotification()
+            scheduler.schedulePotentialUserSurveyNotification()
 
             verify(localNotificationScheduler, never()).scheduleNotification(any())
         }
 
     @Test
-    fun `given WooPOS opened before, when schedularPotentialUserSurveyNotification called, then notification not scheduled`() =
+    fun `given WooPOS opened before, when schedulePotentialUserSurveyNotification called, then notification not scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(true))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularPotentialUserSurveyNotification()
+            scheduler.schedulePotentialUserSurveyNotification()
 
             verify(localNotificationScheduler, never()).scheduleNotification(any())
         }
 
     @Test
-    fun `given GB country code, when schedularPotentialUserSurveyNotification called, then notification scheduled`() =
+    fun `given GB country code, when schedulePotentialUserSurveyNotification called, then notification scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "GB")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularPotentialUserSurveyNotification()
+            scheduler.schedulePotentialUserSurveyNotification()
 
             verify(localNotificationScheduler).scheduleNotification(
                 LocalNotification.WooPosSurveyPotentialUserNotification(siteId = 123L)
@@ -128,14 +128,14 @@ class WooPosSurveysNotificationSchedularTest {
         }
 
     @Test
-    fun `given lowercase country code, when schedularPotentialUserSurveyNotification called, then notification scheduled`() =
+    fun `given lowercase country code, when schedulePotentialUserSurveyNotification called, then notification scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "us")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularPotentialUserSurveyNotification()
+            scheduler.schedulePotentialUserSurveyNotification()
 
             verify(localNotificationScheduler).scheduleNotification(
                 LocalNotification.WooPosSurveyPotentialUserNotification(siteId = 123L)
@@ -143,39 +143,39 @@ class WooPosSurveysNotificationSchedularTest {
         }
 
     @Test
-    fun `given null country code, when schedularPotentialUserSurveyNotification called, then notification not scheduled`() =
+    fun `given null country code, when schedulePotentialUserSurveyNotification called, then notification not scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "")
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularPotentialUserSurveyNotification()
+            scheduler.schedulePotentialUserSurveyNotification()
 
             verify(localNotificationScheduler, never()).scheduleNotification(any())
         }
 
     @Test
-    fun `given null site settings, when schedularPotentialUserSurveyNotification called, then notification not scheduled`() =
+    fun `given null site settings, when schedulePotentialUserSurveyNotification called, then notification not scheduled`() =
         runTest {
             whenever(appPrefs.isWooPosSurveyNotificationPotentialUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(null)
 
-            schedular.schedularPotentialUserSurveyNotification()
+            scheduler.schedulePotentialUserSurveyNotification()
 
             verify(localNotificationScheduler, never()).scheduleNotification(any())
         }
 
     @Test
-    fun `given all conditions met, when schedularCurrentUserSurveyNotification called, then notification scheduled with delay`() =
+    fun `given all conditions met, when scheduleCurrentUserSurveyNotification called, then notification scheduled with delay`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationCurrentUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(true))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularCurrentUserSurveyNotification()
+            scheduler.scheduleCurrentUserSurveyNotification()
 
             verify(localNotificationScheduler).scheduleNotification(
                 LocalNotification.WooPosSurveyCurrentUserNotification(
@@ -186,40 +186,40 @@ class WooPosSurveysNotificationSchedularTest {
         }
 
     @Test
-    fun `given notification already shown, when schedularCurrentUserSurveyNotification called, then notification not scheduled`() =
+    fun `given notification already shown, when scheduleCurrentUserSurveyNotification called, then notification not scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationCurrentUserShown).thenReturn(true)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(true))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularCurrentUserSurveyNotification()
+            scheduler.scheduleCurrentUserSurveyNotification()
 
             verify(localNotificationScheduler, never()).scheduleNotification(any())
         }
 
     @Test
-    fun `given WooPOS not opened before, when schedularCurrentUserSurveyNotification called, then notification not scheduled`() =
+    fun `given WooPOS not opened before, when scheduleCurrentUserSurveyNotification called, then notification not scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "US")
             whenever(appPrefs.isWooPosSurveyNotificationCurrentUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(false))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularCurrentUserSurveyNotification()
+            scheduler.scheduleCurrentUserSurveyNotification()
 
             verify(localNotificationScheduler, never()).scheduleNotification(any())
         }
 
     @Test
-    fun `given country not allowed, when schedularCurrentUserSurveyNotification called, then notification not scheduled`() =
+    fun `given country not allowed, when scheduleCurrentUserSurveyNotification called, then notification not scheduled`() =
         runTest {
             val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = "FR")
             whenever(appPrefs.isWooPosSurveyNotificationCurrentUserShown).thenReturn(false)
             whenever(wooPosPreferencesRepository.wasOpenedOnce).thenReturn(flowOf(true))
             whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-            schedular.schedularCurrentUserSurveyNotification()
+            scheduler.scheduleCurrentUserSurveyNotification()
 
             verify(localNotificationScheduler, never()).scheduleNotification(any())
         }
