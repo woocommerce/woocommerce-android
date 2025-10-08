@@ -544,7 +544,6 @@
     <ID>UnitTestNamingRule:CreationFocusedOrderCreateEditViewModelTest.kt$CreationFocusedOrderCreateEditViewModelTest$@Test fun `when regular product and variation selected, should update order's items`()</ID>
     <ID>UnitTestNamingRule:CreationFocusedOrderCreateEditViewModelTest.kt$CreationFocusedOrderCreateEditViewModelTest$@Test fun `when removing a fee, do not remove the rest of fees`()</ID>
     <ID>UnitTestNamingRule:CreationFocusedOrderCreateEditViewModelTest.kt$CreationFocusedOrderCreateEditViewModelTest$@Test fun `when removing product, should make view not editable`()</ID>
-    <ID>UnitTestNamingRule:CurrencyPositionConverterTest.kt$CurrencyPositionConverterTest$@Test fun `returns default value if the db-stored value is invalid`()</ID>
     <ID>UnitTestNamingRule:CurrentTimeProviderTest.kt$CurrentTimeProviderTest$@Test fun `always returns current date`()</ID>
     <ID>UnitTestNamingRule:CustomPackageCreationDataTest.kt$CustomPackageCreationDataTest$@Test fun `isValid returns false when any dimension field is empty`()</ID>
     <ID>UnitTestNamingRule:CustomPackageCreationDataTest.kt$CustomPackageCreationDataTest$@Test fun `isValid returns false when saveAsTemplate is true and name or weight is empty`()</ID>

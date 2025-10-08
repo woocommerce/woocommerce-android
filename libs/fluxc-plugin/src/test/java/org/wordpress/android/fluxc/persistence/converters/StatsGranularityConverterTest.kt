@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore
 
 class StatsGranularityConverterTest {
     @Test
-    fun `returns default value if the db-stored value is invalid`() {
+    fun `when the db-stored value is invalid, then it returns default value`() {
         val converter = StatsGranularityConverter(logger = mock())
         val invalidValue = "invalid_stats_granularity"
 
