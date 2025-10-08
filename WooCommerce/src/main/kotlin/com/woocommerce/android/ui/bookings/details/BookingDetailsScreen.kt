@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -28,12 +30,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
@@ -85,11 +89,13 @@ fun BookingDetailsScreen(
     onViewOrder: (Long) -> Unit,
     onViewNotes: () -> Unit,
 ) {
+    val context = LocalContext.current
     val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             Toolbar(
                 title = viewState.toolbarTitle,
+                navigationIcon = if (context.isTwoPanesShouldBeUsed) null else Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationButtonClick = onBack,
                 modifier = Modifier.shadow(4.dp)
             )
