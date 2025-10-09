@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
@@ -27,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val bookingFilterRepository: BookingFilterRepository,
     private val bookingListHandler: BookingListHandler,
     private val filtersBuilder: BookingListFiltersBuilder,
     private val bookingMapper: BookingMapper,
@@ -118,8 +121,10 @@ class BookingListViewModel @Inject constructor(
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
             val sortFlow = sortOption.drop(1) // Skip the initial value to avoid double fetch on init
+            val bookingFilterFlow =
+                bookingFilterRepository.bookingFilterFlow.drop(1) // Skip initial to avoid double fetch on init
 
-            merge(selectedTab, queryFlow, sortFlow).collectLatest {
+            merge(selectedTab, queryFlow, sortFlow, bookingFilterFlow).collectLatest {
                 // Cancel any ongoing fetch or load more operations
                 bookingsFetchJob?.cancel()
                 bookingsLoadMoreJob?.cancel()
@@ -187,10 +192,15 @@ class BookingListViewModel @Inject constructor(
         triggerEvent(NavigateToFilters)
     }
 
-    private fun prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
-        listOfNotNull(
-            selectedTab.value.asDateRangeFilter()
-        )
+    private suspend fun prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
+        when (selectedTab.value) {
+            BookingListTab.Today,
+            BookingListTab.Upcoming -> listOfNotNull(
+                selectedTab.value.asDateRangeFilter()
+            )
+
+            BookingListTab.All -> bookingFilterRepository.bookingFilterFlow.first().asList()
+        }
     }
 
     data class NavigateToBookingDetails(val bookingId: Long) : MultiLiveEvent.Event()
