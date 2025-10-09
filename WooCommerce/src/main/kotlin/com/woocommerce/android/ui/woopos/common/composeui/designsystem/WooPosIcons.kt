@@ -84,6 +84,21 @@ object WooPosIcons {
             )
         }
 
+    val CardReaderNotConnected: ImageVector
+        @Composable
+        get() {
+            val tertiaryColor = if (isSystemInDarkTheme()) {
+                Color(0xFF720EEC)
+            } else {
+                Color(0xFF3C087E)
+            }
+            return cardReaderNotConnected(
+                primaryColor = MaterialTheme.colorScheme.primary,
+                secondaryColor = MaterialTheme.colorScheme.secondary,
+                tertiaryColor = tertiaryColor
+            )
+        }
+
     private fun notFound(
         primaryColor: Color,
         secondaryColor: Color,
@@ -580,6 +595,96 @@ object WooPosIcons {
             }
         }.build()
     }
+
+    private fun cardReaderNotConnected(
+        primaryColor: Color,
+        secondaryColor: Color,
+        tertiaryColor: Color
+    ): ImageVector {
+        return ImageVector.Builder(
+            name = "CardReaderNotConnected",
+            defaultWidth = 169.dp,
+            defaultHeight = 169.dp,
+            viewportWidth = 169f,
+            viewportHeight = 169f
+        ).apply {
+            path(fill = SolidColor(primaryColor)) {
+                moveTo(155.557f, 28.9419f)
+                curveTo(155.557f, 20.2518f, 150.755f, 15.3636f, 142.159f, 15.3636f)
+                horizontalLineTo(57.5111f)
+                curveTo(48.9147f, 15.3636f, 44.1131f, 20.2518f, 44.1131f, 28.9419f)
+                verticalLineTo(113.515f)
+                curveTo(44.1131f, 122.205f, 48.9147f, 127.094f, 57.5111f, 127.094f)
+                horizontalLineTo(142.159f)
+                curveTo(150.755f, 127.094f, 155.557f, 122.205f, 155.557f, 113.515f)
+                verticalLineTo(45.779f)
+                verticalLineTo(28.9419f)
+                close()
+            }
+            path(fill = SolidColor(secondaryColor)) {
+                moveTo(75.3242f, 39.8038f)
+                lineTo(80.2033f, 44.692f)
+                curveTo(85.2372f, 39.6487f, 92.1298f, 36.5451f, 99.7969f, 36.5451f)
+                curveTo(107.464f, 36.5451f, 114.357f, 39.6487f, 119.391f, 44.692f)
+                lineTo(124.27f, 39.8038f)
+                curveTo(117.997f, 33.519f, 109.323f, 29.6395f, 99.7969f, 29.6395f)
+                curveTo(90.2712f, 29.6395f, 81.5973f, 33.519f, 75.3242f, 39.8038f)
+                close()
+            }
+            path(fill = SolidColor(secondaryColor)) {
+                moveTo(85.0825f, 49.6587f)
+                lineTo(89.9616f, 54.5469f)
+                curveTo(92.4398f, 52.064f, 95.9248f, 50.5122f, 99.7197f, 50.5122f)
+                curveTo(103.514f, 50.5122f, 107f, 52.064f, 109.478f, 54.5469f)
+                lineTo(114.357f, 49.6587f)
+                curveTo(110.562f, 45.8568f, 105.373f, 43.5291f, 99.6422f, 43.5291f)
+                curveTo(93.9113f, 43.5291f, 88.7224f, 45.8568f, 84.9276f, 49.6587f)
+                horizontalLineTo(85.0825f)
+                close()
+            }
+            path(fill = SolidColor(secondaryColor)) {
+                moveTo(94.9181f, 59.4341f)
+                lineTo(99.7971f, 64.3223f)
+                lineTo(104.676f, 59.4341f)
+                curveTo(103.437f, 58.1926f, 101.733f, 57.4167f, 99.7971f, 57.4167f)
+                curveTo(97.861f, 57.4167f, 96.1572f, 58.1926f, 94.9181f, 59.4341f)
+                close()
+            }
+            path(fill = SolidColor(tertiaryColor)) {
+                moveTo(44.1131f, 78.266f)
+                verticalLineTo(101.566f)
+                verticalLineTo(113.515f)
+                curveTo(44.1131f, 122.205f, 48.9147f, 127.094f, 57.5111f, 127.094f)
+                horizontalLineTo(142.159f)
+                lineTo(44.1131f, 78.266f)
+                close()
+            }
+            path(fill = SolidColor(secondaryColor)) {
+                moveTo(13.443f, 132.377f)
+                curveTo(13.443f, 152.566f, 29.8459f, 169f, 49.9972f, 169f)
+                curveTo(70.1484f, 169f, 86.5513f, 152.566f, 86.5513f, 132.377f)
+                curveTo(86.5513f, 112.188f, 70.1484f, 95.7545f, 49.9972f, 95.7545f)
+                curveTo(29.8459f, 95.7545f, 13.443f, 112.188f, 13.443f, 132.377f)
+                close()
+            }
+            path(fill = SolidColor(primaryColor)) {
+                moveTo(64.7339f, 122.501f)
+                lineTo(59.8238f, 117.558f)
+                lineTo(49.996f, 127.443f)
+                lineTo(40.1682f, 117.558f)
+                lineTo(35.2582f, 122.493f)
+                lineTo(45.0937f, 132.378f)
+                lineTo(35.2582f, 142.271f)
+                lineTo(40.1682f, 147.206f)
+                lineTo(49.996f, 137.313f)
+                lineTo(59.8238f, 147.198f)
+                lineTo(64.7339f, 142.263f)
+                lineTo(54.906f, 132.378f)
+                lineTo(64.7339f, 122.501f)
+                close()
+            }
+        }.build()
+    }
 }
 
 @Suppress("UnusedPrivateMember")
@@ -666,6 +771,16 @@ private fun WooPosIconsPreview() {
                     Image(
                         imageVector = WooPosIcons.CouponsEmpty,
                         contentDescription = "CouponsEmpty",
+                        modifier = Modifier.size(80.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.CardReaderNotConnected,
+                        contentDescription = "CardReaderNotConnected",
                         modifier = Modifier.size(80.dp)
                     )
                 }
