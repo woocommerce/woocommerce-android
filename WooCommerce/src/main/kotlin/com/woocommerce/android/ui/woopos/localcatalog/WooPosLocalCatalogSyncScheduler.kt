@@ -11,7 +11,12 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -21,6 +26,7 @@ import javax.inject.Singleton
 class WooPosLocalCatalogSyncScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val logger: WooPosLogWrapper,
+    private val preferencesRepository: WooPosPreferencesRepository,
 ) {
 
     private companion object {
@@ -33,45 +39,51 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
     private val workManager by lazy { WorkManager.getInstance(context) }
 
     fun schedulePeriodicFullCatalogSync() {
-        val syncWorkRequest = PeriodicWorkRequestBuilder<WooPosLocalCatalogSyncWorker>(
-            REFRESH_INTERVAL_HOURS,
-            TimeUnit.HOURS
-        )
-            .setInitialDelay(calculateDelayToNight(), TimeUnit.MILLISECONDS)
-            .setConstraints(getConstraints())
-            .setBackoffCriteria(
-                BackoffPolicy.EXPONENTIAL,
-                1,
-                TimeUnit.MINUTES
+        CoroutineScope(Dispatchers.IO).launch {
+            val constraints = getConstraintsBasedOnPreference()
+            val syncWorkRequest = PeriodicWorkRequestBuilder<WooPosLocalCatalogSyncWorker>(
+                REFRESH_INTERVAL_HOURS,
+                TimeUnit.HOURS
             )
-            .build()
+                .setInitialDelay(calculateDelayToNight(), TimeUnit.MILLISECONDS)
+                .setConstraints(constraints)
+                .setBackoffCriteria(
+                    BackoffPolicy.EXPONENTIAL,
+                    1,
+                    TimeUnit.MINUTES
+                )
+                .build()
 
-        workManager.enqueueUniquePeriodicWork(
-            WooPosLocalCatalogSyncWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
-            syncWorkRequest
-        )
+            workManager.enqueueUniquePeriodicWork(
+                WooPosLocalCatalogSyncWorker.WORK_NAME,
+                ExistingPeriodicWorkPolicy.REPLACE,
+                syncWorkRequest
+            )
 
-        logger.d("POS local catalog full sync scheduled.")
+            logger.d("POS local catalog full sync scheduled.")
+        }
     }
 
     fun triggerManualFullCatalogSync() {
-        val oneTimeWorkRequest = OneTimeWorkRequestBuilder<WooPosLocalCatalogSyncWorker>()
-            .setConstraints(getConstraints())
-            .setBackoffCriteria(
-                BackoffPolicy.EXPONENTIAL,
-                1,
-                TimeUnit.MINUTES
+        CoroutineScope(Dispatchers.IO).launch {
+            val constraints = getConstraintsBasedOnPreference()
+            val oneTimeWorkRequest = OneTimeWorkRequestBuilder<WooPosLocalCatalogSyncWorker>()
+                .setConstraints(constraints)
+                .setBackoffCriteria(
+                    BackoffPolicy.EXPONENTIAL,
+                    1,
+                    TimeUnit.MINUTES
+                )
+                .build()
+
+            workManager.enqueueUniqueWork(
+                ONE_TIME_WORK_NAME,
+                ExistingWorkPolicy.REPLACE,
+                oneTimeWorkRequest
             )
-            .build()
 
-        workManager.enqueueUniqueWork(
-            ONE_TIME_WORK_NAME,
-            ExistingWorkPolicy.REPLACE,
-            oneTimeWorkRequest
-        )
-
-        logger.d("Manual POS local catalog sync triggered")
+            logger.d("Manual POS local catalog sync triggered")
+        }
     }
 
     fun isPeriodicWorkRunning(): Boolean {
@@ -86,9 +98,23 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
         return oneTimeWork.any { it.state == WorkInfo.State.RUNNING }
     }
 
-    private fun getConstraints(): Constraints {
+    fun updateWorkConstraints() {
+        logger.d("Updating work constraints based on cellular preference change")
+        cancelPeriodicWork()
+        schedulePeriodicFullCatalogSync()
+    }
+
+    fun cancelPeriodicWork() {
+        workManager.cancelUniqueWork(WooPosLocalCatalogSyncWorker.WORK_NAME)
+        logger.d("Cancelled periodic work for constraint update")
+    }
+
+    private suspend fun getConstraintsBasedOnPreference(): Constraints {
+        val allowCellular = preferencesRepository.allowCellularDataUpdate.first()
+        val networkType = if (allowCellular) NetworkType.CONNECTED else NetworkType.UNMETERED
+
         return Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiredNetworkType(networkType)
             .setRequiresBatteryNotLow(true)
             .build()
     }

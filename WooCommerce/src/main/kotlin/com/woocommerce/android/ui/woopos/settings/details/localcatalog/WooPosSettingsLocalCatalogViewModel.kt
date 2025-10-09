@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.ui.woopos.util.format.WooPosDateFormatter
@@ -24,6 +25,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dateFormatter: WooPosDateFormatter,
     private val preferencesRepository: WooPosPreferencesRepository,
+    private val syncScheduler: WooPosLocalCatalogSyncScheduler,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsLocalCatalogState())
     val state: StateFlow<WooPosSettingsLocalCatalogState> = _state.asStateFlow()
@@ -69,6 +71,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 it.copy(allowCellularDataUpdate = newValue)
             }
             preferencesRepository.setAllowCellularDataUpdate(newValue)
+            syncScheduler.updateWorkConstraints()
         }
     }
 
