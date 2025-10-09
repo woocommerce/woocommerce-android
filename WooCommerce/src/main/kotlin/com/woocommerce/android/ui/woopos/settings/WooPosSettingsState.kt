@@ -49,6 +49,14 @@ sealed class WooPosSettingsDetailDestination {
         }
     }
 
+    sealed class LocalCatalog : WooPosSettingsDetailDestination() {
+        data object Overview : LocalCatalog() {
+            override val titleRes: Int = R.string.woopos_settings_local_catalog_category
+            override val parentDestination: WooPosSettingsDetailDestination? = null
+            override val childDestinations: List<WooPosSettingsDetailDestination> = emptyList()
+        }
+    }
+
     sealed class Help : WooPosSettingsDetailDestination() {
         data object Overview : Help() {
             override val titleRes: Int = R.string.woopos_settings_help_category
