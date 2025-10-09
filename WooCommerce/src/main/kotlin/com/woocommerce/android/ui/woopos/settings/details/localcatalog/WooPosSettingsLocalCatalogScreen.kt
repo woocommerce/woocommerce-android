@@ -81,7 +81,7 @@ private fun WooPosSettingsLocalCatalogScreen(
 
         RefreshSection(
             onRefreshCatalog = onRefreshCatalog,
-            isRefreshing = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog
+            catalogStatus = state.catalogStatus
         )
     }
 }
@@ -195,7 +195,7 @@ private fun SettingsSection(
 @Composable
 private fun RefreshSection(
     onRefreshCatalog: () -> Unit,
-    isRefreshing: Boolean
+    catalogStatus: WooPosSettingsLocalCatalogState.CatalogStatus
 ) {
     Column(
         modifier = Modifier
@@ -218,7 +218,11 @@ private fun RefreshSection(
         WooPosButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = onRefreshCatalog,
-            state = if (isRefreshing) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
+            state = when (catalogStatus) {
+                is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> WooPosButtonState.ENABLED
+                WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus -> WooPosButtonState.DISABLED
+                WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> WooPosButtonState.LOADING
+            },
             text = stringResource(R.string.woopos_settings_local_catalog_refresh_button)
         )
     }
