@@ -239,8 +239,6 @@ private fun OrdersList(
         state = listState,
     ) {
         items(state.items, key = { it.id }) { item ->
-            val isSelected = item.id == state.selectedOrderId
-
             WooPosCard(
                 modifier = modifier
                     .wrapContentHeight(),
@@ -255,7 +253,7 @@ private fun OrdersList(
                         .clip(MaterialTheme.shapes.medium)
                         .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                         .then(
-                            if (isSelected) {
+                            if (item.isSelected) {
                                 Modifier.border(
                                     width = 2.dp,
                                     color = Color.Black,
@@ -266,7 +264,7 @@ private fun OrdersList(
                             }
                         )
                         .clickable { onOrderSelected(item.id) }
-                        .semantics { selected = isSelected }
+                        .semantics { selected = item.isSelected }
                         .padding(
                             horizontal = WooPosSpacing.Medium.value,
                             vertical = WooPosSpacing.Medium.value
