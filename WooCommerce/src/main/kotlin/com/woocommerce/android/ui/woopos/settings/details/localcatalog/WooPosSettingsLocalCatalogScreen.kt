@@ -66,8 +66,7 @@ private fun WooPosSettingsLocalCatalogScreen(
             .padding(WooPosSpacing.Medium.value)
     ) {
         CatalogStatusSection(
-            catalogStatus = state.catalogStatus,
-            isLoading = state.isLoading
+            catalogStatus = state.catalogStatus
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
@@ -75,22 +74,21 @@ private fun WooPosSettingsLocalCatalogScreen(
         SettingsSection(
             allowCellularDataUpdate = state.allowCellularDataUpdate,
             onToggleCellularData = onToggleCellularData,
-            isLoading = state.isLoading
+            isLoading = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         RefreshSection(
             onRefreshCatalog = onRefreshCatalog,
-            isRefreshing = state.isRefreshing
+            isRefreshing = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog
         )
     }
 }
 
 @Composable
 private fun CatalogStatusSection(
-    catalogStatus: CatalogStatus?,
-    isLoading: Boolean
+    catalogStatus: WooPosSettingsLocalCatalogState.CatalogStatus
 ) {
     Column(
         modifier = Modifier
@@ -103,38 +101,42 @@ private fun CatalogStatusSection(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-        if (isLoading || catalogStatus == null) {
-            StatusRow(
-                label = stringResource(R.string.woopos_settings_local_catalog_size),
-                value = null,
-                isLoading = true
-            )
-            StatusRow(
-                label = stringResource(R.string.woopos_settings_local_catalog_last_update),
-                value = null,
-                isLoading = true
-            )
-            StatusRow(
-                label = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
-                value = null,
-                isLoading = true
-            )
-        } else {
-            StatusRow(
-                label = stringResource(R.string.woopos_settings_local_catalog_size),
-                value = catalogStatus.catalogSize,
-                isLoading = false
-            )
-            StatusRow(
-                label = stringResource(R.string.woopos_settings_local_catalog_last_update),
-                value = catalogStatus.lastUpdate,
-                isLoading = false
-            )
-            StatusRow(
-                label = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
-                value = catalogStatus.lastFullUpdate,
-                isLoading = false
-            )
+        when (catalogStatus) {
+            is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> {
+                StatusRow(
+                    label = stringResource(R.string.woopos_settings_local_catalog_size),
+                    value = catalogStatus.catalogSize,
+                    isLoading = false
+                )
+                StatusRow(
+                    label = stringResource(R.string.woopos_settings_local_catalog_last_update),
+                    value = catalogStatus.lastUpdate,
+                    isLoading = false
+                )
+                StatusRow(
+                    label = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
+                    value = catalogStatus.lastFullUpdate,
+                    isLoading = false
+                )
+            }
+            is WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus,
+            is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> {
+                StatusRow(
+                    label = stringResource(R.string.woopos_settings_local_catalog_size),
+                    value = null,
+                    isLoading = true
+                )
+                StatusRow(
+                    label = stringResource(R.string.woopos_settings_local_catalog_last_update),
+                    value = null,
+                    isLoading = true
+                )
+                StatusRow(
+                    label = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
+                    value = null,
+                    isLoading = true
+                )
+            }
         }
     }
 }
@@ -274,14 +276,44 @@ fun WooPosSettingsLocalCatalogScreenPreview() {
     WooPosTheme {
         WooPosSettingsLocalCatalogScreen(
             state = WooPosSettingsLocalCatalogState(
-                catalogStatus = CatalogStatus(
+                catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Available(
                     catalogSize = "12.5 MB",
                     lastUpdate = "2 hours ago",
                     lastFullUpdate = "Yesterday at 3:45 PM"
                 ),
-                allowCellularDataUpdate = true,
-                isLoading = false,
-                isRefreshing = false
+                allowCellularDataUpdate = true
+            ),
+            onToggleCellularData = {},
+            onRefreshCatalog = {}
+        )
+    }
+}
+
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsLocalCatalogScreenLoadingPreview() {
+    WooPosTheme {
+        WooPosSettingsLocalCatalogScreen(
+            state = WooPosSettingsLocalCatalogState(
+                catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus,
+                allowCellularDataUpdate = true
+            ),
+            onToggleCellularData = {},
+            onRefreshCatalog = {}
+        )
+    }
+}
+
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsLocalCatalogRefreshingPreview() {
+    WooPosTheme {
+        WooPosSettingsLocalCatalogScreen(
+            state = WooPosSettingsLocalCatalogState(
+                catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog,
+                allowCellularDataUpdate = true
             ),
             onToggleCellularData = {},
             onRefreshCatalog = {}

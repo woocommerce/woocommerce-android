@@ -1,14 +1,17 @@
 package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 
 data class WooPosSettingsLocalCatalogState(
-    val catalogStatus: CatalogStatus? = null,
+    val catalogStatus: CatalogStatus = CatalogStatus.LoadingStatus,
     val allowCellularDataUpdate: Boolean = false,
-    val isLoading: Boolean = false,
-    val isRefreshing: Boolean = false
-)
+) {
+    sealed class CatalogStatus {
+        data class Available(
+            val catalogSize: String,
+            val lastUpdate: String,
+            val lastFullUpdate: String
+        ) : CatalogStatus()
 
-data class CatalogStatus(
-    val catalogSize: String,
-    val lastUpdate: String,
-    val lastFullUpdate: String
-)
+        object LoadingStatus : CatalogStatus()
+        object RefreshingCatalog : CatalogStatus()
+    }
+}
