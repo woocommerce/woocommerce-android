@@ -63,12 +63,6 @@ object WooPosIcons {
             tertiaryColor = MaterialTheme.colorScheme.inverseSurface
         )
 
-    val Exit: ImageVector
-        @Composable
-        get() = exit(
-            color = Color.White
-        )
-
     val CouponsEmpty: ImageVector
         @Composable
         get() {
@@ -446,48 +440,6 @@ object WooPosIcons {
         }.build()
     }
 
-    private fun exit(color: Color): ImageVector {
-        return ImageVector.Builder(
-            name = "Exit",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(color)) {
-                moveTo(10.09f, 15.59f)
-                lineTo(11.5f, 17f)
-                lineToRelative(5f, -5f)
-                lineToRelative(-5f, -5f)
-                lineToRelative(-1.41f, 1.41f)
-                lineTo(12.67f, 11f)
-                horizontalLineTo(3f)
-                verticalLineToRelative(2f)
-                horizontalLineToRelative(9.67f)
-                lineToRelative(-2.58f, 2.59f)
-                close()
-                moveTo(19f, 3f)
-                horizontalLineTo(5f)
-                curveToRelative(-1.11f, 0f, -2f, 0.9f, -2f, 2f)
-                verticalLineToRelative(4f)
-                horizontalLineToRelative(2f)
-                verticalLineTo(5f)
-                horizontalLineToRelative(14f)
-                verticalLineToRelative(14f)
-                horizontalLineTo(5f)
-                verticalLineToRelative(-4f)
-                horizontalLineTo(3f)
-                verticalLineToRelative(4f)
-                curveToRelative(0f, 1.1f, 0.89f, 2f, 2f, 2f)
-                horizontalLineToRelative(14f)
-                curveToRelative(1.1f, 0f, 2f, -0.9f, 2f, -2f)
-                verticalLineTo(5f)
-                curveToRelative(0f, -1.1f, -0.9f, -2f, -2f, -2f)
-                close()
-            }
-        }.build()
-    }
-
     private fun couponsEmpty(
         primaryColor: Color,
         secondaryColor: Color,
@@ -752,16 +704,6 @@ private fun WooPosIconsPreview() {
                         imageVector = WooPosIcons.BluetoothSettings,
                         contentDescription = "BluetoothSettings",
                         modifier = Modifier.size(80.dp)
-                    )
-                }
-                Box(
-                    modifier = Modifier.size(80.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        imageVector = WooPosIcons.Exit,
-                        contentDescription = "Exit",
-                        modifier = Modifier.size(24.dp)
                     )
                 }
                 Box(
