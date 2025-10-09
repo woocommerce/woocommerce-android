@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.extensions.navigateBackWithResult
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.bookings.list.BookingListFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,17 +27,31 @@ class BookingFilterListFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         return composeView {
-            val options by viewModel.options.observeAsState()
-            BookingFilterListScreen(
-                state = BookingFilterListViewModel.BookingFilterListUiState(
-                    items = options.orEmpty(),
-                    onClose = { requireActivity().onBackPressedDispatcher.onBackPressed() },
-                    onShowBookings = {
-                        // TODO Pass new filter payload instead of `true`
-                        navigateBackWithResult(BookingListFragment.BOOKINGS_FILTER_RESULT, true)
-                    }
+            val uiState by viewModel.uiState.observeAsState()
+            uiState?.let { state ->
+                BookingFilterListScreen(
+                    state = BookingFilterListViewModel.BookingFilterListUiState(
+                        items = state.items,
+                        onClose = state.onClose,
+                        onShowBookings = state.onShowBookings
+                    )
                 )
-            )
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        handleEvents()
+    }
+
+    private fun handleEvents() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.Exit -> {
+                    findNavController().popBackStack()
+                }
+            }
         }
     }
 }

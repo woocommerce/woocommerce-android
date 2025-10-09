@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,10 +17,24 @@ class BookingFilterListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
 
-    private val _options = MutableStateFlow(
-        defaultBookingFilters().map { BookingFilterListItem(title = it.titleRes()) }
+    private val _uiState = MutableStateFlow(
+        BookingFilterListUiState(
+            items = defaultBookingFilters().map { BookingFilterListItem(title = it.titleRes()) },
+            onClose = ::onClose,
+            onShowBookings = ::onShowBookings
+        )
     )
-    val options = _options.asLiveData(viewModelScope.coroutineContext)
+    val uiState = _uiState.asLiveData(viewModelScope.coroutineContext)
+
+    private fun onClose() {
+        // Verify unsaved changes and close
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    private fun onShowBookings() {
+        // Apply filters and show bookings
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
 
     @StringRes
     private fun BookingsFilterOption.titleRes(): Int = when (this) {
