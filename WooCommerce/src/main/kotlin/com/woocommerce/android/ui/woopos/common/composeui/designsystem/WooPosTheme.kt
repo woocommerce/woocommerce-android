@@ -28,13 +28,17 @@ data class CustomColors(
     val onSurfaceVariantLowest: Color,
     val onSurfaceVariantHighest: Color,
 
+    val tertiaryIconColor: Color,
+
     val transparent: Color = Color.Transparent,
     val unspecified: Color = Color.Unspecified,
 )
 
-private object WooPosColors {
+internal object WooPosColors {
     val WooPurple10 = Color(0xFFD1C1FF)
     val WooPurple40 = Color(0xFF873EFF)
+    val WooPurple50 = Color(0xFF720EEC)
+    val WooPurple80 = Color(0xFF3C087E)
 
     val WooRed50 = Color(0xFFD63638)
     val WooRed30 = Color(0xFFF86368)
@@ -136,6 +140,8 @@ private val LightCustomColors = CustomColors(
 
     onSurfaceVariantLowest = WooPosColors.Gray30,
     onSurfaceVariantHighest = WooPosColors.Gray60,
+
+    tertiaryIconColor = WooPosColors.WooPurple80,
 )
 
 private val DarkCustomColors = CustomColors(
@@ -150,6 +156,8 @@ private val DarkCustomColors = CustomColors(
 
     onSurfaceVariantLowest = WooPosColors.Gray50,
     onSurfaceVariantHighest = WooPosColors.Gray20,
+
+    tertiaryIconColor = WooPosColors.WooPurple50,
 )
 
 @Composable
