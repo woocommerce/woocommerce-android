@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,26 +36,6 @@ fun WooPosErrorScreen(
     primaryButton: WooPosErrorScreenButtonState? = null,
     secondaryButton: WooPosErrorScreenButtonState? = null
 ) {
-    WooPosErrorScreenInternal(
-        modifier = modifier,
-        iconVector = icon,
-        message = message,
-        reason = reason,
-        primaryButton = primaryButton,
-        secondaryButton = secondaryButton
-    )
-}
-
-@Composable
-private fun WooPosErrorScreenInternal(
-    modifier: Modifier = Modifier,
-    iconVector: ImageVector? = null,
-    iconPainter: Painter? = null,
-    message: String,
-    reason: String,
-    primaryButton: WooPosErrorScreenButtonState? = null,
-    secondaryButton: WooPosErrorScreenButtonState? = null
-) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -69,20 +48,12 @@ private fun WooPosErrorScreenInternal(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            when {
-                iconVector != null -> Icon(
-                    modifier = Modifier.size(80.dp),
-                    imageVector = iconVector,
-                    contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
-                    tint = WooPosTheme.colors.unspecified,
-                )
-                iconPainter != null -> Icon(
-                    modifier = Modifier.size(80.dp),
-                    painter = iconPainter,
-                    contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
-                    tint = WooPosTheme.colors.unspecified,
-                )
-            }
+            Icon(
+                modifier = Modifier.size(80.dp),
+                imageVector = icon,
+                contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
+                tint = WooPosTheme.colors.unspecified,
+            )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
 
