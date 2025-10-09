@@ -27,12 +27,12 @@ class BookingFilterListViewModel @Inject constructor(
     val uiState = _uiState.asLiveData(viewModelScope.coroutineContext)
 
     private fun onClose() {
-        // Verify unsaved changes and close
+        // TODO Verify unsaved changes and close
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     private fun onShowBookings() {
-        // Apply filters and show bookings
+        // TODO Apply filters and show bookings
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
