@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.bookings.filter
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -24,7 +23,7 @@ class BookingFilterListViewModel @Inject constructor(
             onShowBookings = ::onShowBookings
         )
     )
-    val uiState = _uiState.asLiveData(viewModelScope.coroutineContext)
+    val uiState = _uiState.asLiveData()
 
     private fun onClose() {
         // TODO Verify unsaved changes and close
