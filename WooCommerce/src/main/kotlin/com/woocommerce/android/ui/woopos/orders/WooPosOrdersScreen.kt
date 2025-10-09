@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -239,16 +240,6 @@ private fun OrdersList(
     ) {
         items(state.items, key = { it.id }) { item ->
             val isSelected = item.id == state.selectedOrderId
-            val background = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surface
-            }
-            val foreground = if (isSelected) {
-                MaterialTheme.colorScheme.onPrimaryContainer
-            } else {
-                MaterialTheme.colorScheme.onSurface
-            }
 
             WooPosCard(
                 modifier = modifier
@@ -262,7 +253,18 @@ private fun OrdersList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(MaterialTheme.shapes.medium)
-                        .background(background)
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                        .then(
+                            if (isSelected) {
+                                Modifier.border(
+                                    width = 2.dp,
+                                    color = Color.Black,
+                                    shape = MaterialTheme.shapes.medium
+                                )
+                            } else {
+                                Modifier
+                            }
+                        )
                         .clickable { onOrderSelected(item.id) }
                         .semantics { selected = isSelected }
                         .padding(
@@ -300,7 +302,7 @@ private fun OrdersList(
 
                         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-                        OrderStatusChip(item.status, textColor = foreground)
+                        OrderStatusChip(item.status, textColor = MaterialTheme.colorScheme.onSurface)
                     }
 
                     Spacer(Modifier.weight(1f))
