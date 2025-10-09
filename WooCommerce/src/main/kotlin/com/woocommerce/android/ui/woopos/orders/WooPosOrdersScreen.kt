@@ -137,7 +137,7 @@ private fun OrdersContent(
                 .weight(0.7f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceContainerLow),
-            order = state.items.find { it.id == state.selectedOrderId },
+            order = state.items.find { it.isSelected },
         )
     }
 }
