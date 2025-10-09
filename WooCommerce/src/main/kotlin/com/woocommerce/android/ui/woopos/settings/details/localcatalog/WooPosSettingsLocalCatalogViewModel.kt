@@ -78,7 +78,6 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 is PosLocalCatalogSyncResult.Failure -> {
                     // TBD local catalog: Handle errors
                     backupCatalogData?.let { _state.update { it.copy(catalogStatus = backupCatalogData) } }
-
                 }
             }
         }

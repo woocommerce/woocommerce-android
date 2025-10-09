@@ -293,7 +293,6 @@ fun WooPosSettingsLocalCatalogScreenPreview() {
     }
 }
 
-
 @WooPosPreview
 @Composable
 fun WooPosSettingsLocalCatalogScreenLoadingPreview() {
@@ -308,7 +307,6 @@ fun WooPosSettingsLocalCatalogScreenLoadingPreview() {
         )
     }
 }
-
 
 @WooPosPreview
 @Composable
