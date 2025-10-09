@@ -9,9 +9,9 @@ data class BookingListViewState(
     val sortBottomSheetState: BookingListSortBottomSheetState?,
     val searchState: BookingListSearchState
 ) {
-    // TODO combine with other filters when available
+    // TODO use filters when available
     val areFiltersActive: Boolean
-        get() = tabState.selectedTab != BookingListTab.All
+        get() = false
 }
 
 data class BookingListContentState(
@@ -39,6 +39,7 @@ data class BookingListTabState(
 
 data class BookingListControlsState(
     val selectedSortOption: BookingListSortOption,
+    val isFilterButtonVisible: Boolean,
     val onSortClick: () -> Unit,
     val onFilterClick: () -> Unit
 )

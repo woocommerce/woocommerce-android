@@ -33,11 +33,19 @@ class BookingListHandlerTest : BaseUnitTest() {
     private val availablePages = 3
     private val bookingsRepository: BookingsRepository = mock {
         val results = MutableStateFlow(emptyList<Booking>())
-        on { observeBookings(any(), any()) } doAnswer { invocation ->
+        on { observeBookings(any(), any(), any()) } doAnswer { invocation ->
             val limit = invocation.getArgument<Int>(0)
             results.map { it.take(limit) }
         }
-        onBlocking { fetchBookings(any(), any(), anyOrNull(), any()) } doAnswer InlineClassesAnswer { invocation ->
+        onBlocking {
+            fetchBookings(
+                any(),
+                any(),
+                anyOrNull(),
+                any(),
+                any()
+            )
+        } doAnswer InlineClassesAnswer { invocation ->
             val page = invocation.getArgument<Int>(0)
             val perPage = invocation.getArgument<Int>(1)
             val canLoadMore = page < availablePages
@@ -57,7 +65,7 @@ class BookingListHandlerTest : BaseUnitTest() {
     @Test
     fun `given repository returns bookings, when observing bookings flow, then returns bookings`() = testBlocking {
         val sampleBookings = List(10) { getSampleBooking(it) }
-        given(bookingsRepository.observeBookings(any(), any())).willReturn(flowOf(sampleBookings))
+        given(bookingsRepository.observeBookings(any(), any(), any())).willReturn(flowOf(sampleBookings))
 
         val bookings = bookingListHandler.bookingsFlow.first()
 
@@ -67,7 +75,10 @@ class BookingListHandlerTest : BaseUnitTest() {
     @Test
     fun `given no search query and force refresh, when loading bookings, then fetches from repository`() =
         testBlocking {
-            val result = bookingListHandler.loadBookings(searchQuery = null)
+            val result = bookingListHandler.loadBookings(
+                searchQuery = null,
+                sortBy = BookingListSortOption.NewestToOldest
+            )
             val bookings = bookingListHandler.bookingsFlow.first()
 
             assertThat(result.isSuccess).isTrue()
@@ -78,10 +89,21 @@ class BookingListHandlerTest : BaseUnitTest() {
     fun `given repository fetch fails, when loading bookings with force refresh, then returns failure`() =
         testBlocking {
             val exception = Exception("Network error")
-            given(bookingsRepository.fetchBookings(page = any(), perPage = any(), query = anyOrNull(), filters = any()))
+            given(
+                bookingsRepository.fetchBookings(
+                    page = any(),
+                    perPage = any(),
+                    query = anyOrNull(),
+                    filters = any(),
+                    order = any()
+                )
+            )
                 .willReturn(Result.failure(exception))
 
-            val result = bookingListHandler.loadBookings(searchQuery = null)
+            val result = bookingListHandler.loadBookings(
+                searchQuery = null,
+                sortBy = BookingListSortOption.NewestToOldest
+            )
 
             assertThat(result.isFailure).isTrue()
             assertThat(result.exceptionOrNull()).isEqualTo(exception)
@@ -97,13 +119,14 @@ class BookingListHandlerTest : BaseUnitTest() {
                 page = any(),
                 perPage = any(),
                 query = anyOrNull(),
-                filters = any()
+                filters = any(),
+                order = any()
             )
         }
 
     @Test
     fun `when load more is called and can load more is true, then fetches next page`() = testBlocking {
-        bookingListHandler.loadBookings()
+        bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
 
         val result = bookingListHandler.loadMore()
         val bookings = bookingListHandler.bookingsFlow.first()
@@ -114,7 +137,7 @@ class BookingListHandlerTest : BaseUnitTest() {
 
     @Test
     fun `when last page is reached, then can load more becomes false`() = testBlocking {
-        bookingListHandler.loadBookings()
+        bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
 
         var result: Result<Unit>? = null
         repeat(availablePages - 1) {
@@ -126,18 +149,19 @@ class BookingListHandlerTest : BaseUnitTest() {
             page = intThat { it > availablePages },
             perPage = any(),
             query = anyOrNull(),
-            filters = any()
+            filters = any(),
+            order = any()
         )
     }
 
     @Test
     fun `when load bookings is called, then pagination resets`() = testBlocking {
         // First load and load more to advance page
-        bookingListHandler.loadBookings()
+        bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
         bookingListHandler.loadMore()
 
         // Load bookings again - should reset to page 1
-        bookingListHandler.loadBookings()
+        bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
         val bookings = bookingListHandler.bookingsFlow.first()
 
         assertThat(bookings).hasSize(BookingListHandler.PAGE_SIZE)
@@ -145,7 +169,7 @@ class BookingListHandlerTest : BaseUnitTest() {
 
     @Test
     fun `when bookings flow is observed with pagination, then limit increases correctly`() = testBlocking {
-        bookingListHandler.loadBookings()
+        bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
 
         val initialBookings = bookingListHandler.bookingsFlow.first()
         assertThat(initialBookings).hasSize(BookingListHandler.PAGE_SIZE)
@@ -154,15 +178,19 @@ class BookingListHandlerTest : BaseUnitTest() {
         val moreBookings = bookingListHandler.bookingsFlow.first()
 
         @Suppress("UnusedFlow")
-        verify(bookingsRepository).observeBookings(limit = eq(2 * BookingListHandler.PAGE_SIZE), filters = any())
+        verify(bookingsRepository).observeBookings(
+            limit = eq(2 * BookingListHandler.PAGE_SIZE),
+            filters = any(),
+            order = any()
+        )
         assertThat(moreBookings).hasSize(2 * BookingListHandler.PAGE_SIZE)
     }
 
     @Test
     fun `when concurrent load operations occur, then operations are synchronized`() = testBlocking {
         // Launch multiple concurrent load operations
-        val job1 = launch { bookingListHandler.loadBookings() }
-        val job2 = launch { bookingListHandler.loadBookings() }
+        val job1 = launch { bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest) }
+        val job2 = launch { bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest) }
         val job3 = launch { bookingListHandler.loadMore() }
 
         job1.join()

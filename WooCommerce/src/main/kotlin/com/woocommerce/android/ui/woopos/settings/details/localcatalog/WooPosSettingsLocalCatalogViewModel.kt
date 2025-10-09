@@ -36,7 +36,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
 
     private fun loadCatalogStatus() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            _state.update { it.copy(catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus) }
 
             val productsTimestamp = syncTimestampManager.getProductsLastSyncTimestamp()
             val variationsTimestamp = syncTimestampManager.getVariationsLastSyncTimestamp()
@@ -46,7 +46,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 variationsTimestamp
             )
 
-            val catalogStatus = CatalogStatus(
+            val catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Available(
                 catalogSize = "8.3 MB", // TBD local catalog: Replace with actual catalog size
                 lastUpdate = formattedTimestamp,
                 lastFullUpdate = formattedTimestamp // TBD local catalog: Replace with full sync timestamp
@@ -57,8 +57,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     catalogStatus = catalogStatus,
-                    allowCellularDataUpdate = allowCellularDataUpdate,
-                    isLoading = false
+                    allowCellularDataUpdate = allowCellularDataUpdate
                 )
             }
         }
@@ -77,7 +76,10 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
 
     fun runFullCatalogSync() {
         viewModelScope.launch {
-            _state.update { it.copy(isRefreshing = true) }
+            val backupCatalogData =
+                (_state.value.catalogStatus as? WooPosSettingsLocalCatalogState.CatalogStatus.Available)
+
+            _state.update { it.copy(catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog) }
 
             val result = localCatalogSyncRepository.syncLocalCatalogFull(selectedSite.get())
 
@@ -87,10 +89,9 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
                     // TBD local catalog: Handle errors
+                    backupCatalogData?.let { _state.update { it.copy(catalogStatus = backupCatalogData) } }
                 }
             }
-
-            _state.update { it.copy(isRefreshing = false) }
         }
     }
 }
