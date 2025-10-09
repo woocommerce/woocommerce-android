@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,8 +49,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
@@ -58,6 +61,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -226,10 +231,11 @@ private fun OrdersList(
             .collect { onEndOfOrdersListReached() }
     }
 
-    LazyColumn(
-        state = listState,
+    WooPosLazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(vertical = WooPosSpacing.XSmall.value)
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+        contentPadding = PaddingValues(WooPosSpacing.Medium.value),
+        state = listState,
     ) {
         items(state.items, key = { it.id }) { item ->
             val isSelected = item.id == state.selectedOrderId
@@ -244,59 +250,67 @@ private fun OrdersList(
                 MaterialTheme.colorScheme.onSurface
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(background)
-                    .clickable { onOrderSelected(item.id) }
-                    .semantics { selected = isSelected }
-                    .padding(
-                        horizontal = WooPosSpacing.Medium.value,
-                        vertical = WooPosSpacing.Medium.value
-                    ),
-                verticalAlignment = Alignment.Top
+            WooPosCard(
+                modifier = modifier
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+                backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                elevation = WooPosElevation.Medium,
+                shadowType = ShadowType.Soft,
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
-                    // "#012"
-                    WooPosText(
-                        item.title,
-                        style = WooPosTypography.BodyMedium,
-                        color = foreground,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    // "Jul 28, 2025 at 10:31 AM"
-                    WooPosText(
-                        item.date,
-                        style = WooPosTypography.BodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    // "johndoe@mail.com" (if available)
-                    val email = item.customerEmail.orEmpty()
-                    if (email.isNotBlank()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(background)
+                        .clickable { onOrderSelected(item.id) }
+                        .semantics { selected = isSelected }
+                        .padding(
+                            horizontal = WooPosSpacing.Medium.value,
+                            vertical = WooPosSpacing.Medium.value
+                        ),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
                         WooPosText(
-                            email,
+                            item.title,
                             style = WooPosTypography.BodySmall,
-                            color = foreground
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold
                         )
+
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+
+                        WooPosText(
+                            item.date,
+                            style = WooPosTypography.BodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+
+                        val email = item.customerEmail.orEmpty()
+                        if (email.isNotBlank()) {
+                            WooPosText(
+                                email,
+                                style = WooPosTypography.BodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+
+                        OrderStatusChip(item.status, textColor = foreground)
                     }
 
                     Spacer(Modifier.weight(1f))
 
-                    OrderStatusChip(item.status, textColor = foreground)
+                    WooPosText(
+                        text = item.total,
+                        style = WooPosTypography.BodySmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
-
-                Spacer(Modifier.weight(1f))
-
-                // "$43.90" right-aligned
-                WooPosText(
-                    text = item.total,
-                    style = WooPosTypography.BodyMedium,
-                    color = foreground,
-                    modifier = Modifier.alignByBaseline()
-                )
             }
         }
 
