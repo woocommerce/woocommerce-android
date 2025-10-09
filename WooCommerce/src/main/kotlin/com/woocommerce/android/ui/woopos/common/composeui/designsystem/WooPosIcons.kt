@@ -27,11 +27,18 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 object WooPosIcons {
     val NotFound: ImageVector
         @Composable
-        get() = notFound(
-            primaryColor = MaterialTheme.colorScheme.secondary,
-            secondaryColor = MaterialTheme.colorScheme.primary,
-            tertiaryColor = MaterialTheme.colorScheme.inverseSurface
-        )
+        get() {
+            val tertiaryColor = if (isSystemInDarkTheme()) {
+                Color(0xFF720EEC)
+            } else {
+                Color(0xFF3C087E)
+            }
+            return notFound(
+                primaryColor = MaterialTheme.colorScheme.secondary,
+                secondaryColor = MaterialTheme.colorScheme.primary,
+                tertiaryColor = tertiaryColor
+            )
+        }
 
     val Check: ImageVector
         @Composable
@@ -41,27 +48,48 @@ object WooPosIcons {
 
     val ErrorX: ImageVector
         @Composable
-        get() = errorX(
-            primaryColor = MaterialTheme.colorScheme.secondary,
-            secondaryColor = MaterialTheme.colorScheme.primary,
-            tertiaryColor = MaterialTheme.colorScheme.inverseSurface
-        )
+        get() {
+            val tertiaryColor = if (isSystemInDarkTheme()) {
+                Color(0xFF720EEC)
+            } else {
+                Color(0xFF3C087E)
+            }
+            return errorX(
+                primaryColor = MaterialTheme.colorScheme.secondary,
+                secondaryColor = MaterialTheme.colorScheme.primary,
+                tertiaryColor = tertiaryColor
+            )
+        }
 
     val OrdersEmpty: ImageVector
         @Composable
-        get() = ordersEmpty(
-            primaryColor = MaterialTheme.colorScheme.primary,
-            secondaryColor = MaterialTheme.colorScheme.secondary,
-            tertiaryColor = MaterialTheme.colorScheme.inverseSurface
-        )
+        get() {
+            val tertiaryColor = if (isSystemInDarkTheme()) {
+                Color(0xFF720EEC)
+            } else {
+                Color(0xFF3C087E)
+            }
+            return ordersEmpty(
+                primaryColor = MaterialTheme.colorScheme.primary,
+                secondaryColor = MaterialTheme.colorScheme.secondary,
+                tertiaryColor = tertiaryColor
+            )
+        }
 
     val BluetoothSettings: ImageVector
         @Composable
-        get() = bluetoothSettings(
-            primaryColor = MaterialTheme.colorScheme.primary,
-            secondaryColor = MaterialTheme.colorScheme.secondary,
-            tertiaryColor = MaterialTheme.colorScheme.inverseSurface
-        )
+        get() {
+            val tertiaryColor = if (isSystemInDarkTheme()) {
+                Color(0xFF720EEC)
+            } else {
+                Color(0xFF3C087E)
+            }
+            return bluetoothSettings(
+                primaryColor = MaterialTheme.colorScheme.primary,
+                secondaryColor = MaterialTheme.colorScheme.secondary,
+                tertiaryColor = tertiaryColor
+            )
+        }
 
     val CouponsEmpty: ImageVector
         @Composable
