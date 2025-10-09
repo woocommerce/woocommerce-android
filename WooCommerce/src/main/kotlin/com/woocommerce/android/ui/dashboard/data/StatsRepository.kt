@@ -412,12 +412,3 @@ class StatsRepository @Inject constructor(
         }
     }
 }
-
-fun String.asRevenueRangeId(
-    startDate: Date,
-    endDate: Date
-): String {
-    val startDateString = startDate.formatToYYYYmmDD()
-    val endDateString = endDate.formatToYYYYmmDD()
-    return "$this$startDateString$endDateString"
-}
