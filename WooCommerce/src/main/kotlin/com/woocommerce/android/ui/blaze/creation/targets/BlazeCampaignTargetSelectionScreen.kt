@@ -226,7 +226,7 @@ private fun SearchList(
         }
 
         is SearchState.NoResults -> {
-            val image = painterResource(id = R.drawable.search_failed_illustration)
+            val image = painterResource(id = R.drawable.img_empty_search)
             val message = stringResource(id = string.blaze_campaign_creation_location_search_failed_message)
             ImageWithMessage(modifier, image, message)
         }
@@ -242,7 +242,7 @@ private fun SearchList(
             ) {
                 ImageWithMessage(
                     modifier = Modifier.fillMaxWidth(),
-                    image = painterResource(id = R.drawable.search_failed_illustration),
+                    image = painterResource(id = R.drawable.img_empty_search),
                     message = stringResource(id = string.blaze_campaign_creation_location_search_failed_message)
                 )
                 WCColoredButton(onClick = onRetrySearchTapped, text = stringResource(id = R.string.retry))

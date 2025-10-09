@@ -97,6 +97,15 @@ class WooPosOrdersViewModel @Inject constructor(
         loadMoreIfPossible()
     }
 
+    fun onOrdersEmptyActionClicked() {
+        // Action to be defined
+    }
+
+    fun onOrdersLoadingErrorRetryButtonClicked() {
+        _state.value = WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
+        loadOrders()
+    }
+
     @Suppress("ReturnCount")
     fun loadMoreIfPossible() {
         if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) return

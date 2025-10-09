@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 
 @Composable
@@ -43,7 +43,7 @@ fun WidgetError(
             style = MaterialTheme.typography.h6
         )
 
-        val errorMessage = annotatedStringRes(
+        val errorMessage = clickableAnnotatedStringRes(
             stringResId = R.string.dynamic_dashboard_widget_error_description,
             onUrlClick = { onContactSupportClicked() }
         )

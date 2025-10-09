@@ -50,7 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringResLegacy
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
@@ -242,11 +242,11 @@ private fun BlazeCampaignBottomSheetContent(
     onDismissClick: () -> Unit
 ) {
     val learnMoreItems = listOf(
-        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_1),
-        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_2),
-        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_3),
-        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_4),
-        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_5),
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_1),
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_2),
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_3),
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_4),
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_5),
     )
 
     Column(

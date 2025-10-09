@@ -462,4 +462,34 @@ class WooPosOrdersViewModelTest {
         verify(dataSource).loadOrders()
         verify(dataSource, times(2)).loadMore()
     }
+
+    @Test
+    fun `given Error, when retry tapped, then load orders again`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.Error("boom")) }
+        )
+
+        viewModel = WooPosOrdersViewModel(dataSource)
+        advanceUntilIdle()
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow {
+                emit(LoadOrdersResult.SuccessCache(emptyList()))
+                emit(LoadOrdersResult.SuccessRemote(listOf(order(7), order(8))))
+            }
+        )
+
+        // WHEN
+        viewModel.onOrdersLoadingErrorRetryButtonClicked()
+        advanceUntilIdle()
+
+        // THEN
+        val after = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(after.items.map { it.id }).containsExactly(7L, 8L)
+        assertThat(after.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
+        assertThat(after.paginationState).isEqualTo(WooPosPaginationState.None)
+
+        verify(dataSource, times(2)).loadOrders()
+    }
 }
