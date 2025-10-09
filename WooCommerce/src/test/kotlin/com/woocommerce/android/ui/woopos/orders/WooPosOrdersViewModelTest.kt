@@ -51,7 +51,7 @@ class WooPosOrdersViewModelTest {
         whenever(
             wooStore.formatCurrencyForDisplay(
                 amount = any(),
-                site = any(), // or anyOrNull() if your impl allows null
+                site = any(),
                 currencyCode = anyOrNull(),
                 applyDecimalFormatting = any()
             )
