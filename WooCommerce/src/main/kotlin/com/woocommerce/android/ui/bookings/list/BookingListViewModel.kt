@@ -187,10 +187,6 @@ class BookingListViewModel @Inject constructor(
         triggerEvent(NavigateToFilters)
     }
 
-    fun onFiltersApplied() {
-        // TODO Receive filters from filter screen and apply them
-    }
-
     private fun prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
         listOfNotNull(
             selectedTab.value.asDateRangeFilter()
