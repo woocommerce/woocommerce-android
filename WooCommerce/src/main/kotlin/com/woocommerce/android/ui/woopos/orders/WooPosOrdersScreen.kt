@@ -300,7 +300,7 @@ private fun OrdersList(
 
                         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-                        OrderStatusBadge(item.status, textColor = MaterialTheme.colorScheme.onSurface)
+                        OrderStatusBadge(item.status)
                     }
 
                     Spacer(Modifier.weight(1f))
@@ -440,7 +440,7 @@ fun WooPosOrdersScreenPreview() {
 }
 
 @Composable
-fun OrderStatusBadge(status: PosOrderStatus, textColor: Color) {
+fun OrderStatusBadge(status: PosOrderStatus) {
     val bgColor = when (status.colorKey) {
         OrderStatusColorKey.COMPLETED -> R.color.tag_bg_completed
         OrderStatusColorKey.FAILED -> R.color.tag_bg_failed
@@ -452,7 +452,7 @@ fun OrderStatusBadge(status: PosOrderStatus, textColor: Color) {
     WooPosText(
         text = status.text,
         style = WooPosTypography.BodySmall,
-        color = textColor,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
             .clip(RoundedCornerShape(WooPosSpacing.Small.value))
             .background(Color(ContextCompat.getColor(LocalContext.current, bgColor)))
