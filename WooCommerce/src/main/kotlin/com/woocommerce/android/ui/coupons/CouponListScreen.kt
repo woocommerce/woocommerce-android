@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Appen
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Refreshing
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 
 @Composable
 fun CouponListScreen(viewModel: CouponListViewModel) {
@@ -299,11 +300,15 @@ private fun CouponListPreview() {
 @Preview
 @Composable
 private fun CouponListEmptyPreview() {
-    EmptyCouponList()
+    WooPosTheme {
+        EmptyCouponList()
+    }
 }
 
 @Preview
 @Composable
 private fun CouponListSkeletonPreview() {
-    CouponListSkeleton()
+    WooPosTheme {
+        CouponListSkeleton()
+    }
 }
