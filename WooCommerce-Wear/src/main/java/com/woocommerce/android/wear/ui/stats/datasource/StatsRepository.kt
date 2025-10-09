@@ -16,12 +16,12 @@ import com.woocommerce.android.wear.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.wear.extensions.getSiteId
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StoreStatsData.RevenueData
-import com.woocommerce.android.wear.ui.stats.range.StatsTimeRange
 import com.woocommerce.android.wear.ui.stats.range.TodayRangeData
 import com.woocommerce.android.wear.util.DateUtils
 import com.woocommerce.commons.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.DataParameters.TOTAL_REVENUE
 import com.woocommerce.commons.DataParameters.VISITORS_TOTAL
+import com.woocommerce.commons.stats.StatsTimeRange
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.SiteModel

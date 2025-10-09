@@ -7,11 +7,11 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.network.giftcard.GiftCardRestClient
 import com.woocommerce.android.network.giftcard.toWCModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import com.woocommerce.commons.stats.StatsTimeRange
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
