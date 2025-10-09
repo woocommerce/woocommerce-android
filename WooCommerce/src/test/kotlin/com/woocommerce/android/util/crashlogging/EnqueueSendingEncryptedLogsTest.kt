@@ -36,7 +36,7 @@ class EnqueueSendingEncryptedLogsTest : BaseUnitTest() {
             encryptedLogging = encryptedLogging,
             encryptedLogsFileProvider = encryptedLogsFileProvider,
             networkStatus = networkStatus,
-            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
         )
     }
 
