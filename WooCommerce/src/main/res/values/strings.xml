@@ -169,6 +169,7 @@
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
     <string name="date_compared_to">Compared to</string>
+    <string name="date_time_connector">at</string>
     <string name="images_unavailable_notice">The images are unavailable because your site is marked Private. You can change this by switching to Coming Soon mode.\n<a href="">Tap to learn more.</a></string>
     <!--
         Error Strings

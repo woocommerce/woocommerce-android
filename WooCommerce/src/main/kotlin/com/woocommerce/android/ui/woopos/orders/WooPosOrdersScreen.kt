@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -35,12 +36,15 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -254,13 +258,43 @@ private fun OrdersList(
                 verticalAlignment = Alignment.Top
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
-                    WooPosText(item.title, style = WooPosTypography.BodyMedium, color = foreground)
-                    WooPosText(item.date, style = WooPosTypography.BodySmall, color = foreground)
+                    // "#012"
+                    WooPosText(
+                        item.title,
+                        style = WooPosTypography.BodyMedium,
+                        color = foreground,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    // "Jul 28, 2025 at 10:31 AM"
+                    WooPosText(
+                        item.date,
+                        style = WooPosTypography.BodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    // "johndoe@mail.com" (if available)
+                    val email = item.customerEmail.orEmpty()
+                    if (email.isNotBlank()) {
+                        WooPosText(
+                            email,
+                            style = WooPosTypography.BodySmall,
+                            color = foreground
+                        )
+                    }
+
+                    Spacer(Modifier.weight(1f))
+
+                    OrderStatusChip(item.status, textColor = foreground)
                 }
+
                 Spacer(Modifier.weight(1f))
+
+                // "$43.90" right-aligned
                 WooPosText(
                     text = item.total,
                     style = WooPosTypography.BodyMedium,
+                    color = foreground,
                     modifier = Modifier.alignByBaseline()
                 )
             }
@@ -389,4 +423,25 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
 @Composable
 fun WooPosOrdersScreenPreview() {
     WooPosTheme { WooPosOrdersScreen(onNavigationEvent = {}) }
+}
+
+@Composable
+fun OrderStatusChip(status: PosOrderStatus, textColor: Color) {
+    val bgColor = when (status.colorKey) {
+        OrderStatusColorKey.COMPLETED -> R.color.tag_bg_completed
+        OrderStatusColorKey.FAILED -> R.color.tag_bg_failed
+        OrderStatusColorKey.PROCESSING -> R.color.tag_bg_processing
+        OrderStatusColorKey.ON_HOLD -> R.color.tag_bg_on_hold
+        OrderStatusColorKey.OTHER -> R.color.tag_bg_other
+    }
+
+    WooPosText(
+        text = status.text,
+        style = WooPosTypography.BodySmall,
+        color = textColor,
+        modifier = Modifier
+            .clip(RoundedCornerShape(WooPosSpacing.Small.value))
+            .background(Color(ContextCompat.getColor(LocalContext.current, bgColor)))
+            .padding(horizontal = WooPosSpacing.Small.value, vertical = WooPosSpacing.XSmall.value)
+    )
 }
