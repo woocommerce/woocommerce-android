@@ -56,7 +56,7 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
 
             workManager.enqueueUniquePeriodicWork(
                 WooPosLocalCatalogSyncWorker.WORK_NAME,
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 syncWorkRequest
             )
 
