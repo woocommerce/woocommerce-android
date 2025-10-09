@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilter
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,7 +48,30 @@ class BookingFilterListViewModel @Inject constructor(
     }
 
     private fun onShowBookings() {
-        // TODO Apply filters and show bookings
+        launch {
+            bookingFilterRepository.save(_uiState.value.updatedBookingFilter)
+        }
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
+}
+
+private val BookingFilterListUiState.updatedBookingFilter: BookingFilter
+    get() {
+        val initial = initialBookingFilter ?: BookingFilter()
+        val updates = updatedBookingFilters
+
+        return BookingFilter(
+            dateRange = updates.getOrDefault(initial.dateRange),
+            customer = updates.getOrDefault(initial.customer),
+            teamMember = updates.getOrDefault(initial.teamMember),
+            attendanceStatus = updates.getOrDefault(initial.attendanceStatus),
+            paymentStatus = updates.getOrDefault(initial.paymentStatus),
+            bookingType = updates.getOrDefault(initial.bookingType),
+            category = updates.getOrDefault(initial.category),
+            serviceEvent = updates.getOrDefault(initial.serviceEvent),
+        )
+    }
+
+private inline fun <reified T> Set<BookingsFilterOption>.getOrDefault(default: T?): T? {
+    return this.filterIsInstance<T>().firstOrNull() ?: default
 }

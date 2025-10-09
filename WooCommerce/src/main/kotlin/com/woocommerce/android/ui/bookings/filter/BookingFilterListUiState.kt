@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 
 data class BookingFilterListUiState(
     val initialBookingFilter: BookingFilter? = null,
+    val updatedBookingFilters: Set<BookingsFilterOption> = emptySet(),
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
 ) {
