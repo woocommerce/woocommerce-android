@@ -34,7 +34,7 @@ data class CustomColors(
     val unspecified: Color = Color.Unspecified,
 )
 
-internal object WooPosColors {
+private object WooPosColors {
     val WooPurple10 = Color(0xFFD1C1FF)
     val WooPurple40 = Color(0xFF873EFF)
     val WooPurple50 = Color(0xFF720EEC)
