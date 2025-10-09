@@ -184,7 +184,7 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onFilterClicked() {
-        // TODO Show filter bottom sheet
+        triggerEvent(NavigateToFilters)
     }
 
     private fun prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
@@ -194,4 +194,5 @@ class BookingListViewModel @Inject constructor(
     }
 
     data class NavigateToBookingDetails(val bookingId: Long) : MultiLiveEvent.Event()
+    object NavigateToFilters : MultiLiveEvent.Event()
 }
