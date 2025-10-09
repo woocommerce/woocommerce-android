@@ -2,14 +2,26 @@
 
 package com.woocommerce.android.ui.woopos.common.composeui.designsystem
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Suppress("LongMethod")
 object WooPosIcons {
@@ -567,5 +579,97 @@ object WooPosIcons {
                 close()
             }
         }.build()
+    }
+}
+
+@Suppress("UnusedPrivateMember")
+@OptIn(ExperimentalLayoutApi::class)
+@WooPosPreview
+@Composable
+private fun WooPosIconsPreview() {
+    WooPosTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(WooPosSpacing.Large.value)
+        ) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                maxItemsInEachRow = 4
+            ) {
+                Box(
+                    modifier = Modifier.size(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.NotFound,
+                        contentDescription = "NotFound",
+                        modifier = Modifier.size(80.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.Check,
+                        contentDescription = "Check",
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.ErrorX,
+                        contentDescription = "ErrorX",
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.OrdersEmpty,
+                        contentDescription = "OrdersEmpty",
+                        modifier = Modifier.size(70.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.BluetoothSettings,
+                        contentDescription = "BluetoothSettings",
+                        modifier = Modifier.size(80.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.Exit,
+                        contentDescription = "Exit",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(80.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.CouponsEmpty,
+                        contentDescription = "CouponsEmpty",
+                        modifier = Modifier.size(80.dp)
+                    )
+                }
+            }
+        }
     }
 }
