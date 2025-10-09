@@ -38,7 +38,7 @@ class WooPosPreferencesRepository @Inject constructor(
 
     val allowCellularDataUpdate: Flow<Boolean> = dataStore.data
         .map { preferences ->
-            preferences[allowCellularDataUpdateKey] ?: false
+            preferences[allowCellularDataUpdateKey] ?: true
         }
 
     suspend fun addRecentProductSearch(search: String) {
