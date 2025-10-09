@@ -343,6 +343,7 @@ dependencies {
     // Dependencies for screenshots
     androidTestImplementation(libs.fastlane.screengrab)
     androidTestImplementation(libs.wiremock.get().module.toString()) {
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'
         exclude group: 'asm', module: 'asm'
         exclude group: 'org.json', module: 'json'
