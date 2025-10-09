@@ -111,7 +111,7 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
 
     private suspend fun getConstraintsBasedOnPreference(): Constraints {
         val allowCellular = preferencesRepository.allowCellularDataUpdate.first()
-        val networkType = if (allowCellular) NetworkType.CONNECTED else NetworkType.UNMETERED
+        val networkType = if (allowCellular) NetworkType.NOT_ROAMING else NetworkType.UNMETERED
 
         return Constraints.Builder()
             .setRequiredNetworkType(networkType)
