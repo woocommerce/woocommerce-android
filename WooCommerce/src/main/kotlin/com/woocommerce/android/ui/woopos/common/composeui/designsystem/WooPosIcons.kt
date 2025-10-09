@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "LargeClass")
 object WooPosIcons {
     val NotFound: ImageVector
         @Composable
@@ -721,7 +721,7 @@ private fun WooPosIconsPreview() {
                     Image(
                         imageVector = WooPosIcons.Check,
                         contentDescription = "Check",
-                        modifier = Modifier.size(60.dp)
+                        modifier = Modifier.size(80.dp)
                     )
                 }
                 Box(
@@ -731,7 +731,7 @@ private fun WooPosIconsPreview() {
                     Image(
                         imageVector = WooPosIcons.ErrorX,
                         contentDescription = "ErrorX",
-                        modifier = Modifier.size(60.dp)
+                        modifier = Modifier.size(80.dp)
                     )
                 }
                 Box(
@@ -741,7 +741,7 @@ private fun WooPosIconsPreview() {
                     Image(
                         imageVector = WooPosIcons.OrdersEmpty,
                         contentDescription = "OrdersEmpty",
-                        modifier = Modifier.size(70.dp)
+                        modifier = Modifier.size(80.dp)
                     )
                 }
                 Box(
