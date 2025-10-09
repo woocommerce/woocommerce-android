@@ -22,6 +22,7 @@ import com.woocommerce.commons.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.DataParameters.TOTAL_REVENUE
 import com.woocommerce.commons.DataParameters.VISITORS_TOTAL
 import com.woocommerce.commons.stats.StatsTimeRange
+import com.woocommerce.commons.stats.StatsUtils.toRevenueRangeId
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.SiteModel
@@ -76,12 +77,6 @@ class StatsRepository @Inject constructor(
                 result.endDate.orEmpty()
             ).let { Result.success(it) }
         }
-    }
-
-    fun StatsTimeRange.toRevenueRangeId(medium: String): String {
-        return medium +
-            dateUtils.getYearMonthDayStringFromDate(start) +
-            dateUtils.getYearMonthDayStringFromDate(end)
     }
 
     suspend fun fetchVisitorStats(

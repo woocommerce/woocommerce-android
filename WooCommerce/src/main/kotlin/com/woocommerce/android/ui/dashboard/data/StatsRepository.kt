@@ -12,6 +12,7 @@ import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.commons.stats.StatsTimeRange
+import com.woocommerce.commons.stats.StatsUtils.toRevenueRangeId
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -358,12 +359,6 @@ class StatsRepository @Inject constructor(
                 )
             )
         }
-    }
-
-    fun StatsTimeRange.toRevenueRangeId(medium: String): String {
-        return medium +
-            DateUtils.getYearMonthDayStringFromDate(start) +
-            DateUtils.getYearMonthDayStringFromDate(end)
     }
 
     private fun supportsProductOnlyLeaderboardAndReportEndpoint(): Boolean {
