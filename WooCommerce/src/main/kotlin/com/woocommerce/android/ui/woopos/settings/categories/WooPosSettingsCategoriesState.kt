@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Hardware
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.woocommerce.android.R
@@ -21,6 +22,12 @@ enum class WooPosSettingsCategory(
         R.string.woopos_settings_store_category_subtitle,
         Icons.Default.Store,
         WooPosSettingsDetailDestination.Store.Overview
+    ),
+    LOCAL_CATALOG(
+        R.string.woopos_settings_local_catalog_category,
+        R.string.woopos_settings_local_catalog_category_subtitle,
+        Icons.Default.Inventory,
+        WooPosSettingsDetailDestination.LocalCatalog.Overview
     ),
     HARDWARE(
         R.string.woopos_settings_hardware_category,

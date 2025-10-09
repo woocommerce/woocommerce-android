@@ -344,6 +344,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "store_details_tapped"
         }
 
+        data object LocalCatalogTapped : Event() {
+            override val name: String = "local_catalog_tapped"
+        }
+
         data object HardwareTapped : Event() {
             override val name: String = "hardware_tapped"
         }
