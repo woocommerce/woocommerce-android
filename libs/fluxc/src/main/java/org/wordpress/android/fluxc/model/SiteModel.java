@@ -6,12 +6,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.yarolegovich.wellsql.core.Identifiable;
-import com.yarolegovich.wellsql.core.annotation.Column;
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey;
-import com.yarolegovich.wellsql.core.annotation.RawConstraints;
-import com.yarolegovich.wellsql.core.annotation.Table;
-
 import org.wordpress.android.fluxc.Payload;
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId;
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId;
@@ -25,6 +19,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Objects;
+
+import com.yarolegovich.wellsql.core.Identifiable;
+import com.yarolegovich.wellsql.core.annotation.Column;
+import com.yarolegovich.wellsql.core.annotation.PrimaryKey;
+import com.yarolegovich.wellsql.core.annotation.RawConstraints;
+import com.yarolegovich.wellsql.core.annotation.Table;
 
 // WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
 @Table
@@ -1110,7 +1110,7 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     }
 
     public Boolean getCanBlaze() {
-        return mCanBlaze;
+        return mCanBlaze == true;
     }
 
     public void setCanBlaze(Boolean canBlaze) {
