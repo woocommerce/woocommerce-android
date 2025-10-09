@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -27,6 +26,7 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val logger: WooPosLogWrapper,
     private val preferencesRepository: WooPosPreferencesRepository,
+    private val applicationScope: CoroutineScope,
 ) {
 
     private companion object {
@@ -39,7 +39,7 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
     private val workManager by lazy { WorkManager.getInstance(context) }
 
     fun schedulePeriodicFullCatalogSync() {
-        CoroutineScope(Dispatchers.IO).launch {
+        applicationScope.launch {
             val constraints = getConstraintsBasedOnPreference()
             val syncWorkRequest = PeriodicWorkRequestBuilder<WooPosLocalCatalogSyncWorker>(
                 REFRESH_INTERVAL_HOURS,
@@ -65,7 +65,7 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
     }
 
     fun triggerManualFullCatalogSync() {
-        CoroutineScope(Dispatchers.IO).launch {
+        applicationScope.launch {
             val constraints = getConstraintsBasedOnPreference()
             val oneTimeWorkRequest = OneTimeWorkRequestBuilder<WooPosLocalCatalogSyncWorker>()
                 .setConstraints(constraints)
