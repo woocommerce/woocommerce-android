@@ -492,7 +492,7 @@ private fun EmptyViewPreview() {
                     selectedSortOption = BookingListSortOption.NewestToOldest,
                     onSortClick = {},
                     onFilterClick = {},
-                    isFilterButtonVisible = true,
+                    isFilterButtonVisible = true
                 ),
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(
