@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
@@ -124,7 +124,7 @@ fun WooShippingLabelHazmatFormScreen(
         Text(
             style = MaterialTheme.typography.bodyMedium,
             color = colorResource(id = R.color.color_on_surface),
-            text = annotatedStringRes(
+            text = clickableAnnotatedStringRes(
                 stringResId = R.string.woo_shipping_labels_hazmat_info_tooltip_1,
                 onUrlClick = { url ->
                     when (url) {
@@ -138,7 +138,7 @@ fun WooShippingLabelHazmatFormScreen(
         Text(
             style = MaterialTheme.typography.bodyMedium,
             color = colorResource(id = R.color.color_on_surface),
-            text = annotatedStringRes(
+            text = clickableAnnotatedStringRes(
                 stringResId = R.string.woo_shipping_labels_hazmat_info_tooltip_2,
                 onUrlClick = { onUrlSelected(AppUrls.DHL_EXPRESS_HAZMAT_INSTRUCTIONS) }
             )

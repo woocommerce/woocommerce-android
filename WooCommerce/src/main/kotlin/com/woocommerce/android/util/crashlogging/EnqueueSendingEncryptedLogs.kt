@@ -7,24 +7,34 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.NetworkStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class EnqueueSendingEncryptedLogs @Inject constructor(
     private val encryptedLogging: EncryptedLogging,
     private val encryptedLogsFileProvider: EncryptedLogsFileProvider,
     private val networkStatus: NetworkStatus,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
     operator fun invoke(
         uuid: String,
         eventLevel: EventLevel
     ) {
-        appCoroutineScope.launch {
+        if (eventLevel == FATAL) {
+            val logs = runBlocking { encryptedLogsFileProvider.provide() }
             encryptedLogging.enqueueSendingEncryptedLogs(
                 uuid = uuid,
-                file = encryptedLogsFileProvider.provide(),
-                shouldUploadImmediately = eventLevel != FATAL && networkStatus.isConnected()
+                file = logs,
+                shouldUploadImmediately = false
             )
+        } else {
+            appCoroutineScope.launch {
+                encryptedLogging.enqueueSendingEncryptedLogs(
+                    uuid = uuid,
+                    file = encryptedLogsFileProvider.provide(),
+                    shouldUploadImmediately = networkStatus.isConnected()
+                )
+            }
         }
     }
 }
