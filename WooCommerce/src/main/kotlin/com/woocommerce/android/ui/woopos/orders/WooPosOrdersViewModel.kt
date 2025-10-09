@@ -304,7 +304,7 @@ class WooPosOrdersViewModel @Inject constructor(
                 applyDecimalFormatting = true
             )
 
-            val formattedStatus = order.status.toString().replaceFirstChar {
+            val formattedStatus = order.status.value.replaceFirstChar {
                 if (it.isLowerCase()) it.titlecase(locale) else it.toString()
             }.replace("-", " ")
 
