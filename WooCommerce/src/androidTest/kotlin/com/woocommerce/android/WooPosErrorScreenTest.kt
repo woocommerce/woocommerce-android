@@ -5,7 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -55,8 +55,8 @@ class WooPosErrorScreenTest {
         var primaryClicked = false
         var secondaryClicked = false
 
-        val primaryButton = Button(primaryButtonText) { primaryClicked = true }
-        val secondaryButton = Button(secondaryButtonText) { secondaryClicked = true }
+        val primaryButton = WooPosErrorScreenButtonState(primaryButtonText) { primaryClicked = true }
+        val secondaryButton = WooPosErrorScreenButtonState(secondaryButtonText) { secondaryClicked = true }
 
         composeTestRule.setContent {
             WooPosTheme {

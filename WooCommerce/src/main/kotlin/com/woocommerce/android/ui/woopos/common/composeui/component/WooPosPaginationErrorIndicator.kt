@@ -41,7 +41,7 @@ fun WooPosPaginationErrorIndicator(
     icon: ImageVector? = WooPosIcons.ErrorX,
     message: String,
     description: String,
-    primaryButton: Button,
+    primaryButton: WooPosErrorScreenButtonState,
 ) {
     WooPosPaginationErrorIndicatorContent(
         modifier = modifier,
@@ -58,7 +58,7 @@ private fun WooPosPaginationErrorIndicatorContent(
     icon: ImageVector? = null,
     message: String,
     description: String,
-    primaryButton: Button
+    primaryButton: WooPosErrorScreenButtonState
 ) {
     val itemContentDescription =
         stringResource(id = R.string.woopos_items_pagination_error_content_description)
@@ -168,7 +168,7 @@ fun WooPosPaginationErrorScreenPreview() {
             WooPosPaginationErrorIndicator(
                 message = stringResource(id = R.string.woopos_items_pagination_error_title),
                 description = stringResource(id = R.string.woopos_items_pagination_error_description),
-                primaryButton = Button(
+                primaryButton = WooPosErrorScreenButtonState(
                     text = stringResource(id = R.string.woopos_items_pagination_try_again_label),
                     click = {}
                 )

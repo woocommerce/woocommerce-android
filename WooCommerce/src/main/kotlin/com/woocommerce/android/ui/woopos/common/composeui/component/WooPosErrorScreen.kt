@@ -34,31 +34,12 @@ fun WooPosErrorScreen(
     icon: ImageVector = WooPosIcons.ErrorX,
     message: String,
     reason: String,
-    primaryButton: Button? = null,
-    secondaryButton: Button? = null
+    primaryButton: WooPosErrorScreenButtonState? = null,
+    secondaryButton: WooPosErrorScreenButtonState? = null
 ) {
     WooPosErrorScreenInternal(
         modifier = modifier,
         iconVector = icon,
-        message = message,
-        reason = reason,
-        primaryButton = primaryButton,
-        secondaryButton = secondaryButton
-    )
-}
-
-@Composable
-fun WooPosErrorScreen(
-    modifier: Modifier = Modifier,
-    icon: Painter,
-    message: String,
-    reason: String,
-    primaryButton: Button? = null,
-    secondaryButton: Button? = null
-) {
-    WooPosErrorScreenInternal(
-        modifier = modifier,
-        iconPainter = icon,
         message = message,
         reason = reason,
         primaryButton = primaryButton,
@@ -73,8 +54,8 @@ private fun WooPosErrorScreenInternal(
     iconPainter: Painter? = null,
     message: String,
     reason: String,
-    primaryButton: Button? = null,
-    secondaryButton: Button? = null
+    primaryButton: WooPosErrorScreenButtonState? = null,
+    secondaryButton: WooPosErrorScreenButtonState? = null
 ) {
     Column(
         modifier = modifier
@@ -141,7 +122,7 @@ private fun WooPosErrorScreenInternal(
     }
 }
 
-data class Button(
+data class WooPosErrorScreenButtonState(
     val text: String,
     val click: () -> Unit
 )
@@ -153,11 +134,11 @@ fun WooPosErrorStatePreview() {
         WooPosErrorScreen(
             message = stringResource(R.string.woopos_totals_main_error_label),
             reason = "Reason",
-            primaryButton = Button(
+            primaryButton = WooPosErrorScreenButtonState(
                 text = stringResource(R.string.retry),
                 click = { }
             ),
-            secondaryButton = Button(
+            secondaryButton = WooPosErrorScreenButtonState(
                 text = stringResource(R.string.cancel),
                 click = { }
             )
@@ -172,7 +153,7 @@ fun WooPosErrorStateSingleButtonPreview() {
         WooPosErrorScreen(
             message = "Very long title Very long title Very long title Very long title Very long title ",
             reason = "Very loooong reason Very loooong reason Very loooong reason Very loooong reason ",
-            primaryButton = Button(
+            primaryButton = WooPosErrorScreenButtonState(
                 text = stringResource(R.string.retry),
                 click = { }
             ),

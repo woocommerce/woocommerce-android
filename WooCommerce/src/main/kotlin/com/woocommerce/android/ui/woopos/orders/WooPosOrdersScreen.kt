@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
@@ -365,7 +365,7 @@ fun OrdersError(
     WooPosErrorScreen(
         message = stringResource(id = R.string.woopos_orders_loading_error_title),
         reason = stringResource(id = R.string.woopos_orders_loading_error_message),
-        primaryButton = Button(
+        primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
             click = onRetryClicked
         )
@@ -378,7 +378,7 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
         icon = null,
         message = stringResource(id = R.string.woopos_orders_pagination_error_title),
         description = stringResource(id = R.string.woopos_orders_pagination_error_content_description),
-        primaryButton = Button(
+        primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_coupons_pagination_try_again_label),
             click = onPaginationErrorTryAgain
         ),

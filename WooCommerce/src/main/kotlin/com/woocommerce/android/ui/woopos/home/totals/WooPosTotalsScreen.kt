@@ -44,7 +44,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
@@ -446,7 +446,7 @@ private fun TotalsErrorScreen(
     WooPosErrorScreen(
         message = stringResource(R.string.woopos_totals_main_error_label),
         reason = errorMessage,
-        primaryButton = Button(
+        primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(R.string.retry),
             click = { onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked) }
         )
@@ -462,11 +462,11 @@ private fun TotalsInvalidCouponsErrorScreen(
     return WooPosErrorScreen(
         message = errorMessage,
         reason = HtmlCompat.fromHtml(errorReason, HtmlCompat.FROM_HTML_MODE_COMPACT).toString(),
-        primaryButton = Button(
+        primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(R.string.woopos_totals_coupons_validation_failed_edit_order),
             click = { onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation) }
         ),
-        secondaryButton = Button(
+        secondaryButton = WooPosErrorScreenButtonState(
             text = stringResource(R.string.woopos_totals_coupons_validation_failed_remove_coupons),
             click = { onUIEvent(WooPosTotalsUIEvent.OnRemoveCouponsClicked) }
         )
