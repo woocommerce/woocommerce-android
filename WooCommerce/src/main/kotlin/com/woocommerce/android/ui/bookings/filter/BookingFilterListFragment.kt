@@ -30,11 +30,7 @@ class BookingFilterListFragment : BaseFragment() {
             val uiState by viewModel.uiState.observeAsState()
             uiState?.let { state ->
                 BookingFilterListScreen(
-                    state = BookingFilterListViewModel.BookingFilterListUiState(
-                        items = state.items,
-                        onClose = state.onClose,
-                        onShowBookings = state.onShowBookings
-                    )
+                    state = state,
                 )
             }
         }
