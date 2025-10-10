@@ -304,9 +304,18 @@ class WooPosOrdersViewModel @Inject constructor(
                 applyDecimalFormatting = true
             )
 
-            val formattedStatus = order.status.value.replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(locale) else it.toString()
-            }.replace("-", " ")
+            val formattedStatus = when (order.status) {
+                Order.Status.Cancelled -> resourceProvider.getString(R.string.woopos_orders_status_cancelled)
+                Order.Status.Completed -> resourceProvider.getString(R.string.woopos_orders_status_completed)
+                is Order.Status.Custom -> order.status.value
+                    .replaceFirstChar { it.titlecase(locale) }
+                    .replace("-", " ") // cannot localize at runtime
+                Order.Status.Failed -> resourceProvider.getString(R.string.woopos_orders_status_failed)
+                Order.Status.OnHold -> resourceProvider.getString(R.string.woopos_orders_status_on_hold)
+                Order.Status.Pending -> resourceProvider.getString(R.string.woopos_orders_status_pending)
+                Order.Status.Processing -> resourceProvider.getString(R.string.woopos_orders_status_processing)
+                Order.Status.Refunded -> resourceProvider.getString(R.string.woopos_orders_status_refunded)
+            }
 
             OrderItemViewState(
                 id = order.id,

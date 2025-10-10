@@ -3782,6 +3782,15 @@
     <string name="woopos_orders_pagination_error_title">Unable to load more orders</string>
     <string name="woopos_orders_pagination_error_content_description">Please try again.</string>
 
+    <string name="woopos_orders_status_auto_draft">Draft</string>
+    <string name="woopos_orders_status_pending">Pending Payment</string>
+    <string name="woopos_orders_status_processing">Processing</string>
+    <string name="woopos_orders_status_on_hold">On hold</string>
+    <string name="woopos_orders_status_failed">Failed</string>
+    <string name="woopos_orders_status_cancelled">Cancelled</string>
+    <string name="woopos_orders_status_completed">Completed</string>
+    <string name="woopos_orders_status_refunded">Refunded</string>
+
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
     <string name="woopos_cash_payment_total">Total: %s</string>
