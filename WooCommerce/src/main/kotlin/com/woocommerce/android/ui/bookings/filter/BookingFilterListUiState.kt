@@ -1,13 +1,14 @@
 package com.woocommerce.android.ui.bookings.filter
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
-sealed interface BookingFilterPage {
-    data object List : BookingFilterPage
-    data object DateTimePicker : BookingFilterPage
+sealed class BookingFilterPage(@StringRes val titleRes: Int) {
+    data object List : BookingFilterPage(R.string.bookings_filters_default_title)
+    data object DateTimePicker : BookingFilterPage(R.string.bookings_filter_title_date)
 }
 
 data class BookingFilterListUiState(
@@ -25,6 +26,12 @@ data class BookingFilterListUiState(
             value = option.value,
             onClick = { openPage(option.page) },
         )
+    }
+
+    @DrawableRes
+    val navigationIcon: Int = when (currentPage) {
+        is BookingFilterPage.List -> R.drawable.ic_gridicons_cross_24dp
+        else -> R.drawable.ic_back_24dp
     }
 }
 

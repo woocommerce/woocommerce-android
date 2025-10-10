@@ -35,9 +35,9 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
         topBar = {
             Column {
                 Toolbar(
-                    title = stringResource(id = R.string.bookings_filters_default_title),
+                    title = stringResource(state.currentPage.titleRes),
                     onNavigationButtonClick = state.onClose,
-                    navigationIcon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_cross_24dp)
+                    navigationIcon = ImageVector.vectorResource(id = state.navigationIcon)
                 )
                 HorizontalDivider(thickness = 0.5.dp)
             }
