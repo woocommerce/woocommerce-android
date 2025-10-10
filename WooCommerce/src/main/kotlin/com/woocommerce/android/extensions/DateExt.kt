@@ -88,15 +88,6 @@ fun Date.formatToEEEEMMMddhha(locale: Locale): String {
     return dateFormat.format(this)
 }
 
-fun Date.formatToMMMddYYYYAtHHmm(
-    locale: Locale = Locale.getDefault(),
-    atWord: String
-): String {
-    val datePart = SimpleDateFormat("MMM d, yyyy", locale).format(this)
-    val timePart = SimpleDateFormat("h:mm a", locale).format(this)
-    return "$datePart $atWord $timePart"
-}
-
 fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(context).format(this.time)
 
 fun Date.getMediumDate(context: Context): String = DateFormat.getMediumDateFormat(context).format(this)
