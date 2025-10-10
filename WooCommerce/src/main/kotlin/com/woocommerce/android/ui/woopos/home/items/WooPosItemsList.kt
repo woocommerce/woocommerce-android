@@ -303,7 +303,7 @@ private fun ProductImage(item: Product) {
             imageVector = Icons.Outlined.Inventory2,
             contentDescription = null,
             colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-            modifier = Modifier.size(36.dp, 36.dp)
+            modifier = Modifier.size(44.dp)
         )
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
