@@ -269,8 +269,7 @@ private fun OrdersList(
                         .padding(WooPosSpacing.Medium.value),
                     verticalAlignment = Alignment.Top
                 ) {
-                    Column(modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+                    Column(modifier = Modifier.weight(1f)) {
                         WooPosText(
                             item.title,
                             style = WooPosTypography.BodySmall,
@@ -280,8 +279,6 @@ private fun OrdersList(
                             overflow = TextOverflow.Ellipsis
                         )
 
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-
                         WooPosText(
                             item.date,
                             style = WooPosTypography.BodySmall,
@@ -289,8 +286,6 @@ private fun OrdersList(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
                         val email = item.customerEmail.orEmpty()
                         if (email.isNotBlank()) {
@@ -303,12 +298,10 @@ private fun OrdersList(
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
                         OrderStatusBadge(item.status)
                     }
-
-                    //Spacer(Modifier.weight(1f))
 
                     WooPosText(
                         text = item.total,
