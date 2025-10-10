@@ -269,7 +269,8 @@ private fun OrdersList(
                         .padding(WooPosSpacing.Medium.value),
                     verticalAlignment = Alignment.Top
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
                         WooPosText(
                             item.title,
                             style = WooPosTypography.BodySmall,
@@ -297,9 +298,7 @@ private fun OrdersList(
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-
+                        
                         OrderStatusBadge(item.status)
                     }
 
