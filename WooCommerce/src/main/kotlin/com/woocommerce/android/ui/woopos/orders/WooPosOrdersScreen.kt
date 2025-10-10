@@ -430,12 +430,6 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
     )
 }
 
-@WooPosPreview
-@Composable
-fun WooPosOrdersScreenPreview() {
-    WooPosTheme { WooPosOrdersScreen(onNavigationEvent = {}) }
-}
-
 @Composable
 fun OrderStatusBadge(status: PosOrderStatus) {
     val bgColor = when (status.colorKey) {
@@ -455,4 +449,10 @@ fun OrderStatusBadge(status: PosOrderStatus) {
             .background(Color(ContextCompat.getColor(LocalContext.current, bgColor)))
             .padding(horizontal = WooPosSpacing.Small.value, vertical = WooPosSpacing.XSmall.value)
     )
+}
+
+@WooPosPreview
+@Composable
+fun WooPosOrdersScreenPreview() {
+    WooPosTheme { WooPosOrdersScreen(onNavigationEvent = {}) }
 }
