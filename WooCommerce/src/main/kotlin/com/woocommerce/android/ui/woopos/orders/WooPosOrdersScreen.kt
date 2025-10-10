@@ -70,7 +70,7 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
-private val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
+val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

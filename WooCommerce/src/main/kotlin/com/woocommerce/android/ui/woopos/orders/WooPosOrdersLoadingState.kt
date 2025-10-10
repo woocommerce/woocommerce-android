@@ -43,6 +43,7 @@ fun WooPosOrdersLoadingState() {
                 .weight(0.3f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surface)
+                .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT)
         )
 
         OrderDetailsLoadingPane(
@@ -50,6 +51,7 @@ fun WooPosOrdersLoadingState() {
                 .weight(0.7f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT)
         )
     }
 }
@@ -111,7 +113,8 @@ fun WooPosOrdersOrderLoadingRow() {
 @Composable
 private fun OrdersListLoadingPane(modifier: Modifier = Modifier) {
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier
+            .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         contentPadding = PaddingValues(WooPosSpacing.Medium.value)
     ) {
@@ -192,7 +195,6 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
         ) {
             WooPosCard(
                 shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-                backgroundColor = MaterialTheme.colorScheme.surface,
                 elevation = WooPosElevation.Medium,
                 shadowType = ShadowType.Soft,
             ) {
@@ -226,7 +228,6 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
 
             WooPosCard(
                 shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-                backgroundColor = MaterialTheme.colorScheme.surface,
                 elevation = WooPosElevation.Medium,
                 shadowType = ShadowType.Soft,
             ) {
