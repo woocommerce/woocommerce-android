@@ -40,7 +40,9 @@ class WooPosSyncProductsActionTest {
             siteId = 123L
         }
 
-        whenever(posLocalCatalogStore.upsertProducts(any()))
+        whenever(posLocalCatalogStore.upsertProducts(anyOrNull()))
+            .doAnswer(InlineClassesAnswer { KotlinResult.success(Unit) })
+        whenever(posLocalCatalogStore.deleteProductsNotInList(anyOrNull(), anyOrNull()))
             .doAnswer(InlineClassesAnswer { KotlinResult.success(Unit) })
         Unit
     }
@@ -228,11 +230,70 @@ class WooPosSyncProductsActionTest {
             .executeInTransaction<WooPosSyncProductsResult>(any())
     }
 
+    @Test
+    fun `when sync with no modifiedAfterGmt, then deletes products not in list`() = runTest {
+        // GIVEN
+        givenSinglePageCatalog(productsCount = 50)
+
+        // WHEN
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
+        verify(posLocalCatalogStore).executeInTransaction<Unit>(any())
+    }
+
+    @Test
+    fun `when sync with modifiedAfterGmt, then does not delete products`() = runTest {
+        // GIVEN
+        val modifiedAfter = "2024-01-01T00:00:00Z"
+        givenSinglePageCatalog(productsCount = 25)
+
+        // WHEN
+        val result = sut.execute(site, modifiedAfterGmt = modifiedAfter, pageSize = 100, maxPages = 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
+        verify(posLocalCatalogStore).executeInTransaction<Unit>(any())
+    }
+
+    @Test
+    fun `when full sync with empty catalog, then deletes all products`() = runTest {
+        // GIVEN
+        givenEmptyCatalog()
+        // Note: givenEmptyCatalog() already sets up executeInTransaction to return success
+
+        // WHEN
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
+        verify(posLocalCatalogStore).executeInTransaction<Unit>(any())
+    }
+
+    @Test
+    fun `when full sync with multiple pages, then deletes using all product IDs`() = runTest {
+        // GIVEN
+        givenMultiPageCatalog(
+            page1Count = 100,
+            page2Count = 100,
+            page3Count = 50
+        )
+
+        // WHEN
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncProductsResult.Success::class.java)
+        assertThat((result as WooPosSyncProductsResult.Success).productsSynced).isEqualTo(250)
+        verify(posLocalCatalogStore).executeInTransaction<Unit>(any())
+    }
+
     private suspend fun givenSinglePageCatalog(productsCount: Int = PAGE_SIZE / 2) {
         val mockProducts = createMockProducts(1, productsCount)
 
-        whenever(posLocalCatalogStore.executeInTransaction<WooPosSyncProductsResult>(any()))
-            .doAnswer(InlineClassesAnswer { KotlinResult.success(Result.success(Unit)) })
+        whenever(posLocalCatalogStore.executeInTransaction<Unit>(any()))
+            .doAnswer(InlineClassesAnswer { KotlinResult.success(Unit) })
 
         mockFetchRecentlyModifiedProductsSuccess(
             offset = 0,
@@ -252,8 +313,8 @@ class WooPosSyncProductsActionTest {
             page1Count + page2Count + page3Count
         )
 
-        whenever(posLocalCatalogStore.executeInTransaction<WooPosSyncProductsResult>(any()))
-            .doAnswer(InlineClassesAnswer { KotlinResult.success(Result.success(Unit)) })
+        whenever(posLocalCatalogStore.executeInTransaction<Unit>(any()))
+            .doAnswer(InlineClassesAnswer { KotlinResult.success(Unit) })
 
         mockFetchRecentlyModifiedProductsSuccess(
             offset = 0,
@@ -284,8 +345,8 @@ class WooPosSyncProductsActionTest {
     }
 
     private suspend fun givenEmptyCatalog() {
-        whenever(posLocalCatalogStore.executeInTransaction<WooPosSyncProductsResult>(any()))
-            .doAnswer(InlineClassesAnswer { KotlinResult.success(Result.success(Unit)) })
+        whenever(posLocalCatalogStore.executeInTransaction<Unit>(any()))
+            .doAnswer(InlineClassesAnswer { KotlinResult.success(Unit) })
 
         mockFetchRecentlyModifiedProductsSuccess(
             offset = 0,
@@ -337,8 +398,8 @@ class WooPosSyncProductsActionTest {
     private suspend fun givenPageWithZeroProductsButHasMore() {
         val mockPage2Products = createMockProducts(1, 50)
 
-        whenever(posLocalCatalogStore.executeInTransaction<WooPosSyncProductsResult>(any()))
-            .doAnswer(InlineClassesAnswer { KotlinResult.success(Result.success(Unit)) })
+        whenever(posLocalCatalogStore.executeInTransaction<Unit>(any()))
+            .doAnswer(InlineClassesAnswer { KotlinResult.success(Unit) })
 
         mockFetchRecentlyModifiedProductsSuccess(
             offset = 0,

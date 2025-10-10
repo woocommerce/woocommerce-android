@@ -35,10 +35,10 @@ class WooPosSyncProductsAction @Inject constructor(
             posLocalCatalogStore.executeInTransaction {
                 val isFullSync = modifiedAfterGmt == null
                 if (isFullSync) {
-                        posLocalCatalogStore.deleteProductsNotInList(
-                            siteId = site.localId(),
-                            remoteIds = products.map { it.remoteId }
-                        ).getOrThrow()
+                    posLocalCatalogStore.deleteProductsNotInList(
+                        siteId = site.localId(),
+                        remoteIds = products.map { it.remoteId }
+                    ).getOrThrow()
                 }
 
                 posLocalCatalogStore.upsertProducts(products).getOrThrow()
