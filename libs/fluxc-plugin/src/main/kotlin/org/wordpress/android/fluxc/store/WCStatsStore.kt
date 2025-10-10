@@ -22,8 +22,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStats
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient.OrderStatsApiUnit
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.VisitorStatsSummaryApiResponse
-import org.wordpress.android.fluxc.persistence.WCStatsSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.NewVisitorStatsDao
+import org.wordpress.android.fluxc.persistence.dao.RevenueStatsDao
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.entity.VisitorSummaryStatsEntity
 import org.wordpress.android.fluxc.persistence.entity.toDomainModel
@@ -42,6 +42,7 @@ class WCStatsStore @Inject internal constructor(
     private val coroutineEngine: CoroutineEngine,
     private val visitorSummaryStatsDao: VisitorSummaryStatsDao,
     private val newVisitorStatsDao: NewVisitorStatsDao,
+    private val revenueStatsDao: RevenueStatsDao,
 ) : Store(dispatcher) {
     companion object {
         private const val DATE_FORMAT_DAY = "yyyy-MM-dd"
@@ -85,7 +86,7 @@ class WCStatsStore @Inject internal constructor(
         val startDate: String,
         val endDate: String,
         val forced: Boolean = false,
-        val revenueRangeId: String = ""
+        val revenueRangeId: String,
     ) : Payload<BaseNetworkError>()
 
     class FetchRevenueStatsResponsePayload(
@@ -106,10 +107,9 @@ class WCStatsStore @Inject internal constructor(
     ) : Payload<BaseNetworkError>()
 
     class FetchRevenueStatsAvailabilityResponsePayload(
-        val site: SiteModel,
-        val available: Boolean = false
+        val site: SiteModel
     ) : Payload<OrderStatsError>() {
-        constructor(error: OrderStatsError, site: SiteModel, available: Boolean) : this(site, available) {
+        constructor(error: OrderStatsError, site: SiteModel) : this(site) {
             this.error = error
         }
     }
@@ -390,11 +390,9 @@ class WCStatsStore @Inject internal constructor(
      * Methods to support v4 revenue api changes
      */
     class OnWCRevenueStatsChanged(
-        val rowsAffected: Int,
         val granularity: StatsGranularity,
         val startDate: String? = null,
         val endDate: String? = null,
-        val availability: Boolean = false
     ) : OnChanged<OrderStatsError>() {
         var causeOfChange: WCStatsAction? = null
     }
@@ -416,15 +414,14 @@ class WCStatsStore @Inject internal constructor(
 
             with(result) {
                 return@withDefaultContext if (isError || stats == null) {
-                    OnWCRevenueStatsChanged(0, granularity)
+                    OnWCRevenueStatsChanged(granularity)
                         .also { it.error = error }
                 } else {
-                    val rowsAffected = WCStatsSqlUtils.insertOrUpdateRevenueStats(stats)
+                    revenueStatsDao.insert(stats)
                     OnWCRevenueStatsChanged(
-                        rowsAffected,
                         granularity,
                         stats.startDate,
-                        stats.endDate
+                        stats.endDate,
                     )
                 }
             }
@@ -492,11 +489,11 @@ class WCStatsStore @Inject internal constructor(
         val onStatsChanged = with(payload) {
             if (isError) {
                 return@with OnWCRevenueStatsChanged(
-                    0, granularity = StatsGranularity.YEARS, availability = payload.available
+                    granularity = StatsGranularity.YEARS
                 ).also { it.error = payload.error }
             } else {
                 return@with OnWCRevenueStatsChanged(
-                    0, granularity = StatsGranularity.YEARS, availability = payload.available
+                    granularity = StatsGranularity.YEARS
                 )
             }
         }
@@ -504,7 +501,7 @@ class WCStatsStore @Inject internal constructor(
         emitChange(onStatsChanged)
     }
 
-    fun getGrossRevenueStats(
+    suspend fun getGrossRevenueStats(
         site: SiteModel,
         granularity: StatsGranularity,
         startDate: String,
@@ -516,7 +513,7 @@ class WCStatsStore @Inject internal constructor(
         } ?: mapOf()
     }
 
-    fun getOrderCountStats(
+    suspend fun getOrderCountStats(
         site: SiteModel,
         granularity: StatsGranularity,
         startDate: String,
@@ -528,19 +525,15 @@ class WCStatsStore @Inject internal constructor(
         } ?: mapOf()
     }
 
-    fun getRawRevenueStats(
+    suspend fun getRawRevenueStats(
         site: SiteModel,
         granularity: StatsGranularity,
         startDate: String,
         endDate: String
-    ): WCRevenueStatsModel? {
-        return WCStatsSqlUtils.getRevenueStatsForSiteIntervalAndDate(
-            site, granularity, startDate, endDate
-        )
-    }
+    ) = revenueStatsDao.getBySiteIntervalAndDate(site.localId(), granularity, startDate, endDate)
 
-    fun getRawRevenueStatsFromRangeId(
+    suspend fun getRawRevenueStatsFromRangeId(
         site: SiteModel,
         revenueRangeId: String
-    ) = WCStatsSqlUtils.getRevenueStatsFromRangeId(site, revenueRangeId)
+    ) = revenueStatsDao.getBySiteAndRangeId(site.localId(), revenueRangeId)
 }

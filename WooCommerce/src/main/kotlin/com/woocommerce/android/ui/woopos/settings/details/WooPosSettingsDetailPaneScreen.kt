@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwar
 import com.woocommerce.android.ui.woopos.settings.details.hardware.barcodescanner.WooPosSettingsHardwareBarcodeScannerScreen
 import com.woocommerce.android.ui.woopos.settings.details.hardware.cardreader.WooPosSettingsHardwareCardReaderScreen
 import com.woocommerce.android.ui.woopos.settings.details.help.WooPosHelpDetailScreen
+import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSettingsLocalCatalogScreen
 import com.woocommerce.android.ui.woopos.settings.details.store.WooPosSettingsStoreScreen
 
 @Composable
@@ -91,6 +92,10 @@ fun WooPosSettingsDetailPaneScreen(
 
                 is WooPosSettingsDetailDestination.Store.Overview -> {
                     WooPosSettingsStoreScreen()
+                }
+
+                is WooPosSettingsDetailDestination.LocalCatalog.Overview -> {
+                    WooPosSettingsLocalCatalogScreen()
                 }
 
                 is WooPosSettingsDetailDestination.Help.Overview -> {

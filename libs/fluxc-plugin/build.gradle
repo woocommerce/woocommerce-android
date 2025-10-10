@@ -47,7 +47,7 @@ tasks.withType(KotlinCompile).configureEach {
 }
 
 dependencies {
-    implementation project(":libs:fluxc")
+    api project(":libs:fluxc")
 
     testFixturesCompileOnly project(":libs:fluxc")
     testFixturesCompileOnly libs.mockito.kotlin
@@ -57,6 +57,8 @@ dependencies {
     testFixturesCompileOnly libs.wordpress.utils
     testFixturesCompileOnly libs.assertj.core
     testFixturesCompileOnly libs.junit
+    testFixturesCompileOnly libs.kotlinx.coroutines.core
+    testFixturesCompileOnly libs.androidx.room.runtime
 
     // WordPress libs
     implementation(libs.wordpress.utils) {
@@ -65,27 +67,28 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    api libs.wellsql
+    implementation libs.androidx.core.ktx
+
+    implementation libs.wellsql
     kapt libs.wellsql.processor
 
     // FluxC annotations
     api project(":libs:fluxc-annotations")
     kapt project(":libs:fluxc-processor")
 
-    implementation libs.google.gson
+    api libs.google.gson
 
     // Dagger
-    implementation libs.google.dagger
+    api libs.google.dagger
     ksp libs.google.dagger.compiler
     compileOnly libs.glassfish.javax.annotation
 
     // Coroutines
     implementation libs.kotlinx.coroutines.core
-    implementation libs.kotlinx.coroutines.android
+    runtimeOnly libs.kotlinx.coroutines.android
 
     implementation libs.androidx.room.runtime
     ksp libs.androidx.room.compiler
-    api libs.androidx.room.ktx
 
     testImplementation libs.junit
     testImplementation libs.robolectric
@@ -96,7 +99,7 @@ dependencies {
     testImplementation libs.kotlin.test.junit
 
     androidTestImplementation libs.androidx.room.testing
-    androidTestImplementation libs.androidx.test.main.runner
+    androidTestRuntimeOnly libs.androidx.test.main.runner
     androidTestImplementation libs.androidx.test.ext.junit
     androidTestImplementation libs.assertj.core
 }

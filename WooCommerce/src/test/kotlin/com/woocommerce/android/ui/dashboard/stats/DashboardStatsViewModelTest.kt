@@ -39,6 +39,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -48,7 +49,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         val DEFAULT_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.TODAY
         val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
         const val DEFAULT_LAST_UPDATE = 1690382344865L
-        val ANY_REVENUE_STATS = WCRevenueStatsModel()
+        val ANY_REVENUE_STATS = WCRevenueStatsModel(LocalId(1), "", "", "", "", "", "")
     }
 
     private val getStats: GetStats = mock {

@@ -544,7 +544,6 @@
     <ID>UnitTestNamingRule:CreationFocusedOrderCreateEditViewModelTest.kt$CreationFocusedOrderCreateEditViewModelTest$@Test fun `when regular product and variation selected, should update order's items`()</ID>
     <ID>UnitTestNamingRule:CreationFocusedOrderCreateEditViewModelTest.kt$CreationFocusedOrderCreateEditViewModelTest$@Test fun `when removing a fee, do not remove the rest of fees`()</ID>
     <ID>UnitTestNamingRule:CreationFocusedOrderCreateEditViewModelTest.kt$CreationFocusedOrderCreateEditViewModelTest$@Test fun `when removing product, should make view not editable`()</ID>
-    <ID>UnitTestNamingRule:CurrencyPositionConverterTest.kt$CurrencyPositionConverterTest$@Test fun `returns default value if the db-stored value is invalid`()</ID>
     <ID>UnitTestNamingRule:CurrentTimeProviderTest.kt$CurrentTimeProviderTest$@Test fun `always returns current date`()</ID>
     <ID>UnitTestNamingRule:CustomPackageCreationDataTest.kt$CustomPackageCreationDataTest$@Test fun `isValid returns false when any dimension field is empty`()</ID>
     <ID>UnitTestNamingRule:CustomPackageCreationDataTest.kt$CustomPackageCreationDataTest$@Test fun `isValid returns false when saveAsTemplate is true and name or weight is empty`()</ID>
@@ -2239,9 +2238,6 @@
     <ID>UnitTestNamingRule:WCProductStoreTest.kt$WCProductStoreTest$@Test fun testUpdateProduct()</ID>
     <ID>UnitTestNamingRule:WCProductStoreTest.kt$WCProductStoreTest$@Test fun testUpdateVariation()</ID>
     <ID>UnitTestNamingRule:WCProductStoreTest.kt$WCProductStoreTest$@Test fun testVerifySkuExistsLocally()</ID>
-    <ID>UnitTestNamingRule:WCRevenueStatsModelTest.kt$WCRevenueStatsModelTest$@Test fun `should assign null value if number of sold items exceeds integer range`()</ID>
-    <ID>UnitTestNamingRule:WCRevenueStatsModelTest.kt$WCRevenueStatsModelTest$@Test fun `should assign null value if number of sold items is negative`()</ID>
-    <ID>UnitTestNamingRule:WCRevenueStatsModelTest.kt$WCRevenueStatsModelTest$@Test fun `should correctly parse value if number of sold items is within integer limits`()</ID>
     <ID>UnitTestNamingRule:WCSSRModelCachingFetcherTest.kt$WCSSRModelCachingFetcherTest$@Test fun `given cached value when load called again then store is not called`()</ID>
     <ID>UnitTestNamingRule:WCSSRModelCachingFetcherTest.kt$WCSSRModelCachingFetcherTest$@Test fun `given empty cache when load called then fetches from remote`()</ID>
     <ID>UnitTestNamingRule:WCSSRModelCachingFetcherTest.kt$WCSSRModelCachingFetcherTest$@Test fun `given remote failure when load called then returns error`()</ID>
@@ -2269,8 +2265,6 @@
     <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `purchase shipping labels with polling one label failed`()</ID>
     <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `refund shipping label for order`()</ID>
     <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `verify shipping address`()</ID>
-    <ID>UnitTestNamingRule:WCStatsSqlUtilsTest.kt$WCStatsSqlUtilsTest$@Test @Suppress("LongMethod") fun testGetRawRevenueStatsForSiteAndUnit()</ID>
-    <ID>UnitTestNamingRule:WCStatsSqlUtilsTest.kt$WCStatsSqlUtilsTest$@Test @Suppress("LongMethod") fun testSimpleInsertionAndRetrievalOfRevenueStats()</ID>
     <ID>UnitTestNamingRule:WCTaxStoreTest.kt$WCTaxStoreTest$@Test fun `get stored tax class list for site`()</ID>
     <ID>UnitTestNamingRule:WCUserStoreTest.kt$WCUserStoreTest$@Test fun `fetch user role`()</ID>
     <ID>UnitTestNamingRule:WCUserStoreTest.kt$WCUserStoreTest$@Test fun `get user role from db`()</ID>

@@ -48,17 +48,22 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
-    private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> {
-        return buildMap {
-            this@toQueryParams.forEach { filter ->
-                when (filter) {
-                    is BookingsFilterOption.DateRange -> {
-                        filter.before?.let { set("start_date_before", it.toString()) }
-                        filter.after?.let { set("start_date_after", it.toString()) }
-                    }
+    private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> = buildMap {
+        this@toQueryParams.forEach { filter ->
+            when (filter) {
+                BookingsFilterOption.TeamMember -> TODO()
+                BookingsFilterOption.AttendanceStatus -> TODO()
+                BookingsFilterOption.PaymentStatus -> TODO()
+                BookingsFilterOption.BookingType -> TODO()
+                is BookingsFilterOption.Customer -> filter.customerId?.let { set("customer", it.toString()) }
 
-                    is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
+                BookingsFilterOption.Category -> TODO()
+                is BookingsFilterOption.DateRange -> {
+                    filter.before?.let { set("start_date_before", it.toString()) }
+                    filter.after?.let { set("start_date_after", it.toString()) }
                 }
+
+                BookingsFilterOption.ServiceEvent -> TODO()
             }
         }
     }
