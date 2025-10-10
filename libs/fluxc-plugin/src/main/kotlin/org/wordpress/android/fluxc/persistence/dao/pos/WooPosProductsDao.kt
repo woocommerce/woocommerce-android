@@ -22,17 +22,6 @@ abstract class WooPosProductsDao {
     @Query("DELETE FROM PosProductEntity WHERE localSiteId = :localSiteId AND remoteId = :remoteId")
     abstract suspend fun deleteProduct(localSiteId: LocalId, remoteId: RemoteId)
 
-    @Query("DELETE FROM PosProductEntity WHERE localSiteId = :localSiteId AND remoteId NOT IN (:remoteIds)")
-    protected abstract suspend fun deleteProductsNotInListQuery(localSiteId: LocalId, remoteIds: List<RemoteId>)
-
     @Query("DELETE FROM PosProductEntity WHERE localSiteId = :localSiteId")
-    protected abstract suspend fun deleteAllProductsForSite(localSiteId: LocalId)
-
-    open suspend fun deleteProductsNotInList(localSiteId: LocalId, remoteIds: List<RemoteId>) {
-        if (remoteIds.isEmpty()) {
-            deleteAllProductsForSite(localSiteId)
-        } else {
-            deleteProductsNotInListQuery(localSiteId, remoteIds)
-        }
-    }
+    abstract suspend fun deleteAllProductsForSite(localSiteId: LocalId)
 }
