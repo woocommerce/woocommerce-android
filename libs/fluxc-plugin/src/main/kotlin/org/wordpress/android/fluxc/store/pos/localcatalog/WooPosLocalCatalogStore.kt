@@ -159,11 +159,10 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun upsertProducts(products: List<WooPosProductEntity>): Result<Unit> =
         runCatching { posProductDao.upsertProducts(products) }
 
-    suspend fun deleteProductsNotInList(
-        siteId: LocalOrRemoteId.LocalId,
-        remoteIds: List<LocalOrRemoteId.RemoteId>
+    suspend fun deleteAllProducts(
+        siteId: LocalOrRemoteId.LocalId
     ): Result<Unit> =
-        runCatching { posProductDao.deleteProductsNotInList(siteId, remoteIds) }
+        runCatching { posProductDao.deleteAllProductsForSite(siteId) }
 
     suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
         runCatching { posVariationsDao.upsertVariations(variations) }
