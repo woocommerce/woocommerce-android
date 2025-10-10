@@ -265,10 +265,7 @@ private fun OrdersList(
                         )
                         .clickable { onOrderSelected(item.id) }
                         .semantics { selected = item.isSelected }
-                        .padding(
-                            horizontal = WooPosSpacing.Medium.value,
-                            vertical = WooPosSpacing.Medium.value
-                        ),
+                        .padding(WooPosSpacing.Medium.value),
                     verticalAlignment = Alignment.Top
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
