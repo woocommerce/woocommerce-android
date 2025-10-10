@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.filter
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.tween
@@ -31,6 +32,10 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun BookingFilterListScreen(state: BookingFilterListUiState) {
+    BackHandler {
+        state.onClose()
+    }
+
     Scaffold(
         topBar = {
             Column {
