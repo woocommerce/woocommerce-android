@@ -88,22 +88,21 @@ dependencies {
     implementation libs.squareup.okhttp3.urlconnection
     implementation libs.squareup.okhttp3.tls
     api libs.volley
-    implementation libs.google.gson
+    api libs.google.gson
 
     implementation libs.apache.commons.text
-    api libs.androidx.paging.runtime
+    implementation libs.androidx.paging.runtime
     implementation libs.androidx.room.runtime
     ksp libs.androidx.room.compiler
-    implementation libs.androidx.room.ktx
 
     // Dagger
-    implementation libs.google.dagger
+    api libs.google.dagger
     ksp libs.google.dagger.compiler
     compileOnly libs.glassfish.javax.annotation
 
     // Coroutines
     implementation libs.kotlinx.coroutines.core
-    implementation libs.kotlinx.coroutines.android
+    runtimeOnly libs.kotlinx.coroutines.android
 
     // Unit tests
     testImplementation libs.junit
@@ -113,7 +112,6 @@ dependencies {
     testImplementation libs.robolectric
     testImplementation libs.mockito.kotlin
     testImplementation libs.assertj.core
-    testImplementation libs.androidx.arch.core.testing
 }
 
 tasks.withType(KotlinCompile).configureEach {
