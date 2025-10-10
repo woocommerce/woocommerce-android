@@ -414,7 +414,6 @@ class WooPosSyncProductsActionTest {
             )
     }
 
-
     private fun createMockProducts(start: Int = 1, end: Int): List<WooPosProductEntity> {
         return (start..end).map {
             WooPosProductEntity(
