@@ -4163,8 +4163,6 @@
     <string name="bookings_sort_by_newest_to_oldest">Newest to oldest</string>
     <string name="bookings_sort_by_oldest_to_newest_short">Oldest</string>
     <string name="bookings_sort_by_newest_to_oldest_short">Newest</string>
-    <string name="bookings_filters_default_title">Filters</string>
-    <string name="bookings_filters_count_title">Filters (%d)</string>
     <string name="bookings_empty_state_title_default">No bookings found</string>
     <string name="bookings_empty_state_title_today">No bookings today</string>
     <string name="bookings_empty_state_title_upcoming">No upcoming bookings</string>
@@ -4175,6 +4173,18 @@
     <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
     <string name="bookings_empty_state_change_filters_button">Change filters</string>
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
+    <string name="bookings_filters_default_title">Filters</string>
+    <string name="bookings_filters_count_title">Filters (%d)</string>
+    <string name="bookings_filters_show_bookings">Show bookings</string>
+    <string name="bookings_filter_title_team_member">Assigned team member</string>
+    <string name="bookings_filter_title_attendance_status">Attendance status</string>
+    <string name="bookings_filter_title_payment_status">Payment status</string>
+    <string name="bookings_filter_title_type">Booking type</string>
+    <string name="bookings_filter_customer_name">Customer name</string>
+    <string name="bookings_filter_category">Category</string>
+    <string name="bookings_filter_title_date">Date</string>
+    <string name="bookings_filter_title_service_event">Service / Event</string>
+    <string name="bookings_filter_default">Any</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>

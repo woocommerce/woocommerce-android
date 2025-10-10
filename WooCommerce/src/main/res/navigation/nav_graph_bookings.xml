@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_bookingListFragment_to_bookingDetailsFragment"
             app:destination="@id/bookingDetailsFragment" />
+        <action
+            android:id="@+id/action_bookingListFragment_to_bookingFilterList"
+            app:destination="@id/bookingFilterListFragment" />
     </fragment>
     <fragment
         android:id="@+id/bookingDetailsFragment"
@@ -28,5 +31,9 @@
                 app:argType="long" />
         </action>
     </fragment>
+    <fragment
+        android:id="@+id/bookingFilterListFragment"
+        android:name="com.woocommerce.android.ui.bookings.filter.BookingFilterListFragment"
+        android:label="BookingFilterListFragment" />
 
 </navigation>
