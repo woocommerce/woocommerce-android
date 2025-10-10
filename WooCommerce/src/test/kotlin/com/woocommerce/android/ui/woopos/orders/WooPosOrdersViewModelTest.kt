@@ -63,6 +63,15 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessCache(listOf(order(1), order(2)))) }
         )
+
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_auto_draft)).thenReturn("Draft")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending Payment")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_processing)).thenReturn("Processing")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_on_hold)).thenReturn("On hold")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_failed)).thenReturn("Failed")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
     }
 
     @Test
