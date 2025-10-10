@@ -44,6 +44,7 @@ fun WooPosOrdersLoadingState() {
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT)
+                .padding(top = WooPosSpacing.XLarge.value)
         )
 
         OrderDetailsLoadingPane(
@@ -51,7 +52,7 @@ fun WooPosOrdersLoadingState() {
                 .weight(0.7f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT)
+                .padding(top = WooPosSpacing.Large.value)
         )
     }
 }
@@ -113,8 +114,7 @@ fun WooPosOrdersOrderLoadingRow() {
 @Composable
 private fun OrdersListLoadingPane(modifier: Modifier = Modifier) {
     LazyColumn(
-        modifier = modifier
-            .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         contentPadding = PaddingValues(WooPosSpacing.Medium.value)
     ) {
@@ -146,12 +146,12 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
             Column {
                 WooPosShimmerBox(
                     modifier = Modifier
-                        .width(80.dp)
-                        .height(24.dp)
+                        .width(96.dp)
+                        .height(28.dp)
                         .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
                 WooPosShimmerBox(
                     modifier = Modifier
@@ -181,7 +181,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
 
             WooPosShimmerBox(
                 modifier = Modifier
-                    .width(120.dp)
+                    .width(140.dp)
                     .height(36.dp)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
@@ -214,10 +214,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                         ProductLoadingItem()
                         if (it < 2) {
                             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                            HorizontalDivider(
-                                color = MaterialTheme.colorScheme.outlineVariant,
-                                thickness = 1.dp
-                            )
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant,)
                             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                         }
                     }
