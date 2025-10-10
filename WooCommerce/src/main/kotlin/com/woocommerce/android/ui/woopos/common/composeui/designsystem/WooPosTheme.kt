@@ -28,6 +28,15 @@ data class CustomColors(
     val onSurfaceVariantLowest: Color,
     val onSurfaceVariantHighest: Color,
 
+    val infoLowest: Color,
+    val errorLowest: Color,
+
+    val onInfoLowest: Color,
+    val onErrorLowest: Color,
+
+    val default: Color,
+    val onDefault: Color,
+
     val transparent: Color = Color.Transparent,
     val unspecified: Color = Color.Unspecified,
 )
@@ -36,8 +45,11 @@ private object WooPosColors {
     val WooPurple10 = Color(0xFFD1C1FF)
     val WooPurple40 = Color(0xFF873EFF)
 
+    val WooRed0 = Color(0xFFF7EBEC)
+    val WooRed10 = Color(0xFFFFABAF)
     val WooRed50 = Color(0xFFD63638)
     val WooRed30 = Color(0xFFF86368)
+    val WooRed80 = Color(0xFF691C1C)
 
     val White = Color(0xFFFFFFFF)
     val Black = Color(0xFF000000)
@@ -58,6 +70,10 @@ private object WooPosColors {
     val Gray80 = Color(0xFF373A3E)
     val Gray90 = Color(0xFF1D2327)
     val Gray100 = Color(0xFF101517)
+
+    val Blue10 = Color(0xFFD6DDF9)
+    val Blue20 = Color(0xFFADBAF3)
+    val Blue80 = Color(0xFF1F3286)
 }
 
 private val LightColorScheme = lightColorScheme(
@@ -136,6 +152,15 @@ private val LightCustomColors = CustomColors(
 
     onSurfaceVariantLowest = WooPosColors.Gray30,
     onSurfaceVariantHighest = WooPosColors.Gray60,
+
+    infoLowest = WooPosColors.Blue10,
+    errorLowest = WooPosColors.WooRed0,
+
+    default = WooPosColors.Gray5,
+    onDefault = WooPosColors.Gray100,
+
+    onInfoLowest = WooPosColors.Blue80,
+    onErrorLowest = WooPosColors.WooRed80
 )
 
 private val DarkCustomColors = CustomColors(
@@ -150,6 +175,15 @@ private val DarkCustomColors = CustomColors(
 
     onSurfaceVariantLowest = WooPosColors.Gray50,
     onSurfaceVariantHighest = WooPosColors.Gray20,
+
+    infoLowest = WooPosColors.Blue20,
+    errorLowest = WooPosColors.WooRed10,
+
+    default = WooPosColors.Gray5,
+    onDefault = WooPosColors.Gray100,
+
+    onInfoLowest = WooPosColors.Blue80,
+    onErrorLowest = WooPosColors.WooRed80
 )
 
 @Composable

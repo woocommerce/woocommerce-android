@@ -434,22 +434,26 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
 @Composable
 fun OrderStatusBadge(status: PosOrderStatus) {
     val bgColor = when (status.colorKey) {
-        OrderStatusColorKey.COMPLETED -> R.color.tag_bg_completed
-        OrderStatusColorKey.FAILED -> R.color.tag_bg_failed
-        OrderStatusColorKey.PROCESSING -> R.color.tag_bg_processing
-        OrderStatusColorKey.ON_HOLD -> R.color.tag_bg_on_hold
-        OrderStatusColorKey.OTHER -> R.color.tag_bg_other
+        OrderStatusColorKey.COMPLETED -> WooPosTheme.colors.infoLowest
+        OrderStatusColorKey.FAILED -> WooPosTheme.colors.errorLowest
+        else -> WooPosTheme.colors.default
+    }
+
+    val textColor = when (status.colorKey) {
+        OrderStatusColorKey.COMPLETED -> WooPosTheme.colors.onInfoLowest
+        OrderStatusColorKey.FAILED -> WooPosTheme.colors.onErrorLowest
+        else -> WooPosTheme.colors.onDefault
     }
 
     WooPosText(
         text = status.text,
         style = WooPosTypography.BodySmall,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = textColor,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier
             .clip(RoundedCornerShape(WooPosSpacing.Small.value))
-            .background(Color(ContextCompat.getColor(LocalContext.current, bgColor)))
+            .background(bgColor)
             .padding(horizontal = WooPosSpacing.Small.value, vertical = WooPosSpacing.XSmall.value)
     )
 }
