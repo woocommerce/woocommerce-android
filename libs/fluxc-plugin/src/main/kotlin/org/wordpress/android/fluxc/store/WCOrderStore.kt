@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.generated.ListActionBuilder
+import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -539,7 +540,11 @@ class WCOrderStore @Inject internal constructor(
             // remote actions
             FETCH_ORDERS -> fetchOrders(action.payload as FetchOrdersPayload)
             WCOrderAction.FETCH_ORDER_LIST -> fetchOrderList(action.payload as FetchOrderListPayload)
-            WCOrderAction.FETCH_ORDERS_BY_IDS -> fetchOrdersByIds(action.payload as FetchOrdersByIdsPayload)
+            WCOrderAction.FETCH_ORDERS_BY_IDS -> coroutineEngine.launch(API, this, "fetchOrdersByIds") {
+                fetchOrdersByIds(action.payload as FetchOrdersByIdsPayload).let {
+                    mDispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersByIdsAction(it))
+                }
+            }
             WCOrderAction.FETCH_ORDERS_COUNT -> fetchOrdersCount(action.payload as FetchOrdersCountPayload)
             WCOrderAction.UPDATE_ORDER_STATUS ->
                 throw IllegalStateException("Invalid action. Use suspendable updateOrderStatus(..) directly")
@@ -581,10 +586,8 @@ class WCOrderStore @Inject internal constructor(
         )
     }
 
-    private fun fetchOrdersByIds(payload: FetchOrdersByIdsPayload) {
-        payload.orderIds.chunked(NUM_ORDERS_PER_FETCH).forEach { idsToFetch ->
-            wcOrderRestClient.fetchOrdersByIds(payload.site, idsToFetch)
-        }
+    suspend fun fetchOrdersByIds(payload: FetchOrdersByIdsPayload): FetchOrdersByIdsResponsePayload {
+        return wcOrderRestClient.fetchOrdersByIds(payload.site, payload.orderIds)
     }
 
     private fun searchOrders(payload: SearchOrdersPayload) {

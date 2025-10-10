@@ -339,23 +339,7 @@ class OrderRestClient @Inject constructor(
      * @param site The WooCommerce [SiteModel] the orders belong to
      * @param orderIds A list of remote order identifiers to fetch from the API
      */
-    fun fetchOrdersByIds(site: SiteModel, orderIds: List<Long>) {
-        coroutineEngine.launch(T.API, this, "fetchOrdersByIds") {
-            val payload = fetchOrdersByIdsSync(site, orderIds)
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersByIdsAction(payload))
-        }
-    }
-
-    /**
-     * Requests orders from the API that match the provided list of [orderIds] by making a GET call to
-     * `/wp-json/wc/v3/orders`
-     *
-     * Dispatches a [WCOrderAction.FETCHED_ORDERS_BY_IDS] action with the resulting list of orders.
-     *
-     * @param site The WooCommerce [SiteModel] the orders belong to
-     * @param orderIds A list of remote order identifiers to fetch from the API
-     */
-    suspend fun fetchOrdersByIdsSync(site: SiteModel, orderIds: List<Long>): FetchOrdersByIdsResponsePayload {
+    suspend fun fetchOrdersByIds(site: SiteModel, orderIds: List<Long>): FetchOrdersByIdsResponsePayload {
         val url = WOOCOMMERCE.orders.pathV3
         val params = mapOf(
             "per_page" to orderIds.size.toString(),

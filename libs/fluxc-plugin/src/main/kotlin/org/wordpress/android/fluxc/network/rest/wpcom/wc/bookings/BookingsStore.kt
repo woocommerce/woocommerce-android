@@ -8,12 +8,12 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog
@@ -24,7 +24,7 @@ import javax.inject.Singleton
 @Singleton
 class BookingsStore @Inject internal constructor(
     private val bookingsRestClient: BookingsRestClient,
-    private val ordersRestClient: OrderRestClient,
+    private val orderStore: WCOrderStore,
     private val bookingsDao: BookingsDao,
     private val productsDao: ProductsDao,
     private val headersParser: HeadersParser,
@@ -96,7 +96,7 @@ class BookingsStore @Inject internal constructor(
     ): WooResult<Map<Long, OrderEntity>> {
         if (orderIds.isEmpty()) { return WooResult(emptyMap()) }
 
-        val result = ordersRestClient.fetchOrdersByIdsSync(site, orderIds)
+        val result = orderStore.fetchOrdersByIds(WCOrderStore.FetchOrdersByIdsPayload(site, orderIds))
         return if (result.isError) {
             WooResult(error = result.error?.networkError?.toWooError() ?: WooError(GENERIC_ERROR, UNKNOWN))
         } else {
