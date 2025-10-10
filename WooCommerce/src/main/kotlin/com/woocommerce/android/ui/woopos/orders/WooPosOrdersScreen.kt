@@ -283,7 +283,7 @@ private fun OrdersList(
                         WooPosText(
                             item.date,
                             style = WooPosTypography.BodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = WooPosTheme.colors.onSurfaceVariantHighest,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -293,12 +293,12 @@ private fun OrdersList(
                             WooPosText(
                                 email,
                                 style = WooPosTypography.BodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = WooPosTheme.colors.onSurfaceVariantHighest,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
-                        
+
                         OrderStatusBadge(item.status)
                     }
 
