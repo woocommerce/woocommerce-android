@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -268,12 +269,15 @@ private fun OrdersList(
                         .padding(WooPosSpacing.Medium.value),
                     verticalAlignment = Alignment.Top
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+                    Column(modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
                         WooPosText(
                             item.title,
                             style = WooPosTypography.BodySmall,
                             color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
@@ -281,7 +285,9 @@ private fun OrdersList(
                         WooPosText(
                             item.date,
                             style = WooPosTypography.BodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
@@ -291,7 +297,9 @@ private fun OrdersList(
                             WooPosText(
                                 email,
                                 style = WooPosTypography.BodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
 
@@ -300,12 +308,13 @@ private fun OrdersList(
                         OrderStatusBadge(item.status)
                     }
 
-                    Spacer(Modifier.weight(1f))
+                    //Spacer(Modifier.weight(1f))
 
                     WooPosText(
                         text = item.total,
                         style = WooPosTypography.BodySmall,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1
                     )
                 }
             }
@@ -444,6 +453,8 @@ fun OrderStatusBadge(status: PosOrderStatus) {
         text = status.text,
         style = WooPosTypography.BodySmall,
         color = MaterialTheme.colorScheme.onSurface,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
         modifier = Modifier
             .clip(RoundedCornerShape(WooPosSpacing.Small.value))
             .background(Color(ContextCompat.getColor(LocalContext.current, bgColor)))
