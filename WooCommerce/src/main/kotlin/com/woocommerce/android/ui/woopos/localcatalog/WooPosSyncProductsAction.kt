@@ -33,10 +33,15 @@ class WooPosSyncProductsAction @Inject constructor(
             val (products, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
 
             posLocalCatalogStore.executeInTransaction {
-                // TBD local catalog We need to either remove products that are no longer present on the server
-                // or delete all products before we start inserting (low performance)
-                // or soft-delete all products before we start inserting
-                posLocalCatalogStore.upsertProducts(products)
+                val isFullSync = modifiedAfterGmt == null
+                if (isFullSync) {
+                        posLocalCatalogStore.deleteProductsNotInList(
+                            siteId = site.localId(),
+                            remoteIds = products.map { it.remoteId }
+                        ).getOrThrow()
+                }
+
+                posLocalCatalogStore.upsertProducts(products).getOrThrow()
             }.fold(
                 onSuccess = {
                     logger.d("Local Catalog transaction committed successfully")
