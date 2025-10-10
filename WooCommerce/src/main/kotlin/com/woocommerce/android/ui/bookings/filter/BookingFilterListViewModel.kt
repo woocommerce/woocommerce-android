@@ -23,13 +23,20 @@ class BookingFilterListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(
         BookingFilterListUiState(
             onClose = ::onClose,
-            onShowBookings = ::onShowBookings
+            onShowBookings = ::onShowBookings,
+            openPage = ::onOpenPage,
         )
     )
     val uiState = _uiState.asLiveData()
 
     init {
         getBookingFilter()
+    }
+
+    private fun onOpenPage(page: BookingFilterPage) {
+        _uiState.update { current ->
+            current.copy(currentPage = page)
+        }
     }
 
     private fun getBookingFilter() {
@@ -43,8 +50,14 @@ class BookingFilterListViewModel @Inject constructor(
     }
 
     private fun onClose() {
-        // TODO Verify unsaved changes and close
-        triggerEvent(MultiLiveEvent.Event.Exit)
+        if (_uiState.value.currentPage != BookingFilterPage.List) {
+            _uiState.update { current ->
+                current.copy(currentPage = BookingFilterPage.List)
+            }
+        } else {
+            // TODO Verify unsaved changes and close
+            triggerEvent(MultiLiveEvent.Event.Exit)
+        }
     }
 
     private fun onShowBookings() {

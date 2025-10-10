@@ -1,14 +1,18 @@
 package com.woocommerce.android.ui.bookings.filter
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCListItemWithInlineSubtitle
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -58,29 +61,53 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
         },
         containerColor = MaterialTheme.colorScheme.surface,
     ) { innerPadding ->
-        LazyColumn(
+        AnimatedContent(
+            targetState = state.currentPage,
+            transitionSpec = {
+                if (targetState is BookingFilterPage.List) {
+                    slideOut()
+                } else {
+                    slideIn()
+                }
+            },
+            label = "BookingFiltersAnimatedContent",
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-        ) {
-            items(state.items) { item -> BookingFilterListRow(item) }
+        ) { page ->
+            when (page) {
+                is BookingFilterPage.List -> {
+                    BookingFilterRootPage(state.items)
+                }
+
+                is BookingFilterPage.DateTimePicker -> {
+                    DateTimeFilterPicker()
+                }
+            }
         }
     }
 }
 
-@Composable
-private fun BookingFilterListRow(item: BookingFilterListItem) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        WCListItemWithInlineSubtitle(
-            text = stringResource(item.title),
-            subtitle = item.value ?: stringResource(id = R.string.bookings_filter_default),
-            modifier = Modifier
-                .defaultMinSize(minHeight = 64.dp)
-                .clickable { item.onClick() }
-                .padding(vertical = 8.dp)
+private const val TRANSITION_DURATION = 250
+
+private fun slideIn(duration: Int = TRANSITION_DURATION): ContentTransform {
+    return (
+        slideInHorizontally(animationSpec = tween(durationMillis = duration)) { fullWidth -> fullWidth } +
+            fadeIn(animationSpec = tween(durationMillis = duration))
+        ) togetherWith (
+        slideOutHorizontally(animationSpec = tween(durationMillis = duration)) { fullWidth -> -fullWidth } +
+            fadeOut(animationSpec = tween(durationMillis = duration))
         )
-        HorizontalDivider(thickness = 0.5.dp)
-    }
+}
+
+private fun slideOut(duration: Int = TRANSITION_DURATION): ContentTransform {
+    return (
+        slideInHorizontally(animationSpec = tween(durationMillis = duration)) { fullWidth -> -fullWidth } +
+            fadeIn(animationSpec = tween(durationMillis = duration))
+        ) togetherWith (
+        slideOutHorizontally(animationSpec = tween(durationMillis = duration)) { fullWidth -> fullWidth } +
+            fadeOut(animationSpec = tween(durationMillis = duration))
+        )
 }
 
 @LightDarkThemePreviews

@@ -5,17 +5,25 @@ import com.woocommerce.android.R
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
+sealed interface BookingFilterPage {
+    data object List : BookingFilterPage
+    data object DateTimePicker : BookingFilterPage
+}
+
 data class BookingFilterListUiState(
     val initialBookingFilters: BookingFilters? = null,
     val newBookingFilters: Set<BookingsFilterOption> = emptySet(),
+    val currentPage: BookingFilterPage = BookingFilterPage.List,
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
+    val openPage: (BookingFilterPage) -> Unit = {},
 ) {
 
     val items: List<BookingFilterListItem> = initialBookingFilters.defaultBookingFilters().map { option ->
         BookingFilterListItem(
             title = option.titleRes(),
             value = option.value,
+            onClick = { openPage(option.page) },
         )
     }
 }
@@ -60,3 +68,16 @@ private fun BookingFilters?.defaultBookingFilters(): List<BookingsFilterOption> 
     BookingsFilterOption.DateRange(before = this?.dateRange?.before, after = this?.dateRange?.after),
     BookingsFilterOption.ServiceEvent,
 )
+
+// TODO map to new pages as we add them
+private val BookingsFilterOption.page: BookingFilterPage
+    get() = when (this) {
+        BookingsFilterOption.TeamMember,
+        BookingsFilterOption.AttendanceStatus,
+        BookingsFilterOption.PaymentStatus,
+        BookingsFilterOption.BookingType,
+        BookingsFilterOption.Category,
+        BookingsFilterOption.ServiceEvent,
+        is BookingsFilterOption.Customer,
+        is BookingsFilterOption.DateRange -> BookingFilterPage.DateTimePicker
+    }
