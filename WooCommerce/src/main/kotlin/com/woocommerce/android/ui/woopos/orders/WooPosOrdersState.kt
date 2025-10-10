@@ -6,29 +6,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
-enum class OrderStatusColorKey {
-    COMPLETED,
-    FAILED,
-    PROCESSING,
-    ON_HOLD,
-    OTHER;
-
-    companion object {
-        fun fromStatus(status: Status): OrderStatusColorKey = when (status) {
-            Status.Completed -> COMPLETED
-            Status.Failed -> FAILED
-            Status.Processing -> PROCESSING
-            Status.OnHold -> ON_HOLD
-            else -> OTHER
-        }
-    }
-}
-
-data class PosOrderStatus(
-    val text: String,
-    val colorKey: OrderStatusColorKey
-)
-
 @Immutable
 data class OrderItemViewState(
     val id: Long,
@@ -73,3 +50,26 @@ sealed class WooPosOrdersState {
         override val searchInputState: WooPosSearchInputState,
     ) : WooPosOrdersState()
 }
+
+enum class OrderStatusColorKey {
+    COMPLETED,
+    FAILED,
+    PROCESSING,
+    ON_HOLD,
+    OTHER;
+
+    companion object {
+        fun fromStatus(status: Status): OrderStatusColorKey = when (status) {
+            Status.Completed -> COMPLETED
+            Status.Failed -> FAILED
+            Status.Processing -> PROCESSING
+            Status.OnHold -> ON_HOLD
+            else -> OTHER
+        }
+    }
+}
+
+data class PosOrderStatus(
+    val text: String,
+    val colorKey: OrderStatusColorKey
+)
