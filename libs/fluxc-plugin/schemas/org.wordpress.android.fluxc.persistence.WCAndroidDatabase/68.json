@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 68,
-    "identityHash": "3a49ceb8212056caa9e036eafc905fc7",
+    "identityHash": "d5062b5e8fcdf91affe375df7ef6d4fd",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3951,7 +3951,7 @@
       },
       {
         "tableName": "Bookings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `allDay` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` TEXT NOT NULL, `currency` TEXT NOT NULL, `customerId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `resourceId` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `googleCalendarEventId` TEXT NOT NULL, `orderId` INTEGER NOT NULL, `orderItemId` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `personCounts` TEXT, `localTimezone` TEXT NOT NULL, `order_status` TEXT, `order_product_name` TEXT, `order_customer_billingFirstName` TEXT, `order_customer_billingLastName` TEXT, `order_customer_billingCompany` TEXT, `order_customer_billingAddress1` TEXT, `order_customer_billingAddress2` TEXT, `order_customer_billingCity` TEXT, `order_customer_billingState` TEXT, `order_customer_billingPostcode` TEXT, `order_customer_billingCountry` TEXT, `order_customer_billingEmail` TEXT, `order_customer_billingPhone` TEXT, PRIMARY KEY(`id`, `localSiteId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `allDay` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` TEXT NOT NULL, `currency` TEXT NOT NULL, `customerId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `resourceId` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `googleCalendarEventId` TEXT NOT NULL, `orderId` INTEGER NOT NULL, `orderItemId` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `personCounts` TEXT, `localTimezone` TEXT NOT NULL, `order_status` TEXT, `order_product_name` TEXT, `order_customer_billingFirstName` TEXT, `order_customer_billingLastName` TEXT, `order_customer_billingCompany` TEXT, `order_customer_billingAddress1` TEXT, `order_customer_billingAddress2` TEXT, `order_customer_billingCity` TEXT, `order_customer_billingState` TEXT, `order_customer_billingPostcode` TEXT, `order_customer_billingCountry` TEXT, `order_customer_billingEmail` TEXT, `order_customer_billingPhone` TEXT, `order_payment_subtotal` TEXT, `order_payment_subtotalTax` TEXT, `order_payment_total` TEXT, `order_payment_totalTax` TEXT, PRIMARY KEY(`id`, `localSiteId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -4130,6 +4130,26 @@
             "fieldPath": "order.customerInfo.billingPhone",
             "columnName": "order_customer_billingPhone",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "order.paymentInfo.subtotal",
+            "columnName": "order_payment_subtotal",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "order.paymentInfo.subtotalTax",
+            "columnName": "order_payment_subtotalTax",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "order.paymentInfo.total",
+            "columnName": "order_payment_total",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "order.paymentInfo.totalTax",
+            "columnName": "order_payment_totalTax",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -4198,7 +4218,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3a49ceb8212056caa9e036eafc905fc7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd5062b5e8fcdf91affe375df7ef6d4fd')"
     ]
   }
 }

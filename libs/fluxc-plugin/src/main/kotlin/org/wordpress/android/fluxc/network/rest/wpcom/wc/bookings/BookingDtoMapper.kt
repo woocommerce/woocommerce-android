@@ -5,6 +5,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
+import java.math.BigDecimal
 import java.time.Instant
 import javax.inject.Inject
 
@@ -79,6 +80,14 @@ internal class BookingDtoMapper @Inject constructor(
                 )
             } else {
                 null
+            },
+            paymentInfo = lineItem?.let {
+                BookingPaymentInfo(
+                    subtotal = it.subtotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    subtotalTax = it.subtotalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                )
             }
         )
     }
