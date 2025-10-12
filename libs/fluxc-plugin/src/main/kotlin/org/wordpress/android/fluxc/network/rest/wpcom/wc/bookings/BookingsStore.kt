@@ -1,8 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
 import kotlinx.coroutines.flow.Flow
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -10,14 +8,12 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ER
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
-import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog
-import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,7 +22,7 @@ class BookingsStore @Inject internal constructor(
     private val bookingsRestClient: BookingsRestClient,
     private val orderStore: WCOrderStore,
     private val bookingsDao: BookingsDao,
-    private val productsDao: ProductsDao,
+    private val bookingDtoMapper: BookingDtoMapper,
     private val headersParser: HeadersParser,
     private val coroutineEngine: CoroutineEngine,
 ) {
@@ -55,10 +51,12 @@ class BookingsStore @Inject internal constructor(
                     }
 
                     val entities = response.result.map {
-                        it.toEntity(
-                            localSiteId = site.localId(),
-                            orderEntity = ordersResult.model?.get(it.orderId)
-                        )
+                        with(bookingDtoMapper) {
+                            it.toEntity(
+                                localSiteId = site.localId(),
+                                orderEntity = ordersResult.model?.get(it.orderId)
+                            )
+                        }
                     }
                     bookingsDao.insertOrReplace(entities)
                     val totalPages = headersParser.getTotalPages(response.headers)
@@ -102,59 +100,5 @@ class BookingsStore @Inject internal constructor(
         } else {
             WooResult(result.fetchedOrders.map { (order, _) -> order }.associateBy { it.orderId })
         }
-    }
-
-    private suspend fun BookingDto.toEntity(
-        localSiteId: LocalId,
-        orderEntity: OrderEntity?
-    ): BookingEntity = BookingEntity(
-        id = RemoteId(id),
-        localSiteId = localSiteId,
-        start = Instant.ofEpochSecond(start),
-        end = Instant.ofEpochSecond(end),
-        allDay = allDay,
-        status = BookingEntity.Status.fromKey(status),
-        cost = cost,
-        currency = currency,
-        customerId = customerId,
-        productId = productId,
-        resourceId = resourceId,
-        dateCreated = Instant.ofEpochSecond(dateCreated),
-        dateModified = Instant.ofEpochSecond(dateModified),
-        googleCalendarEventId = googleCalendarEventId,
-        orderId = orderId,
-        orderItemId = orderItemId,
-        parentId = parentId,
-        personCounts = personCounts?.map { it.toLong() },
-        localTimezone = localTimezone,
-        order = orderEntity?.toBookingOrderInfo(productId) ?: BookingOrderInfo(
-            productInfo = productsDao.getProduct(localSiteId.value, productId)?.let {
-                BookingProductInfo(name = it.name)
-            }
-        )
-    )
-
-    private suspend fun OrderEntity.toBookingOrderInfo(
-        productId: Long
-    ): BookingOrderInfo {
-        return BookingOrderInfo(
-            status = status,
-            productInfo = BookingProductInfo(
-                name = getLineItemList().firstOrNull { it.productId == productId }?.name.orEmpty()
-            ),
-            customerInfo = BookingCustomerInfo(
-                billingFirstName = billingFirstName,
-                billingLastName = billingLastName,
-                billingCompany = billingCompany.ifEmpty { null },
-                billingAddress1 = billingAddress1.ifEmpty { null },
-                billingAddress2 = billingAddress2.ifEmpty { null },
-                billingCity = billingCity.ifEmpty { null },
-                billingState = billingState.ifEmpty { null },
-                billingPostcode = billingPostcode.ifEmpty { null },
-                billingCountry = billingCountry.ifEmpty { null },
-                billingEmail = billingEmail.ifEmpty { null },
-                billingPhone = billingPhone.ifEmpty { null },
-            )
-        )
     }
 }
