@@ -46,7 +46,7 @@ fun BookingSummary(
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp),
             )
             Text(
-                text = model.customerName.ifEmpty { stringResource(R.string.orderdetail_customer_name_default) },
+                text = model.customerName ?: stringResource(R.string.orderdetail_customer_name_default),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp),
             )
@@ -69,7 +69,7 @@ fun BookingSummary(
 data class BookingSummaryModel(
     val date: String,
     val name: String,
-    val customerName: String,
+    val customerName: String?,
     val attendanceStatus: BookingAttendanceStatus,
     val status: BookingStatus,
 )

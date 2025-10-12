@@ -130,7 +130,7 @@ class BookingsStore @Inject internal constructor(
         order = orderEntity?.toBookingOrderInfo(productId) ?: BookingOrderInfo(
             productInfo = productsDao.getProduct(localSiteId.value, productId)?.let {
                 BookingProductInfo(name = it.name)
-            } ?: BookingProductInfo()
+            }
         )
     )
 
@@ -145,15 +145,15 @@ class BookingsStore @Inject internal constructor(
             customerInfo = BookingCustomerInfo(
                 billingFirstName = billingFirstName,
                 billingLastName = billingLastName,
-                billingCompany = billingCompany,
-                billingAddress1 = billingAddress1,
-                billingAddress2 = billingAddress2,
-                billingCity = billingCity,
-                billingState = billingState,
-                billingPostcode = billingPostcode,
-                billingCountry = billingCountry,
-                billingEmail = billingEmail,
-                billingPhone = billingPhone,
+                billingCompany = billingCompany.ifEmpty { null },
+                billingAddress1 = billingAddress1.ifEmpty { null },
+                billingAddress2 = billingAddress2.ifEmpty { null },
+                billingCity = billingCity.ifEmpty { null },
+                billingState = billingState.ifEmpty { null },
+                billingPostcode = billingPostcode.ifEmpty { null },
+                billingCountry = billingCountry.ifEmpty { null },
+                billingEmail = billingEmail.ifEmpty { null },
+                billingPhone = billingPhone.ifEmpty { null },
             )
         )
     }

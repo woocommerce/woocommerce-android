@@ -5,24 +5,24 @@ import androidx.room.Embedded
 
 data class BookingOrderInfo(
     val status: String? = null,
-    @Embedded(prefix = "product_") val productInfo: BookingProductInfo = BookingProductInfo(),
-    @Embedded(prefix = "customer_") val customerInfo: BookingCustomerInfo = BookingCustomerInfo(),
+    @Embedded(prefix = "product_") val productInfo: BookingProductInfo? = null,
+    @Embedded(prefix = "customer_") val customerInfo: BookingCustomerInfo? = null,
 )
 
 data class BookingProductInfo(
-    @ColumnInfo(defaultValue = "") val name: String = "",
+    @ColumnInfo val name: String,
 )
 
 data class BookingCustomerInfo(
-    @ColumnInfo(defaultValue = "") val billingFirstName: String = "",
-    @ColumnInfo(defaultValue = "") val billingLastName: String = "",
-    @ColumnInfo(defaultValue = "") val billingCompany: String = "",
-    @ColumnInfo(defaultValue = "") val billingAddress1: String = "",
-    @ColumnInfo(defaultValue = "") val billingAddress2: String = "",
-    @ColumnInfo(defaultValue = "") val billingCity: String = "",
-    @ColumnInfo(defaultValue = "") val billingState: String = "",
-    @ColumnInfo(defaultValue = "") val billingPostcode: String = "",
-    @ColumnInfo(defaultValue = "") val billingCountry: String = "",
-    @ColumnInfo(defaultValue = "") val billingEmail: String = "",
-    @ColumnInfo(defaultValue = "") val billingPhone: String = ""
+    @ColumnInfo val billingFirstName: String? = null,
+    @ColumnInfo val billingLastName: String? = null,
+    @ColumnInfo val billingCompany: String? = null,
+    @ColumnInfo val billingAddress1: String? = null,
+    @ColumnInfo val billingAddress2: String? = null,
+    @ColumnInfo val billingCity: String? = null,
+    @ColumnInfo val billingState: String? = null,
+    @ColumnInfo val billingPostcode: String? = null,
+    @ColumnInfo val billingCountry: String? = null,
+    @ColumnInfo val billingEmail: String? = null,
+    @ColumnInfo val billingPhone: String? = null,
 )

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 68,
-    "identityHash": "6ed1d4015d2c5da7956c6f6185fb90e7",
+    "identityHash": "3a49ceb8212056caa9e036eafc905fc7",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3951,7 +3951,7 @@
       },
       {
         "tableName": "Bookings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `allDay` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` TEXT NOT NULL, `currency` TEXT NOT NULL, `customerId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `resourceId` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `googleCalendarEventId` TEXT NOT NULL, `orderId` INTEGER NOT NULL, `orderItemId` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `personCounts` TEXT, `localTimezone` TEXT NOT NULL, `order_status` TEXT, `order_product_name` TEXT NOT NULL DEFAULT '', `order_customer_billingFirstName` TEXT NOT NULL DEFAULT '', `order_customer_billingLastName` TEXT NOT NULL DEFAULT '', `order_customer_billingCompany` TEXT NOT NULL DEFAULT '', `order_customer_billingAddress1` TEXT NOT NULL DEFAULT '', `order_customer_billingAddress2` TEXT NOT NULL DEFAULT '', `order_customer_billingCity` TEXT NOT NULL DEFAULT '', `order_customer_billingState` TEXT NOT NULL DEFAULT '', `order_customer_billingPostcode` TEXT NOT NULL DEFAULT '', `order_customer_billingCountry` TEXT NOT NULL DEFAULT '', `order_customer_billingEmail` TEXT NOT NULL DEFAULT '', `order_customer_billingPhone` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`id`, `localSiteId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `allDay` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` TEXT NOT NULL, `currency` TEXT NOT NULL, `customerId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `resourceId` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `googleCalendarEventId` TEXT NOT NULL, `orderId` INTEGER NOT NULL, `orderItemId` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `personCounts` TEXT, `localTimezone` TEXT NOT NULL, `order_status` TEXT, `order_product_name` TEXT, `order_customer_billingFirstName` TEXT, `order_customer_billingLastName` TEXT, `order_customer_billingCompany` TEXT, `order_customer_billingAddress1` TEXT, `order_customer_billingAddress2` TEXT, `order_customer_billingCity` TEXT, `order_customer_billingState` TEXT, `order_customer_billingPostcode` TEXT, `order_customer_billingCountry` TEXT, `order_customer_billingEmail` TEXT, `order_customer_billingPhone` TEXT, PRIMARY KEY(`id`, `localSiteId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -4074,86 +4074,62 @@
           {
             "fieldPath": "order.productInfo.name",
             "columnName": "order_product_name",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingFirstName",
             "columnName": "order_customer_billingFirstName",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingLastName",
             "columnName": "order_customer_billingLastName",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingCompany",
             "columnName": "order_customer_billingCompany",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingAddress1",
             "columnName": "order_customer_billingAddress1",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingAddress2",
             "columnName": "order_customer_billingAddress2",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingCity",
             "columnName": "order_customer_billingCity",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingState",
             "columnName": "order_customer_billingState",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingPostcode",
             "columnName": "order_customer_billingPostcode",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingCountry",
             "columnName": "order_customer_billingCountry",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingEmail",
             "columnName": "order_customer_billingEmail",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "order.customerInfo.billingPhone",
             "columnName": "order_customer_billingPhone",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -4222,7 +4198,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6ed1d4015d2c5da7956c6f6185fb90e7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3a49ceb8212056caa9e036eafc905fc7')"
     ]
   }
 }

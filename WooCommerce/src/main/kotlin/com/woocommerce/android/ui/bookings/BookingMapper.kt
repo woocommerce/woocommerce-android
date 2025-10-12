@@ -31,10 +31,8 @@ class BookingMapper @Inject constructor(
     fun Booking.toBookingSummaryModel(): BookingSummaryModel {
         return BookingSummaryModel(
             date = summaryDateFormatter.format(start),
-            name = order.productInfo.name.ifEmpty { "-" },
-            customerName = order.customerInfo.let {
-                "${it.billingFirstName} ${it.billingLastName}"
-            }.trim(),
+            name = order.productInfo?.name ?: "-",
+            customerName = order.customerInfo?.fullName(),
             attendanceStatus = BookingAttendanceStatus.BOOKED,
             status = status.toUiModel()
         )
@@ -60,17 +58,19 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    fun BookingCustomerInfo.toCustomerDetailsModel(): BookingCustomerDetailsModel {
+    fun BookingCustomerInfo?.toCustomerDetailsModel(): BookingCustomerDetailsModel {
+        if (this == null) return BookingCustomerDetailsModel.EMPTY
+
         return BookingCustomerDetailsModel(
-            name = "$billingFirstName $billingLastName".trim(),
-            email = billingEmail.ifEmpty { null },
-            phone = billingPhone.ifEmpty { null },
+            name = fullName(),
+            email = billingEmail,
+            phone = billingPhone,
             billingAddressLines = listOfNotNull(
                 billingAddress1,
                 billingAddress2,
                 listOfNotNull(billingCity, billingState, billingPostcode).takeIf { it.isNotEmpty() }?.joinToString(" "),
                 billingCountry
-            ).ifEmpty { listOf("-") }
+            )
         )
     }
 
@@ -82,5 +82,9 @@ class BookingMapper @Inject constructor(
         BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
         BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
         is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
+    }
+
+    private fun BookingCustomerInfo.fullName(): String? {
+        return "${billingFirstName.orEmpty()} ${billingLastName.orEmpty()}".trim().ifEmpty { null }
     }
 }
