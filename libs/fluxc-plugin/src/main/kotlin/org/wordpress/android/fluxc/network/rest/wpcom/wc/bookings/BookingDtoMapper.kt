@@ -48,7 +48,7 @@ internal class BookingDtoMapper @Inject constructor(
         parentId = parentId,
         personCounts = personCounts?.map { it.toLong() },
         localTimezone = localTimezone,
-        order = orderEntity?.toBookingOrderInfo(productId) ?: BookingOrderInfo(
+        order = orderEntity?.toBookingOrderInfo(orderItemId) ?: BookingOrderInfo(
             productInfo = productsDao.getProduct(localSiteId.value, productId)?.let {
                 BookingProductInfo(name = it.name)
             }
@@ -56,9 +56,9 @@ internal class BookingDtoMapper @Inject constructor(
     )
 
     private suspend fun OrderEntity.toBookingOrderInfo(
-        productId: Long
+        orderItemId: Long
     ): BookingOrderInfo {
-        val lineItem = getLineItemList().firstOrNull { it.productId == productId }
+        val lineItem = getLineItemList().firstOrNull { it.id == orderItemId }
         return BookingOrderInfo(
             status = status,
             productInfo = BookingProductInfo(
