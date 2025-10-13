@@ -34,12 +34,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -79,10 +76,11 @@ class RefundSummaryViewModel @Inject constructor(
     val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
     private var refundSummaryState by refundSummaryStateLiveData
 
-    private val orderFlow: SharedFlow<Order> = flow {
-        val order = requireNotNull(orderDetailRepository.getOrderById(navArgs.orderId))
-        emit(order)
-    }.shareIn(viewModelScope, SharingStarted.Lazily, replay = 1)
+    private val order: Deferred<Order> by lazy {
+        viewModelScope.async {
+            requireNotNull(orderDetailRepository.getOrderById(navArgs.orderId))
+        }
+    }
 
     private lateinit var gateway: PaymentGateway
 
@@ -93,14 +91,14 @@ class RefundSummaryViewModel @Inject constructor(
 
     init {
         launch {
-            val order = orderFlow.first()
+            val order = order.await()
             gateway = loadPaymentGateway(order)
             initRefundSummaryState(order)
         }
     }
 
     fun onRefundIssued(reason: String) = launch {
-        val order = orderFlow.first()
+        val order = order.await()
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
             mapOf(
@@ -128,7 +126,7 @@ class RefundSummaryViewModel @Inject constructor(
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
                 refundJob = launch {
-                    val order = orderFlow.first()
+                    val order = order.await()
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
                     )
@@ -255,7 +253,7 @@ class RefundSummaryViewModel @Inject constructor(
     fun refund() {
         triggerUIMessageIfRefundIsInterac()
         launch {
-            val order = orderFlow.first()
+            val order = order.await()
             val result = initiateRefund(order)
             if (result.isError) {
                 trackRefundError(order, result)
