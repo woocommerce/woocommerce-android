@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -87,6 +88,7 @@ fun BookingCustomerDetails(
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 ) {
                     BookingDetailsLabel(label = R.string.booking_billing_address_label)
+                    Spacer(Modifier.height(4.dp))
                     Text(
                         text = billingAddress,
                         style = MaterialTheme.typography.labelLarge,
