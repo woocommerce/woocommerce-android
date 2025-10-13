@@ -12,6 +12,9 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Duration
 import java.time.Instant
@@ -52,8 +55,9 @@ class BookingMapperTest : BaseUnitTest() {
 
         // THEN
         assertThat(model.date).isEqualTo(expectedDate)
-        assertThat(model.name).isEqualTo("Women’s Haircut")
-        assertThat(model.customerName).isEqualTo("Margarita Nikolaevna")
+        assertThat(model.name).isEqualTo(booking.order.productInfo?.name)
+        assertThat(model.customerName)
+            .isEqualTo("${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName}")
         assertThat(model.attendanceStatus).isEqualTo(BookingAttendanceStatus.BOOKED)
         assertThat(model.status).isEqualTo(BookingStatus.Confirmed)
     }
@@ -131,7 +135,15 @@ class BookingMapperTest : BaseUnitTest() {
             orderItemId = 1L,
             parentId = 0L,
             personCounts = listOf(1L),
-            localTimezone = "UTC"
+            localTimezone = "UTC",
+            order = BookingOrderInfo(
+                status = "completed",
+                productInfo = BookingProductInfo(name = "Women’s Haircut"),
+                customerInfo = BookingCustomerInfo(
+                    billingFirstName = "Margarita",
+                    billingLastName = "Nikolaevna"
+                )
+            )
         )
     }
 }
