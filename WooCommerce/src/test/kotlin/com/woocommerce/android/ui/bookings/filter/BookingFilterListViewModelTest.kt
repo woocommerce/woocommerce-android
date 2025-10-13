@@ -12,14 +12,14 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilter
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingFilterListViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: BookingFilterListViewModel
     private val bookingFilterRepository: BookingFilterRepository = mock {
-        on { bookingFilterFlow } doReturn flowOf(BookingFilter())
+        on { bookingFiltersFlow } doReturn flowOf(BookingFilters())
     }
 
     @Before
