@@ -19,6 +19,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
@@ -92,11 +94,33 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         assertThat(state.bookingUiState?.orderId).isEqualTo(2L)
     }
 
+    @Test
+    fun `when init, then fetchBooking is triggered`() = testBlocking {
+        // Given
+        val bookingId = 321L
+        val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
+        val bookingsRepository = mock<BookingsRepository> {
+            on { observeBooking(any()) } doReturn bookingFlow
+            onBlocking { fetchBooking(any()) } doReturn Result.success(Unit)
+        }
+        // When
+        BookingDetailsViewModel(
+            savedState = savedState,
+            resourceProvider = resourceProvider,
+            bookingsRepository = bookingsRepository,
+            bookingMapper = bookingMapper
+        ).apply { state.observeForever { } }
+
+        // Then
+        verify(bookingsRepository, times(1)).fetchBooking(bookingId)
+    }
+
     private fun createViewModel(
         savedState: SavedStateHandle,
     ): BookingDetailsViewModel {
         val bookingsRepository = mock<BookingsRepository> {
             on { observeBooking(any()) } doReturn bookingFlow
+            onBlocking { fetchBooking(any()) } doReturn Result.success(Unit)
         }
         return BookingDetailsViewModel(
             savedState = savedState,

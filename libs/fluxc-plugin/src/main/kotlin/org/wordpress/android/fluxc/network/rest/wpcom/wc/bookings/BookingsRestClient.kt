@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
+import org.wordpress.android.fluxc.annotations.endpoint.WCWPAPIEndpoint
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
@@ -17,6 +18,25 @@ class BookingsRestClient @Inject constructor(
 ) {
     companion object {
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
+    }
+
+    suspend fun fetchBooking(
+        site: SiteModel,
+        bookingId: Long
+    ): WooPayload<BookingDto> {
+        val endpoint = WCWPAPIEndpoint(
+            WOOCOMMERCE.bookings.id(bookingId).endpoint
+        ).pathV2Bookings
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = BookingDto::class.java,
+            params = emptyMap()
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
     }
 
     @Suppress("LongParameterList")

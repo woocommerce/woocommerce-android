@@ -134,3 +134,4 @@
 /gla/ads/reports/programs
 
 /bookings
+/bookings/<id>/

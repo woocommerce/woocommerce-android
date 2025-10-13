@@ -15,13 +15,14 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BookingDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    resourceProvider: ResourceProvider,
-    bookingsRepository: BookingsRepository,
+    private val resourceProvider: ResourceProvider,
+    private val bookingsRepository: BookingsRepository,
     private val bookingMapper: BookingMapper,
 ) : ScopedViewModel(savedState) {
 
@@ -29,24 +30,40 @@ class BookingDetailsViewModel @Inject constructor(
 
     private val booking = bookingsRepository.observeBooking(navArgs.bookingId)
 
+    private val loadingState = MutableStateFlow<BookingDetailsLoadingState>(BookingDetailsLoadingState.Idle)
+
     // Temporary, the booking status should come from the stored object
     private val bookingAttendanceStatus = MutableStateFlow<BookingAttendanceStatus?>(null)
 
     val state: LiveData<BookingDetailsViewState> = combine(
         booking,
-        bookingAttendanceStatus
-    ) { booking, attendanceStatus ->
+        bookingAttendanceStatus,
+        loadingState
+    ) { booking, attendanceStatus, loadingState ->
         with(bookingMapper) {
             BookingDetailsViewState(
                 toolbarTitle = booking?.id?.value?.let { id ->
                     resourceProvider.getString(R.string.booking_details_title, id)
                 } ?: "",
                 bookingUiState = if (booking != null) buildBookingUiState(booking, attendanceStatus) else null,
+                loadingState = loadingState,
                 onCancelBooking = ::onCancelBooking,
                 onAttendanceStatusSelected = ::onAttendanceStatusSelected
             )
         }
     }.asLiveData()
+
+    init {
+        refreshBooking()
+    }
+
+    private fun refreshBooking() {
+        launch {
+            loadingState.value = BookingDetailsLoadingState.Refreshing
+            bookingsRepository.fetchBooking(navArgs.bookingId)
+            loadingState.value = BookingDetailsLoadingState.Idle
+        }
+    }
 
     private fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
         // Temporary, the booking status should come from the stored object

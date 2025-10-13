@@ -60,6 +60,20 @@ class BookingsRepository @Inject constructor(
             bookingId = bookingId
         )
 
+    suspend fun fetchBooking(
+        bookingId: Long
+    ): Result<Unit> {
+        val result = bookingsStore.fetchBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId
+        )
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
     data class FetchResult(
         val bookings: List<Booking>,
         val hasMorePages: Boolean
