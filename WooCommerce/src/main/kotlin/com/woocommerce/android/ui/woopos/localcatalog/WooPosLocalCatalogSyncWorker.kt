@@ -73,7 +73,7 @@ constructor(
 
             is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
                 // TBD Local Catalog - stop future syncs for this site if catalog too large
-                logger.e("Local catalog FULL  sync failed: ${fullSyncResult.error}.")
+                logger.e("Local catalog FULL sync failed: ${fullSyncResult.error}.")
                 Result.failure()
             }
         }
