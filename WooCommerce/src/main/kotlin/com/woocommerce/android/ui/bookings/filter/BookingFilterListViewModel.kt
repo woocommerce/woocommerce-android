@@ -76,7 +76,8 @@ private val BookingFilterListUiState.updatedBookingFilters: BookingFilters
             dateRange = updates.getOrDefault(initial.dateRange),
             customer = updates.getOrDefault(initial.customer),
             teamMember = updates.getOrDefault(
-                initial.teamMember),
+                initial.teamMember
+            ),
             attendanceStatus = updates.getOrDefault(initial.attendanceStatus),
             paymentStatus = updates.getOrDefault(initial.paymentStatus),
             bookingType = updates.getOrDefault(initial.bookingType),
