@@ -74,7 +74,6 @@ import kotlinx.coroutines.flow.filter
 
 private val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -82,22 +81,53 @@ fun WooPosOrdersScreen(
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
-    val onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) }
-    BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
+    WooPosOrdersScreen(
+        state = state,
+        onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
+        onRefresh = viewModel::onRefresh,
+        onOrderSelected = viewModel::onOrderSelected,
+        onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
+        onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
+        onSearchEvent = viewModel::onSearchEvent,
+        onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
+        onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun WooPosOrdersScreen(
+    state: WooPosOrdersState,
+    onBackClicked: () -> Unit,
+    onRefresh: () -> Unit,
+    onOrderSelected: (Long) -> Unit,
+    onEndOfOrdersListReached: () -> Unit,
+    onPaginationErrorTryAgain: () -> Unit,
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    onOrdersEmptyActionClicked: () -> Unit,
+    onOrdersLoadingErrorRetryButtonClicked: () -> Unit
+) {
+    BackHandler { onBackClicked() }
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (val currentState = state) {
-            is WooPosOrdersState.Content -> OrdersContent(currentState, viewModel)
+            is WooPosOrdersState.Content -> OrdersContent(
+                state = currentState,
+                onRefresh = onRefresh,
+                onOrderSelected = onOrderSelected,
+                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onSearchEvent = onSearchEvent
+            )
             is WooPosOrdersState.Empty -> OrdersEmpty(
-                onActionClicked = { viewModel::onOrdersEmptyActionClicked }
+                onActionClicked = onOrdersEmptyActionClicked
             )
 
             is WooPosOrdersState.Error -> OrdersError(
-                onRetryClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked
+                onRetryClicked = onOrdersLoadingErrorRetryButtonClicked
             )
 
             is WooPosOrdersState.Loading -> {
-                // full screen loading state
             }
         }
 
@@ -114,17 +144,21 @@ fun WooPosOrdersScreen(
 @Composable
 private fun OrdersContent(
     state: WooPosOrdersState.Content,
-    viewModel: WooPosOrdersViewModel
+    onRefresh: () -> Unit,
+    onOrderSelected: (Long) -> Unit,
+    onEndOfOrdersListReached: () -> Unit,
+    onPaginationErrorTryAgain: () -> Unit,
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersListPane(
             state = state,
-            onRefresh = viewModel::onRefresh,
+            onRefresh = onRefresh,
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            onOrderSelected = viewModel::onOrderSelected,
-            onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
-            onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
-            onSearchEvent = viewModel::onSearchEvent,
+            onOrderSelected = onOrderSelected,
+            onEndOfOrdersListReached = onEndOfOrdersListReached,
+            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+            onSearchEvent = onSearchEvent,
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
@@ -461,5 +495,48 @@ fun OrderStatusBadge(status: PosOrderStatus) {
 @WooPosPreview
 @Composable
 fun WooPosOrdersScreenPreview() {
-    WooPosTheme { WooPosOrdersScreen(onNavigationEvent = {}) }
+    WooPosTheme {
+        WooPosOrdersScreen(
+            state = WooPosOrdersState.Content(
+                items = listOf(
+                    OrderItemViewState(
+                        id = 1,
+                        title = "#1234",
+                        date = "Jan 15, 2025 at 10:30 AM",
+                        total = "$125.00",
+                        customerEmail = "customer@example.com",
+                        isSelected = true,
+                        status = PosOrderStatus(
+                            text = "Completed",
+                            colorKey = OrderStatusColorKey.COMPLETED
+                        )
+                    ),
+                    OrderItemViewState(
+                        id = 2,
+                        title = "#1235",
+                        date = "Jan 16, 2025 at 2:45 PM",
+                        total = "$89.50",
+                        customerEmail = "another@example.com",
+                        isSelected = false,
+                        status = PosOrderStatus(
+                            text = "Processing",
+                            colorKey = OrderStatusColorKey.PROCESSING
+                        )
+                    )
+                ),
+                pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                searchInputState = WooPosSearchInputState.Closed,
+                paginationState = WooPosPaginationState.None,
+                selectedOrderId = 1
+            ),
+            onBackClicked = {},
+            onRefresh = {},
+            onOrderSelected = {},
+            onEndOfOrdersListReached = {},
+            onPaginationErrorTryAgain = {},
+            onSearchEvent = {},
+            onOrdersEmptyActionClicked = {},
+            onOrdersLoadingErrorRetryButtonClicked = {}
+        )
+    }
 }
