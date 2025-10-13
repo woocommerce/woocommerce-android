@@ -4181,7 +4181,7 @@
     <string name="bookings_filter_title_payment_status">Payment status</string>
     <string name="bookings_filter_title_type">Booking type</string>
     <string name="bookings_filter_customer_name">Customer name</string>
-    <string name="bookings_filter_category">Category</string>
+    <string name="bookings_filter_location">Location</string>
     <string name="bookings_filter_title_date">Date &amp; time</string>
     <string name="bookings_filter_title_service_event">Service / Event</string>
     <string name="bookings_filter_default">Any</string>

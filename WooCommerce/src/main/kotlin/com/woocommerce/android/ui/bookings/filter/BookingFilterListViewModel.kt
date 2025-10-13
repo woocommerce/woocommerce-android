@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
 
 @HiltViewModel
@@ -80,11 +79,7 @@ private val BookingFilterListUiState.updatedBookingFilters: BookingFilters
             attendanceStatus = updates.getOrDefault(initial.attendanceStatus),
             paymentStatus = updates.getOrDefault(initial.paymentStatus),
             bookingType = updates.getOrDefault(initial.bookingType),
-            category = updates.getOrDefault(initial.category),
+            location = updates.getOrDefault(initial.location),
             serviceEvent = updates.getOrDefault(initial.serviceEvent),
         )
     }
-
-private inline fun <reified T> Set<BookingsFilterOption>.getOrDefault(default: T?): T? {
-    return this.filterIsInstance<T>().firstOrNull() ?: default
-}

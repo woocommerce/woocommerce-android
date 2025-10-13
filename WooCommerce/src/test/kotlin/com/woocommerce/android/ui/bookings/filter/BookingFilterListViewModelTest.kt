@@ -46,20 +46,20 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         assertThat(initial.currentPage).isInstanceOf(BookingFilterPage.List::class.java)
 
         // WHEN
-        initial.openPage(BookingFilterPage.DateTimePicker)
+        initial.openPage(BookingFilterPage.DateTime)
 
         // THEN
         val updated = viewModel.uiState.getOrAwaitValue()
-        assertThat(updated.currentPage).isInstanceOf(BookingFilterPage.DateTimePicker::class.java)
+        assertThat(updated.currentPage).isInstanceOf(BookingFilterPage.DateTime::class.java)
     }
 
     @Test
     fun `given current page is DateTimePicker, when onClose, then current page set to List`() {
         // GIVEN
         val initial = viewModel.uiState.getOrAwaitValue()
-        initial.openPage(BookingFilterPage.DateTimePicker)
+        initial.openPage(BookingFilterPage.DateTime)
         val afterOpen = viewModel.uiState.getOrAwaitValue()
-        assertThat(afterOpen.currentPage).isInstanceOf(BookingFilterPage.DateTimePicker::class.java)
+        assertThat(afterOpen.currentPage).isInstanceOf(BookingFilterPage.DateTime::class.java)
 
         // WHEN
         afterOpen.onClose()

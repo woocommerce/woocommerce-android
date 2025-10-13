@@ -85,7 +85,14 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
                     BookingFilterRootPage(state.items)
                 }
 
-                is BookingFilterPage.DateTimePicker -> {
+                BookingFilterPage.AttendanceStatus,
+                BookingFilterPage.BookingType,
+                BookingFilterPage.Customer,
+                BookingFilterPage.Location,
+                BookingFilterPage.PaymentStatus,
+                BookingFilterPage.ServiceEvent,
+                BookingFilterPage.TeamMember,
+                is BookingFilterPage.DateTime -> {
                     DateTimeFilterPicker()
                 }
             }

@@ -6,9 +6,16 @@ import com.woocommerce.android.R
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
-sealed class BookingFilterPage(@StringRes val titleRes: Int) {
-    data object List : BookingFilterPage(R.string.bookings_filters_default_title)
-    data object DateTimePicker : BookingFilterPage(R.string.bookings_filter_title_date)
+sealed interface BookingFilterPage {
+    data object List : BookingFilterPage
+    data object DateTime : BookingFilterPage
+    data object TeamMember : BookingFilterPage
+    data object AttendanceStatus : BookingFilterPage
+    data object PaymentStatus : BookingFilterPage
+    data object BookingType : BookingFilterPage
+    data object Customer : BookingFilterPage
+    data object ServiceEvent : BookingFilterPage
+    data object Location : BookingFilterPage
 }
 
 data class BookingFilterListUiState(
@@ -20,11 +27,11 @@ data class BookingFilterListUiState(
     val openPage: (BookingFilterPage) -> Unit = {},
 ) {
 
-    val items: List<BookingFilterListItem> = initialBookingFilters.defaultBookingFilters().map { option ->
+    val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
-            title = option.titleRes(),
-            value = option.value,
-            onClick = { openPage(option.page) },
+            title = page.titleRes,
+            value = page.filterValue,
+            onClick = { openPage(page) },
         )
     }
 
@@ -33,6 +40,24 @@ data class BookingFilterListUiState(
         is BookingFilterPage.List -> R.drawable.ic_gridicons_cross_24dp
         else -> R.drawable.ic_back_24dp
     }
+
+    val BookingFilterPage.filterValue: String?
+        get() = when (this) {
+            BookingFilterPage.Customer -> {
+                newBookingFilters.getOrDefault<BookingsFilterOption.Customer>(
+                    initialBookingFilters?.customer
+                )?.customerName
+            }
+
+            BookingFilterPage.DateTime,
+            BookingFilterPage.Location,
+            BookingFilterPage.AttendanceStatus,
+            BookingFilterPage.BookingType,
+            BookingFilterPage.PaymentStatus,
+            BookingFilterPage.ServiceEvent,
+            BookingFilterPage.TeamMember,
+            BookingFilterPage.List -> null
+        }
 }
 
 data class BookingFilterListItem(
@@ -41,50 +66,30 @@ data class BookingFilterListItem(
     val onClick: () -> Unit = {}
 )
 
-@StringRes
-fun BookingsFilterOption.titleRes(): Int = when (this) {
-    BookingsFilterOption.TeamMember -> R.string.bookings_filter_title_team_member
-    BookingsFilterOption.AttendanceStatus -> R.string.bookings_filter_title_attendance_status
-    BookingsFilterOption.PaymentStatus -> R.string.bookings_filter_title_payment_status
-    BookingsFilterOption.BookingType -> R.string.bookings_filter_title_type
-    is BookingsFilterOption.Customer -> R.string.bookings_filter_customer_name
-    BookingsFilterOption.Category -> R.string.bookings_filter_category
-    is BookingsFilterOption.DateRange -> R.string.bookings_filter_title_date
-    BookingsFilterOption.ServiceEvent -> R.string.bookings_filter_title_service_event
-}
-
-private val BookingsFilterOption.value: String?
-    get() = when (this) {
-        BookingsFilterOption.TeamMember,
-        BookingsFilterOption.AttendanceStatus,
-        BookingsFilterOption.PaymentStatus,
-        BookingsFilterOption.BookingType,
-        BookingsFilterOption.Category,
-        BookingsFilterOption.ServiceEvent,
-        is BookingsFilterOption.Customer,
-        is BookingsFilterOption.DateRange -> null
+val BookingFilterPage.titleRes: Int
+    @StringRes get() = when (this) {
+        BookingFilterPage.TeamMember -> R.string.bookings_filter_title_team_member
+        BookingFilterPage.AttendanceStatus -> R.string.bookings_filter_title_attendance_status
+        BookingFilterPage.PaymentStatus -> R.string.bookings_filter_title_payment_status
+        BookingFilterPage.BookingType -> R.string.bookings_filter_title_type
+        BookingFilterPage.Customer -> R.string.bookings_filter_customer_name
+        BookingFilterPage.Location -> R.string.bookings_filter_location
+        BookingFilterPage.DateTime -> R.string.bookings_filter_title_date
+        BookingFilterPage.ServiceEvent -> R.string.bookings_filter_title_service_event
+        BookingFilterPage.List -> R.string.bookings_filters_default_title
     }
 
-private fun BookingFilters?.defaultBookingFilters(): List<BookingsFilterOption> = listOf(
-    BookingsFilterOption.TeamMember,
-    BookingsFilterOption.AttendanceStatus,
-    BookingsFilterOption.PaymentStatus,
-    BookingsFilterOption.BookingType,
-    BookingsFilterOption.Customer(customerId = this?.customer?.customerId, customerName = this?.customer?.customerName),
-    BookingsFilterOption.Category,
-    BookingsFilterOption.DateRange(before = this?.dateRange?.before, after = this?.dateRange?.after),
-    BookingsFilterOption.ServiceEvent,
+private fun availableBookingFilters(): List<BookingFilterPage> = listOf(
+    BookingFilterPage.TeamMember,
+    BookingFilterPage.BookingType,
+    BookingFilterPage.ServiceEvent,
+    BookingFilterPage.AttendanceStatus,
+    BookingFilterPage.PaymentStatus,
+    BookingFilterPage.Customer,
+    BookingFilterPage.DateTime,
+    BookingFilterPage.Location,
 )
 
-// TODO map to new pages as we add them
-private val BookingsFilterOption.page: BookingFilterPage
-    get() = when (this) {
-        BookingsFilterOption.TeamMember,
-        BookingsFilterOption.AttendanceStatus,
-        BookingsFilterOption.PaymentStatus,
-        BookingsFilterOption.BookingType,
-        BookingsFilterOption.Category,
-        BookingsFilterOption.ServiceEvent,
-        is BookingsFilterOption.Customer,
-        is BookingsFilterOption.DateRange -> BookingFilterPage.DateTimePicker
-    }
+inline fun <reified T> Set<BookingsFilterOption>.getOrDefault(default: T?): T? {
+    return this.filterIsInstance<T>().firstOrNull() ?: default
+}

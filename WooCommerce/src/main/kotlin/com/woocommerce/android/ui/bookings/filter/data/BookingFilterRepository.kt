@@ -50,8 +50,8 @@ class BookingFilterRepository @Inject constructor(
             if (customer != null) {
                 val id = customer.customerId
                 val name = customer.customerName
-                if (id != null) prefs[customerIdKey] = id else prefs.remove(customerIdKey)
-                if (name != null) prefs[customerNameKey] = name else prefs.remove(customerNameKey)
+                prefs[customerIdKey] = id
+                prefs[customerNameKey] = name
             } else {
                 // Clear if not provided
                 prefs.remove(customerIdKey)
@@ -80,7 +80,7 @@ class BookingFilterRepository @Inject constructor(
     private fun Preferences.getCustomerValue(siteId: Int): BookingsFilterOption.Customer? {
         val customerId = this[customerIdKey(siteId)]
         val customerName = this[customerNameKey(siteId)]
-        return if (customerId != null || customerName != null) {
+        return if (customerId != null && customerName != null) {
             BookingsFilterOption.Customer(customerId = customerId, customerName = customerName)
         } else {
             null
