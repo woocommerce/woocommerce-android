@@ -13,7 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +31,8 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
 
     init {
         loadCatalogStatus()
+
+        listenToCellularDataUpdateValue()
     }
 
     private fun loadCatalogStatus() {
@@ -52,23 +53,24 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 lastFullUpdate = formattedTimestamp // TBD local catalog: Replace with full sync timestamp
             )
 
-            val allowCellularDataUpdate = preferencesRepository.allowCellularDataUpdate.first()
-
             _state.update {
-                it.copy(
-                    catalogStatus = catalogStatus,
-                    allowCellularDataUpdate = allowCellularDataUpdate
-                )
+                it.copy(catalogStatus = catalogStatus)
             }
         }
     }
 
-    fun toggleCellularDataUpdate() {
+    private fun listenToCellularDataUpdateValue() {
         viewModelScope.launch {
-            val newValue = !_state.value.allowCellularDataUpdate
-            _state.update {
-                it.copy(allowCellularDataUpdate = newValue)
+            preferencesRepository.allowCellularDataUpdate.collect { allowCellularDataUpdate ->
+                _state.update {
+                    it.copy(allowCellularDataUpdate = allowCellularDataUpdate)
+                }
             }
+        }
+    }
+
+    fun toggleCellularDataUpdate(newValue: Boolean) {
+        viewModelScope.launch {
             preferencesRepository.setAllowCellularDataUpdate(newValue)
             syncScheduler.updateWorkConstraints()
         }
