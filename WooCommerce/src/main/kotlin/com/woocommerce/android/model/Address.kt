@@ -13,7 +13,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
 
-@Suppress("TooManyFunctions")
 @Parcelize
 data class Address(
     val company: String,
