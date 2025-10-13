@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.list
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
@@ -50,7 +51,8 @@ class BookingListViewModelTest : BaseUnitTest() {
     private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
     private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
     private val currencyFormatter = mock<CurrencyFormatter>()
-    private val bookingMapper = BookingMapper(currencyFormatter)
+    private val getLocations = mock<GetLocations>()
+    private val bookingMapper = BookingMapper(currencyFormatter, getLocations)
     private val bookingFiltersFlow = MutableStateFlow(BookingFilters())
     private val bookingFilterRepository: BookingFilterRepository = mock {
         on { bookingFiltersFlow } doReturn bookingFiltersFlow
