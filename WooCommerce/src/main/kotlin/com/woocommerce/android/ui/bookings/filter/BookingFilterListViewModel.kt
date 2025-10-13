@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,13 +22,20 @@ class BookingFilterListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(
         BookingFilterListUiState(
             onClose = ::onClose,
-            onShowBookings = ::onShowBookings
+            onShowBookings = ::onShowBookings,
+            openPage = ::onOpenPage,
         )
     )
     val uiState = _uiState.asLiveData()
 
     init {
         getBookingFilter()
+    }
+
+    private fun onOpenPage(page: BookingFilterPage) {
+        _uiState.update { current ->
+            current.copy(currentPage = page)
+        }
     }
 
     private fun getBookingFilter() {
@@ -43,8 +49,14 @@ class BookingFilterListViewModel @Inject constructor(
     }
 
     private fun onClose() {
-        // TODO Verify unsaved changes and close
-        triggerEvent(MultiLiveEvent.Event.Exit)
+        if (_uiState.value.currentPage != BookingFilterPage.List) {
+            _uiState.update { current ->
+                current.copy(currentPage = BookingFilterPage.List)
+            }
+        } else {
+            // TODO Verify unsaved changes and close
+            triggerEvent(MultiLiveEvent.Event.Exit)
+        }
     }
 
     private fun onShowBookings() {
@@ -63,15 +75,13 @@ private val BookingFilterListUiState.updatedBookingFilters: BookingFilters
         return BookingFilters(
             dateRange = updates.getOrDefault(initial.dateRange),
             customer = updates.getOrDefault(initial.customer),
-            teamMember = updates.getOrDefault(initial.teamMember),
+            teamMember = updates.getOrDefault(
+                initial.teamMember
+            ),
             attendanceStatus = updates.getOrDefault(initial.attendanceStatus),
             paymentStatus = updates.getOrDefault(initial.paymentStatus),
             bookingType = updates.getOrDefault(initial.bookingType),
-            category = updates.getOrDefault(initial.category),
+            location = updates.getOrDefault(initial.location),
             serviceEvent = updates.getOrDefault(initial.serviceEvent),
         )
     }
-
-private inline fun <reified T> Set<BookingsFilterOption>.getOrDefault(default: T?): T? {
-    return this.filterIsInstance<T>().firstOrNull() ?: default
-}

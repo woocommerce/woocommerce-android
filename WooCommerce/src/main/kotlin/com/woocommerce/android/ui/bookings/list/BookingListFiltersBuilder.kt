@@ -45,7 +45,7 @@ class BookingListFiltersBuilder @Inject constructor(
         attendanceStatus?.let { filters.add(it) }
         paymentStatus?.let { filters.add(it) }
         bookingType?.let { filters.add(it) }
-        category?.let { filters.add(it) }
+        location?.let { filters.add(it) }
         serviceEvent?.let { filters.add(it) }
         return filters
     }
