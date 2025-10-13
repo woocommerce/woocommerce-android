@@ -541,9 +541,7 @@ class WCOrderStore @Inject internal constructor(
             FETCH_ORDERS -> fetchOrders(action.payload as FetchOrdersPayload)
             WCOrderAction.FETCH_ORDER_LIST -> fetchOrderList(action.payload as FetchOrderListPayload)
             WCOrderAction.FETCH_ORDERS_BY_IDS -> coroutineEngine.launch(API, this, "fetchOrdersByIds") {
-                fetchOrdersByIds(action.payload as FetchOrdersByIdsPayload).let {
-                    mDispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersByIdsAction(it))
-                }
+                fetchOrdersByIds(action.payload as FetchOrdersByIdsPayload)
             }
             WCOrderAction.FETCH_ORDERS_COUNT -> fetchOrdersCount(action.payload as FetchOrdersCountPayload)
             WCOrderAction.UPDATE_ORDER_STATUS ->
@@ -587,7 +585,9 @@ class WCOrderStore @Inject internal constructor(
     }
 
     suspend fun fetchOrdersByIds(payload: FetchOrdersByIdsPayload): FetchOrdersByIdsResponsePayload {
-        return wcOrderRestClient.fetchOrdersByIds(payload.site, payload.orderIds)
+        return wcOrderRestClient.fetchOrdersByIds(payload.site, payload.orderIds).also {
+            mDispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersByIdsAction(it))
+        }
     }
 
     private fun searchOrders(payload: SearchOrdersPayload) {
