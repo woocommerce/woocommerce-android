@@ -167,6 +167,11 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
         runCatching { posVariationsDao.upsertVariations(variations) }
 
+    suspend fun deleteAllVariations(
+        siteId: LocalOrRemoteId.LocalId
+    ): Result<Unit> =
+        runCatching { posVariationsDao.deleteAllVariationsForSite(siteId) }
+
     /**
      * Observes all variations for a given product from the local database.
      *
