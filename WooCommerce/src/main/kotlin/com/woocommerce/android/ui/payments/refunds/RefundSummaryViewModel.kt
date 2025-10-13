@@ -255,14 +255,14 @@ class RefundSummaryViewModel @Inject constructor(
     fun refund() {
         triggerUIMessageIfRefundIsInterac()
         viewModelScope.launch {
-            val orderToUse = orderFlow.first()
-            val result = initiateRefund(orderToUse)
+            val order = orderFlow.first()
+            val result = initiateRefund(order)
             if (result.isError) {
-                trackRefundError(orderToUse, result)
+                trackRefundError(order, result)
                 triggerUIMessage()
             } else {
-                trackRefundSuccess(orderToUse, result)
-                updateRefundSummaryStateWithOrderNote(orderToUse)
+                trackRefundSuccess(order, result)
+                updateRefundSummaryStateWithOrderNote(order)
                 triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
                 triggerEvent(Exit)
             }
