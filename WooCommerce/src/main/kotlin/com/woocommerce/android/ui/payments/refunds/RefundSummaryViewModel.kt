@@ -92,14 +92,14 @@ class RefundSummaryViewModel @Inject constructor(
         get() = refundJob?.isActive ?: false
 
     init {
-        viewModelScope.launch {
+        launch {
             val order = orderFlow.first()
             gateway = loadPaymentGateway(order)
             initRefundSummaryState(order)
         }
     }
 
-    fun onRefundIssued(reason: String) = viewModelScope.launch {
+    fun onRefundIssued(reason: String) = launch {
         val order = orderFlow.first()
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
@@ -127,7 +127,7 @@ class RefundSummaryViewModel @Inject constructor(
     fun onRefundConfirmed(wasConfirmed: Boolean) {
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
-                refundJob = viewModelScope.launch {
+                refundJob = launch {
                     val order = orderFlow.first()
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
@@ -205,7 +205,7 @@ class RefundSummaryViewModel @Inject constructor(
     }
 
     private fun loadCardDetails(chargeId: String, refundMethod: String) {
-        viewModelScope.launch {
+        launch {
             refundSummaryState = refundSummaryState.copy(isFetchingCardData = true)
             val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)
             refundSummaryState = refundSummaryState.copy(isFetchingCardData = false)
@@ -254,7 +254,7 @@ class RefundSummaryViewModel @Inject constructor(
    For Interac refund -> Update the backend of the successful refund. The actual refund happens on the client-side */
     fun refund() {
         triggerUIMessageIfRefundIsInterac()
-        viewModelScope.launch {
+        launch {
             val order = orderFlow.first()
             val result = initiateRefund(order)
             if (result.isError) {
