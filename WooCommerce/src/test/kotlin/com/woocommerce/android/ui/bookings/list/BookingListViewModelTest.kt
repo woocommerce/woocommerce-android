@@ -25,6 +25,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Clock
@@ -345,7 +346,8 @@ class BookingListViewModelTest : BaseUnitTest() {
             orderItemId = 1L,
             parentId = 0L,
             personCounts = listOf(1L),
-            localTimezone = ""
+            localTimezone = "",
+            order = BookingOrderInfo()
         )
     }
 }

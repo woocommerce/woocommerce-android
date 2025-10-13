@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.bookings
 
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Duration
 import java.time.ZoneOffset
@@ -29,9 +31,8 @@ class BookingMapper @Inject constructor(
     fun Booking.toBookingSummaryModel(): BookingSummaryModel {
         return BookingSummaryModel(
             date = summaryDateFormatter.format(start),
-            // TODO replace mocked values when product and customer data are available
-            name = "Women’s Haircut",
-            customerName = "Margarita Nikolaevna",
+            name = order.productInfo?.name ?: "-",
+            customerName = order.customerInfo?.fullName(),
             attendanceStatus = BookingAttendanceStatus.BOOKED,
             status = status.toUiModel()
         )
@@ -57,6 +58,22 @@ class BookingMapper @Inject constructor(
         )
     }
 
+    fun BookingCustomerInfo?.toCustomerDetailsModel(): BookingCustomerDetailsModel {
+        if (this == null) return BookingCustomerDetailsModel.EMPTY
+
+        return BookingCustomerDetailsModel(
+            name = fullName(),
+            email = billingEmail,
+            phone = billingPhone,
+            billingAddressLines = listOfNotNull(
+                billingAddress1,
+                billingAddress2,
+                listOfNotNull(billingCity, billingState, billingPostcode).takeIf { it.isNotEmpty() }?.joinToString(" "),
+                billingCountry
+            )
+        )
+    }
+
     private fun BookingEntity.Status.toUiModel(): BookingStatus = when (this) {
         BookingEntity.Status.Paid -> BookingStatus.Paid
         BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
@@ -65,5 +82,9 @@ class BookingMapper @Inject constructor(
         BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
         BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
         is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
+    }
+
+    private fun BookingCustomerInfo.fullName(): String? {
+        return "${billingFirstName.orEmpty()} ${billingLastName.orEmpty()}".trim().ifEmpty { null }
     }
 }

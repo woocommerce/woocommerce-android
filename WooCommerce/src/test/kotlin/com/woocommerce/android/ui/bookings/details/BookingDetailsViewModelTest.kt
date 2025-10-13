@@ -21,6 +21,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Duration
 import java.time.Instant
@@ -127,7 +128,8 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             orderItemId = 1L,
             parentId = 0L,
             personCounts = listOf(1L),
-            localTimezone = ""
+            localTimezone = "",
+            order = BookingOrderInfo()
         )
     }
 }
