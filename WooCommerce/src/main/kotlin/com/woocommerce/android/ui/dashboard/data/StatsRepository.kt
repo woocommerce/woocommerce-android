@@ -7,11 +7,12 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.network.giftcard.GiftCardRestClient
 import com.woocommerce.android.network.giftcard.toWCModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import com.woocommerce.commons.stats.StatsTimeRange
+import com.woocommerce.commons.stats.StatsUtils.toRevenueRangeId
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -63,7 +64,7 @@ class StatsRepository @Inject constructor(
         range: StatsTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
-        revenueRangeId: String = ""
+        revenueRangeId: String,
     ): Result<WCRevenueStatsModel?> = fetchRevenueStats(
         range = range,
         granularity = granularity,
@@ -76,7 +77,7 @@ class StatsRepository @Inject constructor(
         range: StatsTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
-        revenueRangeId: String = "",
+        revenueRangeId: String,
         site: SiteModel
     ): Result<WCRevenueStatsModel?> {
         val result = wcStatsStore.fetchRevenueStats(
@@ -308,13 +309,15 @@ class StatsRepository @Inject constructor(
      * Even if the includeVisitorStats flag is set to true, errors fetching visitor
      * will be handled as null and only errors fetching the revenue stats will be processed.
      */
+    @Suppress("LongParameterList")
     suspend fun fetchStats(
         range: StatsTimeRange,
         revenueStatsGranularity: StatsGranularity,
         visitorStatsGranularity: StatsGranularity,
         forced: Boolean,
         includeVisitorStats: Boolean,
-        site: SiteModel = selectedSite.get()
+        site: SiteModel = selectedSite.get(),
+        medium: String,
     ): Result<SiteStats> = coroutineScope {
         val fetchVisitorStats = if (includeVisitorStats) {
             async {
@@ -334,6 +337,7 @@ class StatsRepository @Inject constructor(
                 range = range,
                 granularity = revenueStatsGranularity,
                 forced = forced,
+                revenueRangeId = range.toRevenueRangeId(medium),
                 site = site
             )
         }
@@ -407,13 +411,4 @@ class StatsRepository @Inject constructor(
             }
         }
     }
-}
-
-fun String.asRevenueRangeId(
-    startDate: Date,
-    endDate: Date
-): String {
-    val startDateString = startDate.formatToYYYYmmDD()
-    val endDateString = endDate.formatToYYYYmmDD()
-    return "$this$startDateString$endDateString"
 }

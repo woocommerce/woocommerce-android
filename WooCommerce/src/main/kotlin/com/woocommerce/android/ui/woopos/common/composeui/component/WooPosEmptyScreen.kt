@@ -13,13 +13,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -31,7 +30,7 @@ fun WooPosEmptyScreen(
     title: String,
     message: String,
     contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
+    icon: ImageVector = WooPosIcons.NotFound,
 ) {
     WooPosItemsEmptyListInternal(
         modifier = modifier,
@@ -50,7 +49,7 @@ fun WooPosEmptyScreen(
     title: String,
     message: String,
     contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
+    icon: ImageVector = WooPosIcons.NotFound,
     actionLabel: String,
     onActionClicked: (() -> Unit),
 ) {
@@ -71,7 +70,7 @@ private fun WooPosItemsEmptyListInternal(
     title: String,
     message: String,
     contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
+    icon: ImageVector = WooPosIcons.NotFound,
     actionLabel: String?,
     onActionClicked: (() -> Unit)? = null,
 ) {
@@ -85,7 +84,7 @@ private fun WooPosItemsEmptyListInternal(
         ) {
             Image(
                 modifier = Modifier.size(148.dp),
-                painter = icon,
+                imageVector = icon,
                 contentDescription = contentDescription,
             )
 

@@ -4,8 +4,8 @@ import com.woocommerce.android.extensions.endOfCurrentYear
 import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneYearAgo
 import com.woocommerce.android.extensions.startOfCurrentYear
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeData
+import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale

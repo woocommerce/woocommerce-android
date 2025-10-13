@@ -24,6 +24,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
@@ -402,7 +403,7 @@ class GetStatsTest : BaseUnitTest() {
             calendar = Calendar.getInstance(),
             locale = Locale.getDefault()
         )
-        val ANY_REVENUE_STATS = WCRevenueStatsModel()
+        val ANY_REVENUE_STATS = WCRevenueStatsModel(LocalId(1), "", "", "", "", "", "")
         val ANY_VISITOR_STATS = mapOf(
             "2020-10-01" to 1,
             "2020-11-01" to 3,

@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorSummaryStatsGranularity
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.data.StatsRepository.StatsException
-import com.woocommerce.android.ui.dashboard.data.asRevenueRangeId
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.PluginNotActive
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.RevenueStatsError
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.RevenueStatsSuccess
@@ -20,6 +19,7 @@ import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.Visit
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ResultWithOutdatedFlag
+import com.woocommerce.commons.stats.StatsUtils.asRevenueRangeId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow

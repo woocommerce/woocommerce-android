@@ -5,6 +5,7 @@ import com.woocommerce.android.wear.extensions.formatToMMMddYYYY
 import com.woocommerce.android.wear.extensions.oneDayAgo
 import com.woocommerce.android.wear.extensions.startOfCurrentDay
 import com.woocommerce.android.wear.util.DateUtils
+import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Calendar
 import java.util.Locale
 
