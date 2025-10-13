@@ -20,8 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.bookings.filter.BookingFilterListViewModel.BookingFilterListItem
-import com.woocommerce.android.ui.bookings.filter.BookingFilterListViewModel.BookingFilterListUiState
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCListItemWithInlineSubtitle
@@ -91,40 +89,7 @@ private fun BookingFilterListScreenPreview() {
     WooThemeWithBackground {
         BookingFilterListScreen(
             state = BookingFilterListUiState(
-                items = listOf(
-                    BookingFilterListItem(
-                        title = R.string.bookings_filter_title_team_member,
-                        value = null
-                    ),
-                    BookingFilterListItem(
-                        title = R.string.bookings_filter_title_attendance_status,
-                        value = null
-                    ),
-                    BookingFilterListItem(
-                        title = R.string.bookings_filter_title_payment_status,
-                        value = null
-                    ),
-                    BookingFilterListItem(
-                        title = R.string.bookings_filter_title_type,
-                        value = null
-                    ),
-                    BookingFilterListItem(
-                        title = R.string.bookings_filter_customer_name,
-                        value = null
-                    ),
-                    BookingFilterListItem(
-                        title = R.string.bookings_filter_category,
-                        value = null
-                    ),
-                    BookingFilterListItem(
-                        title = R.string.bookings_filter_title_date,
-                        value = null
-                    ),
-                    BookingFilterListItem(
-                        title = R.string.bookings_filter_title_service_event,
-                        value = null
-                    ),
-                )
+                initialBookingFilters = null,
             )
         )
     }
