@@ -16,7 +16,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilter
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.nio.file.Files
 import java.nio.file.Path
@@ -68,10 +68,10 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
         val repository = BookingFilterRepository(dataStore, selectedSite)
 
         // WHEN
-        val value = repository.bookingFilterFlow.first()
+        val value = repository.bookingFiltersFlow.first()
 
         // THEN
-        assertThat(value).isEqualTo(BookingFilter())
+        assertThat(value).isEqualTo(BookingFilters())
         assertThat(value.customer).isNull()
         assertThat(value.dateRange).isNull()
     }
@@ -84,14 +84,14 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
         val before = Instant.parse("2025-01-02T00:00:00Z")
         val after = Instant.parse("2025-01-01T00:00:00Z")
         val customer = BookingsFilterOption.Customer(customerId = 7L, customerName = "Alice")
-        val toSave = BookingFilter(
+        val toSave = BookingFilters(
             customer = customer,
             dateRange = BookingsFilterOption.DateRange(before = before, after = after)
         )
 
         // WHEN
         repository.save(toSave)
-        val emitted = repository.bookingFilterFlow.first()
+        val emitted = repository.bookingFiltersFlow.first()
 
         // THEN
         assertThat(emitted.customer).isEqualTo(customer)
@@ -105,28 +105,28 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
         val repository = BookingFilterRepository(dataStore, selectedSite)
         setSite(100)
         val siteACustomer = BookingsFilterOption.Customer(1L, "Customer A")
-        repository.save(BookingFilter(customer = siteACustomer))
+        repository.save(BookingFilters(customer = siteACustomer))
         // Ensure emission with site A
-        val firstA = repository.bookingFilterFlow.first()
+        val firstA = repository.bookingFiltersFlow.first()
         assertThat(firstA.customer).isEqualTo(siteACustomer)
 
         // WHEN switch to site B (no values yet)
         setSite(200)
-        val firstBEmpty = repository.bookingFilterFlow.first()
+        val firstBEmpty = repository.bookingFiltersFlow.first()
         // THEN empty for site B
-        assertThat(firstBEmpty).isEqualTo(BookingFilter())
+        assertThat(firstBEmpty).isEqualTo(BookingFilters())
 
         // WHEN save for site B and read again
         val siteBCustomer = BookingsFilterOption.Customer(2L, "Customer B")
-        repository.save(BookingFilter(customer = siteBCustomer))
-        val secondB = repository.bookingFilterFlow.first()
+        repository.save(BookingFilters(customer = siteBCustomer))
+        val secondB = repository.bookingFiltersFlow.first()
 
         // THEN
         assertThat(secondB.customer).isEqualTo(siteBCustomer)
 
         // AND switch back to site A still has A's values
         setSite(100)
-        val secondA = repository.bookingFilterFlow.first()
+        val secondA = repository.bookingFiltersFlow.first()
         assertThat(secondA.customer).isEqualTo(siteACustomer)
     }
 }

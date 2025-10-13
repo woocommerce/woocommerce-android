@@ -89,7 +89,7 @@ private fun BookingFilterListScreenPreview() {
     WooThemeWithBackground {
         BookingFilterListScreen(
             state = BookingFilterListUiState(
-                initialBookingFilter = null,
+                initialBookingFilters = null,
             )
         )
     }

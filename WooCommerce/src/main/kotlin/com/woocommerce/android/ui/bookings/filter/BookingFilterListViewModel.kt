@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilter
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
 
@@ -35,9 +35,9 @@ class BookingFilterListViewModel @Inject constructor(
     private fun getBookingFilter() {
         launch {
             // We don't observe changes here, just get the current value once
-            val bookingFilter = bookingFilterRepository.bookingFilterFlow.firstOrNull()
+            val bookingFilters = bookingFilterRepository.bookingFiltersFlow.firstOrNull()
             _uiState.update { current ->
-                current.copy(initialBookingFilter = bookingFilter)
+                current.copy(initialBookingFilters = bookingFilters)
             }
         }
     }
@@ -49,18 +49,18 @@ class BookingFilterListViewModel @Inject constructor(
 
     private fun onShowBookings() {
         launch {
-            bookingFilterRepository.save(_uiState.value.updatedBookingFilter)
+            bookingFilterRepository.save(_uiState.value.updatedBookingFilters)
         }
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 }
 
-private val BookingFilterListUiState.updatedBookingFilter: BookingFilter
+private val BookingFilterListUiState.updatedBookingFilters: BookingFilters
     get() {
-        val initial = initialBookingFilter ?: BookingFilter()
-        val updates = updatedBookingFilters
+        val initial = initialBookingFilters ?: BookingFilters()
+        val updates = this@updatedBookingFilters.newBookingFilters
 
-        return BookingFilter(
+        return BookingFilters(
             dateRange = updates.getOrDefault(initial.dateRange),
             customer = updates.getOrDefault(initial.customer),
             teamMember = updates.getOrDefault(initial.teamMember),

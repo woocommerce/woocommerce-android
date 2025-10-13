@@ -122,7 +122,7 @@ class BookingListViewModel @Inject constructor(
                 }
             val sortFlow = sortOption.drop(1) // Skip the initial value to avoid double fetch on init
             val bookingFilterFlow =
-                bookingFilterRepository.bookingFilterFlow.drop(1) // Skip initial to avoid double fetch on init
+                bookingFilterRepository.bookingFiltersFlow.drop(1) // Skip initial to avoid double fetch on init
 
             merge(selectedTab, queryFlow, sortFlow, bookingFilterFlow).collectLatest {
                 // Cancel any ongoing fetch or load more operations
@@ -199,7 +199,7 @@ class BookingListViewModel @Inject constructor(
                 selectedTab.value.asDateRangeFilter()
             )
 
-            BookingListTab.All -> bookingFilterRepository.bookingFilterFlow.first().asList()
+            BookingListTab.All -> bookingFilterRepository.bookingFiltersFlow.first().asList()
         }
     }
 

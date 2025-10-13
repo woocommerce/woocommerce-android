@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilter
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.Instant
 import javax.inject.Inject
@@ -31,22 +31,22 @@ class BookingFilterRepository @Inject constructor(
 
     private val siteIdFlow = selectedSite.observe().map { it?.id ?: -1 }.distinctUntilChanged()
 
-    val bookingFilterFlow: Flow<BookingFilter> = siteIdFlow.flatMapLatest { siteId ->
+    val bookingFiltersFlow: Flow<BookingFilters> = siteIdFlow.flatMapLatest { siteId ->
         dataStore.data.map { prefs ->
-            BookingFilter(
+            BookingFilters(
                 customer = prefs.getCustomerValue(siteId),
                 dateRange = prefs.getDateRangeValue(siteId)
             )
         }
     }
 
-    suspend fun save(bookingFilter: BookingFilter) {
+    suspend fun save(bookingFilters: BookingFilters) {
         val siteId = selectedSite.getSelectedSiteId()
         dataStore.edit { prefs ->
             // Customer
             val customerIdKey = customerIdKey(siteId)
             val customerNameKey = customerNameKey(siteId)
-            val customer = bookingFilter.customer
+            val customer = bookingFilters.customer
             if (customer != null) {
                 val id = customer.customerId
                 val name = customer.customerName
@@ -59,7 +59,7 @@ class BookingFilterRepository @Inject constructor(
             }
 
             // Date range
-            val dateRange = bookingFilter.dateRange
+            val dateRange = bookingFilters.dateRange
             val beforeKey = dateBeforeKey(siteId)
             val afterKey = dateAfterKey(siteId)
             if (dateRange != null) {

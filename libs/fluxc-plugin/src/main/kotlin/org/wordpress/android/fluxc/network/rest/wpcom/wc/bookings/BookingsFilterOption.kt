@@ -23,7 +23,7 @@ sealed interface BookingsFilterOption {
     object ServiceEvent : BookingsFilterOption
 }
 
-data class BookingFilter(
+data class BookingFilters(
     val dateRange: BookingsFilterOption.DateRange? = null,
     val customer: BookingsFilterOption.Customer? = null,
     val teamMember: BookingsFilterOption.TeamMember? = null,

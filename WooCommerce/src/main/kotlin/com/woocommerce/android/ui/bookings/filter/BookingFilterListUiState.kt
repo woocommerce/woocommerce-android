@@ -2,17 +2,17 @@ package com.woocommerce.android.ui.bookings.filter
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilter
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
 data class BookingFilterListUiState(
-    val initialBookingFilter: BookingFilter? = null,
-    val updatedBookingFilters: Set<BookingsFilterOption> = emptySet(),
+    val initialBookingFilters: BookingFilters? = null,
+    val newBookingFilters: Set<BookingsFilterOption> = emptySet(),
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
 ) {
 
-    val items: List<BookingFilterListItem> = initialBookingFilter.defaultBookingFilters().map { option ->
+    val items: List<BookingFilterListItem> = initialBookingFilters.defaultBookingFilters().map { option ->
         BookingFilterListItem(
             title = option.titleRes(),
             value = option.value,
@@ -50,7 +50,7 @@ private val BookingsFilterOption.value: String?
         is BookingsFilterOption.DateRange -> null
     }
 
-private fun BookingFilter?.defaultBookingFilters(): List<BookingsFilterOption> = listOf(
+private fun BookingFilters?.defaultBookingFilters(): List<BookingsFilterOption> = listOf(
     BookingsFilterOption.TeamMember,
     BookingsFilterOption.AttendanceStatus,
     BookingsFilterOption.PaymentStatus,

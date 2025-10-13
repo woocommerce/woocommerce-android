@@ -24,7 +24,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilter
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Clock
@@ -50,9 +50,9 @@ class BookingListViewModelTest : BaseUnitTest() {
     private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val bookingMapper = BookingMapper(currencyFormatter)
-    private val bookingFilterFlow = MutableStateFlow(BookingFilter())
+    private val bookingFiltersFlow = MutableStateFlow(BookingFilters())
     private val bookingFilterRepository: BookingFilterRepository = mock {
-        on { bookingFilterFlow } doReturn bookingFilterFlow
+        on { bookingFiltersFlow } doReturn bookingFiltersFlow
     }
 
     private lateinit var viewModel: BookingListViewModel
@@ -313,8 +313,8 @@ class BookingListViewModelTest : BaseUnitTest() {
 
         // WHEN
         val customerFilter = BookingsFilterOption.Customer(1L, "Customer")
-        bookingFilterFlow.emit(
-            BookingFilter(customer = customerFilter)
+        bookingFiltersFlow.emit(
+            BookingFilters(customer = customerFilter)
         )
 
         // THEN
