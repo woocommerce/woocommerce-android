@@ -303,7 +303,6 @@ private fun OrdersList(
                 ) {
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)
                     ) {
                         WooPosText(
                             item.title,
@@ -314,6 +313,8 @@ private fun OrdersList(
                             overflow = TextOverflow.Ellipsis
                         )
 
+                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
                         WooPosText(
                             item.date,
                             style = WooPosTypography.BodySmall,
@@ -321,6 +322,8 @@ private fun OrdersList(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
+
+                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
 
                         val email = item.customerEmail.orEmpty()
                         if (email.isNotBlank()) {
@@ -332,6 +335,8 @@ private fun OrdersList(
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
+
+                        Spacer(Modifier.height(WooPosSpacing.Small.value))
 
                         OrderStatusBadge(item.status)
                     }
