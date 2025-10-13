@@ -15,7 +15,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,14 +33,15 @@ class BookingDetailsViewModel @Inject constructor(
     private val bookingAttendanceStatus = MutableStateFlow<BookingAttendanceStatus?>(null)
 
     val state: LiveData<BookingDetailsViewState> = combine(
-        booking.filterNotNull(),
+        booking,
         bookingAttendanceStatus
     ) { booking, attendanceStatus ->
         with(bookingMapper) {
             BookingDetailsViewState(
-                toolbarTitle = resourceProvider.getString(R.string.booking_details_title, booking.id.value),
-                orderId = booking.orderId,
-                bookingUiState = buildBookingUiState(booking, attendanceStatus),
+                toolbarTitle = booking?.id?.value?.let { id ->
+                    resourceProvider.getString(R.string.booking_details_title, id)
+                } ?: "",
+                bookingUiState = if (booking != null) buildBookingUiState(booking, attendanceStatus) else null,
                 onCancelBooking = ::onCancelBooking,
                 onAttendanceStatusSelected = ::onAttendanceStatusSelected
             )
@@ -61,6 +61,7 @@ class BookingDetailsViewModel @Inject constructor(
         booking: Booking,
         attendanceStatus: BookingAttendanceStatus?
     ): BookingUiState = BookingUiState(
+        orderId = booking.orderId,
         bookingSummary = booking.toBookingSummaryModel().let {
             if (attendanceStatus != null) {
                 it.copy(attendanceStatus = attendanceStatus)
