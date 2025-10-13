@@ -48,13 +48,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -81,6 +79,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputF
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -403,7 +402,7 @@ private fun TestYourScannerScanFailedContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = step.iconRes),
+            imageVector = WooPosIcons.ErrorX,
             contentDescription = null,
             modifier = Modifier
                 .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
@@ -452,7 +451,7 @@ private fun PairYourScannerContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = step.iconRes),
+            imageVector = WooPosIcons.BluetoothSettings,
             contentDescription = null,
             modifier = Modifier
                 .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
@@ -654,7 +653,7 @@ private fun ScannerSetupSuccessIcon(
             .background(WooPosTheme.colors.success, CircleShape)
     ) {
         Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
+            imageVector = WooPosIcons.Check,
             tint = WooPosTheme.colors.onSuccess,
             contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
             modifier = Modifier.size(40.dp)
