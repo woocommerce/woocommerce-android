@@ -56,7 +56,7 @@ class BookingDetailsViewModel @Inject constructor(
         // TODO Add logic to Cancel booking
     }
 
-    private fun BookingMapper.buildBookingUiState(
+    private suspend fun BookingMapper.buildBookingUiState(
         booking: Booking,
         attendanceStatus: BookingAttendanceStatus?
     ): BookingUiState = BookingUiState(

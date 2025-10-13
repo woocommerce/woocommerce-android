@@ -11,6 +11,8 @@ import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
@@ -65,7 +67,7 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    fun BookingCustomerInfo?.toCustomerDetailsModel(): BookingCustomerDetailsModel {
+    suspend fun BookingCustomerInfo?.toCustomerDetailsModel(): BookingCustomerDetailsModel {
         if (this == null) return BookingCustomerDetailsModel.EMPTY
 
         return BookingCustomerDetailsModel(
@@ -104,9 +106,11 @@ class BookingMapper @Inject constructor(
         return "${billingFirstName.orEmpty()} ${billingLastName.orEmpty()}".trim().ifEmpty { null }
     }
 
-    private fun BookingCustomerInfo.address(): Address? {
+    private suspend fun BookingCustomerInfo.address(): Address? {
         val countryCode = billingCountry ?: return null
-        val (country, state) = getLocations(countryCode, billingState.orEmpty())
+        val (country, state) = withContext(Dispatchers.IO) {
+            getLocations(countryCode, billingState.orEmpty())
+        }
         return Address(
             company = billingCompany.orEmpty(),
             firstName = billingFirstName.orEmpty(),
