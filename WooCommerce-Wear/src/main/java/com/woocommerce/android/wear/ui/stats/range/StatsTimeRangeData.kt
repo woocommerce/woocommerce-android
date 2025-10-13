@@ -1,15 +1,7 @@
 package com.woocommerce.android.wear.ui.stats.range
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Calendar
-import java.util.Date
-
-@Parcelize
-data class StatsTimeRange(
-    val start: Date,
-    val end: Date
-) : Parcelable
 
 abstract class StatsTimeRangeData(
     referenceCalendar: Calendar

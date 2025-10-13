@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorSummaryStatsGranularity
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
-import com.woocommerce.android.ui.dashboard.data.asRevenueRangeId
+import com.woocommerce.commons.stats.StatsUtils.asRevenueRangeId
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

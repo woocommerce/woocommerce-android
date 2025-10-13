@@ -21,6 +21,8 @@ import com.woocommerce.android.wear.util.DateUtils
 import com.woocommerce.commons.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.DataParameters.TOTAL_REVENUE
 import com.woocommerce.commons.DataParameters.VISITORS_TOTAL
+import com.woocommerce.commons.stats.StatsTimeRange
+import com.woocommerce.commons.stats.StatsUtils.toRevenueRangeId
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.SiteModel
@@ -61,7 +63,8 @@ class StatsRepository @Inject constructor(
                 site = selectedSite,
                 granularity = StatsGranularity.DAYS,
                 startDate = todayRange.start.formatToYYYYmmDDhhmmss(),
-                endDate = todayRange.end.formatToYYYYmmDDhhmmss()
+                endDate = todayRange.end.formatToYYYYmmDDhhmmss(),
+                revenueRangeId = StatsTimeRange(todayRange.start, todayRange.end).toRevenueRangeId("Wear")
             )
         )
 
