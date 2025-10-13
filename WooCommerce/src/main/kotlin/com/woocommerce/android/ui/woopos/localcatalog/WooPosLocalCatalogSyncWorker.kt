@@ -56,6 +56,7 @@ constructor(
                     "Local catalog FULL sync completed successfully. Products: ${fullSyncResult.productsSynced}, " +
                         "Variations: ${fullSyncResult.variationsSynced}, Duration: ${fullSyncResult.syncDurationMs}ms"
                 )
+                logger.d("Starting Local catalog INCREMENTAL sync.")
                 val incrementalSyncResult = syncRepository.syncLocalCatalogIncremental(site)
                 if (incrementalSyncResult is PosLocalCatalogSyncResult.Failure) {
                     logger.d(
