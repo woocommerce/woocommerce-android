@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.bookings
 
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
@@ -17,6 +19,7 @@ import javax.inject.Inject
 
 class BookingMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
+    private val getLocations: GetLocations
 ) {
     private val summaryDateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(
         FormatStyle.MEDIUM,
@@ -65,12 +68,7 @@ class BookingMapper @Inject constructor(
             name = fullName(),
             email = billingEmail,
             phone = billingPhone,
-            billingAddressLines = listOfNotNull(
-                billingAddress1,
-                billingAddress2,
-                listOfNotNull(billingCity, billingState, billingPostcode).takeIf { it.isNotEmpty() }?.joinToString(" "),
-                billingCountry
-            )
+            billingAddress = address()?.getFullAddress()
         )
     }
 
@@ -86,5 +84,23 @@ class BookingMapper @Inject constructor(
 
     private fun BookingCustomerInfo.fullName(): String? {
         return "${billingFirstName.orEmpty()} ${billingLastName.orEmpty()}".trim().ifEmpty { null }
+    }
+
+    private fun BookingCustomerInfo.address(): Address? {
+        val countryCode = billingCountry ?: return null
+        val (country, state) = getLocations(countryCode, billingState.orEmpty())
+        return Address(
+            company = billingCompany.orEmpty(),
+            firstName = billingFirstName.orEmpty(),
+            lastName = billingLastName.orEmpty(),
+            phone = billingPhone.orEmpty(),
+            country = country,
+            state = state,
+            address1 = billingAddress1.orEmpty(),
+            address2 = billingAddress2.orEmpty(),
+            city = billingCity.orEmpty(),
+            postcode = billingPostcode.orEmpty(),
+            email = billingEmail.orEmpty()
+        )
     }
 }

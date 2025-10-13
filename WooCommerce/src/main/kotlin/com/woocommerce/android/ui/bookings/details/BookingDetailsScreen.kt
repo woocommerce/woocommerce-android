@@ -146,11 +146,11 @@ private fun BookingDetailsPreview() {
                         name = "Margarita Nikolaevna",
                         email = "margarita@example.com",
                         phone = "+1 555-123-4567",
-                        billingAddressLines = listOf(
-                            "238 Willow Creek Drive",
-                            "Montgomery AL 36109",
-                            "United States"
-                        )
+                        billingAddress = """
+                            238 Willow Creek Drive
+                            Montgomery AL 36109
+                            United States
+                        """.trimIndent()
                     ),
                     bookingPaymentDetails = BookingPaymentDetailsModel(
                         service = "$55.00",

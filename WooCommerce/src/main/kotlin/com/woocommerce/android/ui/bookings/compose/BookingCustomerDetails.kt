@@ -81,19 +81,17 @@ fun BookingCustomerDetails(
                     modifier = Modifier.clickable { phoneMenuExpanded = true }
                 )
             }
-            if (model.billingAddressLines.isNotEmpty()) {
+            model.billingAddress?.let { billingAddress ->
                 Column(
                     modifier = Modifier
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 ) {
                     BookingDetailsLabel(label = R.string.booking_billing_address_label)
-                    model.billingAddressLines.forEach { line ->
-                        Text(
-                            text = line,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+                    Text(
+                        text = billingAddress,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
                 HorizontalDivider(thickness = 0.5.dp)
             }
@@ -148,14 +146,14 @@ data class BookingCustomerDetailsModel(
     val name: String?,
     val email: String?,
     val phone: String?,
-    val billingAddressLines: List<String>,
+    val billingAddress: String?,
 ) {
     companion object {
         val EMPTY = BookingCustomerDetailsModel(
             name = null,
             email = null,
             phone = null,
-            billingAddressLines = emptyList()
+            billingAddress = null
         )
     }
 }
@@ -169,11 +167,11 @@ private fun BookingCustomerDetailsPreview() {
                 name = "Margarita Nikolaevna",
                 email = "margarita@example.com",
                 phone = "+1 555-123-4567",
-                billingAddressLines = listOf(
-                    "238 Willow Creek Drive",
-                    "Montgomery",
-                    "AL 36109"
-                )
+                billingAddress = """
+                    238 Willow Creek Drive
+                    Montgomery
+                    AL 36109
+                """.trimIndent()
             ),
             modifier = Modifier.fillMaxWidth()
         )
