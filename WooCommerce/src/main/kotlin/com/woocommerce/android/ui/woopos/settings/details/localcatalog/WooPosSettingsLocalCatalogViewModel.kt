@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.ui.woopos.util.format.WooPosDateFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,12 +23,16 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
     private val selectedSite: SelectedSite,
     private val dateFormatter: WooPosDateFormatter,
+    private val preferencesRepository: WooPosPreferencesRepository,
+    private val syncScheduler: WooPosLocalCatalogSyncScheduler,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsLocalCatalogState())
     val state: StateFlow<WooPosSettingsLocalCatalogState> = _state.asStateFlow()
 
     init {
         loadCatalogStatus()
+
+        listenToCellularDataUpdateValue()
     }
 
     private fun loadCatalogStatus() {
@@ -53,12 +59,20 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
         }
     }
 
-    fun toggleCellularDataUpdate() {
+    private fun listenToCellularDataUpdateValue() {
         viewModelScope.launch {
-            _state.update {
-                it.copy(allowCellularDataUpdate = !it.allowCellularDataUpdate)
+            preferencesRepository.allowCellularDataUpdate.collect { allowCellularDataUpdate ->
+                _state.update {
+                    it.copy(allowCellularDataUpdate = allowCellularDataUpdate)
+                }
             }
-            // TBD local catalog: Save preference to shared preferences or data store
+        }
+    }
+
+    fun toggleCellularDataUpdate(newValue: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.setAllowCellularDataUpdate(newValue)
+            syncScheduler.updateWorkConstraints()
         }
     }
 

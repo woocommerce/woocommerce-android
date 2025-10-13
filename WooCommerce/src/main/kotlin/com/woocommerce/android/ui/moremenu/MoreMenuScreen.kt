@@ -453,17 +453,6 @@ private fun MoreMenuPreview() {
         val state = MoreMenuViewState(
             menuSections = listOf(
                 MoreMenuItemSection(
-                    title = null,
-                    items = listOf(
-                        MoreMenuItemButton(
-                            title = R.string.more_menu_button_woo_pos,
-                            description = R.string.more_menu_button_woo_pos_description,
-                            icon = R.drawable.ic_more_menu_pos,
-                            extraIcon = R.drawable.ic_more_menu_pos_extra,
-                        ),
-                    ),
-                ),
-                MoreMenuItemSection(
                     title = R.string.more_menu_settings_section_title,
                     items = listOf(
                         MoreMenuItemButton(
