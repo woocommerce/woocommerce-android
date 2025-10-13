@@ -1,16 +1,20 @@
 package com.woocommerce.android.ui.bookings
 
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.math.BigDecimal
 import java.time.Duration
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -69,6 +73,20 @@ class BookingMapper @Inject constructor(
             email = billingEmail,
             phone = billingPhone,
             billingAddress = address()?.getFullAddress()
+        )
+    }
+
+    fun BookingPaymentInfo.toPaymentDetailsModel(currency: String): BookingPaymentDetailsModel {
+        val discount = total - subtotal
+        return BookingPaymentDetailsModel(
+            service = currencyFormatter.formatCurrency(subtotal, currency), // Pre-discount subtotal
+            tax = currencyFormatter.formatCurrency(totalTax, currency), // Tax on total after discount
+            discount = if (discount.isNotEqualTo(BigDecimal.ZERO)) {
+                "- ${currencyFormatter.formatCurrency(discount.abs(), currency)}"
+            } else {
+                "-"
+            },
+            total = currencyFormatter.formatCurrency(total + totalTax, currency) // Total including tax
         )
     }
 

@@ -18,5 +18,5 @@ data class BookingUiState(
     val bookingSummary: BookingSummaryModel,
     val bookingsAppointmentDetails: BookingAppointmentDetailsModel,
     val bookingCustomerDetails: BookingCustomerDetailsModel,
-    val bookingPaymentDetails: BookingPaymentDetailsModel,
+    val bookingPaymentDetails: BookingPaymentDetailsModel?,
 )

@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -70,11 +69,6 @@ class BookingDetailsViewModel @Inject constructor(
         },
         bookingsAppointmentDetails = booking.toAppointmentDetailsModel(),
         bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
-        bookingPaymentDetails = BookingPaymentDetailsModel(
-            service = "$55.00",
-            tax = "$4.50",
-            discount = "-",
-            total = "$59.50"
-        )
+        bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency)
     )
 }

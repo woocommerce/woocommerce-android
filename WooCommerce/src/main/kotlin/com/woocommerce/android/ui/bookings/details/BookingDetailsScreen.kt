@@ -97,14 +97,16 @@ fun BookingDetailsScreen(
                         onClick = { showAttendanceSheet.value = true },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    BookingPaymentSection(
-                        model = viewState.bookingUiState.bookingPaymentDetails,
-                        status = viewState.bookingUiState.bookingSummary.status,
-                        onMarkAsPaid = { onViewOrder(viewState.orderId) },
-                        onViewOrder = { onViewOrder(viewState.orderId) },
-                        onMarkAsRefunded = { onViewOrder(viewState.orderId) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    viewState.bookingUiState.bookingPaymentDetails?.let {
+                        BookingPaymentSection(
+                            model = it,
+                            status = viewState.bookingUiState.bookingSummary.status,
+                            onMarkAsPaid = { onViewOrder(viewState.orderId) },
+                            onViewOrder = { onViewOrder(viewState.orderId) },
+                            onMarkAsRefunded = { onViewOrder(viewState.orderId) },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
