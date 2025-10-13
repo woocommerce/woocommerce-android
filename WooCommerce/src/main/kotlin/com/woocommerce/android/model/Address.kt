@@ -49,7 +49,7 @@ data class Address(
             .build()
     }
 
-    fun getEnvelopeAddress(): String {
+    private fun getEnvelopeAddress(): String {
         return getAddressData().takeIf { it.postalCountry != null }?.let {
             val formatInterpreter = FormatInterpreter(FormOptions().createSnapshot())
             try {
@@ -64,20 +64,13 @@ data class Address(
         } ?: this.orderAddressToString()
     }
 
-    fun getFullAddress(name: String, address: String, country: String): String {
-        var fullAddr = ""
-        if (name.isNotBlank()) fullAddr += "$name\n"
-        if (address.isNotBlank()) fullAddr += "$address\n"
-        if (country.isNotBlank()) fullAddr += country
-        return fullAddr
-    }
-
     fun getFullAddress(): String {
-        return getFullAddress(
-            name = "$firstName $lastName".trim(),
-            address = getEnvelopeAddress(),
-            country = AddressUtils.getCountryLabelByCountryCode(country.code)
-        )
+        return buildString {
+            appendWithIfNotEmpty("$firstName $lastName".trim(), "\n")
+            appendWithIfNotEmpty(getEnvelopeAddress(), "\n")
+            val countryName = AddressUtils.getCountryLabelByCountryCode(country.code)
+            append(countryName)
+        }
     }
 
     fun hasInfo(): Boolean {

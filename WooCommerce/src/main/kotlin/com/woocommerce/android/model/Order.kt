@@ -7,7 +7,6 @@ import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.ProductHelper
-import com.woocommerce.android.util.AddressUtils
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -293,27 +292,9 @@ data class Order(
         }
     }
 
-    fun formatBillingInformationForDisplay(): String {
-        val billingName = getBillingName("")
-        val billingAddress = this.billingAddress.getEnvelopeAddress()
-        val billingCountry = AddressUtils.getCountryLabelByCountryCode(this.billingAddress.country.code)
-        return this.billingAddress.getFullAddress(
-            billingName,
-            billingAddress,
-            billingCountry
-        )
-    }
+    fun formatBillingInformationForDisplay(): String = this.billingAddress.getFullAddress()
 
-    fun formatShippingInformationForDisplay(): String {
-        val shippingName = "${shippingAddress.firstName} ${shippingAddress.lastName}"
-        val shippingAddress = this.shippingAddress.getEnvelopeAddress()
-        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(this.shippingAddress.country.code)
-        return this.shippingAddress.getFullAddress(
-            shippingName,
-            shippingAddress,
-            shippingCountry
-        )
-    }
+    fun formatShippingInformationForDisplay(): String = this.shippingAddress.getFullAddress()
 
     fun getProductIds() = items.map { it.productId }
 
