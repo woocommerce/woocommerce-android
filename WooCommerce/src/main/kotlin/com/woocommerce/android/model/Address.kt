@@ -68,7 +68,7 @@ data class Address(
             appendWithIfNotEmpty("$firstName $lastName".trim(), "\n")
             appendWithIfNotEmpty(getEnvelopeAddress(), "\n")
             val countryName = AddressUtils.getCountryLabelByCountryCode(country.code)
-            append(countryName)
+            appendWithIfNotEmpty(countryName, "\n")
         }
     }
 
