@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 
 @Dao
 interface BookingsDao {
@@ -97,4 +98,13 @@ interface BookingsDao {
             order = order
         )
     }
+
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND id = :resourceId")
+    suspend fun getResource(localSiteId: LocalId, resourceId: Long): BookingResourceEntity?
+
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND id = :resourceId")
+    fun observeResource(localSiteId: LocalId, resourceId: Long): Flow<BookingResourceEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrReplace(resource: BookingResourceEntity): Long
 }
