@@ -29,9 +29,9 @@ data class CustomColors(
     val onSurfaceVariantHighest: Color,
 
     val infoLowest: Color,
-    val errorLowest: Color,
-
     val onInfoLowest: Color,
+    
+    val errorLowest: Color,
     val onErrorLowest: Color,
 
     val default: Color,
