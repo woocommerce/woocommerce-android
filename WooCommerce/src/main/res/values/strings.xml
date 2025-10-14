@@ -4227,7 +4227,6 @@
     <string name="booking_attendance_update_title">Update attendance status</string>
     <string name="booking_attendance_status_booked_desc">The appointment is scheduled but hasn’t happened yet.</string>
     <string name="booking_attendance_status_checked_in_desc">The customer arrived and the session took place as planned.</string>
-    <string name="booking_attendance_status_cancelled_desc">The client will no longer be able to attend.</string>
     <string name="booking_attendance_status_no_show_desc">The client missed the appointment without canceling in advance.</string>
     <string name="booking_payment_header">PAYMENT</string>
     <string name="booking_payment_label_service">Service</string>
