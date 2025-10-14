@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -116,6 +117,30 @@ class BookingsStore @Inject internal constructor(
             }
         }
     }
+
+    suspend fun fetchResource(
+        site: SiteModel,
+        resourceId: Long
+    ): WooResult<BookingResourceEntity> {
+        val response = bookingsRestClient.fetchResource(site, resourceId)
+        return when {
+            response.isError -> WooResult(response.error)
+            response.result != null -> {
+                val entity = with(bookingDtoMapper) {
+                    response.result.toEntity(site.localId())
+                }
+                bookingsDao.insertOrReplace(entity)
+                WooResult(entity)
+            }
+
+            else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        }
+    }
+
+    fun observeResource(
+        site: SiteModel,
+        resourceId: Long
+    ): Flow<BookingResourceEntity?> = bookingsDao.observeResource(site.localId(), resourceId)
 
     private suspend fun fetchOrders(
         site: SiteModel,
