@@ -126,7 +126,7 @@ private fun BookingAttendanceStatus.description(): String = when (this) {
     BookingAttendanceStatus.CHECKED_IN -> R.string.booking_attendance_status_checked_in_desc
     BookingAttendanceStatus.NO_SHOW -> R.string.booking_attendance_status_no_show_desc
     else -> null
-}.let { it?.let { id -> stringResource(id) } ?: "" }
+}?.let { stringResource(it) } ?: ""
 
 private val BookingAttendanceStatus.iconRes: Int?
     get() = when (this) {
