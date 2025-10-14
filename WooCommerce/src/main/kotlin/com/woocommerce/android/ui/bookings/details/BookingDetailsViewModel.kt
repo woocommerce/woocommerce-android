@@ -4,11 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -24,6 +26,7 @@ class BookingDetailsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val bookingsRepository: BookingsRepository,
     private val bookingMapper: BookingMapper,
+    private val networkStatus: NetworkStatus,
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: BookingDetailsFragmentArgs by savedState.navArgs()
@@ -59,8 +62,15 @@ class BookingDetailsViewModel @Inject constructor(
 
     private fun refreshBooking() {
         launch {
+            if (!networkStatus.isConnected()) {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+                return@launch
+            }
             loadingState.value = BookingDetailsLoadingState.Refreshing
             bookingsRepository.fetchBooking(navArgs.bookingId)
+                .onFailure {
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
+                }
             loadingState.value = BookingDetailsLoadingState.Idle
         }
     }
