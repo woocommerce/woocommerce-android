@@ -50,22 +50,23 @@ class BookingDetailsViewModel @Inject constructor(
                 bookingUiState = if (booking != null) buildBookingUiState(booking, attendanceStatus) else null,
                 loadingState = loadingState,
                 onCancelBooking = ::onCancelBooking,
-                onAttendanceStatusSelected = ::onAttendanceStatusSelected
+                onAttendanceStatusSelected = ::onAttendanceStatusSelected,
+                onRefresh = ::fetchBooking,
             )
         }
     }.asLiveData()
 
     init {
-        refreshBooking()
+        fetchBooking(BookingDetailsLoadingState.Loading)
     }
 
-    private fun refreshBooking() {
+    private fun fetchBooking(state: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing) {
         launch {
             if (!networkStatus.isConnected()) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
             }
-            loadingState.value = BookingDetailsLoadingState.Refreshing
+            loadingState.value = state
             bookingsRepository.fetchBooking(navArgs.bookingId)
                 .onFailure {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))

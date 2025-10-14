@@ -18,6 +18,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -43,6 +44,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -64,6 +66,7 @@ fun BookingDetailsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
@@ -82,22 +85,30 @@ fun BookingDetailsScreen(
     ) { innerPadding ->
         Surface(
             color = colorResource(R.color.default_window_background),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(innerPadding)
+            WCPullToRefreshBox(
+                isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
+                onRefresh = viewState.onRefresh,
+                state = rememberPullToRefreshState(),
+                modifier = Modifier.fillMaxSize()
             ) {
-                when {
-                    viewState.shouldShowSkeleton -> BookingDetailsLoading()
-                    viewState.bookingUiState != null -> {
-                        BookingDetailsContent(
-                            booking = viewState.bookingUiState,
-                            onCancelBooking = viewState.onCancelBooking,
-                            onViewOrder = onViewOrder,
-                            onAttendanceStatusClicked = { showAttendanceSheet.value = true },
-                        )
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    when {
+                        viewState.shouldShowSkeleton -> BookingDetailsLoading()
+                        viewState.bookingUiState != null -> {
+                            BookingDetailsContent(
+                                booking = viewState.bookingUiState,
+                                onCancelBooking = viewState.onCancelBooking,
+                                onViewOrder = onViewOrder,
+                                onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                            )
+                        }
                     }
                 }
             }

@@ -177,6 +177,34 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
     }
 
+    @Test
+    fun `when onRefresh called, then fetchBooking is triggered again`() = testBlocking {
+        // Given
+        val bookingId = 654L
+        val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
+        val bookingsRepository = mock<BookingsRepository> {
+            on { observeBooking(any()) } doReturn bookingFlow
+            onBlocking { fetchBooking(any()) } doReturn Result.success(Unit)
+        }
+        val networkStatus = mock<NetworkStatus> {
+            on { isConnected() } doReturn true
+        }
+        val viewModel = BookingDetailsViewModel(
+            savedState = savedState,
+            resourceProvider = resourceProvider,
+            bookingsRepository = bookingsRepository,
+            bookingMapper = bookingMapper,
+            networkStatus = networkStatus
+        ).apply { state.observeForever { } }
+
+        // When
+        val state = viewModel.state.getOrAwaitValue()
+        state.onRefresh()
+
+        // Then
+        verify(bookingsRepository, times(2)).fetchBooking(bookingId)
+    }
+
     private fun createViewModel(
         savedState: SavedStateHandle,
     ): BookingDetailsViewModel {
