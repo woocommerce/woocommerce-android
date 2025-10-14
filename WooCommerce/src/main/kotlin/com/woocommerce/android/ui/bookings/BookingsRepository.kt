@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import javax.inject.Inject
 
 class BookingsRepository @Inject constructor(
@@ -74,6 +75,25 @@ class BookingsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchResource(
+        resourceId: Long
+    ): Result<Unit> {
+        val result = bookingsStore.fetchResource(
+            site = selectedSite.get(),
+            resourceId = resourceId
+        )
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    fun observeResource(resourceId: Long): Flow<BookingResource?> = bookingsStore.observeResource(
+        site = selectedSite.get(),
+        resourceId = resourceId
+    )
+
     data class FetchResult(
         val bookings: List<Booking>,
         val hasMorePages: Boolean
@@ -81,4 +101,4 @@ class BookingsRepository @Inject constructor(
 }
 
 typealias Booking = BookingEntity
-typealias BookingStatus = BookingEntity.Status
+typealias BookingResource = BookingResourceEntity
