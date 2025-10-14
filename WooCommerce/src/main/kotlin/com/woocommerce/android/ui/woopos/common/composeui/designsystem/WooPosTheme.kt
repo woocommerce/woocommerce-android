@@ -28,6 +28,15 @@ data class CustomColors(
     val onSurfaceVariantLowest: Color,
     val onSurfaceVariantHighest: Color,
 
+    val infoLowest: Color,
+    val onInfoLowest: Color,
+
+    val errorLowest: Color,
+    val onErrorLowest: Color,
+
+    val default: Color,
+    val onDefault: Color,
+
     val tertiaryIconColor: Color,
 
     val transparent: Color = Color.Transparent,
@@ -40,8 +49,11 @@ private object WooPosColors {
     val WooPurple50 = Color(0xFF720EEC)
     val WooPurple80 = Color(0xFF3C087E)
 
+    val WooRed0 = Color(0xFFF7EBEC)
+    val WooRed10 = Color(0xFFFFABAF)
     val WooRed50 = Color(0xFFD63638)
     val WooRed30 = Color(0xFFF86368)
+    val WooRed80 = Color(0xFF691C1C)
 
     val White = Color(0xFFFFFFFF)
     val Black = Color(0xFF000000)
@@ -62,6 +74,10 @@ private object WooPosColors {
     val Gray80 = Color(0xFF373A3E)
     val Gray90 = Color(0xFF1D2327)
     val Gray100 = Color(0xFF101517)
+
+    val Blue10 = Color(0xFFD6DDF9)
+    val Blue20 = Color(0xFFADBAF3)
+    val Blue80 = Color(0xFF1F3286)
 }
 
 private val LightColorScheme = lightColorScheme(
@@ -141,7 +157,16 @@ private val LightCustomColors = CustomColors(
     onSurfaceVariantLowest = WooPosColors.Gray30,
     onSurfaceVariantHighest = WooPosColors.Gray60,
 
-    tertiaryIconColor = WooPosColors.WooPurple80,
+    infoLowest = WooPosColors.Blue10,
+    errorLowest = WooPosColors.WooRed0,
+
+    default = WooPosColors.Gray5,
+    onDefault = WooPosColors.Gray100,
+
+    onInfoLowest = WooPosColors.Blue80,
+    onErrorLowest = WooPosColors.WooRed80,
+
+    tertiaryIconColor = WooPosColors.WooPurple80
 )
 
 private val DarkCustomColors = CustomColors(
@@ -157,7 +182,16 @@ private val DarkCustomColors = CustomColors(
     onSurfaceVariantLowest = WooPosColors.Gray50,
     onSurfaceVariantHighest = WooPosColors.Gray20,
 
-    tertiaryIconColor = WooPosColors.WooPurple50,
+    infoLowest = WooPosColors.Blue20,
+    errorLowest = WooPosColors.WooRed10,
+
+    default = WooPosColors.Gray5,
+    onDefault = WooPosColors.Gray100,
+
+    onInfoLowest = WooPosColors.Blue80,
+    onErrorLowest = WooPosColors.WooRed80,
+
+    tertiaryIconColor = WooPosColors.WooPurple50
 )
 
 @Composable

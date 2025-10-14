@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.runtime.Immutable
+import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
@@ -11,7 +12,9 @@ data class OrderItemViewState(
     val title: String,
     val date: String,
     val total: String,
-    val isSelected: Boolean
+    val customerEmail: String?,
+    val isSelected: Boolean,
+    val status: PosOrderStatus
 )
 
 @Immutable
@@ -47,3 +50,26 @@ sealed class WooPosOrdersState {
         override val searchInputState: WooPosSearchInputState,
     ) : WooPosOrdersState()
 }
+
+enum class OrderStatusColorKey {
+    COMPLETED,
+    FAILED,
+    PROCESSING,
+    ON_HOLD,
+    OTHER;
+
+    companion object {
+        fun fromStatus(status: Status): OrderStatusColorKey = when (status) {
+            Status.Completed -> COMPLETED
+            Status.Failed -> FAILED
+            Status.Processing -> PROCESSING
+            Status.OnHold -> ON_HOLD
+            else -> OTHER
+        }
+    }
+}
+
+data class PosOrderStatus(
+    val text: String,
+    val colorKey: OrderStatusColorKey
+)
