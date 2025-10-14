@@ -13,4 +13,3 @@ data class BookingResourceDto(
     @SerializedName("image_url") val imageUrl: String?,
     @SerializedName("description") val description: String?
 )
-

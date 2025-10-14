@@ -48,7 +48,7 @@ fun BookingAppointmentDetails(
                     when (it) {
                         is BookingStaffMemberStatus.Loaded, is BookingStaffMemberStatus.Unavailable -> {
                             Text(
-                                text = (it as? BookingStaffMemberStatus.Loaded)?.name?: "-",
+                                text = (it as? BookingStaffMemberStatus.Loaded)?.name ?: "-",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
