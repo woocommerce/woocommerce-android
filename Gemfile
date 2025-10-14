@@ -9,7 +9,7 @@ gem 'rubocop', '~> 1.65'
 
 ### Fastlane Plugins
 
-gem 'fastlane-plugin-wpmreleasetoolkit', '~> 12.3'
+gem 'fastlane-plugin-wpmreleasetoolkit', '~> 13.5'
 # gem 'fastlane-plugin-wpmreleasetoolkit', path: '../../release-toolkit'
 # gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', branch: ''
 

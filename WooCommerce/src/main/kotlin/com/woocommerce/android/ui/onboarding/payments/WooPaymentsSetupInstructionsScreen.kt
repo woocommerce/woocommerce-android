@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -122,7 +122,7 @@ private fun WooPaymentsSetupInstructionsContent(
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
         )
 
-        val text = annotatedStringRes(
+        val text = clickableAnnotatedStringRes(
             stringResId = R.string.store_onboarding_wcpay_instructions_content_step_1_content,
             onUrlClick = { onWPComAccountMoreDetailsClick() }
         )
@@ -215,7 +215,7 @@ private fun WooPaymentsSetupInstructionsFooter(
                     .align(Alignment.CenterVertically)
                     .padding(end = 8.dp)
             )
-            val text = annotatedStringRes(
+            val text = clickableAnnotatedStringRes(
                 stringResId = R.string.store_onboarding_wcpay_instructions_content_learn_more,
                 onUrlClick = { onLearnMoreClick() }
             )

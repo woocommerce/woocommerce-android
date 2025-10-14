@@ -4,12 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
+import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -22,6 +24,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Clock
 import java.time.Duration
@@ -46,6 +51,10 @@ class BookingListViewModelTest : BaseUnitTest() {
     private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val bookingMapper = BookingMapper(currencyFormatter)
+    private val bookingFiltersFlow = MutableStateFlow(BookingFilters())
+    private val bookingFilterRepository: BookingFilterRepository = mock {
+        on { bookingFiltersFlow } doReturn bookingFiltersFlow
+    }
 
     private lateinit var viewModel: BookingListViewModel
 
@@ -57,6 +66,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(bookings))
         viewModel = BookingListViewModel(
             savedStateHandle = SavedStateHandle(),
+            bookingFilterRepository = bookingFilterRepository,
             bookingListHandler = bookingListHandler,
             filtersBuilder = filtersBuilder,
             bookingMapper = bookingMapper,
@@ -295,6 +305,27 @@ class BookingListViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given All tab, when filters are changed, then bookings are refetched`() = testBlocking {
+        // GIVEN
+        setup()
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.tabState.onTabChanged(BookingListTab.All)
+
+        // WHEN
+        val customerFilter = BookingsFilterOption.Customer(1L, "Customer")
+        bookingFiltersFlow.emit(
+            BookingFilters(customer = customerFilter)
+        )
+
+        // THEN
+        verify(bookingListHandler).loadBookings(
+            searchQuery = anyOrNull(),
+            filters = eq(listOf(customerFilter)),
+            sortBy = any()
+        )
+    }
+
     private fun getSampleBooking(id: Int): Booking {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(id.toLong()),
@@ -315,7 +346,8 @@ class BookingListViewModelTest : BaseUnitTest() {
             orderItemId = 1L,
             parentId = 0L,
             personCounts = listOf(1L),
-            localTimezone = ""
+            localTimezone = "",
+            order = BookingOrderInfo()
         )
     }
 }

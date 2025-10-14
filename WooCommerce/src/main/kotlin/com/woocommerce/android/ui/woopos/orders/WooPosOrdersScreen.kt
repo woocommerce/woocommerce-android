@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -48,11 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
@@ -63,6 +62,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -434,7 +434,7 @@ fun OrdersEmpty(
 ) {
     WooPosEmptyScreen(
         modifier = Modifier.fillMaxSize(),
-        icon = painterResource(id = R.drawable.ic_woo_pos_orders_empty),
+        icon = WooPosIcons.OrdersEmpty,
         title = stringResource(id = R.string.woopos_orders_empty_list_title),
         message = stringResource(id = R.string.woopos_orders_empty_list_message),
         contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
@@ -450,7 +450,7 @@ fun OrdersError(
     WooPosErrorScreen(
         message = stringResource(id = R.string.woopos_orders_loading_error_title),
         reason = stringResource(id = R.string.woopos_orders_loading_error_message),
-        primaryButton = Button(
+        primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
             click = onRetryClicked
         )
@@ -463,7 +463,7 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
         icon = null,
         message = stringResource(id = R.string.woopos_orders_pagination_error_title),
         description = stringResource(id = R.string.woopos_orders_pagination_error_content_description),
-        primaryButton = Button(
+        primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_coupons_pagination_try_again_label),
             click = onPaginationErrorTryAgain
         ),

@@ -156,8 +156,11 @@ class ProductDetailFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val isTrashEnabled =
+        val productListInBackstack =
             findNavController().previousBackStackEntry?.destination?.id == BottomNavigationPosition.PRODUCTS.id
+        val isInDetailPane =
+            requireContext().isTwoPanesShouldBeUsed && (parentFragment?.id == R.id.detail_nav_container)
+        val isTrashEnabled = productListInBackstack || isInDetailPane
         viewModel.setTrashActionPossible(isTrashEnabled)
 
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON)

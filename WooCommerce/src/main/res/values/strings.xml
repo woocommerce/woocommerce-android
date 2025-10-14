@@ -3646,6 +3646,18 @@
     <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>
     <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
+    <string name="woopos_settings_local_catalog_category">Catalog</string>
+    <string name="woopos_settings_local_catalog_category_subtitle">Manage catalog settings</string>
+    <string name="woopos_settings_local_catalog_status">Catalog Status</string>
+    <string name="woopos_settings_local_catalog_size">Catalog Size</string>
+    <string name="woopos_settings_local_catalog_last_update">Last Update</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Last Full Update</string>
+    <string name="woopos_settings_local_catalog_settings">Manage Data Usage</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Allow full update on cellular data</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Download catalog updates using mobile data</string>
+    <string name="woopos_settings_local_catalog_actions">Manual Catalog Update</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Use this refresh only when something seems off - POS keeps data current automatically.</string>
+    <string name="woopos_settings_local_catalog_refresh_button">Refresh Catalog</string>
 
     <string name="woopos_date_never">Never</string>
     <string name="woopos_date_just_now">Just now</string>
@@ -4161,8 +4173,28 @@
     <string name="bookings_sort_by_newest_to_oldest">Newest to oldest</string>
     <string name="bookings_sort_by_oldest_to_newest_short">Oldest</string>
     <string name="bookings_sort_by_newest_to_oldest_short">Newest</string>
+    <string name="bookings_empty_state_title_default">No bookings found</string>
+    <string name="bookings_empty_state_title_today">No bookings today</string>
+    <string name="bookings_empty_state_title_upcoming">No upcoming bookings</string>
+    <string name="bookings_empty_state_description_default">Incoming bookings will appear here, where you can view and manage them.</string>
+    <string name="bookings_empty_state_description_today">You don’t have any appointments or events scheduled for today.</string>
+    <string name="bookings_empty_state_description_upcoming">You don’t have any future appointments or events scheduled scheduled yet.</string>
+    <string name="bookings_search_no_results"><![CDATA[We’re sorry, we couldn’t find results for <b>\"%s\"</b>]]></string>
+    <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
+    <string name="bookings_empty_state_change_filters_button">Change filters</string>
+    <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
     <string name="bookings_filters_count_title">Filters (%d)</string>
+    <string name="bookings_filters_show_bookings">Show bookings</string>
+    <string name="bookings_filter_title_team_member">Assigned team member</string>
+    <string name="bookings_filter_title_attendance_status">Attendance status</string>
+    <string name="bookings_filter_title_payment_status">Payment status</string>
+    <string name="bookings_filter_title_type">Booking type</string>
+    <string name="bookings_filter_customer_name">Customer name</string>
+    <string name="bookings_filter_location">Location</string>
+    <string name="bookings_filter_title_date">Date &amp; time</string>
+    <string name="bookings_filter_title_service_event">Service / Event</string>
+    <string name="bookings_filter_default">Any</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
@@ -4227,5 +4259,4 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
-
 </resources>

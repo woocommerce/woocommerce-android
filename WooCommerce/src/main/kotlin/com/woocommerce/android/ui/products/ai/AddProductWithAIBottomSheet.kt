@@ -44,7 +44,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -131,7 +131,7 @@ private fun AddProductWithAIContent(
 
             Spacer(Modifier.height(dimensionResource(id = R.dimen.minor_100)))
 
-            val learnMoreText = annotatedStringRes(
+            val learnMoreText = clickableAnnotatedStringRes(
                 stringResId = R.string.product_creation_ai_entry_sheet_learn_more,
                 onUrlClick = { onLearnMoreClick() }
             )

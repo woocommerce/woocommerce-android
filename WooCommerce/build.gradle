@@ -281,12 +281,11 @@ dependencies {
     // Dagger
     implementation(libs.google.dagger.hilt.android.main)
     implementation(libs.androidx.hilt.navigation.fragment)
-    implementation(libs.androidx.hilt.common)
+    compileOnly(libs.androidx.hilt.common)
     implementation(libs.androidx.hilt.work)
 
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.google.dagger.hilt.compiler)
-    implementation(libs.google.dagger.android.support)
     ksp(libs.google.dagger.android.processor)
 
     implementation(libs.mpandroidchart)
@@ -294,7 +293,6 @@ dependencies {
     implementation(libs.bumptech.glide.main)
     ksp(libs.bumptech.glide.compiler)
     implementation(libs.bumptech.glide.volley.integration)
-    implementation(libs.bumptech.glide.avif.integration)
     implementation(libs.google.play.app.update)
     implementation(libs.google.play.review)
 
@@ -350,6 +348,7 @@ dependencies {
         exclude group: 'asm', module: 'asm'
         exclude group: 'org.json', module: 'json'
     }
+    androidTestImplementation(libs.apache.http.client.android)
     constraints {
         androidTestImplementation(libs.wiremock) {
             because("newer versions of WireMock use Java APIs not available on Android")
@@ -376,7 +375,6 @@ dependencies {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
     }
-    androidTestImplementation(libs.apache.http.client.android)
 
     implementation(libs.zendesk.support) {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -386,10 +384,11 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.paging.runtime)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
+    runtimeOnly(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     testImplementation(libs.kotlinx.coroutines.test)
 
@@ -425,7 +424,7 @@ dependencies {
     implementation(libs.coil.svg)
 
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugRuntimeOnly(libs.androidx.compose.ui.test.manifest)
 
     coreLibraryDesugaring(libs.android.desugar)
 
@@ -433,7 +432,7 @@ dependencies {
     implementation(libs.lottie.compose)
 
     // CameraX
-    implementation(libs.androidx.camera.camera2)
+    runtimeOnly(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 

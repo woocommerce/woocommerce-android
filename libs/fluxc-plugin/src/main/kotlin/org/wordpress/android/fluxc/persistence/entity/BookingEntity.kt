@@ -1,10 +1,12 @@
 package org.wordpress.android.fluxc.persistence.entity
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import java.time.Instant
 
 @Entity(
@@ -31,7 +33,8 @@ data class BookingEntity(
     val orderItemId: Long,
     val parentId: Long,
     val personCounts: List<Long>?,
-    val localTimezone: String
+    val localTimezone: String,
+    @Embedded("order_") val order: BookingOrderInfo
 ) {
     sealed interface Status {
         val key: String
