@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.bookings
 
+import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -163,12 +165,84 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.total).isEqualTo("$110.00")
     }
 
+    @Test
+    fun `given booking, when building cancel dialog message, then formats using booking details`() {
+        // GIVEN
+        val resourceProvider = mock<ResourceProvider>()
+        val start = Instant.parse("2025-09-12T16:00:00Z")
+        val booking = sampleBooking(start = start, end = start.plus(Duration.ofHours(1)))
+        val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withZone(ZoneOffset.UTC).format(start)
+        val expectedTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC).format(start)
+        whenever(
+            resourceProvider.getString(
+                eq(R.string.booking_cancel_dialog_message),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenAnswer {
+            val name = it.getArgument<String>(1)
+            val service = it.getArgument<String>(2)
+            val date = it.getArgument<String>(3)
+            val time = it.getArgument<String>(4)
+            "$name will no longer be able to attend “$service” on $date at $time."
+        }
+
+        // WHEN
+        val message = mapper.buildCancelDialogMessage(booking, resourceProvider)
+
+        // THEN
+        assertThat(message).isEqualTo(
+            "${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName} will no " +
+                "longer be able to attend “${booking.order.productInfo?.name}” on $expectedDate at $expectedTime."
+        )
+    }
+
+    @Test
+    fun `given booking without customer, when building cancel dialog message, then falls back to guest`() {
+        // GIVEN
+        val resourceProvider = mock<ResourceProvider>()
+        whenever(resourceProvider.getString(eq(R.string.customer_detail_guest_customer))).thenReturn("Guest")
+        val start = Instant.parse("2025-09-12T16:00:00Z")
+        val bookingWithoutCustomer = sampleBooking(start = start, customerInfo = null)
+        val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withZone(ZoneOffset.UTC).format(start)
+        val expectedTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC).format(start)
+        whenever(
+            resourceProvider.getString(
+                eq(R.string.booking_cancel_dialog_message),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenAnswer {
+            val name = it.getArgument<String>(1)
+            val service = it.getArgument<String>(2)
+            val date = it.getArgument<String>(3)
+            val time = it.getArgument<String>(4)
+            "$name will no longer be able to attend “$service” on $date at $time."
+        }
+
+        // WHEN
+        val message = mapper.buildCancelDialogMessage(bookingWithoutCustomer, resourceProvider)
+
+        // THEN
+        assertThat(message).isEqualTo(
+            "Guest will no longer be able to attend “Women’s Haircut” on $expectedDate at $expectedTime."
+        )
+    }
+
     private fun sampleBooking(
         status: BookingEntity.Status = BookingEntity.Status.Confirmed,
         start: Instant = Instant.parse("2025-07-05T11:00:00Z"),
         end: Instant = start.plus(Duration.ofHours(1)),
         cost: String = "0.00",
-        currency: String = "USD"
+        currency: String = "USD",
+        customerInfo: BookingCustomerInfo? = BookingCustomerInfo(
+            billingFirstName = "Margarita",
+            billingLastName = "Nikolaevna"
+        )
     ): BookingEntity {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(1L),
@@ -193,10 +267,7 @@ class BookingMapperTest : BaseUnitTest() {
             order = BookingOrderInfo(
                 status = "completed",
                 productInfo = BookingProductInfo(name = "Women’s Haircut"),
-                customerInfo = BookingCustomerInfo(
-                    billingFirstName = "Margarita",
-                    billingLastName = "Nikolaevna"
-                )
+                customerInfo = customerInfo,
             )
         )
     }

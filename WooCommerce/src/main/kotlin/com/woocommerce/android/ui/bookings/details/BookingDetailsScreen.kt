@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.bookings.compose.CancelBookingDialog
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -108,6 +109,13 @@ fun BookingDetailsScreen(
                     viewState.onAttendanceStatusSelected(status)
                 },
                 onDismiss = { showAttendanceSheet.value = false }
+            )
+        }
+        if (viewState.showCancelBookingDialog) {
+            CancelBookingDialog(
+                message = viewState.cancelDialogMessage,
+                onDismiss = viewState.onDismissCancelDialog,
+                onConfirmCancel = viewState.onConfirmCancelBooking,
             )
         }
     }

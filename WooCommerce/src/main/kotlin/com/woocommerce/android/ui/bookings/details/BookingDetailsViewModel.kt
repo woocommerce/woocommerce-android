@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BookingDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    resourceProvider: ResourceProvider,
+    private val resourceProvider: ResourceProvider,
     bookingsRepository: BookingsRepository,
     private val bookingMapper: BookingMapper,
 ) : ScopedViewModel(savedState) {
@@ -30,19 +30,28 @@ class BookingDetailsViewModel @Inject constructor(
 
     // Temporary, the booking status should come from the stored object
     private val bookingAttendanceStatus = MutableStateFlow<BookingAttendanceStatus?>(null)
+    private val showCancelDialog = MutableStateFlow(false)
 
     val state: LiveData<BookingDetailsViewState> = combine(
         booking,
-        bookingAttendanceStatus
-    ) { booking, attendanceStatus ->
+        bookingAttendanceStatus,
+        showCancelDialog
+    ) { booking, attendanceStatus, showDialog ->
         with(bookingMapper) {
+            val cancelMessage = booking?.let {
+                buildCancelDialogMessage(booking, resourceProvider)
+            } ?: ""
             BookingDetailsViewState(
                 toolbarTitle = booking?.id?.value?.let { id ->
                     resourceProvider.getString(R.string.booking_details_title, id)
                 } ?: "",
                 bookingUiState = if (booking != null) buildBookingUiState(booking, attendanceStatus) else null,
                 onCancelBooking = ::onCancelBooking,
-                onAttendanceStatusSelected = ::onAttendanceStatusSelected
+                onAttendanceStatusSelected = ::onAttendanceStatusSelected,
+                showCancelBookingDialog = showDialog,
+                cancelDialogMessage = cancelMessage,
+                onDismissCancelDialog = ::onDismissCancelDialog,
+                onConfirmCancelBooking = ::onConfirmCancelBooking,
             )
         }
     }.asLiveData()
@@ -53,7 +62,16 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun onCancelBooking() {
-        // TODO Add logic to Cancel booking
+        showCancelDialog.value = true
+    }
+
+    private fun onDismissCancelDialog() {
+        showCancelDialog.value = false
+    }
+
+    private fun onConfirmCancelBooking() {
+        // TODO Add logic to Cancel booking action
+        showCancelDialog.value = false
     }
 
     private suspend fun BookingMapper.buildBookingUiState(

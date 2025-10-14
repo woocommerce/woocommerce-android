@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings
 
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.GetLocations
@@ -11,6 +12,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
@@ -104,6 +106,21 @@ class BookingMapper @Inject constructor(
 
     private fun BookingCustomerInfo.fullName(): String? {
         return "${billingFirstName.orEmpty()} ${billingLastName.orEmpty()}".trim().ifEmpty { null }
+    }
+
+    fun buildCancelDialogMessage(booking: Booking, resourceProvider: ResourceProvider): String {
+        val customerName = booking.order.customerInfo?.fullName()
+            ?: resourceProvider.getString(R.string.customer_detail_guest_customer)
+        val serviceName = booking.order.productInfo?.name ?: "-"
+        val date = detailsDateFormatter.format(booking.start)
+        val time = timeRangeFormatter.format(booking.start)
+        return resourceProvider.getString(
+            R.string.booking_cancel_dialog_message,
+            customerName,
+            serviceName,
+            date,
+            time
+        )
     }
 
     private suspend fun BookingCustomerInfo.address(): Address? {

@@ -47,6 +47,18 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
                 any()
             )
         ).thenReturn("Booking #${initialBooking.id.value}")
+        // Stub guest customer fallback used by cancel message
+        whenever(resourceProvider.getString(eq(R.string.customer_detail_guest_customer))).thenReturn("Guest")
+        // Stub cancel dialog message formatting regardless of inputs
+        whenever(
+            resourceProvider.getString(
+                eq(R.string.booking_cancel_dialog_message),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn("Formatted cancel message")
     }
 
     @Test
@@ -92,6 +104,56 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         assertThat(state.bookingUiState).isNotNull
         assertThat(state.bookingUiState?.orderId).isEqualTo(2L)
+    }
+
+    @Test
+    fun `when onCancelBooking called, then cancel dialog is shown with message`() = testBlocking {
+        // Given
+        val savedState = SavedStateHandle(mapOf("bookingId" to 111L))
+        val viewModel = createViewModel(savedState)
+        val state = viewModel.state.getOrAwaitValue()
+
+        // When
+        state.onCancelBooking()
+
+        // Then
+        val updated = viewModel.state.getOrAwaitValue()
+        assertThat(updated.showCancelBookingDialog).isTrue()
+        assertThat(updated.cancelDialogMessage).isEqualTo("Formatted cancel message")
+    }
+
+    @Test
+    fun `given cancel dialog shown, when onDismissCancelDialog called, then dialog is hidden`() = testBlocking {
+        // Given
+        val savedState = SavedStateHandle(mapOf("bookingId" to 222L))
+        val viewModel = createViewModel(savedState)
+        val state = viewModel.state.getOrAwaitValue()
+        state.onCancelBooking()
+        assertThat(viewModel.state.getOrAwaitValue().showCancelBookingDialog).isTrue()
+
+        // When
+        viewModel.state.getOrAwaitValue().onDismissCancelDialog()
+
+        // Then
+        val updated = viewModel.state.getOrAwaitValue()
+        assertThat(updated.showCancelBookingDialog).isFalse()
+    }
+
+    @Test
+    fun `given cancel dialog shown, when onConfirmCancelBooking called, then dialog is hidden`() = testBlocking {
+        // Given
+        val savedState = SavedStateHandle(mapOf("bookingId" to 333L))
+        val viewModel = createViewModel(savedState)
+        val state = viewModel.state.getOrAwaitValue()
+        state.onCancelBooking()
+        assertThat(viewModel.state.getOrAwaitValue().showCancelBookingDialog).isTrue()
+
+        // When
+        viewModel.state.getOrAwaitValue().onConfirmCancelBooking()
+
+        // Then
+        val updated = viewModel.state.getOrAwaitValue()
+        assertThat(updated.showCancelBookingDialog).isFalse()
     }
 
     private fun createViewModel(

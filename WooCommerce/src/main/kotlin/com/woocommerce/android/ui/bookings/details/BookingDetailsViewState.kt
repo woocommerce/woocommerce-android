@@ -10,7 +10,11 @@ data class BookingDetailsViewState(
     val toolbarTitle: String = "",
     val bookingUiState: BookingUiState? = null,
     val onCancelBooking: () -> Unit = {},
-    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> }
+    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
+    val showCancelBookingDialog: Boolean = false,
+    val cancelDialogMessage: String = "",
+    val onDismissCancelDialog: () -> Unit = {},
+    val onConfirmCancelBooking: () -> Unit = {},
 ) {
 
     val shouldShowSkeleton: Boolean = bookingUiState == null

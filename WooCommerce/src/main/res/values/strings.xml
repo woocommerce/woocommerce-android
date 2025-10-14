@@ -4258,4 +4258,8 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
+    <string name="booking_cancel_dialog_title">Cancel booking</string>
+    <string name="booking_cancel_dialog_message">%1$s will no longer be able to attend “%2$s” on %3$s at %4$s.</string>
+    <string name="booking_cancel_dialog_keep">No, keep it</string>
+    <string name="booking_cancel_dialog_confirm">Yes, cancel it</string>
 </resources>
