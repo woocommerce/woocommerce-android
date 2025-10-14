@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -59,7 +60,9 @@ fun BookingAppointmentDetails(
                         BookingStaffMemberStatus.Loading -> {
                             SkeletonView(
                                 width = 80.dp,
-                                height = 20.dp,
+                                height = with(LocalDensity.current) {
+                                    MaterialTheme.typography.bodyMedium.fontSize.toDp()
+                                },
                             )
                         }
                     }
@@ -153,7 +156,7 @@ private fun BookingAppointmentDetailsPreview() {
             model = BookingAppointmentDetailsModel(
                 date = "05/07/2025, 11:00 AM",
                 time = "11:00 am - 12:00 pm",
-                staff = BookingStaffMemberStatus.Loaded("Marianne Renoir"),
+                staff = BookingStaffMemberStatus.Loading,
                 location = "238 Willow Creek Drive, Montgomery AL 36109",
                 duration = "60 min",
                 price = "$55.00"
