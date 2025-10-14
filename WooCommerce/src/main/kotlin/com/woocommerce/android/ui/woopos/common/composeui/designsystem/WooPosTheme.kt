@@ -30,7 +30,7 @@ data class CustomColors(
 
     val infoLowest: Color,
     val onInfoLowest: Color,
-    
+
     val errorLowest: Color,
     val onErrorLowest: Color,
 
