@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
@@ -35,7 +36,8 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val resourceProvider = mock<ResourceProvider>()
-    private val bookingMapper = BookingMapper(currencyFormatter)
+    private val getLocations = mock<GetLocations>()
+    private val bookingMapper = BookingMapper(currencyFormatter, getLocations)
 
     private val initialBooking = getSampleBooking(1)
     private val bookingFlow = MutableStateFlow(initialBooking)

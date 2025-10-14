@@ -138,14 +138,16 @@ private fun BookingDetailsContent(
         onClick = onAttendanceStatusClicked,
         modifier = Modifier.fillMaxWidth()
     )
-    BookingPaymentSection(
-        model = booking.bookingPaymentDetails,
-        status = booking.bookingSummary.status,
-        onMarkAsPaid = { onViewOrder(booking.orderId) },
-        onViewOrder = { onViewOrder(booking.orderId) },
-        onMarkAsRefunded = { onViewOrder(booking.orderId) },
-        modifier = Modifier.fillMaxWidth()
-    )
+    booking.bookingPaymentDetails?.let {
+        BookingPaymentSection(
+            model = it,
+            status = booking.bookingSummary.status,
+            onMarkAsPaid = { onViewOrder(booking.orderId) },
+            onViewOrder = { onViewOrder(booking.orderId) },
+            onMarkAsRefunded = { onViewOrder(booking.orderId) },
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }
 
 @Composable
@@ -229,11 +231,11 @@ private fun BookingDetailsPreview() {
                         name = "Margarita Nikolaevna",
                         email = "margarita@example.com",
                         phone = "+1 555-123-4567",
-                        billingAddressLines = listOf(
-                            "238 Willow Creek Drive",
-                            "Montgomery AL 36109",
-                            "United States"
-                        )
+                        billingAddress = """
+                            238 Willow Creek Drive
+                            Montgomery AL 36109
+                            United States
+                        """.trimIndent()
                     ),
                     bookingPaymentDetails = BookingPaymentDetailsModel(
                         service = "$55.00",
