@@ -475,13 +475,17 @@ fun OrderStatusBadge(status: PosOrderStatus) {
     val bgColor = when (status.colorKey) {
         OrderStatusColorKey.COMPLETED -> WooPosTheme.colors.infoLowest
         OrderStatusColorKey.FAILED -> WooPosTheme.colors.errorLowest
-        else -> WooPosTheme.colors.default
+        OrderStatusColorKey.PROCESSING,
+        OrderStatusColorKey.ON_HOLD,
+        OrderStatusColorKey.OTHER -> WooPosTheme.colors.default
     }
 
     val textColor = when (status.colorKey) {
         OrderStatusColorKey.COMPLETED -> WooPosTheme.colors.onInfoLowest
         OrderStatusColorKey.FAILED -> WooPosTheme.colors.onErrorLowest
-        else -> WooPosTheme.colors.onDefault
+        OrderStatusColorKey.PROCESSING,
+        OrderStatusColorKey.ON_HOLD,
+        OrderStatusColorKey.OTHER -> WooPosTheme.colors.onDefault
     }
 
     WooPosText(
