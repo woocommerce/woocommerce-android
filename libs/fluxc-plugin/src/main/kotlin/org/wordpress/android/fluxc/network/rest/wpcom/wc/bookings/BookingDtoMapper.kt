@@ -97,6 +97,8 @@ internal class BookingDtoMapper @Inject constructor(
             },
             paymentInfo = lineItem?.let {
                 BookingPaymentInfo(
+                    paymentMethodId = paymentMethod,
+                    paymentMethodTitle = paymentMethodTitle,
                     subtotal = it.subtotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     subtotalTax = it.subtotalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
