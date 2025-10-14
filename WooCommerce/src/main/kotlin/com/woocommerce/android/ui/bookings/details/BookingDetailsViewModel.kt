@@ -82,33 +82,35 @@ class BookingDetailsViewModel @Inject constructor(
         fetchBookingDetails(BookingDetailsLoadingState.Loading)
     }
 
-    private fun fetchBookingDetails(state: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing) {
+    private fun fetchBookingDetails(
+        initialBookingLoadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing
+    ) {
+        suspend fun fetchBooking(initialLoadingState: BookingDetailsLoadingState): Result<Unit> {
+            loadingState.value = initialLoadingState
+            return bookingsRepository.fetchBooking(navArgs.bookingId).also {
+                loadingState.value = BookingDetailsLoadingState.Idle
+            }
+        }
+
+        suspend fun fetchResource(): Result<Unit> {
+            val resourceId = this.booking.first()?.resourceId?.takeIf { it != 0L } ?: return Result.success(Unit)
+            resourceLoadingState.value = ResourceLoadingState.Loading
+            return bookingsRepository.fetchResource(resourceId).also {
+                resourceLoadingState.value = ResourceLoadingState.Idle
+            }
+        }
+
         launch {
             if (!networkStatus.isConnected()) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
             }
 
-            val bookingTask = async { fetchBooking(state) }
+            val bookingTask = async { fetchBooking(initialBookingLoadingState) }
             val resourceTask = async { fetchResource() }
             if (awaitAll(bookingTask, resourceTask).any { it.isFailure }) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
             }
-        }
-    }
-
-    private suspend fun fetchBooking(initialState: BookingDetailsLoadingState): Result<Unit> {
-        loadingState.value = initialState
-        return bookingsRepository.fetchBooking(navArgs.bookingId).also {
-            loadingState.value = BookingDetailsLoadingState.Idle
-        }
-    }
-
-    private suspend fun fetchResource(): Result<Unit> {
-        val resourceId = this.booking.first()?.resourceId?.takeIf { it != 0L } ?: return Result.success(Unit)
-        resourceLoadingState.value = ResourceLoadingState.Loading
-        return bookingsRepository.fetchResource(resourceId).also {
-            resourceLoadingState.value = ResourceLoadingState.Idle
         }
     }
 
