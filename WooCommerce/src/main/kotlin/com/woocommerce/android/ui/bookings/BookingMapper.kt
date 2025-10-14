@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsMode
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.list.BookingListItem
@@ -60,7 +61,7 @@ class BookingMapper @Inject constructor(
             date = detailsDateFormatter.format(start),
             time = "${timeRangeFormatter.format(start)} - ${timeRangeFormatter.format(end)}",
             // TODO replace mocked values when available from API
-            staff = "Marianne Renoir",
+            staff = BookingStaffMemberStatus.Loaded("Marianne Renoir"),
             location = "238 Willow Creek Drive, Montgomery AL 36109",
             duration = "$durationMinutes min",
             price = currencyFormatter.formatCurrency(cost, currency)
