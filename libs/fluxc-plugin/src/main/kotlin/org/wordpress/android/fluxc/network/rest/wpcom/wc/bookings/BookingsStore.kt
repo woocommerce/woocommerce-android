@@ -97,16 +97,15 @@ class BookingsStore @Inject internal constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    val dto = response.result
-                    val orderIds = listOf(dto.orderId).filterNot { it == 0L }
-                    val ordersResult = fetchOrders(site, orderIds)
-                    if (ordersResult.isError) {
-                        return@withDefaultContext WooResult(ordersResult.error)
+                    val bookingDto = response.result
+                    val orderResult = orderStore.fetchSingleOrderSync(site, bookingDto.orderId)
+                    if (orderResult.isError) {
+                        return@withDefaultContext WooResult(orderResult.error)
                     }
                     val entity = with(bookingDtoMapper) {
-                        dto.toEntity(
+                        bookingDto.toEntity(
                             localSiteId = site.localId(),
-                            orderEntity = ordersResult.model?.get(dto.orderId)
+                            orderEntity = orderResult.model,
                         )
                     }
                     bookingsDao.insertOrReplace(listOf(entity))

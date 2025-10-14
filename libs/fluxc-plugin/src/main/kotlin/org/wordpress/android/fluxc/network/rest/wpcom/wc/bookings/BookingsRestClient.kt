@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
-import org.wordpress.android.fluxc.annotations.endpoint.WCWPAPIEndpoint
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
@@ -24,9 +23,7 @@ class BookingsRestClient @Inject constructor(
         site: SiteModel,
         bookingId: Long
     ): WooPayload<BookingDto> {
-        val endpoint = WCWPAPIEndpoint(
-            WOOCOMMERCE.bookings.id(bookingId).endpoint
-        ).pathV2Bookings
+        val endpoint = WOOCOMMERCE.bookings.id(bookingId).pathV2Bookings
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
             path = endpoint,
