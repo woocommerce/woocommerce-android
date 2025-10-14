@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.bookings.details.CancelState
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -56,7 +57,7 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    fun Booking.toAppointmentDetailsModel(): BookingAppointmentDetailsModel {
+    fun Booking.toAppointmentDetailsModel(cancelState: CancelState): BookingAppointmentDetailsModel {
         val durationMinutes = Duration.between(start, end).toMinutes()
         return BookingAppointmentDetailsModel(
             date = detailsDateFormatter.format(start),
@@ -65,7 +66,8 @@ class BookingMapper @Inject constructor(
             staff = "Marianne Renoir",
             location = "238 Willow Creek Drive, Montgomery AL 36109",
             duration = "$durationMinutes min",
-            price = currencyFormatter.formatCurrency(cost, currency)
+            price = currencyFormatter.formatCurrency(cost, currency),
+            cancelState = cancelState,
         )
     }
 

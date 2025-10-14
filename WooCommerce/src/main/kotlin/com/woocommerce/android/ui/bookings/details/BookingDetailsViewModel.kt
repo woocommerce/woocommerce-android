@@ -12,8 +12,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import java.time.Duration
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,13 +33,15 @@ class BookingDetailsViewModel @Inject constructor(
 
     // Temporary, the booking status should come from the stored object
     private val bookingAttendanceStatus = MutableStateFlow<BookingAttendanceStatus?>(null)
+    private val cancelState = MutableStateFlow<CancelState>(CancelState.Idle)
     private val showCancelDialog = MutableStateFlow(false)
 
     val state: LiveData<BookingDetailsViewState> = combine(
         booking,
         bookingAttendanceStatus,
-        showCancelDialog
-    ) { booking, attendanceStatus, showDialog ->
+        showCancelDialog,
+        cancelState,
+    ) { booking, attendanceStatus, showDialog, cancel ->
         with(bookingMapper) {
             val cancelMessage = booking?.let {
                 buildCancelDialogMessage(booking, resourceProvider)
@@ -45,7 +50,11 @@ class BookingDetailsViewModel @Inject constructor(
                 toolbarTitle = booking?.id?.value?.let { id ->
                     resourceProvider.getString(R.string.booking_details_title, id)
                 } ?: "",
-                bookingUiState = if (booking != null) buildBookingUiState(booking, attendanceStatus) else null,
+                bookingUiState = if (booking != null) {
+                    buildBookingUiState(booking, attendanceStatus, cancel)
+                } else {
+                    null
+                },
                 onCancelBooking = ::onCancelBooking,
                 onAttendanceStatusSelected = ::onAttendanceStatusSelected,
                 showCancelBookingDialog = showDialog,
@@ -69,14 +78,18 @@ class BookingDetailsViewModel @Inject constructor(
         showCancelDialog.value = false
     }
 
-    private fun onConfirmCancelBooking() {
+    private fun onConfirmCancelBooking() = launch {
         // TODO Add logic to Cancel booking action
         showCancelDialog.value = false
+        cancelState.value = CancelState.InProgress
+        delay(Duration.ofSeconds(1).toMillis())
+        cancelState.value = CancelState.Idle
     }
 
     private suspend fun BookingMapper.buildBookingUiState(
         booking: Booking,
-        attendanceStatus: BookingAttendanceStatus?
+        attendanceStatus: BookingAttendanceStatus?,
+        cancelState: CancelState,
     ): BookingUiState = BookingUiState(
         orderId = booking.orderId,
         bookingSummary = booking.toBookingSummaryModel().let {
@@ -86,7 +99,7 @@ class BookingDetailsViewModel @Inject constructor(
                 it
             }
         },
-        bookingsAppointmentDetails = booking.toAppointmentDetailsModel(),
+        bookingsAppointmentDetails = booking.toAppointmentDetailsModel(cancelState),
         bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
         bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency)
     )

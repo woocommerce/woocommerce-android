@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
+import com.woocommerce.android.ui.bookings.details.CancelState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -98,7 +99,7 @@ class BookingMapperTest : BaseUnitTest() {
         val expectedTime = "${timeFormatter.format(start)} - ${timeFormatter.format(end)}"
 
         // WHEN
-        val model = mapper.run { booking.toAppointmentDetailsModel() }
+        val model = mapper.run { booking.toAppointmentDetailsModel(CancelState.Idle) }
 
         // THEN
         assertThat(model.date).isEqualTo(expectedDate)
@@ -107,6 +108,7 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.location).isEqualTo("238 Willow Creek Drive, Montgomery AL 36109")
         assertThat(model.duration).isEqualTo("90 min")
         assertThat(model.price).isEqualTo("$55.00")
+        assertThat(model.cancelState).isEqualTo(CancelState.Idle)
     }
 
     @Test

@@ -233,7 +233,8 @@ private fun BookingDetailsPreview() {
                         staff = "Marianne Renoir",
                         location = "238 Willow Creek Drive, Montgomery AL 36109",
                         duration = "60 min",
-                        price = "$55.00"
+                        price = "$55.00",
+                        cancelState = CancelState.Idle,
                     ),
                     bookingCustomerDetails = BookingCustomerDetailsModel(
                         name = "Margarita Nikolaevna",

@@ -27,3 +27,8 @@ data class BookingUiState(
     val bookingCustomerDetails: BookingCustomerDetailsModel,
     val bookingPaymentDetails: BookingPaymentDetailsModel?,
 )
+
+sealed interface CancelState {
+    data object Idle : CancelState
+    data object InProgress : CancelState
+}
