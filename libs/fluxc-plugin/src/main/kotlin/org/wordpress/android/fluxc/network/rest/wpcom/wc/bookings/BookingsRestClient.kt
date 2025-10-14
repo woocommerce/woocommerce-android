@@ -57,7 +57,7 @@ class BookingsRestClient @Inject constructor(
                 BookingsFilterOption.BookingType -> TODO()
                 is BookingsFilterOption.Customer -> filter.customerId?.let { set("customer", it.toString()) }
 
-                BookingsFilterOption.Category -> TODO()
+                BookingsFilterOption.Location -> TODO()
                 is BookingsFilterOption.DateRange -> {
                     filter.before?.let { set("start_date_before", it.toString()) }
                     filter.after?.let { set("start_date_after", it.toString()) }

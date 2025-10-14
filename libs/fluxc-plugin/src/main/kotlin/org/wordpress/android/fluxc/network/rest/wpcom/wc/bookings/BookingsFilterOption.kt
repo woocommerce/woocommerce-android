@@ -11,9 +11,9 @@ sealed interface BookingsFilterOption {
 
     object BookingType : BookingsFilterOption
 
-    data class Customer(val customerId: Long?, val customerName: String?) : BookingsFilterOption
+    data class Customer(val customerId: Long, val customerName: String) : BookingsFilterOption
 
-    object Category : BookingsFilterOption
+    object Location : BookingsFilterOption
 
     data class DateRange(
         val before: Instant?,
@@ -30,6 +30,6 @@ data class BookingFilters(
     val attendanceStatus: BookingsFilterOption.AttendanceStatus? = null,
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
     val bookingType: BookingsFilterOption.BookingType? = null,
-    val category: BookingsFilterOption.Category? = null,
+    val location: BookingsFilterOption.Location? = null,
     val serviceEvent: BookingsFilterOption.ServiceEvent? = null,
 )
