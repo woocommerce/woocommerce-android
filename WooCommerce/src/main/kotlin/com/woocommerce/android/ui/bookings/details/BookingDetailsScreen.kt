@@ -17,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,10 +25,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
@@ -83,44 +80,39 @@ fun BookingDetailsScreen(
             )
         }
     ) { innerPadding ->
-        Surface(
-            color = colorResource(R.color.default_window_background),
+        WCPullToRefreshBox(
+            isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
+            onRefresh = viewState.onRefresh,
+            state = rememberPullToRefreshState(),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            WCPullToRefreshBox(
-                isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
-                onRefresh = viewState.onRefresh,
-                state = rememberPullToRefreshState(),
-                modifier = Modifier.fillMaxSize()
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
             ) {
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    when {
-                        viewState.shouldShowSkeleton -> BookingDetailsLoading()
-                        viewState.bookingUiState != null -> {
-                            BookingDetailsContent(
-                                booking = viewState.bookingUiState,
-                                onCancelBooking = viewState.onCancelBooking,
-                                onViewOrder = onViewOrder,
-                                onAttendanceStatusClicked = { showAttendanceSheet.value = true },
-                            )
-                        }
+                when {
+                    viewState.shouldShowSkeleton -> BookingDetailsLoading()
+                    viewState.bookingUiState != null -> {
+                        BookingDetailsContent(
+                            booking = viewState.bookingUiState,
+                            onCancelBooking = viewState.onCancelBooking,
+                            onViewOrder = onViewOrder,
+                            onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                        )
                     }
                 }
             }
         }
-        if (showAttendanceSheet.value) {
-            BookingAttendanceStatusBottomSheet(
-                onSelect = { status ->
-                    viewState.onAttendanceStatusSelected(status)
-                },
-                onDismiss = { showAttendanceSheet.value = false }
-            )
-        }
+    }
+    if (showAttendanceSheet.value) {
+        BookingAttendanceStatusBottomSheet(
+            onSelect = { status ->
+                viewState.onAttendanceStatusSelected(status)
+            },
+            onDismiss = { showAttendanceSheet.value = false }
+        )
     }
 }
 
