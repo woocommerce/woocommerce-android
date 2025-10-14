@@ -1,12 +1,21 @@
 package com.woocommerce.android.ui.bookings.details
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -17,8 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
@@ -32,7 +41,9 @@ import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,33 +89,16 @@ fun BookingDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(innerPadding)
             ) {
-                viewState.bookingUiState?.let {
-                    BookingSummary(
-                        model = viewState.bookingUiState.bookingSummary,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    BookingAppointmentDetails(
-                        model = viewState.bookingUiState.bookingsAppointmentDetails,
-                        onCancelBooking = viewState.onCancelBooking,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    BookingCustomerDetails(
-                        model = viewState.bookingUiState.bookingCustomerDetails,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    BookingAttendanceSection(
-                        status = viewState.bookingUiState.bookingSummary.attendanceStatus,
-                        onClick = { showAttendanceSheet.value = true },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    BookingPaymentSection(
-                        model = viewState.bookingUiState.bookingPaymentDetails,
-                        status = viewState.bookingUiState.bookingSummary.status,
-                        onMarkAsPaid = { onViewOrder(viewState.orderId) },
-                        onViewOrder = { onViewOrder(viewState.orderId) },
-                        onMarkAsRefunded = { onViewOrder(viewState.orderId) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                when {
+                    viewState.shouldShowSkeleton -> BookingDetailsLoading()
+                    viewState.bookingUiState != null -> {
+                        BookingDetailsContent(
+                            booking = viewState.bookingUiState,
+                            onCancelBooking = viewState.onCancelBooking,
+                            onViewOrder = onViewOrder,
+                            onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                        )
+                    }
                 }
             }
         }
@@ -119,7 +113,95 @@ fun BookingDetailsScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Composable
+private fun BookingDetailsContent(
+    booking: BookingUiState,
+    onCancelBooking: () -> Unit,
+    onViewOrder: (Long) -> Unit,
+    onAttendanceStatusClicked: () -> Unit,
+) {
+    BookingSummary(
+        model = booking.bookingSummary,
+        modifier = Modifier.fillMaxWidth()
+    )
+    BookingAppointmentDetails(
+        model = booking.bookingsAppointmentDetails,
+        onCancelBooking = onCancelBooking,
+        modifier = Modifier.fillMaxWidth()
+    )
+    BookingCustomerDetails(
+        model = booking.bookingCustomerDetails,
+        modifier = Modifier.fillMaxWidth()
+    )
+    BookingAttendanceSection(
+        status = booking.bookingSummary.attendanceStatus,
+        onClick = onAttendanceStatusClicked,
+        modifier = Modifier.fillMaxWidth()
+    )
+    BookingPaymentSection(
+        model = booking.bookingPaymentDetails,
+        status = booking.bookingSummary.status,
+        onMarkAsPaid = { onViewOrder(booking.orderId) },
+        onViewOrder = { onViewOrder(booking.orderId) },
+        onMarkAsRefunded = { onViewOrder(booking.orderId) },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun BookingDetailsLoading() {
+    Column {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .padding(16.dp)
+        ) {
+            SkeletonView(Modifier.size(200.dp, 20.dp))
+            Spacer(Modifier.height(4.dp))
+            SkeletonView(Modifier.size(250.dp, 15.dp))
+            Spacer(Modifier.height(8.dp))
+            SkeletonView(Modifier.size(150.dp, 25.dp))
+        }
+        Spacer(Modifier.height(40.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+        ) {
+            repeat(6) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .padding(vertical = 10.dp, horizontal = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    SkeletonView(
+                        modifier = Modifier
+                            .height(20.dp)
+                            .width(50.dp + 10 * (it % 3).dp)
+                    )
+                    SkeletonView(
+                        modifier = Modifier
+                            .height(20.dp)
+                            .width(100.dp + 10 * (it % 5).dp)
+                    )
+                }
+                HorizontalDivider(
+                    Modifier.padding(start = 16.dp)
+                )
+            }
+            SkeletonView(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(40.dp)
+            )
+        }
+    }
+}
+
+@LightDarkThemePreviews
 @Composable
 private fun BookingDetailsPreview() {
     WooThemeWithBackground {
@@ -127,6 +209,7 @@ private fun BookingDetailsPreview() {
             viewState = BookingDetailsViewState(
                 toolbarTitle = "Booking #12345",
                 bookingUiState = BookingUiState(
+                    orderId = 1L,
                     bookingSummary = BookingSummaryModel(
                         date = "05/07/2025, 11:00 AM",
                         name = "Women’s Haircut",
@@ -162,6 +245,21 @@ private fun BookingDetailsPreview() {
             ),
             onBack = {},
             onViewOrder = {}
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun BookingDetailsLoadingPreview() {
+    WooThemeWithBackground {
+        BookingDetailsScreen(
+            viewState = BookingDetailsViewState(
+                toolbarTitle = "",
+                bookingUiState = null,
+            ),
+            onBack = {},
+            onViewOrder = {},
         )
     }
 }

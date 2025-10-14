@@ -89,7 +89,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         // Then
         val state = viewModel.state.getOrAwaitValue()
         assertThat(state.bookingUiState).isNotNull
-        assertThat(state.orderId).isEqualTo(2L)
+        assertThat(state.bookingUiState?.orderId).isEqualTo(2L)
     }
 
     private fun createViewModel(
