@@ -65,6 +65,24 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
+    suspend fun fetchResource(
+        site: SiteModel,
+        resourceId: Long
+    ): WooPayload<BookingResourceDto> {
+        val endpoint = WOOCOMMERCE.resources.id(resourceId).pathV2Bookings
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = BookingResourceDto::class.java,
+            params = emptyMap()
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> = buildMap {
         this@toQueryParams.forEach { filter ->
             when (filter) {
