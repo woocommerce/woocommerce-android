@@ -88,6 +88,35 @@ class BookingsStore @Inject internal constructor(
         bookingId: Long
     ): Flow<BookingEntity?> = bookingsDao.observeBooking(site.localId(), bookingId)
 
+    suspend fun fetchBooking(
+        site: SiteModel,
+        bookingId: Long
+    ): WooResult<BookingEntity> {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBooking") {
+            val response = bookingsRestClient.fetchBooking(site, bookingId)
+            when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> {
+                    val bookingDto = response.result
+                    val orderResult = orderStore.fetchSingleOrderSync(site, bookingDto.orderId)
+                    if (orderResult.isError) {
+                        return@withDefaultContext WooResult(orderResult.error)
+                    }
+                    val entity = with(bookingDtoMapper) {
+                        bookingDto.toEntity(
+                            localSiteId = site.localId(),
+                            orderEntity = orderResult.model,
+                        )
+                    }
+                    bookingsDao.insertOrReplace(listOf(entity))
+                    WooResult(entity)
+                }
+
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     private suspend fun fetchOrders(
         site: SiteModel,
         orderIds: List<Long>

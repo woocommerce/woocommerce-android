@@ -19,6 +19,23 @@ class BookingsRestClient @Inject constructor(
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
     }
 
+    suspend fun fetchBooking(
+        site: SiteModel,
+        bookingId: Long
+    ): WooPayload<BookingDto> {
+        val endpoint = WOOCOMMERCE.bookings.id(bookingId).pathV2Bookings
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = BookingDto::class.java,
+            params = emptyMap()
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     @Suppress("LongParameterList")
     suspend fun fetchBookings(
         site: SiteModel,

@@ -4,48 +4,76 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BookingDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    resourceProvider: ResourceProvider,
-    bookingsRepository: BookingsRepository,
+    private val resourceProvider: ResourceProvider,
+    private val bookingsRepository: BookingsRepository,
     private val bookingMapper: BookingMapper,
+    private val networkStatus: NetworkStatus,
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: BookingDetailsFragmentArgs by savedState.navArgs()
 
     private val booking = bookingsRepository.observeBooking(navArgs.bookingId)
 
+    private val loadingState = MutableStateFlow<BookingDetailsLoadingState>(BookingDetailsLoadingState.Idle)
+
     // Temporary, the booking status should come from the stored object
     private val bookingAttendanceStatus = MutableStateFlow<BookingAttendanceStatus?>(null)
 
     val state: LiveData<BookingDetailsViewState> = combine(
         booking,
-        bookingAttendanceStatus
-    ) { booking, attendanceStatus ->
+        bookingAttendanceStatus,
+        loadingState
+    ) { booking, attendanceStatus, loadingState ->
         with(bookingMapper) {
             BookingDetailsViewState(
                 toolbarTitle = booking?.id?.value?.let { id ->
                     resourceProvider.getString(R.string.booking_details_title, id)
                 } ?: "",
                 bookingUiState = if (booking != null) buildBookingUiState(booking, attendanceStatus) else null,
+                loadingState = loadingState,
                 onCancelBooking = ::onCancelBooking,
-                onAttendanceStatusSelected = ::onAttendanceStatusSelected
+                onAttendanceStatusSelected = ::onAttendanceStatusSelected,
+                onRefresh = ::fetchBooking,
             )
         }
     }.asLiveData()
+
+    init {
+        fetchBooking(BookingDetailsLoadingState.Loading)
+    }
+
+    private fun fetchBooking(state: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing) {
+        launch {
+            if (!networkStatus.isConnected()) {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+                return@launch
+            }
+            loadingState.value = state
+            bookingsRepository.fetchBooking(navArgs.bookingId)
+                .onFailure {
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
+                }
+            loadingState.value = BookingDetailsLoadingState.Idle
+        }
+    }
 
     private fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
         // Temporary, the booking status should come from the stored object
