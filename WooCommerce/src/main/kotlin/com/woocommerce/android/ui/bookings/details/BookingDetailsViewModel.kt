@@ -45,7 +45,6 @@ class BookingDetailsViewModel @Inject constructor(
     private val booking = bookingsRepository.observeBooking(navArgs.bookingId)
         .shareIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
 
-    private val resourceLoadingState = MutableStateFlow<ResourceLoadingState>(ResourceLoadingState.Idle)
     private val resource = booking.flatMapLatest { it?.let { bookingsRepository.observeResource(it) } ?: flowOf(null) }
 
     private val loadingState = MutableStateFlow<BookingDetailsLoadingState>(BookingDetailsLoadingState.Idle)
@@ -57,60 +56,55 @@ class BookingDetailsViewModel @Inject constructor(
         booking,
         bookingAttendanceStatus,
         loadingState,
-        resource,
-        resourceLoadingState
-    ) { booking, attendanceStatus, loadingState, resource, resourceLoadingState ->
+        resource
+    ) { booking, attendanceStatus, loadingState, resource ->
         with(bookingMapper) {
             BookingDetailsViewState(
                 toolbarTitle = booking?.id?.value?.let { id ->
                     resourceProvider.getString(R.string.booking_details_title, id)
                 } ?: "",
                 bookingUiState = if (booking != null) {
-                    buildBookingUiState(booking, resource, attendanceStatus, resourceLoadingState)
+                    buildBookingUiState(booking, resource, attendanceStatus, loadingState)
                 } else {
                     null
                 },
                 loadingState = loadingState,
                 onCancelBooking = ::onCancelBooking,
                 onAttendanceStatusSelected = ::onAttendanceStatusSelected,
-                onRefresh = ::fetchBookingDetails,
+                onRefresh = ::fetchBooking,
             )
         }
     }.asLiveData()
 
     init {
-        fetchBookingDetails(BookingDetailsLoadingState.Loading)
+        fetchBooking(BookingDetailsLoadingState.Loading)
     }
 
-    private fun fetchBookingDetails(
-        initialBookingLoadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing
+    private fun fetchBooking(
+        initialLoadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing
     ) {
-        suspend fun fetchBooking(initialLoadingState: BookingDetailsLoadingState): Result<Unit> {
-            loadingState.value = initialLoadingState
-            return bookingsRepository.fetchBooking(navArgs.bookingId).also {
-                loadingState.value = BookingDetailsLoadingState.Idle
-            }
-        }
-
-        suspend fun fetchResource(): Result<Unit> {
-            val resourceId = this.booking.first()?.resourceId?.takeIf { it != 0L } ?: return Result.success(Unit)
-            resourceLoadingState.value = ResourceLoadingState.Loading
-            return bookingsRepository.fetchResource(resourceId).also {
-                resourceLoadingState.value = ResourceLoadingState.Idle
-            }
-        }
-
         launch {
             if (!networkStatus.isConnected()) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
             }
 
-            val bookingTask = async { fetchBooking(initialBookingLoadingState) }
-            val resourceTask = async { fetchResource() }
+            loadingState.value = initialLoadingState
+
+            val bookingTask = async {
+                bookingsRepository.fetchBooking(navArgs.bookingId)
+            }
+            val resourceTask = async {
+                val booking = booking.first() ?: bookingTask.await().getOrNull()
+                val resourceId = booking?.resourceId?.takeIf { it != 0L } ?: return@async Result.success(Unit)
+                bookingsRepository.fetchResource(resourceId)
+            }
+
             if (awaitAll(bookingTask, resourceTask).any { it.isFailure }) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
             }
+
+            loadingState.value = BookingDetailsLoadingState.Idle
         }
     }
 
@@ -127,7 +121,7 @@ class BookingDetailsViewModel @Inject constructor(
         booking: Booking,
         resource: BookingResource?,
         attendanceStatus: BookingAttendanceStatus?,
-        resourceLoadingState: ResourceLoadingState
+        loadingState: BookingDetailsLoadingState
     ): BookingUiState = BookingUiState(
         orderId = booking.orderId,
         bookingSummary = booking.toBookingSummaryModel().let {
@@ -141,7 +135,7 @@ class BookingDetailsViewModel @Inject constructor(
             staffMemberStatus = buildStaffMemberStatus(
                 resourceId = booking.resourceId,
                 resource = resource,
-                loadingState = resourceLoadingState
+                loadingState = loadingState
             )
         ),
         bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
@@ -151,17 +145,15 @@ class BookingDetailsViewModel @Inject constructor(
     private fun buildStaffMemberStatus(
         resourceId: Long,
         resource: BookingResource?,
-        loadingState: ResourceLoadingState
+        loadingState: BookingDetailsLoadingState
     ): BookingStaffMemberStatus? {
         return when {
             resourceId == 0L -> null
             resource != null -> BookingStaffMemberStatus.Loaded(resource.name)
-            loadingState == ResourceLoadingState.Loading -> BookingStaffMemberStatus.Loading
+            loadingState == BookingDetailsLoadingState.Loading ||
+                loadingState == BookingDetailsLoadingState.Refreshing -> BookingStaffMemberStatus.Loading
+
             else -> BookingStaffMemberStatus.Unavailable
         }
-    }
-
-    private enum class ResourceLoadingState {
-        Idle, Loading
     }
 }

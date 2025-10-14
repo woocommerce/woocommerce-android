@@ -64,7 +64,7 @@ class BookingsRepository @Inject constructor(
 
     suspend fun fetchBooking(
         bookingId: Long
-    ): Result<Unit> {
+    ): Result<Booking> {
         val result = bookingsStore.fetchBooking(
             site = selectedSite.get(),
             bookingId = bookingId
@@ -72,7 +72,7 @@ class BookingsRepository @Inject constructor(
         return if (result.isError) {
             Result.failure(WooException(result.error))
         } else {
-            Result.success(Unit)
+            Result.success(result.model!!)
         }
     }
 
