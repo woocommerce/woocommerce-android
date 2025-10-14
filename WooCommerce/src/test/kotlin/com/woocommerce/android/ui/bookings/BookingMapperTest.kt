@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings
 
+import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.util.CurrencyFormatter
@@ -8,14 +9,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.math.BigDecimal
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
@@ -25,12 +30,19 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingMapperTest : BaseUnitTest() {
 
-    private val currencyFormatter: CurrencyFormatter = mock()
+    private val currencyFormatter: CurrencyFormatter = mock {
+        on { formatCurrency(any<BigDecimal>(), any(), eq(true)) } doAnswer {
+            val amount = it.getArgument<BigDecimal>(0)
+            val currency = it.getArgument<String>(1)
+            "$currency${amount.setScale(2)}"
+        }
+    }
+    private val getLocations: GetLocations = mock()
     private lateinit var mapper: BookingMapper
 
     @Before
     fun setup() {
-        mapper = BookingMapper(currencyFormatter)
+        mapper = BookingMapper(currencyFormatter, getLocations)
     }
 
     @Test
@@ -107,6 +119,48 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.status).isInstanceOf(BookingStatus.Unknown::class.java)
         val unknown = model.status as BookingStatus.Unknown
         assertThat(unknown.key).isEqualTo("weird-status")
+    }
+
+    @Test
+    fun `given payment info with valid values, when mapped to payment details model, then maps fields correctly`() {
+        // GIVEN
+        val paymentInfo = BookingPaymentInfo(
+            subtotal = BigDecimal("100.00"),
+            subtotalTax = BigDecimal("10.00"),
+            total = BigDecimal("90.00"), // With discount
+            totalTax = BigDecimal("9.00")
+        )
+        val currency = "$"
+
+        // WHEN
+        val model = mapper.run { paymentInfo.toPaymentDetailsModel(currency) }
+
+        // THEN
+        assertThat(model.service).isEqualTo("$100.00") // subtotal
+        assertThat(model.tax).isEqualTo("$9.00") // totalTax
+        assertThat(model.discount).isEqualTo("- $10.00") // discount = total - subtotal = 90 - 100 = -10, abs = 10
+        assertThat(model.total).isEqualTo("$99.00") // total + totalTax = 90 + 9
+    }
+
+    @Test
+    fun `given payment info with zero discount, when mapped to payment details model, then shows dash for discount`() {
+        // GIVEN
+        val paymentInfo = BookingPaymentInfo(
+            subtotal = BigDecimal("100.00"),
+            subtotalTax = BigDecimal("0.00"),
+            total = BigDecimal("100.00"), // No discount
+            totalTax = BigDecimal("10.00")
+        )
+        val currency = "$"
+
+        // WHEN
+        val model = mapper.run { paymentInfo.toPaymentDetailsModel(currency) }
+
+        // THEN
+        assertThat(model.service).isEqualTo("$100.00")
+        assertThat(model.tax).isEqualTo("$10.00")
+        assertThat(model.discount).isEqualTo("-") // No discount
+        assertThat(model.total).isEqualTo("$110.00")
     }
 
     private fun sampleBooking(
