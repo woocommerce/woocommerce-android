@@ -55,13 +55,15 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    fun Booking.toAppointmentDetailsModel(): BookingAppointmentDetailsModel {
+    fun Booking.toAppointmentDetailsModel(
+        staffMemberStatus: BookingStaffMemberStatus?
+    ): BookingAppointmentDetailsModel {
         val durationMinutes = Duration.between(start, end).toMinutes()
         return BookingAppointmentDetailsModel(
             date = detailsDateFormatter.format(start),
             time = "${timeRangeFormatter.format(start)} - ${timeRangeFormatter.format(end)}",
+            staff = staffMemberStatus,
             // TODO replace mocked values when available from API
-            staff = BookingStaffMemberStatus.Loaded("Marianne Renoir"),
             location = "238 Willow Creek Drive, Montgomery AL 36109",
             duration = "$durationMinutes min",
             price = currencyFormatter.formatCurrency(cost, currency)

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.bookings
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
@@ -89,10 +90,16 @@ class BookingsRepository @Inject constructor(
         }
     }
 
-    fun observeResource(resourceId: Long): Flow<BookingResource?> = bookingsStore.observeResource(
-        site = selectedSite.get(),
-        resourceId = resourceId
-    )
+    fun observeResource(booking: Booking): Flow<BookingResource?> {
+        return if (booking.resourceId == 0L) {
+            flowOf(null)
+        } else {
+            bookingsStore.observeResource(
+                site = selectedSite.get(),
+                resourceId = booking.resourceId
+            )
+        }
+    }
 
     data class FetchResult(
         val bookings: List<Booking>,
