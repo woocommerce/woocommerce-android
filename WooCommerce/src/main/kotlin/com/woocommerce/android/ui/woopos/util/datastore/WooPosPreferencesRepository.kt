@@ -83,18 +83,20 @@ class WooPosPreferencesRepository @Inject constructor(
     }
 
     suspend fun isPeriodicSyncEnabledForSite(siteId: Long): Boolean {
-        val key = booleanPreferencesKey("pos_periodic_sync_enabled_$siteId")
+        val key = buildPeriodicSyncEnabledKey(siteId)
         val preferences = dataStore.data.map { it[key] ?: true }.first()
         return preferences
     }
 
     suspend fun disablePeriodicSyncForSite(siteId: Long) {
-        val key = booleanPreferencesKey("pos_periodic_sync_enabled_$siteId")
+        val key = buildPeriodicSyncEnabledKey(siteId)
         dataStore.edit { preferences ->
             preferences[key] = false
         }
     }
 
+    private fun buildPeriodicSyncEnabledKey(siteId: Long): Preferences.Key<Boolean> =
+        booleanPreferencesKey("pos_periodic_sync_enabled_$siteId")
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.siteId}-$key")
 
