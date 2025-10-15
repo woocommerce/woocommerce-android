@@ -1,10 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+23.6
+-----
+- [Internal][Woo POS] Survey for potential and current users of the POS delivered via local push notification. [https://github.com/woocommerce/woocommerce-android/pull/14751]
+
+
 23.5
 -----
-- [*][Internal][Woo POS] Survey for potential and current users of the POS delivered via local push notification. [https://github.com/woocommerce/woocommerce-android/pull/14751]
-
 - [Internal][Wear] Remove unused dependencies and optimize dependency scopes [https://github.com/woocommerce/woocommerce-android/pull/14710]
 - [Internal] Remove unused dependencies and optimize dependency scopes [https://github.com/woocommerce/woocommerce-android/pull/14710]
 - [*] Fix a rare crash in order refund flow [https://github.com/woocommerce/woocommerce-android/pull/14742]
