@@ -35,8 +35,9 @@ object AppUrls {
 
     const val CROWDSIGNAL_MAIN_SURVEY = "https://automattic.survey.fm/woo-app-general-feedback-user-survey"
     const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
-    const val CROWDSIGNAL_WOO_POS_SURVEY_POTENTIAL_USER = "https://automattic.survey.fm/woo-pos-potential-user-survey"
-    const val CROWDSIGNAL_WOO_POS_SURVEY_CURRENT_USER = "https://automattic.survey.fm/woo-pos-current-user-survey"
+
+    const val CROWDSIGNAL_WOO_POS_SURVEY_POTENTIAL_USER = "https://automattic.survey.fm/pos-survey-potential-users"
+    const val CROWDSIGNAL_WOO_POS_SURVEY_CURRENT_USER = "https://automattic.survey.fm/pos-survey-existing-users"
 
     const val CROWDSIGNAL_ANALYTICS_HUB_SURVEY = "https://automattic.survey.fm/woo-app-analytics-hub-production"
 

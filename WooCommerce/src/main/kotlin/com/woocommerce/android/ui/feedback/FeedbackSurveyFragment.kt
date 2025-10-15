@@ -25,6 +25,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_STORE_SETUP_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_SHIPPING_LINES_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_ADDONS_FEEDBACK
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_POS_CURRENT_USER_FEEDBACK
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_POS_POTENTIAL_USER_FEEDBACK
 import com.woocommerce.android.databinding.FragmentFeedbackSurveyBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
@@ -63,6 +65,8 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
             SurveyType.ADDONS -> VALUE_PRODUCT_ADDONS_FEEDBACK
             SurveyType.ANALYTICS_HUB -> VALUE_ANALYTICS_HUB_FEEDBACK
             SurveyType.ORDER_SHIPPING_LINES -> VALUE_ORDER_SHIPPING_LINES_FEEDBACK
+            SurveyType.WOO_POS_POTENTIAL_USER -> VALUE_WOO_POS_POTENTIAL_USER_FEEDBACK
+            SurveyType.WOO_POS_CURRENT_USER -> VALUE_WOO_POS_CURRENT_USER_FEEDBACK
         }
     }
 

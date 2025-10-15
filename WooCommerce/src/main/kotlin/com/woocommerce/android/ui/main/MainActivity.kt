@@ -878,7 +878,7 @@ class MainActivity :
                     event.isHandled = false
                 }
 
-                is MainActivityViewModel.ViewSurvey -> showSurvey(event.surveyUrl)
+                is MainActivityViewModel.ViewSurvey -> showSurvey(event.surveyType)
             }
         }
 
@@ -1288,10 +1288,9 @@ class MainActivity :
         }
     }
 
-    private fun showSurvey(surveyUrl: String) {
+    private fun showSurvey(surveyType: SurveyType) {
         NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(
-            surveyType = SurveyType.MAIN,
-            customUrl = surveyUrl
+            surveyType = surveyType
         ).apply {
             navController.navigateSafely(this)
         }
