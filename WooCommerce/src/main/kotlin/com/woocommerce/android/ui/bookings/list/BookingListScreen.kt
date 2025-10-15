@@ -58,7 +58,6 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
-import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -319,7 +318,7 @@ private fun EmptyView(
 
         if (state.searchState.query?.isNotEmpty() == true) {
             EmptySearchResultsView(
-                query = state.searchState.query,
+                areFiltersActive = state.areFiltersActive,
                 modifier = innerEmptyViewModifier
             )
         } else {
@@ -398,7 +397,10 @@ private fun EmptyListView(
 }
 
 @Composable
-private fun EmptySearchResultsView(query: String, modifier: Modifier) {
+private fun EmptySearchResultsView(
+    areFiltersActive: Boolean,
+    modifier: Modifier
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -412,7 +414,13 @@ private fun EmptySearchResultsView(query: String, modifier: Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = annotatedStringRes(R.string.bookings_search_no_results, query),
+            text = stringResource(
+                id = if (areFiltersActive) {
+                    R.string.bookings_search_no_results_with_filters
+                } else {
+                    R.string.bookings_search_no_results_without_filters
+                }
+            ),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Normal,
             textAlign = TextAlign.Center
