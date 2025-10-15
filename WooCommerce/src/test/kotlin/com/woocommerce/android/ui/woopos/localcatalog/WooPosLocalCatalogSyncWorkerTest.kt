@@ -61,6 +61,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
         whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
+        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
         whenever(syncRepository.syncLocalCatalogFull(site))
             .thenReturn(successResponse)
         whenever(syncRepository.syncLocalCatalogIncremental(site))
@@ -135,6 +136,22 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+    }
+
+    @Test
+    fun `when periodic sync is disabled for site, then returns failure and skips sync`() = testBlocking {
+        // GIVEN
+        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(site.siteId)).thenReturn(false)
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        verify(syncRepository, org.mockito.kotlin.never()).syncLocalCatalogFull(any())
+        verify(syncRepository, org.mockito.kotlin.never()).syncLocalCatalogIncremental(any())
     }
 
     @Test
@@ -302,5 +319,52 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         assertThat(result).isEqualTo(ListenableWorker.Result.failure())
         verify(syncRepository).syncLocalCatalogFull(eq(site))
         verify(syncRepository, org.mockito.kotlin.never()).syncLocalCatalogIncremental(any())
+    }
+
+    @Test
+    fun `when sync fails with catalog too large, then disables periodic sync for site`() = testBlocking {
+        // GIVEN
+        whenever(syncRepository.syncLocalCatalogFull(site))
+            .thenReturn(catalogTooLargeResponse)
+
+        val worker = createWorker()
+
+        // WHEN
+        worker.doWork()
+
+        // THEN
+        verify(preferencesRepository).disablePeriodicSyncForSite(site.siteId)
+    }
+
+    @Test
+    fun `when sync fails with unexpected error, then does not disable periodic sync`() = testBlocking {
+        // GIVEN
+        whenever(syncRepository.syncLocalCatalogFull(site))
+            .thenReturn(PosLocalCatalogSyncResult.Failure.UnexpectedError("Network error"))
+
+        val worker = createWorker()
+
+        // WHEN
+        worker.doWork()
+
+        // THEN
+        verify(preferencesRepository, org.mockito.kotlin.never()).disablePeriodicSyncForSite(any())
+    }
+
+    @Test
+    fun `when sync succeeds, then does not disable periodic sync`() = testBlocking {
+        // GIVEN
+        whenever(syncRepository.syncLocalCatalogFull(site))
+            .thenReturn(successResponse)
+        whenever(syncRepository.syncLocalCatalogIncremental(site))
+            .thenReturn(incrementalSuccessResponse)
+
+        val worker = createWorker()
+
+        // WHEN
+        worker.doWork()
+
+        // THEN
+        verify(preferencesRepository, org.mockito.kotlin.never()).disablePeriodicSyncForSite(any())
     }
 }
