@@ -33,7 +33,7 @@ class BlazeCampaignTargetLocationSelectionViewModelTests : BaseUnitTest() {
         onBlocking { fetchLocations(any()) } doReturn Result.success(sampleLocations)
     }
     private val resourceProvider: ResourceProvider = mock {
-        on { getString(any()) } doAnswer { it.getArgument<Any?>(0).toString() }
+        on { getString(any()) } doAnswer { it.getArgument<Any>(0).toString() }
     }
     private lateinit var viewModel: BlazeCampaignTargetLocationSelectionViewModel
 
