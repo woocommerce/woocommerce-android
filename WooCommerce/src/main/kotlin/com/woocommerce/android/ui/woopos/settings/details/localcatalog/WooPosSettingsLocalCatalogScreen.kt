@@ -55,7 +55,7 @@ fun WooPosSettingsLocalCatalogScreen(
 @Composable
 private fun WooPosSettingsLocalCatalogScreen(
     state: WooPosSettingsLocalCatalogState,
-    onToggleCellularData: () -> Unit,
+    onToggleCellularData: (Boolean) -> Unit,
     onRefreshCatalog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -144,7 +144,7 @@ private fun CatalogStatusSection(
 @Composable
 private fun SettingsSection(
     allowCellularDataUpdate: Boolean,
-    onToggleCellularData: () -> Unit,
+    onToggleCellularData: (Boolean) -> Unit,
     isLoading: Boolean
 ) {
     Column(
@@ -181,7 +181,7 @@ private fun SettingsSection(
 
             Switch(
                 checked = allowCellularDataUpdate,
-                onCheckedChange = { onToggleCellularData() },
+                onCheckedChange = { onToggleCellularData(it) },
                 enabled = !isLoading,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.primary,

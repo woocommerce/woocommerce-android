@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -44,6 +45,8 @@ import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Appending
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Refreshing
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 
 @Composable
 fun CouponListScreen(viewModel: CouponListViewModel) {
@@ -98,7 +101,7 @@ private fun EmptyCouponList() {
         )
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         Image(
-            painter = painterResource(id = R.drawable.img_empty_coupon_list),
+            painter = rememberVectorPainter(image = WooPosIcons.CouponsEmpty),
             contentDescription = null,
         )
     }
@@ -297,11 +300,15 @@ private fun CouponListPreview() {
 @Preview
 @Composable
 private fun CouponListEmptyPreview() {
-    EmptyCouponList()
+    WooPosTheme {
+        EmptyCouponList()
+    }
 }
 
 @Preview
 @Composable
 private fun CouponListSkeletonPreview() {
-    CouponListSkeleton()
+    WooPosTheme {
+        CouponListSkeleton()
+    }
 }

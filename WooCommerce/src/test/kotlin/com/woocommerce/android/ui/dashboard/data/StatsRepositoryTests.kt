@@ -14,6 +14,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.WCStatsAction
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundleStats
 import org.wordpress.android.fluxc.model.WCGiftCardStats
@@ -78,7 +79,6 @@ class StatsRepositoryTests : BaseUnitTest() {
             )
 
             val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(
-                rowsAffected = 2,
                 granularity = granularity,
                 startDate = startDate,
                 endDate = endDate
@@ -91,14 +91,15 @@ class StatsRepositoryTests : BaseUnitTest() {
                 .thenReturn(emptyMap())
             whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
             whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))
-                .thenReturn(WCRevenueStatsModel())
+                .thenReturn(WCRevenueStatsModel(LocalId(1), "", "", "", "", "", ""))
 
             val result = sut.fetchStats(
                 range = defaultRange,
                 revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
                 visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
                 forced = true,
-                includeVisitorStats = true
+                includeVisitorStats = true,
+                medium = "Widget",
             )
 
             val model = result.getOrNull()
@@ -119,7 +120,6 @@ class StatsRepositoryTests : BaseUnitTest() {
         }
 
         val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(
-            rowsAffected = 2,
             granularity = granularity,
             startDate = startDate,
             endDate = endDate
@@ -130,14 +130,15 @@ class StatsRepositoryTests : BaseUnitTest() {
         whenever(wcStatsStore.fetchNewVisitorStats(any())).thenReturn(visitorStatsResponse)
         whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
         whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))
-            .thenReturn(WCRevenueStatsModel())
+            .thenReturn(WCRevenueStatsModel(LocalId(1), "", "", "", "", "", ""))
 
         val result = sut.fetchStats(
             range = defaultRange,
             revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             forced = true,
-            includeVisitorStats = true
+            includeVisitorStats = true,
+            medium = "Widget",
         )
 
         val model = result.getOrNull()
@@ -157,7 +158,7 @@ class StatsRepositoryTests : BaseUnitTest() {
             date = startDate
         )
 
-        val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(0, granularity)
+        val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(granularity)
             .also { it.error = WCStatsStore.OrderStatsError() }
 
         whenever(selectedSite.get()).thenReturn(defaultSiteModel)
@@ -170,7 +171,8 @@ class StatsRepositoryTests : BaseUnitTest() {
             revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             forced = true,
-            includeVisitorStats = true
+            includeVisitorStats = true,
+            medium = "Widget",
         )
 
         assertThat(result.isFailure).isEqualTo(true)

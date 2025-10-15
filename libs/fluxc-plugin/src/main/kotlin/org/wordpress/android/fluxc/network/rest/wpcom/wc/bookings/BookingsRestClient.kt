@@ -19,6 +19,23 @@ class BookingsRestClient @Inject constructor(
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
     }
 
+    suspend fun fetchBooking(
+        site: SiteModel,
+        bookingId: Long
+    ): WooPayload<BookingDto> {
+        val endpoint = WOOCOMMERCE.bookings.id(bookingId).pathV2Bookings
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = BookingDto::class.java,
+            params = emptyMap()
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     @Suppress("LongParameterList")
     suspend fun fetchBookings(
         site: SiteModel,
@@ -48,17 +65,22 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
-    private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> {
-        return buildMap {
-            this@toQueryParams.forEach { filter ->
-                when (filter) {
-                    is BookingsFilterOption.DateRange -> {
-                        filter.before?.let { set("start_date_before", it.toString()) }
-                        filter.after?.let { set("start_date_after", it.toString()) }
-                    }
+    private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> = buildMap {
+        this@toQueryParams.forEach { filter ->
+            when (filter) {
+                BookingsFilterOption.TeamMember -> TODO()
+                BookingsFilterOption.AttendanceStatus -> TODO()
+                BookingsFilterOption.PaymentStatus -> TODO()
+                BookingsFilterOption.BookingType -> TODO()
+                is BookingsFilterOption.Customer -> filter.customerId?.let { set("customer", it.toString()) }
 
-                    is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
+                BookingsFilterOption.Location -> TODO()
+                is BookingsFilterOption.DateRange -> {
+                    filter.before?.let { set("start_date_before", it.toString()) }
+                    filter.after?.let { set("start_date_after", it.toString()) }
                 }
+
+                BookingsFilterOption.ServiceEvent -> TODO()
             }
         }
     }

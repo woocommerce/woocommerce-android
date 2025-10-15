@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.ranges
 
+import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Calendar
 
 abstract class StatsTimeRangeData(

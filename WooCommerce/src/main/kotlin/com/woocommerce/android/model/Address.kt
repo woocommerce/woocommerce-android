@@ -6,13 +6,13 @@ import com.google.i18n.addressinput.common.FormOptions
 import com.google.i18n.addressinput.common.FormatInterpreter
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.ui.addressformatting.presentationName
+import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
 
-@Suppress("TooManyFunctions")
 @Parcelize
 data class Address(
     val company: String,
@@ -48,7 +48,7 @@ data class Address(
             .build()
     }
 
-    fun getEnvelopeAddress(): String {
+    private fun getEnvelopeAddress(): String {
         return getAddressData().takeIf { it.postalCountry != null }?.let {
             val formatInterpreter = FormatInterpreter(FormOptions().createSnapshot())
             try {
@@ -63,12 +63,13 @@ data class Address(
         } ?: this.orderAddressToString()
     }
 
-    fun getFullAddress(name: String, address: String, country: String): String {
-        var fullAddr = ""
-        if (name.isNotBlank()) fullAddr += "$name\n"
-        if (address.isNotBlank()) fullAddr += "$address\n"
-        if (country.isNotBlank()) fullAddr += country
-        return fullAddr
+    fun getFullAddress(): String {
+        return buildString {
+            appendWithIfNotEmpty("$firstName $lastName".trim(), "\n")
+            appendWithIfNotEmpty(getEnvelopeAddress(), "\n")
+            val countryName = AddressUtils.getCountryLabelByCountryCode(country.code)
+            appendWithIfNotEmpty(countryName, "\n")
+        }
     }
 
     fun hasInfo(): Boolean {
