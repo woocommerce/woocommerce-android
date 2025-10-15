@@ -44,12 +44,12 @@ constructor(
 
         val site = selectedSite.getOrNull()
         if (site == null) {
-            logger.e("No selected WooCommerce site found, skipping local catalog sync")
+            logger.w("No selected WooCommerce site found, skipping local catalog sync")
             return Result.failure()
         }
 
         if (!preferencesRepository.isPeriodicSyncEnabledForSite(site.siteId)) {
-            logger.e("Periodic sync permanently disabled for site ${site.url}, skipping local catalog sync.")
+            logger.w("Periodic sync permanently disabled for site ${site.url}, skipping local catalog sync.")
             return Result.failure()
         }
 
