@@ -7,6 +7,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -30,6 +31,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
+    private var preferencesRepository: WooPosPreferencesRepository = mock()
 
     private val successResponse = PosLocalCatalogSyncResult.Success(
         productsSynced = 10,
@@ -74,6 +76,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             syncRepository = syncRepository,
             logger = logger,
             featureFlagM1Enabled = featureFlagM1Enabled,
+            preferencesRepository = preferencesRepository,
         )
     }
 
