@@ -339,43 +339,39 @@ class OrderRestClient @Inject constructor(
      * @param site The WooCommerce [SiteModel] the orders belong to
      * @param orderIds A list of remote order identifiers to fetch from the API
      */
-    fun fetchOrdersByIds(site: SiteModel, orderIds: List<Long>) {
-        coroutineEngine.launch(T.API, this, "fetchOrdersByIds") {
-            val url = WOOCOMMERCE.orders.pathV3
-            val params = mapOf(
-                "per_page" to orderIds.size.toString(),
-                "include" to orderIds.map { it }.joinToString(),
-                "_fields" to ORDER_FIELDS
-            )
+    suspend fun fetchOrdersByIds(site: SiteModel, orderIds: List<Long>): FetchOrdersByIdsResponsePayload {
+        val url = WOOCOMMERCE.orders.pathV3
+        val params = mapOf(
+            "per_page" to orderIds.size.toString(),
+            "include" to orderIds.map { it }.joinToString(),
+            "_fields" to ORDER_FIELDS
+        )
 
-            val response = wooNetwork.executeGetGsonRequest(
-                site = site,
-                path = url,
-                clazz = Array<OrderDto>::class.java,
-                params = params
-            )
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = Array<OrderDto>::class.java,
+            params = params
+        )
 
-            when (response) {
-                is WPAPIResponse.Success -> {
-                    val orderModels = response.data?.map { orderDto ->
-                        orderDtoMapper.toDatabaseEntity(orderDto, site.localId())
-                    }.orEmpty()
+        return when (response) {
+            is WPAPIResponse.Success -> {
+                val orderModels = response.data?.map { orderDto ->
+                    orderDtoMapper.toDatabaseEntity(orderDto, site.localId())
+                }.orEmpty()
 
-                    val payload = FetchOrdersByIdsResponsePayload(
-                        site = site,
-                        orderIds = orderIds,
-                        fetchedOrders = orderModels
-                    )
-                    dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersByIdsAction(payload))
-                }
+                FetchOrdersByIdsResponsePayload(
+                    site = site,
+                    orderIds = orderIds,
+                    fetchedOrders = orderModels
+                )
+            }
 
-                is WPAPIResponse.Error -> {
-                    val orderError = wpAPINetworkErrorToOrderError(response.error)
-                    val payload = FetchOrdersByIdsResponsePayload(
-                        error = orderError, site = site, orderIds = orderIds
-                    )
-                    dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrdersByIdsAction(payload))
-                }
+            is WPAPIResponse.Error -> {
+                val orderError = wpAPINetworkErrorToOrderError(response.error)
+                FetchOrdersByIdsResponsePayload(
+                    error = orderError, site = site, orderIds = orderIds
+                )
             }
         }
     }
@@ -1230,7 +1226,7 @@ class OrderRestClient @Inject constructor(
             wpAPINetworkError.type == BaseRequest.GenericErrorType.TIMEOUT -> TIMEOUT_ERROR
             else -> OrderErrorType.fromString(wpAPINetworkError.errorCode.orEmpty())
         }
-        return OrderError(orderErrorType, wpAPINetworkError.combinedErrorMessage)
+        return OrderError(orderErrorType, wpAPINetworkError.combinedErrorMessage, wpAPINetworkError)
     }
 
     private fun orderShipmentTrackingResponseToModel(

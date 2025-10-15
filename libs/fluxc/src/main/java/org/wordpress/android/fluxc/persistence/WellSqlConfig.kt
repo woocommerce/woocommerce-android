@@ -40,7 +40,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 231
+        return 232
     }
 
     override fun getDbName(): String {
@@ -2251,6 +2251,10 @@ open class WellSqlConfig : DefaultWellConfig {
                     db.execSQL("ALTER TABLE SiteModel ADD IS_GARDEN_SITE BOOLEAN NOT NULL DEFAULT 0")
                     db.execSQL("ALTER TABLE SiteModel ADD GARDEN_NAME TEXT")
                     db.execSQL("ALTER TABLE SiteModel ADD GARDEN_PARTNER TEXT")
+                }
+
+                231 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCRevenueStatsModel")
                 }
             }
         }

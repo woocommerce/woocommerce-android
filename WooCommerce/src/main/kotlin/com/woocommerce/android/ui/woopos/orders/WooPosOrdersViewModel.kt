@@ -2,12 +2,15 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.extensions.formatToDDMMMYYYY
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -15,11 +18,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
-    private val ordersDataSource: WooPosOrdersDataSource
+    private val ordersDataSource: WooPosOrdersDataSource,
+    private val wooCommerceStore: WooCommerceStore,
+    private val selectedSite: SelectedSite,
+    private val resourceProvider: ResourceProvider,
+    private val locale: Locale
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -288,12 +297,40 @@ class WooPosOrdersViewModel @Inject constructor(
         selectedId: Long?
     ): List<OrderItemViewState> {
         return orders.map { order ->
+            val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
+                amount = order.total.toDouble(),
+                site = selectedSite.get(),
+                currencyCode = null,
+                applyDecimalFormatting = true
+            )
+
+            val formattedStatus = when (order.status) {
+                Order.Status.Cancelled -> resourceProvider.getString(R.string.woopos_orders_status_cancelled)
+                Order.Status.Completed -> resourceProvider.getString(R.string.woopos_orders_status_completed)
+                is Order.Status.Custom ->
+                    order.status.value
+                        .replaceFirstChar { it.titlecase(locale) }
+                        .replace("-", " ") // cannot localize at runtime
+                Order.Status.Failed -> resourceProvider.getString(R.string.woopos_orders_status_failed)
+                Order.Status.OnHold -> resourceProvider.getString(R.string.woopos_orders_status_on_hold)
+                Order.Status.Pending -> resourceProvider.getString(R.string.woopos_orders_status_pending)
+                Order.Status.Processing -> resourceProvider.getString(R.string.woopos_orders_status_processing)
+                Order.Status.Refunded -> resourceProvider.getString(R.string.woopos_orders_status_refunded)
+            }
+
             OrderItemViewState(
                 id = order.id,
-                title = "Order #${order.number}",
-                date = order.dateCreated.formatToDDMMMYYYY(),
-                total = "${order.total} ${order.currency}",
-                isSelected = order.id == selectedId
+                title = "#${order.number}",
+                date = order.dateCreated.formatToMMMddYYYYAtHHmm(
+                    atWord = resourceProvider.getString(R.string.date_time_connector)
+                ),
+                total = formattedOrderTotals,
+                customerEmail = order.customer?.email,
+                isSelected = order.id == selectedId,
+                status = PosOrderStatus(
+                    text = formattedStatus,
+                    colorKey = OrderStatusColorKey.fromStatus(order.status)
+                )
             )
         }
     }

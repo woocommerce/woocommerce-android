@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.bookings
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import javax.inject.Inject
 
 class BookingsRepository @Inject constructor(
@@ -60,6 +62,45 @@ class BookingsRepository @Inject constructor(
             bookingId = bookingId
         )
 
+    suspend fun fetchBooking(
+        bookingId: Long
+    ): Result<Booking> {
+        val result = bookingsStore.fetchBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId
+        )
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(result.model!!)
+        }
+    }
+
+    suspend fun fetchResource(
+        resourceId: Long
+    ): Result<Unit> {
+        val result = bookingsStore.fetchResource(
+            site = selectedSite.get(),
+            resourceId = resourceId
+        )
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    fun observeResource(resourceId: Long): Flow<BookingResource?> {
+        return if (resourceId == 0L) {
+            flowOf(null)
+        } else {
+            bookingsStore.observeResource(
+                site = selectedSite.get(),
+                resourceId = resourceId
+            )
+        }
+    }
+
     data class FetchResult(
         val bookings: List<Booking>,
         val hasMorePages: Boolean
@@ -67,4 +108,4 @@ class BookingsRepository @Inject constructor(
 }
 
 typealias Booking = BookingEntity
-typealias BookingStatus = BookingEntity.Status
+typealias BookingResource = BookingResourceEntity

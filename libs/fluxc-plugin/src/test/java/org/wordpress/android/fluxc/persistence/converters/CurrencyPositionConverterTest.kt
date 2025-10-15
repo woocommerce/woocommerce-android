@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 
 class CurrencyPositionConverterTest {
     @Test
-    fun `returns default value if the db-stored value is invalid`() {
+    fun `when the db-stored value is invalid, then it returns default value`() {
         val converter = CurrencyPositionConverter(logger = mock())
         val invalidValue = "invalid_currency_position"
 

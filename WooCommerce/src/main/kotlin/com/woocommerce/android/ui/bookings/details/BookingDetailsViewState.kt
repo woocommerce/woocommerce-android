@@ -6,17 +6,27 @@ import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 
+sealed interface BookingDetailsLoadingState {
+    data object Idle : BookingDetailsLoadingState
+    data object Loading : BookingDetailsLoadingState
+    data object Refreshing : BookingDetailsLoadingState
+}
+
 data class BookingDetailsViewState(
     val toolbarTitle: String = "",
-    val orderId: Long = 0L,
     val bookingUiState: BookingUiState? = null,
+    val loadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Idle,
     val onCancelBooking: () -> Unit = {},
-    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> }
-)
+    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
+    val onRefresh: () -> Unit = {},
+) {
+    val shouldShowSkeleton: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Refreshing
+}
 
 data class BookingUiState(
+    val orderId: Long,
     val bookingSummary: BookingSummaryModel,
     val bookingsAppointmentDetails: BookingAppointmentDetailsModel,
     val bookingCustomerDetails: BookingCustomerDetailsModel,
-    val bookingPaymentDetails: BookingPaymentDetailsModel,
+    val bookingPaymentDetails: BookingPaymentDetailsModel?,
 )

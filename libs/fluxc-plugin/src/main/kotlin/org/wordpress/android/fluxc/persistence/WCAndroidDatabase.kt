@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
+import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.data.WCLocationModel
@@ -30,6 +31,7 @@ import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConver
 import org.wordpress.android.fluxc.persistence.converters.LocalIdConverter
 import org.wordpress.android.fluxc.persistence.converters.LongListConverter
 import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
+import org.wordpress.android.fluxc.persistence.converters.StatsGranularityConverter
 import org.wordpress.android.fluxc.persistence.converters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
@@ -55,6 +57,7 @@ import org.wordpress.android.fluxc.persistence.dao.ProductTagsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
+import org.wordpress.android.fluxc.persistence.dao.RevenueStatsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
@@ -70,6 +73,7 @@ import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CustomerFromAnalyticsEntity
@@ -122,7 +126,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 66
+const val WC_DATABASE_VERSION = 69
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -172,6 +176,8 @@ const val WC_DATABASE_VERSION = 66
         GatewayEntity::class,
         WCNewVisitorStatsModel::class,
         BookingEntity::class,
+        BookingResourceEntity::class,
+        WCRevenueStatsModel::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -220,6 +226,9 @@ const val WC_DATABASE_VERSION = 66
         AutoMigration(from = 63, to = 64),
         AutoMigration(from = 64, to = 65),
         AutoMigration(from = 65, to = 66),
+        AutoMigration(from = 66, to = 67),
+        AutoMigration(from = 67, to = 68),
+        AutoMigration(from = 68, to = 69)
     ]
 )
 @TypeConverters(
@@ -230,6 +239,7 @@ const val WC_DATABASE_VERSION = 66
         RemoteIdConverter::class,
         BigDecimalConverter::class,
         CurrencyPositionConverter::class,
+        StatsGranularityConverter::class,
     ]
 )
 abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
@@ -269,17 +279,20 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val globalAttributesDao: GlobalAttributesDao
     internal abstract val gatewaysDao: GatewaysDao
     internal abstract val newVisitorStatsDao: NewVisitorStatsDao
+    internal abstract val revenueStatsDao: RevenueStatsDao
 
     companion object {
         fun buildDb(
             applicationContext: Context,
-            currencyPositionConverter: CurrencyPositionConverter
+            currencyPositionConverter: CurrencyPositionConverter,
+            statsGranularityConverter: StatsGranularityConverter,
         ) = Room.databaseBuilder(
             applicationContext,
             WCAndroidDatabase::class.java,
             "wc-android-database"
         ).allowMainThreadQueries()
             .addTypeConverter(currencyPositionConverter)
+            .addTypeConverter(statsGranularityConverter)
             .fallbackToDestructiveMigrationOnDowngrade()
             .fallbackToDestructiveMigrationFrom(1, 2)
             .addMigrations(MIGRATION_3_4)

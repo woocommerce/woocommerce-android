@@ -5,6 +5,9 @@
 -----
 - [*][Internal][Woo POS] Survey for potential and current users of the POS delivered via local push notification. [https://github.com/woocommerce/woocommerce-android/pull/14751]
 
+- [Internal][Wear] Remove unused dependencies and optimize dependency scopes [https://github.com/woocommerce/woocommerce-android/pull/14710]
+- [Internal] Remove unused dependencies and optimize dependency scopes [https://github.com/woocommerce/woocommerce-android/pull/14710]
+- [*] Fix a rare crash in order refund flow [https://github.com/woocommerce/woocommerce-android/pull/14742]
 
 23.4
 -----

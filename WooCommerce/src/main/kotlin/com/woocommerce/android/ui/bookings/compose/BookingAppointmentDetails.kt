@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.bookings.compose
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,10 +14,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -39,10 +42,32 @@ fun BookingAppointmentDetails(
                 label = R.string.booking_appointment_label_time,
                 value = model.time
             )
-            AppointmentDetailsRow(
-                label = R.string.booking_appointment_label_staff,
-                value = model.staff
-            )
+            model.staff?.let {
+                AppointmentDetailsRow(
+                    label = R.string.booking_appointment_label_staff
+                ) {
+                    when (it) {
+                        is BookingStaffMemberStatus.Loaded, is BookingStaffMemberStatus.Unavailable -> {
+                            Text(
+                                text = (it as? BookingStaffMemberStatus.Loaded)?.name ?: "-",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+
+                        BookingStaffMemberStatus.Loading -> {
+                            SkeletonView(
+                                width = 80.dp,
+                                height = with(LocalDensity.current) {
+                                    MaterialTheme.typography.bodyMedium.fontSize.toDp()
+                                },
+                            )
+                        }
+                    }
+                }
+            }
             AppointmentDetailsRow(
                 label = R.string.booking_appointment_label_location,
                 value = model.location
@@ -72,7 +97,10 @@ fun BookingAppointmentDetails(
 }
 
 @Composable
-fun AppointmentDetailsRow(@StringRes label: Int, value: String) {
+private fun AppointmentDetailsRow(
+    @StringRes label: Int,
+    value: @Composable () -> Unit
+) {
     Column {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -81,14 +109,9 @@ fun AppointmentDetailsRow(@StringRes label: Int, value: String) {
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             BookingDetailsLabel(label)
-            Text(
-                modifier = Modifier.padding(start = 8.dp),
-                text = value,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Box(Modifier.padding(start = 8.dp)) {
+                value()
+            }
         }
         HorizontalDivider(
             modifier = Modifier.padding(start = 16.dp),
@@ -97,14 +120,33 @@ fun AppointmentDetailsRow(@StringRes label: Int, value: String) {
     }
 }
 
+@Composable
+private fun AppointmentDetailsRow(@StringRes label: Int, value: String) {
+    AppointmentDetailsRow(label = label) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
 data class BookingAppointmentDetailsModel(
     val date: String,
     val time: String,
-    val staff: String,
+    val staff: BookingStaffMemberStatus?,
     val location: String,
     val duration: String,
     val price: String
 )
+
+sealed interface BookingStaffMemberStatus {
+    data object Loading : BookingStaffMemberStatus
+    data class Loaded(val name: String) : BookingStaffMemberStatus
+    data object Unavailable : BookingStaffMemberStatus
+}
 
 @LightDarkThemePreviews
 @Composable
@@ -114,7 +156,7 @@ private fun BookingAppointmentDetailsPreview() {
             model = BookingAppointmentDetailsModel(
                 date = "05/07/2025, 11:00 AM",
                 time = "11:00 am - 12:00 pm",
-                staff = "Marianne Renoir",
+                staff = BookingStaffMemberStatus.Loading,
                 location = "238 Willow Creek Drive, Montgomery AL 36109",
                 duration = "60 min",
                 price = "$55.00"

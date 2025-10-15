@@ -27,9 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.coupons.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListSkeleton
 import com.woocommerce.android.ui.coupons.selector.LoadingState.Appending
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 
 @Composable
 fun CouponSelectorScreen(
@@ -91,7 +92,7 @@ fun EmptyCouponSelectorList(
         )
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         Image(
-            painter = painterResource(id = R.drawable.img_empty_coupon_list),
+            painter = rememberVectorPainter(image = WooPosIcons.CouponsEmpty),
             contentDescription = null,
         )
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_200)))
