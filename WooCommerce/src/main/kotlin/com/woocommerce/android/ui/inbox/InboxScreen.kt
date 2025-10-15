@@ -43,17 +43,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.toAnnotatedString
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 
 @Composable
@@ -169,7 +169,7 @@ fun InboxNoteRow(note: InboxNoteUi, limitDescription: Boolean = false) {
             )
             Text(
                 modifier = Modifier.animateContentSize(),
-                text = HtmlCompat.fromHtml(note.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toAnnotatedString(),
+                text = AnnotatedString.fromHtml(note.description),
                 style = MaterialTheme.typography.body2,
                 maxLines = if (displayShowMoreButton.value) 2 else Int.MAX_VALUE,
                 overflow = TextOverflow.Ellipsis

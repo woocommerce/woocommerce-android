@@ -70,6 +70,7 @@ class OrderStatsRestClient @Inject constructor(
      * Possible non-generic errors:
      * [OrderStatsErrorType.INVALID_PARAM] if [granularity], [startDate], or [endDate] are invalid or incompatible
      */
+    @Suppress("LongParameterList")
     suspend fun fetchRevenueStats(
         site: SiteModel,
         granularity: StatsGranularity,
@@ -77,7 +78,7 @@ class OrderStatsRestClient @Inject constructor(
         endDate: String,
         perPage: Int,
         forceRefresh: Boolean = false,
-        revenueRangeId: String = "",
+        revenueRangeId: String,
         dateType: String = "date_created",
     ): FetchRevenueStatsResponsePayload {
         val url = WOOCOMMERCE.reports.revenue.stats.pathV4Analytics
@@ -103,15 +104,15 @@ class OrderStatsRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 response.data?.let {
-                        val model = WCRevenueStatsModel().apply {
-                            this.localSiteId = site.id
-                            this.interval = granularity.toString()
-                            this.data = it.intervals.toString()
-                            this.total = it.totals.toString()
-                            this.startDate = startDate
-                            this.endDate = endDate
-                            this.rangeId = revenueRangeId
-                        }
+                        val model = WCRevenueStatsModel(
+                            localSiteId = site.localId(),
+                            interval = granularity.toString(),
+                            data = it.intervals.toString(),
+                            total = it.totals.toString(),
+                            startDate = startDate,
+                            endDate = endDate,
+                            rangeId = revenueRangeId,
+                        )
 
                     FetchRevenueStatsResponsePayload(site, granularity, model)
                 } ?: FetchRevenueStatsResponsePayload(
@@ -161,12 +162,12 @@ class OrderStatsRestClient @Inject constructor(
 
             when (response) {
                 is WPAPIResponse.Success -> {
-                    val payload = FetchRevenueStatsAvailabilityResponsePayload(site, true)
+                    val payload = FetchRevenueStatsAvailabilityResponsePayload(site)
                     dispatcher.dispatch(WCStatsActionBuilder.newFetchedRevenueStatsAvailabilityAction(payload))
                 }
                 is WPAPIResponse.Error -> {
                     val orderError = response.error.toOrderError()
-                    val payload = FetchRevenueStatsAvailabilityResponsePayload(orderError, site, false)
+                    val payload = FetchRevenueStatsAvailabilityResponsePayload(orderError, site)
                     dispatcher.dispatch(WCStatsActionBuilder.newFetchedRevenueStatsAvailabilityAction(payload))
                 }
             }

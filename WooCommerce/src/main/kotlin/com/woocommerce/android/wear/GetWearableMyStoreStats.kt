@@ -31,7 +31,8 @@ class GetWearableMyStoreStats @Inject constructor(
             visitorStatsGranularity = todayRange.visitorStatsGranularity,
             forced = true,
             includeVisitorStats = true,
-            site = selectedSite
+            site = selectedSite,
+            medium = "Wear",
         ).getOrNull()
     }
 }

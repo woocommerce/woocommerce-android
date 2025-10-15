@@ -292,6 +292,49 @@ class WooPosSyncVariationsActionTest {
         assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
     }
 
+    @Test
+    fun `given full sync with null modifiedAfterGmt, when sync variations called, then deletes variations not in list`() = runTest {
+        // GIVEN
+        val variations = createMockVariations(1, 50)
+        givenSinglePageCatalog(variationsCount = 50)
+
+        // WHEN
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = 2)
+
+        // THEN
+        verify(posLocalCatalogStore).deleteAllVariations(siteId = eq(site.localId()))
+        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+    }
+
+    @Test
+    fun `given incremental sync with modifiedAfterGmt, when sync variations called, then does not delete variations`() = runTest {
+        // GIVEN
+        val modifiedAfter = "2024-01-01T00:00:00Z"
+        givenSinglePageCatalog(variationsCount = 25)
+
+        // WHEN
+        val result = sut.execute(site, modifiedAfterGmt = modifiedAfter, pageSize = 100, maxPages = 2)
+
+        // THEN
+        verify(posLocalCatalogStore, times(0)).deleteAllVariations(any())
+        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+    }
+
+    @Test
+    fun `given empty catalog full sync, when sync variations called, then deletes all variations`() = runTest {
+        // GIVEN
+        givenEmptyCatalog()
+
+        // WHEN
+        val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = 2)
+
+        // THEN
+        verify(posLocalCatalogStore).deleteAllVariations(
+            siteId = eq(site.localId())
+        )
+        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+    }
+
     // Helper functions
     private suspend fun givenSinglePageCatalog(
         variationsCount: Int = PAGE_SIZE / 2,
@@ -541,5 +584,6 @@ class WooPosSyncVariationsActionTest {
             runBlocking { block.invoke() }
         }
         whenever(posLocalCatalogStore.upsertVariations(any())).thenReturn(KotlinResult.success(Unit))
+        whenever(posLocalCatalogStore.deleteAllVariations(any())).thenReturn(KotlinResult.success(Unit))
     }
 }

@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.store
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
-import com.yarolegovich.wellsql.WellSql
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
@@ -19,8 +18,8 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.UnitTestUtils
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.WCVisitorStatsSummary
@@ -34,7 +33,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStats
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.VisitorStatsSummaryApiResponse
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsResponsePayload
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -67,14 +65,6 @@ class WCStatsStoreTest {
 
     @Before
     fun setUp() {
-        val config = SingleStoreWellSqlConfigForTests(
-            context,
-            listOf(WCRevenueStatsModel::class.java),
-            WellSqlConfig.Companion.ADDON_WOOCOMMERCE
-        )
-        WellSql.init(config)
-        config.reset()
-
         wcStatsStore = WCStatsStore(
             dispatcher = Dispatcher(),
             wcOrderStatsClient = mockOrderStatsRestClient,
@@ -82,6 +72,7 @@ class WCStatsStoreTest {
             coroutineEngine = initCoroutineEngine(),
             visitorSummaryStatsDao = databaseRule.db.visitorSummaryStatsDao,
             newVisitorStatsDao = databaseRule.db.newVisitorStatsDao,
+            revenueStatsDao = databaseRule.db.revenueStatsDao,
         )
     }
 
@@ -385,11 +376,14 @@ class WCStatsStoreTest {
                     any(),
                     any()
                 )
-            ).thenReturn(FetchRevenueStatsResponsePayload(it, StatsGranularity.DAYS, WCRevenueStatsModel()))
-            val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
-            val endDate = DateUtils.getEndDateForSite(it)
-            val payload = FetchRevenueStatsPayload(it, StatsGranularity.DAYS, startDate, endDate)
-            wcStatsStore.fetchRevenueStats(payload)
+            ).thenReturn(
+                FetchRevenueStatsResponsePayload(
+                    it,
+                    StatsGranularity.DAYS,
+                    WCRevenueStatsModel.fake()
+                )
+            )
+            wcStatsStore.fetchRevenueStats(revenuePayload(it))
 
             val timeOnSite = getCurrentDateTimeForSite(it, "yyyy-MM-dd'T'00:00:00")
 
@@ -424,11 +418,14 @@ class WCStatsStoreTest {
                     any(),
                     any()
                 )
-            ).thenReturn(FetchRevenueStatsResponsePayload(it, StatsGranularity.DAYS, WCRevenueStatsModel()))
-            val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
-            val endDate = DateUtils.getEndDateForSite(it)
-            val payload = FetchRevenueStatsPayload(it, StatsGranularity.DAYS, startDate, endDate)
-            wcStatsStore.fetchRevenueStats(payload)
+            ).thenReturn(
+                FetchRevenueStatsResponsePayload(
+                    it,
+                    StatsGranularity.DAYS,
+                    WCRevenueStatsModel.fake()
+                )
+            )
+            wcStatsStore.fetchRevenueStats(revenuePayload(it))
 
             val timeOnSite = getCurrentDateTimeForSite(it, "yyyy-MM-dd'T'00:00:00")
 
@@ -471,12 +468,13 @@ class WCStatsStoreTest {
                     any(),
                     any()
                 )
-            ).thenReturn(FetchRevenueStatsResponsePayload(it, StatsGranularity.DAYS, WCRevenueStatsModel()))
-            val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
-            val endDate = DateUtils.formatDate("yyyy-MM-dd", Date())
-
-            val payload = FetchRevenueStatsPayload(it, StatsGranularity.DAYS, startDate, endDate)
-            wcStatsStore.fetchRevenueStats(payload)
+            ).thenReturn(
+                FetchRevenueStatsResponsePayload(
+                    it, StatsGranularity.DAYS,
+                    WCRevenueStatsModel.fake()
+                )
+            )
+            wcStatsStore.fetchRevenueStats(revenuePayload(it))
 
             val timeOnSite = getCurrentDateTimeForSite(it, "yyyy-MM-dd'T'00:00:00")
 
@@ -511,11 +509,13 @@ class WCStatsStoreTest {
                     any(),
                     any()
                 )
-            ).thenReturn(FetchRevenueStatsResponsePayload(it, StatsGranularity.DAYS, WCRevenueStatsModel()))
-            val startDate = DateUtils.getStartDateForSite(it, DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date()))
-            val endDate = DateUtils.getEndDateForSite(it)
-            val payload = FetchRevenueStatsPayload(it, StatsGranularity.DAYS, startDate, endDate)
-            wcStatsStore.fetchRevenueStats(payload)
+            ).thenReturn(
+                FetchRevenueStatsResponsePayload(
+                    it, StatsGranularity.DAYS,
+                    WCRevenueStatsModel.fake()
+                )
+            )
+            wcStatsStore.fetchRevenueStats(revenuePayload(it))
 
             val timeOnSite = getCurrentDateTimeForSite(it, "yyyy-MM-dd'T'00:00:00")
 
@@ -548,7 +548,7 @@ class WCStatsStoreTest {
     fun testGetRevenueAndOrderStatsForSite() = test {
         // revenue stats model for current day
         val currentDayStatsModel = WCStatsTestUtils.generateSampleRevenueStatsModel()
-        val site = SiteModel().apply { id = currentDayStatsModel.localSiteId }
+        val site1 = SiteModel().apply { id = currentDayStatsModel.localSiteId.value }
         val currentDayGranularity = StatsGranularity.valueOf(
             currentDayStatsModel.interval.uppercase(
                 Locale.getDefault()
@@ -567,27 +567,28 @@ class WCStatsStoreTest {
             )
         ).thenReturn(
             FetchRevenueStatsResponsePayload(
-                site,
+                site1,
                 currentDayGranularity,
                 currentDayStatsModel
             )
         )
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site,
-                currentDayGranularity,
-                currentDayStatsModel.startDate,
-                currentDayStatsModel.endDate
+                site = site1,
+                granularity = currentDayGranularity,
+                startDate = currentDayStatsModel.startDate,
+                endDate = currentDayStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
         // verify that the revenue stats & order count is not empty
         val currentDayRevenueStats = wcStatsStore.getGrossRevenueStats(
-            site, StatsGranularity.valueOf(currentDayStatsModel.interval.uppercase(Locale.getDefault())),
+            site1, StatsGranularity.valueOf(currentDayStatsModel.interval.uppercase(Locale.getDefault())),
             currentDayStatsModel.startDate, currentDayStatsModel.endDate
         )
         val currentDayOrderStats = wcStatsStore.getOrderCountStats(
-            site, StatsGranularity.valueOf(currentDayStatsModel.interval.uppercase(Locale.getDefault())),
+            site1, StatsGranularity.valueOf(currentDayStatsModel.interval.uppercase(Locale.getDefault())),
             currentDayStatsModel.startDate, currentDayStatsModel.endDate
         )
 
@@ -605,7 +606,7 @@ class WCStatsStoreTest {
             )
         )
         val currentWeekPayload = FetchRevenueStatsResponsePayload(
-            site, currentWeekGranularity, currentWeekStatsModel
+            site1, currentWeekGranularity, currentWeekStatsModel
         )
         whenever(
             mockOrderStatsRestClient.fetchRevenueStats(
@@ -621,20 +622,21 @@ class WCStatsStoreTest {
         ).thenReturn(currentWeekPayload)
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site,
-                currentWeekGranularity,
-                currentWeekStatsModel.startDate,
-                currentWeekStatsModel.endDate
+                site = site1,
+                granularity = currentWeekGranularity,
+                startDate = currentWeekStatsModel.startDate,
+                endDate = currentWeekStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
         // verify that the revenue stats & order count is not empty
         val currentWeekRevenueStats = wcStatsStore.getGrossRevenueStats(
-            site, StatsGranularity.valueOf(currentWeekStatsModel.interval.uppercase(Locale.getDefault())),
+            site1, StatsGranularity.valueOf(currentWeekStatsModel.interval.uppercase(Locale.getDefault())),
             currentWeekStatsModel.startDate, currentWeekStatsModel.endDate
         )
         val currentWeekOrderStats = wcStatsStore.getOrderCountStats(
-            site, StatsGranularity.valueOf(currentWeekStatsModel.interval.uppercase(Locale.getDefault())),
+            site1, StatsGranularity.valueOf(currentWeekStatsModel.interval.uppercase(Locale.getDefault())),
             currentWeekStatsModel.startDate, currentWeekStatsModel.endDate
         )
 
@@ -652,7 +654,7 @@ class WCStatsStoreTest {
             )
         )
         val currentMonthPayload = FetchRevenueStatsResponsePayload(
-            site, currentMonthGranularity, currentMonthStatsModel
+            site1, currentMonthGranularity, currentMonthStatsModel
         )
         whenever(
             mockOrderStatsRestClient.fetchRevenueStats(
@@ -668,20 +670,21 @@ class WCStatsStoreTest {
         ).thenReturn(currentMonthPayload)
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site,
-                currentMonthGranularity,
-                currentMonthStatsModel.startDate,
-                currentMonthStatsModel.endDate
+                site = site1,
+                granularity = currentMonthGranularity,
+                startDate = currentMonthStatsModel.startDate,
+                endDate = currentMonthStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
         // verify that the revenue stats & order count is not empty
         val currentMonthRevenueStats = wcStatsStore.getGrossRevenueStats(
-            site, StatsGranularity.valueOf(currentMonthStatsModel.interval.uppercase(Locale.getDefault())),
+            site1, StatsGranularity.valueOf(currentMonthStatsModel.interval.uppercase(Locale.getDefault())),
             currentMonthStatsModel.startDate, currentMonthStatsModel.endDate
         )
         val currentMonthOrderStats = wcStatsStore.getOrderCountStats(
-            site, StatsGranularity.valueOf(currentMonthStatsModel.interval.uppercase(Locale.getDefault())),
+            site1, StatsGranularity.valueOf(currentMonthStatsModel.interval.uppercase(Locale.getDefault())),
             currentMonthStatsModel.startDate, currentMonthStatsModel.endDate
         )
 
@@ -699,7 +702,7 @@ class WCStatsStoreTest {
             )
         )
         val allSiteCurrentDayPayload = FetchRevenueStatsResponsePayload(
-            site, allSiteCurrentDayGranularity, altSiteOrderStatsModel
+            site2, allSiteCurrentDayGranularity, altSiteOrderStatsModel
         )
         whenever(
             mockOrderStatsRestClient.fetchRevenueStats(
@@ -715,20 +718,21 @@ class WCStatsStoreTest {
         ).thenReturn(allSiteCurrentDayPayload)
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site,
-                allSiteCurrentDayGranularity,
-                altSiteOrderStatsModel.startDate,
-                altSiteOrderStatsModel.endDate
+                site = site2,
+                granularity = allSiteCurrentDayGranularity,
+                startDate = altSiteOrderStatsModel.startDate,
+                endDate = altSiteOrderStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
         // verify that the revenue stats & order count is not empty
         val altSiteCurrentDayRevenueStats = wcStatsStore.getGrossRevenueStats(
-            site, StatsGranularity.valueOf(altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())),
+            site2, StatsGranularity.valueOf(altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())),
             altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
         )
         val altSiteCurrentDayOrderStats = wcStatsStore.getOrderCountStats(
-            site, StatsGranularity.valueOf(altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())),
+            site2, StatsGranularity.valueOf(altSiteOrderStatsModel.interval.uppercase(Locale.getDefault())),
             altSiteOrderStatsModel.startDate, altSiteOrderStatsModel.endDate
         )
 
@@ -755,10 +759,11 @@ class WCStatsStoreTest {
         ).thenReturn(nonExistentPayload)
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site,
-                nonExistentSiteGranularity,
-                altSiteOrderStatsModel.startDate,
-                altSiteOrderStatsModel.endDate
+                site = site2,
+                granularity = nonExistentSiteGranularity,
+                startDate = altSiteOrderStatsModel.startDate,
+                endDate = altSiteOrderStatsModel.endDate,
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
@@ -794,19 +799,20 @@ class WCStatsStoreTest {
         ).thenReturn(nonExistentPayload)
         wcStatsStore.fetchRevenueStats(
             FetchRevenueStatsPayload(
-                site = site,
+                site = site2,
                 granularity = StatsGranularity.YEARS,
                 startDate = "2019-01-01",
-                endDate = "2019-01-07"
+                endDate = "2019-01-07",
+                revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
             )
         )
 
         // verify that the revenue stats & order count is empty
         val missingRevenueStats = wcStatsStore.getGrossRevenueStats(
-            site, StatsGranularity.YEARS, "2019-01-01", "2019-01-07"
+            site2, StatsGranularity.YEARS, "2019-01-01", "2019-01-07"
         )
         val missingOrderStats = wcStatsStore.getOrderCountStats(
-            site, StatsGranularity.YEARS, "2019-01-01", "2019-01-07"
+            site2, StatsGranularity.YEARS, "2019-01-01", "2019-01-07"
         )
         assertTrue(missingRevenueStats.isEmpty())
         assertTrue(missingOrderStats.isEmpty())
@@ -1183,4 +1189,32 @@ class WCStatsStoreTest {
 
         assertEquals(true, result.isError)
     }
+
+    @Suppress("LongParameterList")
+    private fun revenuePayload(
+        site: SiteModel,
+    ): FetchRevenueStatsPayload {
+        val startDate = DateUtils.getStartDateForSite(
+            site,
+            DateUtils.formatDate("yyyy-MM-dd'T'00:00:00", Date())
+        )
+        val endDate = DateUtils.getEndDateForSite(site)
+        return FetchRevenueStatsPayload(
+            site = site,
+            granularity = StatsGranularity.DAYS,
+            startDate = startDate,
+            endDate = endDate,
+            revenueRangeId = "$startDate$endDate",
+        )
+    }
+
+    private fun WCRevenueStatsModel.Companion.fake() = WCRevenueStatsModel(
+        LocalId(1),
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+    )
 }

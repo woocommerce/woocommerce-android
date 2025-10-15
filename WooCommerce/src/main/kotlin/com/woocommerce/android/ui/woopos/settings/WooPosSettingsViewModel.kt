@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCateg
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.HardwareTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.HelpTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsClosed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsOpened
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.StoreDetailsTapped
@@ -38,6 +39,7 @@ class WooPosSettingsViewModel @Inject constructor(
     private fun trackCategorySelection(category: WooPosSettingsCategory) {
         val event = when (category) {
             WooPosSettingsCategory.STORE -> StoreDetailsTapped
+            WooPosSettingsCategory.LOCAL_CATALOG -> LocalCatalogTapped
             WooPosSettingsCategory.HARDWARE -> HardwareTapped
             WooPosSettingsCategory.HELP -> HelpTapped
         }

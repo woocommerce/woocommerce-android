@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.list
 
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.Clock
 import java.time.LocalDate
@@ -34,5 +35,18 @@ class BookingListFiltersBuilder @Inject constructor(
 
             BookingListTab.All -> null
         }
+    }
+
+    fun BookingFilters.asList(): List<BookingsFilterOption> {
+        val filters = mutableListOf<BookingsFilterOption>()
+        customer?.let { filters.add(it) }
+        dateRange?.let { filters.add(it) }
+        teamMember?.let { filters.add(it) }
+        attendanceStatus?.let { filters.add(it) }
+        paymentStatus?.let { filters.add(it) }
+        bookingType?.let { filters.add(it) }
+        location?.let { filters.add(it) }
+        serviceEvent?.let { filters.add(it) }
+        return filters
     }
 }

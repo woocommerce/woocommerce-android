@@ -54,7 +54,8 @@ class GetWidgetStats @Inject constructor(
                         visitorStatsGranularity = rangeSelection.visitorStatsGranularity,
                         forced = true,
                         includeVisitorStats = areVisitorStatsSupported,
-                        site = siteModel
+                        site = siteModel,
+                        medium = "Widget",
                     )
                     fetchedStats.fold(
                         onSuccess = { stats ->

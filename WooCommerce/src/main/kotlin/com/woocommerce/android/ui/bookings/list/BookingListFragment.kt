@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class BookingListFragment : TopLevelFragment() {
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -46,12 +47,13 @@ class BookingListFragment : TopLevelFragment() {
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is BookingListViewModel.NavigateToBookingDetails -> {
-                    findNavController().navigate(
-                        BookingListFragmentDirections
-                            .actionBookingListFragmentToBookingDetailsFragment(event.bookingId)
-                    )
-                }
+                is BookingListViewModel.NavigateToFilters -> findNavController().navigate(
+                    BookingListFragmentDirections.actionBookingListFragmentToBookingFilterList()
+                )
+
+                is BookingListViewModel.NavigateToBookingDetails -> findNavController().navigate(
+                    BookingListFragmentDirections.actionBookingListFragmentToBookingDetailsFragment(event.bookingId)
+                )
 
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }

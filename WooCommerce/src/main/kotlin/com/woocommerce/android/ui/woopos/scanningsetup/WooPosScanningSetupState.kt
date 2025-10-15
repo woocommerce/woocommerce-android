@@ -138,10 +138,6 @@ data class WooPosScanningSetupState(
 
         @Parcelize
         data class PairYourScanner(@StringRes val deviceName: Int) : ScanningSetupStep() {
-            @get:DrawableRes
-            @IgnoredOnParcel
-            val iconRes: Int = R.drawable.ic_woopos_bluetooth_settings
-
             @get:StringRes
             @IgnoredOnParcel
             val titleRes = R.string.woopos_scanning_setup_pair_your_scanner_title
@@ -206,10 +202,6 @@ data class WooPosScanningSetupState(
 
         @Parcelize
         data object TestYourScannerScanFailed : ScanningSetupStep() {
-            @get:DrawableRes
-            @IgnoredOnParcel
-            val iconRes: Int = R.drawable.ic_woo_pos_error_x
-
             @get:StringRes
             @IgnoredOnParcel
             val titleRes = R.string.woopos_scanning_setup_scan_failed_title

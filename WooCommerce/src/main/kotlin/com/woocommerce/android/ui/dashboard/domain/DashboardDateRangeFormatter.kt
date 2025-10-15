@@ -7,8 +7,8 @@ import com.woocommerce.android.extensions.formatToMMMMyyyy
 import com.woocommerce.android.extensions.formatToYYYY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.dashboard.data.asRevenueRangeId
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.commons.stats.StatsUtils.asRevenueRangeId
 import javax.inject.Inject
 
 class DashboardDateRangeFormatter @Inject constructor(private val dateUtils: DateUtils) {
