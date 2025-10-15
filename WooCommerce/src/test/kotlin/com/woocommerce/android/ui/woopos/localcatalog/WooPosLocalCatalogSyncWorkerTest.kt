@@ -16,6 +16,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -150,8 +151,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.failure())
-        verify(syncRepository, org.mockito.kotlin.never()).syncLocalCatalogFull(any())
-        verify(syncRepository, org.mockito.kotlin.never()).syncLocalCatalogIncremental(any())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
     }
 
     @Test
@@ -301,7 +302,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.retry())
         verify(syncRepository).syncLocalCatalogFull(eq(site))
-        verify(syncRepository, org.mockito.kotlin.never()).syncLocalCatalogIncremental(any())
+        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
     }
 
     @Test
@@ -318,7 +319,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.failure())
         verify(syncRepository).syncLocalCatalogFull(eq(site))
-        verify(syncRepository, org.mockito.kotlin.never()).syncLocalCatalogIncremental(any())
+        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
     }
 
     @Test
@@ -348,7 +349,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         worker.doWork()
 
         // THEN
-        verify(preferencesRepository, org.mockito.kotlin.never()).disablePeriodicSyncForSite(any())
+        verify(preferencesRepository, never()).disablePeriodicSyncForSite(any())
     }
 
     @Test
@@ -365,6 +366,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         worker.doWork()
 
         // THEN
-        verify(preferencesRepository, org.mockito.kotlin.never()).disablePeriodicSyncForSite(any())
+        verify(preferencesRepository, never()).disablePeriodicSyncForSite(any())
     }
 }
