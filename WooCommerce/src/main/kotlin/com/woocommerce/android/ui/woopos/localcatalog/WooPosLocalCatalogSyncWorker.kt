@@ -82,7 +82,7 @@ constructor(
                 preferencesRepository.disablePeriodicSyncForSite(site.siteId)
                 logger.e(
                     "Local catalog FULL sync failed: ${fullSyncResult.error}. Permanently " +
-                        "disabling periodic sync for site ${site.siteId}."
+                        "disabling periodic sync for site ${site.url}."
                 )
                 Result.failure()
             }
