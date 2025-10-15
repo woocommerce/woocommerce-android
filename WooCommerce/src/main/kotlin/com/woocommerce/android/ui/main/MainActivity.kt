@@ -1028,28 +1028,25 @@ class MainActivity :
         restart()
     }
 
-    override fun showProductDetail(remoteProductId: Long, popUpToProductList: Boolean) {
+    override fun showProductDetail(remoteProductId: Long, popUpToProductList: Boolean, sharedView: View?) {
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
             mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
         )
+        val extras = if (sharedView != null) {
+            val productCardDetailTransitionName = getString(R.string.product_card_detail_transition_name)
+            FragmentNavigatorExtras(sharedView to productCardDetailTransitionName)
+        } else {
+            null
+        }
         navController.navigateSafely(
             directions = action,
+            extras = extras,
             navOptions = navOptions {
                 if (popUpToProductList) {
                     popUpTo(R.id.products)
                 }
             }
         )
-    }
-
-    override fun showProductDetailWithSharedTransition(remoteProductId: Long, sharedView: View) {
-        val productCardDetailTransitionName = getString(R.string.product_card_detail_transition_name)
-        val extras = FragmentNavigatorExtras(sharedView to productCardDetailTransitionName)
-
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-        )
-        navController.navigateSafely(directions = action, extras = extras)
     }
 
     override fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
