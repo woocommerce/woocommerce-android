@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -286,7 +286,7 @@ private fun SyncFailedContent(onRetryClicked: () -> Unit) {
     WooPosErrorScreen(
         message = stringResource(R.string.woopos_home_sync_failed_title),
         reason = stringResource(R.string.woopos_home_sync_failed_message),
-        primaryButton = Button(
+        primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(R.string.woopos_home_sync_failed_retry_button),
             click = onRetryClicked
         )

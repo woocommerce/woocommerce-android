@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.wc.stats
 
 import org.wordpress.android.fluxc.UnitTestUtils
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -25,13 +25,15 @@ object WCStatsTestUtils {
         endDate: String = dateTimeFormatter.format(LocalDate.now().atTime(23, 59, 59)),
         data: String = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/revenue-stats-data.json")
     ): WCRevenueStatsModel {
-        return WCRevenueStatsModel().apply {
-            this.localSiteId = localSiteId
-            this.interval = interval
-            this.endDate = endDate
-            this.data = data
-            this.startDate = startDate
-        }
+        return WCRevenueStatsModel(
+            localSiteId = LocalId(localSiteId),
+            interval = interval,
+            endDate = endDate,
+            data = data,
+            startDate = startDate,
+            total = "",
+            rangeId = "",
+        )
     }
 
     /**
@@ -48,7 +50,7 @@ object WCStatsTestUtils {
         data: String = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/visitor-stats-data.json")
     ): WCNewVisitorStatsModel {
         return WCNewVisitorStatsModel(
-            localSiteId = LocalOrRemoteId.LocalId(localSiteId),
+            localSiteId = LocalId(localSiteId),
             granularity = granularity,
             quantity = quantity,
             endDate = endDate,

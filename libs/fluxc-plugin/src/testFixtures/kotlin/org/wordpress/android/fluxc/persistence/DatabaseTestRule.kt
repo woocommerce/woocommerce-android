@@ -6,6 +6,7 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.mockito.Mockito
 import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConverter
+import org.wordpress.android.fluxc.persistence.converters.StatsGranularityConverter
 
 class DatabaseTestRule(private val appContext: Context) : TestWatcher() {
 
@@ -14,6 +15,7 @@ class DatabaseTestRule(private val appContext: Context) : TestWatcher() {
     override fun starting(description: Description?) {
         db = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
             .addTypeConverter(CurrencyPositionConverter(Mockito.mock()))
+            .addTypeConverter(StatsGranularityConverter(Mockito.mock()))
             .allowMainThreadQueries()
             .build()
     }

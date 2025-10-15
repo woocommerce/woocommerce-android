@@ -48,27 +48,35 @@ constructor(
             return Result.failure()
         }
 
-        logger.d("Starting full local catalog sync")
+        logger.d("Starting FULL local catalog sync")
 
-        val syncResult = syncRepository.syncLocalCatalogFull(site)
+        val fullSyncResult = syncRepository.syncLocalCatalogFull(site)
 
-        return when (syncResult) {
+        return when (fullSyncResult) {
             is PosLocalCatalogSyncResult.Success -> {
                 logger.d(
-                    "Local catalog sync completed successfully. Products: ${syncResult.productsSynced}, " +
-                        "Variations: ${syncResult.variationsSynced}, Duration: ${syncResult.syncDurationMs}ms"
+                    "Local catalog FULL sync completed successfully. Products: ${fullSyncResult.productsSynced}, " +
+                        "Variations: ${fullSyncResult.variationsSynced}, Duration: ${fullSyncResult.syncDurationMs}ms"
                 )
                 timestampManager.storeFullSyncLastCompletedTimestamp(System.currentTimeMillis())
+                logger.d("Starting Local catalog INCREMENTAL sync.")
+                val incrementalSyncResult = syncRepository.syncLocalCatalogIncremental(site)
+                if (incrementalSyncResult is PosLocalCatalogSyncResult.Failure) {
+                    logger.d(
+                        "Local catalog INCREMENTAL sync failed."
+                    )
+                }
                 Result.success()
             }
 
             is PosLocalCatalogSyncResult.Failure.UnexpectedError -> {
-                logger.e("Local catalog sync failed: ${syncResult.error}. Retrying ...")
+                logger.e("Local catalog FULL sync failed: ${fullSyncResult.error}. Retrying ...")
                 Result.retry()
             }
+
             is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
                 // TBD Local Catalog - stop future syncs for this site if catalog too large
-                logger.e("Local catalog sync failed: ${syncResult.error}.")
+                logger.e("Local catalog FULL sync failed: ${fullSyncResult.error}.")
                 Result.failure()
             }
         }

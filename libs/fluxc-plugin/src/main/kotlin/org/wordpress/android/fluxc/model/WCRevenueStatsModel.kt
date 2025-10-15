@@ -1,35 +1,29 @@
 package org.wordpress.android.fluxc.model
 
+import androidx.room.Entity
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.utils.NonNegativeIntJsonDeserializer
 
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-data class WCRevenueStatsModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    @Column var localSiteId = 0
-    @Column var interval = "" // The unit ("hour", "day", "week", "month", "year")
-    @Column var startDate = "" // The start date of the data
-    @Column var endDate = "" // The end date of the data
-    @Column var data = "" // JSON - A list of lists; each nested list contains the data for a time period
-    @Column var total = "" // JSON - A map of total stats for a given time period
-    @Column var rangeId = "" // A ID for easily fetch the Revenue Stats for a given start and end date
-
+@Entity(
+    tableName = "RevenueStatsEntity",
+    primaryKeys = ["localSiteId", "rangeId"],
+)
+data class WCRevenueStatsModel(
+    val localSiteId: LocalId,
+    val interval: String, // The unit ("hour", "day", "week", "month", "year")
+    val startDate: String, // The start date of the data
+    val endDate: String, // The end date of the data
+    val data: String, // JSON - A list of lists; each nested list contains the data for a time period
+    val total: String, // JSON - A map of total stats for a given time period
+    val rangeId: String, // A ID for easily fetch the Revenue Stats for a given start and end date
+) {
     companion object {
         private val gson by lazy { Gson() }
-    }
-
-    override fun getId() = id
-
-    override fun setId(id: Int) {
-        this.id = id
     }
 
     @Suppress("MemberNameEqualsClassName")

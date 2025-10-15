@@ -21,14 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
@@ -138,7 +138,7 @@ private fun WooPosVariationsScreens(
             }
 
             is WooPosVariationsViewState.Empty -> {
-                WooPosItemsEmptyList(
+                WooPosEmptyScreen(
                     modifier = Modifier.fillMaxSize()
                         .padding(top = WooPosSpacing.Large.value),
                     title = stringResource(id = R.string.woopos_variations_empty_list_title),
@@ -168,7 +168,7 @@ private fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
             modifier = modifier,
             message = stringResource(id = R.string.woopos_variations_loading_error_title),
             reason = stringResource(id = R.string.woopos_variations_loading_error_message),
-            primaryButton = Button(
+            primaryButton = WooPosErrorScreenButtonState(
                 text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
                 click = onRetryClicked
             )
@@ -181,7 +181,7 @@ private fun VariationsPaginationError(onRetryClicked: () -> Unit) {
     WooPosPaginationErrorIndicator(
         message = stringResource(id = R.string.woopos_items_pagination_error_title),
         description = stringResource(id = R.string.woopos_items_pagination_error_description),
-        primaryButton = Button(
+        primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_items_pagination_try_again_label),
             click = onRetryClicked
         ),

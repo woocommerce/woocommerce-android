@@ -7,10 +7,8 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.metadata.get
-import org.wordpress.android.fluxc.model.order.FeeLine
 import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
 import org.wordpress.android.fluxc.model.order.OrderAddress
-import org.wordpress.android.fluxc.model.order.ShippingLine
 import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.model.order.WCLineTaxEntry
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.CHARGE_ID_KEY

@@ -35,30 +35,28 @@ android {
 }
 
 dependencies {
-    implementation libs.wordpress.utils
+    api libs.wordpress.utils
     implementation libs.gravatar
 
-    implementation libs.androidx.appcompat
+    api libs.androidx.appcompat
 
     implementation libs.androidx.constraintlayout.main
     implementation libs.google.material
 
-    implementation libs.androidx.core.ktx
-
     api libs.google.play.services.auth
 
-    implementation project(":libs:fluxc")
+    api project(":libs:fluxc")
 
     implementation libs.bumptech.glide.main
     ksp libs.bumptech.glide.ksp
 
     implementation libs.androidx.credentials.main
-    implementation libs.androidx.credentials.play.service.auth
+    runtimeOnly libs.androidx.credentials.play.service.auth
 
     // Dagger
-    implementation libs.google.dagger
+    api libs.google.dagger
     ksp libs.google.dagger.compiler
-    implementation libs.google.dagger.android.support
+    api libs.google.dagger.android.support
     ksp libs.google.dagger.android.processor
 
     testImplementation libs.junit

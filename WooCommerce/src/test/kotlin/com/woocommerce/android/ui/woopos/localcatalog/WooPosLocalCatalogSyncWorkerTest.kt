@@ -43,6 +43,12 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         totalPages = 29,
         maxPages = 10
     )
+    private val incrementalSuccessResponse = PosLocalCatalogSyncResult.Success(
+        productsSynced = 5,
+        variationsSynced = 2,
+        syncDurationMs = 500
+    )
+    private val incrementalFailureResponse = PosLocalCatalogSyncResult.Failure.UnexpectedError("Incremental sync error")
 
     @Before
     fun setup() = testBlocking {
@@ -57,6 +63,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
         whenever(syncRepository.syncLocalCatalogFull(site))
             .thenReturn(successResponse)
+        whenever(syncRepository.syncLocalCatalogIncremental(site))
+            .thenReturn(incrementalSuccessResponse)
     }
 
     private fun createWorker(): WooPosLocalCatalogSyncWorker {
@@ -82,6 +90,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogIncremental(eq(site))
     }
 
     @Test
@@ -190,6 +200,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
                     syncDurationMs = 1000L
                 )
             )
+        whenever(syncRepository.syncLocalCatalogIncremental(site))
+            .thenReturn(incrementalSuccessResponse)
         val result3 = worker.doWork()
 
         // THEN
@@ -221,6 +233,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
                     syncDurationMs = 800L
                 )
             )
+        whenever(syncRepository.syncLocalCatalogIncremental(any()))
+            .thenReturn(incrementalSuccessResponse)
 
         val worker = createWorker()
 
@@ -235,5 +249,71 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         assertThat(result2).isEqualTo(ListenableWorker.Result.success())
         verify(syncRepository).syncLocalCatalogFull(eq(site1))
         verify(syncRepository).syncLocalCatalogFull(eq(site2))
+    }
+
+    @Test
+    fun `given full sync succeeds, when incremental sync succeeds, then returns success and calls both syncs`() = testBlocking {
+        // GIVEN
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogIncremental(eq(site))
+    }
+
+    @Test
+    fun `given full sync succeeds, when incremental sync fails, then returns success but logs error`() = testBlocking {
+        // GIVEN
+        whenever(syncRepository.syncLocalCatalogIncremental(site))
+            .thenReturn(incrementalFailureResponse)
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogIncremental(eq(site))
+        verify(logger).d("Local catalog INCREMENTAL sync failed.")
+    }
+
+    @Test
+    fun `given full sync fails, when worker executes, then incremental sync is not called`() = testBlocking {
+        // GIVEN
+        whenever(syncRepository.syncLocalCatalogFull(site))
+            .thenReturn(PosLocalCatalogSyncResult.Failure.UnexpectedError("Full sync failed"))
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.retry())
+        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository, org.mockito.kotlin.never()).syncLocalCatalogIncremental(any())
+    }
+
+    @Test
+    fun `given full sync fails with catalog too large, when worker executes, then incremental sync is not called`() = testBlocking {
+        // GIVEN
+        whenever(syncRepository.syncLocalCatalogFull(site))
+            .thenReturn(catalogTooLargeResponse)
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository, org.mockito.kotlin.never()).syncLocalCatalogIncremental(any())
     }
 }

@@ -135,15 +135,10 @@ dependencies {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
-    implementation(libs.automattic.tracks.android)
     implementation(libs.automattic.tracks.crashlogging)
 
     // WearOS
     implementation(libs.google.play.services.wearable)
-    implementation(libs.androidx.wear.tiles.main)
-    implementation(libs.androidx.wear.tiles.material)
-    implementation(libs.google.horologist.compose.tools)
-    implementation(libs.google.horologist.tiles)
     implementation(libs.google.horologist.compose.layout)
     implementation(libs.androidx.wear.watchface.complications.data.source.ktx)
     implementation(libs.androidx.wear.compose.material)
@@ -164,30 +159,26 @@ dependencies {
     // Android Support
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.datastore.main)
     implementation(libs.google.gson)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
+    runtimeOnly(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     testImplementation(libs.kotlinx.coroutines.test)
 
     // Dagger & Hilt
     implementation(libs.google.dagger.hilt.android.main)
-    implementation(libs.androidx.hilt.navigation.fragment)
-    implementation(libs.androidx.hilt.common)
-    implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.hilt.navigation.compose)
+    compileOnly(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.google.dagger.hilt.compiler)
-    implementation(libs.google.dagger.android.support)
     ksp(libs.google.dagger.android.processor)
 
     // Testing

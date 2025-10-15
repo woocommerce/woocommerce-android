@@ -20,7 +20,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,7 +33,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.DashboardWidget.Type.COUPONS
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.rememberNavController
@@ -48,7 +47,9 @@ import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.DateRangeState
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Date
 
 @Composable
@@ -317,7 +318,7 @@ private fun CouponsEmptyView(
             .padding(16.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.img_empty_coupon_list),
+            painter = rememberVectorPainter(image = WooPosIcons.CouponsEmpty),
             contentDescription = null,
             modifier = Modifier
                 .sizeIn(maxWidth = 160.dp, maxHeight = 160.dp)

@@ -877,6 +877,8 @@ class MainActivity :
                     // Propagate it to the DashboardBlazeCard
                     event.isHandled = false
                 }
+
+                is MainActivityViewModel.ViewSurvey -> showSurvey(event.surveyType)
             }
         }
 
@@ -1282,6 +1284,14 @@ class MainActivity :
 
     override fun showFeedbackSurvey() {
         NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.MAIN).apply {
+            navController.navigateSafely(this)
+        }
+    }
+
+    private fun showSurvey(surveyType: SurveyType) {
+        NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(
+            surveyType = surveyType
+        ).apply {
             navController.navigateSafely(this)
         }
     }

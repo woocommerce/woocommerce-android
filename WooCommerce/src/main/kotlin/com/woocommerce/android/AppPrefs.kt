@@ -310,6 +310,14 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.JETPACK_APP_PASSWORDS_ENABLED, true)
         set(value) = setBoolean(DeletablePrefKey.JETPACK_APP_PASSWORDS_ENABLED, value)
 
+    var isWooPosSurveyNotificationCurrentUserShown: Boolean
+        get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN, false)
+        set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN, value)
+
+    var isWooPosSurveyNotificationPotentialUserShown: Boolean
+        get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, false)
+        set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
+
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
     fun setProductSortingChoice(currentSiteId: Int, value: String) {
@@ -1356,14 +1364,6 @@ object AppPrefs {
             Context.MODE_PRIVATE
         )
     }
-
-    var isWooPosSurveyNotificationCurrentUserShown: Boolean
-        get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN, false)
-        set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN, value)
-
-    var isWooPosSurveyNotificationPotentialUserShown: Boolean
-        get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, false)
-        set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
 
     enum class CardReaderOnboardingStatus {
         CARD_READER_ONBOARDING_COMPLETED,

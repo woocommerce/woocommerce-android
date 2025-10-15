@@ -19,10 +19,13 @@ import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER
 import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER
+import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS_SURVEY_CURRENT_USER_REMINDER
+import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -286,6 +289,14 @@ class MainActivityViewModel @Inject constructor(
                 when (it) {
                     BLAZE_NO_CAMPAIGN_REMINDER,
                     BLAZE_ABANDONED_CAMPAIGN_REMINDER -> triggerEvent(LaunchBlazeCampaignCreation)
+
+                    WOO_POS_SURVEY_POTENTIAL_USER_REMINDER -> triggerEvent(
+                        ViewSurvey(SurveyType.WOO_POS_POTENTIAL_USER)
+                    )
+
+                    WOO_POS_SURVEY_CURRENT_USER_REMINDER -> triggerEvent(
+                        ViewSurvey(SurveyType.WOO_POS_CURRENT_USER)
+                    )
                 }
             }
         }
@@ -333,6 +344,7 @@ class MainActivityViewModel @Inject constructor(
     data class ViewUrlInWebView(
         val url: String,
     ) : Event()
+    data class ViewSurvey(val surveyType: SurveyType) : Event()
 
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()

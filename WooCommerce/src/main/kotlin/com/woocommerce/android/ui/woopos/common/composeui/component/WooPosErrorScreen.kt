@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,8 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -31,14 +30,15 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 @Composable
 fun WooPosErrorScreen(
     modifier: Modifier = Modifier,
-    icon: Painter = painterResource(id = R.drawable.ic_woo_pos_error_x),
+    icon: ImageVector = WooPosIcons.ErrorX,
     message: String,
     reason: String,
-    primaryButton: Button? = null,
-    secondaryButton: Button? = null
+    primaryButton: WooPosErrorScreenButtonState? = null,
+    secondaryButton: WooPosErrorScreenButtonState? = null
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
             .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             .padding(WooPosSpacing.XLarge.value.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -50,7 +50,7 @@ fun WooPosErrorScreen(
         ) {
             Icon(
                 modifier = Modifier.size(80.dp),
-                painter = icon,
+                imageVector = icon,
                 contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
                 tint = WooPosTheme.colors.unspecified,
             )
@@ -77,9 +77,7 @@ fun WooPosErrorScreen(
                 WooPosButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = Modifier
-                        .fillMaxWidth(.5f)
-                        .height(80.dp)
+                    modifier = WooPosErrorAndEmptyStateButtonModifier
                 )
             }
             secondaryButton?.let {
@@ -87,9 +85,7 @@ fun WooPosErrorScreen(
                 WooPosOutlinedButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = Modifier
-                        .fillMaxWidth(.5f)
-                        .height(80.dp)
+                    modifier = WooPosErrorAndEmptyStateButtonModifier
                 )
             }
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
@@ -97,7 +93,7 @@ fun WooPosErrorScreen(
     }
 }
 
-data class Button(
+data class WooPosErrorScreenButtonState(
     val text: String,
     val click: () -> Unit
 )
@@ -109,11 +105,11 @@ fun WooPosErrorStatePreview() {
         WooPosErrorScreen(
             message = stringResource(R.string.woopos_totals_main_error_label),
             reason = "Reason",
-            primaryButton = Button(
+            primaryButton = WooPosErrorScreenButtonState(
                 text = stringResource(R.string.retry),
                 click = { }
             ),
-            secondaryButton = Button(
+            secondaryButton = WooPosErrorScreenButtonState(
                 text = stringResource(R.string.cancel),
                 click = { }
             )
@@ -128,7 +124,7 @@ fun WooPosErrorStateSingleButtonPreview() {
         WooPosErrorScreen(
             message = "Very long title Very long title Very long title Very long title Very long title ",
             reason = "Very loooong reason Very loooong reason Very loooong reason Very loooong reason ",
-            primaryButton = Button(
+            primaryButton = WooPosErrorScreenButtonState(
                 text = stringResource(R.string.retry),
                 click = { }
             ),
