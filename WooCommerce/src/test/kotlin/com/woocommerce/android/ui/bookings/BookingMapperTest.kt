@@ -9,11 +9,13 @@ import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -42,11 +44,58 @@ class BookingMapperTest : BaseUnitTest() {
         }
     }
     private val getLocations: GetLocations = mock()
+    private val resourceProvider: ResourceProvider = mock()
     private lateinit var mapper: BookingMapper
 
     @Before
     fun setup() {
-        mapper = BookingMapper(currencyFormatter, getLocations)
+        // Stub ResourceProvider localized strings for durations using quantity strings
+        whenever(
+            resourceProvider.getQuantityString(
+                quantity = any(),
+                default = eq(com.woocommerce.android.R.string.booking_duration_minutes),
+                zero = anyOrNull(),
+                one = eq(com.woocommerce.android.R.string.booking_duration_minute)
+            )
+        ).thenAnswer {
+            val qty = it.getArgument<Int>(0)
+            if (qty == 1) "$qty minute" else "$qty minutes"
+        }
+        whenever(
+            resourceProvider.getQuantityString(
+                quantity = any(),
+                default = eq(com.woocommerce.android.R.string.booking_duration_hours),
+                zero = anyOrNull(),
+                one = eq(com.woocommerce.android.R.string.booking_duration_hour)
+            )
+        ).thenAnswer {
+            val qty = it.getArgument<Int>(0)
+            if (qty == 1) "$qty hour" else "$qty hours"
+        }
+        whenever(
+            resourceProvider.getQuantityString(
+                quantity = any(),
+                default = eq(com.woocommerce.android.R.string.booking_duration_days),
+                zero = anyOrNull(),
+                one = eq(com.woocommerce.android.R.string.booking_duration_day)
+            )
+        ).thenAnswer {
+            val qty = it.getArgument<Int>(0)
+            if (qty == 1) "$qty day" else "$qty days"
+        }
+        whenever(
+            resourceProvider.getQuantityString(
+                quantity = any(),
+                default = eq(com.woocommerce.android.R.string.booking_duration_seconds),
+                zero = anyOrNull(),
+                one = eq(com.woocommerce.android.R.string.booking_duration_second)
+            )
+        ).thenAnswer {
+            val qty = it.getArgument<Int>(0)
+            if (qty == 1) "$qty second" else "$qty seconds"
+        }
+
+        mapper = BookingMapper(currencyFormatter, getLocations, resourceProvider)
     }
 
     @Test
@@ -108,7 +157,7 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.time).isEqualTo(expectedTime)
         assertThat(model.staff).isEqualTo(staffMemberStatus)
         assertThat(model.location).isEqualTo("238 Willow Creek Drive, Montgomery AL 36109")
-        assertThat(model.duration).isEqualTo("90 min")
+        assertThat(model.duration).isEqualTo("1 hour 30 minutes")
         assertThat(model.price).isEqualTo("$55.00")
         assertThat(model.cancelStatus).isEqualTo(CancelStatus.Idle)
     }
@@ -225,6 +274,155 @@ class BookingMapperTest : BaseUnitTest() {
                     )
                 )
             )
+    }
+
+    @Test
+    fun `given duration under one hour, when mapped to appointment details, then formats minutes`() {
+        // GIVEN
+        val start = Instant.parse("2025-07-05T11:00:00Z")
+        val end = start.plusSeconds(45 * 60) // 45 minutes
+        val booking = sampleBooking(
+            start = start,
+            end = end,
+        )
+        val staffMemberStatus = BookingStaffMemberStatus.Loaded("Alex Doe")
+        whenever(currencyFormatter.formatCurrency(eq("0.00"), eq("USD"), eq(true))).thenReturn("$0.00")
+
+        // WHEN
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+
+        // THEN
+        assertThat(model.duration).isEqualTo("45 minutes")
+    }
+
+    @Test
+    fun `given duration is exact hours, when mapped to appointment details, then formats hours only`() {
+        // GIVEN
+        val start = Instant.parse("2025-07-05T11:00:00Z")
+        val end = start.plus(Duration.ofHours(2)) // 2 hours
+        val booking = sampleBooking(
+            start = start,
+            end = end,
+        )
+        val staffMemberStatus = BookingStaffMemberStatus.Loaded("Alex Doe")
+        whenever(currencyFormatter.formatCurrency(eq("0.00"), eq("USD"), eq(true))).thenReturn("$0.00")
+
+        // WHEN
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+
+        // THEN
+        assertThat(model.duration).isEqualTo("2 hours")
+    }
+
+    @Test
+    fun `given duration is exact days, when mapped to appointment details, then formats days only`() {
+        // GIVEN
+        val start = Instant.parse("2025-07-05T11:00:00Z")
+        val end = start.plus(Duration.ofHours(24)) // 1 day
+        val booking = sampleBooking(
+            start = start,
+            end = end,
+        )
+        val staffMemberStatus = BookingStaffMemberStatus.Loaded("Alex Doe")
+        whenever(currencyFormatter.formatCurrency(eq("0.00"), eq("USD"), eq(true))).thenReturn("$0.00")
+
+        // WHEN
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+
+        // THEN
+        assertThat(model.duration).isEqualTo("1 day")
+    }
+
+    @Test
+    fun `given duration is days plus hours, when mapped to appointment details, then formats days and hours`() {
+        // GIVEN
+        val start = Instant.parse("2025-07-05T11:00:00Z")
+        val end = start.plus(Duration.ofHours(27)) // 1 day 3 hours
+        val booking = sampleBooking(
+            start = start,
+            end = end,
+        )
+        val staffMemberStatus = BookingStaffMemberStatus.Loaded("Alex Doe")
+        whenever(currencyFormatter.formatCurrency(eq("0.00"), eq("USD"), eq(true))).thenReturn("$0.00")
+
+        // WHEN
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+
+        // THEN
+        assertThat(model.duration).isEqualTo("1 day 3 hours")
+    }
+
+    @Test
+    fun `given duration is days plus hours plus minutes, when mapped to appointment details, then formats days hours and minutes`() {
+        // GIVEN
+        val start = Instant.parse("2025-07-05T11:00:00Z")
+        val end = start
+            .plus(Duration.ofDays(1))
+            .plus(Duration.ofHours(2))
+            .plus(Duration.ofMinutes(15)) // 1 day 2 hours 15 minutes
+        val booking = sampleBooking(
+            start = start,
+            end = end,
+        )
+        val staffMemberStatus = BookingStaffMemberStatus.Loaded("Alex Doe")
+        whenever(currencyFormatter.formatCurrency(eq("0.00"), eq("USD"), eq(true))).thenReturn("$0.00")
+
+        // WHEN
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+
+        // THEN
+        assertThat(model.duration).isEqualTo("1 day 2 hours 15 minutes")
+    }
+
+    @Test
+    fun `given duration under one minute, when mapped to appointment details, then formats seconds`() {
+        // GIVEN
+        val start = Instant.parse("2025-07-05T11:00:00Z")
+        val end = start.plusSeconds(45) // 45 seconds
+        val booking = sampleBooking(
+            start = start,
+            end = end,
+        )
+        val staffMemberStatus = BookingStaffMemberStatus.Loaded("Alex Doe")
+        whenever(currencyFormatter.formatCurrency(eq("0.00"), eq("USD"), eq(true))).thenReturn("$0.00")
+
+        // WHEN
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+
+        // THEN
+        assertThat(model.duration).isEqualTo("45 seconds")
+    }
+
+    @Test
+    fun `given duration within one minute of one hour, when mapped, then rounds up to full hour`() {
+        // GIVEN
+        val start = Instant.parse("2025-07-05T11:00:00Z")
+        val end = start.plus(Duration.ofHours(1)).minusSeconds(30) // 59s or less short should round up
+        val booking = sampleBooking(start = start, end = end)
+        val staffMemberStatus = BookingStaffMemberStatus.Loaded("Alex Doe")
+        whenever(currencyFormatter.formatCurrency(eq("0.00"), eq("USD"), eq(true))).thenReturn("$0.00")
+
+        // WHEN
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+
+        // THEN
+        assertThat(model.duration).isEqualTo("1 hour")
+    }
+
+    @Test
+    fun `given duration within one minute of one day, when mapped, then rounds up to full day`() {
+        // GIVEN
+        val start = Instant.parse("2025-07-05T11:00:00Z")
+        val end = start.plus(Duration.ofDays(1)).minusSeconds(45) // within 1 minute of full day
+        val booking = sampleBooking(start = start, end = end)
+        val staffMemberStatus = BookingStaffMemberStatus.Loaded("Alex Doe")
+        whenever(currencyFormatter.formatCurrency(eq("0.00"), eq("USD"), eq(true))).thenReturn("$0.00")
+
+        // WHEN
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
+
+        // THEN
+        assertThat(model.duration).isEqualTo("1 day")
     }
 
     private fun sampleBooking(
