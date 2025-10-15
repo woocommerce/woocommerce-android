@@ -14,11 +14,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.DialogState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncState
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
@@ -37,8 +33,6 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
-    private val syncStatusChecker: WooPosFullSyncStatusChecker,
-    private val performInitialFullSync: WooPosPerformInstantCatalogFullSync,
     private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -68,43 +62,7 @@ class WooPosHomeViewModel @Inject constructor(
 
     private fun startCatalogSyncIfNeeded() {
         viewModelScope.launch {
-            val requirement = syncStatusChecker.checkSyncRequirement()
-
-            when (requirement) {
-                is WooPosFullSyncRequirement.NotRequired,
-                is WooPosFullSyncRequirement.Overdue -> {
-                    _state.value = _state.value.copy(
-                        catalogSyncState = WooPosHomeState.CatalogSyncState.Idle
-                    )
-                    incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
-                }
-                is WooPosFullSyncRequirement.BlockingRequired -> {
-                    performInitialFullSync().collect { syncStatus ->
-                        when (syncStatus) {
-                            is WooPosFullSyncState.InProgress -> {
-                                _state.value = _state.value.copy(
-                                    catalogSyncState = WooPosHomeState.CatalogSyncState.Syncing
-                                )
-                            }
-                            is WooPosFullSyncState.Success -> {
-                                _state.value = _state.value.copy(
-                                    catalogSyncState = WooPosHomeState.CatalogSyncState.Success
-                                )
-                            }
-                            is WooPosFullSyncState.Failed -> {
-                                _state.value = _state.value.copy(
-                                    catalogSyncState = WooPosHomeState.CatalogSyncState.Failed(syncStatus.error)
-                                )
-                            }
-                        }
-                    }
-                }
-                is WooPosFullSyncRequirement.Error -> {
-                    _state.value = _state.value.copy(
-                        catalogSyncState = WooPosHomeState.CatalogSyncState.Failed(requirement.message)
-                    )
-                }
-            }
+            incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
         }
     }
 
@@ -138,10 +96,6 @@ class WooPosHomeViewModel @Inject constructor(
                     _navigationEvent.emit(NavigationEvent.ExitPos)
                     analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed)
                 }
-            }
-
-            WooPosHomeUIEvent.RetryCatalogSyncClicked -> {
-                startCatalogSyncIfNeeded()
             }
 
             is WooPosHomeUIEvent.OnBarcodeEvent -> {

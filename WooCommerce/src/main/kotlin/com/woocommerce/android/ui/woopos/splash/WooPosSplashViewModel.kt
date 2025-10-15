@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncState
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
@@ -24,6 +28,8 @@ class WooPosSplashViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab,
     private val ordersCache: WooPosOrdersInMemoryCache,
+    private val syncStatusChecker: WooPosFullSyncStatusChecker,
+    private val performInitialFullSync: WooPosPerformInstantCatalogFullSync,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
     val state: StateFlow<WooPosSplashState> = _state
@@ -44,8 +50,54 @@ class WooPosSplashViewModel @Inject constructor(
                 launch { popularProductsProvider.fetchAndCachePopularProducts() },
                 launch { ordersCache.clear() }
             )
-            _state.value = WooPosSplashState.Loaded
-            trackPosLoaded(splashScreenStartTime)
+
+            val requirement = syncStatusChecker.checkSyncRequirement()
+            when (requirement) {
+                is WooPosFullSyncRequirement.NotRequired,
+                is WooPosFullSyncRequirement.Overdue -> {
+                    _state.value = WooPosSplashState.Loaded
+                    trackPosLoaded(splashScreenStartTime)
+                }
+                is WooPosFullSyncRequirement.BlockingRequired -> {
+                    _state.value = WooPosSplashState.Syncing
+                    performInitialFullSync().collect { syncStatus ->
+                        when (syncStatus) {
+                            is WooPosFullSyncState.InProgress -> {
+                                _state.value = WooPosSplashState.Syncing
+                            }
+                            is WooPosFullSyncState.Success -> {
+                                _state.value = WooPosSplashState.Loaded
+                                trackPosLoaded(splashScreenStartTime)
+                            }
+                            is WooPosFullSyncState.Failed -> {
+                                _state.value = WooPosSplashState.SyncFailed(syncStatus.error)
+                            }
+                        }
+                    }
+                }
+                is WooPosFullSyncRequirement.Error -> {
+                    _state.value = WooPosSplashState.SyncFailed(requirement.message)
+                }
+            }
+        }
+    }
+
+    fun onRetrySync() {
+        viewModelScope.launch {
+            _state.value = WooPosSplashState.Syncing
+            performInitialFullSync().collect { syncStatus ->
+                when (syncStatus) {
+                    is WooPosFullSyncState.InProgress -> {
+                        _state.value = WooPosSplashState.Syncing
+                    }
+                    is WooPosFullSyncState.Success -> {
+                        _state.value = WooPosSplashState.Loaded
+                    }
+                    is WooPosFullSyncState.Failed -> {
+                        _state.value = WooPosSplashState.SyncFailed(syncStatus.error)
+                    }
+                }
+            }
         }
     }
 
