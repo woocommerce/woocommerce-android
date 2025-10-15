@@ -37,6 +37,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
@@ -183,13 +184,17 @@ class MainActivity :
     @Inject
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
 
-    @Inject lateinit var animatorHelper: MainAnimatorHelper
+    @Inject
+    lateinit var animatorHelper: MainAnimatorHelper
 
-    @Inject lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
+    @Inject
+    lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
 
-    @Inject lateinit var posTabController: WooPosTabController
+    @Inject
+    lateinit var posTabController: WooPosTabController
 
-    @Inject lateinit var bookingsTabController: BookingsTabController
+    @Inject
+    lateinit var bookingsTabController: BookingsTabController
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -1024,15 +1029,17 @@ class MainActivity :
     }
 
     override fun showProductDetail(remoteProductId: Long, popUpToProductList: Boolean) {
-        val action = when (popUpToProductList) {
-            true -> NavGraphMainDirections.actionGlobalProductDetailFragmentPopUpToProductList(
-                mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-            )
-            else -> NavGraphMainDirections.actionGlobalProductDetailFragment(
-                mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-            )
-        }
-        navController.navigateSafely(action)
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
+        )
+        navController.navigateSafely(
+            directions = action,
+            navOptions = navOptions {
+                if (popUpToProductList) {
+                    popUpTo(R.id.products)
+                }
+            }
+        )
     }
 
     override fun showProductDetailWithSharedTransition(remoteProductId: Long, sharedView: View) {
