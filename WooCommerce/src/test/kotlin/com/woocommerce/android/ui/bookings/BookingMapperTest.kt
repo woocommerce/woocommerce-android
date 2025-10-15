@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.bookings
 import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.details.CancelState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -89,6 +90,7 @@ class BookingMapperTest : BaseUnitTest() {
             cost = "55.00",
             currency = "USD"
         )
+        val staffMemberStatus = BookingStaffMemberStatus.Loaded("Marianne Renoir")
 
         whenever(currencyFormatter.formatCurrency(eq("55.00"), eq("USD"), eq(true))).thenReturn("$55.00")
 
@@ -99,12 +101,12 @@ class BookingMapperTest : BaseUnitTest() {
         val expectedTime = "${timeFormatter.format(start)} - ${timeFormatter.format(end)}"
 
         // WHEN
-        val model = mapper.run { booking.toAppointmentDetailsModel(CancelState.Idle) }
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelState.Idle) }
 
         // THEN
         assertThat(model.date).isEqualTo(expectedDate)
         assertThat(model.time).isEqualTo(expectedTime)
-        assertThat(model.staff).isEqualTo("Marianne Renoir")
+        assertThat(model.staff).isEqualTo(staffMemberStatus)
         assertThat(model.location).isEqualTo("238 Willow Creek Drive, Montgomery AL 36109")
         assertThat(model.duration).isEqualTo("90 min")
         assertThat(model.price).isEqualTo("$55.00")
@@ -129,6 +131,8 @@ class BookingMapperTest : BaseUnitTest() {
     fun `given payment info with valid values, when mapped to payment details model, then maps fields correctly`() {
         // GIVEN
         val paymentInfo = BookingPaymentInfo(
+            paymentMethodId = "cod",
+            paymentMethodTitle = "Cash on Delivery",
             subtotal = BigDecimal("100.00"),
             subtotalTax = BigDecimal("10.00"),
             total = BigDecimal("90.00"), // With discount
@@ -150,6 +154,8 @@ class BookingMapperTest : BaseUnitTest() {
     fun `given payment info with zero discount, when mapped to payment details model, then shows dash for discount`() {
         // GIVEN
         val paymentInfo = BookingPaymentInfo(
+            paymentMethodId = "cod",
+            paymentMethodTitle = "Cash on Delivery",
             subtotal = BigDecimal("100.00"),
             subtotalTax = BigDecimal("0.00"),
             total = BigDecimal("100.00"), // No discount

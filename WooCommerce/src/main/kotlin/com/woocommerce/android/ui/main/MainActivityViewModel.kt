@@ -6,7 +6,6 @@ import android.os.Build.VERSION_CODES
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
@@ -26,6 +25,7 @@ import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -291,11 +291,11 @@ class MainActivityViewModel @Inject constructor(
                     BLAZE_ABANDONED_CAMPAIGN_REMINDER -> triggerEvent(LaunchBlazeCampaignCreation)
 
                     WOO_POS_SURVEY_POTENTIAL_USER_REMINDER -> triggerEvent(
-                        ViewSurvey(AppUrls.CROWDSIGNAL_WOO_POS_SURVEY_POTENTIAL_USER)
+                        ViewSurvey(SurveyType.WOO_POS_POTENTIAL_USER)
                     )
 
                     WOO_POS_SURVEY_CURRENT_USER_REMINDER -> triggerEvent(
-                        ViewSurvey(AppUrls.CROWDSIGNAL_WOO_POS_SURVEY_CURRENT_USER)
+                        ViewSurvey(SurveyType.WOO_POS_CURRENT_USER)
                     )
                 }
             }
@@ -344,7 +344,7 @@ class MainActivityViewModel @Inject constructor(
     data class ViewUrlInWebView(
         val url: String,
     ) : Event()
-    data class ViewSurvey(val surveyUrl: String) : Event()
+    data class ViewSurvey(val surveyType: SurveyType) : Event()
 
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()

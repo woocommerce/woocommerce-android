@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsMode
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.details.CancelState
@@ -57,13 +58,16 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    fun Booking.toAppointmentDetailsModel(cancelState: CancelState): BookingAppointmentDetailsModel {
+    fun Booking.toAppointmentDetailsModel(
+        staffMemberStatus: BookingStaffMemberStatus?,
+        cancelState: CancelState,
+    ): BookingAppointmentDetailsModel {
         val durationMinutes = Duration.between(start, end).toMinutes()
         return BookingAppointmentDetailsModel(
             date = detailsDateFormatter.format(start),
             time = "${timeRangeFormatter.format(start)} - ${timeRangeFormatter.format(end)}",
+            staff = staffMemberStatus,
             // TODO replace mocked values when available from API
-            staff = "Marianne Renoir",
             location = "238 Willow Creek Drive, Montgomery AL 36109",
             duration = "$durationMinutes min",
             price = currencyFormatter.formatCurrency(cost, currency),

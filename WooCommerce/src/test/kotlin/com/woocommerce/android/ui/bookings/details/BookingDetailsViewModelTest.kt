@@ -8,18 +8,22 @@ import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
+import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -33,14 +37,20 @@ import java.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingDetailsViewModelTest : BaseUnitTest() {
+    private val initialBooking = getSampleBooking(1)
+    private val bookingFlow = MutableStateFlow(initialBooking)
 
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val resourceProvider = mock<ResourceProvider>()
     private val getLocations = mock<GetLocations>()
     private val bookingMapper = BookingMapper(currencyFormatter, getLocations)
-
-    private val initialBooking = getSampleBooking(1)
-    private val bookingFlow = MutableStateFlow(initialBooking)
+    private val bookingsRepository = mock<BookingsRepository> {
+        on { observeBooking(any()) } doReturn bookingFlow
+        onBlocking { fetchBooking(any()) } doReturn Result.success(bookingFlow.value)
+    }
+    private val networkStatus = mock<NetworkStatus> {
+        on { isConnected() } doReturn true
+    }
 
     @Before
     fun setup() {
@@ -115,21 +125,9 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         // Given
         val bookingId = 321L
         val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
-        val bookingsRepository = mock<BookingsRepository> {
-            on { observeBooking(any()) } doReturn bookingFlow
-            onBlocking { fetchBooking(any()) } doReturn Result.success(Unit)
-        }
+
         // When
-        val networkStatus = mock<NetworkStatus> {
-            on { isConnected() } doReturn true
-        }
-        BookingDetailsViewModel(
-            savedState = savedState,
-            resourceProvider = resourceProvider,
-            bookingsRepository = bookingsRepository,
-            bookingMapper = bookingMapper,
-            networkStatus = networkStatus
-        ).apply { state.observeForever { } }
+        createViewModel(savedState = savedState)
 
         // Then
         verify(bookingsRepository, times(1)).fetchBooking(bookingId)
@@ -140,19 +138,8 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         // Given
         val bookingId = 999L
         val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
-        val bookingsRepository = mock<BookingsRepository> {
-            on { observeBooking(any()) } doReturn bookingFlow
-        }
-        val networkStatus = mock<NetworkStatus> {
-            on { isConnected() } doReturn false
-        }
-        val viewModel = BookingDetailsViewModel(
-            savedState = savedState,
-            resourceProvider = resourceProvider,
-            bookingsRepository = bookingsRepository,
-            bookingMapper = bookingMapper,
-            networkStatus = networkStatus
-        ).apply { event.observeForever { } }
+        whenever(networkStatus.isConnected()).thenReturn(false)
+        val viewModel = createViewModel(savedState)
 
         // When
         val event = viewModel.event.getOrAwaitValue()
@@ -167,20 +154,8 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         // Given
         val bookingId = 111L
         val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
-        val bookingsRepository = mock<BookingsRepository> {
-            on { observeBooking(any()) } doReturn bookingFlow
-            onBlocking { fetchBooking(any()) } doReturn Result.failure(Exception("boom"))
-        }
-        val networkStatus = mock<NetworkStatus> {
-            on { isConnected() } doReturn true
-        }
-        val viewModel = BookingDetailsViewModel(
-            savedState = savedState,
-            resourceProvider = resourceProvider,
-            bookingsRepository = bookingsRepository,
-            bookingMapper = bookingMapper,
-            networkStatus = networkStatus
-        ).apply { event.observeForever { } }
+        whenever(bookingsRepository.fetchBooking(any())).thenReturn(Result.failure(Exception("Fetch failed")))
+        val viewModel = createViewModel(savedState)
 
         // When
         val event = viewModel.event.getOrAwaitValue()
@@ -194,20 +169,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         // Given
         val bookingId = 654L
         val savedState = SavedStateHandle(mapOf("bookingId" to bookingId))
-        val bookingsRepository = mock<BookingsRepository> {
-            on { observeBooking(any()) } doReturn bookingFlow
-            onBlocking { fetchBooking(any()) } doReturn Result.success(Unit)
-        }
-        val networkStatus = mock<NetworkStatus> {
-            on { isConnected() } doReturn true
-        }
-        val viewModel = BookingDetailsViewModel(
-            savedState = savedState,
-            resourceProvider = resourceProvider,
-            bookingsRepository = bookingsRepository,
-            bookingMapper = bookingMapper,
-            networkStatus = networkStatus
-        ).apply { state.observeForever { } }
+        val viewModel = createViewModel(savedState)
 
         // When
         val state = viewModel.state.getOrAwaitValue()
@@ -215,6 +177,43 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         // Then
         verify(bookingsRepository, times(2)).fetchBooking(bookingId)
+        verify(bookingsRepository, times(2)).fetchResource(bookingFlow.value.resourceId)
+    }
+
+    @Test
+    fun `given resource not cached, when init, then show loading state`() = testBlocking {
+        // Given
+        val savedState = SavedStateHandle(mapOf("bookingId" to 123L))
+        whenever(bookingsRepository.observeResource(any())).thenReturn(MutableStateFlow(null))
+        whenever(bookingsRepository.fetchResource(any())).doSuspendableAnswer {
+            delay(100) // To make sure loading state is observed
+            Result.success(Unit)
+        }
+        val viewModel = createViewModel(savedState)
+
+        // When
+        val state = viewModel.state.getOrAwaitValue()
+
+        // Then
+        assertThat(state.bookingUiState?.bookingsAppointmentDetails?.staff)
+            .isEqualTo(BookingStaffMemberStatus.Loading)
+    }
+
+    @Test
+    fun `given resource not cached, when fetchResource fails, then return Unavailable`() = testBlocking {
+        // Given
+        val savedState = SavedStateHandle(mapOf("bookingId" to 123L))
+        whenever(bookingsRepository.observeResource(any())).thenReturn(MutableStateFlow(null))
+        whenever(bookingsRepository.fetchResource(any())).doReturn(Result.failure(Exception("Fetch failed")))
+        val viewModel = createViewModel(savedState)
+
+        // When
+        val state = viewModel.state.getOrAwaitValue()
+        advanceUntilIdle()
+
+        // Then
+        assertThat(state.bookingUiState?.bookingsAppointmentDetails?.staff)
+            .isEqualTo(BookingStaffMemberStatus.Unavailable)
     }
 
     @Test
@@ -270,13 +269,6 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     private fun createViewModel(
         savedState: SavedStateHandle,
     ): BookingDetailsViewModel {
-        val bookingsRepository = mock<BookingsRepository> {
-            on { observeBooking(any()) } doReturn bookingFlow
-            onBlocking { fetchBooking(any()) } doReturn Result.success(Unit)
-        }
-        val networkStatus = mock<NetworkStatus> {
-            on { isConnected() } doReturn true
-        }
         return BookingDetailsViewModel(
             savedState = savedState,
             resourceProvider = resourceProvider,

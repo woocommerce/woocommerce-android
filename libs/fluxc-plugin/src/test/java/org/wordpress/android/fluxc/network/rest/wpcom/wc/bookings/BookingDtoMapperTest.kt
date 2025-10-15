@@ -224,6 +224,8 @@ class BookingDtoMapperTest {
 
         // Then
         with(result.order.paymentInfo!!) {
+            assertThat(paymentMethodId).isEqualTo("cod")
+            assertThat(paymentMethodTitle).isEqualTo("Cash on Delivery")
             assertThat(subtotal).isEqualTo(BigDecimal.ZERO)
             assertThat(total).isEqualTo(BigDecimal.ZERO)
             assertThat(subtotalTax).isEqualTo(BigDecimal.ZERO)
@@ -283,8 +285,8 @@ class BookingDtoMapperTest {
         total = "50.00",
         totalTax = "",
         shippingTotal = "",
-        paymentMethod = "",
-        paymentMethodTitle = "",
+        paymentMethod = "cod",
+        paymentMethodTitle = "Cash on Delivery",
         datePaid = "",
         pricesIncludeTax = false,
         customerNote = "",

@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
-import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import java.math.BigDecimal
 
@@ -12,24 +11,26 @@ data class BookingOrderInfo(
 )
 
 data class BookingProductInfo(
-    @ColumnInfo val name: String,
+    val name: String,
 )
 
 data class BookingCustomerInfo(
-    @ColumnInfo val billingFirstName: String? = null,
-    @ColumnInfo val billingLastName: String? = null,
-    @ColumnInfo val billingCompany: String? = null,
-    @ColumnInfo val billingAddress1: String? = null,
-    @ColumnInfo val billingAddress2: String? = null,
-    @ColumnInfo val billingCity: String? = null,
-    @ColumnInfo val billingState: String? = null,
-    @ColumnInfo val billingPostcode: String? = null,
-    @ColumnInfo val billingCountry: String? = null,
-    @ColumnInfo val billingEmail: String? = null,
-    @ColumnInfo val billingPhone: String? = null,
+    val billingFirstName: String? = null,
+    val billingLastName: String? = null,
+    val billingCompany: String? = null,
+    val billingAddress1: String? = null,
+    val billingAddress2: String? = null,
+    val billingCity: String? = null,
+    val billingState: String? = null,
+    val billingPostcode: String? = null,
+    val billingCountry: String? = null,
+    val billingEmail: String? = null,
+    val billingPhone: String? = null,
 )
 
 data class BookingPaymentInfo(
+    val paymentMethodId: String?,
+    val paymentMethodTitle: String?,
     val subtotal: BigDecimal,
     val subtotalTax: BigDecimal,
     val total: BigDecimal,

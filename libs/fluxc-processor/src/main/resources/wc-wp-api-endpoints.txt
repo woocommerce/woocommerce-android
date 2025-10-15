@@ -135,3 +135,4 @@
 
 /bookings
 /bookings/<id>/
+/resources/<id>/
