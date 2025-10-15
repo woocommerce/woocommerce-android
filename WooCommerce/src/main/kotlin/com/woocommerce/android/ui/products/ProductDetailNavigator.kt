@@ -7,15 +7,21 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.navOptions
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
 class ProductDetailNavigator @Inject constructor(
     private val activity: MainActivity,
+    private val selectedSite: SelectedSite,
     private val productDetailRepository: ProductDetailRepository
 ) {
     fun showProductDetail(
@@ -25,9 +31,9 @@ class ProductDetailNavigator @Inject constructor(
     ) {
         activity.lifecycleScope.launch {
             val product = productDetailRepository.getProductAsync(remoteProductId)
-
-            if (false /* product?.productType = ProductType.Booking */) {
-                TODO("Open in a WebView")
+            if (selectedSite.get().isCIABSite() && product?.productType == ProductType.BOOKING
+            ) {
+                showProductInWebView(product, popUpToProductList)
             } else {
                 showProductDetailFragment(
                     remoteProductId = remoteProductId,
@@ -55,6 +61,27 @@ class ProductDetailNavigator @Inject constructor(
         activity.findNavController(R.id.nav_host_fragment_main).navigateSafely(
             directions = action,
             extras = extras,
+            navOptions = navOptions {
+                if (popUpToProductList) {
+                    popUpTo(R.id.products)
+                }
+            }
+        )
+    }
+
+    private fun showProductInWebView(product: Product, popUpToProductList: Boolean) {
+        // TODO replace with final URL when confirmed
+        fun buildProductUrl(): String {
+            val site = selectedSite.get()
+            return site.adminUrlOrDefault.slashJoin("?page=next-admin&p=/woocommerce/products/edit/${product.remoteId}")
+        }
+
+        val action = NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
+            urlToLoad = buildProductUrl(),
+            title = product.name
+        )
+        activity.findNavController(R.id.nav_host_fragment_main).navigateSafely(
+            directions = action,
             navOptions = navOptions {
                 if (popUpToProductList) {
                     popUpTo(R.id.products)
