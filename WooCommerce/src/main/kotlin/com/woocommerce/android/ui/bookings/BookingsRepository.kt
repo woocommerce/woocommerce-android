@@ -90,13 +90,13 @@ class BookingsRepository @Inject constructor(
         }
     }
 
-    fun observeResource(booking: Booking): Flow<BookingResource?> {
-        return if (booking.resourceId == 0L) {
+    fun observeResource(resourceId: Long): Flow<BookingResource?> {
+        return if (resourceId == 0L) {
             flowOf(null)
         } else {
             bookingsStore.observeResource(
                 site = selectedSite.get(),
-                resourceId = booking.resourceId
+                resourceId = resourceId
             )
         }
     }

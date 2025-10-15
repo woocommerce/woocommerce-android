@@ -45,7 +45,9 @@ class BookingDetailsViewModel @Inject constructor(
     private val booking = bookingsRepository.observeBooking(navArgs.bookingId)
         .shareIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
 
-    private val resource = booking.flatMapLatest { it?.let { bookingsRepository.observeResource(it) } ?: flowOf(null) }
+    private val resource = booking.flatMapLatest { booking ->
+        booking?.resourceId?.let { bookingsRepository.observeResource(it) } ?: flowOf(null)
+    }
 
     private val loadingState = MutableStateFlow<BookingDetailsLoadingState>(BookingDetailsLoadingState.Idle)
 
