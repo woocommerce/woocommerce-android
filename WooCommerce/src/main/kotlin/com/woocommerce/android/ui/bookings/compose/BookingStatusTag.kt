@@ -2,12 +2,13 @@ package com.woocommerce.android.ui.bookings.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCTag
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -17,7 +18,7 @@ fun BookingStatusTag(
 ) {
     WCTag(
         text = state.text(),
-        backgroundColor = colorResource(R.color.tagView_bg),
+        backgroundColor = state.backgroundColor(),
         textColor = colorResource(R.color.tagView_text),
         fontWeight = FontWeight.Normal,
         modifier = modifier
@@ -49,7 +50,15 @@ private fun BookingStatus.text(): String {
     }
 }
 
-@Preview
+@Composable
+fun BookingStatus.backgroundColor(): Color {
+    return when (this) {
+        BookingStatus.PayAtLocation -> R.color.tag_bg_booking_yellow
+        else -> R.color.tagView_bg
+    }.let { colorResource(it) }
+}
+
+@LightDarkThemePreviews
 @Composable
 private fun PaymentStatusTagPreview() {
     WooThemeWithBackground {
@@ -59,12 +68,12 @@ private fun PaymentStatusTagPreview() {
     }
 }
 
-@Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@LightDarkThemePreviews
 @Composable
-private fun PaymentStatusTagDarkPreview() {
+private fun PaymentStatusTagPayAtLocationPreview() {
     WooThemeWithBackground {
         BookingStatusTag(
-            state = BookingStatus.Complete
+            state = BookingStatus.PayAtLocation
         )
     }
 }
