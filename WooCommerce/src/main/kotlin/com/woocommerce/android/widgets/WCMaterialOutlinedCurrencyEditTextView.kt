@@ -56,9 +56,6 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
 
     private lateinit var currencyEditText: CurrencyEditText
 
-    val editText: TextInputEditText
-        get() = currencyEditText
-
     @Inject
     lateinit var parameterRepository: ParameterRepository
 
@@ -90,6 +87,9 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
                 }
             }
         }
+
+    val value: LiveData<BigDecimal?>
+        get() = currencyEditText.value
 
     init {
         context.obtainStyledAttributes(
@@ -152,8 +152,9 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         currencyEditText.initView(siteParameters.currencyFormattingParameters)
     }
 
-    val value: LiveData<BigDecimal?>
-        get() = currencyEditText.value
+    override fun getEditText(): TextInputEditText {
+        return currencyEditText
+    }
 
     fun getText() = currencyEditText.text.toString()
 
