@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -57,7 +56,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPagina
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -72,7 +70,7 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
-private val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
+val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 
 @Composable
 fun WooPosOrdersScreen(
@@ -127,8 +125,7 @@ private fun WooPosOrdersScreen(
                 onRetryClicked = onOrdersLoadingErrorRetryButtonClicked
             )
 
-            is WooPosOrdersState.Loading -> {
-            }
+            is WooPosOrdersState.Loading -> WooPosOrdersLoadingState()
         }
 
         if (state.searchInputState is WooPosSearchInputState.Closed) {
@@ -353,7 +350,7 @@ private fun OrdersList(
 
         if (state.paginationState == WooPosPaginationState.Loading) {
             item {
-                OrdersPaginationLoadingRow()
+                WooPosOrdersOrderLoadingRow()
             }
         }
 
@@ -387,44 +384,6 @@ private fun OrderDetails(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    }
-}
-
-@Composable
-private fun OrdersPaginationLoadingRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
-            .padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Medium.value
-            )
-            .heightIn(min = 64.dp),
-        verticalAlignment = Alignment.Top
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.55f)
-                    .height(18.dp)
-            )
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.35f)
-                    .height(14.dp)
-            )
-        }
-
-        Spacer(Modifier.weight(1f))
-
-        WooPosShimmerBox(
-            modifier = Modifier
-                .width(72.dp)
-                .height(18.dp)
-                .alignByBaseline()
-        )
     }
 }
 
