@@ -2,6 +2,7 @@ import com.automattic.android.measure.reporters.InternalA8cCiReporter
 import com.automattic.android.measure.reporters.RemoteBuildCacheMetricsReporter
 import com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter
 import io.gitlab.arturbosch.detekt.Detekt
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -44,15 +45,15 @@ measureBuilds {
 allprojects {
     apply plugin: libs.plugins.detekt.get().pluginId
 
-    tasks.withType(KotlinCompile).all {
-        kotlinOptions {
-            jvmTarget = libs.versions.java.get()
+    tasks.withType(KotlinCompile).configureEach {
+        compilerOptions {
+            jvmTarget = JvmTarget.fromTarget(libs.versions.java.get())
             allWarningsAsErrors = true
-            freeCompilerArgs += [
-                    "-opt-in=kotlin.RequiresOptIn",
+            optIn.add("kotlin.RequiresOptIn")
+            freeCompilerArgs.addAll([
                     "-Xjvm-default=all-compatibility",
                     "-Xannotation-default-target=param-property"
-            ]
+            ])
         }
     }
 }
