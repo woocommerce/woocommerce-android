@@ -25,6 +25,7 @@ fun BookingStatusTag(
 }
 
 sealed interface BookingStatus {
+    data object PayAtLocation : BookingStatus
     data object Unpaid : BookingStatus
     data object PendingConfirmation : BookingStatus
     data object Confirmed : BookingStatus
@@ -43,6 +44,7 @@ private fun BookingStatus.text(): String {
         BookingStatus.Paid -> stringResource(R.string.booking_payment_status_paid)
         BookingStatus.Cancelled -> stringResource(R.string.booking_payment_status_cancelled)
         BookingStatus.Complete -> stringResource(R.string.booking_payment_status_complete)
+        BookingStatus.PayAtLocation -> stringResource(R.string.booking_payment_status_pay_at_location)
         is BookingStatus.Unknown -> key
     }
 }

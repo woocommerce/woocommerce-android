@@ -4212,6 +4212,7 @@
     <string name="booking_payment_status_cancelled">Cancelled</string>
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
+    <string name="booking_payment_status_pay_at_location">Pay at location</string>
     <string name="booking_attendance_status_booked">Booked</string>
     <string name="booking_attendance_status_checked_in">Checked-in</string>
     <string name="booking_attendance_status_cancelled">Cancelled</string>
