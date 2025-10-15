@@ -73,6 +73,7 @@ import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CustomerFromAnalyticsEntity
@@ -125,7 +126,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 68
+const val WC_DATABASE_VERSION = 69
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -175,6 +176,7 @@ const val WC_DATABASE_VERSION = 68
         GatewayEntity::class,
         WCNewVisitorStatsModel::class,
         BookingEntity::class,
+        BookingResourceEntity::class,
         WCRevenueStatsModel::class,
     ],
     autoMigrations = [
@@ -225,7 +227,8 @@ const val WC_DATABASE_VERSION = 68
         AutoMigration(from = 64, to = 65),
         AutoMigration(from = 65, to = 66),
         AutoMigration(from = 66, to = 67),
-        AutoMigration(from = 67, to = 68)
+        AutoMigration(from = 67, to = 68),
+        AutoMigration(from = 68, to = 69)
     ]
 )
 @TypeConverters(

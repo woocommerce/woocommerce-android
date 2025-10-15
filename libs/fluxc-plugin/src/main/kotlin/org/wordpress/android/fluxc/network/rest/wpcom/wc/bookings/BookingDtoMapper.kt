@@ -4,6 +4,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import java.math.BigDecimal
 import java.time.Instant
@@ -55,6 +56,19 @@ internal class BookingDtoMapper @Inject constructor(
         )
     )
 
+    fun BookingResourceDto.toEntity(localSiteId: LocalId) = BookingResourceEntity(
+        id = RemoteId(id),
+        localSiteId = localSiteId,
+        name = name,
+        qty = qty,
+        role = role,
+        email = email,
+        phoneNumber = phoneNumber,
+        imageId = imageId,
+        imageUrl = imageUrl,
+        description = description,
+    )
+
     private suspend fun OrderEntity.toBookingOrderInfo(
         orderItemId: Long
     ): BookingOrderInfo {
@@ -83,6 +97,8 @@ internal class BookingDtoMapper @Inject constructor(
             },
             paymentInfo = lineItem?.let {
                 BookingPaymentInfo(
+                    paymentMethodId = paymentMethod,
+                    paymentMethodTitle = paymentMethodTitle,
                     subtotal = it.subtotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     subtotalTax = it.subtotalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,

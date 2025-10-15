@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
+import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -225,7 +226,7 @@ private fun BookingDetailsPreview() {
                     bookingsAppointmentDetails = BookingAppointmentDetailsModel(
                         date = "Monday, 05 July 2025",
                         time = "11:00 am - 12:00 pm",
-                        staff = "Marianne Renoir",
+                        staff = BookingStaffMemberStatus.Loaded("Marianne Renoir"),
                         location = "238 Willow Creek Drive, Montgomery AL 36109",
                         duration = "60 min",
                         price = "$55.00"
