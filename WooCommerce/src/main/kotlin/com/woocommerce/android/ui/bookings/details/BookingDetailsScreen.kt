@@ -17,7 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -25,10 +25,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
@@ -44,6 +42,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.compose.CancelBookingDialog
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -65,6 +64,7 @@ fun BookingDetailsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
@@ -81,14 +81,17 @@ fun BookingDetailsScreen(
             )
         }
     ) { innerPadding ->
-        Surface(
-            color = colorResource(R.color.default_window_background),
-            modifier = Modifier.fillMaxSize()
+        WCPullToRefreshBox(
+            isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
+            onRefresh = viewState.onRefresh,
+            state = rememberPullToRefreshState(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(innerPadding)
             ) {
                 when {
                     viewState.shouldShowSkeleton -> BookingDetailsLoading()

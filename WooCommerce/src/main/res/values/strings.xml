@@ -3212,9 +3212,9 @@
     <string name="local_notification_blaze_abandoned_campaign_reminder_title">Thinking about boosting your sales?</string>
     <string name="local_notification_blaze_abandoned_campaign_reminder_description">Get your products seen by millions with Blaze and boost your sales</string>
     <string name="local_notification_woo_pos_survey_potential_user_title">Thinking about in-person sales?</string>
-    <string name="local_notification_woo_pos_survey_potential_user_description">Help us build tools you\'d actually use. 2-minute survey to build tools you\'ll love.</string>
+    <string name="local_notification_woo_pos_survey_potential_user_description">Take a quick 2-minute survey to help us shape features you\'ll love.</string>
     <string name="local_notification_woo_pos_survey_current_user_title">How\'s POS working for you?</string>
-    <string name="local_notification_woo_pos_survey_current_user_description">Share your experience in 2 minutes and help us improve.</string>
+    <string name="local_notification_woo_pos_survey_current_user_description">Share your experience in a quick 2-minute survey and help us improve.</string>
 
     <!--
     First product published congratulatory feature
@@ -4232,6 +4232,8 @@
     <string name="booking_payment_label_service">Service</string>
     <string name="booking_payment_mark_as_paid">Mark as paid</string>
     <string name="booking_payment_view_order">View order</string>
+    <string name="booking_fetch_error">Error fetching booking</string>
+
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>
     <string name="about_automattic_legal_page_title">Legal and More</string>
