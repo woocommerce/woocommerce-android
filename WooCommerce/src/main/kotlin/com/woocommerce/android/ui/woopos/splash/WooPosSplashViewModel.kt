@@ -4,16 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncState
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogInitialFullSyncState
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogInitialFullSync
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.Loaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.joinAll
@@ -28,8 +27,7 @@ class WooPosSplashViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab,
     private val ordersCache: WooPosOrdersInMemoryCache,
-    private val syncStatusChecker: WooPosFullSyncStatusChecker,
-    private val performInitialFullSync: WooPosPerformInstantCatalogFullSync,
+    private val performInitialFullSync: WooPosPerformLocalCatalogInitialFullSync,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
     val state: StateFlow<WooPosSplashState> = _state
@@ -51,60 +49,43 @@ class WooPosSplashViewModel @Inject constructor(
                 launch { ordersCache.clear() }
             )
 
-            val requirement = syncStatusChecker.checkSyncRequirement()
-            when (requirement) {
-                is WooPosFullSyncRequirement.NotRequired,
-                is WooPosFullSyncRequirement.Overdue -> {
-                    _state.value = WooPosSplashState.Loaded
-                    trackPosLoaded(splashScreenStartTime)
-                }
-                is WooPosFullSyncRequirement.BlockingRequired -> {
-                    _state.value = WooPosSplashState.Syncing
-                    performInitialFullSync().collect { syncStatus ->
-                        when (syncStatus) {
-                            is WooPosFullSyncState.InProgress -> {
-                                _state.value = WooPosSplashState.Syncing
-                            }
-                            is WooPosFullSyncState.Success -> {
-                                _state.value = WooPosSplashState.Loaded
-                                trackPosLoaded(splashScreenStartTime)
-                            }
-                            is WooPosFullSyncState.Failed -> {
-                                _state.value = WooPosSplashState.SyncFailed(syncStatus.error)
-                            }
-                        }
-                    }
-                }
-                is WooPosFullSyncRequirement.Error -> {
-                    _state.value = WooPosSplashState.SyncFailed(requirement.message)
-                }
-            }
+            performInitialFullSync().collect(syncStateCollector(splashScreenStartTime))
         }
     }
 
     fun onRetrySync() {
         viewModelScope.launch {
+            val retryStartTime = System.currentTimeMillis()
             _state.value = WooPosSplashState.Syncing
-            performInitialFullSync().collect { syncStatus ->
-                when (syncStatus) {
-                    is WooPosFullSyncState.InProgress -> {
-                        _state.value = WooPosSplashState.Syncing
-                    }
-                    is WooPosFullSyncState.Success -> {
-                        _state.value = WooPosSplashState.Loaded
-                    }
-                    is WooPosFullSyncState.Failed -> {
-                        _state.value = WooPosSplashState.SyncFailed(syncStatus.error)
-                    }
-                }
+            performInitialFullSync().collect(syncStateCollector(retryStartTime))
+        }
+    }
+
+    private fun syncStateCollector(
+        startTime: Long
+    ) = FlowCollector<WooPosLocalCatalogInitialFullSyncState> { syncState ->
+        when (syncState) {
+            is WooPosLocalCatalogInitialFullSyncState.Ready -> {
+                _state.value = WooPosSplashState.Loaded
+                trackPosLoaded(startTime)
+            }
+            is WooPosLocalCatalogInitialFullSyncState.Syncing -> {
+                _state.value = WooPosSplashState.Syncing
+            }
+            is WooPosLocalCatalogInitialFullSyncState.Completed -> {
+                _state.value = WooPosSplashState.Loaded
+                trackPosLoaded(startTime)
+            }
+            is WooPosLocalCatalogInitialFullSyncState.Failed -> {
+                _state.value = WooPosSplashState.SyncFailed(syncState.error)
             }
         }
     }
 
-    private suspend fun trackPosLoaded(splashScreenStartTime: Long) {
+    private suspend fun trackPosLoaded(startTime: Long) {
         val event = Loaded.apply {
             val waitingTimeSeconds = TimeUnit.MILLISECONDS.toSeconds(
-                System.currentTimeMillis() - splashScreenStartTime
+                System.currentTimeMillis() - startTime
             ).toFloat()
             addProperties(mapOf("waiting_time" to waitingTimeSeconds.toString()))
         }
