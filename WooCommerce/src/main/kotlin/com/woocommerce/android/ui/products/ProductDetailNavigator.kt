@@ -1,21 +1,18 @@
 package com.woocommerce.android.ui.products
 
 import android.view.View
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.navOptions
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adminUrlOrDefault
-import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
-import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
@@ -29,19 +26,11 @@ class ProductDetailNavigator @Inject constructor(
         popUpToProductList: Boolean = false,
         sharedView: View? = null
     ) {
-        activity.lifecycleScope.launch {
-            val product = productDetailRepository.getProductAsync(remoteProductId)
-            if (selectedSite.get().isCIABSite() && product?.productType == ProductType.BOOKING
-            ) {
-                showProductInWebView(product, popUpToProductList)
-            } else {
-                showProductDetailFragment(
-                    remoteProductId = remoteProductId,
-                    popUpToProductList = popUpToProductList,
-                    sharedView = sharedView
-                )
-            }
-        }
+        showProductDetailFragment(
+            remoteProductId = remoteProductId,
+            popUpToProductList = popUpToProductList,
+            sharedView = sharedView
+        )
     }
 
     private fun showProductDetailFragment(
