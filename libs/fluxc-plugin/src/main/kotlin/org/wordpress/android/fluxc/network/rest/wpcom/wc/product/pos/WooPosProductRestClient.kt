@@ -64,7 +64,7 @@ class WooPosProductRestClient @Inject constructor(
         page: Int,
         pageSize: Int,
     ): WooResult<Array<WooPosVariationApiResponse>> {
-        val url = "/wc-analytics/variations"
+        val url = WOOCOMMERCE.variations.pathV3
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
             "page" to page.toString(),
