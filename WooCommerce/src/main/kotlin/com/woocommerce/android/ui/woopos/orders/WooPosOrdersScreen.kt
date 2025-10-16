@@ -88,7 +88,8 @@ fun WooPosOrdersScreen(
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
         onSearchEvent = viewModel::onSearchEvent,
         onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
-        onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked
+        onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
+        onEmailReceiptButtonClicked = viewModel::onEmailReceiptButtonClicked
     )
 }
 
@@ -103,7 +104,8 @@ private fun WooPosOrdersScreen(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onOrdersEmptyActionClicked: () -> Unit,
-    onOrdersLoadingErrorRetryButtonClicked: () -> Unit
+    onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
+    onEmailReceiptButtonClicked: (Long) -> Unit,
 ) {
     BackHandler { onBackClicked() }
 
@@ -115,7 +117,8 @@ private fun WooPosOrdersScreen(
                 onOrderSelected = onOrderSelected,
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                onSearchEvent = onSearchEvent
+                onSearchEvent = onSearchEvent,
+                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
             )
             is WooPosOrdersState.Empty -> OrdersEmpty(
                 onActionClicked = onOrdersEmptyActionClicked
@@ -145,7 +148,8 @@ private fun OrdersContent(
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
-    onSearchEvent: (WooPosSearchUIEvent) -> Unit
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    onEmailReceiptButtonClicked: (Long) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersListPane(
@@ -168,6 +172,8 @@ private fun OrdersContent(
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceContainerLow),
             order = state.items.find { it.isSelected },
+            details = state.selectedOrderDetails,
+            onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
         )
     }
 }
@@ -363,26 +369,250 @@ private fun OrdersList(
 }
 
 @Composable
-private fun OrderDetails(
+fun OrderDetails(
     modifier: Modifier = Modifier,
     order: OrderItemViewState?,
+    details: OrderDetailsViewState?,
+    onEmailReceiptButtonClicked: (Long) -> Unit = {}
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         WooPosToolbar(
             modifier = Modifier.fillMaxWidth(),
-            titleText = order?.title ?: "--",
-            titleFontWeight = FontWeight.Bold
+            titleText = details?.number ?: order?.title ?: "--",
+            onBackClicked = null
         )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = WooPosSpacing.Large.value, end = WooPosSpacing.Large.value)
-        ) {
-            WooPosText(
-                text = "Order details goes here",
-                style = WooPosTypography.BodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+
+        // Placeholder when nothing is selected
+        if (details == null) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(WooPosSpacing.Large.value),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                WooPosText(
+                    text = stringResource(R.string.woopos_orders_details_placeholder_title),
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(Modifier.height(WooPosSpacing.Small.value))
+                WooPosText(
+                    text = stringResource(R.string.woopos_orders_details_placeholder_message),
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest
+                )
+            }
+            return
+        }
+
+        WooPosLazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value),
+            contentPadding = PaddingValues(
+                start = WooPosSpacing.Large.value,
+                end = WooPosSpacing.Large.value,
+                top = WooPosSpacing.Medium.value,
+                bottom = WooPosSpacing.XLarge.value
             )
+        ) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        WooPosText(
+                            text = details.dateTime,
+                            style = WooPosTypography.BodySmall,
+                            color = WooPosTheme.colors.onSurfaceVariantHighest
+                        )
+                        details.customerEmail?.takeIf { it.isNotBlank() }?.let {
+                            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                            WooPosText(
+                                text = it,
+                                style = WooPosTypography.BodySmall,
+                                color = WooPosTheme.colors.onSurfaceVariantHighest
+                            )
+                        }
+                        Spacer(Modifier.height(WooPosSpacing.Small.value))
+                        OrderStatusBadge(details.status)
+                    }
+
+                    androidx.compose.material3.Button(
+                        onClick = { onEmailReceiptButtonClicked(details.id) }
+                    ) {
+                        WooPosText(
+                            text = stringResource(R.string.woopos_orders_email_receipt),
+                            style = WooPosTypography.BodySmall
+                        )
+                    }
+                }
+            }
+
+            // Products card
+            item {
+                WooPosCard(
+                    shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+                    backgroundColor = MaterialTheme.colorScheme.surface,
+                    elevation = WooPosElevation.Medium,
+                    shadowType = ShadowType.Soft
+                ) {
+                    Column(Modifier.padding(WooPosSpacing.Medium.value)) {
+                        WooPosText(
+                            text = stringResource(R.string.woopos_orders_details_products_title),
+                            style = WooPosTypography.Heading
+                        )
+                        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+                        details.lineItems.forEach { row ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = WooPosSpacing.Small.value),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    WooPosText(
+                                        text = row.name,
+                                        style = WooPosTypography.BodySmall,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                                    WooPosText(
+                                        text = row.qtyAndUnitPrice,
+                                        style = WooPosTypography.BodySmall,
+                                        color = WooPosTheme.colors.onSurfaceVariantHighest
+                                    )
+                                }
+                                WooPosText(
+                                    text = row.lineTotal,
+                                    style = WooPosTypography.BodySmall
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                WooPosCard(
+                    shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+                    backgroundColor = MaterialTheme.colorScheme.surface,
+                    elevation = WooPosElevation.Medium,
+                    shadowType = ShadowType.Soft
+                ) {
+                    Column(Modifier.padding(WooPosSpacing.Medium.value)) {
+                        WooPosText(
+                            text = stringResource(R.string.woopos_orders_details_totals_title),
+                            style = WooPosTypography.Heading
+                        )
+                        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+                        @Composable
+                        fun RowLine(label: String, value: String) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = WooPosSpacing.XSmall.value)
+                            ) {
+                                WooPosText(
+                                    text = label,
+                                    style = WooPosTypography.BodySmall,
+                                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                WooPosText(
+                                    text = value,
+                                    style = WooPosTypography.BodySmall
+                                )
+                            }
+                        }
+
+                        val b = details.breakdown
+                        RowLine(
+                            label = stringResource(R.string.woopos_orders_details_breakdown_products_label),
+                            value = b.products
+                        )
+
+                        b.discount?.let { d ->
+                            val label =
+                                if (b.discountCode.isNullOrBlank()) {
+                                    stringResource(R.string.woopos_orders_details_breakdown_discount_label)
+                                } else {
+                                    stringResource(
+                                        R.string.woopos_orders_details_breakdown_discount_with_code_label,
+                                        b.discountCode
+                                    )
+                                }
+                            RowLine(label, d)
+                        }
+
+                        RowLine(
+                            label = stringResource(R.string.woopos_orders_details_breakdown_taxes_label),
+                            value = b.taxes
+                        )
+
+                        b.shipping?.let {
+                            RowLine(
+                                label = stringResource(R.string.woopos_orders_details_breakdown_shipping_label),
+                                value = it
+                            )
+                        }
+
+                        Spacer(Modifier.height(WooPosSpacing.Small.value))
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(1.dp)
+                                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        )
+
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = WooPosSpacing.Small.value)
+                        ) {
+                            WooPosText(
+                                text = stringResource(R.string.woopos_orders_details_total_label),
+                                style = WooPosTypography.BodySmall,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f)
+                            )
+                            WooPosText(
+                                text = details.total,
+                                style = WooPosTypography.BodySmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+
+            item {
+                Column {
+                    Row(Modifier.fillMaxWidth()) {
+                        WooPosText(
+                            text = stringResource(R.string.woopos_orders_details_total_paid_label),
+                            style = WooPosTypography.BodySmall,
+                            modifier = Modifier.weight(1f)
+                        )
+                        WooPosText(
+                            text = details.totalPaid,
+                            style = WooPosTypography.BodySmall
+                        )
+                    }
+                    details.paymentMethodTitle?.let {
+                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                        WooPosText(
+                            text = it,
+                            style = WooPosTypography.BodySmall,
+                            color = WooPosTheme.colors.onSurfaceVariantHighest
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -469,10 +699,10 @@ fun WooPosOrdersScreenPreview() {
                 items = listOf(
                     OrderItemViewState(
                         id = 1,
-                        title = "#1234",
-                        date = "Jan 15, 2025 at 10:30 AM",
-                        total = "$125.00",
-                        customerEmail = "customer@example.com",
+                        title = "#014",
+                        date = "Aug 28, 2025 at 10:31 AM",
+                        total = "$17.00",
+                        customerEmail = "johndoe@mail.com",
                         isSelected = true,
                         status = PosOrderStatus(
                             text = "Completed",
@@ -481,10 +711,10 @@ fun WooPosOrdersScreenPreview() {
                     ),
                     OrderItemViewState(
                         id = 2,
-                        title = "#1235",
-                        date = "Jan 16, 2025 at 2:45 PM",
-                        total = "$89.50",
-                        customerEmail = "another@example.com",
+                        title = "#013",
+                        date = "Jul 28, 2025 at 10:31 AM",
+                        total = "$43.90",
+                        customerEmail = "johndoe@mail.com",
                         isSelected = false,
                         status = PosOrderStatus(
                             text = "Processing",
@@ -495,7 +725,8 @@ fun WooPosOrdersScreenPreview() {
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
                 paginationState = WooPosPaginationState.None,
-                selectedOrderId = 1
+                selectedOrderId = 1,
+                selectedOrderDetails = sampleOrderDetails()
             ),
             onBackClicked = {},
             onRefresh = {},
@@ -504,7 +735,32 @@ fun WooPosOrdersScreenPreview() {
             onPaginationErrorTryAgain = {},
             onSearchEvent = {},
             onOrdersEmptyActionClicked = {},
-            onOrdersLoadingErrorRetryButtonClicked = {}
+            onOrdersLoadingErrorRetryButtonClicked = {},
+            onEmailReceiptButtonClicked = {} // ✅ required by the current signature
         )
     }
 }
+
+@Suppress("MagicNumber")
+private fun sampleOrderDetails() = OrderDetailsViewState(
+    id = 1L,
+    number = "#014",
+    dateTime = "Aug 28, 2025 at 10:31 AM",
+    customerEmail = "johndoe@mail.com",
+    status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
+    lineItems = listOf(
+        OrderDetailsViewState.LineItemRow(101, "Cup", "1 x $8.50", "$15.00", null),
+        OrderDetailsViewState.LineItemRow(102, "Coffee Container", "1 x $10.00", "$8.00", null),
+        OrderDetailsViewState.LineItemRow(103, "Paper Filter", "1 x $4.50", "$8.00", null)
+    ),
+    breakdown = OrderDetailsViewState.TotalsBreakdown(
+        products = "$23.00",
+        discount = "-$5.00",
+        discountCode = "8qew4mnq",
+        taxes = "$0.00",
+        shipping = null
+    ),
+    total = "$17.00",
+    totalPaid = "$17.00",
+    paymentMethodTitle = "WooCommerce In-Person Payments"
+)

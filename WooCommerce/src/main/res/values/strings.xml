@@ -3794,6 +3794,23 @@
     <string name="woopos_orders_pagination_error_title">Unable to load more orders</string>
     <string name="woopos_orders_pagination_error_content_description">Please try again.</string>
 
+    <string name="woopos_orders_email_receipt">Issue refund</string>
+    <string name="woopos_orders_issue_refund_content_description">Issue a refund for this order</string>
+    <string name="woopos_orders_details_placeholder_title">Select an order</string>
+    <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
+    <string name="woopos_orders_details_products_title">Products</string>
+    <string name="woopos_orders_details_totals_title">Totals</string>
+    <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
+    <string name="woopos_orders_details_breakdown_products_label">Products</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Discount</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_taxes_label">Taxes</string>
+    <string name="woopos_orders_details_breakdown_shipping_label">Shipping</string>
+    <string name="woopos_orders_details_total_label">Total</string>
+    <string name="woopos_orders_details_total_paid_label">Total paid</string>
+    <string name="woopos_orders_details_products_list_content_description">Order products list</string>
+    <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
+
     <string name="woopos_orders_status_auto_draft">Draft</string>
     <string name="woopos_orders_status_pending">Pending Payment</string>
     <string name="woopos_orders_status_processing">Processing</string>
