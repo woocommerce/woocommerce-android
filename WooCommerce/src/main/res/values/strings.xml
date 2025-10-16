@@ -3794,7 +3794,7 @@
     <string name="woopos_orders_pagination_error_title">Unable to load more orders</string>
     <string name="woopos_orders_pagination_error_content_description">Please try again.</string>
 
-    <string name="woopos_orders_email_receipt">Issue refund</string>
+    <string name="woopos_orders_email_receipt">Email receipt</string>
     <string name="woopos_orders_issue_refund_content_description">Issue a refund for this order</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
