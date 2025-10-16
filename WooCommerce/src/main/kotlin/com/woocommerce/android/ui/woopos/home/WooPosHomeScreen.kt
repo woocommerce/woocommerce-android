@@ -199,9 +199,7 @@ private fun WooPosHomeScreenProducts(modifier: Modifier) {
     if (isPreviewMode()) {
         WooPosItemsScreenPreview(modifier)
     } else {
-        WooPosItemsScreen(
-            modifier = modifier
-        )
+        WooPosItemsScreen(modifier = modifier)
     }
 }
 
