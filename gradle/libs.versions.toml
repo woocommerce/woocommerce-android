@@ -84,9 +84,9 @@ json-path = '2.9.0'
 json-smart = '2.6.0'
 junit = '4.13.2'
 lottie = '6.6.7'
-kotlin = '2.1.10'
+kotlin = '2.2.20'
 kotlinx-coroutines = '1.10.2'
-ksp = '2.1.10-1.0.29'
+ksp = '2.2.20-2.0.4'
 mockito-kotlin = '5.4.0'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
@@ -235,7 +235,7 @@ google-play-services-auth = { group = "com.google.android.gms", name = "play-ser
 google-play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "google-play-services-code-scanner" }
 google-play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "google-play-services-wearable" }
 google-play-services-mlkit-subject-segmentation = { group = "com.google.android.gms", name = "play-services-mlkit-subject-segmentation", version.ref = "google-mlkit-subject-segmentation" }
-google-protobuf-javalite = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "google-protobuf-library" }
+google-protobuf-kotlinlite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "google-protobuf-library" }
 google-protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "google-protobuf-library" }
 google-zxing-core = { group = "com.google.zxing", name = "core", version.ref = "google-zxing" }
 gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar" }

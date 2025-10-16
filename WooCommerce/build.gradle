@@ -438,7 +438,7 @@ dependencies {
 
     implementation(libs.google.guava)
 
-    implementation(libs.google.protobuf.javalite)
+    implementation(libs.google.protobuf.kotlinlite)
 
     testImplementation(testFixtures(project(":libs:fluxc-plugin")))
 
@@ -463,17 +463,6 @@ protobuf {
             }
         }
     }
-}
-
-androidComponents {
-    onVariants(selector().all(), { variant ->
-        afterEvaluate {
-            def capName = variant.name.capitalize()
-            tasks.getByName("ksp${capName}Kotlin") {
-                setSource(tasks.getByName("generate${capName}Proto").outputs)
-            }
-        }
-    })
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
