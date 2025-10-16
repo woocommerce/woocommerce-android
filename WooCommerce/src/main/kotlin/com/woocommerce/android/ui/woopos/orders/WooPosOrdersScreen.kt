@@ -451,7 +451,6 @@ fun OrderDetails(
                 }
             }
 
-            // Products card
             item {
                 WooPosCard(
                     shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
