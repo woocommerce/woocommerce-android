@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -81,6 +82,21 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun isPeriodicSyncEnabledForSite(siteId: Long): Boolean {
+        val key = buildPeriodicSyncEnabledKey(siteId)
+        val preferences = dataStore.data.map { it[key] ?: true }.first()
+        return preferences
+    }
+
+    suspend fun disablePeriodicSyncForSite(siteId: Long) {
+        val key = buildPeriodicSyncEnabledKey(siteId)
+        dataStore.edit { preferences ->
+            preferences[key] = false
+        }
+    }
+
+    private fun buildPeriodicSyncEnabledKey(siteId: Long): Preferences.Key<Boolean> =
+        booleanPreferencesKey("pos_periodic_sync_enabled_$siteId")
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.siteId}-$key")
 
