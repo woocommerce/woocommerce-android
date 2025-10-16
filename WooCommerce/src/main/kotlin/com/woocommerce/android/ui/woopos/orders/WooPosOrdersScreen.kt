@@ -736,7 +736,7 @@ fun WooPosOrdersScreenPreview() {
             onSearchEvent = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {} // ✅ required by the current signature
+            onEmailReceiptButtonClicked = {}
         )
     }
 }
