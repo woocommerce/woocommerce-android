@@ -69,7 +69,7 @@ class BookingsRestClient @Inject constructor(
         site: SiteModel,
         resourceId: Long
     ): WooPayload<BookingResourceDto> {
-        val endpoint = WOOCOMMERCE.resources.id(resourceId).pathV2Bookings
+        val endpoint = WOOCOMMERCE.resources.team_members.id(resourceId).pathV2Bookings
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
