@@ -83,14 +83,14 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     fun onOrderSelected(orderId: Long) {
-        val currentState = _state.value
-        if (currentState is WooPosOrdersState.Content) {
-            _state.value = currentState.copy(
-                items = currentState.items.map { it.copy(isSelected = it.id == orderId) },
-                selectedOrderId = orderId,
-                selectedOrderDetails = ordersById[orderId]?.let(::mapDetails)
-            )
-        }
+        val current = _state.value as? WooPosOrdersState.Content ?: return
+        val details = ordersById[orderId]?.let(::mapDetails) ?: return
+
+        _state.value = current.copy(
+            items = current.items.map { it.copy(isSelected = it.id == orderId) },
+            selectedOrderId = orderId,
+            selectedOrderDetails = details
+        )
     }
 
     fun onRefresh() {
@@ -271,7 +271,13 @@ class WooPosOrdersViewModel @Inject constructor(
                     }
 
                     is LoadOrdersResult.SuccessCache -> {
-                        replaceOrders(result.orders)
+                        if (result.orders.isEmpty()) {
+                            _state.value = WooPosOrdersState.Loading(
+                                searchInputState = WooPosSearchInputState.Closed
+                            )
+                        } else {
+                            replaceOrders(result.orders)
+                        }
                     }
 
                     is LoadOrdersResult.SuccessRemote -> {
@@ -301,13 +307,14 @@ class WooPosOrdersViewModel @Inject constructor(
         ordersById.clear()
         orders.forEach { ordersById[it.id] = it }
 
-        val newSelectedId = orders.firstOrNull()?.id
+        val newSelectedId = requireNotNull(orders.firstOrNull()?.id) { "Content requires at least one order" }
         val newItems = mapOrders(orders, newSelectedId)
+        val details = mapDetails(requireNotNull(ordersById[newSelectedId]))
 
         _state.value = WooPosOrdersState.Content(
             items = newItems,
             selectedOrderId = newSelectedId,
-            selectedOrderDetails = newSelectedId?.let { id -> ordersById[id]?.let(::mapDetails) },
+            selectedOrderDetails = details,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
@@ -320,18 +327,16 @@ class WooPosOrdersViewModel @Inject constructor(
     ) {
         orders.forEach { ordersById[it.id] = it }
 
-        val current = _state.value as? WooPosOrdersState.Content
-        val existingItems = current?.items.orEmpty()
-        val selectedId = current?.selectedOrderId
-            ?: existingItems.firstOrNull()?.id
-            ?: orders.firstOrNull()?.id
+        val current = _state.value as WooPosOrdersState.Content
+        val items = current.items + mapOrders(orders, current.selectedOrderId)
 
-        val newItems = mapOrders(orders, selectedId)
+        // Selection doesn’t change on append
+        val details = mapDetails(requireNotNull(ordersById[current.selectedOrderId]))
 
         _state.value = WooPosOrdersState.Content(
-            items = existingItems + newItems,
-            selectedOrderId = selectedId,
-            selectedOrderDetails = selectedId?.let { id -> ordersById[id]?.let(::mapDetails) },
+            items = items,
+            selectedOrderId = current.selectedOrderId,
+            selectedOrderDetails = details,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState

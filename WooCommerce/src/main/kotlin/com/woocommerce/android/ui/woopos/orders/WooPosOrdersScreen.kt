@@ -382,7 +382,7 @@ private fun OrdersList(
 fun OrderDetails(
     modifier: Modifier = Modifier,
     order: OrderItemViewState?,
-    details: OrderDetailsViewState?,
+    details: OrderDetailsViewState,
     onEmailReceiptButtonClicked: (Long) -> Unit = {}
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -391,30 +391,6 @@ fun OrderDetails(
             titleText = details?.number ?: order?.title ?: "--",
             onBackClicked = null
         )
-
-        if (details == null) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(WooPosSpacing.Large.value),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_orders_details_placeholder_title),
-                    style = WooPosTypography.Heading,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(Modifier.height(WooPosSpacing.Small.value))
-                WooPosText(
-                    text = stringResource(R.string.woopos_orders_details_placeholder_message),
-                    style = WooPosTypography.BodySmall,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest
-                )
-            }
-            return
-        }
 
         WooPosLazyColumn(
             modifier = Modifier.fillMaxSize(),

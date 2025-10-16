@@ -61,9 +61,9 @@ sealed class WooPosOrdersState {
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
         val paginationState: WooPosPaginationState,
-        val selectedOrderId: Long?,
+        val selectedOrderId: Long,
 
-        val selectedOrderDetails: OrderDetailsViewState? = null
+        val selectedOrderDetails: OrderDetailsViewState
     ) : WooPosOrdersState()
 
     @Immutable
