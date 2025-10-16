@@ -90,7 +90,7 @@ class BookingsRestClient @Inject constructor(
                 BookingsFilterOption.AttendanceStatus -> TODO()
                 BookingsFilterOption.PaymentStatus -> TODO()
                 BookingsFilterOption.BookingType -> TODO()
-                is BookingsFilterOption.Customer -> filter.customerId?.let { set("customer", it.toString()) }
+                is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
 
                 BookingsFilterOption.Location -> TODO()
                 is BookingsFilterOption.DateRange -> {
