@@ -20,6 +20,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -66,6 +67,7 @@ import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
@@ -78,6 +80,7 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -116,6 +119,9 @@ class OrderListFragment :
 
     @Inject
     internal lateinit var orderFiltersRepository: OrderFiltersRepository
+
+    @Inject
+    internal lateinit var customerListRepository: CustomerListRepository
 
     private var tracker: SelectionTracker<Long>? = null
     private var actionMode: ActionMode? = null
@@ -691,7 +697,7 @@ class OrderListFragment :
                 }
 
                 is OrdersCommunicationViewModel.CommunicationEvent.CustomerFilterRequested -> {
-                    applyCustomerFilter(event.customerId)
+                    applyCustomerFilter(event.customer)
                 }
 
                 else -> event.isHandled = false
@@ -924,14 +930,22 @@ class OrderListFragment :
         }
     }
 
-    fun applyCustomerFilter(customerId: Long) {
+    fun applyCustomerFilter(customer: Order.Customer) {
         searchQuery = ""
-        orderFiltersRepository.setSelectedFilters(
-            OrderListFilterCategory.CUSTOMER,
-            listOf(customerId.toString())
-        )
-        viewModel.loadOrders()
-        uiMessageResolver.showSnack(R.string.order_list_customer_filter_applied)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            customer.customerId?.let { customerId ->
+                customerListRepository.fetchCustomerByRemoteId(customerId)
+
+                orderFiltersRepository.setSelectedFilters(
+                    OrderListFilterCategory.CUSTOMER,
+                    listOf(customerId.toString())
+                )
+            }
+
+            viewModel.loadOrders()
+            uiMessageResolver.showSnack(R.string.order_list_customer_filter_applied)
+        }
     }
 
     private fun showOrderFilters() {

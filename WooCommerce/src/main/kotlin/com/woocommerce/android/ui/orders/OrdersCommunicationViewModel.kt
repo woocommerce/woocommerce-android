@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,8 +33,8 @@ class OrdersCommunicationViewModel @Inject constructor(
         triggerEvent(CommunicationEvent.OrdersLoaded)
     }
 
-    fun applyCustomerFilter(customerId: Long) {
-        triggerEvent(CommunicationEvent.CustomerFilterRequested(customerId))
+    fun applyCustomerFilter(customer: Order.Customer) {
+        triggerEvent(CommunicationEvent.CustomerFilterRequested(customer))
     }
 
     sealed class CommunicationEvent : MultiLiveEvent.Event() {
@@ -41,6 +42,6 @@ class OrdersCommunicationViewModel @Inject constructor(
         data object OrdersEmptyNotified : CommunicationEvent()
         data object OrdersLoadingNotified : CommunicationEvent()
         data object OrdersLoaded : CommunicationEvent()
-        data class CustomerFilterRequested(val customerId: Long) : CommunicationEvent()
+        data class CustomerFilterRequested(val customer: Order.Customer) : CommunicationEvent()
     }
 }
