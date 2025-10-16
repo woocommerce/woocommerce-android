@@ -161,7 +161,6 @@ private fun MainItemsList(
                 }
             }
         }
-
     }
 }
 
