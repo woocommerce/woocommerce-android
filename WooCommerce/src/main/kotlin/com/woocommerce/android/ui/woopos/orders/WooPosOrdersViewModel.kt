@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -29,8 +31,9 @@ class WooPosOrdersViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
-    private val locale: Locale
-) : ViewModel() {
+    private val locale: Locale,
+    private val productImageMap: ProductImageMap,
+) : ViewModel(), OnProductFetchedListener {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
         WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
@@ -56,6 +59,27 @@ class WooPosOrdersViewModel @Inject constructor(
 
     init {
         loadOrders()
+        productImageMap.subscribeToOnProductFetchedEvents(this)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        productImageMap.unsubscribeFromOnProductFetchedEvents(this)
+    }
+
+    @Suppress("ReturnCount")
+    override fun onProductFetched(remoteProductId: Long) {
+        val current = _state.value as? WooPosOrdersState.Content ?: return
+        val selectedId = current.selectedOrderId ?: return
+        val selectedOrder = ordersById[selectedId] ?: return
+
+        // Only refresh if the selected order uses that product
+        val affectsSelected = selectedOrder.items.any { it.productId == remoteProductId }
+        if (!affectsSelected) return
+
+        _state.value = current.copy(
+            selectedOrderDetails = mapDetails(selectedOrder)
+        )
     }
 
     fun onOrderSelected(orderId: Long) {
@@ -285,7 +309,8 @@ class WooPosOrdersViewModel @Inject constructor(
             selectedOrderId = newSelectedId,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState
+            searchInputState = _state.value.searchInputState,
+            selectedOrderDetails = newSelectedId?.let { ordersById[it] }?.let(::mapDetails)
         )
     }
 
@@ -349,6 +374,7 @@ class WooPosOrdersViewModel @Inject constructor(
             text = statusText,
             colorKey = OrderStatusColorKey.fromStatus(order.status)
         )
+        fun imageFor(item: Order.Item): String? = productImageMap.get(item.productId)
 
         val lineItems = order.items.map { item ->
             val unitPrice = if (item.quantity == 0f) item.total else item.total / item.quantity.toBigDecimal()
@@ -357,7 +383,7 @@ class WooPosOrdersViewModel @Inject constructor(
                 name = item.name,
                 qtyAndUnitPrice = "${item.quantity.toInt()} x ${fmt(unitPrice)}",
                 lineTotal = fmt(item.total),
-                thumbnailUrl = null
+                imageUrl = imageFor(item)
             )
         }
 

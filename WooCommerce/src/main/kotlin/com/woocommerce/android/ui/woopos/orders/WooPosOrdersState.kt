@@ -26,7 +26,7 @@ data class OrderDetailsViewState(
         val name: String,
         val qtyAndUnitPrice: String,
         val lineTotal: String,
-        val thumbnailUrl: String?,
+        val imageUrl: String?,
     )
 
     @Immutable
