@@ -8,8 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -87,9 +91,17 @@ fun BookingAppointmentDetails(
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.onSurface
                 ),
-                onClick = onCancelBooking
+                onClick = onCancelBooking,
+                enabled = model.cancelButtonEnabled,
             ) {
-                Text(text = stringResource(R.string.booking_details_cancel_booking_button))
+                if (model.cancelInProgressShown) {
+                    CircularProgressIndicator(
+                        color = LocalContentColor.current,
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Text(text = stringResource(R.string.booking_details_cancel_booking_button))
+                }
             }
             HorizontalDivider(thickness = 0.5.dp)
         }
@@ -139,8 +151,12 @@ data class BookingAppointmentDetailsModel(
     val staff: BookingStaffMemberStatus?,
     val location: String,
     val duration: String,
-    val price: String
-)
+    val price: String,
+    val cancelStatus: CancelStatus,
+) {
+    val cancelButtonEnabled: Boolean = cancelStatus != CancelStatus.InProgress
+    val cancelInProgressShown: Boolean = cancelStatus == CancelStatus.InProgress
+}
 
 sealed interface BookingStaffMemberStatus {
     data object Loading : BookingStaffMemberStatus
@@ -159,7 +175,8 @@ private fun BookingAppointmentDetailsPreview() {
                 staff = BookingStaffMemberStatus.Loading,
                 location = "238 Willow Creek Drive, Montgomery AL 36109",
                 duration = "60 min",
-                price = "$55.00"
+                price = "$55.00",
+                cancelStatus = CancelStatus.Idle,
             ),
             onCancelBooking = {},
             modifier = Modifier.fillMaxWidth()

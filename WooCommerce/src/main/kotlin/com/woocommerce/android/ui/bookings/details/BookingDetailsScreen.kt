@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
@@ -106,14 +107,15 @@ fun BookingDetailsScreen(
                 }
             }
         }
-    }
-    if (showAttendanceSheet.value) {
-        BookingAttendanceStatusBottomSheet(
-            onSelect = { status ->
-                viewState.onAttendanceStatusSelected(status)
-            },
-            onDismiss = { showAttendanceSheet.value = false }
-        )
+        if (showAttendanceSheet.value) {
+            BookingAttendanceStatusBottomSheet(
+                onSelect = { status ->
+                    viewState.onAttendanceStatusSelected(status)
+                },
+                onDismiss = { showAttendanceSheet.value = false }
+            )
+        }
+        viewState.dialogState?.Render()
     }
 }
 
@@ -229,7 +231,8 @@ private fun BookingDetailsPreview() {
                         staff = BookingStaffMemberStatus.Loaded("Marianne Renoir"),
                         location = "238 Willow Creek Drive, Montgomery AL 36109",
                         duration = "60 min",
-                        price = "$55.00"
+                        price = "$55.00",
+                        cancelStatus = CancelStatus.Idle,
                     ),
                     bookingCustomerDetails = BookingCustomerDetailsModel(
                         name = "Margarita Nikolaevna",

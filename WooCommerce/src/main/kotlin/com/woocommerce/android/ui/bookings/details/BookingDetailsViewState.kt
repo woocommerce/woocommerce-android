@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.compose.DialogState
 
 sealed interface BookingDetailsLoadingState {
     data object Idle : BookingDetailsLoadingState
@@ -18,6 +19,7 @@ data class BookingDetailsViewState(
     val loadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Idle,
     val onCancelBooking: () -> Unit = {},
     val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
+    val dialogState: DialogState? = null,
     val onRefresh: () -> Unit = {},
 ) {
     val shouldShowSkeleton: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Refreshing
@@ -30,3 +32,8 @@ data class BookingUiState(
     val bookingCustomerDetails: BookingCustomerDetailsModel,
     val bookingPaymentDetails: BookingPaymentDetailsModel?,
 )
+
+sealed interface CancelStatus {
+    data object Idle : CancelStatus
+    data object InProgress : CancelStatus
+}

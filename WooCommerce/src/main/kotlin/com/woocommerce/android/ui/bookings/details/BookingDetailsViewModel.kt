@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.bookings.BookingResource
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
+import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -20,6 +22,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -28,6 +31,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import java.time.Duration
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -54,25 +58,62 @@ class BookingDetailsViewModel @Inject constructor(
     // Temporary, the booking status should come from the stored object
     private val bookingAttendanceStatus = MutableStateFlow<BookingAttendanceStatus?>(null)
 
-    val state: LiveData<BookingDetailsViewState> = combine(
+    private val cancelStatusState = MutableStateFlow<CancelStatus>(CancelStatus.Idle)
+    private val showCancelBookingDialog = MutableStateFlow(false)
+
+    private val cancelBookingDialogState = combine(
+        booking,
+        showCancelBookingDialog,
+    ) { booking, showCancelBooking ->
+        if (showCancelBooking && booking != null) {
+            val message = bookingMapper.buildCancelDialogMessage(booking)
+            DialogState(
+                title = UiString.UiStringRes(R.string.booking_cancel_dialog_title),
+                message = message,
+                positiveButton = DialogState.DialogButton(
+                    text = UiString.UiStringRes(R.string.booking_cancel_dialog_confirm),
+                    onClick = ::onConfirmCancelBooking
+                ),
+                negativeButton = DialogState.DialogButton(
+                    text = UiString.UiStringRes(R.string.booking_cancel_dialog_keep),
+                    onClick = ::onDismissCancelDialog
+                ),
+            )
+        } else {
+            null
+        }
+    }
+
+    private val bookingUiStateFlow = combine(
         booking,
         bookingAttendanceStatus,
         loadingState,
-        resource
-    ) { booking, attendanceStatus, loadingState, resource ->
+        resource,
+        cancelStatusState,
+    ) { booking, attendanceStatus, loadingState, resource, cancelStatus ->
+        if (booking != null) {
+            bookingMapper.buildBookingUiState(booking, attendanceStatus, resource, loadingState, cancelStatus)
+        } else {
+            null
+        }
+    }
+
+    val state: LiveData<BookingDetailsViewState> = combine(
+        booking,
+        bookingUiStateFlow,
+        loadingState,
+        cancelBookingDialogState,
+    ) { booking, bookingUiState, loadingState, cancelBookingDialog ->
         with(bookingMapper) {
             BookingDetailsViewState(
                 toolbarTitle = booking?.id?.value?.let { id ->
                     resourceProvider.getString(R.string.booking_details_title, id)
                 } ?: "",
-                bookingUiState = if (booking != null) {
-                    buildBookingUiState(booking, resource, attendanceStatus, loadingState)
-                } else {
-                    null
-                },
-                loadingState = loadingState,
+                bookingUiState = bookingUiState,
                 onCancelBooking = ::onCancelBooking,
                 onAttendanceStatusSelected = ::onAttendanceStatusSelected,
+                dialogState = cancelBookingDialog,
+                loadingState = loadingState,
                 onRefresh = ::fetchBooking,
             )
         }
@@ -116,14 +157,27 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun onCancelBooking() {
-        // TODO Add logic to Cancel booking
+        showCancelBookingDialog.value = true
+    }
+
+    private fun onDismissCancelDialog() {
+        showCancelBookingDialog.value = false
+    }
+
+    private fun onConfirmCancelBooking() = launch {
+        // TODO Add logic to Cancel booking action
+        showCancelBookingDialog.value = false
+        cancelStatusState.value = CancelStatus.InProgress
+        delay(Duration.ofSeconds(1).toMillis())
+        cancelStatusState.value = CancelStatus.Idle
     }
 
     private suspend fun BookingMapper.buildBookingUiState(
         booking: Booking,
-        resource: BookingResource?,
         attendanceStatus: BookingAttendanceStatus?,
-        loadingState: BookingDetailsLoadingState
+        resource: BookingResource?,
+        loadingState: BookingDetailsLoadingState,
+        cancelStatus: CancelStatus,
     ): BookingUiState = BookingUiState(
         orderId = booking.orderId,
         bookingSummary = booking.toBookingSummaryModel().let {
@@ -138,7 +192,8 @@ class BookingDetailsViewModel @Inject constructor(
                 resourceId = booking.resourceId,
                 resource = resource,
                 loadingState = loadingState
-            )
+            ),
+            cancelStatus = cancelStatus
         ),
         bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
         bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency)
