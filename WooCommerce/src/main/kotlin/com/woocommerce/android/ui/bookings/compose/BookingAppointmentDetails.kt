@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.bookings.details.CancelState
+import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -152,10 +152,10 @@ data class BookingAppointmentDetailsModel(
     val location: String,
     val duration: String,
     val price: String,
-    val cancelState: CancelState,
+    val cancelStatus: CancelStatus,
 ) {
-    val cancelButtonEnabled: Boolean = cancelState != CancelState.InProgress
-    val cancelInProgressShown: Boolean = cancelState == CancelState.InProgress
+    val cancelButtonEnabled: Boolean = cancelStatus != CancelStatus.InProgress
+    val cancelInProgressShown: Boolean = cancelStatus == CancelStatus.InProgress
 }
 
 sealed interface BookingStaffMemberStatus {
@@ -176,7 +176,7 @@ private fun BookingAppointmentDetailsPreview() {
                 location = "238 Willow Creek Drive, Montgomery AL 36109",
                 duration = "60 min",
                 price = "$55.00",
-                cancelState = CancelState.Idle,
+                cancelStatus = CancelStatus.Idle,
             ),
             onCancelBooking = {},
             modifier = Modifier.fillMaxWidth()

@@ -2,13 +2,13 @@ package com.woocommerce.android.ui.bookings
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
-import com.woocommerce.android.ui.bookings.details.CancelState
+import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -101,7 +101,7 @@ class BookingMapperTest : BaseUnitTest() {
         val expectedTime = "${timeFormatter.format(start)} - ${timeFormatter.format(end)}"
 
         // WHEN
-        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelState.Idle) }
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
 
         // THEN
         assertThat(model.date).isEqualTo(expectedDate)
@@ -110,7 +110,7 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.location).isEqualTo("238 Willow Creek Drive, Montgomery AL 36109")
         assertThat(model.duration).isEqualTo("90 min")
         assertThat(model.price).isEqualTo("$55.00")
-        assertThat(model.cancelState).isEqualTo(CancelState.Idle)
+        assertThat(model.cancelStatus).isEqualTo(CancelStatus.Idle)
     }
 
     @Test
@@ -176,69 +176,55 @@ class BookingMapperTest : BaseUnitTest() {
     @Test
     fun `given booking, when building cancel dialog message, then formats using booking details`() {
         // GIVEN
-        val resourceProvider = mock<ResourceProvider>()
         val start = Instant.parse("2025-09-12T16:00:00Z")
         val booking = sampleBooking(start = start, end = start.plus(Duration.ofHours(1)))
         val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withZone(ZoneOffset.UTC).format(start)
         val expectedTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC).format(start)
-        whenever(
-            resourceProvider.getString(
-                eq(R.string.booking_cancel_dialog_message),
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        ).thenAnswer {
-            val name = it.getArgument<String>(1)
-            val service = it.getArgument<String>(2)
-            val date = it.getArgument<String>(3)
-            val time = it.getArgument<String>(4)
-            "$name will no longer be able to attend “$service” on $date at $time."
-        }
 
         // WHEN
-        val message = mapper.buildCancelDialogMessage(booking, resourceProvider)
+        val message = mapper.buildCancelDialogMessage(booking)
 
         // THEN
-        assertThat(message).isEqualTo(
-            "${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName} will no " +
-                "longer be able to attend “${booking.order.productInfo?.name}” on $expectedDate at $expectedTime."
-        )
+        val customerName =
+            "${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName}"
+        assertThat(message)
+            .isEqualTo(
+                UiString.UiStringRes(
+                    R.string.booking_cancel_dialog_message,
+                    listOf(
+                        UiString.UiStringText(customerName),
+                        UiString.UiStringText("${booking.order.productInfo?.name}"),
+                        UiString.UiStringText(expectedDate),
+                        UiString.UiStringText(expectedTime)
+                    )
+                )
+            )
     }
 
     @Test
     fun `given booking without customer, when building cancel dialog message, then falls back to guest`() {
         // GIVEN
-        val resourceProvider = mock<ResourceProvider>()
-        whenever(resourceProvider.getString(eq(R.string.customer_detail_guest_customer))).thenReturn("Guest")
         val start = Instant.parse("2025-09-12T16:00:00Z")
-        val bookingWithoutCustomer = sampleBooking(start = start, customerInfo = null)
+        val booking = sampleBooking(start = start, customerInfo = null)
         val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withZone(ZoneOffset.UTC).format(start)
         val expectedTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC).format(start)
-        whenever(
-            resourceProvider.getString(
-                eq(R.string.booking_cancel_dialog_message),
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        ).thenAnswer {
-            val name = it.getArgument<String>(1)
-            val service = it.getArgument<String>(2)
-            val date = it.getArgument<String>(3)
-            val time = it.getArgument<String>(4)
-            "$name will no longer be able to attend “$service” on $date at $time."
-        }
 
         // WHEN
-        val message = mapper.buildCancelDialogMessage(bookingWithoutCustomer, resourceProvider)
+        val message = mapper.buildCancelDialogMessage(booking)
 
         // THEN
-        assertThat(message).isEqualTo(
-            "Guest will no longer be able to attend “Women’s Haircut” on $expectedDate at $expectedTime."
-        )
+        assertThat(message)
+            .isEqualTo(
+                UiString.UiStringRes(
+                    R.string.booking_cancel_dialog_message,
+                    listOf(
+                        UiString.UiStringRes(R.string.customer_detail_guest_customer),
+                        UiString.UiStringText("${booking.order.productInfo?.name}"),
+                        UiString.UiStringText(expectedDate),
+                        UiString.UiStringText(expectedTime)
+                    )
+                )
+            )
     }
 
     private fun sampleBooking(

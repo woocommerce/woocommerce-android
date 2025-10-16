@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.GetLocations
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
@@ -11,10 +12,9 @@ import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
-import com.woocommerce.android.ui.bookings.details.CancelState
+import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
@@ -60,7 +60,7 @@ class BookingMapper @Inject constructor(
 
     fun Booking.toAppointmentDetailsModel(
         staffMemberStatus: BookingStaffMemberStatus?,
-        cancelState: CancelState,
+        cancelStatus: CancelStatus,
     ): BookingAppointmentDetailsModel {
         val durationMinutes = Duration.between(start, end).toMinutes()
         return BookingAppointmentDetailsModel(
@@ -71,7 +71,7 @@ class BookingMapper @Inject constructor(
             location = "238 Willow Creek Drive, Montgomery AL 36109",
             duration = "$durationMinutes min",
             price = currencyFormatter.formatCurrency(cost, currency),
-            cancelState = cancelState,
+            cancelStatus = cancelStatus,
         )
     }
 
@@ -114,18 +114,20 @@ class BookingMapper @Inject constructor(
         return "${billingFirstName.orEmpty()} ${billingLastName.orEmpty()}".trim().ifEmpty { null }
     }
 
-    fun buildCancelDialogMessage(booking: Booking, resourceProvider: ResourceProvider): String {
-        val customerName = booking.order.customerInfo?.fullName()
-            ?: resourceProvider.getString(R.string.customer_detail_guest_customer)
+    fun buildCancelDialogMessage(booking: Booking): UiString {
+        val customerName = booking.order.customerInfo?.fullName()?.let { UiString.UiStringText(it) }
+            ?: UiString.UiStringRes(R.string.customer_detail_guest_customer)
         val serviceName = booking.order.productInfo?.name ?: "-"
         val date = detailsDateFormatter.format(booking.start)
         val time = timeRangeFormatter.format(booking.start)
-        return resourceProvider.getString(
+        return UiString.UiStringRes(
             R.string.booking_cancel_dialog_message,
-            customerName,
-            serviceName,
-            date,
-            time
+            listOf(
+                customerName,
+                UiString.UiStringText(serviceName),
+                UiString.UiStringText(date),
+                UiString.UiStringText(time)
+            )
         )
     }
 

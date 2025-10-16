@@ -61,18 +61,6 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
                 any()
             )
         ).thenReturn("Booking #${initialBooking.id.value}")
-        // Stub guest customer fallback used by cancel message
-        whenever(resourceProvider.getString(eq(R.string.customer_detail_guest_customer))).thenReturn("Guest")
-        // Stub cancel dialog message formatting regardless of inputs
-        whenever(
-            resourceProvider.getString(
-                eq(R.string.booking_cancel_dialog_message),
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        ).thenReturn("Formatted cancel message")
     }
 
     @Test
@@ -228,8 +216,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         // Then
         val updated = viewModel.state.getOrAwaitValue()
-        assertThat(updated.showCancelBookingDialog).isTrue()
-        assertThat(updated.cancelDialogMessage).isEqualTo("Formatted cancel message")
+        assertThat(updated.cancelBookingDialogState).isNotNull
     }
 
     @Test
@@ -239,14 +226,15 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel(savedState)
         val state = viewModel.state.getOrAwaitValue()
         state.onCancelBooking()
-        assertThat(viewModel.state.getOrAwaitValue().showCancelBookingDialog).isTrue()
+        val stateWithDialog = viewModel.state.getOrAwaitValue()
+        assertThat(stateWithDialog.cancelBookingDialogState).isNotNull
 
         // When
-        viewModel.state.getOrAwaitValue().onDismissCancelDialog()
+        stateWithDialog.cancelBookingDialogState?.negativeButton?.onClick()
 
         // Then
         val updated = viewModel.state.getOrAwaitValue()
-        assertThat(updated.showCancelBookingDialog).isFalse()
+        assertThat(updated.cancelBookingDialogState).isNull()
     }
 
     @Test
@@ -256,14 +244,15 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel(savedState)
         val state = viewModel.state.getOrAwaitValue()
         state.onCancelBooking()
-        assertThat(viewModel.state.getOrAwaitValue().showCancelBookingDialog).isTrue()
+        val stateWithDialog = viewModel.state.getOrAwaitValue()
+        assertThat(stateWithDialog.cancelBookingDialogState).isNotNull()
 
         // When
-        viewModel.state.getOrAwaitValue().onConfirmCancelBooking()
+        stateWithDialog.cancelBookingDialogState?.positiveButton?.onClick()
 
         // Then
         val updated = viewModel.state.getOrAwaitValue()
-        assertThat(updated.showCancelBookingDialog).isFalse()
+        assertThat(updated.cancelBookingDialogState).isNull()
     }
 
     private fun createViewModel(
