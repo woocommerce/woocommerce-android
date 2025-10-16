@@ -36,15 +36,11 @@ class WooPosVariationsInDbDataSource @Inject constructor(
         forceRefresh: Boolean
     ): Flow<FetchResult> = getVariationsFromDatabaseFlow(productId)
         .map { variations ->
-            FetchResult.Remote(Result.success(variations.applyFilter()))
+            FetchResult.Remote(Result.success(variations))
         }
         .flowOn(Dispatchers.IO)
 
     override suspend fun loadMore(productId: Long): Result<List<WooPosVariation>> = withContext(Dispatchers.IO) {
         Result.success(emptyList())
     }
-}
-
-private fun List<WooPosVariation>.applyFilter(): List<WooPosVariation> {
-    return filter { !it.isDownloadable }
 }

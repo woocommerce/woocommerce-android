@@ -11,7 +11,8 @@ import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 @Dao
 abstract class WooPosVariationsDao {
 
-    @Query("SELECT * FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId = :productId ORDER BY variationName ASC")
+    @Query("SELECT * FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId = :productId " +
+        "AND status = 'publish' AND downloadable = 0 ORDER BY variationName ASC")
     abstract fun observeVariationsForProduct(
         localSiteId: Int,
         productId: Long
