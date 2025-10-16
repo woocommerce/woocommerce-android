@@ -115,7 +115,7 @@ fun BookingDetailsScreen(
                 onDismiss = { showAttendanceSheet.value = false }
             )
         }
-        viewState.cancelBookingDialogState?.Render()
+        viewState.dialogState?.Render()
     }
 }
 

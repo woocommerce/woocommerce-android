@@ -19,7 +19,7 @@ data class BookingDetailsViewState(
     val loadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Idle,
     val onCancelBooking: () -> Unit = {},
     val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
-    val cancelBookingDialogState: DialogState? = null,
+    val dialogState: DialogState? = null,
     val onRefresh: () -> Unit = {},
 ) {
     val shouldShowSkeleton: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Refreshing

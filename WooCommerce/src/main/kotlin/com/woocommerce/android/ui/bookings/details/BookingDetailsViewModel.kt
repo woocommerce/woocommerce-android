@@ -61,7 +61,7 @@ class BookingDetailsViewModel @Inject constructor(
     private val cancelStatusState = MutableStateFlow<CancelStatus>(CancelStatus.Idle)
     private val showCancelBookingDialog = MutableStateFlow(false)
 
-    val cancelBookingDialogState = combine(
+    private val cancelBookingDialogState = combine(
         booking,
         showCancelBookingDialog,
     ) { booking, showCancelBooking ->
@@ -84,7 +84,7 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    val bookingUiStateFlow = combine(
+    private val bookingUiStateFlow = combine(
         booking,
         bookingAttendanceStatus,
         loadingState,
@@ -112,7 +112,7 @@ class BookingDetailsViewModel @Inject constructor(
                 bookingUiState = bookingUiState,
                 onCancelBooking = ::onCancelBooking,
                 onAttendanceStatusSelected = ::onAttendanceStatusSelected,
-                cancelBookingDialogState = cancelBookingDialog,
+                dialogState = cancelBookingDialog,
                 loadingState = loadingState,
                 onRefresh = ::fetchBooking,
             )

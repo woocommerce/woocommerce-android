@@ -216,7 +216,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         // Then
         val updated = viewModel.state.getOrAwaitValue()
-        assertThat(updated.cancelBookingDialogState).isNotNull
+        assertThat(updated.dialogState).isNotNull
     }
 
     @Test
@@ -227,14 +227,14 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.onCancelBooking()
         val stateWithDialog = viewModel.state.getOrAwaitValue()
-        assertThat(stateWithDialog.cancelBookingDialogState).isNotNull
+        assertThat(stateWithDialog.dialogState).isNotNull
 
         // When
-        stateWithDialog.cancelBookingDialogState?.negativeButton?.onClick()
+        stateWithDialog.dialogState?.negativeButton?.onClick()
 
         // Then
         val updated = viewModel.state.getOrAwaitValue()
-        assertThat(updated.cancelBookingDialogState).isNull()
+        assertThat(updated.dialogState).isNull()
     }
 
     @Test
@@ -245,14 +245,14 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
         state.onCancelBooking()
         val stateWithDialog = viewModel.state.getOrAwaitValue()
-        assertThat(stateWithDialog.cancelBookingDialogState).isNotNull()
+        assertThat(stateWithDialog.dialogState).isNotNull()
 
         // When
-        stateWithDialog.cancelBookingDialogState?.positiveButton?.onClick()
+        stateWithDialog.dialogState?.positiveButton?.onClick()
 
         // Then
         val updated = viewModel.state.getOrAwaitValue()
-        assertThat(updated.cancelBookingDialogState).isNull()
+        assertThat(updated.dialogState).isNull()
     }
 
     private fun createViewModel(
