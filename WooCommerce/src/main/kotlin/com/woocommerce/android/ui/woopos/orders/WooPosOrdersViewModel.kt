@@ -307,22 +307,31 @@ class WooPosOrdersViewModel @Inject constructor(
         _state.value = WooPosOrdersState.Content(
             items = newItems,
             selectedOrderId = newSelectedId,
+            selectedOrderDetails = newSelectedId?.let { id -> ordersById[id]?.let(::mapDetails) },
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState,
-            selectedOrderDetails = newSelectedId?.let { ordersById[it] }?.let(::mapDetails)
+            searchInputState = _state.value.searchInputState
         )
     }
 
-    private fun appendOrders(orders: List<Order>, paginationState: WooPosPaginationState = WooPosPaginationState.None) {
+    private fun appendOrders(
+        orders: List<Order>,
+        paginationState: WooPosPaginationState = WooPosPaginationState.None
+    ) {
+        orders.forEach { ordersById[it.id] = it }
+
         val current = _state.value as? WooPosOrdersState.Content
         val existingItems = current?.items.orEmpty()
-        val selectedId = current?.selectedOrderId ?: existingItems.firstOrNull()?.id ?: orders.firstOrNull()?.id
+        val selectedId = current?.selectedOrderId
+            ?: existingItems.firstOrNull()?.id
+            ?: orders.firstOrNull()?.id
+
         val newItems = mapOrders(orders, selectedId)
 
         _state.value = WooPosOrdersState.Content(
             items = existingItems + newItems,
             selectedOrderId = selectedId,
+            selectedOrderDetails = selectedId?.let { id -> ordersById[id]?.let(::mapDetails) },
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
