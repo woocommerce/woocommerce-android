@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
@@ -42,7 +43,19 @@ class WooPosOrdersViewModelTest {
     private val wooStore: WooCommerceStore = org.mockito.kotlin.mock()
     private val selectedSite: SelectedSite = org.mockito.kotlin.mock()
     private val resourceProvider: ResourceProvider = org.mockito.kotlin.mock()
+    private val productImageMap: ProductImageMap = org.mockito.kotlin.mock()
     private val providedLocale: Locale = Locale.US
+
+    private fun createViewModel(): WooPosOrdersViewModel {
+        return WooPosOrdersViewModel(
+            ordersDataSource = dataSource,
+            wooCommerceStore = wooStore,
+            selectedSite = selectedSite,
+            resourceProvider = resourceProvider,
+            locale = providedLocale,
+            productImageMap = productImageMap
+        )
+    }
 
     @Before
     fun setUp() {
@@ -72,6 +85,8 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
+
+        whenever(productImageMap.get(any())).thenReturn(null)
     }
 
     @Test
@@ -87,7 +102,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // THEN
@@ -98,6 +113,8 @@ class WooPosOrdersViewModelTest {
         assertThat(content.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
         verify(dataSource).loadOrders()
+
+        assertThat(content.selectedOrderDetails?.id).isEqualTo(2L)
     }
 
     @Test
@@ -112,7 +129,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // THEN
@@ -121,6 +138,7 @@ class WooPosOrdersViewModelTest {
         val content = state as WooPosOrdersState.Content
         assertThat(content.items.map { it.id }).containsExactly(10L)
         assertThat(content.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
+        assertThat(content.selectedOrderDetails?.id).isEqualTo(10L)
     }
 
     @Test
@@ -134,7 +152,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // THEN
@@ -150,7 +168,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // THEN
@@ -166,7 +184,7 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1)))) }
         )
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
         val before = viewModel.state.value as WooPosOrdersState.Content
         assertThat(before.items.map { it.id }).containsExactly(1L)
@@ -198,7 +216,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
         viewModel.onOrderSelected(3L)
         advanceUntilIdle()
@@ -210,6 +228,8 @@ class WooPosOrdersViewModelTest {
         assertThat(selectedFlags[1L]).isFalse()
         assertThat(selectedFlags[2L]).isFalse()
         assertThat(selectedFlags[3L]).isTrue()
+
+        assertThat(state.selectedOrderDetails?.id).isEqualTo(3L)
     }
 
     @Test
@@ -218,7 +238,7 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(100), order(200)))) }
         )
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
         viewModel.onOrderSelected(200L)
         advanceUntilIdle()
@@ -238,12 +258,13 @@ class WooPosOrdersViewModelTest {
         val state = viewModel.state.value as WooPosOrdersState.Content
         assertThat(state.items.map { it.id }).containsExactly(300L, 400L)
         assertThat(state.selectedOrderId).isEqualTo(300L)
+        assertThat(state.selectedOrderDetails?.id).isEqualTo(300L)
     }
 
     @Test
     fun `given ViewModel initialized, when onSearchEvent SearchIconClicked, then search input state opens`() = runTest {
         // GIVEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
@@ -265,7 +286,7 @@ class WooPosOrdersViewModelTest {
         val searchResult = listOf(order(10), order(20))
         whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Success(searchResult))
 
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
@@ -285,7 +306,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given ViewModel initialized, when onSearchEvent Search with empty query, then loadOrders is called`() = runTest {
         // GIVEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
@@ -299,7 +320,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given search input is open, when onSearchEvent Close, then search input state closes and loadOrders is called`() = runTest {
         // GIVEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
@@ -321,7 +342,7 @@ class WooPosOrdersViewModelTest {
         val query = "test query"
         whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Error("search failed"))
 
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
@@ -349,7 +370,7 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.loadMore()).thenReturn(Result.success(listOf(order(3), order(4))))
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.onEndOfOrdersListReached()
@@ -369,7 +390,7 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.hasMorePages).thenReturn(true)
         whenever(dataSource.loadMore()).thenReturn(Result.failure(RuntimeException("boom")))
 
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.onEndOfOrdersListReached()
@@ -390,7 +411,7 @@ class WooPosOrdersViewModelTest {
             }
         )
 
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
@@ -412,7 +433,7 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.loadMore()).thenReturn(Result.success(listOf(order(30), order(40))))
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.onOrderSelected(20L)
@@ -427,6 +448,7 @@ class WooPosOrdersViewModelTest {
         assertThat(content.selectedOrderId).isEqualTo(20L)
         val selectedFlags = content.items.associate { it.id to it.isSelected }
         assertThat(selectedFlags[20L]).isTrue()
+        assertThat(content.selectedOrderDetails?.id).isEqualTo(20L)
     }
 
     @Test
@@ -445,7 +467,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
         viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
         viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
@@ -473,7 +495,7 @@ class WooPosOrdersViewModelTest {
             Result.failure(RuntimeException("boom"))
         )
 
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
@@ -504,7 +526,7 @@ class WooPosOrdersViewModelTest {
             flow { emit(LoadOrdersResult.Error("boom")) }
         )
 
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         whenever(dataSource.loadOrders()).thenReturn(
@@ -531,13 +553,13 @@ class WooPosOrdersViewModelTest {
     fun `given on-hold status, when mapped, then status text is titlecased and hyphen replaced`() = runTest {
         // GIVEN
         val base = OrderTestUtils.generateTestOrder(orderId = 42L)
-        val withOnHold = base.copy(status = Order.Status.OnHold) // domain has "on-hold" value
+        val withOnHold = base.copy(status = Order.Status.OnHold)
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(withOnHold))) }
         )
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // THEN
@@ -556,7 +578,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // THEN
@@ -574,12 +596,58 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        viewModel = WooPosOrdersViewModel(dataSource, wooStore, selectedSite, resourceProvider, providedLocale)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
         val item = content.items.single { it.id == 11L }
         assertThat(item.date).contains(" at ")
+    }
+
+    @Test
+    fun `given product image map returns url, when mapping selected details, then line item uses that url`() = runTest {
+        // GIVEN
+        val ord = order(101)
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(ord))) }
+        )
+        whenever(productImageMap.get(any())).thenReturn("https://example.com/image.jpg")
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val details = state.selectedOrderDetails!!
+        assertThat(details.lineItems).isNotEmpty
+        assertThat(details.lineItems.all { it.imageUrl == "https://example.com/image.jpg" }).isTrue()
+    }
+
+    @Test
+    fun `given product fetch completes, when onProductFetched called, then selected details refresh and show image`() = runTest {
+        // GIVEN
+        val ord = order(202)
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(ord))) }
+        )
+
+        whenever(productImageMap.get(any()))
+            .thenReturn(null)
+            .thenReturn("https://example.com/img.png")
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val affectedProductId = ord.items.firstOrNull()?.productId ?: 0L
+        viewModel.onProductFetched(affectedProductId)
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        val details = content.selectedOrderDetails!!
+        assertThat(details.lineItems.any { it.imageUrl == "https://example.com/img.png" }).isTrue()
     }
 }
