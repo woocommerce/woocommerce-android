@@ -42,7 +42,7 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
 
         val finalWorkInfo = syncScheduler.observeOneTimeWorkInfo()
             .filter { workInfo ->
-                workInfo?.state?.isFinished == true
+                workInfo?.state?.isFinished == true || workInfo == null
             }
             .first()
 
@@ -54,7 +54,7 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
 
         val finalWorkInfo = syncScheduler.observePeriodicWorkInfo()
             .filter { workInfo ->
-                workInfo?.state?.isFinished == true
+                workInfo?.state?.isFinished == true || workInfo == null
             }
             .first()
 
@@ -80,9 +80,19 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
                 wooPosLogWrapper.e("$workerType worker failed or cancelled: ${workInfo.state}")
                 emit(WooPosFullSyncState.Failed("Background sync worker ${workInfo.state}"))
             }
+            null -> {
+                val completedTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
+                if (completedTimestamp != null) {
+                    wooPosLogWrapper.d("$workerType worker info is null but sync timestamp found - assuming success")
+                    emit(WooPosFullSyncState.Success)
+                } else {
+                    wooPosLogWrapper.e("$workerType worker info is null and no sync timestamp found")
+                    emit(WooPosFullSyncState.Failed("Worker completed but sync not verified"))
+                }
+            }
             else -> {
-                wooPosLogWrapper.e("$workerType worker finished with unexpected state: ${workInfo?.state}")
-                emit(WooPosFullSyncState.Failed("Unexpected worker state"))
+                wooPosLogWrapper.e("$workerType worker finished with unexpected state: ${workInfo.state}")
+                emit(WooPosFullSyncState.Failed("Unexpected worker state: ${workInfo.state}"))
             }
         }
     }
