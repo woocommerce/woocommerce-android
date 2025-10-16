@@ -650,4 +650,70 @@ class WooPosOrdersViewModelTest {
         val details = content.selectedOrderDetails!!
         assertThat(details.lineItems.any { it.imageUrl == "https://example.com/img.png" }).isTrue()
     }
+
+    @Test
+    fun `given orders loaded, when selecting an order, then selectedOrderDetails is populated`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1), order(2)))) }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onOrderSelected(2L)
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.selectedOrderId).isEqualTo(2L)
+        assertThat(content.selectedOrderDetails?.id).isEqualTo(2L)
+        assertThat(content.selectedOrderDetails?.lineItems).isNotEmpty
+        assertThat(content.selectedOrderDetails?.total).isEqualTo("$0.00")
+    }
+
+    @Test
+    fun `given selected order, when appending next page, then selectedOrderDetails content remains correct`() = runTest {
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(10), order(20)))) }
+        )
+        whenever(dataSource.hasMorePages).thenReturn(true)
+        whenever(dataSource.loadMore()).thenReturn(Result.success(listOf(order(30), order(40))))
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(20L)
+        advanceUntilIdle()
+
+        viewModel.onEndOfOrdersListReached()
+        advanceUntilIdle()
+
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        val details = content.selectedOrderDetails
+        assertThat(details).isNotNull
+        assertThat(details?.id).isEqualTo(20L)
+        assertThat(details?.totalPaid).isEqualTo("$0.00")
+    }
+
+    @Test
+    fun `given orders reloaded, when refreshing, then first order details are auto-populated`() = runTest {
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(100), order(200)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(300), order(400)))) }
+        )
+
+        viewModel.onRefresh()
+        advanceUntilIdle()
+
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.selectedOrderId).isEqualTo(300L)
+        assertThat(content.selectedOrderDetails?.id).isEqualTo(300L)
+    }
 }
