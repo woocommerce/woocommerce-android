@@ -20,7 +20,6 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -80,10 +79,9 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
@@ -697,7 +695,7 @@ class OrderListFragment :
                 }
 
                 is OrdersCommunicationViewModel.CommunicationEvent.CustomerFilterRequested -> {
-                    applyCustomerFilter(event.customer)
+                    applyCustomerFilter(event.customerId)
                 }
 
                 else -> event.isHandled = false
@@ -930,22 +928,15 @@ class OrderListFragment :
         }
     }
 
-    fun applyCustomerFilter(customer: Order.Customer) {
+    fun applyCustomerFilter(customerId: Long) {
         searchQuery = ""
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            customer.customerId?.let { customerId ->
-                customerListRepository.fetchCustomerByRemoteId(customerId)
-
-                orderFiltersRepository.setSelectedFilters(
-                    OrderListFilterCategory.CUSTOMER,
-                    listOf(customerId.toString())
-                )
-            }
-
-            viewModel.loadOrders()
-            uiMessageResolver.showSnack(R.string.order_list_customer_filter_applied)
-        }
+        orderFiltersRepository.setSelectedFilters(
+            OrderListFilterCategory.CUSTOMER,
+            listOf(customerId.toString())
+        )
+        orderFiltersRepository.loadCustomerInfoIfNeeded(customerId)
+        viewModel.loadOrders()
+        uiMessageResolver.showSnack(R.string.order_list_customer_filter_applied)
     }
 
     private fun showOrderFilters() {

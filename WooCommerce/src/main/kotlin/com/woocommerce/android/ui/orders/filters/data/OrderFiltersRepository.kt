@@ -9,12 +9,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WCCustomerStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class OrderFiltersRepository @Inject constructor(
     private val appSharedPrefs: AppPrefsWrapper,
+    private val customerStore: WCCustomerStore,
     private val selectedSite: SelectedSite,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
@@ -52,6 +55,14 @@ class OrderFiltersRepository @Inject constructor(
                         selectedFilters.joinToString(separator = ",")
                     )
                 }
+            }
+        }
+    }
+
+    fun loadCustomerInfoIfNeeded(customerId: Long) {
+        appCoroutineScope.launch {
+            if (customerStore.getCustomerByRemoteId(selectedSite.get(), customerId) == null) {
+                customerStore.fetchSingleCustomer(selectedSite.get(), customerId)
             }
         }
     }

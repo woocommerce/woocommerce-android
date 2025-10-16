@@ -886,9 +886,9 @@ class OrderDetailFragment :
     }
 
     private fun onViewCustomerOrdersClicked(order: Order) {
-        val customer = order.customer?.takeIf { (it.customerId ?: 0) > 0 } ?: return
+        val customerId = order.customer?.customerId?.takeIf { it > 0 } ?: return
 
-        communicationViewModel.applyCustomerFilter(customer)
+        communicationViewModel.applyCustomerFilter(customerId)
         if (!requireContext().isTwoPanesShouldBeUsed) {
             findNavController().popBackStack(R.id.orders, false)
         }
