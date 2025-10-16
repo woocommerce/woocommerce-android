@@ -10,8 +10,21 @@ import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 
 @Dao
 abstract class WooPosProductsDao {
-    @Query("SELECT * FROM PosProductEntity WHERE localSiteId = :localSiteId AND status = 'publish' " +
-        "AND (type = 'simple' OR type = 'variable') AND downloadable = 0 ORDER BY LOWER(name)")
+    companion object {
+        private const val PRODUCT_STATUS_PUBLISH = "publish"
+        private const val PRODUCT_TYPE_SIMPLE = "simple"
+        private const val PRODUCT_TYPE_VARIABLE = "variable"
+        private const val DOWNLOADABLE_FALSE = 0
+    }
+
+    @Query(
+        "SELECT * FROM PosProductEntity " +
+            "WHERE localSiteId = :localSiteId " +
+            "AND status = '$PRODUCT_STATUS_PUBLISH' " +
+            "AND (type = '$PRODUCT_TYPE_SIMPLE' OR type = '$PRODUCT_TYPE_VARIABLE') " +
+            "AND downloadable = '$DOWNLOADABLE_FALSE' " +
+            "ORDER BY LOWER(name)"
+    )
     abstract fun observeAllProducts(localSiteId: LocalId): Flow<List<WooPosProductEntity>>
 
     @Query("SELECT * FROM PosProductEntity WHERE localSiteId = :localSiteId AND remoteId = :remoteId")

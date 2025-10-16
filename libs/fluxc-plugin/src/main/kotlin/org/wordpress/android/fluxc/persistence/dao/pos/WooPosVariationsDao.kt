@@ -10,9 +10,19 @@ import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 
 @Dao
 abstract class WooPosVariationsDao {
+    companion object {
+        private const val VARIATION_STATUS_PUBLISH = "publish"
+        private const val DOWNLOADABLE_FALSE = 0
+    }
 
-    @Query("SELECT * FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId = :productId " +
-        "AND status = 'publish' AND downloadable = 0 ORDER BY variationName ASC")
+    @Query(
+        "SELECT * FROM PosVariationEntity " +
+            "WHERE localSiteId = :localSiteId " +
+            "AND remoteProductId = :productId " +
+            "AND status = '$VARIATION_STATUS_PUBLISH' " +
+            "AND downloadable = '$DOWNLOADABLE_FALSE' " +
+            "ORDER BY variationName ASC"
+    )
     abstract fun observeVariationsForProduct(
         localSiteId: Int,
         productId: Long
