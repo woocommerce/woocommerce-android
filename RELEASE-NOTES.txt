@@ -6,6 +6,7 @@
 - [Internal][Wear] Remove unused dependencies and optimize dependency scopes [https://github.com/woocommerce/woocommerce-android/pull/14710]
 - [Internal] Remove unused dependencies and optimize dependency scopes [https://github.com/woocommerce/woocommerce-android/pull/14710]
 - [*] Fix a rare crash in order refund flow [https://github.com/woocommerce/woocommerce-android/pull/14742]
+- [*] Fix customer name display when filtering orders from order details  [https://github.com/woocommerce/woocommerce-android/pull/14761]
 
 23.4
 -----
