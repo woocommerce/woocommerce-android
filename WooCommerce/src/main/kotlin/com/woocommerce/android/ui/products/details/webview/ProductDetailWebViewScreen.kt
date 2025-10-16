@@ -31,7 +31,8 @@ private fun ProductDetailWebViewScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = viewState.title
+                title = viewState.title,
+                navigationIcon = null
             )
         }
     ) {
