@@ -123,10 +123,8 @@ fun WCColoredButton(
     ) {
         Box {
             if (loading) {
-                CircularProgressIndicator(
-                    color = LocalContentColor.current,
+                ButtonCircularProgressIndicator(
                     modifier = Modifier
-                        .size(24.dp)
                         .align(Alignment.Center)
                 )
             }
@@ -185,6 +183,7 @@ fun WCOutlinedButton(
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
+    loading: Boolean = false,
     shape: Shape = MaterialTheme.shapes.small,
     colors: ButtonColors = ButtonDefaults.wcOutlinedButtonColors(),
     border: BorderStroke? = ButtonDefaults.wcOutlinedButtonBorder(enabled),
@@ -194,21 +193,28 @@ fun WCOutlinedButton(
     WCOutlinedButton(
         onClick = onClick,
         modifier = modifier,
-        enabled = enabled,
+        enabled = enabled && !loading,
         shape = shape,
         colors = colors,
         border = border,
         contentPadding = contentPadding,
         interactionSource = interactionSource
     ) {
-        if (leadingIcon != null) {
-            leadingIcon()
-            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
-        }
-        Text(text = text)
-        if (trailingIcon != null) {
-            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
-            trailingIcon()
+        if (loading) {
+            ButtonCircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+            )
+        } else {
+            if (leadingIcon != null) {
+                leadingIcon()
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+            }
+            Text(text = text)
+            if (trailingIcon != null) {
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+                trailingIcon()
+            }
         }
     }
 }
@@ -415,6 +421,15 @@ private fun ProvideMaterial3CompositionForMaterial2(
     }
 }
 
+@Composable
+private fun ButtonCircularProgressIndicator(modifier: Modifier = Modifier) {
+    CircularProgressIndicator(
+        color = LocalContentColor.current,
+        modifier = modifier
+            .size(24.dp)
+    )
+}
+
 @LightDarkThemePreviews
 @Composable
 private fun ButtonsPreview() {
@@ -459,6 +474,11 @@ private fun ButtonsPreview() {
                     )
                 }
             )
+            WCColoredButton(
+                text = "Button Loading",
+                loading = true,
+                onClick = {},
+            )
 
             WCOutlinedButton(onClick = {}) {
                 Text(text = "Outlined Button")
@@ -474,6 +494,11 @@ private fun ButtonsPreview() {
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
                 }
+            )
+            WCOutlinedButton(
+                text = "Outlined Button Loading",
+                loading = true,
+                onClick = {},
             )
 
             WCTextButton(onClick = {}) {
