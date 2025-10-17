@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,9 +37,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -46,13 +49,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 
 @Composable
 fun WooPosSettingsLocalCatalogScreen(
-    onShowSyncErrorDialog: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WooPosSettingsLocalCatalogViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-
-    viewModel.setOnShowSyncErrorDialog(onShowSyncErrorDialog)
 
     WooPosSettingsLocalCatalogScreen(
         state = state,
@@ -287,6 +287,7 @@ private fun SectionTitle(title: String) {
 @Composable
 fun WooPosSyncErrorDialog(
     isVisible: Boolean,
+    onRetry: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -328,6 +329,15 @@ fun WooPosSyncErrorDialog(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Image(
+                    imageVector = WooPosIcons.ErrorX,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+                )
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
                 WooPosText(
                     text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_title),
                     style = WooPosTypography.Heading,
@@ -347,8 +357,16 @@ fun WooPosSyncErrorDialog(
 
                 WooPosButton(
                     modifier = Modifier.fillMaxWidth(),
+                    onClick = onRetry,
+                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_retry_button)
+                )
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+                WooPosOutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = onDismissRequest,
-                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_button)
+                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_cancel_button)
                 )
             }
         }
@@ -410,6 +428,7 @@ fun WooPosSyncErrorDialogPreview() {
     WooPosTheme {
         WooPosSyncErrorDialog(
             isVisible = true,
+            onRetry = {},
             onDismissRequest = {}
         )
     }
