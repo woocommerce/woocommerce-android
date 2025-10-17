@@ -47,7 +47,7 @@ class BookingMapper @Inject constructor(
             name = order.productInfo?.name ?: "-",
             customerName = order.customerInfo?.fullName(),
             attendanceStatus = BookingAttendanceStatus.BOOKED,
-            status = status.toUiModel()
+            status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId)
         )
     }
 
@@ -100,14 +100,23 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    private fun BookingEntity.Status.toUiModel(): BookingStatus = when (this) {
-        BookingEntity.Status.Paid -> BookingStatus.Paid
-        BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
-        BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
-        BookingEntity.Status.Complete -> BookingStatus.Complete
-        BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
-        BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
-        is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
+    private fun BookingEntity.Status.toUiModel(
+        orderStatus: String?,
+        paymentMethod: String?,
+    ): BookingStatus {
+        return if (orderStatus != "completed" && paymentMethod == "cod") {
+            BookingStatus.PayAtLocation
+        } else {
+            when (this) {
+                BookingEntity.Status.Paid -> BookingStatus.Paid
+                BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
+                BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
+                BookingEntity.Status.Complete -> BookingStatus.Complete
+                BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
+                BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
+                is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
+            }
+        }
     }
 
     private fun BookingCustomerInfo.fullName(): String? {
