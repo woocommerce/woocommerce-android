@@ -612,4 +612,69 @@ class WooPosOrdersViewModelTest {
         assertThat(content.items.keys.map { it.id }).containsExactly(300L, 400L)
         assertThat(content.selectedDetails.id).isEqualTo(300L)
     }
+
+    @Test
+    fun `given order with no refunds, when mapped, then breakdown has empty refunds and null net payment`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1)))) }
+        )
+        runBlocking {
+            whenever(getOrderRefunds.invoke(1L)).thenReturn(emptyList())
+        }
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.selectedDetails.breakdown.refunds).isEmpty()
+        assertThat(content.selectedDetails.breakdown.netPayment).isNull()
+    }
+
+    @Test
+    fun `given order with refunds, when mapped, then breakdown includes refund amounts and net payment`() = runTest {
+        // GIVEN
+        val testOrder = order(1)
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(testOrder))) }
+        )
+
+        val refund1 = com.woocommerce.android.model.Refund(
+            id = 1,
+            dateCreated = java.util.Date(),
+            amount = java.math.BigDecimal("10.00"),
+            reason = null,
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLines = emptyList(),
+            feeLines = emptyList()
+        )
+        val refund2 = com.woocommerce.android.model.Refund(
+            id = 2,
+            dateCreated = java.util.Date(),
+            amount = java.math.BigDecimal("5.00"),
+            reason = null,
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLines = emptyList(),
+            feeLines = emptyList()
+        )
+
+        runBlocking {
+            whenever(getOrderRefunds.invoke(1L)).thenReturn(listOf(refund1, refund2))
+            whenever(formatPrice.invoke(java.math.BigDecimal("10.00"))).thenReturn("$10.00")
+            whenever(formatPrice.invoke(java.math.BigDecimal("5.00"))).thenReturn("$5.00")
+        }
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.selectedDetails.breakdown.refunds).containsExactly("-$10.00", "-$5.00")
+        assertThat(content.selectedDetails.breakdown.netPayment).isNotNull()
+    }
 }
