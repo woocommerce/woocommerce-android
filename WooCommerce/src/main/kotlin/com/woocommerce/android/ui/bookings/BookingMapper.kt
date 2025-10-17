@@ -46,8 +46,8 @@ class BookingMapper @Inject constructor(
             date = summaryDateFormatter.format(start),
             name = order.productInfo?.name ?: "-",
             customerName = order.customerInfo?.fullName(),
-            attendanceStatus = BookingAttendanceStatus.BOOKED,
-            status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId)
+            status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId),
+            attendanceStatus = attendanceStatus.toUiModel(),
         )
     }
 
@@ -117,6 +117,13 @@ class BookingMapper @Inject constructor(
                 is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
             }
         }
+    }
+
+    private fun BookingEntity.AttendanceStatus.toUiModel(): BookingAttendanceStatus = when (this) {
+        BookingEntity.AttendanceStatus.Booked -> BookingAttendanceStatus.Booked
+        BookingEntity.AttendanceStatus.CheckedIn -> BookingAttendanceStatus.CheckedIn
+        BookingEntity.AttendanceStatus.NoShow -> BookingAttendanceStatus.NoShow
+        is BookingEntity.AttendanceStatus.Unknown -> BookingAttendanceStatus.Unknown(this.key)
     }
 
     private fun BookingCustomerInfo.fullName(): String? {

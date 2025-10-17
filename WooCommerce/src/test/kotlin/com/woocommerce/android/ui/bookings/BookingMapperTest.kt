@@ -74,7 +74,7 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.name).isEqualTo(booking.order.productInfo?.name)
         assertThat(model.customerName)
             .isEqualTo("${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName}")
-        assertThat(model.attendanceStatus).isEqualTo(BookingAttendanceStatus.BOOKED)
+        assertThat(model.attendanceStatus).isEqualTo(BookingAttendanceStatus.Booked)
         assertThat(model.status).isEqualTo(BookingStatus.Confirmed)
     }
 
@@ -281,6 +281,7 @@ class BookingMapperTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "UTC",
+            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
             order = BookingOrderInfo(
                 status = "completed",
                 productInfo = BookingProductInfo(name = "Women’s Haircut"),

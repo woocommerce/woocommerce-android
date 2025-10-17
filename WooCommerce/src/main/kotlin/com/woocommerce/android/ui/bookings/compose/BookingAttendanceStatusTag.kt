@@ -28,27 +28,30 @@ fun BookingAttendanceStatusTag(
     )
 }
 
-enum class BookingAttendanceStatus {
-    BOOKED, CHECKED_IN, NO_SHOW, CANCELLED
+sealed interface BookingAttendanceStatus {
+    data object Booked : BookingAttendanceStatus
+    data object CheckedIn : BookingAttendanceStatus
+    data object NoShow : BookingAttendanceStatus
+    data object Cancelled : BookingAttendanceStatus
+    data class Unknown(val key: String) : BookingAttendanceStatus
 }
 
 @Composable
 fun BookingAttendanceStatus.text(): String {
     return when (this) {
-        BookingAttendanceStatus.BOOKED -> R.string.booking_attendance_status_booked
-        BookingAttendanceStatus.CHECKED_IN -> R.string.booking_attendance_status_checked_in
-        BookingAttendanceStatus.CANCELLED -> R.string.booking_attendance_status_cancelled
-        BookingAttendanceStatus.NO_SHOW -> R.string.booking_attendance_status_no_show
-    }.let { stringResource(it) }
+        BookingAttendanceStatus.Booked -> stringResource(R.string.booking_attendance_status_booked)
+        BookingAttendanceStatus.CheckedIn -> stringResource(R.string.booking_attendance_status_checked_in)
+        BookingAttendanceStatus.Cancelled -> stringResource(R.string.booking_attendance_status_cancelled)
+        BookingAttendanceStatus.NoShow -> stringResource(R.string.booking_attendance_status_no_show)
+        is BookingAttendanceStatus.Unknown -> key
+    }
 }
 
 @Composable
 fun BookingAttendanceStatus.backgroundColor(): Color {
     return when (this) {
-        BookingAttendanceStatus.NO_SHOW -> R.color.tag_bg_booking_yellow
-        BookingAttendanceStatus.BOOKED,
-        BookingAttendanceStatus.CHECKED_IN,
-        BookingAttendanceStatus.CANCELLED -> R.color.tagView_bg
+        BookingAttendanceStatus.NoShow -> R.color.tag_bg_booking_yellow
+        else -> R.color.tagView_bg
     }.let { colorResource(it) }
 }
 
@@ -57,7 +60,7 @@ fun BookingAttendanceStatus.backgroundColor(): Color {
 private fun AttendanceStatusTagPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.BOOKED
+            state = BookingAttendanceStatus.Booked
         )
     }
 }
@@ -67,7 +70,7 @@ private fun AttendanceStatusTagPreview() {
 private fun AttendanceStatusTagDarkPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.CHECKED_IN
+            state = BookingAttendanceStatus.CheckedIn
         )
     }
 }
@@ -77,7 +80,7 @@ private fun AttendanceStatusTagDarkPreview() {
 private fun AttendanceStatusTagNoShowPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.NO_SHOW,
+            state = BookingAttendanceStatus.NoShow,
             modifier = Modifier.padding(10.dp)
         )
     }

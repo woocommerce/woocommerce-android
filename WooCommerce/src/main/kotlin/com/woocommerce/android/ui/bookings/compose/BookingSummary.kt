@@ -83,7 +83,7 @@ private fun BookingSummaryPreview() {
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = BookingAttendanceStatus.CHECKED_IN,
+                attendanceStatus = BookingAttendanceStatus.CheckedIn,
                 status = BookingStatus.Paid
             ),
             modifier = Modifier.fillMaxWidth()
@@ -100,7 +100,7 @@ private fun BookingSummaryDarkPreview() {
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = BookingAttendanceStatus.BOOKED,
+                attendanceStatus = BookingAttendanceStatus.Booked,
                 status = BookingStatus.PendingConfirmation
             ),
             modifier = Modifier.fillMaxWidth()

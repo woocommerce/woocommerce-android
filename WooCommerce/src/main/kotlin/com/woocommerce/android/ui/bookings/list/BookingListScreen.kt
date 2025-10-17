@@ -449,7 +449,7 @@ private fun BookingListPreview() {
                                 date = "Aug 20, 2024",
                                 name = "Women’s Haircut",
                                 customerName = "Margarita Nikolaevna",
-                                attendanceStatus = BookingAttendanceStatus.BOOKED,
+                                attendanceStatus = BookingAttendanceStatus.Booked,
                                 status = BookingStatus.Paid
                             )
                         )

@@ -85,11 +85,11 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         // When
         val state = viewModel.state.getOrAwaitValue()
-        state.onAttendanceStatusSelected(BookingAttendanceStatus.CANCELLED)
+        state.onAttendanceStatusSelected(BookingAttendanceStatus.Cancelled)
 
         // Then
         val updated = viewModel.state.value?.bookingUiState?.bookingSummary?.attendanceStatus
-        assertThat(updated).isEqualTo(BookingAttendanceStatus.CANCELLED)
+        assertThat(updated).isEqualTo(BookingAttendanceStatus.Cancelled)
     }
 
     @Test
@@ -290,6 +290,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "",
+            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
             order = BookingOrderInfo()
         )
     }

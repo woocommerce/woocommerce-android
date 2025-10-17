@@ -90,7 +90,7 @@ private fun AttendanceRow(
 private fun BookingAttendanceSectionPreview() {
     WooThemeWithBackground {
         BookingAttendanceSection(
-            status = BookingAttendanceStatus.BOOKED,
+            status = BookingAttendanceStatus.Booked,
             onClick = {},
             modifier = Modifier.fillMaxWidth()
         )
