@@ -50,7 +50,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onBack = containerViewModel::navigateBack,
         onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
         onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
-        onShowSyncErrorDialog = containerViewModel::showSyncErrorDialog,
+        onRetrySync = containerViewModel::retrySyncFromDialog,
         onDismissDialog = containerViewModel::hideDialog
     )
 }
@@ -64,7 +64,7 @@ private fun WooPosSettingsContent(
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
-    onShowSyncErrorDialog: (String) -> Unit,
+    onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit
 ) {
     Row(
@@ -93,7 +93,6 @@ private fun WooPosSettingsContent(
             onBack = onBack,
             onShowProductInfoDialog = onShowProductInfoDialog,
             onShowScanningSetupDialog = onShowScanningSetupDialog,
-            onShowSyncErrorDialog = onShowSyncErrorDialog,
             modifier = Modifier
                 .weight(0.7f)
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
@@ -114,6 +113,7 @@ private fun WooPosSettingsContent(
 
     WooPosSyncErrorDialog(
         isVisible = dialogState is WooPosSettingsDialogState.SyncErrorDialog,
+        onRetry = onRetrySync,
         onDismissRequest = onDismissDialog
     )
 }

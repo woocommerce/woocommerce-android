@@ -21,10 +21,35 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosSettingsViewModel @Inject constructor(
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val childToParentEventReceiver: WooPosSettingsChildToParentEventReceiver,
+    private val parentToChildEventSender: WooPosSettingsParentToChildEventSender,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsState())
     val state: StateFlow<WooPosSettingsState> = _state.asStateFlow()
+
+    init {
+        listenToChildEvents()
+    }
+
+    private fun listenToChildEvents() {
+        viewModelScope.launch {
+            childToParentEventReceiver.events.collect { event ->
+                when (event) {
+                    is SettingsChildToParentEvent.ShowSyncErrorDialog -> {
+                        showSyncErrorDialog(event.errorMessage)
+                    }
+                }
+            }
+        }
+    }
+
+    fun retrySyncFromDialog() {
+        hideDialog()
+        viewModelScope.launch {
+            parentToChildEventSender.sendToChild(SettingsParentToChildEvent.RetrySyncRequested)
+        }
+    }
 
     fun onCategorySelected(category: WooPosSettingsCategory) {
         trackCategorySelection(category)
