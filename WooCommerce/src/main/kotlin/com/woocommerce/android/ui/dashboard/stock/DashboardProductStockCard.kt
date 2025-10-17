@@ -21,7 +21,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,11 +32,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.findActivity
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
+import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -46,8 +47,8 @@ import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.OpenProductDetail
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
@@ -75,13 +76,17 @@ fun DashboardProductStockCard(
 
 @Composable
 private fun HandleEvents(event: LiveData<Event>) {
+    val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val context = LocalContext.current
 
-    DisposableEffect(event, context, lifecycleOwner) {
+    DisposableEffect(event, navController, lifecycleOwner) {
         val observer = Observer { event: Event ->
             when (event) {
-                is OpenProductDetail -> (context.findActivity() as? MainActivity)?.showProductDetail(event.productId)
+                is OpenProductDetail -> navController.navigateSafely(
+                    NavGraphMainDirections.actionGlobalProductDetailFragment(
+                        mode = ShowProduct(event.productId),
+                    )
+                )
             }
         }
         event.observe(lifecycleOwner, observer)

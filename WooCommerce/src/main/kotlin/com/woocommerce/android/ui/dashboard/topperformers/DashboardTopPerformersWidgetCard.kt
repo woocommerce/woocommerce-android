@@ -20,7 +20,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -33,8 +32,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.findActivity
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
@@ -58,7 +57,7 @@ import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformers
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersDateRange
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersState
-import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Calendar
@@ -159,12 +158,16 @@ private fun HandleEvents(
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val context = LocalContext.current
 
-    DisposableEffect(event, navController, lifecycleOwner, context) {
+    DisposableEffect(event, navController, lifecycleOwner) {
         val observer = Observer { event: Event ->
             when (event) {
-                is OpenTopPerformer -> (context.findActivity() as? MainActivity)?.showProductDetail(event.productId)
+                is OpenTopPerformer -> navController.navigateSafely(
+                    NavGraphMainDirections.actionGlobalProductDetailFragment(
+                        mode = ShowProduct(event.productId),
+                    )
+                )
+
                 is OpenDatePicker -> openDatePicker(event.fromDate.time, event.toDate.time)
                 is OpenAnalytics -> {
                     navController.navigateSafely(
@@ -367,7 +370,6 @@ private fun TopPerformersErrorView(
                 onContactSupportClick = onContactSupportClicked
             )
         }
-
         else -> {
             WidgetError(
                 onContactSupportClicked = onContactSupportClicked,
