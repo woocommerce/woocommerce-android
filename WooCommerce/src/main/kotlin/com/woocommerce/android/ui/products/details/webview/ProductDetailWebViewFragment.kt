@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.details.webview
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +26,10 @@ class ProductDetailWebViewFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            ProductDetailWebViewScreen(viewModel)
+            ProductDetailWebViewScreen(
+                viewModel = viewModel,
+                showNavigationIcon = shouldShowNavigationIcon()
+            )
         }
     }
 
@@ -44,7 +46,6 @@ class ProductDetailWebViewFragment : BaseFragment() {
         }
     }
 
-    @SuppressLint("RestrictedApi")
     private fun navigateBack() {
         if (isInDetailPane) {
             // If we are in the detail pane of a two-pane layout, we need to handle the back navigation
@@ -54,4 +55,6 @@ class ProductDetailWebViewFragment : BaseFragment() {
             findNavController().popBackStack(R.id.productDetailFragment, true)
         }
     }
+
+    private fun shouldShowNavigationIcon(): Boolean = !isInDetailPane
 }

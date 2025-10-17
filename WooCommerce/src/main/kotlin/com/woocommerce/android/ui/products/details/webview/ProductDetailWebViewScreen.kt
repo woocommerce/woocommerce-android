@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products.details.webview
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -13,12 +15,16 @@ import com.woocommerce.android.ui.compose.component.web.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
-fun ProductDetailWebViewScreen(viewModel: ProductDetailWebViewViewModel) {
+fun ProductDetailWebViewScreen(
+    viewModel: ProductDetailWebViewViewModel,
+    showNavigationIcon: Boolean
+) {
     viewModel.viewState.observeAsState().value?.let {
         ProductDetailWebViewScreen(
             viewState = it,
+            showNavigationIcon = showNavigationIcon,
             webViewAuthenticator = viewModel.webViewAuthenticator,
-            userAgent = viewModel.userAgent
+            userAgent = viewModel.userAgent,
         )
     }
 }
@@ -26,6 +32,7 @@ fun ProductDetailWebViewScreen(viewModel: ProductDetailWebViewViewModel) {
 @Composable
 private fun ProductDetailWebViewScreen(
     viewState: ProductDetailWebViewViewModel.ViewState,
+    showNavigationIcon: Boolean,
     webViewAuthenticator: WebViewAuthenticator,
     userAgent: UserAgent
 ) {
@@ -35,7 +42,8 @@ private fun ProductDetailWebViewScreen(
         topBar = {
             Toolbar(
                 title = viewState.title,
-                navigationIcon = null
+                navigationIcon = if (showNavigationIcon) Icons.AutoMirrored.Default.ArrowBack else null,
+                onNavigationButtonClick = viewState.onBackClick
             )
         }
     ) {
