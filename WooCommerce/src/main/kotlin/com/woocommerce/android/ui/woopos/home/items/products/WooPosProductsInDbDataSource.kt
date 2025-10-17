@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
@@ -20,7 +21,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
 
     private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
         val siteModel = selectedSite.getOrNull() ?: return flow { emit(emptyList()) }
-        val siteId = org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId(siteModel.id)
+        val siteId = LocalOrRemoteId.LocalId(siteModel.id)
 
         return posLocalCatalogStore.observeProducts(siteId)
             .map { result ->
