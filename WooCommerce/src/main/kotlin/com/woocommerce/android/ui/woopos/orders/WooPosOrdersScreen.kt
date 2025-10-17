@@ -182,7 +182,6 @@ private fun OrdersContent(
                 .weight(0.7f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceContainerLow),
-            order = state.items.find { it.isSelected },
             details = state.selectedOrderDetails,
             onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
         )
