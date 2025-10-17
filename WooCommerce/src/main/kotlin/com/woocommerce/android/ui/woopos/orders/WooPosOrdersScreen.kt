@@ -518,8 +518,8 @@ private fun sampleOrderDetails(
         discountCode = "8qew4mnq",
         taxes = "$0.00",
         shipping = null,
-        refunds = emptyList(),
-        netPayment = null
+        refunds = listOf("-$3.00", "-$2.00"),
+        netPayment = "$12.00"
     ),
     total = "$17.00",
     totalPaid = "$17.00",
