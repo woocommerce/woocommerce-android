@@ -14,15 +14,15 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
 
@@ -42,6 +42,7 @@ class BookingListViewModel @Inject constructor(
         clazz = String::class.java,
         key = "searchQuery"
     )
+    private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val sortOption = savedStateHandle.getStateFlow(viewModelScope, BookingListSortOption.NewestToOldest)
 
@@ -59,7 +60,7 @@ class BookingListViewModel @Inject constructor(
         BookingListContentState(
             bookings = bookings,
             loadingState = loadingState,
-            onRefresh = { fetchBookings(BookingListLoadingState.Refreshing) },
+            onRefresh = { refreshTrigger.tryEmit(Unit) },
             onLoadMore = ::loadMore,
             onBookingClick = ::onBookingClick
         )
@@ -115,37 +116,66 @@ class BookingListViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private fun monitorSearchAndFilterChanges() {
         launch {
+            var lastFetchParams: FetchParams? = null
             val queryFlow = searchQuery
-                .drop(1) // Skip the initial value to avoid double fetch on init
-                .debounce {
-                    if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                .withIndex()
+                .debounce { (index, query) ->
+                    // Skip debounce for the initial value or when the query is cleared
+                    if (index == 0 || query.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
-            val sortFlow = sortOption.drop(1) // Skip the initial value to avoid double fetch on init
-            val bookingFilterFlow =
-                bookingFilterRepository.bookingFiltersFlow.drop(1) // Skip initial to avoid double fetch on init
+                .map { it.value }
 
-            merge(selectedTab, queryFlow, sortFlow, bookingFilterFlow).collectLatest {
+            combine(
+                selectedTab,
+                queryFlow,
+                sortOption,
+                bookingFilterRepository.bookingFiltersFlow
+            ) { tab, query, sort, filters ->
+                FetchParams(
+                    searchQuery = query,
+                    sortOption = sort,
+                    selectedTab = tab,
+                    filters = filters
+                )
+            }.collectLatest { fetchParams ->
                 // Cancel any ongoing fetch or load more operations
                 bookingsFetchJob?.cancel()
                 bookingsLoadMoreJob?.cancel()
 
-                bookingsFetchJob = fetchBookings(
-                    initialLoadingState = if (it is BookingListSortOption) {
+                val initialLoadingState = lastFetchParams.let { lastFetchParams ->
+                    if (lastFetchParams != null && lastFetchParams.sortOption != fetchParams.sortOption) {
+                        // When sort option changes, force refreshing state to indicate data reload
                         BookingListLoadingState.Refreshing
                     } else {
                         BookingListLoadingState.Loading
                     }
+                }
+
+                lastFetchParams = fetchParams
+                fetchBookings(
+                    initialLoadingState = initialLoadingState,
+                    fetchParams = fetchParams
                 )
+
+                refreshTrigger.collect {
+                    fetchBookings(
+                        initialLoadingState = BookingListLoadingState.Refreshing,
+                        fetchParams = fetchParams
+                    )
+                }
             }
         }
     }
 
-    private fun fetchBookings(initialLoadingState: BookingListLoadingState) = launch {
+    private suspend fun fetchBookings(
+        initialLoadingState: BookingListLoadingState,
+        fetchParams: FetchParams,
+    ) {
         loadingState.value = initialLoadingState
         bookingListHandler.loadBookings(
-            searchQuery = searchQuery.value,
-            filters = prepareFilters(),
-            sortBy = sortOption.value
+            searchQuery = fetchParams.searchQuery,
+            filters = fetchParams.prepareFilters(),
+            sortBy = fetchParams.sortOption
         ).onFailure {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
         }
@@ -192,16 +222,23 @@ class BookingListViewModel @Inject constructor(
         triggerEvent(NavigateToFilters)
     }
 
-    private suspend fun prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
-        when (selectedTab.value) {
+    private fun FetchParams.prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
+        when (selectedTab) {
             BookingListTab.Today,
             BookingListTab.Upcoming -> listOfNotNull(
-                selectedTab.value.asDateRangeFilter()
+                selectedTab.asDateRangeFilter()
             )
 
-            BookingListTab.All -> bookingFilterRepository.bookingFiltersFlow.first().asList()
+            BookingListTab.All -> filters.asList()
         }
     }
+
+    private data class FetchParams(
+        val searchQuery: String?,
+        val sortOption: BookingListSortOption,
+        val selectedTab: BookingListTab,
+        val filters: BookingFilters
+    )
 
     data class NavigateToBookingDetails(val bookingId: Long) : MultiLiveEvent.Event()
     object NavigateToFilters : MultiLiveEvent.Event()
