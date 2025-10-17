@@ -7,6 +7,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
 
@@ -28,7 +30,8 @@ class WooPosOrdersViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
-    private val locale: Locale
+    private val locale: Locale,
+    private val getProductById: WooPosGetProductById,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -56,13 +59,18 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     fun onOrderSelected(orderId: Long) {
-        val currentState = _state.value
-        if (currentState is WooPosOrdersState.Content) {
-            _state.value = currentState.copy(
-                items = currentState.items.map { it.copy(isSelected = it.id == orderId) },
-                selectedOrderId = orderId
-            )
+        val current = _state.value as? WooPosOrdersState.Content ?: return
+
+        val updatedItems = current.items.mapKeys { (item, _) ->
+            item.copy(isSelected = item.id == orderId)
         }
+
+        val selectedEntry = updatedItems.entries.first { (item, _) -> item.isSelected }
+
+        _state.value = current.copy(
+            items = updatedItems,
+            selectedDetails = selectedEntry.value
+        )
     }
 
     fun onRefresh() {
@@ -113,6 +121,11 @@ class WooPosOrdersViewModel @Inject constructor(
     fun onOrdersLoadingErrorRetryButtonClicked() {
         _state.value = WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
         loadOrders()
+    }
+
+    @Suppress("UnusedParameter")
+    fun onEmailReceiptButtonClicked(orderId: Long) {
+        // Action to be implemented
     }
 
     @Suppress("ReturnCount")
@@ -238,7 +251,13 @@ class WooPosOrdersViewModel @Inject constructor(
                     }
 
                     is LoadOrdersResult.SuccessCache -> {
-                        replaceOrders(result.orders)
+                        if (result.orders.isEmpty()) {
+                            _state.value = WooPosOrdersState.Loading(
+                                searchInputState = WooPosSearchInputState.Closed
+                            )
+                        } else {
+                            replaceOrders(result.orders)
+                        }
                     }
 
                     is LoadOrdersResult.SuccessRemote -> {
@@ -261,77 +280,141 @@ class WooPosOrdersViewModel @Inject constructor(
         loadingMoreOrdersJob?.cancel()
     }
 
-    private fun replaceOrders(
+    private suspend fun replaceOrders(
         orders: List<Order>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
-        val newSelectedId = orders.firstOrNull()?.id
-        val newItems = mapOrders(orders, newSelectedId)
+        val newSelectedId = requireNotNull(orders.firstOrNull()?.id) { "Content requires at least one order" }
+        val items = buildItemsMap(orders, newSelectedId)
+        val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
 
         _state.value = WooPosOrdersState.Content(
-            items = newItems,
-            selectedOrderId = newSelectedId,
+            items = items,
+            selectedDetails = selectedEntry.value,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
         )
     }
 
-    private fun appendOrders(orders: List<Order>, paginationState: WooPosPaginationState = WooPosPaginationState.None) {
-        val current = _state.value as? WooPosOrdersState.Content
-        val existingItems = current?.items.orEmpty()
-        val selectedId = current?.selectedOrderId ?: existingItems.firstOrNull()?.id ?: orders.firstOrNull()?.id
-        val newItems = mapOrders(orders, selectedId)
+    private suspend fun appendOrders(
+        orders: List<Order>,
+        paginationState: WooPosPaginationState = WooPosPaginationState.None
+    ) {
+        val current = _state.value as WooPosOrdersState.Content
+        val currentSelectedId = current.items.entries.firstOrNull { it.key.isSelected }?.key?.id
+        val newItems = buildItemsMap(orders, currentSelectedId)
+        val items = current.items + newItems
 
         _state.value = WooPosOrdersState.Content(
-            items = existingItems + newItems,
-            selectedOrderId = selectedId,
+            items = items,
+            selectedDetails = current.selectedDetails,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
         )
     }
 
-    private fun mapOrders(
+    private suspend fun buildItemsMap(
         orders: List<Order>,
         selectedId: Long?
-    ): List<OrderItemViewState> {
-        return orders.map { order ->
-            val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
-                amount = order.total.toDouble(),
-                site = selectedSite.get(),
-                currencyCode = null,
-                applyDecimalFormatting = true
+    ): Map<OrderItemViewState, OrderDetailsViewState> {
+        return orders.associate { order ->
+            val item = mapOrderItem(order, selectedId)
+            val details = mapOrderDetails(order)
+            item to details
+        }
+    }
+
+    private fun mapOrderItem(order: Order, selectedId: Long?): OrderItemViewState {
+        val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
+            amount = order.total.toDouble(),
+            site = selectedSite.get(),
+            currencyCode = null,
+            applyDecimalFormatting = true
+        )
+
+        val statusText = order.status.localizedLabel(resourceProvider, locale)
+
+        return OrderItemViewState(
+            id = order.id,
+            title = "#${order.number}",
+            date = order.dateCreated.formatToMMMddYYYYAtHHmm(
+                atWord = resourceProvider.getString(R.string.date_time_connector)
+            ),
+            total = formattedOrderTotals,
+            customerEmail = order.customer?.email,
+            isSelected = order.id == selectedId,
+            status = PosOrderStatus(
+                text = statusText,
+                colorKey = OrderStatusColorKey.fromStatus(order.status)
             )
+        )
+    }
 
-            val formattedStatus = when (order.status) {
-                Order.Status.Cancelled -> resourceProvider.getString(R.string.woopos_orders_status_cancelled)
-                Order.Status.Completed -> resourceProvider.getString(R.string.woopos_orders_status_completed)
-                is Order.Status.Custom ->
-                    order.status.value
-                        .replaceFirstChar { it.titlecase(locale) }
-                        .replace("-", " ") // cannot localize at runtime
-                Order.Status.Failed -> resourceProvider.getString(R.string.woopos_orders_status_failed)
-                Order.Status.OnHold -> resourceProvider.getString(R.string.woopos_orders_status_on_hold)
-                Order.Status.Pending -> resourceProvider.getString(R.string.woopos_orders_status_pending)
-                Order.Status.Processing -> resourceProvider.getString(R.string.woopos_orders_status_processing)
-                Order.Status.Refunded -> resourceProvider.getString(R.string.woopos_orders_status_refunded)
-            }
+    private suspend fun mapOrderDetails(order: Order): OrderDetailsViewState {
+        fun fmt(amount: BigDecimal) = wooCommerceStore.formatCurrencyForDisplay(
+            amount = amount.toDouble(),
+            site = selectedSite.get(),
+            currencyCode = null,
+            applyDecimalFormatting = true
+        )
 
-            OrderItemViewState(
-                id = order.id,
-                title = "#${order.number}",
-                date = order.dateCreated.formatToMMMddYYYYAtHHmm(
-                    atWord = resourceProvider.getString(R.string.date_time_connector)
-                ),
-                total = formattedOrderTotals,
-                customerEmail = order.customer?.email,
-                isSelected = order.id == selectedId,
-                status = PosOrderStatus(
-                    text = formattedStatus,
-                    colorKey = OrderStatusColorKey.fromStatus(order.status)
-                )
+        val statusText = order.status.localizedLabel(resourceProvider, locale)
+
+        val status = PosOrderStatus(
+            text = statusText,
+            colorKey = OrderStatusColorKey.fromStatus(order.status)
+        )
+
+        val lineItems = order.items.map { item ->
+            val unitPrice = if (item.quantity == 0f) item.total else item.total / item.quantity.toBigDecimal()
+            val product = getProductById(item.productId)
+            OrderDetailsViewState.LineItemRow(
+                id = item.itemId,
+                name = item.name,
+                qtyAndUnitPrice = "${item.quantity.toInt()} x ${fmt(unitPrice)}",
+                lineTotal = fmt(item.total),
+                imageUrl = product?.firstImageUrl
             )
         }
+
+        val discountCode = order.couponLines.firstOrNull()?.code
+        val breakdown = OrderDetailsViewState.TotalsBreakdown(
+            products = fmt(order.productsTotal),
+            discount = order.discountTotal.takeIf { it != BigDecimal.ZERO }?.let { "-${fmt(it)}" },
+            discountCode = discountCode,
+            taxes = fmt(order.totalTax),
+            shipping = order.shippingTotal.takeIf { it != BigDecimal.ZERO }?.let { fmt(it) }
+        )
+
+        return OrderDetailsViewState(
+            id = order.id,
+            number = "#${order.number}",
+            dateTime = order.dateCreated.formatToMMMddYYYYAtHHmm(
+                atWord = resourceProvider.getString(R.string.date_time_connector)
+            ),
+            customerEmail = order.customer?.email,
+            status = status,
+            lineItems = lineItems,
+            breakdown = breakdown,
+            total = fmt(order.total),
+            totalPaid = fmt(order.total),
+            paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() }
+        )
+    }
+}
+
+private fun Order.Status.localizedLabel(resourceProvider: ResourceProvider, locale: Locale): String {
+    return when (this) {
+        Order.Status.Cancelled -> resourceProvider.getString(R.string.woopos_orders_status_cancelled)
+        Order.Status.Completed -> resourceProvider.getString(R.string.woopos_orders_status_completed)
+        is Order.Status.Custom ->
+            value.replaceFirstChar { it.titlecase(locale) }.replace("-", " ")
+        Order.Status.Failed -> resourceProvider.getString(R.string.woopos_orders_status_failed)
+        Order.Status.OnHold -> resourceProvider.getString(R.string.woopos_orders_status_on_hold)
+        Order.Status.Pending -> resourceProvider.getString(R.string.woopos_orders_status_pending)
+        Order.Status.Processing -> resourceProvider.getString(R.string.woopos_orders_status_processing)
+        Order.Status.Refunded -> resourceProvider.getString(R.string.woopos_orders_status_refunded)
     }
 }

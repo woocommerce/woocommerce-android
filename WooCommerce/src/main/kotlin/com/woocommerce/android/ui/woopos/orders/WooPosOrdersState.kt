@@ -7,6 +7,39 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
 @Immutable
+data class OrderDetailsViewState(
+    val id: Long,
+    val number: String,
+    val dateTime: String,
+    val customerEmail: String?,
+    val status: PosOrderStatus,
+
+    val lineItems: List<LineItemRow>,
+    val breakdown: TotalsBreakdown,
+    val total: String,
+    val totalPaid: String,
+    val paymentMethodTitle: String?,
+) {
+    @Immutable
+    data class LineItemRow(
+        val id: Long,
+        val name: String,
+        val qtyAndUnitPrice: String,
+        val lineTotal: String,
+        val imageUrl: String?,
+    )
+
+    @Immutable
+    data class TotalsBreakdown(
+        val products: String,
+        val discount: String?,
+        val discountCode: String?,
+        val taxes: String,
+        val shipping: String?
+    )
+}
+
+@Immutable
 data class OrderItemViewState(
     val id: Long,
     val title: String,
@@ -24,11 +57,11 @@ sealed class WooPosOrdersState {
 
     @Immutable
     data class Content(
-        val items: List<OrderItemViewState>,
+        val items: Map<OrderItemViewState, OrderDetailsViewState>,
+        val selectedDetails: OrderDetailsViewState,
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
         val paginationState: WooPosPaginationState,
-        val selectedOrderId: Long?
     ) : WooPosOrdersState()
 
     @Immutable
