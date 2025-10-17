@@ -7,6 +7,8 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -46,6 +48,7 @@ class WooPosOrdersViewModelTest {
     private val resourceProvider: ResourceProvider = org.mockito.kotlin.mock()
     private val getProductById: WooPosGetProductById = org.mockito.kotlin.mock()
     private val providedLocale: Locale = Locale.US
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = org.mockito.kotlin.mock()
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
@@ -54,7 +57,8 @@ class WooPosOrdersViewModelTest {
             selectedSite = selectedSite,
             resourceProvider = resourceProvider,
             locale = providedLocale,
-            getProductById = getProductById
+            getProductById = getProductById,
+            childrenToParentEventSender = childrenToParentEventSender
         )
     }
 
@@ -620,5 +624,22 @@ class WooPosOrdersViewModelTest {
         val content = viewModel.state.value as WooPosOrdersState.Content
         assertThat(content.items.keys.map { it.id }).containsExactly(300L, 400L)
         assertThat(content.selectedDetails.id).isEqualTo(300L)
+    }
+
+    @Test
+    fun `given content loaded, when onEmailReceiptButtonClicked called, then ToEmailReceipt is sent`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(123)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onEmailReceiptButtonClicked(123L)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ToEmailReceipt(123L))
     }
 }
