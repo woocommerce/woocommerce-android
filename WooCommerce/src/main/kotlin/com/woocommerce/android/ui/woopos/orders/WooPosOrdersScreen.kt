@@ -57,6 +57,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
@@ -425,14 +426,10 @@ fun OrderDetails(
                         OrderStatusBadge(details.status)
                     }
 
-                    androidx.compose.material3.Button(
+                    WooPosButton(
+                        text = stringResource(R.string.woopos_orders_email_receipt),
                         onClick = { onEmailReceiptButtonClicked(details.id) }
-                    ) {
-                        WooPosText(
-                            text = stringResource(R.string.woopos_orders_email_receipt),
-                            style = WooPosTypography.BodySmall
-                        )
-                    }
+                    )
                 }
             }
 
