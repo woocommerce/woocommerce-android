@@ -48,8 +48,8 @@ class WooPosItemsViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
-    private val _catalogSyncBannerState = MutableStateFlow<CatalogSyncBannerState>(CatalogSyncBannerState.Hidden)
-    val catalogSyncBannerState: StateFlow<CatalogSyncBannerState> = _catalogSyncBannerState
+    private val _catalogSyncOverdueBannerState = MutableStateFlow<CatalogSyncOverdueBannerState>(CatalogSyncOverdueBannerState.Hidden)
+    val catalogSyncOverdueBannerState: StateFlow<CatalogSyncOverdueBannerState> = _catalogSyncOverdueBannerState
 
     init {
         listenUpEvents()
@@ -68,9 +68,9 @@ class WooPosItemsViewModel @Inject constructor(
     private fun checkSyncStatusAndUpdateBanner() {
         viewModelScope.launch {
             val requirement = syncStatusChecker.checkSyncRequirement()
-            _catalogSyncBannerState.value = when (requirement) {
-                is WooPosFullSyncRequirement.Overdue -> CatalogSyncBannerState.OverdueSyncWarning
-                else -> CatalogSyncBannerState.Hidden
+            _catalogSyncOverdueBannerState.value = when (requirement) {
+                is WooPosFullSyncRequirement.Overdue -> CatalogSyncOverdueBannerState.Visible
+                else -> CatalogSyncOverdueBannerState.Hidden
             }
         }
     }
@@ -96,7 +96,7 @@ class WooPosItemsViewModel @Inject constructor(
 
             is WooPosItemsUIEvent.AddCouponIconClicked -> createAndAddCoupon()
             WooPosItemsUIEvent.SyncOverdueBannerDismissed -> {
-                _catalogSyncBannerState.value = CatalogSyncBannerState.Hidden
+                _catalogSyncOverdueBannerState.value = CatalogSyncOverdueBannerState.Hidden
             }
         }
     }
@@ -263,8 +263,8 @@ class WooPosItemsViewModel @Inject constructor(
         data class Coupon(override val id: Long, val couponCode: String) : ItemClickedData(id), Parcelable
     }
 
-    sealed class CatalogSyncBannerState {
-        data object Hidden : CatalogSyncBannerState()
-        data object OverdueSyncWarning : CatalogSyncBannerState()
+    sealed class CatalogSyncOverdueBannerState {
+        data object Hidden : CatalogSyncOverdueBannerState()
+        data object Visible : CatalogSyncOverdueBannerState()
     }
 }

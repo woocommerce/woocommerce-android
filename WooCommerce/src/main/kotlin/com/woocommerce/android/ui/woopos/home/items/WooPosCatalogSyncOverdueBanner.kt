@@ -35,12 +35,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 
 @Composable
 fun WooPosCatalogSyncOverdueBanner(
-    bannerState: WooPosItemsViewModel.CatalogSyncBannerState,
+    state: WooPosItemsViewModel.CatalogSyncOverdueBannerState,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit
 ) {
     AnimatedVisibility(
-        visible = bannerState is WooPosItemsViewModel.CatalogSyncBannerState.OverdueSyncWarning,
+        visible = state is WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible,
         enter = fadeIn(
             animationSpec = tween(durationMillis = 180)
         ) + scaleIn(
@@ -106,7 +106,7 @@ fun WooPosCatalogSyncOverdueBanner(
 fun WooPosRefreshCatalogBannerPreview() {
     WooPosTheme {
         WooPosCatalogSyncOverdueBanner(
-            bannerState = WooPosItemsViewModel.CatalogSyncBannerState.OverdueSyncWarning,
+            state = WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible,
             onDismiss = {}
         )
     }
