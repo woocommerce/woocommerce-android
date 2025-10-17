@@ -191,9 +191,9 @@ fun WCOutlinedButton(
     interactionSource: MutableInteractionSource? = null,
 ) {
     WCOutlinedButton(
-        onClick = onClick,
+        onClick = { if (!loading) onClick() },
         modifier = modifier,
-        enabled = enabled && !loading,
+        enabled = enabled,
         shape = shape,
         colors = colors,
         border = border,
