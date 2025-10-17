@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -48,7 +49,7 @@ class BookingListHandler @Inject constructor(
                 order = sortBy.toBookingsOrderOption()
             )
         } else {
-            searchResults
+            searchResults.take(page * PAGE_SIZE)
         }
     }.flatMapLatest { it }
 
@@ -61,6 +62,7 @@ class BookingListHandler @Inject constructor(
         page.value = 1
         canLoadMore.set(true)
 
+        val previousQuery = this.searchQuery.value
         this.searchQuery.value = searchQuery
         this.filters.value = filters
         this.sortBy.value = sortBy
@@ -68,7 +70,9 @@ class BookingListHandler @Inject constructor(
         return@withLock if (searchQuery == null) {
             fetchBookings()
         } else {
-            searchResults.value = emptyList()
+            if (searchQuery != previousQuery) {
+                searchResults.value = emptyList()
+            }
             if (searchQuery.isEmpty()) {
                 // If the query is empty, return cached results directly
                 canLoadMore.set(false)
@@ -85,10 +89,11 @@ class BookingListHandler @Inject constructor(
     }
 
     private suspend fun fetchBookings(): Result<Unit> {
+        val pageToFetch = page.value
         val isSearching = !searchQuery.value.isNullOrEmpty()
         val order = sortBy.value.toBookingsOrderOption()
         return bookingsRepository.fetchBookings(
-            page = page.value,
+            page = pageToFetch,
             perPage = PAGE_SIZE,
             query = searchQuery.value,
             filters = filters.value,
@@ -99,7 +104,11 @@ class BookingListHandler @Inject constructor(
                 page.update { it + 1 }
             }
             if (isSearching) {
-                searchResults.update { it + result.bookings }
+                if (pageToFetch == 1) {
+                    searchResults.value = result.bookings
+                } else {
+                    searchResults.update { it + result.bookings }
+                }
             }
         }.map { }
     }
