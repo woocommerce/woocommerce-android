@@ -87,12 +87,12 @@ private fun WooPosItemsScreen(
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
 ) {
     val state = itemsStateFlow.collectAsState()
-    val bannerState = catalogSyncBannerStateFlow.collectAsState()
+    val catalogSyncOverdueBannerState = catalogSyncBannerStateFlow.collectAsState()
 
     MainItemsList(
         modifier = modifier,
         state = state,
-        bannerState = bannerState,
+        bannerState = catalogSyncOverdueBannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
         catalogSyncState = catalogSyncState,
