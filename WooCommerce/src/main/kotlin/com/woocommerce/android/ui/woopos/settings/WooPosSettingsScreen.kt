@@ -50,7 +50,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onBack = containerViewModel::navigateBack,
         onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
         onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
-        onRetrySync = containerViewModel::retrySyncFromDialog,
+        onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
         onDismissDialog = containerViewModel::hideDialog
     )
 }

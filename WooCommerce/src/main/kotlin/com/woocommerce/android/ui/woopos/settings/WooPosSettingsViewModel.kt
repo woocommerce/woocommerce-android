@@ -44,7 +44,7 @@ class WooPosSettingsViewModel @Inject constructor(
         }
     }
 
-    fun retrySyncFromDialog() {
+    fun onRetrySyncFromDialogClicked() {
         hideDialog()
         viewModelScope.launch {
             parentToChildEventSender.sendToChild(SettingsParentToChildEvent.RetrySyncRequested)
