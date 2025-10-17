@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -10,6 +9,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -22,12 +22,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -41,20 +38,18 @@ class WooPosOrdersViewModelTest {
     private lateinit var viewModel: WooPosOrdersViewModel
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
-    private val wooStore: WooCommerceStore = org.mockito.kotlin.mock()
-    private val selectedSite: SelectedSite = org.mockito.kotlin.mock()
     private val resourceProvider: ResourceProvider = org.mockito.kotlin.mock()
     private val getProductById: WooPosGetProductById = org.mockito.kotlin.mock()
+    private val formatPrice: WooPosFormatPrice = org.mockito.kotlin.mock()
     private val providedLocale: Locale = Locale.US
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
             ordersDataSource = dataSource,
-            wooCommerceStore = wooStore,
-            selectedSite = selectedSite,
             resourceProvider = resourceProvider,
             locale = providedLocale,
-            getProductById = getProductById
+            getProductById = getProductById,
+            formatPrice = formatPrice
         )
     }
 
@@ -62,17 +57,9 @@ class WooPosOrdersViewModelTest {
     fun setUp() {
         whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
 
-        whenever(
-            wooStore.formatCurrencyForDisplay(
-                amount = any(),
-                site = any(),
-                currencyCode = anyOrNull(),
-                applyDecimalFormatting = any()
-            )
-        ).thenReturn("$0.00")
-
-        val site: SiteModel = mock()
-        whenever(selectedSite.get()).thenReturn(site)
+        runBlocking {
+            whenever(formatPrice.invoke(any())).thenReturn("$0.00")
+        }
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessCache(listOf(order(1), order(2)))) }
