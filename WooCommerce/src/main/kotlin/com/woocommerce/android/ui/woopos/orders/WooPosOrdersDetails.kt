@@ -251,6 +251,42 @@ fun OrderDetails(
                     )
                 }
             }
+
+            if (details.breakdown.refunds.isNotEmpty()) {
+                Column {
+                    details.breakdown.refunds.forEach { refundAmount ->
+                        Row(Modifier.fillMaxWidth()) {
+                            WooPosText(
+                                text = stringResource(R.string.woopos_orders_details_refunded_label),
+                                style = WooPosTypography.BodySmall,
+                                modifier = Modifier.weight(1f)
+                            )
+                            WooPosText(
+                                text = refundAmount,
+                                style = WooPosTypography.BodySmall
+                            )
+                        }
+                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                    }
+                }
+            }
+
+            details.breakdown.netPayment?.let { netPayment ->
+                Spacer(Modifier.height(WooPosSpacing.Small.value))
+                Row(Modifier.fillMaxWidth()) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_orders_details_net_payment_label),
+                        style = WooPosTypography.BodySmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    WooPosText(
+                        text = netPayment,
+                        style = WooPosTypography.BodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
     }
 }

@@ -3809,6 +3809,8 @@
     <string name="woopos_orders_details_breakdown_shipping_label">Shipping</string>
     <string name="woopos_orders_details_total_label">Total</string>
     <string name="woopos_orders_details_total_paid_label">Total paid</string>
+    <string name="woopos_orders_details_refunded_label">Refunded</string>
+    <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
 

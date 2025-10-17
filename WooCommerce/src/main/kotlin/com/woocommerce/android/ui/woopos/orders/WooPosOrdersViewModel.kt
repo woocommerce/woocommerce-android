@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetOrderRefundsByOrderId
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
@@ -30,6 +31,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private val locale: Locale,
     private val getProductById: WooPosGetProductById,
     private val formatPrice: WooPosFormatPrice,
+    private val getOrderRefunds: WooPosGetOrderRefundsByOrderId,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -364,12 +366,24 @@ class WooPosOrdersViewModel @Inject constructor(
         }
 
         val discountCode = order.couponLines.firstOrNull()?.code
+
+        val refunds = getOrderRefunds(order.id)
+        val refundAmounts = refunds.map { "-${formatPrice(it.amount)}" }
+        val totalRefunded = refunds.sumOf { it.amount }
+        val netPayment = if (totalRefunded > BigDecimal.ZERO) {
+            formatPrice(order.total - totalRefunded)
+        } else {
+            null
+        }
+
         val breakdown = OrderDetailsViewState.TotalsBreakdown(
             products = formatPrice(order.productsTotal),
             discount = order.discountTotal.takeIf { it != BigDecimal.ZERO }?.let { "-${formatPrice(it)}" },
             discountCode = discountCode,
             taxes = formatPrice(order.totalTax),
-            shipping = order.shippingTotal.takeIf { it != BigDecimal.ZERO }?.let { formatPrice(it) }
+            shipping = order.shippingTotal.takeIf { it != BigDecimal.ZERO }?.let { formatPrice(it) },
+            refunds = refundAmounts,
+            netPayment = netPayment
         )
 
         return OrderDetailsViewState(

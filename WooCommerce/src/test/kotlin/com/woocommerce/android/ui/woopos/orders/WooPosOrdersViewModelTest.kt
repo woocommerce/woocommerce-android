@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetOrderRefundsByOrderId
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
@@ -41,6 +42,7 @@ class WooPosOrdersViewModelTest {
     private val resourceProvider: ResourceProvider = org.mockito.kotlin.mock()
     private val getProductById: WooPosGetProductById = org.mockito.kotlin.mock()
     private val formatPrice: WooPosFormatPrice = org.mockito.kotlin.mock()
+    private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = org.mockito.kotlin.mock()
     private val providedLocale: Locale = Locale.US
 
     private fun createViewModel(): WooPosOrdersViewModel {
@@ -49,7 +51,8 @@ class WooPosOrdersViewModelTest {
             resourceProvider = resourceProvider,
             locale = providedLocale,
             getProductById = getProductById,
-            formatPrice = formatPrice
+            formatPrice = formatPrice,
+            getOrderRefunds = getOrderRefunds
         )
     }
 
@@ -76,6 +79,7 @@ class WooPosOrdersViewModelTest {
 
         runBlocking {
             whenever(getProductById.invoke(any())).thenReturn(null)
+            whenever(getOrderRefunds.invoke(any())).thenReturn(emptyList())
         }
     }
 
