@@ -57,13 +57,11 @@ sealed class WooPosOrdersState {
 
     @Immutable
     data class Content(
-        val items: List<OrderItemViewState>,
+        val items: Map<OrderItemViewState, OrderDetailsViewState>,
+        val selectedDetails: OrderDetailsViewState,
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
         val paginationState: WooPosPaginationState,
-        val selectedOrderId: Long,
-
-        val selectedOrderDetails: OrderDetailsViewState
     ) : WooPosOrdersState()
 
     @Immutable

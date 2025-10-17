@@ -4,11 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
@@ -32,8 +31,8 @@ class WooPosOrdersViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
     private val locale: Locale,
-    private val productImageMap: ProductImageMap,
-) : ViewModel(), OnProductFetchedListener {
+    private val getProductById: WooPosGetProductById,
+) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
         WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
@@ -43,8 +42,6 @@ class WooPosOrdersViewModel @Inject constructor(
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
     private var loadingMoreOrdersJob: Job? = null
-
-    private val ordersById = linkedMapOf<Long, Order>()
 
     private val currentSearchQuery: String?
         get() = (
@@ -59,37 +56,20 @@ class WooPosOrdersViewModel @Inject constructor(
 
     init {
         loadOrders()
-        productImageMap.subscribeToOnProductFetchedEvents(this)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        productImageMap.unsubscribeFromOnProductFetchedEvents(this)
-    }
-
-    @Suppress("ReturnCount")
-    override fun onProductFetched(remoteProductId: Long) {
-        val current = _state.value as? WooPosOrdersState.Content ?: return
-        val selectedId = current.selectedOrderId ?: return
-        val selectedOrder = ordersById[selectedId] ?: return
-
-        // Only refresh if the selected order uses that product
-        val affectsSelected = selectedOrder.items.any { it.productId == remoteProductId }
-        if (!affectsSelected) return
-
-        _state.value = current.copy(
-            selectedOrderDetails = mapDetails(selectedOrder)
-        )
     }
 
     fun onOrderSelected(orderId: Long) {
         val current = _state.value as? WooPosOrdersState.Content ?: return
-        val details = ordersById[orderId]?.let(::mapDetails) ?: return
+
+        val updatedItems = current.items.mapKeys { (item, _) ->
+            item.copy(isSelected = item.id == orderId)
+        }
+
+        val selectedEntry = updatedItems.entries.first { (item, _) -> item.isSelected }
 
         _state.value = current.copy(
-            items = current.items.map { it.copy(isSelected = it.id == orderId) },
-            selectedOrderId = orderId,
-            selectedOrderDetails = details
+            items = updatedItems,
+            selectedDetails = selectedEntry.value
         )
     }
 
@@ -300,81 +280,79 @@ class WooPosOrdersViewModel @Inject constructor(
         loadingMoreOrdersJob?.cancel()
     }
 
-    private fun replaceOrders(
+    private suspend fun replaceOrders(
         orders: List<Order>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
-        ordersById.clear()
-        orders.forEach { ordersById[it.id] = it }
-
         val newSelectedId = requireNotNull(orders.firstOrNull()?.id) { "Content requires at least one order" }
-        val newItems = mapOrders(orders, newSelectedId)
-        val details = mapDetails(requireNotNull(ordersById[newSelectedId]))
-
-        _state.value = WooPosOrdersState.Content(
-            items = newItems,
-            selectedOrderId = newSelectedId,
-            selectedOrderDetails = details,
-            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-            paginationState = paginationState,
-            searchInputState = _state.value.searchInputState
-        )
-    }
-
-    private fun appendOrders(
-        orders: List<Order>,
-        paginationState: WooPosPaginationState = WooPosPaginationState.None
-    ) {
-        orders.forEach { ordersById[it.id] = it }
-
-        val current = _state.value as WooPosOrdersState.Content
-        val items = current.items + mapOrders(orders, current.selectedOrderId)
-
-        // Selection doesn’t change on append
-        val details = mapDetails(requireNotNull(ordersById[current.selectedOrderId]))
+        val items = buildItemsMap(orders, newSelectedId)
+        val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
 
         _state.value = WooPosOrdersState.Content(
             items = items,
-            selectedOrderId = current.selectedOrderId,
-            selectedOrderDetails = details,
+            selectedDetails = selectedEntry.value,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
         )
     }
 
-    private fun mapOrders(
+    private suspend fun appendOrders(
+        orders: List<Order>,
+        paginationState: WooPosPaginationState = WooPosPaginationState.None
+    ) {
+        val current = _state.value as WooPosOrdersState.Content
+        val currentSelectedId = current.items.entries.firstOrNull { it.key.isSelected }?.key?.id
+        val newItems = buildItemsMap(orders, currentSelectedId)
+        val items = current.items + newItems
+
+        _state.value = WooPosOrdersState.Content(
+            items = items,
+            selectedDetails = current.selectedDetails,
+            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+            paginationState = paginationState,
+            searchInputState = _state.value.searchInputState
+        )
+    }
+
+    private suspend fun buildItemsMap(
         orders: List<Order>,
         selectedId: Long?
-    ): List<OrderItemViewState> {
-        return orders.map { order ->
-            val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
-                amount = order.total.toDouble(),
-                site = selectedSite.get(),
-                currencyCode = null,
-                applyDecimalFormatting = true
-            )
-
-            val statusText = order.status.localizedLabel(resourceProvider, locale)
-
-            OrderItemViewState(
-                id = order.id,
-                title = "#${order.number}",
-                date = order.dateCreated.formatToMMMddYYYYAtHHmm(
-                    atWord = resourceProvider.getString(R.string.date_time_connector)
-                ),
-                total = formattedOrderTotals,
-                customerEmail = order.customer?.email,
-                isSelected = order.id == selectedId,
-                status = PosOrderStatus(
-                    text = statusText,
-                    colorKey = OrderStatusColorKey.fromStatus(order.status)
-                )
-            )
+    ): Map<OrderItemViewState, OrderDetailsViewState> {
+        return orders.associate { order ->
+            val item = mapOrderItem(order, selectedId)
+            val details = mapOrderDetails(order)
+            item to details
         }
     }
 
-    private fun mapDetails(order: Order): OrderDetailsViewState {
+    private fun mapOrderItem(order: Order, selectedId: Long?): OrderItemViewState {
+        val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
+            amount = order.total.toDouble(),
+            site = selectedSite.get(),
+            currencyCode = null,
+            applyDecimalFormatting = true
+        )
+
+        val statusText = order.status.localizedLabel(resourceProvider, locale)
+
+        return OrderItemViewState(
+            id = order.id,
+            title = "#${order.number}",
+            date = order.dateCreated.formatToMMMddYYYYAtHHmm(
+                atWord = resourceProvider.getString(R.string.date_time_connector)
+            ),
+            total = formattedOrderTotals,
+            customerEmail = order.customer?.email,
+            isSelected = order.id == selectedId,
+            status = PosOrderStatus(
+                text = statusText,
+                colorKey = OrderStatusColorKey.fromStatus(order.status)
+            )
+        )
+    }
+
+    private suspend fun mapOrderDetails(order: Order): OrderDetailsViewState {
         fun fmt(amount: BigDecimal) = wooCommerceStore.formatCurrencyForDisplay(
             amount = amount.toDouble(),
             site = selectedSite.get(),
@@ -388,16 +366,16 @@ class WooPosOrdersViewModel @Inject constructor(
             text = statusText,
             colorKey = OrderStatusColorKey.fromStatus(order.status)
         )
-        fun imageFor(item: Order.Item): String? = productImageMap.get(item.productId)
 
         val lineItems = order.items.map { item ->
             val unitPrice = if (item.quantity == 0f) item.total else item.total / item.quantity.toBigDecimal()
+            val product = getProductById(item.productId)
             OrderDetailsViewState.LineItemRow(
                 id = item.itemId,
                 name = item.name,
                 qtyAndUnitPrice = "${item.quantity.toInt()} x ${fmt(unitPrice)}",
                 lineTotal = fmt(item.total),
-                imageUrl = imageFor(item)
+                imageUrl = product?.firstImageUrl
             )
         }
 

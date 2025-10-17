@@ -172,7 +172,7 @@ private fun OrdersContent(
                 .weight(0.7f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceContainerLow),
-            details = state.selectedOrderDetails,
+            details = state.selectedDetails,
             onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
         )
     }
@@ -274,7 +274,7 @@ private fun OrdersList(
         contentPadding = PaddingValues(WooPosSpacing.Medium.value),
         state = listState,
     ) {
-        items(state.items, key = { it.id }) { item ->
+        items(state.items.keys.toList(), key = { it.id }) { item ->
             WooPosCard(
                 modifier = modifier
                     .wrapContentHeight(),
@@ -444,40 +444,45 @@ fun OrderStatusBadge(status: PosOrderStatus) {
 @WooPosPreview
 @Composable
 fun WooPosOrdersScreenPreview() {
+    val item1 = OrderItemViewState(
+        id = 1,
+        title = "#014",
+        date = "Aug 28, 2025 at 10:31 AM",
+        total = "$17.00",
+        customerEmail = "johndoe@mail.com",
+        isSelected = true,
+        status = PosOrderStatus(
+            text = "Completed",
+            colorKey = OrderStatusColorKey.COMPLETED
+        )
+    )
+    val item2 = OrderItemViewState(
+        id = 2,
+        title = "#013",
+        date = "Jul 28, 2025 at 10:31 AM",
+        total = "$43.90",
+        customerEmail = "johndoe@mail.com",
+        isSelected = false,
+        status = PosOrderStatus(
+            text = "Processing",
+            colorKey = OrderStatusColorKey.PROCESSING
+        )
+    )
+
+    val details1 = sampleOrderDetails(id = 1L, number = "#014")
+    val details2 = sampleOrderDetails(id = 2L, number = "#013")
+
     WooPosTheme {
         WooPosOrdersScreen(
             state = WooPosOrdersState.Content(
-                items = listOf(
-                    OrderItemViewState(
-                        id = 1,
-                        title = "#014",
-                        date = "Aug 28, 2025 at 10:31 AM",
-                        total = "$17.00",
-                        customerEmail = "johndoe@mail.com",
-                        isSelected = true,
-                        status = PosOrderStatus(
-                            text = "Completed",
-                            colorKey = OrderStatusColorKey.COMPLETED
-                        )
-                    ),
-                    OrderItemViewState(
-                        id = 2,
-                        title = "#013",
-                        date = "Jul 28, 2025 at 10:31 AM",
-                        total = "$43.90",
-                        customerEmail = "johndoe@mail.com",
-                        isSelected = false,
-                        status = PosOrderStatus(
-                            text = "Processing",
-                            colorKey = OrderStatusColorKey.PROCESSING
-                        )
-                    )
+                items = mapOf(
+                    item1 to details1,
+                    item2 to details2
                 ),
+                selectedDetails = details1,
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
-                paginationState = WooPosPaginationState.None,
-                selectedOrderId = 1,
-                selectedOrderDetails = sampleOrderDetails()
+                paginationState = WooPosPaginationState.None
             ),
             onBackClicked = {},
             onRefresh = {},
@@ -493,9 +498,12 @@ fun WooPosOrdersScreenPreview() {
 }
 
 @Suppress("MagicNumber")
-private fun sampleOrderDetails() = OrderDetailsViewState(
-    id = 1L,
-    number = "#014",
+private fun sampleOrderDetails(
+    id: Long = 1L,
+    number: String = "#014"
+) = OrderDetailsViewState(
+    id = id,
+    number = number,
     dateTime = "Aug 28, 2025 at 10:31 AM",
     customerEmail = "johndoe@mail.com",
     status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
