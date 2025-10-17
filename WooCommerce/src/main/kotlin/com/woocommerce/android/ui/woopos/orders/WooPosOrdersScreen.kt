@@ -382,14 +382,13 @@ private fun OrdersList(
 @Composable
 fun OrderDetails(
     modifier: Modifier = Modifier,
-    order: OrderItemViewState?,
     details: OrderDetailsViewState,
     onEmailReceiptButtonClicked: (Long) -> Unit = {}
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         WooPosToolbar(
             modifier = Modifier.fillMaxWidth(),
-            titleText = details?.number ?: order?.title ?: "--",
+            titleText = details.number,
             onBackClicked = null
         )
 
