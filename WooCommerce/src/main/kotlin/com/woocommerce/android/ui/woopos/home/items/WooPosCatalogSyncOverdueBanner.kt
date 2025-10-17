@@ -46,7 +46,7 @@ fun WooPosCatalogSyncOverdueBanner(
         ) + scaleIn(
             animationSpec = tween(durationMillis = 180)
         ),
-        modifier = modifier.padding(horizontal = WooPosSpacing.Medium.value)
+        modifier = modifier.padding(horizontal = WooPosSpacing.Small.value)
     ) {
         WooPosCard(
             modifier = Modifier.fillMaxWidth(),
