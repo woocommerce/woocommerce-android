@@ -4261,6 +4261,7 @@
     <string name="booking_payment_mark_as_paid">Mark as paid</string>
     <string name="booking_payment_view_order">View order</string>
     <string name="booking_fetch_error">Error fetching booking</string>
+    <string name="booking_attendance_status_error">Error changing the attendance status</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

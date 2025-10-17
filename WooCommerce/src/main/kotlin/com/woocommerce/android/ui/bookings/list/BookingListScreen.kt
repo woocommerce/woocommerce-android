@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -450,7 +451,8 @@ private fun BookingListPreview() {
                                 name = "Women’s Haircut",
                                 customerName = "Margarita Nikolaevna",
                                 attendanceStatus = BookingAttendanceStatus.Booked,
-                                status = BookingStatus.Paid
+                                status = BookingStatus.Paid,
+                                attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                             )
                         )
                     },

@@ -141,6 +141,7 @@ private fun BookingDetailsContent(
     )
     BookingAttendanceSection(
         status = booking.bookingSummary.attendanceStatus,
+        attendanceUpdateStatus = booking.bookingSummary.attendanceUpdateStatus,
         onClick = onAttendanceStatusClicked,
         modifier = Modifier.fillMaxWidth()
     )
@@ -223,7 +224,8 @@ private fun BookingDetailsPreview() {
                         name = "Women’s Haircut",
                         customerName = "Margarita Nikolaevna",
                         attendanceStatus = BookingAttendanceStatus.CheckedIn,
-                        status = BookingStatus.Paid
+                        status = BookingStatus.Paid,
+                        attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                     ),
                     bookingsAppointmentDetails = BookingAppointmentDetailsModel(
                         date = "Monday, 05 July 2025",
