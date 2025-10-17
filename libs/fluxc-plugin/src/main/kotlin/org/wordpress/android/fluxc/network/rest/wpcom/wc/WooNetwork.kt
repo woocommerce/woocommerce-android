@@ -1,16 +1,19 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc
 
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsErrorHandler
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsSupport
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
 import org.wordpress.android.util.AppLog
+import java.security.GeneralSecurityException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -140,7 +143,19 @@ class WooNetwork @Inject constructor(
             )
         }
 
-        return when (val appPasswordsResponse = applicationPasswordsNetwork.request()) {
+        val appPasswordsResponse = try {
+            applicationPasswordsNetwork.request()
+        } catch (e: GeneralSecurityException) {
+            AppLog.e(AppLog.T.API, "Error setting up Application Passwords encryption", e)
+            WPAPIResponse.Error(
+                error = WPAPINetworkError(
+                    baseError = BaseRequest.BaseNetworkError(BaseRequest.GenericErrorType.UNKNOWN),
+                    errorCode = ApplicationPasswordsStore.APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR
+                )
+            )
+        }
+
+        return when (appPasswordsResponse) {
             is WPAPIResponse.Success<*> -> {
                 (appPasswordsResponse as WPAPIResponse<T>).copyWith(
                     networkingMode = WPAPINetworkingMode.ApplicationPasswordsWithJetpack
