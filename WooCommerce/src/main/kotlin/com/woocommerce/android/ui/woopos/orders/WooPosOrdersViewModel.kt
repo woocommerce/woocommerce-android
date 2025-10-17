@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
@@ -27,11 +26,10 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
     private val ordersDataSource: WooPosOrdersDataSource,
-    private val wooCommerceStore: WooCommerceStore,
-    private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
     private val locale: Locale,
     private val getProductById: WooPosGetProductById,
+    private val formatPrice: WooPosFormatPrice,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -326,14 +324,7 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private fun mapOrderItem(order: Order, selectedId: Long?): OrderItemViewState {
-        val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
-            amount = order.total.toDouble(),
-            site = selectedSite.get(),
-            currencyCode = null,
-            applyDecimalFormatting = true
-        )
-
+    private suspend fun mapOrderItem(order: Order, selectedId: Long?): OrderItemViewState {
         val statusText = order.status.localizedLabel(resourceProvider, locale)
 
         return OrderItemViewState(
@@ -342,7 +333,7 @@ class WooPosOrdersViewModel @Inject constructor(
             date = order.dateCreated.formatToMMMddYYYYAtHHmm(
                 atWord = resourceProvider.getString(R.string.date_time_connector)
             ),
-            total = formattedOrderTotals,
+            total = formatPrice(order.total),
             customerEmail = order.customer?.email,
             isSelected = order.id == selectedId,
             status = PosOrderStatus(
@@ -353,13 +344,6 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private suspend fun mapOrderDetails(order: Order): OrderDetailsViewState {
-        fun fmt(amount: BigDecimal) = wooCommerceStore.formatCurrencyForDisplay(
-            amount = amount.toDouble(),
-            site = selectedSite.get(),
-            currencyCode = null,
-            applyDecimalFormatting = true
-        )
-
         val statusText = order.status.localizedLabel(resourceProvider, locale)
 
         val status = PosOrderStatus(
@@ -373,19 +357,19 @@ class WooPosOrdersViewModel @Inject constructor(
             OrderDetailsViewState.LineItemRow(
                 id = item.itemId,
                 name = item.name,
-                qtyAndUnitPrice = "${item.quantity.toInt()} x ${fmt(unitPrice)}",
-                lineTotal = fmt(item.total),
+                qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice)}",
+                lineTotal = formatPrice(item.total),
                 imageUrl = product?.firstImageUrl
             )
         }
 
         val discountCode = order.couponLines.firstOrNull()?.code
         val breakdown = OrderDetailsViewState.TotalsBreakdown(
-            products = fmt(order.productsTotal),
-            discount = order.discountTotal.takeIf { it != BigDecimal.ZERO }?.let { "-${fmt(it)}" },
+            products = formatPrice(order.productsTotal),
+            discount = order.discountTotal.takeIf { it != BigDecimal.ZERO }?.let { "-${formatPrice(it)}" },
             discountCode = discountCode,
-            taxes = fmt(order.totalTax),
-            shipping = order.shippingTotal.takeIf { it != BigDecimal.ZERO }?.let { fmt(it) }
+            taxes = formatPrice(order.totalTax),
+            shipping = order.shippingTotal.takeIf { it != BigDecimal.ZERO }?.let { formatPrice(it) }
         )
 
         return OrderDetailsViewState(
@@ -398,8 +382,8 @@ class WooPosOrdersViewModel @Inject constructor(
             status = status,
             lineItems = lineItems,
             breakdown = breakdown,
-            total = fmt(order.total),
-            totalPaid = fmt(order.total),
+            total = formatPrice(order.total),
+            totalPaid = formatPrice(order.total),
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() }
         )
     }
