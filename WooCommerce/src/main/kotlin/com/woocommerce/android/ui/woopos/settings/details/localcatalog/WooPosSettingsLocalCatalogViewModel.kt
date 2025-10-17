@@ -29,10 +29,16 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private val _state = MutableStateFlow(WooPosSettingsLocalCatalogState())
     val state: StateFlow<WooPosSettingsLocalCatalogState> = _state.asStateFlow()
 
+    private var onShowSyncErrorDialog: ((String) -> Unit)? = null
+
     init {
         loadCatalogStatus()
 
         listenToCellularDataUpdateValue()
+    }
+
+    fun setOnShowSyncErrorDialog(callback: (String) -> Unit) {
+        onShowSyncErrorDialog = callback
     }
 
     private fun loadCatalogStatus() {
@@ -90,8 +96,8 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                     loadCatalogStatus()
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
-                    // TBD local catalog: Handle errors
                     backupCatalogData?.let { _state.update { it.copy(catalogStatus = backupCatalogData) } }
+                    onShowSyncErrorDialog?.invoke(result.error)
                 }
             }
         }

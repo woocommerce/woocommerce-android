@@ -33,6 +33,7 @@ fun WooPosSettingsDetailPaneScreen(
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
+    onShowSyncErrorDialog: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentDestination = state.currentDestination
@@ -95,7 +96,9 @@ fun WooPosSettingsDetailPaneScreen(
                 }
 
                 is WooPosSettingsDetailDestination.LocalCatalog.Overview -> {
-                    WooPosSettingsLocalCatalogScreen()
+                    WooPosSettingsLocalCatalogScreen(
+                        onShowSyncErrorDialog = onShowSyncErrorDialog
+                    )
                 }
 
                 is WooPosSettingsDetailDestination.Help.Overview -> {

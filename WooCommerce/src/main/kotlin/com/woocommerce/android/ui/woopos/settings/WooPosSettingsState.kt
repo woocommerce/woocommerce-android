@@ -76,4 +76,7 @@ sealed class WooPosSettingsDialogState : Parcelable {
 
     @Parcelize
     data object ScanningSetupDialog : WooPosSettingsDialogState()
+
+    @Parcelize
+    data class SyncErrorDialog(val errorMessage: String) : WooPosSettingsDialogState()
 }

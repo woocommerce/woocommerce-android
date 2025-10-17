@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
+import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialog
 import com.woocommerce.android.ui.woopos.settings.productinfo.WooPosSettingsProductInfoDialogState
 
@@ -49,6 +50,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onBack = containerViewModel::navigateBack,
         onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
         onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
+        onShowSyncErrorDialog = containerViewModel::showSyncErrorDialog,
         onDismissDialog = containerViewModel::hideDialog
     )
 }
@@ -62,6 +64,7 @@ private fun WooPosSettingsContent(
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
+    onShowSyncErrorDialog: (String) -> Unit,
     onDismissDialog: () -> Unit
 ) {
     Row(
@@ -90,6 +93,7 @@ private fun WooPosSettingsContent(
             onBack = onBack,
             onShowProductInfoDialog = onShowProductInfoDialog,
             onShowScanningSetupDialog = onShowScanningSetupDialog,
+            onShowSyncErrorDialog = onShowSyncErrorDialog,
             modifier = Modifier
                 .weight(0.7f)
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
@@ -105,6 +109,11 @@ private fun WooPosSettingsContent(
 
     WooPosScanningSetupDialog(
         isVisible = dialogState is WooPosSettingsDialogState.ScanningSetupDialog,
+        onDismissRequest = onDismissDialog
+    )
+
+    WooPosSyncErrorDialog(
+        isVisible = dialogState is WooPosSettingsDialogState.SyncErrorDialog,
         onDismissRequest = onDismissDialog
     )
 }

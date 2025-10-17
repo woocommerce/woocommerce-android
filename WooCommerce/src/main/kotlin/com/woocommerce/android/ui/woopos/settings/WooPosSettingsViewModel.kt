@@ -80,6 +80,12 @@ class WooPosSettingsViewModel @Inject constructor(
         }
     }
 
+    fun showSyncErrorDialog(errorMessage: String) {
+        _state.update { currentState ->
+            currentState.copy(dialogState = WooPosSettingsDialogState.SyncErrorDialog(errorMessage))
+        }
+    }
+
     fun hideDialog() {
         _state.update { currentState ->
             currentState.copy(dialogState = WooPosSettingsDialogState.Hidden)
