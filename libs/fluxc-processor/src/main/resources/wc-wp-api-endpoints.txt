@@ -137,4 +137,4 @@
 
 /bookings
 /bookings/<id>/
-/resources/<id>/
+/resources/team-members/<id>/
