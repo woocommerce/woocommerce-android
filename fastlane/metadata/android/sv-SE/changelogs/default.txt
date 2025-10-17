@@ -1,2 +1,0 @@
-23.4:
-Vi har förbättrat Blaze-kampanjupplevelsen! Att skapa kampanjer fungerar nu smidigt för alla produkter, inklusive de med PDF-miniatyrer. Uppdatera idag för en mer tillförlitlig annonseringsupplevelse.

@@ -1,2 +1,0 @@
-23.4 :
-Nous avons amélioré l’expérience de campagne Blaze ! La création de campagnes fonctionne désormais sans accroc pour tous les produits, y compris ceux avec des miniatures PDF. Mettez à jour dès aujourd’hui pour une expérience publicitaire plus fiable.
