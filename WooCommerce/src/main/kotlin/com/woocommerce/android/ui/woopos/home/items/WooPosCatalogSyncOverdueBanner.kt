@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosRefreshCatalogBanner(
+fun WooPosCatalogSyncOverdueBanner(
     bannerState: WooPosItemsViewModel.CatalogSyncBannerState,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit
@@ -105,7 +105,7 @@ fun WooPosRefreshCatalogBanner(
 @WooPosPreview
 fun WooPosRefreshCatalogBannerPreview() {
     WooPosTheme {
-        WooPosRefreshCatalogBanner(
+        WooPosCatalogSyncOverdueBanner(
             bannerState = WooPosItemsViewModel.CatalogSyncBannerState.OverdueSyncWarning,
             onDismiss = {}
         )

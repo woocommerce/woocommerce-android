@@ -158,7 +158,7 @@ private fun MainItemsList(
                     .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
             )
 
-            WooPosRefreshCatalogBanner(
+            WooPosCatalogSyncOverdueBanner(
                 bannerState = bannerState.value,
                 onDismiss = onSyncWarningBannerDismissed
             )
