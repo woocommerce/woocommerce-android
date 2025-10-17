@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 23.5
+We’ve polished your WooCommerce experience! This update fixes a rare crash during order refunds and corrects how customer names appear when filtering orders. Enjoy smoother performance and more reliable order management with this release.
+
 ## 23.4
 We've improved the Blaze campaign experience! Creating campaigns now works smoothly for all products, including those with PDF thumbnails. Update today for a more reliable advertising experience.
 
